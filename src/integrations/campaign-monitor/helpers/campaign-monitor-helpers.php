@@ -438,7 +438,7 @@ class Campaign_Monitor_Helpers {
 				$code    = $response['data']['Code'] ?? '';
 				$message = $response['data']['Message'] . ( ! empty( $code ) ? " ({$code})" : '' );
 			}
-			throw new Exception( $message, $response['statusCode'] );
+			throw new Exception( esc_html( $message ), absint( $response['statusCode'] ) );
 		}
 
 	}
@@ -605,7 +605,7 @@ class Campaign_Monitor_Helpers {
 	public function get_lists_ajax() {
 
 		Automator()->utilities->verify_nonce();
-		$client_id = isset( $_POST['values'][ self::ACTION_CLIENT_META_KEY ] ) ? sanitize_text_field( wp_unslash( $_POST['values'][ self::ACTION_CLIENT_META_KEY ] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$client_id = isset( $_POST['values'][ self::ACTION_CLIENT_META_KEY ] ) ? sanitize_text_field( wp_unslash( $_POST['values'][ self::ACTION_CLIENT_META_KEY ] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$lists     = $this->get_lists( $client_id, $this->is_ajax_refresh() );
 
 		if ( is_wp_error( $lists ) ) {
@@ -696,7 +696,7 @@ class Campaign_Monitor_Helpers {
 
 		Automator()->utilities->verify_nonce();
 
-		$list_id = isset( $_POST['values']['LIST'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['LIST'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$list_id = isset( $_POST['values']['LIST'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['LIST'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$fields  = $this->get_custom_fields( $list_id, $this->is_ajax_refresh() );
 
 		if ( is_wp_error( $fields ) ) {

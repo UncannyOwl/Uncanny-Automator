@@ -1,4 +1,5 @@
 <?php
+
 namespace Uncanny_Automator\Integrations\Constant_Contact;
 
 use Exception;
@@ -28,7 +29,7 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
+			/* translators: Action sentence */
 				esc_attr_x(
 					'Add {{a tag:%1$s}} to {{a contact:%2$s}}',
 					'Constant Contact',
@@ -40,7 +41,6 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$this->set_readable_sentence( esc_attr_x( 'Add {{a tag}} to {{a contact}}', 'Constant Contact', 'uncanny-automator' ) );
-
 	}
 
 	/**
@@ -74,9 +74,9 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 	/**
 	 * Process the action.
 	 *
-	 * @param int   $user_id
+	 * @param int $user_id
 	 * @param array $action_data
-	 * @param int   $recipe_id
+	 * @param int $recipe_id
 	 * @param array $args
 	 * @param array $parsed
 	 *
@@ -90,7 +90,14 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 		$tag         = isset( $parsed['TAG'] ) ? sanitize_text_field( $parsed['TAG'] ) : '';
 
 		if ( false === filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception( 'Invalid email address: ' . $email, 400 );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Email address */
+					esc_html__( 'Invalid email address: %s', 'uncanny-automator' ),
+					esc_html( $email )
+				),
+				400
+			);
 		}
 
 		$body = array(
@@ -101,7 +108,5 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$helpers->api_request( $body, $action_data );
-
 	}
-
 }

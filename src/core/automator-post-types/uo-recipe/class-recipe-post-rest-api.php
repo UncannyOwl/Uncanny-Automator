@@ -330,7 +330,7 @@ class Recipe_Post_Rest_Api {
 		$post_id = wp_insert_post( $recipe_post );
 
 		if ( is_wp_error( $post_id ) ) {
-			$return['message'] = sprintf( '%s:%s', __( 'The action failed to create the post. The response was', 'uncanny-automator' ), $post_id );
+			$return['message'] = sprintf( '%s:%s', esc_html__( 'The action failed to create the post. The response was', 'uncanny-automator' ), $post_id );
 
 			return new WP_REST_Response( $return, 400 );
 		}
@@ -360,19 +360,19 @@ class Recipe_Post_Rest_Api {
 	 */
 	public function add( WP_REST_Request $request ) {
 
-		$return['message'] = __( 'The data that was sent was malformed. Please reload the page and try again.', 'uncanny-automator' );
+		$return['message'] = esc_html__( 'The data that was sent was malformed. Please reload the page and try again.', 'uncanny-automator' );
 		$return['success'] = false;
 		$return['data']    = $request;
 		$return['post']    = '';
 
 		// Make sure we have a parent post ID
 		if ( ! $request->has_param( 'recipePostID' ) || ! is_numeric( $request->get_param( 'recipePostID' ) ) ) {
-			$return['message'] = __( 'Recipe ID is missing.', 'uncanny-automator' );
+			$return['message'] = esc_html__( 'Recipe ID is missing.', 'uncanny-automator' );
 
 			return new WP_REST_Response( $return, 400 );
 		}
 		if ( $request->has_param( 'trigger_code' ) && $request->has_param( 'item_code' ) ) {
-			$return['message'] = __( 'Trigger code or Item code is missing.', 'uncanny-automator' );
+			$return['message'] = esc_html__( 'Trigger code or Item code is missing.', 'uncanny-automator' );
 
 			return new WP_REST_Response( $return, 400 );
 		}
@@ -380,7 +380,7 @@ class Recipe_Post_Rest_Api {
 		// Make sure the parent post exists
 		$recipe = get_post( absint( $request->get_param( 'recipePostID' ) ) );
 		if ( ! $recipe instanceof WP_Post ) {
-			$return['message'] = __( 'Post ID sent is not a recipe post', 'uncanny-automator' );
+			$return['message'] = esc_html__( 'Post ID sent is not a recipe post', 'uncanny-automator' );
 
 			return new WP_REST_Response( $return, 400 );
 		}
@@ -424,7 +424,7 @@ class Recipe_Post_Rest_Api {
 		}
 
 		if ( ! $post_type ) {
-			$return['message'] = __( 'Post type is not defined.', 'uncanny-automator' );
+			$return['message'] = esc_html__( 'Post type is not defined.', 'uncanny-automator' );
 
 			return new WP_REST_Response( $return, 400 );
 		}
@@ -456,7 +456,7 @@ class Recipe_Post_Rest_Api {
 		$post_id = wp_insert_post( $post );
 
 		if ( is_wp_error( $post_id ) ) {
-			$return['message'] = sprintf( '%s:%s', __( 'The action failed to create the post. The response was', 'uncanny-automator' ), $post_id );
+			$return['message'] = sprintf( '%s:%s', esc_html__( 'The action failed to create the post. The response was', 'uncanny-automator' ), $post_id );
 
 			return new WP_REST_Response( $return, 400 );
 		}
@@ -1402,7 +1402,7 @@ class Recipe_Post_Rest_Api {
 		// Make sure we have all the data
 		if ( $request->get_param( 'recipeId' ) && $request->has_param( 'actionId' ) ) {
 
-			Utilities::log( 'Removing schedule $request: ' . var_export( $request, true ) ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+			Utilities::log( 'Removing schedule $request: ' . var_export( $request, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 
 			$post_id   = (int) $request->get_param( 'actionId' );
 			$recipe_id = (int) $request->get_param( 'recipeId' );
@@ -1646,7 +1646,7 @@ class Recipe_Post_Rest_Api {
 		// Make sure we have a recipe ID and the newOrder
 		if ( ! $request->has_param( 'item_log_id' ) ) {
 			$return['success'] = false;
-			$return['message'] = __( 'Action Log ID is empty', 'uncanny-automator' );
+			$return['message'] = esc_html__( 'Action Log ID is empty', 'uncanny-automator' );
 
 			return new WP_REST_Response( $return, 400 );
 		}
@@ -1657,7 +1657,7 @@ class Recipe_Post_Rest_Api {
 
 		if ( empty( $api_request->params ) ) {
 			$return['success'] = false;
-			$return['message'] = __( 'Missing action params', 'uncanny-automator' );
+			$return['message'] = esc_html__( 'Missing action params', 'uncanny-automator' );
 		}
 
 		$params = maybe_unserialize( $api_request->params );
@@ -1687,7 +1687,7 @@ class Recipe_Post_Rest_Api {
 			return new WP_REST_Response( $return, $e->getCode() );
 		}
 
-		$return['message'] = __( 'The request has been successfully resent', 'uncanny-automator' );
+		$return['message'] = esc_html__( 'The request has been successfully resent', 'uncanny-automator' );
 		$return['success'] = true;
 
 		// Log the success response for retries.

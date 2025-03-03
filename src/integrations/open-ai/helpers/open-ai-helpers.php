@@ -39,7 +39,6 @@ class Open_AI_Helpers {
 		if ( is_admin() ) {
 			$this->load_settings();
 		}
-
 	}
 
 	public function load_settings() {
@@ -61,7 +60,6 @@ class Open_AI_Helpers {
 		wp_safe_redirect( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=open-ai' );
 
 		exit;
-
 	}
 
 	/**
@@ -104,7 +102,6 @@ class Open_AI_Helpers {
 				'options' => $items,
 			)
 		);
-
 	}
 
 	/**
@@ -128,7 +125,6 @@ class Open_AI_Helpers {
 		$this->check_for_errors( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -143,9 +139,15 @@ class Open_AI_Helpers {
 	public function check_for_errors( $response = array() ) {
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( 'Request to OpenAI returned with status: ' . $response['statusCode'], $response['statusCode'] );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: HTTP status code */
+					esc_html__( 'Request to OpenAI returned with status: %s', 'uncanny-automator' ),
+					absint( $response['statusCode'] )
+				),
+				absint( $response['statusCode'] )
+			);
 		}
-
 	}
 
 	/**
@@ -171,7 +173,6 @@ class Open_AI_Helpers {
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
 			wp_die( 'Forbidden', 401 );
 		}
-
 	}
 
 	/**
@@ -235,7 +236,6 @@ class Open_AI_Helpers {
 		}
 
 		die();
-
 	}
 
 	/**
@@ -246,7 +246,6 @@ class Open_AI_Helpers {
 	public function has_gpt4_access() {
 
 		return 'yes' === $this->determine_gpt4_access();
-
 	}
 
 	/**
@@ -269,7 +268,6 @@ class Open_AI_Helpers {
 		wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=open-ai' ) );
 
 		die;
-
 	}
 
 	/**
@@ -313,7 +311,6 @@ class Open_AI_Helpers {
 		set_transient( self::HAS_GPT4_ACCESS_TRANSIENT_KEY, $has_gpt4_access, 0 );
 
 		return $has_gpt4_access;
-
 	}
 
 	/**
@@ -336,7 +333,6 @@ class Open_AI_Helpers {
 		);
 
 		return apply_filters( $id . '_body', $body );
-
 	}
 
 	/**
@@ -356,7 +352,6 @@ class Open_AI_Helpers {
 		$client->set_request_body( $body );
 
 		return $client;
-
 	}
 
 	/**
@@ -383,7 +378,6 @@ class Open_AI_Helpers {
 		$response_text = $client->get_first_response_string( $client->get_response() );
 
 		return $response_text;
-
 	}
 
 	/**
@@ -432,5 +426,4 @@ class Open_AI_Helpers {
 
 		update_post_meta( $recipe_id, 'uap_openai_model_updated', 'yes' );
 	}
-
 }

@@ -77,14 +77,13 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
 			'type'                => 'anonymous',
-			/* translators: Everyone trigger - WordPress */
 			'sentence'            => sprintf(
+				// translators: 1: Post type, 2: Taxonomy term, 3: Taxonomy
 				esc_html_x( '{{A type of post:%1$s}} with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}} is updated', 'WordPress', 'uncanny-automator' ),
 				'WPPOSTTYPES:' . $this->trigger_meta,
 				'WPTAXONOMIES:' . $this->trigger_meta,
 				'WPTAXONOMYTERM:' . $this->trigger_meta
 			),
-			/* translators: Everyone trigger - WordPress */
 			'select_option_name'  => esc_attr_x( 'A post in a taxonomy is updated', 'WordPress', 'uncanny-automator' ),
 			'action'              => 'post_updated',
 			'priority'            => 10,
@@ -240,7 +239,7 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 					// is post taxonomy
 					if (
 						// any taxonomy
-						0 == $required_taxonomy[ $recipe_id ][ $trigger_id ] //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+						0 == $required_taxonomy[ $recipe_id ][ $trigger_id ] // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 					) {
 
 						$post_terms = $this->get_all_post_tax( $post_ID, $post->post_type, $recipe_id, $trigger_id );
@@ -273,7 +272,7 @@ class ANON_WP_UPDATES_POST_IN_TAXONOMY {
 
 							if (
 								// any terms
-								0 == $required_term[ $recipe_id ][ $trigger_id ] //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+								0 == $required_term[ $recipe_id ][ $trigger_id ] // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 								|| in_array( absint( $required_term[ $recipe_id ][ $trigger_id ] ), $term_ids, true ) // specific term
 							) {
 								$matched_recipe_ids[] = array(

@@ -99,7 +99,6 @@ class Mailchimp_Helpers {
 		require_once __DIR__ . '/../settings/settings-mailchimp.php';
 
 		new Mailchimp_Settings( $this );
-
 	}
 
 	/**
@@ -110,7 +109,6 @@ class Mailchimp_Helpers {
 	public function setOptions( Mailchimp_Helpers $options ) { // phpcs:ignore
 
 		$this->options = $options;
-
 	}
 
 	/**
@@ -121,7 +119,6 @@ class Mailchimp_Helpers {
 	public function setPro( Mailchimp_Pro_Helpers $pro ) { // phpcs:ignore
 
 		$this->pro = $pro;
-
 	}
 
 	/**
@@ -136,7 +133,7 @@ class Mailchimp_Helpers {
 	public function get_all_lists( $label = null, $option_code = 'MCLIST', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Audience', 'uncanny-automator' );
+			$label = esc_html__( 'Audience', 'uncanny-automator' );
 		}
 
 		$is_ajax                  = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -163,7 +160,7 @@ class Mailchimp_Helpers {
 					if ( ! empty( $has_any ) && true === $has_any ) {
 						$options[] = array(
 							'value' => '-1',
-							'text'  => __( 'Any audience', 'uncanny-automator' ),
+							'text'  => esc_html__( 'Any audience', 'uncanny-automator' ),
 						);
 					}
 					foreach ( $response['data']['lists'] as $list ) {
@@ -214,14 +211,14 @@ class Mailchimp_Helpers {
 	public function get_list_groups( $label = null, $option_code = 'MCLISTGROUPS', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Groups', 'uncanny-automator' );
+			$label = esc_html__( 'Groups', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any group', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any group', 'uncanny-automator' ),
 			)
 		);
 
@@ -278,7 +275,7 @@ class Mailchimp_Helpers {
 			$response = $this->api_request( $request_params );
 
 			if ( 200 !== intval( $response['statusCode'] ) || empty( $response['data']['categories'] ) ) { // phpcs:ignore
-				throw new \Exception( __( 'Could not fetch categories.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Could not fetch categories.', 'uncanny-automator' ) );
 			}
 
 			foreach ( $response['data']['categories'] as $category ) {
@@ -326,14 +323,14 @@ class Mailchimp_Helpers {
 	public function get_list_tags( $label = null, $option_code = 'MCLISTTAGS', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Tags', 'uncanny-automator' );
+			$label = esc_html__( 'Tags', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any tag', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any tag', 'uncanny-automator' ),
 			)
 		);
 
@@ -417,7 +414,6 @@ class Mailchimp_Helpers {
 		echo wp_json_encode( $fields );
 
 		die();
-
 	}
 
 	/**
@@ -434,7 +430,7 @@ class Mailchimp_Helpers {
 
 		$fields[] = array(
 			'value' => '-1',
-			'text'  => __( 'Select a Segment or Tag', 'uncanny-automator' ),
+			'text'  => esc_html__( 'Select a Segment or Tag', 'uncanny-automator' ),
 		);
 
 		$values = automator_filter_input_array( 'values', INPUT_POST );
@@ -457,7 +453,7 @@ class Mailchimp_Helpers {
 			$response = $this->api_request( $request_params );
 
 			if ( 200 !== intval( $response['statusCode'] ) ) {
-				throw new \Exception( __( 'Could not fetch segments.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Could not fetch segments.', 'uncanny-automator' ) );
 			}
 
 			if ( ! empty( $response['data']['segments'] ) ) {
@@ -491,26 +487,26 @@ class Mailchimp_Helpers {
 	public function get_double_opt_in( $label = null, $option_code = 'MCDOUBLEOPTIN', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Double opt-in', 'uncanny-automator' );
+			$label = esc_html__( 'Double opt-in', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any tag', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any tag', 'uncanny-automator' ),
 			)
 		);
 
 		$options   = array();
 		$options[] = array(
 			'value' => 'yes',
-			'text'  => __( 'Yes', 'uncanny-automator' ),
+			'text'  => esc_html__( 'Yes', 'uncanny-automator' ),
 		);
 
 		$options[] = array(
 			'value' => 'no',
-			'text'  => __( 'No', 'uncanny-automator' ),
+			'text'  => esc_html__( 'No', 'uncanny-automator' ),
 		);
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -568,44 +564,44 @@ class Mailchimp_Helpers {
 			$response = $this->api_request( $request_params );
 
 			if ( 200 !== intval( $response['statusCode'] ) ) {
-				throw new \Exception( __( 'Could not fetch fields', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Could not fetch fields', 'uncanny-automator' ) );
 			}
 
 			if ( ! empty( $response['data']['merge_fields'] ) ) {
 				foreach ( $response['data']['merge_fields'] as $field ) {
 					$merge_order = $field['display_order'] * 10;
 					if ( 'address' === $field['type'] ) {
-						++ $merge_order;
+						++$merge_order;
 						$fields[ $merge_order ] = array(
 							'key'  => $field['tag'] . '_addr1',
 							'type' => 'text',
 							'data' => $field['name'],
 						);
-						++ $merge_order;
+						++$merge_order;
 						$fields[ $merge_order ] = array(
 							'key'  => $field['tag'] . '_addr2',
 							'type' => 'text',
 							'data' => $field['name'],
 						);
-						++ $merge_order;
+						++$merge_order;
 						$fields[ $merge_order ] = array(
 							'key'  => $field['tag'] . '_city',
 							'type' => 'text',
 							'data' => $field['name'],
 						);
-						++ $merge_order;
+						++$merge_order;
 						$fields[ $merge_order ] = array(
 							'key'  => $field['tag'] . '_state',
 							'type' => 'text',
 							'data' => $field['name'],
 						);
-						++ $merge_order;
+						++$merge_order;
 						$fields[ $merge_order ] = array(
 							'key'  => $field['tag'] . '_zip',
 							'type' => 'text',
 							'data' => $field['name'],
 						);
-						++ $merge_order;
+						++$merge_order;
 						$fields[ $merge_order ] = array(
 							'key'  => $field['tag'] . '_country',
 							'type' => 'text',
@@ -648,14 +644,14 @@ class Mailchimp_Helpers {
 	public function get_all_email_templates( $label = null, $option_code = 'MCEMAILTEMPLATE', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Template', 'uncanny-automator' );
+			$label = esc_html__( 'Template', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'All', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'All', 'uncanny-automator' ),
 			)
 		);
 
@@ -673,7 +669,7 @@ class Mailchimp_Helpers {
 		// For default value, when user do not want to select a template.
 		$options[] = array(
 			'value' => '',
-			'text'  => __( 'Select a template', 'uncanny-automator' ),
+			'text'  => esc_html__( 'Select a template', 'uncanny-automator' ),
 		);
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
@@ -686,7 +682,7 @@ class Mailchimp_Helpers {
 				$response = $this->api_request( $request_params );
 
 				if ( 200 !== intval( $response['statusCode'] ) ) {
-					throw new \Exception( __( 'Could not fetch templates.', 'uncanny-automator' ) );
+					throw new \Exception( esc_html__( 'Could not fetch templates.', 'uncanny-automator' ) );
 				}
 
 				if ( ! empty( $response['data']['templates'] ) ) {
@@ -754,7 +750,7 @@ class Mailchimp_Helpers {
 		$client = automator_get_option( '_uncannyowl_mailchimp_settings', array() );
 
 		if ( empty( $client ) || ! isset( $client['access_token'] ) ) {
-			throw new \Exception( __( 'Mailchimp account not found.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Mailchimp account not found.', 'uncanny-automator' ) );
 		}
 
 		return (object) $client;
@@ -852,7 +848,6 @@ class Mailchimp_Helpers {
 		);
 
 		exit;
-
 	}
 
 	/**
@@ -880,7 +875,6 @@ class Mailchimp_Helpers {
 		$this->check_for_errors( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -967,7 +961,7 @@ class Mailchimp_Helpers {
 				$error_msg = '(' . $response['statusCode'] . ') ' . $error_msg;
 			}
 
-			throw new \Exception( $error_msg, $response['statusCode'] );
+			throw new \Exception( esc_html( $error_msg ), absint( $response['statusCode'] ) );
 		}
 	}
 
@@ -1066,7 +1060,6 @@ class Mailchimp_Helpers {
 	public function define_webhook_listener() {
 
 		add_action( 'rest_api_init', array( $this, 'init_webhook' ) );
-
 	}
 
 	/**
@@ -1086,7 +1079,6 @@ class Mailchimp_Helpers {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -1109,7 +1101,6 @@ class Mailchimp_Helpers {
 		}
 
 		return $has_connection;
-
 	}
 
 	/**
@@ -1162,7 +1153,6 @@ class Mailchimp_Helpers {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -1185,7 +1175,6 @@ class Mailchimp_Helpers {
 			);
 
 		}
-
 	}
 
 	/**
@@ -1224,7 +1213,6 @@ class Mailchimp_Helpers {
 		do_action( 'automator_mailchimp_webhook_received_' . $type, $body );
 
 		exit;
-
 	}
 
 	/**
@@ -1235,7 +1223,6 @@ class Mailchimp_Helpers {
 	public function get_webhook_url() {
 
 		return $this->webhook_endpoint . '?key=' . $this->get_webhook_key();
-
 	}
 
 	/**
@@ -1254,7 +1241,6 @@ class Mailchimp_Helpers {
 		}
 
 		return $webhook_key;
-
 	}
 
 	/**
@@ -1269,7 +1255,6 @@ class Mailchimp_Helpers {
 		automator_update_option( 'uap_mailchimp_webhook_key', $new_key );
 
 		return $new_key;
-
 	}
 
 	/**
@@ -1286,7 +1271,6 @@ class Mailchimp_Helpers {
 		wp_safe_redirect( $uri );
 
 		exit;
-
 	}
 
 	/**
@@ -1303,7 +1287,6 @@ class Mailchimp_Helpers {
 		$force_debug = true;
 
 		return automator_log( $message, 'MailChimp Webhook Trigger Entry', $force_debug, 'mailchimp-webhook' );
-
 	}
 
 	/**
@@ -1335,7 +1318,6 @@ class Mailchimp_Helpers {
 			'input_type'  => 'email',
 			'required'    => true,
 		);
-
 	}
 
 	/**
@@ -1360,10 +1342,10 @@ class Mailchimp_Helpers {
 					if ( empty( $sub_value ) && $sub_value !== '0' ) {
 						throw new Exception(
 							sprintf(
-								/* translators: %1$s is the sub-field key, %2$s is the parent field key. */
-								__( "The field '%1\$s' in '%2\$s' is required but is empty.", 'text-domain' ),
-								$sub_key,
-								$key
+							/* translators: %1$s: Sub-field key, %2$s: Parent field key */
+								esc_html__( "The field '%1\$s' in '%2\$s' is required but is empty.", 'uncanny-automator' ),
+								esc_html( $sub_key ),
+								esc_html( $key )
 							)
 						);
 					}
@@ -1380,7 +1362,5 @@ class Mailchimp_Helpers {
 		}
 
 		return $sanitized_fields;
-
 	}
-
 }

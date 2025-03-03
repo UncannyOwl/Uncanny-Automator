@@ -18,11 +18,11 @@ class SureCart_Tokens {
 
 		$tokens = array(
 			'STORE_NAME' => array(
-				'name'         => __( 'Store name', 'uncanny-automator' ),
+				'name'         => esc_html__( 'Store name', 'uncanny-automator' ),
 				'hydrate_with' => array( $this, 'hydrate_common_tokens' ),
 			),
 			'STORE_URL'  => array(
-				'name'         => __( 'Store URL', 'uncanny-automator' ),
+				'name'         => esc_html__( 'Store URL', 'uncanny-automator' ),
 				'hydrate_with' => array( $this, 'hydrate_common_tokens' ),
 			),
 		);
@@ -39,67 +39,67 @@ class SureCart_Tokens {
 
 		$tokens = array(
 			'PRODUCT_ID'             => array(
-				'name' => __( 'Product ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product ID', 'uncanny-automator' ),
 			),
 			'PRODUCT_THUMB'          => array(
-				'name' => __( 'Product image', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product image', 'uncanny-automator' ),
 			),
 			'PRODUCT_THUMB_ID'       => array(
-				'name' => __( 'Product image ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product image ID', 'uncanny-automator' ),
 			),
 			'PRODUCT_PRICE'          => array(
-				'name' => __( 'Product price', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product price', 'uncanny-automator' ),
 			),
 			'PRODUCT_PRICE_ID'       => array(
-				'name' => __( 'Product price ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product price ID', 'uncanny-automator' ),
 			),
 			'PRODUCT_PAYMENT_TYPE'   => array(
-				'name' => __( 'Product payment type', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product payment type', 'uncanny-automator' ),
 			),
 			'PRODUCT_TRIAL_DAYS'     => array(
-				'name' => __( 'Product trial days', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product trial days', 'uncanny-automator' ),
 			),
 			'PRODUCT_DOWNLOAD_URL'   => array(
-				'name' => __( 'Product download URL', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product download URL', 'uncanny-automator' ),
 			),
 			'PRODUCT_DOWNLOAD_LINK'  => array(
-				'name' => __( 'Product download link', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product download link', 'uncanny-automator' ),
 			),
 			'PRODUCT_DOWNLOAD_TITLE' => array(
-				'name' => __( 'Product download title', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product download title', 'uncanny-automator' ),
 			),
 			'SUBSCRIPTION_ID'        => array(
-				'name' => __( 'Subscription ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Subscription ID', 'uncanny-automator' ),
 			),
 			'ORDER_ID'               => array(
-				'name' => __( 'Order ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order ID', 'uncanny-automator' ),
 			),
 			'ORDER_DATE'             => array(
-				'name' => __( 'Order date', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order date', 'uncanny-automator' ),
 			),
 			'ORDER_STATUS'           => array(
-				'name' => __( 'Order status', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order status', 'uncanny-automator' ),
 			),
 			'ORDER_NUMBER'           => array(
-				'name' => __( 'Order number', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order number', 'uncanny-automator' ),
 			),
 			'ORDER_PAID_AMOUNT'      => array(
-				'name' => __( 'Paid amount', 'uncanny-automator' ),
+				'name' => esc_html__( 'Paid amount', 'uncanny-automator' ),
 			),
 			'ORDER_SUBTOTAL'         => array(
-				'name' => __( 'Order subtotal', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order subtotal', 'uncanny-automator' ),
 			),
 			'ORDER_TOTAL'            => array(
-				'name' => __( 'Order total', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order total', 'uncanny-automator' ),
 			),
 			'ORDER_DISCOUNT'         => array(
-				'name' => __( 'Order discount', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order discount', 'uncanny-automator' ),
 			),
 			'PAYMENT_METHOD'         => array(
-				'name' => __( 'Payment method', 'uncanny-automator' ),
+				'name' => esc_html__( 'Payment method', 'uncanny-automator' ),
 			),
 			'ORDER_COUPON'           => array(
-				'name' => __( 'Coupon code', 'uncanny-automator' ),
+				'name' => esc_html__( 'Coupon code', 'uncanny-automator' ),
 			),
 		);
 
@@ -114,58 +114,58 @@ class SureCart_Tokens {
 
 		$tokens = array(
 			'ORDER_PRODUCT'                 => array(
-				'name' => __( 'Product name', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product name', 'uncanny-automator' ),
 			),
 			'ORDER_PRODUCT_ID'              => array(
-				'name' => __( 'Product ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product ID', 'uncanny-automator' ),
 			),
 			'ORDER_PRODUCT_THUMB'           => array(
-				'name' => __( 'Product image', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product image', 'uncanny-automator' ),
 			),
 			'ORDER_PRODUCT_THUMB_ID'        => array(
-				'name' => __( 'Product image ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product image ID', 'uncanny-automator' ),
 			),
 			'ORDER_PRODUCT_PRICE'           => array(
-				'name' => __( 'Product price', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product price', 'uncanny-automator' ),
 			),
 			'ORDER_PRODUCT_PAYMENT_TYPE'    => array(
-				'name' => __( 'Product payment type', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product payment type', 'uncanny-automator' ),
 			),
 			'ORDER_PRODUCT_TRIAL_DAYS'      => array(
-				'name' => __( 'Product trial days', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product trial days', 'uncanny-automator' ),
 			),
 			'ORDER_PRODUCT_SUBSCRIPTION_ID' => array(
-				'name' => __( 'Product subscription ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Product subscription ID', 'uncanny-automator' ),
 			),
 			'ORDER_AMOUNT_DUE'              => array(
-				'name' => __( 'Order amount due', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order amount due', 'uncanny-automator' ),
 			),
 			'ORDER_APPLIED_BALANCE'         => array(
-				'name' => __( 'Order Applied balance amount', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order Applied balance amount', 'uncanny-automator' ),
 			),
 			'ORDER_CREDITED_BALANCE'        => array(
-				'name' => __( 'Order credited balance amount', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order credited balance amount', 'uncanny-automator' ),
 			),
 			'ORDER_DISCOUNT_AMOUNT'         => array(
-				'name' => __( 'Order discount amount', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order discount amount', 'uncanny-automator' ),
 			),
 			'ORDER_SUBTOTAL_AMOUNT'         => array(
-				'name' => __( 'Order subtotal amount', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order subtotal amount', 'uncanny-automator' ),
 			),
 			'ORDER_UNIT_AMOUNT'             => array(
-				'name' => __( 'Order unit amount', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order unit amount', 'uncanny-automator' ),
 			),
 			'ORDER_PAYMENT_PROCESSOR'       => array(
-				'name' => __( 'Order payment processor', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order payment processor', 'uncanny-automator' ),
 			),
 			'ORDER_PDF'                     => array(
-				'name' => __( 'Order PDF URL', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order PDF URL', 'uncanny-automator' ),
 			),
 			'ORDER_ID'                      => array(
-				'name' => __( 'Order ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order ID', 'uncanny-automator' ),
 			),
 			'ORDER_NUMBER'                  => array(
-				'name' => __( 'Order number', 'uncanny-automator' ),
+				'name' => esc_html__( 'Order number', 'uncanny-automator' ),
 			),
 		);
 
@@ -181,25 +181,25 @@ class SureCart_Tokens {
 
 		$tokens = array(
 			'SHIPPING_COUNTRY'  => array(
-				'name' => __( 'Shipping country', 'uncanny-automator' ),
+				'name' => esc_html__( 'Shipping country', 'uncanny-automator' ),
 			),
 			'SHIPPING_STATE'    => array(
-				'name' => __( 'Shipping state', 'uncanny-automator' ),
+				'name' => esc_html__( 'Shipping state', 'uncanny-automator' ),
 			),
 			'SHIPPING_CITY'     => array(
-				'name' => __( 'Shipping city', 'uncanny-automator' ),
+				'name' => esc_html__( 'Shipping city', 'uncanny-automator' ),
 			),
 			'SHIPPING_LINE_1'   => array(
-				'name' => __( 'Shipping line 1', 'uncanny-automator' ),
+				'name' => esc_html__( 'Shipping line 1', 'uncanny-automator' ),
 			),
 			'SHIPPING_LINE_2'   => array(
-				'name' => __( 'Shipping line 2', 'uncanny-automator' ),
+				'name' => esc_html__( 'Shipping line 2', 'uncanny-automator' ),
 			),
 			'SHIPPING_NAME'     => array(
-				'name' => __( 'Shipping name', 'uncanny-automator' ),
+				'name' => esc_html__( 'Shipping name', 'uncanny-automator' ),
 			),
 			'SHIPPING_POSTCODE' => array(
-				'name' => __( 'Shipping postcode', 'uncanny-automator' ),
+				'name' => esc_html__( 'Shipping postcode', 'uncanny-automator' ),
 			),
 		);
 
@@ -210,16 +210,16 @@ class SureCart_Tokens {
 
 		$tokens = array(
 			'BILLING_NAME'       => array(
-				'name' => __( 'Billing name', 'uncanny-automator' ),
+				'name' => esc_html__( 'Billing name', 'uncanny-automator' ),
 			),
 			'BILLING_EMAIL'      => array(
-				'name' => __( 'Billing email', 'uncanny-automator' ),
+				'name' => esc_html__( 'Billing email', 'uncanny-automator' ),
 			),
 			'BILLING_FIRST_NAME' => array(
-				'name' => __( 'Billing first name', 'uncanny-automator' ),
+				'name' => esc_html__( 'Billing first name', 'uncanny-automator' ),
 			),
 			'BILLING_LAST_NAME'  => array(
-				'name' => __( 'Billing last name', 'uncanny-automator' ),
+				'name' => esc_html__( 'Billing last name', 'uncanny-automator' ),
 			),
 		);
 
@@ -479,7 +479,7 @@ class SureCart_Tokens {
 			$interval = $this->get_interval_string( $price->recurring_interval, $price->recurring_interval_count );
 
 			// translators: 1. recurring count 2. recurring interval.
-			$amount .= sprintf( __( ' every %1$d %2$s', 'uncanny-automator' ), $price->recurring_interval_count, $interval );
+			$amount .= sprintf( esc_html__( 'every %1$d %2$s', 'uncanny-automator' ), $price->recurring_interval_count, $interval );
 		}
 
 		if ( ! empty( $price->recurring_period_count ) ) {
@@ -499,14 +499,14 @@ class SureCart_Tokens {
 	 */
 	public function get_price_type( $price ) {
 
-		$plan = __( 'One Time', 'uncanny-automator' );
+		$plan = esc_html__( 'One Time', 'uncanny-automator' );
 
 		if ( ! empty( $price->recurring_period_count ) ) {
-			$plan = __( 'Plan', 'uncanny-automator' );
+			$plan = esc_html__( 'Plan', 'uncanny-automator' );
 		}
 
 		if ( ! empty( $price->recurring_interval ) ) {
-			$plan = __( 'Subscription', 'uncanny-automator' );
+			$plan = esc_html__( 'Subscription', 'uncanny-automator' );
 		}
 
 		return apply_filters( 'automator_surecart_price_type', $plan, $price );
@@ -580,7 +580,7 @@ class SureCart_Tokens {
 			$expose_for       = apply_filters( 'automator_surecart_product_download_url_expiration', 24 * 60 * 60, $download, $purchase_data );
 			$media            = \SureCart\Models\Media::where( array( 'expose_for' => $expose_for ) )->find( $download->media->id );
 			$format           = '<a href="%s" title="%s">%s</a>';
-			$download_link    = sprintf( $format, $media->url, $media->filename, __( 'Download', 'uncanny-automator' ) );
+			$download_link    = sprintf( $format, $media->url, $media->filename, esc_html__( 'Download', 'uncanny-automator' ) );
 			$download_links[] = apply_filters( 'automator_surecart_product_download_link', $download_link );
 		}
 

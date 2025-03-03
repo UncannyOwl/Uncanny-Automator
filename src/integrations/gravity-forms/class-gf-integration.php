@@ -71,7 +71,7 @@ class Gravity_Forms_Integration extends \Uncanny_Automator\Integration {
 		$options = array(
 			array(
 				'value' => -1,
-				'text'  => __( 'Any form', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any form', 'uncanny-automator' ),
 			),
 		);
 

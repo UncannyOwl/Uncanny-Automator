@@ -97,7 +97,7 @@ class WM_USERREMOVED {
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
-				if ( intval( '-1' ) === intval( $required_level[ $recipe_id ][ $trigger_id ] ) || in_array( $required_level[ $recipe_id ][ $trigger_id ], $remove_levels ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+				if ( intval( '-1' ) === intval( $required_level[ $recipe_id ][ $trigger_id ] ) || in_array( $required_level[ $recipe_id ][ $trigger_id ], $remove_levels ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,

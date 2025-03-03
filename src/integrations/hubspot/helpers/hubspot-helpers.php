@@ -52,7 +52,6 @@ class Hubspot_Helpers {
 		add_action( 'init', array( $this, 'disconnect' ), 100, 3 );
 
 		$this->load_settings();
-
 	}
 
 	public function load_settings() {
@@ -78,7 +77,7 @@ class Hubspot_Helpers {
 		$tokens = automator_get_option( '_automator_hubspot_settings', array() );
 
 		if ( empty( $tokens['access_token'] ) || empty( $tokens['refresh_token'] ) ) {
-			throw new \Exception( __( 'HubSpot is not connected', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'HubSpot is not connected', 'uncanny-automator' ) );
 		}
 
 		$tokens = $this->maybe_refresh_token( $tokens );
@@ -202,7 +201,7 @@ class Hubspot_Helpers {
 
 		// Rate limit token refresh calls if they fail
 		if ( time() - $last_call < 60 ) {
-			throw new \Exception( __( 'HubSpot token refresh timeout, please try to reconnect HubSpot from settings', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'HubSpot token refresh timeout, please try to reconnect HubSpot from settings', 'uncanny-automator' ) );
 		}
 
 		$response = Api_Server::api_call( $params );
@@ -216,19 +215,19 @@ class Hubspot_Helpers {
 				automator_delete_option( '_automator_hubspot_settings' );
 				automator_delete_option( '_automator_hubspot_refresh_token_attempts' );
 				automator_delete_option( '_automator_hubspot_last_refresh_token_call' );
-				throw new \Exception( __( 'HubSpot token refresh failed, please reconnect HubSpot from settings', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'HubSpot token refresh failed, please reconnect HubSpot from settings', 'uncanny-automator' ) );
 			}
 
 			automator_update_option( '_automator_hubspot_refresh_token_failed_attempts', $failed_attempt );
 			automator_update_option( '_automator_hubspot_last_refresh_token_call', time() );
 
-			$error_msg = __( 'Could not refresh HubSpot token.', 'uncanny-automator' );
+			$error_msg = esc_html__( 'Could not refresh HubSpot token.', 'uncanny-automator' );
 
 			if ( ! empty( $response['data']['message'] ) ) {
 				$error_msg = $response['data']['message'];
 			}
 
-			throw new \Exception( $error_msg, $response['statusCode'] );
+			throw new \Exception( esc_html( $error_msg ), absint( $response['statusCode'] ) );
 		}
 
 		automator_delete_option( '_automator_hubspot_refresh_token_failed_attempts' );
@@ -236,7 +235,6 @@ class Hubspot_Helpers {
 		$tokens = $this->store_client( $response['data'] );
 
 		return $tokens;
-
 	}
 
 	/**
@@ -310,13 +308,12 @@ class Hubspot_Helpers {
 
 			$message = $this->extract_error_message( $response );
 
-			throw new \Exception( $message );
+			throw new \Exception( esc_html( $message ) );
 		}
 
 		if ( 200 !== intval( $response['statusCode'] ) ) {
-			throw new \Exception( __( 'API returned an error: ', 'uncanny-automator' ) . $response['statusCode'], $response['statusCode'] );
+			throw new \Exception( esc_html( __( 'API returned an error: ', 'uncanny-automator' ) . $response['statusCode'] ), absint( $response['statusCode'] ) );
 		}
-
 	}
 
 	/**
@@ -327,7 +324,7 @@ class Hubspot_Helpers {
 	 */
 	public function extract_error_message( $response ) {
 
-		$message = __( 'API returned an error: ', 'uncanny-automator' ) . $response['statusCode'];
+		$message = esc_html__( 'API returned an error:', 'uncanny-automator' ) . $response['statusCode'];
 
 		if ( ! empty( $response['data']['message'] ) ) {
 			$message = $response['data']['message'] . '<br>';
@@ -421,7 +418,7 @@ class Hubspot_Helpers {
 
 			$fields[] = array(
 				'value' => '',
-				'text'  => __( 'Select a field', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Select a field', 'uncanny-automator' ),
 			);
 
 			foreach ( $response['data'] as $field ) {
@@ -467,7 +464,7 @@ class Hubspot_Helpers {
 
 			$options[] = array(
 				'value' => '',
-				'text'  => __( 'Select a list', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Select a list', 'uncanny-automator' ),
 			);
 
 			foreach ( $response['data']['lists'] as $list ) {
@@ -500,11 +497,11 @@ class Hubspot_Helpers {
 	public function add_contact_to_list( $list, $email, $action_data ) {
 
 		if ( empty( $email ) ) {
-			throw new \Exception( __( 'Email is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Email is missing', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $list ) ) {
-			throw new \Exception( __( 'List is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'List is missing', 'uncanny-automator' ) );
 		}
 
 		$params = array(
@@ -517,12 +514,12 @@ class Hubspot_Helpers {
 
 		// If the email was already in the list
 		if ( ! empty( $response['data']['discarded'] ) ) {
-			throw new \Exception( __( 'Contact with such email address was already in the list', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Contact with such email address was already in the list', 'uncanny-automator' ) );
 		}
 
 		// If the email was not found in contacts
 		if ( ! empty( $response['data']['invalidEmails'] ) ) {
-			throw new \Exception( __( 'Contact with such email address was not found', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Contact with such email address was not found', 'uncanny-automator' ) );
 		}
 
 		return $response;
@@ -538,11 +535,11 @@ class Hubspot_Helpers {
 	public function remove_contact_from_list( $list, $email, $action_data ) {
 
 		if ( empty( $email ) ) {
-			throw new \Exception( __( 'Email is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Email is missing', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $list ) ) {
-			throw new \Exception( __( 'List is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'List is missing', 'uncanny-automator' ) );
 		}
 
 		$params = array(
@@ -555,7 +552,7 @@ class Hubspot_Helpers {
 
 		// If the email was not found in contacts
 		if ( ! empty( $response['data']['discarded'] ) ) {
-			throw new \Exception( __( 'Contact with such email address was not found in the list', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Contact with such email address was not found in the list', 'uncanny-automator' ) );
 		}
 
 		return $response;
@@ -577,5 +574,4 @@ class Hubspot_Helpers {
 
 		return $url;
 	}
-
 }

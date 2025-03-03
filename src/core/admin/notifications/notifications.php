@@ -350,8 +350,11 @@ class Automator_Notifications {
 				continue;
 			}
 
-			// Translators: Readable time to display
-			$modified_start_time            = sprintf( __( '%1$s ago', 'google-analytics-for-wordpress' ), human_time_diff( strtotime( $notification['start'] ), current_time( 'timestamp' ) ) ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
+			$modified_start_time = sprintf(
+				// Translators: Readable time to display
+				__( '%1$s ago', 'uncanny-automator' ),
+				human_time_diff( strtotime( $notification['start'] ), current_time( 'timestamp' ) ) // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
+			);
 			$notifications[ $key ]['start'] = $modified_start_time;
 		}
 

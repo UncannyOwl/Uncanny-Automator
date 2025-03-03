@@ -168,7 +168,7 @@ class Trello_Functions {
 		$nonce = automator_filter_input( 'nonce' );
 
 		if ( ! wp_verify_nonce( $nonce, self::NONCE ) ) {
-			$this->redirect_with_message( __( 'Unable to verify security nonce', 'uncanny-automator' ) );
+			$this->redirect_with_message( esc_html__( 'Unable to verify security nonce', 'uncanny-automator' ) );
 		}
 
 		automator_update_option( self::TOKEN, $token );
@@ -285,7 +285,7 @@ class Trello_Functions {
 			$boards = $this->api->get_boards();
 
 			if ( empty( $boards ) ) {
-				throw new \Exception( __( 'No boards were found', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No boards were found', 'uncanny-automator' ) );
 			}
 
 			foreach ( $boards as $board ) {
@@ -320,19 +320,19 @@ class Trello_Functions {
 			$values = automator_filter_input_array( 'values', INPUT_POST );
 
 			if ( empty( $values['BOARD'] ) ) {
-				throw new \Exception( __( 'Please select a board', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Please select a board', 'uncanny-automator' ) );
 			}
 
 			$board_id = $values['BOARD'];
 
 			if ( empty( $board_id ) ) {
-				throw new \Exception( __( 'Please select a board', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Please select a board', 'uncanny-automator' ) );
 			}
 
 			$lists = $this->api->get_board_lists( $board_id );
 
 			if ( empty( $lists ) ) {
-				throw new \Exception( __( 'No lists were found', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No lists were found', 'uncanny-automator' ) );
 			}
 
 			foreach ( $lists as $list ) {
@@ -375,7 +375,7 @@ class Trello_Functions {
 			$values = automator_filter_input_array( 'values', INPUT_POST );
 
 			if ( empty( $values['BOARD'] ) ) {
-				throw new \Exception( __( 'Please select a board', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Please select a board', 'uncanny-automator' ) );
 			}
 
 			$board_id = $values['BOARD'];
@@ -383,7 +383,7 @@ class Trello_Functions {
 			$members = $this->api->get_board_members( $board_id );
 
 			if ( empty( $members ) ) {
-				throw new \Exception( __( 'No members were found in the given board', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No members were found in the given board', 'uncanny-automator' ) );
 			}
 
 			foreach ( $members as $member ) {
@@ -423,7 +423,7 @@ class Trello_Functions {
 			$values = automator_filter_input_array( 'values', INPUT_POST );
 
 			if ( empty( $values['BOARD'] ) ) {
-				throw new \Exception( __( 'Please select a board', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Please select a board', 'uncanny-automator' ) );
 			}
 
 			$board_id = $values['BOARD'];
@@ -431,7 +431,7 @@ class Trello_Functions {
 			$labels = $this->api->get_board_labels( $board_id );
 
 			if ( empty( $labels ) ) {
-				throw new \Exception( __( 'No labels were found', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No labels were found', 'uncanny-automator' ) );
 			}
 
 			foreach ( $labels as $label ) {
@@ -504,7 +504,7 @@ class Trello_Functions {
 			$values = automator_filter_input_array( 'values', INPUT_POST );
 
 			if ( empty( $values['LIST'] ) ) {
-				throw new \Exception( __( 'Please select a list', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Please select a list', 'uncanny-automator' ) );
 			}
 
 			$list_id = $values['LIST'];
@@ -512,7 +512,7 @@ class Trello_Functions {
 			$cards = $this->api->get_list_cards( $list_id );
 
 			if ( empty( $cards ) ) {
-				throw new \Exception( __( 'No cards were found in the given list', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No cards were found in the given list', 'uncanny-automator' ) );
 			}
 
 			foreach ( $cards as $card ) {
@@ -554,7 +554,7 @@ class Trello_Functions {
 			$values = automator_filter_input_array( 'values', INPUT_POST );
 
 			if ( empty( $values['CARD'] ) ) {
-				throw new \Exception( __( 'Please select a card', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Please select a card', 'uncanny-automator' ) );
 			}
 
 			$card_id = $values['CARD'];
@@ -562,7 +562,7 @@ class Trello_Functions {
 			$checklists = $this->api->get_card_checklists( $card_id );
 
 			if ( empty( $checklists ) ) {
-				throw new \Exception( __( 'No checklists were found on the given card', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No checklists were found on the given card', 'uncanny-automator' ) );
 			}
 
 			foreach ( $checklists as $checklist ) {

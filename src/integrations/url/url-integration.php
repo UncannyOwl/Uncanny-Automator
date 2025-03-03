@@ -27,6 +27,8 @@ class URL_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function load() {
+		// Load tokens
+		new URL_Tokens();
 		// Load triggers
 		new URL_HAS_PARAM( $this->helpers );
 		new URL_HAS_PARAM_LOGGED_IN( $this->helpers );

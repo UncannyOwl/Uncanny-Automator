@@ -38,7 +38,6 @@ class Ontraport_Upsert_Contact extends \Uncanny_Automator\Recipe\Action {
 		$this->set_sentence( $sentence );
 		$this->set_readable_sentence( esc_attr_x( 'Create or update {{a contact}}', 'Ontraport', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
 	}
 
 	/**
@@ -158,7 +157,6 @@ class Ontraport_Upsert_Contact extends \Uncanny_Automator\Recipe\Action {
 		$fields = array( $email, $first_name, $last_name, $address, $sms_number, $status, $facebook_link, $instagram_link, $linkedin_link, $twitter_link );
 
 		return apply_filters( 'automator_ontraport_upsert_fields', $fields, $this );
-
 	}
 
 	/**
@@ -200,7 +198,14 @@ class Ontraport_Upsert_Contact extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new Exception( "Invalid email provided: {$email}", 400 );
+			throw new Exception(
+				sprintf(
+				/* translators: %s: Email address */
+					esc_html__( 'Invalid email provided: %s', 'uncanny-automator' ),
+					esc_html( $email )
+				),
+				400
+			);
 		}
 
 		$body = array(
@@ -219,7 +224,5 @@ class Ontraport_Upsert_Contact extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$this->helpers->api_request( 'contact_upsert', $body, $action_data );
-
 	}
-
 }

@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( ! $is_user_connected ) { ?>
 
 					<?php if ( 'error' === automator_filter_input( 'status' ) ) { ?>
-						<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Unexpected error has occured', 'uncanny-automator' ) ) ); ?>" type="error" class="uap-spacing-bottom">
+						<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Unexpected error has occured', 'uncanny-automator' ) ) ); ?>" type="error" class="uap-spacing-bottom">
 							<?php esc_html_e( 'Permission not granted or you may have cancelled the request during Authentication. Please try again later.', 'uncanny-automator' ); ?>
 						</uo-alert>
 					<?php } ?>
@@ -73,7 +73,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( $is_user_connected && 200 === absint( automator_filter_input( 'code' ) ) ) { ?>
 
 					<?php /* translators: Success message */ ?>
-					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Your account has been connected successfully!', 'uncanny-automator' ) ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Your account has been connected successfully!', 'uncanny-automator' ) ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
 
 				<?php } ?>
 
@@ -129,7 +129,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 									<div class="uap-settings-panel-user-info__additional">
 										<?php /* translators: The user linkedin id */ ?>
-										<?php echo sprintf( esc_html__( 'ID: %s' ), esc_html( $user['id'] ) ); ?>
+										<?php echo sprintf( esc_html__( 'ID: %s', 'uncanny-automator' ), esc_html( $user['id'] ) ); ?>
 
 									</div>
 

@@ -809,7 +809,7 @@ class Recipe_Post_Utilities {
 			'post_status'    => 'any',
 			'post_type'      => 'uo-trigger',
 			'posts_per_page' => 999,
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		);
 
 		$children = get_children( $args );
@@ -830,7 +830,7 @@ class Recipe_Post_Utilities {
 			'post_status'    => 'any',
 			'post_type'      => 'uo-action',
 			'posts_per_page' => 999,
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		);
 
 		$children = get_children( $args );
@@ -851,7 +851,7 @@ class Recipe_Post_Utilities {
 			'post_status'    => 'any',
 			'post_type'      => 'uo-closure',
 			'posts_per_page' => 999,
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		);
 
 		$children = get_children( $args );
@@ -884,7 +884,7 @@ class Recipe_Post_Utilities {
 				'post_status'    => 'any',
 				'post_type'      => 'uo-trigger',
 				'posts_per_page' => 999,
-				//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			);
 
 			$children = get_children( $args );
@@ -908,7 +908,7 @@ class Recipe_Post_Utilities {
 				'post_status'    => 'any',
 				'post_type'      => 'uo-action',
 				'posts_per_page' => 999,
-				//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			);
 
 			$children = get_children( $args );
@@ -932,7 +932,7 @@ class Recipe_Post_Utilities {
 				'post_status'    => 'any',
 				'post_type'      => 'uo-closure',
 				'posts_per_page' => 999,
-				//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			);
 
 			$children = get_children( $args );
@@ -1009,7 +1009,7 @@ class Recipe_Post_Utilities {
 					),
 					admin_url( 'edit.php' )
 				);
-				echo sprintf( '<a href="%s">%s</a>', $url, $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				printf( '<a href="%s">%s</a>', $url, $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				break;
 			case 'type':
 				$type = get_post_meta( $post_id, 'uap_recipe_type', true );
@@ -1041,6 +1041,7 @@ class Recipe_Post_Utilities {
 					// Add another span with the full text (hidden by default).
 					if ( $show_full ) {
 						$notes .= sprintf(
+							// translators: %s: The full note text.
 							'<span class="recipe-ui-list-notes__full" aria-hidden="false">%s</span>',
 							nl2br( esc_textarea( $note_meta ) )
 						);
@@ -1048,7 +1049,19 @@ class Recipe_Post_Utilities {
 
 					$notes .= '</div>';
 				}
-				echo $notes;
+				echo wp_kses(
+					$notes,
+					array(
+						'div'  => array(
+							'class' => array(),
+						),
+						'span' => array(
+							'class'       => array(),
+							'aria-hidden' => array(),
+						),
+						'br'   => array(), // For nl2br output
+					)
+				);
 				break;
 		}
 	}
@@ -1084,5 +1097,4 @@ class Recipe_Post_Utilities {
 
 		return $new_columns;
 	}
-
 }

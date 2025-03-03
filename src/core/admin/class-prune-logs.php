@@ -181,13 +181,15 @@ class Prune_Logs {
 	public static function format_number_in_kb_mb_gb( $number ) {
 
 		if ( $number < 1024 ) {
-			return sprintf( __( '%d MB', 'uncanny-automator' ), $number );
+			/* translators: 1. Number */
+			return sprintf( esc_html__( '%d MB', 'uncanny-automator' ), $number );
 		}
 
 		// Convert in to GB
 		$number = round( ( $number / 1024 ), 0 );
 
-		return sprintf( __( '%d GB', 'uncanny-automator' ), $number );
+		/* translators: 1. Number */
+		return sprintf( esc_html__( '%d GB', 'uncanny-automator' ), $number );
 	}
 
 	/**
@@ -277,10 +279,10 @@ class Prune_Logs {
 		add_action(
 			'admin_init',
 			function () {
-				register_setting( 'uncanny_automator_manual_prune', 'automator_manual_purge_days' );
-				register_setting( 'uncanny_automator_delete_user_records_on_user_delete', 'automator_delete_user_records_on_user_delete' );
-				register_setting( 'uncanny_automator_delete_recipe_records_on_completion', 'automator_delete_recipe_records_on_completion' );
-				register_setting( 'uncanny_automator_delete_data_on_uninstall', 'automator_delete_data_on_uninstall' );
+				register_setting( 'uncanny_automator_manual_prune', 'automator_manual_purge_days' ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
+				register_setting( 'uncanny_automator_delete_user_records_on_user_delete', 'automator_delete_user_records_on_user_delete' ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
+				register_setting( 'uncanny_automator_delete_recipe_records_on_completion', 'automator_delete_recipe_records_on_completion' ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
+				register_setting( 'uncanny_automator_delete_data_on_uninstall', 'automator_delete_data_on_uninstall' ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
 			}
 		);
 	}
@@ -558,7 +560,13 @@ class Prune_Logs {
 		// Add sane amount up to 0.01.
 		if ( $prune_value < $this->minimum_input ) {
 			throw new Exception(
-				rawurlencode( esc_attr_x( 'The field "Days" must be greater than or equals to ' . $this->minimum_input, 'Prune logs', 'uncanny-automator' ) ),
+				rawurlencode(
+					sprintf(
+						/* translators: %d: Minimum number of days */
+						esc_html_x( 'The field "Days" must be greater than or equals to %d', 'Prune logs', 'uncanny-automator' ),
+						absint( $this->minimum_input )
+					)
+				),
 				400
 			);
 		}

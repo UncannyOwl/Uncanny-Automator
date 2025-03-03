@@ -26,7 +26,7 @@ class Jetfb_Helpers {
 				'options' => array(
 					array(
 						'option_code'     => $trigger->get_trigger_meta(),
-						'label'           => __( 'Form', 'uncanny-automator' ),
+						'label'           => esc_html__( 'Form', 'uncanny-automator' ),
 						'input_type'      => 'select',
 						'required'        => true,
 						'options'         => $this->get_forms(),
@@ -52,7 +52,7 @@ class Jetfb_Helpers {
 					$trigger->get_trigger_meta() => array(
 						array(
 							'option_code'     => $trigger->get_trigger_meta(),
-							'label'           => __( 'Form', 'uncanny-automator' ),
+							'label'           => esc_html__( 'Form', 'uncanny-automator' ),
 							'input_type'      => 'select',
 							'required'        => true,
 							'is_ajax'         => true,
@@ -63,7 +63,7 @@ class Jetfb_Helpers {
 						),
 						array(
 							'option_code'     => 'FIELD',
-							'label'           => __( 'Field', 'uncanny-automator' ),
+							'label'           => esc_html__( 'Field', 'uncanny-automator' ),
 							'input_type'      => 'select',
 							'required'        => true,
 							'options'         => array(),
@@ -71,7 +71,7 @@ class Jetfb_Helpers {
 						),
 						array(
 							'option_code'     => 'VALUE',
-							'label'           => __( 'Value', 'uncanny-automator' ),
+							'label'           => esc_html__( 'Value', 'uncanny-automator' ),
 							'input_type'      => 'text',
 							'required'        => true,
 							'relevant_tokens' => array(),
@@ -103,6 +103,7 @@ class Jetfb_Helpers {
 				$form_label = ! empty( $form['label'] ) ?
 					$form['label'] :
 					sprintf(
+						// translators: 1: Form ID
 						esc_html__( 'ID: %d (no title)', 'uncanny-automator' ),
 						$form['value']
 					);

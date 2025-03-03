@@ -60,7 +60,7 @@ class Automator_User_Walkthroughs {
 	public function __construct( $user_id = 0 ) {
 
 		if ( empty( $user_id ) || ! is_numeric( $user_id ) ) {
-			throw new Exception( __( 'Invalid user ID.', 'uncanny-automator' ) );
+			throw new Exception( esc_html__( 'Invalid user ID.', 'uncanny-automator' ) );
 		}
 
 		$this->user_id = $user_id;
@@ -233,7 +233,7 @@ class Automator_User_Walkthroughs {
 	 */
 	private function validate_walkthrough_id( $id ) {
 		if ( empty( $id ) || ! is_string( $id ) ) {
-			throw new Exception( __( 'Invalid walkthrough ID.', 'uncanny-automator' ) );
+			throw new Exception( esc_html__( 'Invalid walkthrough ID.', 'uncanny-automator' ) );
 		}
 	}
 

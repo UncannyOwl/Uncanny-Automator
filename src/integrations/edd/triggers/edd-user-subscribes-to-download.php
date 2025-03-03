@@ -21,6 +21,7 @@ class EDD_USER_SUBSCRIBES_TO_DOWNLOAD extends \Uncanny_Automator\Recipe\Trigger 
 		$this->set_integration( 'EDD' );
 		$this->set_trigger_code( 'EDDR_SUBSCRIBES' );
 		$this->set_trigger_meta( 'EDDR_PRODUCTS' );
+		// translators: 1: Download
 		$this->set_sentence( sprintf( esc_attr_x( 'A user subscribes to {{a download:%1$s}}', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A user subscribes to {{a download}}', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ) );
 		$this->add_action( 'edd_recurring_post_record_signup', 10, 3 );

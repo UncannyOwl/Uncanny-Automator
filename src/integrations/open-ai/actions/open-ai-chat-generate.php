@@ -53,17 +53,17 @@ class OPEN_AI_CHAT_GENERATE {
 		$this->set_action_tokens(
 			array(
 				'RESPONSE'                => array(
-					'name' => __( 'Response', 'uncanny-automator' ),
+					'name' => esc_html__( 'Response', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'USAGE_PROMPT_TOKENS'     => array(
-					'name' => __( 'Prompt tokens usage', 'uncanny-automator' ),
+					'name' => esc_html__( 'Prompt tokens usage', 'uncanny-automator' ),
 				),
 				'USAGE_COMPLETION_TOKENS' => array(
-					'name' => __( 'Completion tokens usage', 'uncanny-automator' ),
+					'name' => esc_html__( 'Completion tokens usage', 'uncanny-automator' ),
 				),
 				'USAGE_TOTAL_TOKENS'      => array(
-					'name' => __( 'Total tokens usage', 'uncanny-automator' ),
+					'name' => esc_html__( 'Total tokens usage', 'uncanny-automator' ),
 				),
 			),
 			$this->get_action_code()

@@ -34,17 +34,15 @@ class AC_ANNON_LISTREMOVE {
 		$this->set_action_meta( $this->prefix . '_META' );
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
-
-		/* translators: Action - WordPress */
 		$this->set_sentence(
 			sprintf(
+				// translators: 1: Contact email, 2: List ID
 				esc_attr__( 'Remove {{a contact:%1$s}} from {{a list:%2$s}}', 'uncanny-automator' ),
 				$this->prefix . '_CONTACT_ID:' . $this->get_action_meta(),
 				$this->get_action_meta()
 			)
 		);
 
-		/* translators: Action - WordPress */
 		$this->set_readable_sentence( esc_attr__( 'Remove {{a contact}} from {{a list}}', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );

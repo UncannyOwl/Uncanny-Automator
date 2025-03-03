@@ -56,8 +56,8 @@ class TRELLO_ADD_CARD_LABEL {
 
 		$user_boards_field = array(
 			'option_code'           => 'BOARD',
-			'label'                 => __( 'Board', 'uncanny-automator' ),
-			'token_name'            => __( 'Board ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Board', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Board ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => $this->functions->user_boards_options(),
@@ -66,8 +66,8 @@ class TRELLO_ADD_CARD_LABEL {
 
 		$board_lists_field = array(
 			'option_code'           => 'LIST',
-			'label'                 => __( 'List', 'uncanny-automator' ),
-			'token_name'            => __( 'List ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'List', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'List ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -81,8 +81,8 @@ class TRELLO_ADD_CARD_LABEL {
 
 		$list_cards_field = array(
 			'option_code'           => 'CARD',
-			'label'                 => __( 'Card', 'uncanny-automator' ),
-			'token_name'            => __( 'Card ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Card', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Card ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),

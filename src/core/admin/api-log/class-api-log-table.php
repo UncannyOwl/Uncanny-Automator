@@ -89,7 +89,7 @@ class Api_Log_Table extends WP_List_Table {
 		$query .= " ORDER BY $orderby $order";
 
 		/* -- Pagination parameters -- */
-		$total_items = $wpdb->query( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$total_items = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		$perpage = 100;
 
@@ -290,7 +290,7 @@ class Api_Log_Table extends WP_List_Table {
 			$time_spent = $request->time_spent;
 
 			$data[] = array(
-				'type'              => 'action' === $request->type ? __( 'Outgoing', 'uncanny-automator' ) : __( 'Incoming', 'uncanny-automator' ),
+				'type'              => 'action' === $request->type ? esc_html__( 'Outgoing', 'uncanny-automator' ) : __( 'Incoming', 'uncanny-automator' ),
 				'title'             => $recipe_name . ' > ' . $name,
 				'date'              => $date,
 				'recipe_title'      => $recipe_name,
@@ -298,7 +298,7 @@ class Api_Log_Table extends WP_List_Table {
 				'recipe_date_time'  => $recipe_date_completed,
 				'recipe_run_number' => $recipe_run_number,
 				'display_name'      => $user_name,
-				'request'           => var_export( $request, true ), //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+				'request'           => var_export( $request, true ), // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 				'time_spent'        => $time_spent,
 				'status'            => $status,
 				'completed'         => $completed,
@@ -402,7 +402,7 @@ class Api_Log_Table extends WP_List_Table {
 			}
 
 			// There's HTML involved. Ignoring
-			echo $filter_html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $filter_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 

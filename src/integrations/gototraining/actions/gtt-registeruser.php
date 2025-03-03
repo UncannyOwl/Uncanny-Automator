@@ -45,10 +45,10 @@ class GTT_REGISTERUSER {
 			'code'                  => $this->action_code,
 			'sentence'              => sprintf(
 				/* translators: Action sentence */
-				__( 'Add the user to {{a training session:%1$s}}', 'uncanny-automator' ),
+				esc_html__( 'Add the user to {{a training session:%1$s}}', 'uncanny-automator' ),
 				$this->action_meta
 			),
-			'select_option_name'    => __( 'Add the user to {{a training session}}', 'uncanny-automator' ),
+			'select_option_name'    => esc_html__( 'Add the user to {{a training session}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'gtt_register_user' ),
@@ -71,7 +71,7 @@ class GTT_REGISTERUSER {
 					array(
 						'option_code'     => 'GTTTRAINING',
 						'input_type'      => 'select',
-						'label'           => __( 'Training', 'uncanny-automator' ),
+						'label'           => esc_html__( 'Training', 'uncanny-automator' ),
 						'description'     => '',
 						'required'        => true,
 						'supports_tokens' => true,
@@ -97,7 +97,7 @@ class GTT_REGISTERUSER {
 			$training_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
 			if ( empty( $training_key ) ) {
-				throw new \Exception( __( 'Training not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Training not found.', 'uncanny-automator' ) );
 			}
 
 			$training_key = str_replace( '-objectkey', '', $training_key );

@@ -38,7 +38,7 @@ class WP_ADD_REPLY_TO_COMMENT {
 		$this->set_action_tokens(
 			array(
 				'COMMENT_ID' => array(
-					'name' => __( 'Comment ID', 'uncanny-automator-pro' ),
+					'name' => esc_html__( 'Comment ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 			),
@@ -121,7 +121,7 @@ class WP_ADD_REPLY_TO_COMMENT {
 		$existing_user  = get_user_by( 'email', $email );
 		if ( empty( $content ) ) {
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, __( 'Comment content is empty.', 'uncanny-automator' ) );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_html__( 'Comment content is empty.', 'uncanny-automator' ) );
 
 			return;
 		}

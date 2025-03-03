@@ -145,13 +145,13 @@ class Microsoft_Teams_Helpers {
 
 		$body = $request->get_body_params();
 
-		$message = __( 'Something went wrong while capturing the tokens', 'uncanny-automator' );
+		$message = esc_html__( 'Something went wrong while capturing the tokens', 'uncanny-automator' );
 		$code    = 400;
 
 		try {
 
 			if ( empty( $body['automator_api_message'] ) ) {
-				throw new \Exception( __( 'Automator message was not found', 'uncanny-automator' ), 400 );
+				throw new \Exception( esc_html__( 'Automator message was not found', 'uncanny-automator' ), 400 );
 			}
 
 			if ( 'authorization_request' === $body['action'] ) {
@@ -240,7 +240,7 @@ class Microsoft_Teams_Helpers {
 
 			if ( ! empty( $response['data']['error'] ) && 'invalid_client' === $response['data']['error'] ) {
 				$this->remove_credentials();
-				throw new \Exception( __( 'Microsoft Teams client is invalid. Please reconnect or contact support.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Microsoft Teams client is invalid. Please reconnect or contact support.', 'uncanny-automator' ) );
 			}
 
 			$client = $response['data'];
@@ -307,7 +307,6 @@ class Microsoft_Teams_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -351,7 +350,7 @@ class Microsoft_Teams_Helpers {
 		$user = $this->get_user();
 
 		if ( empty( $user['userPrincipalName'] ) ) {
-			throw new \Exception( __( 'Something went wrong', 'uncanny-automator' ), 400 );
+			throw new \Exception( esc_html__( 'Something went wrong', 'uncanny-automator' ), 400 );
 		}
 
 		return 'ok';
@@ -372,7 +371,6 @@ class Microsoft_Teams_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -459,7 +457,7 @@ class Microsoft_Teams_Helpers {
 			$teams = $this->get_user_teams();
 
 			if ( empty( $teams['value'] ) ) {
-				throw new \Exception( __( 'No teams were found', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No teams were found', 'uncanny-automator' ) );
 			}
 
 			foreach ( $teams['value'] as $team ) {
@@ -476,7 +474,6 @@ class Microsoft_Teams_Helpers {
 		}
 
 		return $options;
-
 	}
 
 	/**
@@ -523,9 +520,9 @@ class Microsoft_Teams_Helpers {
 	public function channel_type_options() {
 
 		$channel_types = array(
-			'standard' => __( 'Standard', 'uncanny-automator' ),
-			'private'  => __( 'Private', 'uncanny-automator' ),
-			'shared'   => __( 'Shared', 'uncanny-automator' ),
+			'standard' => esc_html__( 'Standard', 'uncanny-automator' ),
+			'private'  => esc_html__( 'Private', 'uncanny-automator' ),
+			'shared'   => esc_html__( 'Shared', 'uncanny-automator' ),
 		);
 
 		$channel_types = apply_filters( 'automator_microsoft_teams_channel_types', $channel_types );
@@ -549,7 +546,7 @@ class Microsoft_Teams_Helpers {
 			$members = $this->get_team_members( $team );
 
 			if ( empty( $members['value'] ) ) {
-				throw new \Exception( __( 'No members were found', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No members were found', 'uncanny-automator' ) );
 			}
 
 			foreach ( $members['value'] as $member ) {
@@ -625,10 +622,10 @@ class Microsoft_Teams_Helpers {
 	public function teams_specializations_options() {
 
 		$specializations = array(
-			'standard'                               => __( 'Standard', 'uncanny-automator' ),
-			'educationClass'                         => __( 'Education - Class Team', 'uncanny-automator' ),
-			'educationStaff'                         => __( 'Education - Staff Team', 'uncanny-automator' ),
-			'educationProfessionalLearningCommunity' => __( 'Education - Professional Learning Community', 'uncanny-automator' ),
+			'standard'                               => esc_html__( 'Standard', 'uncanny-automator' ),
+			'educationClass'                         => esc_html__( 'Education - Class Team', 'uncanny-automator' ),
+			'educationStaff'                         => esc_html__( 'Education - Staff Team', 'uncanny-automator' ),
+			'educationProfessionalLearningCommunity' => esc_html__( 'Education - Professional Learning Community', 'uncanny-automator' ),
 		);
 
 		$specializations = apply_filters( 'automator_microsoft_teams_specializations', $specializations );
@@ -695,7 +692,7 @@ class Microsoft_Teams_Helpers {
 			$channels = $this->get_team_channels( $team );
 
 			if ( empty( $channels['value'] ) ) {
-				throw new \Exception( __( 'No channels were found', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No channels were found', 'uncanny-automator' ) );
 			}
 
 			foreach ( $channels['value'] as $channel ) {
@@ -743,7 +740,7 @@ class Microsoft_Teams_Helpers {
 	public function check_for_errors( $response ) {
 
 		if ( isset( $response['data']['error'] ) ) {
-			throw new \Exception( $response['data']['error'], 400 );
+			throw new \Exception( esc_html( $response['data']['error'] ), 400 );
 		}
 	}
 }

@@ -54,14 +54,14 @@ class MC_EVERYONE_CONTACT_REMOVE {
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						__( 'Audience', 'uncanny-automator' ),
+						esc_html__( 'Audience', 'uncanny-automator' ),
 						'MCLIST'
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						__( 'Delete subscriber from Mailchimp?', 'uncanny-automator' ),
+						esc_html__( 'Delete subscriber from Mailchimp?', 'uncanny-automator' ),
 						'MCDELETEMEMBER',
 						array(
-							'description' => __( 'Yes, delete from Mailchimp, No, only unsubscribe from audience', 'uncanny-automator' ),
+							'description' => esc_html__( 'Yes, delete from Mailchimp, No, only unsubscribe from audience', 'uncanny-automator' ),
 						)
 					),
 				),

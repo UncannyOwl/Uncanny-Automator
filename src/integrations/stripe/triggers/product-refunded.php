@@ -69,7 +69,7 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 
 		$products = array(
 			'option_code' => $this->get_trigger_meta(),
-			'label'       => __( 'Price', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Price', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'read_only'   => false,
@@ -89,7 +89,7 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 					'label'           => esc_attr__( 'Metadata key', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
-					'placeholder'     => __( 'product', 'uncanny-automator' ),
+					'placeholder'     => esc_html__( 'product', 'uncanny-automator' ),
 					'description'     => sprintf( '<i>%s</i>', esc_html__( 'Separate keys with / to build nested data.', 'uncanny-automator' ) ),
 				),
 			),
@@ -112,7 +112,7 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 					'label'           => esc_attr__( 'Custom field key', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
-					'placeholder'     => __( 'product', 'uncanny-automator' ),
+					'placeholder'     => esc_html__( 'product', 'uncanny-automator' ),
 				),
 			),
 			/* translators: Non-personal infinitive verb */

@@ -24,8 +24,8 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 
 		/* translators: %1$s Contact Email */
-		$this->set_sentence( sprintf( esc_attr_x( 'Delete {{a customer:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( 'Delete {{a customer}}', 'uncanny-automator' ) );
+		$this->set_sentence( sprintf( esc_attr_x( 'Delete {{a customer:%1$s}}', 'Stripe', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_attr_x( 'Delete {{a customer}}', 'Stripe', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -37,10 +37,10 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 
 		$email = array(
 			'option_code' => 'EMAIL',
-			'label'       => __( 'Email', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
-			'description' => __( 'Email address of the customer', 'uncanny-automator' ),
+			'description' => esc_html__( 'Email address of the customer', 'uncanny-automator' ),
 		);
 
 		return array(
@@ -56,7 +56,7 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 	public function define_tokens() {
 		return array(
 			'CUSTOMER_ID' => array(
-				'name' => __( 'Customer ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Customer ID', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 		);
@@ -83,7 +83,7 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 
 			$error = _x( 'Customer could not be deleted', 'Stripe', 'uncanny-automator' );
 
-			throw new \Exception( $error );
+			throw new \Exception( esc_html( $error ) );
 		}
 
 		$this->hydrate_tokens(
@@ -94,5 +94,4 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 
 		return true;
 	}
-
 }

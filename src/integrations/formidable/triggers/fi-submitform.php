@@ -112,7 +112,7 @@ class FI_SUBMITFORM {
 						$fi_args['meta_value'] = maybe_serialize( $entries->ip );
 						Automator()->insert_trigger_meta( $fi_args );
 
-						$date_format           = __( 'M j, Y @ G:i', 'formidable' );
+						$date_format           = __( 'M j, Y @ G:i', 'formidable' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 						$fi_args['meta_key']   = 'FIENTRYDATE';
 						$fi_args['meta_value'] = maybe_serialize( \FrmAppHelper::get_localized_date( $date_format, $entries->created_at ) );
 						Automator()->insert_trigger_meta( $fi_args );

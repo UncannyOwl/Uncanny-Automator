@@ -83,7 +83,7 @@ class Facebook_Helpers {
 		// Defer loading of settings page to current_screen so we can check if its recipe page.
 		add_action(
 			'current_screen',
-			function() {
+			function () {
 				// Load the settings page.
 				require_once __DIR__ . '/../settings/settings-facebook.php';
 				new Facebook_Settings( $this );
@@ -92,7 +92,6 @@ class Facebook_Helpers {
 
 		// Fixes the credentials that are sent into our API when the re-send button if clicked.
 		add_filter( 'automator_facebook_api_call', array( $this, 'resend_with_current_credentials' ) );
-
 	}
 
 	/**
@@ -121,7 +120,6 @@ class Facebook_Helpers {
 		}
 
 		return $params;
-
 	}
 
 	/**
@@ -236,7 +234,6 @@ class Facebook_Helpers {
 		wp_safe_redirect( $this->get_settings_page_uri() . '&connection=new' );
 
 		exit;
-
 	}
 
 	/**
@@ -258,7 +255,6 @@ class Facebook_Helpers {
 		}
 
 		wp_die( esc_html__( 'Nonce Verification Failed', 'uncanny-automator' ) );
-
 	}
 
 	/**
@@ -291,7 +287,6 @@ class Facebook_Helpers {
 		$pages = $this->fetch_pages_from_api();
 
 		wp_send_json( $pages );
-
 	}
 
 
@@ -366,7 +361,6 @@ class Facebook_Helpers {
 		);
 
 		return $response;
-
 	}
 
 	/**
@@ -417,7 +411,6 @@ class Facebook_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -435,7 +428,6 @@ class Facebook_Helpers {
 			),
 			$this->fb_endpoint_uri
 		);
-
 	}
 
 	/**
@@ -453,7 +445,6 @@ class Facebook_Helpers {
 		}
 
 		return automator_get_option( self::OPTION_KEY );
-
 	}
 
 	/**
@@ -494,7 +485,6 @@ class Facebook_Helpers {
 		}
 
 		return $response;
-
 	}
 
 
@@ -517,7 +507,6 @@ class Facebook_Helpers {
 		}
 
 		return $pages;
-
 	}
 
 	/**
@@ -594,7 +583,6 @@ class Facebook_Helpers {
 	public function get_endpoint_url() {
 
 		return $this->fb_endpoint_uri;
-
 	}
 
 	/**
@@ -622,7 +610,6 @@ class Facebook_Helpers {
 		$this->check_for_errors( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -647,7 +634,7 @@ class Facebook_Helpers {
 	public function check_for_errors( $response ) {
 
 		if ( isset( $response['data']['error']['message'] ) ) {
-			throw new \Exception( $response['data']['error']['message'], $response['statusCode'] );
+			throw new \Exception( esc_html( $response['data']['error']['message'] ), absint( $response['statusCode'] ) );
 		}
 	}
 
@@ -692,7 +679,6 @@ class Facebook_Helpers {
 			&& 'edit' === automator_filter_input( 'action' );
 
 		return $is_facebook_pages_settings || $is_capturing_token || $is_automator_recipe_page;
-
 	}
 
 	/**
@@ -709,5 +695,4 @@ class Facebook_Helpers {
 
 		return true;
 	}
-
 }

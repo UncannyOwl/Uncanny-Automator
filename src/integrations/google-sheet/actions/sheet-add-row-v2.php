@@ -61,8 +61,8 @@ class SHEET_ADD_ROW_V2 {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			/* translators: Action sentence */
-			'sentence'              => sprintf( __( 'Create a row in a {{Google Sheet:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Create a row in a {{Google Sheet}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Create a row in a {{Google Sheet:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Create a row in a {{Google Sheet}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'requires_user'         => false,
@@ -130,7 +130,7 @@ class SHEET_ADD_ROW_V2 {
 						'option_code'       => 'WORKSHEET_FIELDS',
 						'input_type'        => 'repeater',
 						'relevant_tokens'   => array(),
-						'label'             => __( 'Row', 'uncanny-automator' ),
+						'label'             => esc_html__( 'Row', 'uncanny-automator' ),
 						'description'       => '',
 						'required'          => true,
 						'default_value'     => array(
@@ -142,7 +142,7 @@ class SHEET_ADD_ROW_V2 {
 						'fields'            => array(
 							array(
 								'option_code' => 'GS_COLUMN_NAME',
-								'label'       => __( 'Column', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Column', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
 								'read_only'   => true,
@@ -150,13 +150,13 @@ class SHEET_ADD_ROW_V2 {
 							),
 							array(
 								'option_code' => 'GS_COLUMN_VALUE',
-								'label'       => __( 'Value', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Value', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'options'     => array(),
 							),
 						),
-						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+						'add_row_button'    => esc_html__( 'Add pair', 'uncanny-automator' ),
+						'remove_row_button' => esc_html__( 'Remove pair', 'uncanny-automator' ),
 						'hide_actions'      => true,
 						'ajax'              => array(
 							'endpoint'       => 'automator_fetch_googlesheets_worksheets_columns',
@@ -217,7 +217,7 @@ class SHEET_ADD_ROW_V2 {
 
 		if ( $check_all_empty ) {
 			// Log error no heading found.
-			$error_msg                           = __( 'Trying to add an empty row.', 'uncanny-automator' );
+			$error_msg                           = esc_html__( 'Trying to add an empty row.', 'uncanny-automator' );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_msg );
 

@@ -142,7 +142,7 @@ namespace Uncanny_Automator;
 									<?php if ( ! empty( $user_info['user_id'] ) ) { ?>
 
 										<?php /* translators: 1. ID */ ?>
-										<?php echo esc_html( sprintf( __( 'ID: %1$d', 'uncanny-automator' ), $user_info['user_id'] ) ); ?>
+										<?php echo esc_html( sprintf( esc_html__( 'ID: %1$d', 'uncanny-automator' ), $user_info['user_id'] ) ); ?>
 
 									<?php } ?>
 

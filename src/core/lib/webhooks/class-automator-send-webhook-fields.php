@@ -69,10 +69,10 @@ class Automator_Send_Webhook_Fields {
 				'raw'                   => 'Raw',
 			)
 		);
-		$this->set_webhook_data_types( 'text', __( 'Text', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'float', __( 'Number', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'bool', __( 'Boolean', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'null', __( 'NULL', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'text', esc_html__( 'Text', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'float', esc_html__( 'Number', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'bool', esc_html__( 'Boolean', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'null', esc_html__( 'NULL', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -222,12 +222,12 @@ class Automator_Send_Webhook_Fields {
 					'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
-					'placeholder'     => __( 'first_name', 'uncanny-automator' ),
+					'placeholder'     => esc_html__( 'first_name', 'uncanny-automator' ),
 					'description'     => sprintf( '<i>%s</i>', esc_html__( 'Separate keys with / to build nested data.', 'uncanny-automator' ) ),
 				),
 				array(
 					'option_code'     => 'VALUE_TYPE',
-					'label'           => __( 'Data type', 'uncanny-automator' ),
+					'label'           => esc_html__( 'Data type', 'uncanny-automator' ),
 					'input_type'      => 'select',
 					'required'        => false,
 					'options_show_id' => false,

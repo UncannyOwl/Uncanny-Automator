@@ -68,28 +68,28 @@ class TELEGRAM_MESSAGE_RECEIVED {
 		$this->set_tokens(
 			array(
 				'CHAT_ID'    => array(
-					'name' => __( 'Chat ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Chat ID', 'uncanny-automator' ),
 				),
 				'FIRST_NAME' => array(
-					'name' => __( 'First name', 'uncanny-automator' ),
+					'name' => esc_html__( 'First name', 'uncanny-automator' ),
 				),
 				'LAST_NAME'  => array(
-					'name' => __( 'Last name', 'uncanny-automator' ),
+					'name' => esc_html__( 'Last name', 'uncanny-automator' ),
 				),
 				'USERNAME'   => array(
-					'name' => __( 'Username', 'uncanny-automator' ),
+					'name' => esc_html__( 'Username', 'uncanny-automator' ),
 				),
 				'CHAT_TYPE'  => array(
-					'name' => __( 'Chat type', 'uncanny-automator' ),
+					'name' => esc_html__( 'Chat type', 'uncanny-automator' ),
 				),
 				'CHAT_TITLE' => array(
-					'name' => __( 'Chat title', 'uncanny-automator' ),
+					'name' => esc_html__( 'Chat title', 'uncanny-automator' ),
 				),
 				'DATE'       => array(
-					'name' => __( 'Date', 'uncanny-automator' ),
+					'name' => esc_html__( 'Date', 'uncanny-automator' ),
 				),
 				'TEXT'       => array(
-					'name' => __( 'Text', 'uncanny-automator' ),
+					'name' => esc_html__( 'Text', 'uncanny-automator' ),
 				),
 
 			)

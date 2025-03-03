@@ -111,7 +111,7 @@ class Instagram_Helpers {
 				wp_send_json(
 					array(
 						'status'  => 200,
-						'message' => __( 'Successful', 'automator-pro' ),
+						'message' => esc_html__( 'Successful', 'uncanny-automator' ),
 						'pages'   => $existing_page_settings,
 					)
 				);
@@ -322,7 +322,7 @@ class Instagram_Helpers {
 
 			}
 
-			$message = esc_html__( 'Pages are fetched successfully', 'automator-pro' );
+			$message = esc_html__( 'Pages are fetched successfully', 'uncanny-automator' );
 
 			// Save the pages.
 			automator_update_option( '_uncannyowl_facebook_pages_settings', $pages );

@@ -89,19 +89,19 @@ class HELPSCOUT_CUSTOMER_PROPERTIES_UPDATE {
 							'fields'                => array(
 								array(
 									'option_code' => 'PROPERTY_SLUG',
-									'label'       => __( 'Property ID', 'uncanny-automator' ),
+									'label'       => esc_html__( 'Property ID', 'uncanny-automator' ),
 									'input_type'  => 'text',
 									'read_only'   => true,
 								),
 								array(
 									'option_code' => 'PROPERTY_NAME',
-									'label'       => __( 'Name', 'uncanny-automator' ),
+									'label'       => esc_html__( 'Name', 'uncanny-automator' ),
 									'input_type'  => 'text',
 									'read_only'   => true,
 								),
 								array(
 									'option_code' => 'PROPERTY_VALUE',
-									'label'       => __( 'Value', 'uncanny-automator' ),
+									'label'       => esc_html__( 'Value', 'uncanny-automator' ),
 									'input_type'  => 'text',
 									'required'    => false,
 								),

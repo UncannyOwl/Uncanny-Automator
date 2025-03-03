@@ -47,9 +47,9 @@ class ANON_CF7_SUBFORM {
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
 			/* translators: Anonymous trigger - Contact Form 7 */
-			'sentence'            => sprintf( __( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Anonymous trigger - Contact Form 7 */
-			'select_option_name'  => __( '{{A form}} is submitted', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( '{{A form}} is submitted', 'uncanny-automator' ),
 			'action'              => 'wpcf7_submit',
 			'type'                => 'anonymous',
 			'priority'            => 99,

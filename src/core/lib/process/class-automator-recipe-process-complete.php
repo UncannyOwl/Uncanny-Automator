@@ -113,7 +113,7 @@ class Automator_Recipe_Process_Complete {
 		$process_further = apply_filters_deprecated( 'uap_maybe_continue_recipe_process', array( $process_further ), '3.0', 'automator_maybe_continue_recipe_process' );
 		$process_further = apply_filters( 'automator_maybe_continue_recipe_process', $process_further );
 
-		extract( $process_further, EXTR_OVERWRITE ); //phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+		extract( $process_further, EXTR_OVERWRITE ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 
 		// The trigger is now completed
 		do_action_deprecated( 'uap_trigger_completed', array( $process_further ), '3.0', 'automator_trigger_completed' );
@@ -145,7 +145,6 @@ class Automator_Recipe_Process_Complete {
 		$this->add_backtrace_property( $args );
 
 		return true;
-
 	}
 
 	/**
@@ -164,14 +163,14 @@ class Automator_Recipe_Process_Complete {
 			return;
 		}
 
-		$stack_trace = explode( ' ', wp_debug_backtrace_summary() );
+		$stack_trace = explode( ' ', wp_debug_backtrace_summary() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_wp_debug_backtrace_summary
 
 		$properties = new Properties();
 
 		$properties->add_item(
 			array(
 				'type'       => 'code',
-				'label'      => __( 'Trigger backtrace (for support)', 'uncanny-automator' ),
+				'label'      => esc_html__( 'Trigger backtrace (for support)', 'uncanny-automator' ),
 				'value'      => var_export( $stack_trace, true ), // phpcs:ignore
 				'attributes' => array(
 					'code_language' => 'PHP',
@@ -180,7 +179,6 @@ class Automator_Recipe_Process_Complete {
 		);
 
 		$properties->record_trigger_properties( array( 'args' => $args ) );
-
 	}
 
 	/**
@@ -359,7 +357,6 @@ class Automator_Recipe_Process_Complete {
 		$this->closures( $recipe_id, $user_id, $recipe_log_id, $args );
 
 		return true;
-
 	}
 
 	/**
@@ -489,15 +486,15 @@ class Automator_Recipe_Process_Complete {
 		$error = Automator()->error_message->get( 'action-function-not-exist' );
 
 		if ( null === $action_execution_function ) {
-			throw new \Exception( $error );
+			throw new \Exception( esc_html( $error ) );
 		}
 
 		if ( is_array( $action_execution_function ) && ! method_exists( $action_execution_function[0], $action_execution_function[1] ) ) {
-			throw new \Exception( $error );
+			throw new \Exception( esc_html( $error ) );
 		}
 
 		if ( is_string( $action_execution_function ) && ! function_exists( $action_execution_function ) ) {
-			throw new \Exception( $error );
+			throw new \Exception( esc_html( $error ) );
 		}
 	}
 
@@ -651,7 +648,6 @@ class Automator_Recipe_Process_Complete {
 		self::action_tokens_hydrate_default( $do_action_args );
 
 		$this->recipe( $recipe_id, $user_id, $recipe_log_id, $args );
-
 	}
 
 	/**
@@ -686,7 +682,6 @@ class Automator_Recipe_Process_Complete {
 		$hydrator->set_process_args( $process_args );
 
 		return $hydrator->hydrate( $value );
-
 	}
 
 	/**
@@ -1069,7 +1064,6 @@ class Automator_Recipe_Process_Complete {
 		$substrings    = array( 'existing user was found', 'user was not found', 'user found matching' );
 
 		return self::substring_exists( $substrings, $error_message );
-
 	}
 
 	/**

@@ -94,7 +94,6 @@ class ClickUp_Helpers {
 			new ClickUp_Settings( $this );
 
 		}
-
 	}
 
 	/**
@@ -105,7 +104,6 @@ class ClickUp_Helpers {
 	public function get_client() {
 
 		return automator_get_option( self::CLIENT, false );
-
 	}
 
 	/**
@@ -161,7 +159,6 @@ class ClickUp_Helpers {
 				'response' => rawurlencode( wp_json_encode( $response_query_vars ) ),
 			)
 		);
-
 	}
 
 
@@ -182,7 +179,6 @@ class ClickUp_Helpers {
 			),
 			AUTOMATOR_API_URL . self::API_ENDPOINT
 		);
-
 	}
 
 	/**
@@ -201,7 +197,6 @@ class ClickUp_Helpers {
 		if ( ! wp_verify_nonce( $nonce, self::NONCE_KEY ) ) {
 			wp_die( 'Error 401: Invalid nonce key.' );
 		}
-
 	}
 
 	/**
@@ -220,7 +215,6 @@ class ClickUp_Helpers {
 			),
 			admin_url( 'edit.php' )
 		);
-
 	}
 
 	/**
@@ -236,7 +230,6 @@ class ClickUp_Helpers {
 		wp_safe_redirect( add_query_arg( $args, $redirect_url ) );
 
 		exit;
-
 	}
 
 	/**
@@ -268,13 +261,17 @@ class ClickUp_Helpers {
 
 		if ( ! empty( $response['error'] ) ) {
 			throw new \Exception(
-				sprintf( 'Uncanny Automator API has responded with error %s: %s', $response['error']['type'], $response['error']['description'] ),
-				$response['statusCode']
+				sprintf(
+				/* translators: %1$s: Error type, %2$s: Error description */
+					esc_html__( 'Uncanny Automator API has responded with error %1$s: %2$s', 'uncanny-automator' ),
+					esc_html( $response['error']['type'] ),
+					esc_html( $response['error']['description'] )
+				),
+				absint( $response['statusCode'] )
 			);
 		}
 
 		return $response;
-
 	}
 
 	/**
@@ -292,10 +289,15 @@ class ClickUp_Helpers {
 		$error_message = isset( $response['data']['err'] ) ? $response['data']['err'] : 'No error code specified.';
 
 		throw new \Exception(
-			sprintf( 'ClickUp API has responded with a status code: %s and with an error %s: %s', $response['statusCode'], $error_code, $error_message ),
-			$response['statusCode']
+			sprintf(
+			/* translators: %1$s: Status code, %2$s: Error code, %3$s: Error message */
+				esc_html__( 'ClickUp API has responded with a status code: %1$s and with an error %2$s: %3$s', 'uncanny-automator' ),
+				absint( $response['statusCode'] ),
+				esc_html( $error_code ),
+				esc_html( $error_message )
+			),
+			absint( $response['statusCode'] )
 		);
-
 	}
 
 	/**
@@ -308,7 +310,6 @@ class ClickUp_Helpers {
 	public function is_connected() {
 
 		return ! empty( automator_get_option( self::CLIENT, null ) );
-
 	}
 
 	/**
@@ -340,7 +341,6 @@ class ClickUp_Helpers {
 				'code'   => 200,
 			)
 		);
-
 	}
 
 	/**
@@ -357,7 +357,6 @@ class ClickUp_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -393,7 +392,6 @@ class ClickUp_Helpers {
 		set_transient( self::TRANSIENT_WORKSPACES, $teams, self::TRANSIENT_EXPIRES_TIME );
 
 		return $teams;
-
 	}
 
 	/**
@@ -430,7 +428,6 @@ class ClickUp_Helpers {
 		}
 
 		return $spaces;
-
 	}
 
 	/**
@@ -467,7 +464,6 @@ class ClickUp_Helpers {
 		}
 
 		return $folders;
-
 	}
 
 	/**
@@ -504,7 +500,6 @@ class ClickUp_Helpers {
 		}
 
 		return $lists;
-
 	}
 
 	/**
@@ -547,7 +542,6 @@ class ClickUp_Helpers {
 		}
 
 		return $statuses;
-
 	}
 
 	/**
@@ -580,7 +574,6 @@ class ClickUp_Helpers {
 			);
 
 		}
-
 	}
 
 	/**
@@ -604,7 +597,6 @@ class ClickUp_Helpers {
 		}
 
 		$this->respond_with_json( $options );
-
 	}
 
 	/**
@@ -640,7 +632,6 @@ class ClickUp_Helpers {
 		}
 
 		$this->respond_with_json( $options );
-
 	}
 
 	/**
@@ -668,7 +659,6 @@ class ClickUp_Helpers {
 		}
 
 		$this->respond_with_json( $options );
-
 	}
 
 	/**
@@ -687,7 +677,7 @@ class ClickUp_Helpers {
 		$list_option_code = 'CLICKUP_SPACE_LIST_TASK_CREATE_META';
 
 		// Supports `LIST` option code.
-		if ( isset( $_POST['values']['LIST'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['values']['LIST'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$list_option_code = 'LIST';
 			// Allows the dropdown to have 'Everyone' option.
 			$members[] = array(
@@ -696,8 +686,8 @@ class ClickUp_Helpers {
 			);
 		}
 
-		$list_value = isset( $_POST['values'][ $list_option_code ] ) //phpcs:ignore WordPress.Security.NonceVerification.Missing
-			? sanitize_text_field( wp_unslash( $_POST['values'][ $list_option_code ] ) ) //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$list_value = isset( $_POST['values'][ $list_option_code ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			? sanitize_text_field( wp_unslash( $_POST['values'][ $list_option_code ] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			: 0;
 
 		// Supports custom value.
@@ -705,8 +695,8 @@ class ClickUp_Helpers {
 			$list_option_code .= '_custom';
 		}
 
-		$list_id = isset( $_POST['values'][ $list_option_code ] )  //phpcs:ignore WordPress.Security.NonceVerification.Missing
-			? sanitize_text_field( wp_unslash( $_POST['values'][ $list_option_code ] ) )  //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$list_id = isset( $_POST['values'][ $list_option_code ] )  // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			? sanitize_text_field( wp_unslash( $_POST['values'][ $list_option_code ] ) )  // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			: 0;
 
 		$list_members = $this->get_list_members_dropdown( $list_id );
@@ -727,7 +717,6 @@ class ClickUp_Helpers {
 		}
 
 		wp_send_json( $members );
-
 	}
 
 	/**
@@ -768,7 +757,6 @@ class ClickUp_Helpers {
 		}
 
 		$this->respond_with_json( $options );
-
 	}
 
 	/**
@@ -784,11 +772,11 @@ class ClickUp_Helpers {
 
 		$statuses = array(
 			array(
-				'text'  => __( 'Leave unchanged in ClickUp', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Leave unchanged in ClickUp', 'uncanny-automator' ),
 				'value' => '__NO_UPDATE__',
 			),
 			array(
-				'text'  => __( 'Remove status', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Remove status', 'uncanny-automator' ),
 				'value' => '__REMOVE__',
 			),
 		);
@@ -805,7 +793,6 @@ class ClickUp_Helpers {
 		}
 
 		$this->respond_with_json( $statuses );
-
 	}
 
 	/**
@@ -831,7 +818,6 @@ class ClickUp_Helpers {
 		}
 
 		$this->respond_with_json( $tasks );
-
 	}
 
 	/**
@@ -874,7 +860,6 @@ class ClickUp_Helpers {
 		}
 
 		return $tasks;
-
 	}
 
 	/**
@@ -888,7 +873,6 @@ class ClickUp_Helpers {
 	public function get_action_fields( $action = null, $file_name = '' ) {
 
 		return require UA_ABSPATH . '/src/integrations/clickup/fields/' . sanitize_file_name( $file_name ) . '.php';
-
 	}
 
 	/**
@@ -901,18 +885,17 @@ class ClickUp_Helpers {
 	 */
 	protected function get_payload_values( $key = '', $default = null ) {
 
-		Automator()->utilities->ajax_auth_check( $_POST );  //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		Automator()->utilities->ajax_auth_check( $_POST );  // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-		if ( ! isset( $_POST['values'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( ! isset( $_POST['values'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return $default;
 		}
 
-		if ( ! isset( $_POST['values'][ $key ] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( ! isset( $_POST['values'][ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return $default;
 		}
 
-		return ! empty( $_POST['values'][ $key ] ) ? sanitize_text_field( wp_unslash( $_POST['values'][ $key ] ) ) : $default; //phpcs:ignore WordPress.Security.NonceVerification.Missing
-
+		return ! empty( $_POST['values'][ $key ] ) ? sanitize_text_field( wp_unslash( $_POST['values'][ $key ] ) ) : $default; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/**
@@ -930,7 +913,5 @@ class ClickUp_Helpers {
 				'options' => $options,
 			)
 		);
-
 	}
-
 }

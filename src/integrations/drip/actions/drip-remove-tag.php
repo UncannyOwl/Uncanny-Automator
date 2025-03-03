@@ -55,14 +55,14 @@ class DRIP_REMOVE_TAG {
 
 		$email = array(
 			'option_code' => 'EMAIL',
-			'label'       => __( 'Email', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
 		);
 
 		$tag = array(
 			'option_code'           => $this->action_meta,
-			'label'                 => __( 'Tag', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Tag', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'options'               => $this->functions->get_tags_options(),
 			'required'              => true,

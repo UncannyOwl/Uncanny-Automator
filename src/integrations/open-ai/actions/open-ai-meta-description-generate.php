@@ -61,7 +61,7 @@ class OPEN_AI_META_DESCRIPTION_GENERATE {
 		$this->set_action_tokens(
 			array(
 				'SEO_META_DESCRIPTION_GENERATED' => array(
-					'name' => __( 'Generated SEO meta description', 'uncanny-automator' ),
+					'name' => esc_html__( 'Generated SEO meta description', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

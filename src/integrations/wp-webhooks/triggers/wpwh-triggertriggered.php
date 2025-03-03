@@ -45,9 +45,9 @@ class WPWH_TRIGGERTRIGGERED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
-			'sentence'            => sprintf( __( '{{A webhook trigger:%1$s}} is triggered', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - Formidable */
-			'select_option_name'  => __( '{{A webhook trigger}} is triggered', 'uncanny-automator' ),
+			// translators: 1: Webhook trigger
+			'sentence'            => sprintf( esc_html__( '{{A webhook trigger:%1$s}} is triggered', 'uncanny-automator' ), $this->trigger_meta ),
+			'select_option_name'  => esc_html__( '{{A webhook trigger}} is triggered', 'uncanny-automator' ),
 			'action'              => 'wpwhpro/admin/webhooks/webhook_trigger_sent',
 			'priority'            => 10,
 			'accepted_args'       => 4,

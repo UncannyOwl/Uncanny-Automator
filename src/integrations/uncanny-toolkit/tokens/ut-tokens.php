@@ -20,13 +20,13 @@ class Ut_Tokens {
 	public function __construct() {
 
 		self::$user_import_tokens = array(
-			'user_id'      => __( 'Imported user ID', 'uncanny-automator' ),
-			'user_login'   => __( 'Imported user login', 'uncanny-automator' ),
-			'user_email'   => __( 'Imported user email', 'uncanny-automator' ),
-			'first_name'   => __( 'Imported user first name', 'uncanny-automator' ),
-			'last_name'    => __( 'Imported user last name', 'uncanny-automator' ),
-			'display_name' => __( 'Imported user display name', 'uncanny-automator' ),
-			'wp_role'      => __( 'Imported user WordPress role', 'uncanny-automator' ),
+			'user_id'      => esc_html__( 'Imported user ID', 'uncanny-automator' ),
+			'user_login'   => esc_html__( 'Imported user login', 'uncanny-automator' ),
+			'user_email'   => esc_html__( 'Imported user email', 'uncanny-automator' ),
+			'first_name'   => esc_html__( 'Imported user first name', 'uncanny-automator' ),
+			'last_name'    => esc_html__( 'Imported user last name', 'uncanny-automator' ),
+			'display_name' => esc_html__( 'Imported user display name', 'uncanny-automator' ),
+			'wp_role'      => esc_html__( 'Imported user WordPress role', 'uncanny-automator' ),
 		);
 
 		add_filter(
@@ -108,10 +108,10 @@ class Ut_Tokens {
 			);
 		}
 		$ld_tokens = array(
-			'learndash_course_ids'    => __( 'Course ID(s)', 'uncanny-automator' ),
-			'learndash_course_titles' => __( 'Course title(s)', 'uncanny-automator' ),
-			'learndash_group_ids'     => __( 'Group ID(s)', 'uncanny-automator' ),
-			'learndash_group_titles'  => __( 'Group title(s)', 'uncanny-automator' ),
+			'learndash_course_ids'    => esc_html__( 'Course ID(s)', 'uncanny-automator' ),
+			'learndash_course_titles' => esc_html__( 'Course title(s)', 'uncanny-automator' ),
+			'learndash_group_ids'     => esc_html__( 'Group ID(s)', 'uncanny-automator' ),
+			'learndash_group_titles'  => esc_html__( 'Group title(s)', 'uncanny-automator' ),
 		);
 		if ( 'UTUSERIMPORTED' === $trigger_meta && defined( 'LEARNDASH_VERSION' ) ) {
 			foreach ( $ld_tokens as $token_id => $token_name ) {
@@ -151,7 +151,7 @@ class Ut_Tokens {
 		}
 		$new_tokens[] = array(
 			'tokenId'         => 'learndash_course_id',
-			'tokenName'       => __( 'Course ID', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'Course ID', 'uncanny-automator' ),
 			'tokenType'       => 'int',
 			'tokenIdentifier' => $trigger_meta,
 		);
@@ -183,7 +183,7 @@ class Ut_Tokens {
 		}
 		$new_tokens[] = array(
 			'tokenId'         => 'learndash_group_id',
-			'tokenName'       => __( 'Group ID', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'Group ID', 'uncanny-automator' ),
 			'tokenType'       => 'int',
 			'tokenIdentifier' => $trigger_meta,
 		);

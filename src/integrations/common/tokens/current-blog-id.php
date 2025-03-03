@@ -38,7 +38,7 @@ class Current_Blog_Id extends Token {
 	public function parse( $replaceable, $field_text, $match, $current_user ) {
 
 		if ( ! is_multisite() ) {
-			return __( 'N/A', 'uncanny-automator' );
+			return esc_html__( 'N/A', 'uncanny-automator' );
 		}
 
 		return get_current_blog_id();

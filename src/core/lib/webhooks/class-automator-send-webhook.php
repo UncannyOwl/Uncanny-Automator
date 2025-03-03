@@ -487,7 +487,7 @@ class Automator_Send_Webhook {
 	private function prepare_legacy_fields( $data, $parsing_args = array() ) {
 		$key_values     = array();
 		$number_of_keys = 7;
-		for ( $i = 1; $i <= $number_of_keys; $i ++ ) {
+		for ( $i = 1; $i <= $number_of_keys; $i++ ) {
 			$key                = $this->maybe_parse_tokens( $data[ 'KEY' . $i ], $parsing_args );
 			$value              = $this->maybe_parse_tokens( $data[ 'VALUE' . $i ], $parsing_args );
 			$key_values[ $key ] = $value;
@@ -642,7 +642,7 @@ class Automator_Send_Webhook {
 
 		foreach ( $array as $path => $value ) {
 			$tokens = explode( $this->field_separator, $path );
-			while ( null !== ( $key = array_pop( $tokens ) ) ) { //phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+			while ( null !== ( $key = array_pop( $tokens ) ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 				$current = array( $key => $value );
 				$value   = $current;
 			}
@@ -736,7 +736,7 @@ class Automator_Send_Webhook {
 				try {
 					$xml_body_wrapper = apply_filters( 'automator_send_webhook_xml_body', '<body></body>', $fields );
 					if ( empty( $xml_body_wrapper ) ) {
-						$fields = __( 'XML body wrapper cannot be empty. Please use `automator_send_webhook_xml_body` filter to define a wrapper.', 'uncanny-automator' );
+						$fields = esc_html__( 'XML body wrapper cannot be empty. Please use `automator_send_webhook_xml_body` filter to define a wrapper.', 'uncanny-automator' );
 						break;
 					}
 					$xml_data = new SimpleXMLElement( $xml_body_wrapper );
@@ -745,8 +745,8 @@ class Automator_Send_Webhook {
 
 					if ( $is_check_sample ) {
 						$dom                     = new DOMDocument( '1.0' );
-						$dom->preserveWhiteSpace = true; //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-						$dom->formatOutput       = true; //phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+						$dom->preserveWhiteSpace = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+						$dom->formatOutput       = true; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 						$dom->loadXML( trim( $fields ) );
 						$fields = $dom->saveXML();
 					} else {
@@ -799,7 +799,7 @@ class Automator_Send_Webhook {
 
 		$string = null;
 		foreach ( $binaries as $binary ) {
-			$string .= pack( apply_filters( 'automator_send_webhook_binary_to_string_format', 'H*', $string ), dechex( bindec( $binary ) ) ); //phpcs:ignore PHPCompatibility.ParameterValues.NewPackFormat.NewFormatFound
+			$string .= pack( apply_filters( 'automator_send_webhook_binary_to_string_format', 'H*', $string ), dechex( bindec( $binary ) ) ); // phpcs:ignore PHPCompatibility.ParameterValues.NewPackFormat.NewFormatFound
 		}
 
 		return $string;
@@ -869,32 +869,116 @@ class Automator_Send_Webhook {
 	 */
 	public static function call_webhook( $webhook_url, $args, $request_type = 'POST' ) {
 
+		if ( ! self::validate_webhook_url( $webhook_url ) ) {
+			return new \WP_Error(
+				'invalid_webhook_url',
+				sprintf(
+					'The webhook URL "%s" is not valid. Please ensure it is a publicly accessible URL and does not point to a private or local network address.',
+					esc_url( $webhook_url )
+				)
+			);
+		}
+
 		$request_type = sanitize_text_field( wp_unslash( $request_type ) );
 
 		switch ( $request_type ) {
 			case 'POST':
-				$response = wp_remote_post( $webhook_url, $args );
+				$response = wp_safe_remote_post( $webhook_url, $args );
 				break;
 			case 'GET':
 				$url      = add_query_arg( $args['body'], $webhook_url );
-				$response = wp_remote_get( $url, $args );
+				$response = wp_safe_remote_get( $url, $args );
 				break;
 			case 'HEAD':
-				$response = wp_remote_head( $webhook_url, $args );
+				$response = wp_safe_remote_head( $webhook_url, $args );
 				break;
 			case 'PUT':
 			case 'PATCH':
 			case 'DELETE':
 			case 'OPTIONS':
 				$args['method'] = $request_type;
-				$response       = wp_remote_request( $webhook_url, $args );
+				$response       = wp_safe_remote_request( $webhook_url, $args );
 				break;
 			default:
-				$response = apply_filters( 'automator_send_webhook_default_response', wp_remote_post( $webhook_url, $args ), $webhook_url, $args );
+				$response = apply_filters(
+					'automator_send_webhook_default_response',
+					wp_safe_remote_post( $webhook_url, $args ),
+					$webhook_url,
+					$args
+				);
 				break;
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Validate webhook URL to prevent SSRF attacks
+	 *
+	 * @param string $url The URL to validate
+	 * @return bool True if URL is valid and safe, false otherwise
+	 */
+	public static function validate_webhook_url( $url ) {
+		// First validate the URL format and protocol
+		if ( ! wp_http_validate_url( $url ) ) {
+			return false;
+		}
+
+		// Parse the URL for host
+		$parsed_url = wp_parse_url( $url );
+		$host       = isset( $parsed_url['host'] ) ? strtolower( $parsed_url['host'] ) : '';
+		if ( empty( $host ) ) {
+			return false;
+		}
+
+		// Block localhost and common internal hostnames
+		$default_blocked_hosts = array(
+			'localhost',
+			'127.0.0.1',
+			'::1',
+			'internal',
+			'local',
+			'[::1]', // IPv6 localhost in brackets
+		);
+
+		/**
+		 * Filter to add additional blocked hostnames
+		 * Note: Default blocked hosts cannot be removed for security
+		 *
+		 * @param array $additional_blocked_hosts Array of additional hostnames to block
+		 * @param string $host The current hostname being checked
+		 * @return array
+		 */
+		$additional_blocked_hosts = apply_filters(
+			'automator_send_webhook_blocked_webhook_hosts',
+			array(),
+			$host
+		);
+
+		// Merge default and additional blocked hosts, ensuring defaults cannot be removed
+		$blocked_hosts = array_merge( $default_blocked_hosts, (array) $additional_blocked_hosts );
+		if ( in_array( $host, $blocked_hosts, true ) ) {
+			return false;
+		}
+
+		// Resolve hostname to IP
+		$ip = gethostbyname( $host );
+		// returns the hostname on failure.
+		if ( $ip === $host ) {
+			return false;
+		}
+
+		// Block AWS metadata endpoint and link-local addresses
+		if ( '169.254.169.254' === $ip || 0 === strpos( $ip, '169.254.' ) ) {
+			return false;
+		}
+
+		// Block private and reserved IP ranges
+		if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) === false ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -944,7 +1028,7 @@ class Automator_Send_Webhook {
 				$form_data_body .= PHP_EOL;
 			}
 
-			$counter ++;
+			++$counter;
 		}
 
 		$form_data_body .= $boundary . '--';
@@ -969,7 +1053,7 @@ class Automator_Send_Webhook {
 		$iterator_iterator = new \RecursiveIteratorIterator( $array_iterator, \RecursiveIteratorIterator::LEAVES_ONLY );
 		foreach ( $iterator_iterator as $key => $value ) {
 			$keys = array();
-			for ( $i = 0; $i < $iterator_iterator->getDepth(); $i ++ ) { //phpcs:ignore Generic.CodeAnalysis.ForLoopWithTestFunctionCall.NotAllowed
+			for ( $i = 0; $i < $iterator_iterator->getDepth(); $i++ ) { // phpcs:ignore Generic.CodeAnalysis.ForLoopWithTestFunctionCall.NotAllowed
 				$keys[] = $iterator_iterator->getSubIterator( $i )->key();
 			}
 			$keys[]   = $key;
@@ -1050,7 +1134,6 @@ class Automator_Send_Webhook {
 		$hydration_data['WEBHOOK_RESPONSE_CODE'] = wp_remote_retrieve_response_code( $response );
 
 		return $hydration_data;
-
 	}
 
 	/**
@@ -1096,7 +1179,6 @@ class Automator_Send_Webhook {
 		}
 
 		return esc_html( $value );
-
 	}
 
 	/**

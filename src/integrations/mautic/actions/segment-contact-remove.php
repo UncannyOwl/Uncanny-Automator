@@ -40,7 +40,6 @@ class SEGMENT_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\Action {
 			),
 			$this->get_action_code()
 		);
-
 	}
 
 	/**
@@ -71,7 +70,6 @@ class SEGMENT_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\Action {
 			$email,
 			$segment,
 		);
-
 	}
 
 	/**
@@ -96,7 +94,14 @@ class SEGMENT_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\Action {
 
 		// Invalid email. Complete with error.
 		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception( 'Invalid email. "' . $email . '"', 500 );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Email address */
+					esc_html__( 'Invalid email: "%s"', 'uncanny-automator' ),
+					esc_html( $email )
+				),
+				500
+			);
 		}
 
 		$auth->api_call(
@@ -116,7 +121,5 @@ class SEGMENT_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		return true;
-
 	}
-
 }

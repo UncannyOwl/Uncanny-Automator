@@ -152,7 +152,7 @@ class SHEET_UPDATERECORD_V2 {
 						'option_code'       => 'WORKSHEET_FIELDS',
 						'input_type'        => 'repeater',
 						'relevant_tokens'   => array(),
-						'label'             => __( 'Row', 'uncanny-automator' ),
+						'label'             => esc_html__( 'Row', 'uncanny-automator' ),
 						'description'       => '',
 						'required'          => true,
 						'default_value'     => array(
@@ -164,7 +164,7 @@ class SHEET_UPDATERECORD_V2 {
 						'fields'            => array(
 							array(
 								'option_code' => 'GS_COLUMN_NAME',
-								'label'       => __( 'Column', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Column', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
 								'read_only'   => true,
@@ -172,19 +172,19 @@ class SHEET_UPDATERECORD_V2 {
 							),
 							array(
 								'option_code' => 'COLUMN_UPDATE',
-								'label'       => __( 'Update?', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Update?', 'uncanny-automator' ),
 								'input_type'  => 'checkbox',
 								'is_toggle'   => true,
 							),
 							array(
 								'option_code' => 'GS_COLUMN_VALUE',
-								'label'       => __( 'Value', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Value', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'options'     => array(),
 							),
 						),
-						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+						'add_row_button'    => esc_html__( 'Add pair', 'uncanny-automator' ),
+						'remove_row_button' => esc_html__( 'Remove pair', 'uncanny-automator' ),
 						'hide_actions'      => true,
 						'ajax'              => array(
 							'endpoint'       => 'automator_fetch_googlesheets_worksheets_columns',
@@ -196,7 +196,7 @@ class SHEET_UPDATERECORD_V2 {
 					array(
 						'option_code' => 'UPDATE_MULTIPLE_ROWS',
 						'input_type'  => 'checkbox',
-						'label'       => __( 'If multiple matches are found, update all matching rows instead of the first matching row only.', 'uncanny-automator' ),
+						'label'       => esc_html__( 'If multiple matches are found, update all matching rows instead of the first matching row only.', 'uncanny-automator' ),
 					),
 				),
 			),

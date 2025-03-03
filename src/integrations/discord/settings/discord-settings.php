@@ -207,7 +207,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			wp_safe_redirect(
 				add_query_arg(
 					array(
-						'error' => __( 'Missing credentials', 'uncanny-automator' ),
+						'error' => esc_html__( 'Missing credentials', 'uncanny-automator' ),
 					),
 					$this->get_settings_page_url()
 				)

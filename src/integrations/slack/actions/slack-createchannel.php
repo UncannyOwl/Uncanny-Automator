@@ -10,6 +10,7 @@ namespace Uncanny_Automator;
 class SLACK_CREATECHANNEL {
 
 	use Recipe\Action_Tokens;
+
 	/**
 	 * Integration code
 	 *
@@ -48,8 +49,8 @@ class SLACK_CREATECHANNEL {
 			'code'                  => $this->action_code,
 			'requires_user'         => false,
 			// translators: slack channel
-			'sentence'              => sprintf( __( 'Create {{a channel:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Create {{a channel}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Create {{a channel:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Create {{a channel}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'create_channel' ),
@@ -72,7 +73,7 @@ class SLACK_CREATECHANNEL {
 		$this->set_action_tokens(
 			array(
 				'CHANNEL_ID' => array(
-					'name' => __( 'Channel ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Channel ID', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -80,7 +81,6 @@ class SLACK_CREATECHANNEL {
 		);
 
 		Automator()->register->action( $action );
-
 	}
 
 	/**
@@ -105,7 +105,7 @@ class SLACK_CREATECHANNEL {
 			$response = Automator()->helpers->recipe->slack->conversations_create( $channel_name, $action_data );
 
 			if ( isset( $response['data']['error'] ) ) {
-				throw new \Exception( $response['data']['error'], 400 );
+				throw new \Exception( esc_html( $response['data']['error'] ), 400 );
 			}
 
 			if ( isset( $response['data']['channel']['id'] ) ) {
@@ -121,7 +121,5 @@ class SLACK_CREATECHANNEL {
 		}
 
 		return Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
 	}
-
 }

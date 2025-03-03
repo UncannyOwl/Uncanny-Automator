@@ -48,8 +48,8 @@ class HUBSPOT_REMOVECONTACTFROMLIST {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			// translators: The selected HubSpot static list name
-			'sentence'              => sprintf( __( 'Remove a HubSpot contact from {{a static list:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Remove a HubSpot contact from {{a static list}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Remove a HubSpot contact from {{a static list:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Remove a HubSpot contact from {{a static list}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'requires_user'         => false,

@@ -43,32 +43,32 @@ class Rafflepress_Helpers {
 			// Giveaway tokens
 			array(
 				'tokenId'   => 'GIVEAWAY_TITLE',
-				'tokenName' => __( 'Name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'GIVEAWAY_START_DATE',
-				'tokenName' => __( 'Start date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Start date', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'GIVEAWAY_END_DATE',
-				'tokenName' => __( 'End date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'End date', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'GIVEAWAY_ENTRIES',
-				'tokenName' => __( 'Entries', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Entries', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'GIVEAWAY_USER_COUNT',
-				'tokenName' => __( 'User count', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'User count', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'GIVEAWAY_STATUS',
-				'tokenName' => __( 'Status', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -86,17 +86,17 @@ class Rafflepress_Helpers {
 			// Contestant tokens
 			array(
 				'tokenId'   => 'CONTESTANT_NAME',
-				'tokenName' => __( 'Contestant name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Contestant name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTESTANT_EMAIL',
-				'tokenName' => __( 'Contestant email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Contestant email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'CONTESTANT_EMAIL_VERIFIED',
-				'tokenName' => __( 'Contestant email verified', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Contestant email verified', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -123,8 +123,8 @@ class Rafflepress_Helpers {
 		$giveaway_total_users   = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}rafflepress_contestants WHERE giveaway_id = %d", $giveaway_id ) );
 
 		$tokens['GIVEAWAY_TITLE']      = $giveaway['name'];
-		$tokens['GIVEAWAY_START_DATE'] = date( get_option( 'date_format' ), strtotime( $giveaway['starts'] ) );
-		$tokens['GIVEAWAY_END_DATE']   = date( get_option( 'date_format' ), strtotime( $giveaway['ends'] ) );
+		$tokens['GIVEAWAY_START_DATE'] = wp_date( get_option( 'date_format' ), strtotime( $giveaway['starts'] ) );
+		$tokens['GIVEAWAY_END_DATE']   = wp_date( get_option( 'date_format' ), strtotime( $giveaway['ends'] ) );
 		$tokens['GIVEAWAY_ENTRIES']    = $giveaway_total_entries;
 		$tokens['GIVEAWAY_USER_COUNT'] = $giveaway_total_users;
 		$tokens['GIVEAWAY_STATUS']     = ( true === $giveaway['active'] ) ? 'Active' : 'Inactive';

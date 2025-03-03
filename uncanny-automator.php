@@ -41,8 +41,8 @@ if ( version_compare( PHP_VERSION, '7.3', '<' ) ) {
 			 style="border-left: 4px solid #dc3232; font-weight: bold; background-color: #fff4e5; color: #000;">
 			<p>
 			<?php
-				//Translators: %s: The version number of Uncanny Automator.
-				echo sprintf( esc_html__( 'Notice: Uncanny Automator v%s requires PHP 7.3 or higher to run properly. Your current PHP version is below this requirement, so the plugin has been deactivated and all automations have stopped. Please upgrade your PHP version to ensure that your automations and other plugin features work correctly.', 'uncanny-automator' ), esc_html( AUTOMATOR_PLUGIN_VERSION ) );
+				// translators: %s: The version number of Uncanny Automator.
+				printf( esc_html__( 'Notice: Uncanny Automator v%s requires PHP 7.3 or higher to run properly. Your current PHP version is below this requirement, so the plugin has been deactivated and all automations have stopped. Please upgrade your PHP version to ensure that your automations and other plugin features work correctly.', 'uncanny-automator' ), esc_html( AUTOMATOR_PLUGIN_VERSION ) );
 			?>
 				</p>
 		</div>

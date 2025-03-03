@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\Everest_Forms;
 
 /**
  * Class Everest_Forms_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Everest_Forms_Helpers {
@@ -57,12 +58,12 @@ class Everest_Forms_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'FORM_ID',
-				'tokenName' => __( 'Form ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Form ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'FORM_TITLE',
-				'tokenName' => __( 'Form title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Form title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -171,7 +172,8 @@ class Everest_Forms_Helpers {
 	public function get_all_evf_fields_by_form_id() {
 		Automator()->utilities->verify_nonce();
 		// Ignore nonce, already handled above.
-		$form_id     = isset( $_POST['values']['EVF_FORMS'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['EVF_FORMS'] ) ) : '';
+		$values      = automator_filter_input_array( 'values', INPUT_POST );
+		$form_id     = isset( $values['EVF_FORMS'] ) ? sanitize_text_field( $values['EVF_FORMS'] ) : '';
 		$options     = array();
 		$form_fields = $this->get_all_form_fields( $form_id );
 

@@ -154,7 +154,7 @@ let automatorMauticFieldResolver = () => {
 
 								<div class="uap-settings-panel-user-info__additional">
 									<?php /* translators: The user email */ ?>
-									<?php echo sprintf( esc_html__( 'Email: %s' ), esc_html( $vars['resource_owner']['email'] ) ); ?>
+									<?php echo sprintf( esc_html__( 'Email: %s', 'uncanny-automator' ), esc_html( $vars['resource_owner']['email'] ) ); ?>
 								</div>
 							</div> <!--uap-settings-panel-user-info-->
 						</div> <!--.uap-settings-panel-user-->	

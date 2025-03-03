@@ -188,7 +188,7 @@ class Automator_Recipe_Process_User {
 						$result[] = array(
 							'result' => true,
 							'args'   => $args,
-						); //phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+						); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 					}
 				}
 			}
@@ -675,7 +675,7 @@ class Automator_Recipe_Process_User {
 		} else {
 
 			$user_num_times ++;
-			$run_number         = $run_number + 1; //phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
+			$run_number         = $run_number + 1; // phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 			$args['run_number'] = $run_number;
 			$args['meta_value'] = 1;
 		}
@@ -1010,7 +1010,7 @@ class Automator_Recipe_Process_User {
 
 		global $wpdb;
 
-		return $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		return $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	/**

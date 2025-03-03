@@ -30,6 +30,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 
 	/**
 	 * Store the complete with notice messages.
+	 *
 	 * @var array
 	 */
 	public $complete_with_notice_messages = array();
@@ -308,6 +309,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 				$value = apply_filters( 'automator_campaign_monitor_mobile_number', $value );
 				if ( ! $this->validate_is_mobile_E164( $value ) ) {
 					$__value = sprintf(
+						// translators: 1: Mobile number
 						_x( 'Invalid mobile number format: "%s". Please ensure it begins with a plus sign (+), followed by the country code and phone number.', 'Campaign Monitor', 'uncanny-automator' ),
 						$value
 					);

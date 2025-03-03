@@ -54,12 +54,11 @@ class Json_To_Array_Converter {
 
 			// Handle HTTP request errors.
 			if ( is_wp_error( $response ) ) {
-				$error_message = $response->get_error_message();
 				throw new Exception(
 					sprintf(
-						/* translators: Error message */
-						__( 'Error fetching the JSON from the URL: %s', 'uncanny-automator' ),
-						$error_message
+					/* translators: %s: Error message */
+						esc_html__( 'Error fetching the JSON from the URL: %s', 'uncanny-automator' ),
+						esc_html( $response->get_error_message() )
 					)
 				);
 			}
@@ -70,9 +69,9 @@ class Json_To_Array_Converter {
 			if ( 200 !== $status_code ) {
 				throw new Exception(
 					sprintf(
-						/* translators: Error message */
-						__( 'HTTP error: Received status code %d while fetching the JSON from the URL.', 'uncanny-automator' ),
-						$status_code
+					/* translators: %d: HTTP status code */
+						esc_html__( 'HTTP error: Received status code %d while fetching the JSON from the URL.', 'uncanny-automator' ),
+						absint( $status_code )
 					)
 				);
 			}
@@ -83,7 +82,7 @@ class Json_To_Array_Converter {
 		// If input is a valid file path, retrieve the contents.
 		if ( file_exists( $input ) && is_readable( $input ) ) {
 			// Local file, no need to use wp_remote_*.
-			return file_get_contents( $input ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+			return file_get_contents( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		}
 
 		// If input is a valid JSON string, return it as-is.
@@ -93,8 +92,7 @@ class Json_To_Array_Converter {
 
 		// If none of the conditions are met, throw an exception for invalid input.
 		throw new Exception(
-			/* translators: Error exception message */
-			__( 'Input must be a valid URL, file path, or JSON string.', 'uncanny-automator' )
+			esc_html__( 'Input must be a valid URL, file path, or JSON string.', 'uncanny-automator' )
 		);
 	}
 
@@ -117,9 +115,9 @@ class Json_To_Array_Converter {
 			$error_message = json_last_error_msg();
 			throw new Exception(
 				sprintf(
-					/* translators: Error exception message */
-					__( 'Invalid JSON data: %s', 'uncanny-automator' ),
-					$error_message
+				/* translators: %s: Error exception message */
+					esc_html__( 'Invalid JSON data: %s', 'uncanny-automator' ),
+					esc_html( $error_message )
 				)
 			);
 		}

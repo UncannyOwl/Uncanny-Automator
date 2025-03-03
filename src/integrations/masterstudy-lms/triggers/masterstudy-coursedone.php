@@ -65,7 +65,7 @@ class MASTERSTUDY_COURSEDONE {
 			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_html__( 'Any course', 'uncanny-automator' ) );
 
 		return Automator()->utilities->keep_order_of_options(
 			array(

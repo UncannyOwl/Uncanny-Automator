@@ -70,7 +70,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to fetch user info.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to fetch user info.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -93,7 +93,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to fetch user boards.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to fetch user boards.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -117,7 +117,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to fetch board lists.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to fetch board lists.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -141,7 +141,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to fetch board members.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to fetch board members.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -165,7 +165,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to fetch board lables.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to fetch board lables.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -192,7 +192,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to create a card.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to create a card.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -214,7 +214,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to get custom fields.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to get custom fields.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -238,7 +238,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to fetch list cards.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to fetch list cards.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -262,7 +262,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to fetch checklists.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to fetch checklists.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -288,7 +288,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to create a checklist item.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to create a checklist item.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -312,7 +312,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to add card label.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to add card label.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -339,7 +339,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to update a card.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to update a card.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -363,7 +363,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$default_error = __( 'Unable to add card comment.', 'uncanny-automator' );
+		$default_error = esc_html__( 'Unable to add card comment.', 'uncanny-automator' );
 
 		$this->check_for_errors( $response, $default_error );
 
@@ -387,7 +387,7 @@ class Trello_Api {
 
 		$response = $this->api_request( $args );
 
-		$this->check_for_errors( $response, __( 'Unable to add card member.', 'uncanny-automator' ) );
+		$this->check_for_errors( $response, esc_html__( 'Unable to add card member.', 'uncanny-automator' ) );
 
 		return $response;
 	}
@@ -409,7 +409,7 @@ class Trello_Api {
 			$error_message = $response['data']['message'];
 		}
 
-		throw new \Exception( $error_message );
+		throw new \Exception( esc_html( $error_message ) );
 	}
 
 	/**

@@ -39,7 +39,7 @@ class Helpscout_Helpers {
 			// Capture OAuthentication credentials.
 			add_action(
 				'wp_ajax_automator_helpscout_capture_tokens',
-				function() {
+				function () {
 					$this->capture_tokens();
 				}
 			);
@@ -47,7 +47,7 @@ class Helpscout_Helpers {
 			// Diconnect.
 			add_action(
 				'wp_ajax_automator_helpscout_disconnect',
-				function() {
+				function () {
 					$this->disconnect();
 				}
 			);
@@ -77,7 +77,6 @@ class Helpscout_Helpers {
 		require_once __DIR__ . '/../settings/settings-helpscout.php';
 
 		new Helpscout_Settings( $this );
-
 	}
 
 	public function fetch_tags() {
@@ -118,7 +117,6 @@ class Helpscout_Helpers {
 			);
 
 		}
-
 	}
 
 	/**
@@ -171,7 +169,6 @@ class Helpscout_Helpers {
 		);
 
 		wp_send_json( $data );
-
 	}
 
 	/**
@@ -245,7 +242,6 @@ class Helpscout_Helpers {
 		}
 
 		wp_send_json( $data );
-
 	}
 
 	public function fetch_conversations() {
@@ -291,7 +287,6 @@ class Helpscout_Helpers {
 		}
 
 		wp_send_json( $data );
-
 	}
 
 	/**
@@ -319,7 +314,6 @@ class Helpscout_Helpers {
 		$this->handle_errors( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -351,18 +345,17 @@ class Helpscout_Helpers {
 				}
 
 				throw new \Exception(
-					$err_message,
-					$status_code
+					esc_html( $err_message ),
+					absint( $status_code )
 				);
 
 			}
 
-			throw new \Exception( wp_json_encode( $response ), $status_code );
+			throw new \Exception( esc_html( wp_json_encode( $response ) ), absint( $status_code ) );
 
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -382,7 +375,6 @@ class Helpscout_Helpers {
 			),
 			AUTOMATOR_API_URL . self::API_ENDPOINT
 		);
-
 	}
 
 	/**
@@ -450,7 +442,6 @@ class Helpscout_Helpers {
 				'code'   => 200,
 			)
 		);
-
 	}
 
 	/**
@@ -480,7 +471,6 @@ class Helpscout_Helpers {
 				'code'   => 200,
 			)
 		);
-
 	}
 
 	public function get_connected_user() {
@@ -491,7 +481,6 @@ class Helpscout_Helpers {
 			),
 			null
 		);
-
 	}
 
 	public function verify_access( $nonce = '' ) {
@@ -515,7 +504,6 @@ class Helpscout_Helpers {
 				)
 			);
 		}
-
 	}
 
 	public function redirect( $redirect_url = '', $args = array() ) {
@@ -523,7 +511,6 @@ class Helpscout_Helpers {
 		wp_safe_redirect( add_query_arg( $args, $redirect_url ) );
 
 		exit;
-
 	}
 
 	public function get_settings_url() {
@@ -537,7 +524,6 @@ class Helpscout_Helpers {
 			),
 			admin_url( 'edit.php' )
 		);
-
 	}
 
 	/**
@@ -552,19 +538,16 @@ class Helpscout_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	public function get_client() {
 
 		return automator_get_option( self::CLIENT, false );
-
 	}
 
 	public function get_client_user() {
 
 		return isset( $this->get_client()['user'] ) ? $this->get_client()['user'] : '';
-
 	}
 
 	/**
@@ -605,7 +588,6 @@ class Helpscout_Helpers {
 		}
 
 		return $client_instance['access_token'];
-
 	}
 
 	protected function refresh_token( $client ) {
@@ -642,7 +624,6 @@ class Helpscout_Helpers {
 			automator_log( $e->getMessage(), 'Failed to retrieve refresh token for Help Scout. Please re-connect.', true, 'help-scout' );
 
 		}
-
 	}
 	public function fetch_mailboxes() {
 
@@ -653,7 +634,6 @@ class Helpscout_Helpers {
 		}
 
 		return $saved_mailboxes;
-
 	}
 
 	public function request_mailboxes() {
@@ -690,7 +670,6 @@ class Helpscout_Helpers {
 			);
 
 		}
-
 	}
 
 	/**
@@ -722,13 +701,11 @@ class Helpscout_Helpers {
 		automator_update_option( 'uap_helpscout_webhook_key', $new_key );
 
 		return $new_key;
-
 	}
 
 	public function get_webhook_url() {
 
 		return get_rest_url( null, '/uap/v2/helpscout' );
-
 	}
 
 	/**
@@ -789,7 +766,6 @@ class Helpscout_Helpers {
 				'acknowledged' => time(),
 			)
 		);
-
 	}
 
 	/**
@@ -830,7 +806,6 @@ class Helpscout_Helpers {
 					true
 				)
 			);
-
 	}
 
 	public function helpscout_regenerate_secret_key() {
@@ -850,7 +825,6 @@ class Helpscout_Helpers {
 		wp_safe_redirect( $uri );
 
 		exit;
-
 	}
 
 	public function get_regenerate_url() {
@@ -878,7 +852,6 @@ class Helpscout_Helpers {
 		}
 
 		return $x_helpscout_event === $request_headers['x_helpscout_event'][0];
-
 	}
 
 	/**
@@ -889,7 +862,5 @@ class Helpscout_Helpers {
 	public function format_date_timestamp( $timestamp ) {
 
 		return gmdate( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $timestamp );
-
 	}
-
 }

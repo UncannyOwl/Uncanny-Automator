@@ -19,7 +19,7 @@ final class Action implements \JsonSerializable {
 	use Common\Trait_Setter_Getter;
 
 	protected $type             = 'action';
-	protected $_ui_order        = 0; //phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
+	protected $_ui_order        = 0; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 	protected $is_item_on       = false;
 	protected $id               = null;
 	protected $integration_code = null;

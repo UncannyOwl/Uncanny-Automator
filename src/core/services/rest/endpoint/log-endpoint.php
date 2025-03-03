@@ -106,7 +106,7 @@ class Log_Endpoint {
 				'success' => false,
 				'error'   => array(
 					'code'    => 'LOG_NOT_FOUND',
-					'message' => __( 'The recipe log you are looking for was not found', 'uncanny-automator' ),
+					'message' => esc_html__( 'The recipe log you are looking for was not found', 'uncanny-automator' ),
 					'details' => array(
 						'build_response_output' => $response,
 					),

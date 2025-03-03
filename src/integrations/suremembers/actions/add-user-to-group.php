@@ -39,11 +39,11 @@ class Add_User_To_Group extends \Uncanny_Automator\Recipe\Action {
 		$lists_dropdown = array(
 			'input_type'            => 'select',
 			'option_code'           => 'GROUP',
-			'label'                 => __( 'Access groups', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Access groups', 'uncanny-automator' ),
 			'token_name'            => _x( 'Access group ID', 'SureMembers', 'uncanny-automator' ),
 			'required'              => true,
 			'options'               => $this->helpers->get_access_groups_options( false ),
-			'placeholder'           => __( 'Please select a group', 'uncanny-automator' ),
+			'placeholder'           => esc_html__( 'Please select a group', 'uncanny-automator' ),
 			'supports_custom_value' => true,
 		);
 

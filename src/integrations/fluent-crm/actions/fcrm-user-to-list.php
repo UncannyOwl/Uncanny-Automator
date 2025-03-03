@@ -138,7 +138,7 @@ class FCRM_USER_TO_LIST {
 							_x( 'User was already a member of %1$s', 'FluentCRM', 'uncanny-automator' ),
 							implode(
 							/* translators: Character to separate items */
-								__( ',', 'uncanny-automator' ) . ' ',
+								esc_html__( ',', 'uncanny-automator' ) . ' ',
 								$existing_list_ids
 							)
 						);

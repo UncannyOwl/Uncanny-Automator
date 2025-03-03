@@ -39,7 +39,6 @@ class THREADS_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
 		$this->set_readable_sentence( esc_attr_x( 'Create {{a thread post}}', 'Threads', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
 		$this->set_should_apply_extra_formatting( false );
-
 	}
 
 	/**
@@ -64,7 +63,6 @@ class THREADS_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
 				'required'    => false,
 			),
 		);
-
 	}
 
 	/**
@@ -109,11 +107,13 @@ class THREADS_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
 
 		} catch ( \Exception $e ) {
 
-			throw new \Exception( 'Error processing action: ' . $e->getMessage() );
-
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Error message */
+					esc_html__( 'Error processing action: %s', 'uncanny-automator' ),
+					esc_html( $e->getMessage() )
+				)
+			);
 		}
-
 	}
-
-
 }

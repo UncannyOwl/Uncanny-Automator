@@ -134,11 +134,11 @@ class Automator_Tokens {
 				continue;
 			}
 
-			if ( in_array( $meta_key, $ignore_metas_for_tokens, false ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
+			if ( in_array( $meta_key, $ignore_metas_for_tokens, false ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 				continue;
 			}
 
-			if ( in_array( strtoupper( $meta_key ), $ignore_metas_for_tokens, false ) ) { //phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
+			if ( in_array( strtoupper( $meta_key ), $ignore_metas_for_tokens, false ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 				continue;
 			}
 

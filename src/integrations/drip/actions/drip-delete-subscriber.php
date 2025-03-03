@@ -56,7 +56,7 @@ class DRIP_DELETE_SUBSCRIBER {
 
 		$email = array(
 			'option_code'     => $this->action_meta,
-			'label'           => __( 'Email', 'uncanny-automator' ),
+			'label'           => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'      => 'email',
 			'required'        => true,
 			'supports_tokens' => true,

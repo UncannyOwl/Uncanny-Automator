@@ -199,14 +199,14 @@ class Uncanny_Toolkit_Helpers {
 	/**
 	 * @param Uncanny_Toolkit_Helpers $options
 	 */
-	public function setOptions( Uncanny_Toolkit_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Uncanny_Toolkit_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Uncanny_Toolkit_Pro_Helpers $pro
 	 */
-	public function setPro( Uncanny_Toolkit_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( Uncanny_Toolkit_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 

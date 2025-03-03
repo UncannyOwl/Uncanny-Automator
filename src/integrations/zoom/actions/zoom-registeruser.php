@@ -43,8 +43,8 @@ class ZOOM_REGISTERUSER {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			/* translators: Meeting topic */
-			'sentence'              => sprintf( __( 'Add the user to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Add the user to {{a meeting}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Add the user to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Add the user to {{a meeting}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'zoom_register_user' ),
@@ -53,7 +53,7 @@ class ZOOM_REGISTERUSER {
 			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get meeting questions', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Get meeting questions', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => 'uap_zoom_get_meeting_questions',
 					'modules'     => array( 'modal', 'markdown' ),
@@ -73,7 +73,7 @@ class ZOOM_REGISTERUSER {
 
 		$account_users_field = array(
 			'option_code'           => 'ZOOMUSER',
-			'label'                 => __( 'Account user', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Account user', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => false,
 			'is_ajax'               => true,
@@ -86,7 +86,7 @@ class ZOOM_REGISTERUSER {
 
 		$user_meetings_field = array(
 			'option_code'           => $this->action_meta,
-			'label'                 => __( 'Meeting', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Meeting', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -99,7 +99,7 @@ class ZOOM_REGISTERUSER {
 
 		$meeting_occurrences_field = array(
 			'option_code'              => 'OCCURRENCES',
-			'label'                    => __( 'Occurrences', 'uncanny-automator' ),
+			'label'                    => esc_html__( 'Occurrences', 'uncanny-automator' ),
 			'input_type'               => 'select',
 			'required'                 => false,
 			'options'                  => array(),
@@ -136,18 +136,18 @@ class ZOOM_REGISTERUSER {
 			$meeting_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
 			if ( empty( $user_id ) ) {
-				throw new \Exception( __( 'User was not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User was not found.', 'uncanny-automator' ) );
 			}
 
 			if ( empty( $meeting_key ) ) {
-				throw new \Exception( __( 'Meeting was not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Meeting was not found.', 'uncanny-automator' ) );
 			}
 
 			$meeting_key = str_replace( '-objectkey', '', $meeting_key );
 			$user        = get_userdata( $user_id );
 
 			if ( is_wp_error( $user ) ) {
-				throw new \Exception( __( 'User was not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User was not found.', 'uncanny-automator' ) );
 			}
 
 			$meeting_user          = array();

@@ -29,7 +29,7 @@ if ( false === get_option( 'automator_delete_data_on_uninstall', false ) ) {
  */
 function log_uninstall_error( $message ) {
 	// Error logging logic here (e.g., error_log, writing to a custom log file, etc.)
-	error_log( 'Uncanny Automator Uninstall Error: ' . $message ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	error_log( 'Uncanny Automator Uninstall Error: ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 }
 
 try {
@@ -59,7 +59,7 @@ try {
 
 	// Remove the tables
 	foreach ( $tables_to_remove as $table ) {
-		$wpdb->query( "DROP TABLE IF EXISTS $table" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "DROP TABLE IF EXISTS $table" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	// Database views to be removed
@@ -72,7 +72,7 @@ try {
 
 	// Remove the views
 	foreach ( $views_to_remove as $view ) {
-		$wpdb->query( "DROP VIEW IF EXISTS $view" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "DROP VIEW IF EXISTS $view" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	// Custom post types to be removed
@@ -91,7 +91,7 @@ try {
 		$_posts = get_posts(
 			array(
 				'post_type'      => $p_type,
-				'posts_per_page' => 9999999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page' => 9999999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			)
 		);
 
@@ -139,7 +139,7 @@ try {
 	$sql_query = "DELETE FROM $wpdb->options WHERE $conditions_query";
 
 	// Execute the query
-	$wpdb->query( $sql_query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 	$cron_jobs_to_unhook = array(
 		'automator_weekly_healthcheck',
@@ -158,8 +158,8 @@ try {
 
 	foreach ( $uncanny_automator_translations as $file ) {
 		// Check if file exists and is writable
-		if ( file_exists( $file ) && is_writable( $file ) ) {
-			unlink( $file ); // Delete the file
+		if ( file_exists( $file ) && wp_is_writable( $file ) ) {
+			wp_delete_file( $file ); // Delete the file
 		}
 	}
 

@@ -198,7 +198,7 @@ class INSTAGRAM_PUBLISH_PHOTO {
 
 		if ( false !== strpos( $error_message, 'cannot be loaded due to missing permissions' ) ) {
 
-			return esc_html__( 'Instagram account not found. Check that the requested account is connected to the associated Facebook page.' );
+			return esc_html__( 'Instagram account not found. Check that the requested account is connected to the associated Facebook page.', 'uncanny-automator' );
 
 		}
 

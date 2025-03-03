@@ -87,7 +87,7 @@ class AUTONAMI_TOKENS {
 
 		$tokens[] = array(
 			'tokenId'         => 'LIST_ID',
-			'tokenName'       => __( 'List ID', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'List ID', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => $current_trigger,
 		);
@@ -126,7 +126,7 @@ class AUTONAMI_TOKENS {
 
 		$tokens[] = array(
 			'tokenId'         => 'TAG_ID',
-			'tokenName'       => __( 'Tag ID', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'Tag ID', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => $current_trigger,
 		);
@@ -149,35 +149,35 @@ class AUTONAMI_TOKENS {
 	 */
 	public function contact_tokens( $tokens, $trigger_code ) {
 
-		$prefix = __( 'User', 'uncanny-automator' );
+		$prefix = esc_html__( 'User', 'uncanny-automator' );
 
 		if ( $this->is_userless( $trigger_code ) ) {
-			$prefix = __( 'Contact', 'uncanny-automator' );
+			$prefix = esc_html__( 'Contact', 'uncanny-automator' );
 		}
 
 		$contact_tokens = array(
 			array(
 				'tokenId'   => 'CONTACT_TAGS',
 				/* translators: 1. User or Contact */
-				'tokenName' => sprintf( __( "%s's tags", 'uncanny-automator' ), $prefix ),
+				'tokenName' => sprintf( esc_html__( "%s's tags", 'uncanny-automator' ), $prefix ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_LISTS',
 				/* translators: 1. User or Contact */
-				'tokenName' => sprintf( __( "%s's lists", 'uncanny-automator' ), $prefix ),
+				'tokenName' => sprintf( esc_html__( "%s's lists", 'uncanny-automator' ), $prefix ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_STATUS',
 				/* translators: 1. User or Contact */
-				'tokenName' => sprintf( __( "%s's status", 'uncanny-automator' ), $prefix ),
+				'tokenName' => sprintf( esc_html__( "%s's status", 'uncanny-automator' ), $prefix ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_STATUS_ID',
 				/* translators: 1. User or Contact */
-				'tokenName' => sprintf( __( "%s's status ID", 'uncanny-automator' ), $prefix ),
+				'tokenName' => sprintf( esc_html__( "%s's status ID", 'uncanny-automator' ), $prefix ),
 				'tokenType' => 'text',
 			),
 		);
@@ -201,62 +201,62 @@ class AUTONAMI_TOKENS {
 		$contact_tokens = array(
 			array(
 				'tokenId'   => 'CONTACT_ID',
-				'tokenName' => __( "Contact's ID", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's ID", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_EMAIL',
-				'tokenName' => __( "Contact's email address", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's email address", 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'CONTACT_FNAME',
-				'tokenName' => __( "Contact's first name", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's first name", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_LNAME',
-				'tokenName' => __( "Contact's last name", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's last name", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_PHONE',
-				'tokenName' => __( "Contact's phone number", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's phone number", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_COUNTRY',
-				'tokenName' => __( "Contact's country", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's country", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_STATE',
-				'tokenName' => __( "Contact's state", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's state", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_TIMEZONE',
-				'tokenName' => __( "Contact's timezone", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's timezone", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_TYPE',
-				'tokenName' => __( "Contact's type", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's type", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_SOURCE',
-				'tokenName' => __( "Contact's source", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's source", 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CONTACT_CREATION_DATE',
-				'tokenName' => __( "Contact's creation date", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's creation date", 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'CONTACT_MODIFIED_DATE',
-				'tokenName' => __( "Contact's last modified date", 'uncanny-automator' ),
+				'tokenName' => esc_html__( "Contact's last modified date", 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 		);
@@ -380,15 +380,15 @@ class AUTONAMI_TOKENS {
 
 		switch ( $status_id ) {
 			case 0:
-				return __( 'Unverified', 'uncanny-automator' );
+				return esc_html__( 'Unverified', 'uncanny-automator' );
 			case 1:
-				return __( 'Subscribed', 'uncanny-automator' );
+				return esc_html__( 'Subscribed', 'uncanny-automator' );
 			case 2:
-				return __( 'Bounced', 'uncanny-automator' );
+				return esc_html__( 'Bounced', 'uncanny-automator' );
 			case 3:
-				return __( 'Unsubscribed', 'uncanny-automator' );
+				return esc_html__( 'Unsubscribed', 'uncanny-automator' );
 			default:
-				return __( 'Unknown', 'uncanny-automator' );
+				return esc_html__( 'Unknown', 'uncanny-automator' );
 		}
 	}
 

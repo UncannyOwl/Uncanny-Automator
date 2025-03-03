@@ -46,8 +46,8 @@ class SLACK_SENDMESSAGE {
 			'code'                  => $this->action_code,
 			'requires_user'         => false,
 			// translators: slack channel name
-			'sentence'              => sprintf( __( 'Send a message to {{a channel:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Send a message to {{a channel}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Send a message to {{a channel:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Send a message to {{a channel}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'send_message' ),
@@ -70,7 +70,7 @@ class SLACK_SENDMESSAGE {
 					Automator()->helpers->recipe->slack->options->get_slack_channels( esc_attr__( 'Slack Channel', 'uncanny-automator' ), 'SLACKCHANNEL' ),
 					Automator()->helpers->recipe->slack->bot_name_field(),
 					Automator()->helpers->recipe->slack->bot_icon_field(),
-					Automator()->helpers->recipe->slack->textarea_field( 'SLACKMESSAGE', esc_attr__( 'Message', 'uncanny-automator' ), true, 'textarea', '', true, esc_attr__( '* Markdown is supported', 'uncanny-automator' ), __( 'Enter the message', 'uncanny-automator' ) ),
+					Automator()->helpers->recipe->slack->textarea_field( 'SLACKMESSAGE', esc_attr__( 'Message', 'uncanny-automator' ), true, 'textarea', '', true, esc_attr__( '* Markdown is supported', 'uncanny-automator' ), esc_html__( 'Enter the message', 'uncanny-automator' ) ),
 				),
 			),
 		);

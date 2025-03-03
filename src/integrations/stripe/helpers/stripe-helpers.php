@@ -221,6 +221,9 @@ class Stripe_Helpers {
 		$date_format = get_option( 'date_format' );
 		$time_format = get_option( 'time_format' );
 
-		return date( $date_format . ' ' . $time_format, $timestamp );
+		return wp_date(
+			sprintf( '%s %s', $date_format, $time_format ),
+			$timestamp
+		);
 	}
 }

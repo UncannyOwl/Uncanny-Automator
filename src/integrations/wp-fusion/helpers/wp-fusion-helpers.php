@@ -58,7 +58,7 @@ class Wp_Fusion_Helpers {
 	public static function fusion_tags( $label = '', $trigger_meta = '' ) {
 
 		if ( empty( $label ) ) {
-			$label = __( 'Tag', 'uncanny-automator' );
+			$label = esc_html__( 'Tag', 'uncanny-automator' );
 		}
 
 		$tags    = wp_fusion()->settings->get( 'available_tags' );

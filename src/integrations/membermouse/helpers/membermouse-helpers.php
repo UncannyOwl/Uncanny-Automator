@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\MemberMouse;
 
 /**
  * Class Membermouse_Helper
+ *
  * @package Uncanny_Automator
  */
 class Membermouse_Helpers {
@@ -18,107 +19,107 @@ class Membermouse_Helpers {
 		$tokens = array(
 			array(
 				'tokenId'   => 'MM_MEMBER_ID',
-				'tokenName' => __( 'Member ID', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Member ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_USERNAME',
-				'tokenName' => __( 'Member username', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Member username', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_EMAIL',
-				'tokenName' => __( 'Member email', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Member email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_FIRST_NAME',
-				'tokenName' => __( 'Member first name', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Member first name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_LAST_NAME',
-				'tokenName' => __( 'Member last name', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Member last name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_PHONE',
-				'tokenName' => __( 'Member phone', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Member phone', 'uncanny-automator' ),
 				'tokenType' => 'tel',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_STATUS',
-				'tokenName' => __( 'Member status', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Member status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_MEMBERSHIP_LEVEL',
-				'tokenName' => __( 'Membership level', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Membership level', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_SINCE',
-				'tokenName' => __( 'Member since', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Member since', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_BILLING_ADDRESS',
-				'tokenName' => __( 'Billing address', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing address', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_BILLING_ADDRESS2',
-				'tokenName' => __( 'Billing address2', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing address2', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_BILLING_CITY',
-				'tokenName' => __( 'Billing city', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing city', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_BILLING_STATE',
-				'tokenName' => __( 'Billing state', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing state', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_BILLING_ZIPCODE',
-				'tokenName' => __( 'Billing zipcode', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing zipcode', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_BILLING_COUNTRY',
-				'tokenName' => __( 'Billing country', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing country', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_SHIPPING_ADDRESS',
-				'tokenName' => __( 'Shipping address', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping address', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_SHIPPING_ADDRESS2',
-				'tokenName' => __( 'Shipping address2', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping address2', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_SHIPPING_CITY',
-				'tokenName' => __( 'Shipping city', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping city', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_SHIPPING_STATE',
-				'tokenName' => __( 'Shipping state', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping state', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_SHIPPING_ZIPCODE',
-				'tokenName' => __( 'Shipping zipcode', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping zipcode', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_MEMBER_SHIPPING_COUNTRY',
-				'tokenName' => __( 'Shipping country', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping country', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -128,7 +129,7 @@ class Membermouse_Helpers {
 			foreach ( $custom_fields as $id => $custom_field ) {
 				$tokens[] = array(
 					'tokenId'   => $id,
-					'tokenName' => __( $custom_field, 'uncanny_automator' ),
+					'tokenName' => $custom_field,
 					'tokenType' => 'text',
 				);
 			}
@@ -144,42 +145,42 @@ class Membermouse_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'MM_BUNDLE_ID',
-				'tokenName' => __( 'Bundle ID', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Bundle ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_BUNDLE_NAME',
-				'tokenName' => __( 'Bundle name', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Bundle name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_BUNDLE_STATUS',
-				'tokenName' => __( 'Bundle status', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Bundle status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_BUNDLE_TYPE',
-				'tokenName' => __( 'Bundle type', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Bundle type', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_BUNDLE_ACTIVE_DAYS',
-				'tokenName' => __( 'Day(s) with bundle', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Day(s) with bundle', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_BUNDLE_APPLIED_DATE',
-				'tokenName' => __( 'Bundle applied date', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Bundle applied date', 'uncanny-automator' ),
 				'tokenType' => 'datetime',
 			),
 			array(
 				'tokenId'   => 'MM_BUNDLE_EXPIRY_DATE',
-				'tokenName' => __( 'Bundle expires on', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Bundle expires on', 'uncanny-automator' ),
 				'tokenType' => 'datetime',
 			),
 			array(
 				'tokenId'   => 'MM_BUNDLE_CANCEL_DATE',
-				'tokenName' => __( 'Bundle cancels on', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Bundle cancels on', 'uncanny-automator' ),
 				'tokenType' => 'datetime',
 			),
 		);
@@ -192,92 +193,92 @@ class Membermouse_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'MM_PRODUCT_ID',
-				'tokenName' => __( 'Product ID', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Product ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_REFERENCE_KEY',
-				'tokenName' => __( 'Product reference key', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Product reference key', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_NAME',
-				'tokenName' => __( 'Product name', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Product name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_SKU',
-				'tokenName' => __( 'Product SKU', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Product SKU', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_DESCRIPTION',
-				'tokenName' => __( 'Product description', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Product description', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_PRICE',
-				'tokenName' => __( 'Product price', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Product price', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_CURRENCY',
-				'tokenName' => __( 'Product currency', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Product currency', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_IS_SHIPPABLE',
-				'tokenName' => __( 'Is shippable product?', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Is shippable product?', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_REBILL_PERIOD',
-				'tokenName' => __( 'Subscription rebill period', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Subscription rebill period', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_REBILL_FREQUENCY',
-				'tokenName' => __( 'Subscription rebill frequency', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Subscription rebill frequency', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_LIMIT_PAYMENTS',
-				'tokenName' => __( 'Has payment limit?', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Has payment limit?', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_NUMBER_OF_PAYMENTS',
-				'tokenName' => __( 'Payment plan limit', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Payment plan limit', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_HAS_TRAIL',
-				'tokenName' => __( 'Has trial?', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Has trial?', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_TRAIL_LIMIT',
-				'tokenName' => __( 'Has trial limit?', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Has trial limit?', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_TRAIL_LIMIT_ALT_PRODUCT_ID',
-				'tokenName' => __( 'Alternative product ID', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Alternative product ID', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_TRAIL_AMOUNT',
-				'tokenName' => __( 'Trial amount', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Trial amount', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_TRAIL_DURATION',
-				'tokenName' => __( 'Trial duration', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Trial duration', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_PRODUCT_TRAIL_FREQUENCY',
-				'tokenName' => __( 'Trial frequency', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Trial frequency', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -290,132 +291,132 @@ class Membermouse_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'MM_ORDER_NUMBER',
-				'tokenName' => __( 'Order number', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Order number', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_TRANSACTION_ID',
-				'tokenName' => __( 'Transaction ID', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Transaction ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_IP_ADDRESS',
-				'tokenName' => __( 'IP address', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'IP address', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SHIPPING_METHOD',
-				'tokenName' => __( 'Shipping method', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping method', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SHIPPING',
-				'tokenName' => __( 'Shipping charges', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping charges', 'uncanny-automator' ),
 				'tokenType' => 'float',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_BILLING_ADDRESS',
-				'tokenName' => __( 'Billing address', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing address', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_BILLING_ADDRESS2',
-				'tokenName' => __( 'Billing address - Line 2', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing address - Line 2', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_BILLING_CITY',
-				'tokenName' => __( 'Billing city', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing city', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_BILLING_STATE',
-				'tokenName' => __( 'Billing state', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing state', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_BILLING_ZIPCODE',
-				'tokenName' => __( 'Billing zipcode', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing zipcode', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_BILLING_COUNTRY',
-				'tokenName' => __( 'Billing country', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Billing country', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SHIPPING_ADDRESS',
-				'tokenName' => __( 'Shipping address', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping address', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SHIPPING_ADDRESS2',
-				'tokenName' => __( 'Shipping address - Line 2', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping address - Line 2', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SHIPPING_CITY',
-				'tokenName' => __( 'Shipping city', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping city', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SHIPPING_STATE',
-				'tokenName' => __( 'Shipping state', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping state', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SHIPPING_ZIPCODE',
-				'tokenName' => __( 'Shipping zipcode', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping zipcode', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SHIPPING_COUNTRY',
-				'tokenName' => __( 'Shipping country', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Shipping country', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_AFFILIATE_ID',
-				'tokenName' => __( 'Affiliate ID', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Affiliate ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SUBAFFILIATE_ID',
-				'tokenName' => __( 'Sub affiliate ID', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Sub affiliate ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_PRODUCTS',
-				'tokenName' => __( 'Order product(s)', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Order product(s)', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			//          array(
 			//              'tokenId'   => 'MM_ORDER_PRORATIONS',
-			//              'tokenName' => __( 'Order propations', 'uncanny_automator' ),
+			//              'tokenName' => esc_html__( 'Order propations', 'uncanny-automator' ),
 			//              'tokenType' => 'text',
 			//          ),
 				array(
 					'tokenId'   => 'MM_ORDER_COUPONS',
-					'tokenName' => __( 'Order coupon(s)', 'uncanny_automator' ),
+					'tokenName' => esc_html__( 'Order coupon(s)', 'uncanny-automator' ),
 					'tokenType' => 'text',
 				),
 			array(
 				'tokenId'   => 'MM_ORDER_DATE',
-				'tokenName' => __( 'Order date', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Order date', 'uncanny-automator' ),
 				'tokenType' => 'datetime',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_TOTAL',
-				'tokenName' => __( 'Order total', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Order total', 'uncanny-automator' ),
 				'tokenType' => 'float',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_SUBTOTAL',
-				'tokenName' => __( 'Order subtotal', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Order subtotal', 'uncanny-automator' ),
 				'tokenType' => 'float',
 			),
 			array(
 				'tokenId'   => 'MM_ORDER_DISCOUNT',
-				'tokenName' => __( 'Order discount', 'uncanny_automator' ),
+				'tokenName' => esc_html__( 'Order discount', 'uncanny-automator' ),
 				'tokenType' => 'float',
 			),
 		);
@@ -532,7 +533,10 @@ class Membermouse_Helpers {
 			'MM_ORDER_PRODUCTS'          => $products,
 			'MM_ORDER_PRORATIONS'        => $prorations,
 			'MM_ORDER_COUPONS'           => $coupons,
-			'MM_ORDER_DATE'              => date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $mm_data['order_date'] ) ),
+			'MM_ORDER_DATE'              => wp_date(
+				sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) ),
+				strtotime( $mm_data['order_date'] )
+			),
 			'MM_ORDER_TOTAL'             => $mm_data['order_total'],
 			'MM_ORDER_SUBTOTAL'          => $mm_data['order_subtotal'],
 			'MM_ORDER_DISCOUNT'          => $mm_data['order_discount'],
@@ -549,7 +553,7 @@ class Membermouse_Helpers {
 		$options = array();
 		if ( true === $is_any ) {
 			$options[] = array(
-				'text'  => __( 'Any bundle', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any bundle', 'uncanny-automator' ),
 				'value' => '-1',
 			);
 		}
@@ -573,7 +577,7 @@ class Membermouse_Helpers {
 		$options           = array();
 		if ( true === $is_any ) {
 			$options[] = array(
-				'text'  => __( 'Any membership level', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any membership level', 'uncanny-automator' ),
 				'value' => '-1',
 			);
 		}
@@ -607,7 +611,7 @@ class Membermouse_Helpers {
 		$options          = array();
 		if ( true === $is_any ) {
 			$options[] = array(
-				'text'  => __( 'Any status', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any status', 'uncanny-automator' ),
 				'value' => '-1',
 			);
 		}
@@ -630,7 +634,7 @@ class Membermouse_Helpers {
 		$options = array();
 		if ( true === $is_any ) {
 			$options[] = array(
-				'text'  => __( 'Any field', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any field', 'uncanny-automator' ),
 				'value' => '-1',
 			);
 		}

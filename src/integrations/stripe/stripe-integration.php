@@ -22,7 +22,7 @@ class Stripe_Integration extends \Uncanny_Automator\Integration {
 		$name = 'Stripe';
 
 		if ( 'test' === $this->helpers->get_mode() ) {
-			$name .= ' (' . __( 'Test mode', 'uncanny-automator' ) . ')';
+			$name .= ' (' . esc_html__( 'Test mode', 'uncanny-automator' ) . ')';
 		}
 
 		$this->set_name( $name );

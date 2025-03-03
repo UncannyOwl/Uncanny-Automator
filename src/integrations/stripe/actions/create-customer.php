@@ -25,9 +25,8 @@ class Create_Customer extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 
 		/* translators: %1$s Contact Email */
-		$this->set_sentence( sprintf( esc_attr_x( 'Create {{a customer:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( 'Create {{a customer}}', 'uncanny-automator' ) );
-
+		$this->set_sentence( sprintf( esc_attr_x( 'Create {{a customer:%1$s}}', 'Stripe', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_attr_x( 'Create {{a customer}}', 'Stripe', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -39,71 +38,71 @@ class Create_Customer extends \Uncanny_Automator\Recipe\Action {
 
 		$email = array(
 			'option_code' => 'EMAIL',
-			'label'       => __( 'Email', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
-			'description' => __( 'Email address of the customer', 'uncanny-automator' ),
+			'description' => esc_html__( 'Email address of the customer', 'uncanny-automator' ),
 		);
 
 		$name = array(
 			'option_code' => 'NAME',
-			'label'       => __( 'Name', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Name', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( "The customer's full name or business name.", 'uncanny-automator' ),
+			'description' => esc_html__( "The customer's full name or business name.", 'uncanny-automator' ),
 		);
 
 		$phone = array(
 			'option_code' => 'PHONE',
-			'label'       => __( 'Phone', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Phone', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( "The customer's phone number.", 'uncanny-automator' ),
+			'description' => esc_html__( "The customer's phone number.", 'uncanny-automator' ),
 		);
 
 		$description = array(
 			'option_code' => 'DESCRIPTION',
-			'label'       => __( 'Description', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Description', 'uncanny-automator' ),
 			'input_type'  => 'textarea',
 			'required'    => false,
-			'description' => __( 'An arbitrary string that you can attach to a customer object. It is displayed alongside the customer in the dashboard.', 'uncanny-automator' ),
+			'description' => esc_html__( 'An arbitrary string that you can attach to a customer object. It is displayed alongside the customer in the dashboard.', 'uncanny-automator' ),
 		);
 
 		$line1 = array(
 			'option_code' => 'ADDRESS_LINE1',
-			'label'       => __( 'Address line 1', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Address line 1', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'Address line 1 (e.g., street, PO Box, or company name).', 'uncanny-automator' ),
+			'description' => esc_html__( 'Address line 1 (e.g., street, PO Box, or company name).', 'uncanny-automator' ),
 		);
 
 		$line2 = array(
 			'option_code' => 'ADDRESS_LINE2',
-			'label'       => __( 'Address line 2', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Address line 2', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'Address line 2 (e.g., apartment, suite, unit, or building).', 'uncanny-automator' ),
+			'description' => esc_html__( 'Address line 2 (e.g., apartment, suite, unit, or building).', 'uncanny-automator' ),
 		);
 
 		$city = array(
 			'option_code' => 'ADDRESS_CITY',
-			'label'       => __( 'City', 'uncanny-automator' ),
+			'label'       => esc_html__( 'City', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'City, district, suburb, town, or village.', 'uncanny-automator' ),
+			'description' => esc_html__( 'City, district, suburb, town, or village.', 'uncanny-automator' ),
 		);
 
 		$state = array(
 			'option_code' => 'ADDRESS_STATE',
-			'label'       => __( 'State', 'uncanny-automator' ),
+			'label'       => esc_html__( 'State', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'State, county, province, or region.', 'uncanny-automator' ),
+			'description' => esc_html__( 'State, county, province, or region.', 'uncanny-automator' ),
 		);
 
 		$country = array(
 			'option_code' => 'ADDRESS_COUNTRY',
-			'label'       => __( 'Country', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Country', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
 			'description' => sprintf(
@@ -116,55 +115,55 @@ class Create_Customer extends \Uncanny_Automator\Recipe\Action {
 
 		$postal_code = array(
 			'option_code' => 'ADDRESS_POSTAL_CODE',
-			'label'       => __( 'Postal code', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Postal code', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'ZIP or postal code.', 'uncanny-automator' ),
+			'description' => esc_html__( 'ZIP or postal code.', 'uncanny-automator' ),
 		);
 
 		$payment_method = array(
 			'option_code' => 'PAYMENT_METHOD',
-			'label'       => __( 'Payment method', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Payment method', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'The ID of the PaymentMethod to attach to the customer.', 'uncanny-automator' ),
+			'description' => esc_html__( 'The ID of the PaymentMethod to attach to the customer.', 'uncanny-automator' ),
 		);
 
 		$shipping_line1 = array(
 			'option_code' => 'SHIPPING_LINE1',
-			'label'       => __( 'Shipping line 1', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Shipping line 1', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'Address line 1 (e.g., street, PO Box, or company name).', 'uncanny-automator' ),
+			'description' => esc_html__( 'Address line 1 (e.g., street, PO Box, or company name).', 'uncanny-automator' ),
 		);
 
 		$shipping_line2 = array(
 			'option_code' => 'SHIPPING_LINE2',
-			'label'       => __( 'Shipping line 2', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Shipping line 2', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'Address line 2 (e.g., apartment, suite, unit, or building).', 'uncanny-automator' ),
+			'description' => esc_html__( 'Address line 2 (e.g., apartment, suite, unit, or building).', 'uncanny-automator' ),
 		);
 
 		$shipping_city = array(
 			'option_code' => 'SHIPPING_CITY',
-			'label'       => __( 'Shipping city', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Shipping city', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'City, district, suburb, town, or village.', 'uncanny-automator' ),
+			'description' => esc_html__( 'City, district, suburb, town, or village.', 'uncanny-automator' ),
 		);
 
 		$shipping_state = array(
 			'option_code' => 'SHIPPING_STATE',
-			'label'       => __( 'Shipping state', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Shipping state', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'State, county, province, or region.', 'uncanny-automator' ),
+			'description' => esc_html__( 'State, county, province, or region.', 'uncanny-automator' ),
 		);
 
 		$shipping_country = array(
 			'option_code' => 'SHIPPING_COUNTRY',
-			'label'       => __( 'Shipping country', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Shipping country', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
 			'description' => sprintf(
@@ -177,26 +176,26 @@ class Create_Customer extends \Uncanny_Automator\Recipe\Action {
 
 		$shipping_postal_code = array(
 			'option_code' => 'SHIPPING_POSTAL_CODE',
-			'label'       => __( 'Shipping postal code', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Shipping postal code', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'ZIP or postal code.', 'uncanny-automator' ),
+			'description' => esc_html__( 'ZIP or postal code.', 'uncanny-automator' ),
 		);
 
 		$shipping_name = array(
 			'option_code' => 'SHIPPING_NAME',
-			'label'       => __( 'Shipping name', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Shipping name', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'Customer name.', 'uncanny-automator' ),
+			'description' => esc_html__( 'Customer name.', 'uncanny-automator' ),
 		);
 
 		$shipping_phone = array(
 			'option_code' => 'SHIPPING_PHONE',
-			'label'       => __( 'Shipping phone', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Shipping phone', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => __( 'Customer phone (including extension).', 'uncanny-automator' ),
+			'description' => esc_html__( 'Customer phone (including extension).', 'uncanny-automator' ),
 		);
 
 		$invoice_custom_fields = array(
@@ -421,7 +420,7 @@ class Create_Customer extends \Uncanny_Automator\Recipe\Action {
 
 			$error = _x( 'Customer could not be created', 'Stripe', 'uncanny-automator' );
 
-			throw new \Exception( $error );
+			throw new \Exception( esc_html( $error ) );
 		}
 
 		$this->hydrate_tokens(
@@ -471,4 +470,3 @@ class Create_Customer extends \Uncanny_Automator\Recipe\Action {
 		return $options;
 	}
 }
-

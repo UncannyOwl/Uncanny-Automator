@@ -467,7 +467,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		// (#3)
 		//global $wp_rewrite;
 		//if ( null === $wp_rewrite ) {
-		//$wp_rewrite = new \WP_Rewrite(); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		//$wp_rewrite = new \WP_Rewrite(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		//}
 
 		// (#4)
@@ -540,7 +540,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 	public static function automator_api_decode_message( $message, $secret ) {
 		$tokens = false;
 		if ( ! empty( $message ) && ! empty( $secret ) ) {
-			$message           = base64_decode( $message ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+			$message           = base64_decode( $message ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 			$method            = 'AES128';
 			$iv                = substr( $message, 0, 16 );
 			$encrypted_message = substr( $message, 16 );
@@ -592,7 +592,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 		$helpers = Utilities::automator_get_all_helper_instances();
 		if ( $helpers ) {
 			foreach ( $helpers as $integration => $class ) {
-				if ( isset( $this->$integration ) && $this->$integration instanceof $class ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
+				if ( isset( $this->$integration ) && $this->$integration instanceof $class ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
 					//Already defined, ignore
 				} else {
 					if ( property_exists( $class, 'options' ) ) {
@@ -735,7 +735,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 		 */
 		$args = apply_filters( 'automator_wp_query_args', $args );
 
-		extract( $args ); //phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+		extract( $args ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 
 		// prepare transient key.
 		$transient_key = apply_filters( 'automator_transient_name', 'automator_transient', $args );
@@ -770,7 +770,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 					$meta_key   = sanitize_text_field( $mq['key'] );
 					$meta_value = sanitize_text_field( $mq['value'] );
 					$compare    = isset( $mq['compare'] ) ? $mq['compare'] : 'LIKE';
-					$join       .= " INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '{$meta_key}' AND pm.meta_value {$compare} '{$meta_value}'"; //phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+					$join       .= " INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '{$meta_key}' AND pm.meta_value {$compare} '{$meta_value}'"; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 				}
 
 				// Join tables
@@ -787,7 +787,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 					} elseif ( ! empty( $post_status ) && is_array( $post_status ) ) {
 						$comma_separated = implode( "','", $post_status );
 						$comma_separated = "'" . $comma_separated . "'";
-						$query           .= "AND p.post_status IN ({$comma_separated}) "; //phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+						$query           .= "AND p.post_status IN ({$comma_separated}) "; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 					} else {
 						$query .= " AND p.post_status = 'publish' ";
 					}
@@ -801,7 +801,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 				} elseif ( isset( $post_type ) && is_array( $post_type ) ) {
 					$comma_separated = implode( "','", $post_type );
 					$comma_separated = "'" . $comma_separated . "'";
-					$query           .= " AND p.post_type = '{$comma_separated}'"; //phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+					$query           .= " AND p.post_type = '{$comma_separated}'"; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 				} else {
 					$query .= " AND p.post_type = 'page'";
 				}
@@ -853,7 +853,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 				 */
 				$query = apply_filters( 'automator_maybe_modify_wp_query', $query, $args );
 
-				$posts = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$posts = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			}
 			// type set to array.
 			$options = array();
@@ -1036,7 +1036,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 					ORDER BY display_name
 					LIMIT 0, $limit"
 			);
-			$users = $wpdb->get_results( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$users = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			// save fetched posts in a transient for 3 minutes for performance gains.
 			$expiration_time = apply_filters( 'automator_get_users_expiry_time', Automator()->cache->expires, $users );

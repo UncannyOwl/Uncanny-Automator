@@ -73,7 +73,7 @@ class Automator_DB_Handler_Closures {
 		global $wpdb;
 		$closure_tbl      = $wpdb->prefix . Automator()->db->tables->closure;
 		$closure_meta_tbl = $wpdb->prefix . Automator()->db->tables->closure_meta;
-		$closure          = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $closure_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$closure          = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $closure_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $closure ) {
 			foreach ( $closure as $automator_closure_log_id ) {
 				// delete from uap_closure_log_meta
@@ -103,7 +103,7 @@ class Automator_DB_Handler_Closures {
 		global $wpdb;
 		$closure_tbl      = $wpdb->prefix . Automator()->db->tables->closure;
 		$closure_meta_tbl = $wpdb->prefix . Automator()->db->tables->closure_meta;
-		$closure          = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $closure_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$closure          = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $closure_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $closure ) {
 			foreach ( $closure as $automator_closure_log_id ) {
 				// delete from uap_closure_log_meta

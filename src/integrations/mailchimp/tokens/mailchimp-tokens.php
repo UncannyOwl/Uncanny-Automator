@@ -265,12 +265,12 @@ class MAILCHIMP_TOKENS {
 	private function is_recipe_or_rest() {
 
 		if (
-			isset( $_REQUEST['action'] ) && //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			isset( $_REQUEST['action'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			(
-				'heartbeat' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) || //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				'wp-remove-post-lock' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				'heartbeat' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) || // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				'wp-remove-post-lock' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			)
-		) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			// if it's heartbeat, post lock actions bail
 			return false;
 		}

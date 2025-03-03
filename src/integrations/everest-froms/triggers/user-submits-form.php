@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\Everest_Forms;
 
 /**
  * Class USER_SUBMITS_FORM
+ *
  * @package Uncanny_Automator
  */
 class USER_SUBMITS_FORM extends \Uncanny_Automator\Recipe\Trigger {
@@ -18,6 +19,7 @@ class USER_SUBMITS_FORM extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_integration( 'EVEREST_FORMS' );
 		$this->set_trigger_code( 'EVF_USER_SUBMITS_FORM' );
 		$this->set_trigger_meta( 'EVF_FORMS' );
+		// translators: 1: Form name
 		$this->set_sentence( sprintf( esc_attr_x( 'A user submits {{a form:%1$s}}', 'Everest Forms', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A user submits {{a form}}', 'Everest Forms', 'uncanny-automator' ) );
 		$this->add_action( 'everest_forms_process_complete', 10, 4 );

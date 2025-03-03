@@ -73,7 +73,6 @@ class Threads_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -109,7 +108,6 @@ class Threads_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() . '&success=yes' );
 
 		die;
-
 	}
 
 	/**
@@ -146,7 +144,6 @@ class Threads_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -211,12 +208,13 @@ class Threads_Helpers {
 	public function check_for_errors( $response ) {
 
 		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] && 209 !== $response['statusCode'] ) {
-			$message = isset( $response['data']['error_description'] )
-				? '(' . $response['statusCode'] . ') [' . $response['data']['error'] . '] ' . $response['data']['error_description']
-				: _x( 'API Exception (status code: ' . $response['statusCode'] . '). An error has occured while performing the action. Please try again later.', 'Threads', 'uncanny-automator' );
-			throw new \Exception( $message, $response['statusCode'] );
+			$message = sprintf(
+				/* translators: %d: HTTP status code */
+				_x( 'API Exception (status code: %d). An error has occurred while performing the action. Please try again later.', 'Threads', 'uncanny-automator' ),
+				absint( $response['statusCode'] )
+			);
+			throw new \Exception( esc_html( $message ), absint( $response['statusCode'] ) );
 		}
-
 	}
 
 	/**
@@ -280,5 +278,4 @@ class Threads_Helpers {
 		// Validate required keys are present.
 		return empty( array_diff_key( array_flip( $required_keys ), (array) $credentials ) );
 	}
-
 }

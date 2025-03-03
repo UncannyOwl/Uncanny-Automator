@@ -101,7 +101,7 @@ class MEC_USER_BOOKING_COMPLETED {
 			)
 		);
 
-		$events_options['options'] = array( '-1' => __( 'Any event', 'uncanny-automator' ) ) + $events_options['options'];
+		$events_options['options'] = array( '-1' => esc_html__( 'Any event', 'uncanny-automator' ) ) + $events_options['options'];
 
 		return Automator()->utilities->keep_order_of_options(
 			array(

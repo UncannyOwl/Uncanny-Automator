@@ -11,6 +11,7 @@ use FluentBooking\Framework\Support\Arr;
 
 /**
  * Class FLUENT_BOOKING_NEW_BOOKING
+ *
  * @pacakge Uncanny_Automator
  */
 class FLUENT_BOOKING_NEW_BOOKING extends \Uncanny_Automator\Recipe\Action {
@@ -26,6 +27,7 @@ class FLUENT_BOOKING_NEW_BOOKING extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_code( 'FB_NEW_BOOKING' );
 		$this->set_action_meta( 'FB_BOOKING' );
 		$this->set_requires_user( true );
+		// translators: 1: Event name
 		$this->set_sentence( sprintf( esc_attr_x( 'Add {{a meeting:%1$s}}', 'FluentBooking', 'uncanny-automator' ), $this->get_action_meta() . '_EVENT:' . $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Add a meeting', 'FluentBooking', 'uncanny-automator' ) );
 	}

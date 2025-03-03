@@ -52,7 +52,7 @@ class LD_MAKEUSERLEADER {
 		$this->set_action_tokens(
 			array(
 				'GROUP_TITLE' => array(
-					'name' => __( 'Group title', 'uncanny-automator' ),
+					'name' => esc_html__( 'Group title', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

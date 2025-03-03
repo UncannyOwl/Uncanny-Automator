@@ -19,6 +19,7 @@ class WP_UPDATE_POST_EXCERPT extends Action {
 		$this->set_action_code( 'WP_UPDATE_EXCERPT' );
 		$this->set_action_meta( 'WP_POSTS' );
 		$this->set_requires_user( false );
+		// translators: 1: Post title
 		$this->set_sentence( sprintf( esc_attr_x( 'Update the excerpt of {{a post:%1$s}}', 'WordPress', 'uncanny-automator' ), $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Update the excerpt of {{a post}}', 'WordPress', 'uncanny-automator' ) );
 	}
@@ -69,7 +70,7 @@ class WP_UPDATE_POST_EXCERPT extends Action {
 
 		if ( is_wp_error( $post_updated ) ) {
 			$message = $post_updated->get_error_message();
-
+			// translators: 1: Error message
 			$this->add_log_error( sprintf( esc_attr_x( '(%s)', 'WordPress', 'uncanny-automator' ), $message ) );
 
 			return false;

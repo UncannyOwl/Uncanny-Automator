@@ -24,7 +24,7 @@ namespace Uncanny_Automator;
 		<aside class="uap-template-library__sidebar">
 			<div class="uap-template-library__search-wrapper">
 				<label for="uap-template-library__search" class="screen-reader-text">
-					<?php echo esc_html__( 'Search templates', 'automator' ); ?>
+					<?php echo esc_html__( 'Search templates', 'uncanny-automator' ); ?>
 				</label>
 				<uap-rtl-search></uap-rtl-search>
 			</div><!-- .uap-template-library__search-wrapper -->

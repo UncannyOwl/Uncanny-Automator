@@ -362,19 +362,19 @@ class Wss_Tokens {
 				$value = $order->get_status();
 				break;
 			case 'order_total':
-				$value = strip_tags( wc_price( $order->get_total() ) );
+				$value = wp_strip_all_tags( wc_price( $order->get_total() ) );
 				break;
 			case 'order_total_raw':
 				$value = $order->get_total();
 				break;
 			case 'order_subtotal':
-				$value = strip_tags( wc_price( $order->get_subtotal() ) );
+				$value = wp_strip_all_tags( wc_price( $order->get_subtotal() ) );
 				break;
 			case 'order_subtotal_raw':
 				$value = $order->get_subtotal();
 				break;
 			case 'order_tax':
-				$value = strip_tags( wc_price( $order->get_total_tax() ) );
+				$value = wp_strip_all_tags( wc_price( $order->get_total_tax() ) );
 				break;
 			case 'order_fees':
 				$value = wc_price( $order->get_total_fees() );
@@ -386,7 +386,7 @@ class Wss_Tokens {
 				$value = $order->get_total_tax();
 				break;
 			case 'order_discounts':
-				$value = strip_tags( wc_price( $order->get_discount_total() * - 1 ) );
+				$value = wp_strip_all_tags( wc_price( $order->get_discount_total() * - 1 ) );
 				break;
 			case 'order_discounts_raw':
 				$value = ( $order->get_discount_total() * - 1 );

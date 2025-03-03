@@ -1353,7 +1353,7 @@ WHERE t.automator_trigger_id = %d
 
 		$tbl = Automator()->db->tables->recipe;
 
-		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed=1" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed=1" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return apply_filters( 'automator_total_completed_runs', absint( $results ) );
 	}
@@ -1378,7 +1378,7 @@ WHERE t.automator_trigger_id = %d
 			$query     .= " AND date_time >= '$date'";
 		}
 
-		$results = $wpdb->get_var( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$results = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return apply_filters( 'automator_completed_runs', absint( $results ) );
 	}
@@ -1515,7 +1515,7 @@ WHERE t.automator_trigger_id = %d
 
 		$meta          = "'" . implode( "','", $integration_codes ) . "'";
 		$sql           = $wpdb->prepare( "SELECT rp.ID as ID FROM $wpdb->posts cp LEFT JOIN $wpdb->posts rp ON rp.ID = cp.post_parent WHERE cp.ID IN ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value IN ($meta) ) AND cp.post_status LIKE %s AND rp.post_status LIKE %s", 'publish', 'publish' ); //phpcs:ignore
-		$check_recipes = $wpdb->get_col( $sql ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$check_recipes = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		if ( $count_only ) {
 			return count( $check_recipes );
 		}
@@ -1524,7 +1524,8 @@ WHERE t.automator_trigger_id = %d
 			foreach ( $check_recipes as $recipe_id ) {
 				// Get the title
 				$recipe_title = get_the_title( $recipe_id );
-				$recipe_title = ! empty( $recipe_title ) ? $recipe_title : sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $recipe_id );
+				/* translators: 1. The recipe ID */
+				$recipe_title = ! empty( $recipe_title ) ? $recipe_title : sprintf( esc_html__( 'ID: %s (no title)', 'uncanny-automator' ), $recipe_id );
 
 				// Get the URL
 				$recipe_edit_url = get_edit_post_link( $recipe_id );

@@ -32,11 +32,11 @@ class Ws_Form_Lite_Helpers {
 		$options = array();
 
 		if ( $is_all ) {
-			$options['-1'] = __( 'All forms', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'All forms', 'uncanny-automator' );
 		}
 
 		if ( $is_any ) {
-			$options['-1'] = __( 'Any form', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'Any form', 'uncanny-automator' );
 		}
 
 		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -48,6 +48,7 @@ class Ws_Form_Lite_Helpers {
 		foreach ( $forms as $form ) {
 			$title = esc_html( $form['label'] );
 			if ( empty( $title ) ) {
+				// translators: 1: Form ID
 				$title = sprintf( esc_attr__( 'ID: %s (no title)', 'uncanny-automator' ), $form['id'] );
 			}
 			$options[ $form['id'] ] = $title;

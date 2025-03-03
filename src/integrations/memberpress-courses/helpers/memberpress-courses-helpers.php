@@ -220,7 +220,7 @@ class Memberpress_Courses_Helpers {
 			stripcslashes( $post_types_string )
 		);
 
-		$db_lessons = $wpdb->get_results( stripcslashes( $query ) ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$db_lessons = $wpdb->get_results( stripcslashes( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$lessons    = array();
 
 		foreach ( $db_lessons as $lesson ) {

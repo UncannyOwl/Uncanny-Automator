@@ -380,7 +380,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.3 [2025-02-26] =
+= 6.3 [2025-03-03] =
 
 * IMPORTANT: Support for PHP 7.0 has been discontinued. If you are running PHP 7.0, you MUST upgrade PHP to version 7.3 or higher before installing Automator v6.3 or up. Failure to do that will disable Automator core functionality.
 
@@ -428,11 +428,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * Disable App actions if App is disconnected – Apps were trying to act while disconnected, like a Wi-Fi-less smart fridge. We stopped them. #3227
 * Licensing - Duplicate Queries Triggered by Licensing Function – Licensing was a little too enthusiastic, asking the same thing twice. We've calmed it down. #5452
+* Outgoing Webhooks - Patched up a sneaky Server-Side Request Forgery (SSRF) vulnerability—no more unauthorized web wanderings! #5471 CVE-2024-13838
 * Threads - Settings page - Disconnect is not working – Clicking "Disconnect" and nothing happening? That's history now. #5431
 * Webhooks - "Send data to a webhook" Original Authorization meta gets removed when updating action – We accidentally made it forget its credentials. Not anymore! #5396
 
 **Under the hood:**
 
+* Core - Smoothed out some grumpy WordPress Plugin Check errors—because clean code is happy code! #5474
 * Recipe Logs - Allow Markup text in log messages – Logs can now look fancier, with proper markup support. #5364
 * Recipe UI - Token popup framework - More behind-the-scenes improvements for smoother popups. #4316
 * Token popup framework - Some backend magic happened. Trust us, it's better now. #5137

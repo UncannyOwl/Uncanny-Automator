@@ -55,14 +55,14 @@ class DRIP_SUBSCRIBE_TO_CAMPAIGN {
 
 		$email_field = array(
 			'option_code' => 'EMAIL',
-			'label'       => __( 'Email', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
 		);
 
 		$campaign_field = array(
 			'option_code'           => 'CAMPAIGN',
-			'label'                 => __( 'Campaign', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Campaign', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'options'               => $this->functions->get_campaigns_options(),
 			'required'              => true,

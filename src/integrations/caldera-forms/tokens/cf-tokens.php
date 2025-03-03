@@ -114,13 +114,13 @@ class Cf_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'CFENTRYID',
-				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'CFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'CFENTRYDATE',
-				'tokenName'       => __( 'Entry submission date', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry submission date', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'CFENTRYTOKENS',
 			),

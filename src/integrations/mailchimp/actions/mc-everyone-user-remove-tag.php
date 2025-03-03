@@ -54,7 +54,7 @@ class MC_EVERYONE_USER_REMOVE_TAG {
 			'options_group' => array(
 				$this->get_action_meta() => array(
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						__( 'Audience', 'uncanny-automator' ),
+						esc_html__( 'Audience', 'uncanny-automator' ),
 						'MCLIST',
 						array(
 							'is_ajax'      => true,
@@ -63,7 +63,7 @@ class MC_EVERYONE_USER_REMOVE_TAG {
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_list_tags(
-						__( 'Tags', 'uncanny-automator' ),
+						esc_html__( 'Tags', 'uncanny-automator' ),
 						'MCLISTTAGS',
 						array(
 							'is_ajax'                  => true,
@@ -90,7 +90,7 @@ class MC_EVERYONE_USER_REMOVE_TAG {
 			$tag = isset( $parsed['MCLISTTAGS'] ) ? sanitize_text_field( $parsed['MCLISTTAGS'] ) : '';
 
 			if ( empty( $tag ) ) {
-				throw new \Exception( __( 'No tag selected.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No tag selected.', 'uncanny-automator' ) );
 			}
 
 			if ( empty( filter_var( $email, FILTER_VALIDATE_EMAIL ) ) ) {

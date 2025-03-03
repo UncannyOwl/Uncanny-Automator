@@ -29,7 +29,7 @@ class Thrive_Quiz_Builder_Helpers {
 		$args = wp_parse_args( $args, $defaults );
 
 		$query_args = array(
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page' => apply_filters( 'automator_select_all_posts_limit', 999, 'post' ),
 			'orderby'        => 'title',
 			'order'          => 'DESC',
@@ -40,11 +40,11 @@ class Thrive_Quiz_Builder_Helpers {
 		$all_quizzes = Automator()->helpers->recipe->options->wp_query( $query_args );
 
 		if ( true === $args['is_any'] ) {
-			$all_quizzes = array( '-1' => __( 'Any quiz', 'uncanny-automator' ) ) + $all_quizzes;
+			$all_quizzes = array( '-1' => esc_html__( 'Any quiz', 'uncanny-automator' ) ) + $all_quizzes;
 		}
 
 		if ( true === $args['is_all'] ) {
-			$all_quizzes = array( '-1' => __( 'All quizzes', 'uncanny-automator' ) ) + $all_quizzes;
+			$all_quizzes = array( '-1' => esc_html__( 'All quizzes', 'uncanny-automator' ) ) + $all_quizzes;
 		}
 
 		$option = array(

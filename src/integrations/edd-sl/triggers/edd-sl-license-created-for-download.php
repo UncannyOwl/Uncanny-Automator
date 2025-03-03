@@ -21,6 +21,7 @@ class EDD_SL_LICENSE_CREATED_FOR_DOWNLOAD extends \Uncanny_Automator\Recipe\Trig
 		$this->set_trigger_meta( 'EDD_SL_LICENSES' );
 		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - EDD - Software Licensing
+		// translators: 1: Download name
 		$this->set_sentence( sprintf( esc_attr_x( 'A license for {{a download:%1$s}} is created', 'EDD - Software Licensing', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A license for {{a download}} is created', 'EDD - Software Licensing', 'uncanny-automator' ) );
 		$this->add_action( 'edd_sl_store_license', 20, 4 );

@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class TWILIO_SENDSMS
+ *
  * @package Uncanny_Automator_Pro
  */
 class TWILIO_SENDSMS {
@@ -40,7 +41,7 @@ class TWILIO_SENDSMS {
 			'option_code' => $this->action_meta,
 			'input_type'  => 'text',
 			'label'       => esc_attr__( 'To', 'uncanny-automator' ),
-			'description' => __( 'Separate multiple phone numbers with a comma', 'uncanny-automator' ),
+			'description' => esc_html__( 'Separate multiple phone numbers with a comma', 'uncanny-automator' ),
 			'required'    => true,
 			'tokens'      => true,
 		);
@@ -61,8 +62,9 @@ class TWILIO_SENDSMS {
 			'requires_user'         => false,
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
-			'sentence'              => sprintf( __( 'Send an SMS message to {{a number:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Send an SMS message to {{a number}}', 'uncanny-automator' ),
+			// translators: 1: SMS number
+			'sentence'              => sprintf( esc_html__( 'Send an SMS message to {{a number:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Send an SMS message to {{a number}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'twilio_send_sms' ),

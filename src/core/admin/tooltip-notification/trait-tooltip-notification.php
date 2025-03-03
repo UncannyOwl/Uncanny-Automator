@@ -115,16 +115,35 @@ trait Automator_Tooltip_Trait {
 		>
 			<?php
 
-			echo $this->create_tooltip_template(
+			echo wp_kses(
+				$this->create_tooltip_template(
+					array(
+						'dashicon'    => 'megaphone',
+						'title'       => esc_html__( 'Get started with Automator!', 'uncanny-automator' ),
+						'description' => esc_html__( 'Create your first time-saving Automator recipe and put your site on autopilot!', 'uncanny-automator' ),
+						'cta_label'   => esc_html__( 'Start automating!', 'uncanny-automator' ),
+						'cta_url'     => esc_url( admin_url( 'post-new.php?post_type=uo-recipe' ) ),
+					)
+				),
 				array(
-					'dashicon'    => 'megaphone',
-					'title'       => esc_html__( 'Get started with Automator!', 'uncanny-automator' ),
-					'description' => esc_html__( 'Create your first time-saving Automator recipe and put your site on autopilot!', 'uncanny-automator' ),
-					'cta_label'   => esc_html__( 'Start automating!', 'uncanny-automator' ),
-					'cta_url'     => admin_url( 'post-new.php?post_type=uo-recipe' ),
+					'div'    => array(
+						'class' => array(),
+					),
+					'span'   => array(
+						'class' => array(),
+					),
+					'p'      => array(
+						'class' => array(),
+					),
+					'a'      => array(
+						'class' => array(),
+						'href'  => array(),
+					),
+					'button' => array(
+						'class' => array(),
+					),
 				)
 			);
-
 			?>
 		</div>
 

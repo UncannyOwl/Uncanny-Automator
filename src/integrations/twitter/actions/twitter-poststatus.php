@@ -37,7 +37,6 @@ class TWITTER_POSTSTATUS {
 		$this->action_meta = 'TWITTERSTATUSCONTENT';
 		$this->functions   = new Twitter_Functions();
 		$this->define_action();
-
 	}
 
 	/**
@@ -50,8 +49,10 @@ class TWITTER_POSTSTATUS {
 			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/twitter/' ),
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
-			'sentence'              => sprintf( __( 'Post {{a tweet:%1$s}} to X/Twitter', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Post {{a tweet}} to X/Twitter', 'uncanny-automator' ),
+			// translators: 1: Tweet content
+			'sentence'              => sprintf( esc_html__( 'Post {{a tweet:%1$s}} to X/Twitter', 'uncanny-automator' ), $this->action_meta ),
+			// translators: 1: Tweet content
+			'select_option_name'    => esc_html__( 'Post {{a tweet}} to X/Twitter', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'is_deprecated'         => true,
@@ -67,7 +68,7 @@ class TWITTER_POSTSTATUS {
 						'',
 						true,
 						esc_attr__( 'Messages posted to X/Twitter have a 280 character limit.', 'uncanny-automator' ),
-						__( 'Enter the message', 'uncanny-automator' ),
+						esc_html__( 'Enter the message', 'uncanny-automator' ),
 						278
 					),
 				),
@@ -102,7 +103,6 @@ class TWITTER_POSTSTATUS {
 
 			return;
 		}
-
 	}
 
 	/**
@@ -139,13 +139,11 @@ class TWITTER_POSTSTATUS {
 					$error_msg .= $error->code . ': ' . $error->message . PHP_EOL;
 				}
 
-				throw new \Exception( $error_msg );
+				throw new \Exception( esc_html( $error_msg ) );
 			}
 		} else {
 			$error_msg = $response->get_error_message();
-			throw new \Exception( $error_msg );
+			throw new \Exception( esc_html( $error_msg ) );
 		}
-
 	}
-
 }

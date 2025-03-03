@@ -71,7 +71,7 @@ class AMELIA_USER_REGISTER_EVENT {
 				'options' => array(
 					array(
 						'option_code'     => $this->get_trigger_meta(),
-						'label'           => __( 'Events', 'uncanny-automator' ),
+						'label'           => esc_html__( 'Events', 'uncanny-automator' ),
 						'input_type'      => 'select',
 						'required'        => true,
 						'options'         => Automator()->helpers->recipe->ameliabooking->options->get_events_dropdown(),

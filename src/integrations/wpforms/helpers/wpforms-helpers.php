@@ -1,4 +1,4 @@
-<?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
 
@@ -45,7 +45,7 @@ class Wpforms_Helpers {
 	 *
 	 * @param Wpforms_Helpers $options
 	 */
-	public function setOptions( Wpforms_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Wpforms_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
@@ -54,7 +54,7 @@ class Wpforms_Helpers {
 	 *
 	 * @param Wpforms_Pro_Helpers $pro
 	 */
-	public function setPro( Wpforms_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( Wpforms_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -124,8 +124,9 @@ class Wpforms_Helpers {
 	public function get_entry_date( $date ) {
 		$datetime_offset = get_option( 'gmt_offset' ) * 3600;
 
-		return sprintf( /* translators: %1$s - date for the entry; %2$s - time for the entry. */
-			esc_html__( '%1$s at %2$s', 'wpforms' ),
+		return sprintf(
+			/* translators: %1$s - date for the entry; %2$s - time for the entry. */
+			esc_html__( '%1$s at %2$s', 'wpforms' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			date_i18n( 'M j, Y', $date + $datetime_offset ),
 			date_i18n( get_option( 'time_format' ), $date + $datetime_offset )
 		);
@@ -156,7 +157,7 @@ class Wpforms_Helpers {
 	 * @return false|int|string
 	 */
 	public function get_entry_entry_date( $entry_id ) {
-		$entry_date = current_time( 'timestamp' ); //phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
+		$entry_date = current_time( 'timestamp' ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 		if ( wpforms()->entry && method_exists( wpforms()->entry, 'get' ) ) {
 			$entry_details = wpforms()->entry->get( $entry_id, array( 'cap' => false ) );
 			$entry_date    = strtotime( $entry_details->date );

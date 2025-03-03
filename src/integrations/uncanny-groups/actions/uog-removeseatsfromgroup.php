@@ -65,11 +65,11 @@ class UOG_REMOVESEATSFROMGROUP {
 		$this->set_action_tokens(
 			array(
 				$this->action_meta . '_TOTAL_SEATS'     => array(
-					'name' => __( 'Total seats', 'uncanny-automator' ),
+					'name' => esc_html__( 'Total seats', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				$this->action_meta . '_REMAINING_SEATS' => array(
-					'name' => __( 'Remaining seats', 'uncanny-automator' ),
+					'name' => esc_html__( 'Remaining seats', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 			),
@@ -127,7 +127,7 @@ class UOG_REMOVESEATSFROMGROUP {
 
 		$code_group_id = ulgm()->group_management->seat->get_code_group_id( $uo_group_id );
 		if ( empty( $code_group_id ) ) {
-			$error_message                       = __( 'Group management is not enabled on the selected group.', 'uncanny-automator' );
+			$error_message                       = esc_html__( 'Group management is not enabled on the selected group.', 'uncanny-automator' );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
@@ -136,7 +136,7 @@ class UOG_REMOVESEATSFROMGROUP {
 		$existing_seats = ulgm()->group_management->seat->total_seats( $uo_group_id );
 		$empty_seats    = ulgm()->group_management->seat->available_seats( $uo_group_id );
 		if ( empty( $empty_seats ) ) {
-			$error_message                       = __( 'No empty seats in the selected group.', 'uncanny-automator' );
+			$error_message                       = esc_html__( 'No empty seats in the selected group.', 'uncanny-automator' );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
@@ -147,7 +147,7 @@ class UOG_REMOVESEATSFROMGROUP {
 
 		// If seats to remove are less than empty seats
 		if ( $uo_remove_seats < $empty_seats ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL LIMIT %d", $code_group_id, $uo_remove_seats ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL LIMIT %d", $code_group_id, $uo_remove_seats ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			update_post_meta( $uo_group_id, '_ulgm_total_seats', $empty_seats );
 
 			$this->hydrate_tokens(
@@ -163,7 +163,7 @@ class UOG_REMOVESEATSFROMGROUP {
 		}
 		// if seats to remove are more than empty seats
 		if ( $uo_remove_seats >= $empty_seats ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL", $code_group_id ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL", $code_group_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			$this->hydrate_tokens(
 				array(

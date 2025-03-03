@@ -48,10 +48,24 @@ class Recipe_Post_Type {
 			<uo-alert type="error" no-radius>
 				<strong>
 					<?php
-					echo sprintf(
-						esc_html__( "Your site's Permalinks structure is set to Plain. Please change the setting from \"Plain\" to something else by clicking %s.", 'uncanny-automator' ),
-						'<a target="_blank" href="' . admin_url( 'options-permalink.php' ) . '">' . _x( 'here', 'Admin notice when Permalinks are not set', 'uncanny-automator' ) . '</a>'
-					)
+					echo wp_kses(
+						sprintf(
+							/* translators: %s: The link to the Permalinks settings page */
+							esc_html__( "Your site's Permalinks structure is set to Plain. Please change the setting from \"Plain\" to something else by clicking %s.", 'uncanny-automator' ),
+							sprintf(
+								// translators: %s: The url to the Permalinks settings page, and the text "here".
+								'<a target="_blank" href="%s">%s</a>',
+								esc_url( admin_url( 'options-permalink.php' ) ),
+								esc_html_x( 'here', 'Admin notice when Permalinks are not set', 'uncanny-automator' )
+							)
+						),
+						array(
+							'a' => array(
+								'href'   => array(),
+								'target' => array(),
+							),
+						)
+					);
 					?>
 				</strong>
 			</uo-alert>

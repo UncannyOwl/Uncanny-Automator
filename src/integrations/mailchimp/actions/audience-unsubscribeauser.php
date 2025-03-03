@@ -40,8 +40,8 @@ class AUDIENCE_UNSUBSCRIBEAUSER {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			// translators: Mailchimp audience
-			'sentence'              => sprintf( __( 'Unsubscribe the user from {{an audience:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Unsubscribe the user from {{an audience}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Unsubscribe the user from {{an audience:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Unsubscribe the user from {{an audience}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'options_callback'      => array( $this, 'load_options' ),
@@ -62,14 +62,14 @@ class AUDIENCE_UNSUBSCRIBEAUSER {
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						__( 'Audience', 'uncanny-automator' ),
+						esc_html__( 'Audience', 'uncanny-automator' ),
 						'MCLIST'
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						__( 'Delete subscriber from Mailchimp?', 'uncanny-automator' ),
+						esc_html__( 'Delete subscriber from Mailchimp?', 'uncanny-automator' ),
 						'MCDELETEMEMBER',
 						array(
-							'description' => __( 'Yes, delete from Mailchimp, No, only unsubscribe from audience', 'uncanny-automator' ),
+							'description' => esc_html__( 'Yes, delete from Mailchimp, No, only unsubscribe from audience', 'uncanny-automator' ),
 						)
 					),
 				),

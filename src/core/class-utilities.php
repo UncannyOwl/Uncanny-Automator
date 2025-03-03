@@ -594,6 +594,7 @@ class Utilities {
 
 	/**
 	 * Return active plugins info
+	 *
 	 * @return array
 	 */
 	public static function get_plugins_info() {
@@ -674,18 +675,18 @@ class Utilities {
 		$trace_heading       = "* Heading: $trace_heading \n* Current Page: $current_page_link \n";
 
 		$backtrace_start = "\n\n===========================<<<< BACKTRACE START >>>>===========================\n\n";
-		$error_string    = print_r( ( new \Exception() )->getTraceAsString(), true );
+		$error_string    = print_r( ( new \Exception() )->getTraceAsString(), true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		$backtrace_end   = "\n\n===========================<<<< BACKTRACE END >>>>=============================\n\n";
 
 		$trace_msg_start = "\n===========================<<<< TRACE MESSAGE START >>>>=========================\n\n";
 		$trace_finish    = "\n\n===========================<<<< TRACE MESSAGE END >>>>==========================\n\n\n";
 
-		$trace_message = print_r( $trace_message, true );
+		$trace_message = print_r( $trace_message, true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		$log_directory = UA_DEBUG_LOGS_DIR;
 
 		if ( ! is_dir( $log_directory ) ) {
 			// Recursively create the directory in case the 'uploads' folder doesn't exist yet.
-			mkdir( $log_directory, 0755, true );
+			mkdir( $log_directory, 0755, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 		}
 
 		self::remove_old_logs();
@@ -701,7 +702,7 @@ class Utilities {
 
 		// Make sure the directory exists.
 		if ( is_dir( $log_directory ) ) {
-			error_log( $complete_message, 3, $file );
+			error_log( $complete_message, 3, $file ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 
 	}
@@ -781,7 +782,7 @@ class Utilities {
 			throw new \RuntimeException( 'Unable to create a temporary file' );
 		}
 
-		$f = fopen( $temp_file, 'w+' );
+		$f = fopen( $temp_file, 'w+' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( $f === false ) {
 			throw new \RuntimeException( 'Unable to open temporary file for writing' );
 		}
@@ -793,8 +794,8 @@ class Utilities {
 		rewind( $f );
 		$csv = stream_get_contents( $f );
 
-		fclose( $f );
-		unlink( $temp_file );
+		fclose( $f ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		wp_delete_file( $temp_file );
 
 		return $csv;
 	}

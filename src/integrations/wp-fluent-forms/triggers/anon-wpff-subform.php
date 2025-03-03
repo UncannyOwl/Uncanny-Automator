@@ -45,9 +45,9 @@ class ANON_WPFF_SUBFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Anonymous trigger - Fluent Forms */
-			'sentence'            => sprintf( __( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Anonymous trigger - Fluent Forms */
-			'select_option_name'  => __( '{{A form}} is submitted', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( '{{A form}} is submitted', 'uncanny-automator' ),
 			'action'              => 'fluentform_before_insert_submission',
 			'type'                => 'anonymous',
 			'priority'            => 20,
@@ -144,7 +144,12 @@ class ANON_WPFF_SUBFORM {
 							Automator()->insert_trigger_meta( $wp_ff_args );
 
 							$wp_ff_args['meta_key']   = 'WPFFENTRYDATE';
-							$wp_ff_args['meta_value'] = maybe_serialize( date( 'Y-m-d H:i:s', strtotime( $insert_data['created_at'] ) ) );
+							$wp_ff_args['meta_value'] = maybe_serialize(
+								wp_date(
+									'Y-m-d H:i:s',
+									strtotime( $insert_data['created_at'] )
+								)
+							);
 							Automator()->insert_trigger_meta( $wp_ff_args );
 
 							Automator()->process->user->maybe_trigger_complete( $r['args'] );

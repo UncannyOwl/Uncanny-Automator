@@ -58,27 +58,27 @@ class CONVERTKIT_SUBSCRIBER_SEQUENCE_ADD {
 		$this->set_action_tokens(
 			array(
 				'SUBSCRIPTION_ID'    => array(
-					'name' => __( 'Subscription ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Subscription ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'SUBSCRIPTION_STATE' => array(
-					'name' => __( 'Subscription state', 'uncanny-automator' ),
+					'name' => esc_html__( 'Subscription state', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SUBSCRIPTION_DATE'  => array(
-					'name' => __( 'Subscription date', 'uncanny-automator' ),
+					'name' => esc_html__( 'Subscription date', 'uncanny-automator' ),
 					'type' => 'date',
 				),
 				'SUBSCRIBABLE_ID'    => array(
-					'name' => __( 'Subscribable ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Subscribable ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'SUBSCRIBABLE_TYPE'  => array(
-					'name' => __( 'Subscription type', 'uncanny-automator' ),
+					'name' => esc_html__( 'Subscription type', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SUBSCRIBER_ID'      => array(
-					'name' => __( 'Subscriber ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Subscriber ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 			),

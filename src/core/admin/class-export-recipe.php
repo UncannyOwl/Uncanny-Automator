@@ -142,7 +142,7 @@ class Export_Recipe {
 		header( 'Content-Disposition: attachment; filename="' . $filename . '.json"' );
 
 		// Output the JSON data
-		echo $json; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		exit();
 	}
 
@@ -154,7 +154,7 @@ class Export_Recipe {
 	 * @return array
 	 */
 	public function add_bulk_export_action( $actions ) {
-		$actions['export_recipes'] = __( 'Export', 'uncanny-automator' );
+		$actions['export_recipes'] = esc_html__( 'Export', 'uncanny-automator' );
 		return $actions;
 	}
 
@@ -183,8 +183,8 @@ class Export_Recipe {
 					)
 				)
 			),
-			esc_attr( __( 'Export this recipe', 'uncanny-automator' ) ),
-			esc_html( __( 'Export', 'uncanny-automator' ) )
+			esc_attr( esc_html__( 'Export this recipe', 'uncanny-automator' ) ),
+			esc_html( esc_html__( 'Export', 'uncanny-automator' ) )
 		);
 
 		return $actions;
@@ -342,7 +342,7 @@ class Export_Recipe {
 	 * @return string
 	 */
 	public function generate_bulk_export_filename( $recipe_ids ) {
-		$filename = 'recipes-' . date( 'Y-m-d-H-i-s' );
+		$filename = 'recipes-' . wp_date( 'Y-m-d-H-i-s' );
 
 		return apply_filters( 'automator_recipe_bulk_export_filename', $filename, $recipe_ids );
 	}
@@ -358,6 +358,7 @@ class Export_Recipe {
 		wp_die(
 			esc_attr(
 				sprintf(
+					/* translators: %s: The error message */
 					_x( 'Recipe Export Failed : %s', 'Export Recipe', 'uncanny-automator' ),
 					$message
 				)

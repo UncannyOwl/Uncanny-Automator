@@ -60,7 +60,7 @@ class Wpwh_Helpers {
 	public function list_webhook_triggers( $label = null, $option_code = 'WPWHTRIGGER', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Webhook triggers', 'uncanny-automator' );
+			$label = esc_html__( 'Webhook triggers', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -69,7 +69,7 @@ class Wpwh_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 
 		$options       = array();
-		$options['-1'] = __( 'Any trigger', 'uncanny-automator' );
+		$options['-1'] = esc_html__( 'Any trigger', 'uncanny-automator' );
 
 		$triggers        = WPWHPRO()->webhook->get_triggers();
 		$active_webhooks = WPWHPRO()->settings->get_active_webhooks( 'all' );

@@ -119,7 +119,7 @@ class Automator_DB_Handler_Api {
 	public function get_by_id( $id ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->api;
-		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID =%s", $id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID =%s", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $result;
 	}
@@ -133,7 +133,7 @@ class Automator_DB_Handler_Api {
 	public function get_by_log_id( $type, $item_log_id ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->api;
-		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE type=%s AND item_log_id =%d", $type, $item_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE type=%s AND item_log_id =%d", $type, $item_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $result;
 	}
@@ -157,7 +157,7 @@ class Automator_DB_Handler_Api {
 		// Delete the corresponding response.
 		$item_log_ids = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT item_log_id FROM $api_tbl WHERE recipe_log_id = %d", //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT item_log_id FROM $api_tbl WHERE recipe_log_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$automator_recipe_log_id
 			)
 		);
@@ -175,7 +175,7 @@ class Automator_DB_Handler_Api {
 		}
 
 		// Delete the corresponding actions.
-		$actions = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$actions = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( $actions ) {
 			foreach ( $actions as $item_log_id ) {
@@ -191,7 +191,7 @@ class Automator_DB_Handler_Api {
 
 		// -- Delete the corresponding trigger entries.
 
-		$triggers = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $triggers_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$triggers = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $triggers_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( $triggers ) {
 			foreach ( $triggers as $item_log_id ) {

@@ -116,7 +116,6 @@ class Drip_Functions {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -251,7 +250,6 @@ class Drip_Functions {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -520,7 +518,7 @@ class Drip_Functions {
 			$error_message .= $error['code'] . ': ' . $error['message'] . "\r\n";
 		}
 
-		throw new \Exception( $error_message, $response['statusCode'] );
+		throw new \Exception( esc_html( $error_message ), absint( $response['statusCode'] ) );
 	}
 
 	/**

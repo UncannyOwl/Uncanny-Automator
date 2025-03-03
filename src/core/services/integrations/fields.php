@@ -10,7 +10,6 @@ use Uncanny_Automator\Resolver\Fields_Shared_Callable;
  *
  * @since 5.0
  * @package Uncanny_Automator\Services\Integrations
- *
  */
 class Fields {
 
@@ -40,7 +39,6 @@ class Fields {
 				'code'        => null,
 			)
 		);
-
 	}
 
 	/**
@@ -53,7 +51,6 @@ class Fields {
 	 * @throws Automator_Exception
 	 * - If the object does not implement 'options_callback'
 	 * - If the the options_callback is not a valid callable.
-	 *
 	 */
 	public function get() {
 
@@ -68,8 +65,9 @@ class Fields {
 		if ( ! $object ) {
 			throw new Automator_Exception(
 				sprintf(
-					'Cannot identify object type of %s',
-					$this->config['object_type']
+				/* translators: 1. Object type */
+					esc_html__( 'Cannot identify object type of %s', 'uncanny-automator' ),
+					esc_html( $this->config['object_type'] )
 				),
 				400
 			);
@@ -88,8 +86,9 @@ class Fields {
 			if ( ! is_callable( $callable ) ) {
 				throw new Automator_Exception(
 					sprintf(
-						'Invalid callback detected for object ' . $this->config['code'],
-						$this->config['code']
+					/* translators: 1. Object code */
+						esc_html__( 'Invalid callback detected for object %s', 'uncanny-automator' ),
+						esc_html( $this->config['code'] )
 					),
 					400
 				);
@@ -98,9 +97,21 @@ class Fields {
 			try {
 				$fields = Automator()->get_options_from_callable( $this->config['object_type'], $this->config['code'], $callable );
 			} catch ( \Error $e ) {
-				throw new \Uncanny_Automator\Automator_Error( 'Error Exception: ' . $e->getMessage() );
+				throw new \Uncanny_Automator\Automator_Error(
+					sprintf(
+						// translators: 1. Error message
+						esc_html__( 'Error Exception: %s', 'uncanny-automator' ),
+						esc_html( $e->getMessage() )
+					)
+				);
 			} catch ( \Exception $e ) {
-				throw new \Uncanny_Automator\Automator_Exception( 'Application Exception: ' . $e->getMessage() );
+				throw new \Uncanny_Automator\Automator_Exception(
+					sprintf(
+						// translators: 1. Error message
+						esc_html__( 'Application Exception: %s', 'uncanny-automator' ),
+						esc_html( $e->getMessage() )
+					)
+				);
 			}
 
 			$options       = isset( $fields['options'] ) ? $fields['options'] : array();
@@ -111,7 +122,6 @@ class Fields {
 		}
 
 		return $this->normalize_fields( $options, $options_group );
-
 	}
 
 	/**
@@ -136,7 +146,6 @@ class Fields {
 		}
 
 		return (array) array_merge( $normalized_options_fields, $normalized_options_group_fields );
-
 	}
 
 	/**
@@ -155,7 +164,6 @@ class Fields {
 		}
 
 		return $option_fields;
-
 	}
 
 	/**
@@ -174,8 +182,5 @@ class Fields {
 		}
 
 		return $option_fields;
-
 	}
-
-
 }

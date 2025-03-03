@@ -51,7 +51,7 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 			/* translators: Logged-in trigger - PeepSo Core */
 			'sentence'            => sprintf( esc_attr__( 'A user updates {{a specific field:%1$s}} in their profile', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - PeepSo Core */
-			'select_option_name'  => __( 'A user updates {{a specific field}} in their profile', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A user updates {{a specific field}} in their profile', 'uncanny-automator' ),
 			'action'              => 'peepso_ajax_start',
 			'priority'            => 99,
 			'accepted_args'       => 1,
@@ -69,7 +69,7 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 
 		$options = array(
 			'options' => array(
-				Automator()->helpers->recipe->peepso->get_profile_fields( __( 'Profile field', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => true ) ),
+				Automator()->helpers->recipe->peepso->get_profile_fields( esc_html__( 'Profile field', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => true ) ),
 			),
 		);
 
@@ -155,10 +155,10 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 								$pp_field_id = automator_filter_input( 'id', INPUT_POST );
 								$field_value = automator_filter_input( 'value', INPUT_POST );
 								if ( 'm' === (string) $field_value ) {
-									$field_value = __( 'Male', 'uncanny-automator' );
+									$field_value = esc_html__( 'Male', 'uncanny-automator' );
 								}
 								if ( 'f' === (string) $field_value ) {
-									$field_value = __( 'Female', 'uncanny-automator' );
+									$field_value = esc_html__( 'Female', 'uncanny-automator' );
 								}
 								if ( intval( $user_field_id ) === intval( '-1' ) ) {
 									$user_field_id = $pp_field_id;
@@ -178,7 +178,7 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 								} elseif ( 'peepso_gmt_offset' === $pp_field_id ) {
 									$field_value = Automator()->helpers->recipe->peepso->get_gmt_value( automator_filter_input( 'value', INPUT_POST ) );
 								} else {
-									$field_value = ( 1 === absint( automator_filter_input( 'value', INPUT_POST ) ) ) ? __( 'Enabled', 'uncanny-automator' ) : __( 'Disabled', 'uncanny-automator' );
+									$field_value = ( 1 === absint( automator_filter_input( 'value', INPUT_POST ) ) ) ? esc_html__( 'Enabled', 'uncanny-automator' ) : __( 'Disabled', 'uncanny-automator' );
 								}
 								if ( intval( $user_field_id ) === intval( '-1' ) ) {
 									$user_field_id = $pp_field_id;
@@ -191,7 +191,7 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 								if ( 'email_intensity' === (string) $pp_field_id ) {
 									$field_value = Automator()->helpers->recipe->peepso->get_email_intensity( automator_filter_input( 'value', INPUT_POST ) );
 								} else {
-									$field_value = ( 1 === absint( automator_filter_input( 'value', INPUT_POST ) ) ) ? __( 'Enabled', 'uncanny-automator' ) : __( 'Disabled', 'uncanny-automator' );
+									$field_value = ( 1 === absint( automator_filter_input( 'value', INPUT_POST ) ) ) ? esc_html__( 'Enabled', 'uncanny-automator' ) : __( 'Disabled', 'uncanny-automator' );
 								}
 								if ( intval( $user_field_id ) === intval( '-1' ) ) {
 									$user_field_id = $pp_field_id;
@@ -271,13 +271,13 @@ class PeepSo_USERUPDATESPECIFICFIELD {
 	 */
 	public function get_privacy_status( $merit ) {
 		if ( $merit == PeepSo::ACCESS_PUBLIC ) {
-			$field_value = __( 'Public', 'uncanny-automator' );
+			$field_value = esc_html__( 'Public', 'uncanny-automator' );
 		}
 		if ( $merit == PeepSo::ACCESS_MEMBERS ) {
-			$field_value = __( 'Site Members', 'uncanny-automator' );
+			$field_value = esc_html__( 'Site Members', 'uncanny-automator' );
 		}
 		if ( $merit == PeepSo::ACCESS_PRIVATE ) {
-			$field_value = __( 'Only Me', 'uncanny-automator' );
+			$field_value = esc_html__( 'Only Me', 'uncanny-automator' );
 		}
 
 		return $field_value;

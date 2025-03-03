@@ -4,12 +4,14 @@ namespace Uncanny_Automator;
 
 /**
  * Class WPUM_USERREGISTER
+ *
  * @package Uncanny_Automator
  */
 class WPUM_USERREGISTER {
 
 	/**
 	 * Integration code
+	 *
 	 * @var string
 	 */
 	public static $integration = 'WPUSERMANAGER';
@@ -39,25 +41,29 @@ class WPUM_USERREGISTER {
 	 */
 	public function define_trigger() {
 
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-user-manager/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WP User Manager */
-			'sentence'            => sprintf( __( 'A user registers with {{a form:%1$s}}', 'uncanny-automator' ),
-				$this->trigger_meta ),
-			/* translators: Logged-in trigger - WP User Manager */
-			'select_option_name'  => __( 'A user registers with {{a form}}', 'uncanny-automator' ),
+			'sentence'            => sprintf(
+				// translators: Logged-in trigger - WP User Manager
+				esc_html__( 'A user registers with {{a form:%1$s}}', 'uncanny-automator' ),
+				$this->trigger_meta
+			),
+			// translators: Logged-in trigger - WP User Manager
+			'select_option_name'  => esc_html__( 'A user registers with {{a form}}', 'uncanny-automator' ),
 			'action'              => 'wpum_after_registration',
 			'priority'            => 99,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpum_register_user' ),
-			'options'             => [
+			'options'             => array(
 				Automator()->helpers->recipe->wp_user_manager->options->get_all_forms(
-					__( 'Form', 'uncanny-automator' ), $this->trigger_meta, [ 'is_any' => true ] ),
-			],
+					esc_html__( 'Form', 'uncanny-automator' ),
+					$this->trigger_meta,
+					array( 'is_any' => true )
+				),
+			),
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -69,7 +75,6 @@ class WPUM_USERREGISTER {
 	 * @param $form
 	 */
 	public function wpum_register_user( $new_user_id, $values, $form ) {
-
 
 		if ( 0 === absint( $new_user_id ) ) {
 			// Its a logged in recipe and
@@ -85,19 +90,18 @@ class WPUM_USERREGISTER {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];
 				if ( $form->id == $required_form[ $recipe_id ][ $trigger_id ] ||
-				     $required_form[ $recipe_id ][ $trigger_id ] == '-1' ) {
-					$matched_recipe_ids[] = [
+					 $required_form[ $recipe_id ][ $trigger_id ] == '-1' ) {
+					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
-					];
+					);
 				}
 			}
 		}
 
-
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-				$pass_args = [
+				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,
 					'user_id'          => $new_user_id,
@@ -105,18 +109,18 @@ class WPUM_USERREGISTER {
 					'trigger_to_match' => $matched_recipe_id['trigger_id'],
 					'ignore_post_id'   => true,
 					'is_signed_in'     => true,
-				];
+				);
 
 				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 				if ( $args ) {
 					foreach ( $args as $result ) {
 						if ( true === $result['result'] ) {
-							$trigger_meta = [
+							$trigger_meta = array(
 								'user_id'        => $new_user_id,
 								'trigger_id'     => $result['args']['trigger_id'],
 								'trigger_log_id' => $result['args']['get_trigger_id'],
 								'run_number'     => $result['args']['run_number'],
-							];
+							);
 
 							$trigger_meta['meta_key']   = $this->trigger_meta;
 							$trigger_meta['meta_value'] = maybe_serialize( $form->name );

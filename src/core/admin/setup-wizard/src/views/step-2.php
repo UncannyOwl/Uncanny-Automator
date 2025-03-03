@@ -67,7 +67,7 @@
 				<?php esc_html_e( 'Not connected', 'uncanny-automator' ); ?>
 			</h2>
 			<?php $error_message = get_transient( 'automator_setup_wizard_error' ); ?>
-			<?php if ( ! empty( $error_message ) && ! isset( $_GET['skip'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+			<?php if ( ! empty( $error_message ) && ! isset( $_GET['skip'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
 				<h3 style="color:#e94b35">
 					<?php echo esc_html( get_transient( 'automator_setup_wizard_error' ) ); ?>
 				</h3>

@@ -99,7 +99,7 @@ class Presto_Helpers {
 
 		natcasesort( $options );
 
-		$options = array( '-1' => __( 'Any video', 'uncanny-automator' ) ) + $options;
+		$options = array( '-1' => esc_html__( 'Any video', 'uncanny-automator' ) ) + $options;
 
 		$option = array(
 			'option_code'     => $option_code,

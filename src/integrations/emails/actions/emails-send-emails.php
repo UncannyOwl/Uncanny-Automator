@@ -253,7 +253,7 @@ class EMAILS_SEND_EMAILS {
 		$attachment_field = array(
 			'option_code'              => 'FILE_ATTACHMENT_URL', // Unique identifier for the file field option.
 			'input_type'               => 'file', // Specifies that this field is for file input.
-			'label'                    => __( 'File attachment', 'uncanny-automator' ), // Label for the file field, displayed in the UI.
+			'label'                    => esc_html__( 'File attachment', 'uncanny-automator' ), // Label for the file field, displayed in the UI.
 			'description'              => $file_attachment_description, // A brief description of the file field.
 			'required'                 => false, // Indicates that this file field is mandatory.
 			'supports_multiple_values' => false, // Allows multiple files to be uploaded.

@@ -117,7 +117,7 @@ class Import_Recipe {
 			return;
 		}
 
-		$file = $_FILES['recipejson']; //phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$file = $_FILES['recipejson']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$type = isset( $file['type'] ) ? $file['type'] : null;
 		$temp = isset( $file['tmp_name'] ) ? $file['tmp_name'] : null;
 		if ( 'application/json' !== $type || empty( $temp ) ) {
@@ -127,7 +127,7 @@ class Import_Recipe {
 		}
 
 		// Read the file.
-		$recipe_json = file_get_contents( $temp ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$recipe_json = file_get_contents( $temp ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		if ( false === $recipe_json ) {
 			$this->set_import_error( _x( 'Unable to read the uploaded file.', 'Import Recipe', 'uncanny-automator' ) );
 
@@ -538,7 +538,7 @@ class Import_Recipe {
 		}
 
 		// Display the error.
-		echo $this->generate_notice( 'error', $error ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->generate_notice( 'error', $error ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		// Remove transient.
 		delete_transient( $transient_key );
@@ -589,7 +589,7 @@ class Import_Recipe {
 		}
 
 		// Display the success message.
-		echo $this->generate_notice( 'success', $success ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->generate_notice( 'success', $success ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		// Remove transient.
 		delete_transient( $transient_key );
@@ -620,7 +620,7 @@ class Import_Recipe {
 		}
 
 		// Display the notice.
-		echo $this->generate_notice( 'warning', $warning ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->generate_notice( 'warning', $warning ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

@@ -165,13 +165,13 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 		$name      = trim( $this->get_parsed_meta_value( $this->get_action_meta(), false ) );
 		// Validate the channel name length.
 		if ( strlen( $name ) > 100 ) {
-			throw new Exception( _x( 'Channel name must be no longer than 100 characters', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Channel name must be no longer than 100 characters', 'Discord', 'uncanny-automator' ) );
 		}
 		$type = absint( $this->get_parsed_meta_value( 'CHANNEL_TYPE', 0 ) );
 		// Validate the channel type.
 		$type_ids = wp_list_pluck( $this->helpers->get_channel_types(), 'value' );
 		if ( ! in_array( $type, $type_ids, true ) ) {
-			throw new Exception( _x( 'Invalid channel type', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Invalid channel type', 'Discord', 'uncanny-automator' ) );
 		}
 
 		// Start building the conditional properties.
@@ -182,7 +182,7 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 		$position = absint( $this->get_parsed_meta_value( 'POSITION', 0 ) );
 		// Validate the position.
 		if ( $position < 0 || $position > 1000 ) {
-			throw new Exception( _x( 'Position must be between 0 and 1000', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Position must be between 0 and 1000', 'Discord', 'uncanny-automator' ) );
 		}
 		$conditional['position'] = $position;
 
@@ -192,7 +192,7 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 			$topic = $this->get_parsed_meta_value( 'TOPIC', '' );
 			// Validate the topic length.
 			if ( strlen( $topic ) > 1024 ) {
-				throw new Exception( _x( 'Topic must be no longer than 1024 characters', 'Discord', 'uncanny-automator' ) );
+				throw new Exception( esc_html_x( 'Topic must be no longer than 1024 characters', 'Discord', 'uncanny-automator' ) );
 			}
 			$conditional['topic'] = $topic;
 		}
@@ -201,7 +201,7 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 			$user_rate_limit = absint( $this->get_parsed_meta_value( 'USER_RATE_LIMIT', 0 ) );
 			// Validate the user rate limit.
 			if ( $user_rate_limit < 0 || $user_rate_limit > 21600 ) {
-				throw new Exception( _x( 'User rate limit must be between 0 and 21600', 'Discord', 'uncanny-automator' ) );
+				throw new Exception( esc_html_x( 'User rate limit must be between 0 and 21600', 'Discord', 'uncanny-automator' ) );
 			}
 			$conditional['rate_limit_per_user'] = $user_rate_limit;
 		}
@@ -287,5 +287,4 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 
 		return $rule;
 	}
-
 }

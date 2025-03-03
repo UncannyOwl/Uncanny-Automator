@@ -131,7 +131,7 @@ namespace Uncanny_Automator;
 
 				<?php } ?>
 
-				<uo-alert heading="<?php esc_attr_e( 'Error validating access token' ); ?>" id="whatsup-errors" type="error" class="uap-spacing-top" style="display:none;"></uo-alert>
+				<uo-alert heading="<?php esc_attr_e( 'Error validating access token', 'uncanny-automator' ); ?>" id="whatsup-errors" type="error" class="uap-spacing-top" style="display:none;"></uo-alert>
 
 				<!-- Access token ID -->
 				<uo-text-field

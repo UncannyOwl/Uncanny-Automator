@@ -56,7 +56,7 @@ class Affwp_Helpers {
 	 */
 	public function get_referral_types( $label = null, $option_code = 'REFERRALTYPES', $args = array() ) {
 		if ( ! $label ) {
-			$label = __( 'Referral type', 'uncanny-automator' );
+			$label = esc_html__( 'Referral type', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -67,13 +67,14 @@ class Affwp_Helpers {
 		$options      = array();
 
 		if ( isset( $any_option ) && $any_option == true ) {
-			$options['-1'] = __( 'Any type', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'Any type', 'uncanny-automator' );
 		}
 
 		foreach ( affiliate_wp()->referrals->types_registry->get_types() as $type_id => $type ) {
 			$title = $type['label'];
 			if ( empty( $title ) ) {
-				$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $type_id );
+				// translators: 1: Referral type ID
+				$title = sprintf( esc_html__( 'ID: %s (no title)', 'uncanny-automator' ), $type_id );
 			}
 			$options[ $type_id ] = $title;
 		}

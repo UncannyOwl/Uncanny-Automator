@@ -697,7 +697,7 @@ class Keap_Helpers {
 					$response['statusCode']
 				);
 			}
-			throw new Exception( $message, $response['statusCode'] );
+			throw new Exception( esc_html( $message ), absint( $response['statusCode'] ) );
 		}
 
 	}
@@ -1637,11 +1637,11 @@ class Keap_Helpers {
 			// Keaps wants the number representation of the day of the week or month of the year.
 			if ( ! is_numeric( $value ) && false !== strtotime( $value ) ) {
 				if ( 'DAYOFWEEK' === $keap_type ) {
-					$value = (int) date( 'w', strtotime( $value ) );
+					$value = (int) wp_date( 'w', strtotime( $value ) );
 					// Adjust for Keap's week numbering, making Sunday = 1, Monday = 2, ..., Saturday = 7
 					$value = $value === 0 ? 1 : $value + 1;
 				} elseif ( 'MONTH' === $keap_type ) {
-					$value = (int) date( 'm', strtotime( $value ) );
+					$value = (int) wp_date( 'm', strtotime( $value ) );
 				}
 			} elseif ( is_numeric( $value ) ) {
 				// Ensure we have no leading zeros.
@@ -1693,7 +1693,7 @@ class Keap_Helpers {
 		return new \WP_Error(
 			'invalid_custom_field_value',
 			sprintf(
-				//translators: %1$s: custom field value, %2$s: custom field label.
+				// translators: %1$s: custom field value, %2$s: custom field label.
 				_x( 'Invalid custom field value: %1$s for field: %2$s', 'Keap', 'uncanny-automator' ),
 				$value,
 				$config['text']

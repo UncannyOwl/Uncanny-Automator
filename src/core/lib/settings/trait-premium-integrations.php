@@ -380,7 +380,7 @@ trait Premium_Integrations {
 		}
 
 		foreach ( $this->get_options() as $option_name ) {
-			register_setting( $this->get_settings_id(), $option_name );
+			register_setting( $this->get_settings_id(), $option_name ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
 		}
 	}
 

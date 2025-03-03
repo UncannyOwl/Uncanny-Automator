@@ -89,61 +89,61 @@ class Armember_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'ARM_MEMBERSHIP_PLAN',
-					'tokenName'       => __( 'Membership plan', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Membership plan', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBERSHIP_TYPE',
-					'tokenName'       => __( 'Membership type', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Membership type', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBERSHIP_PLAN_ID',
-					'tokenName'       => __( 'Plan ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Plan ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBER_USERNAME',
-					'tokenName'       => __( 'Member username', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Member username', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBER_EMAIL',
-					'tokenName'       => __( 'Member email', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Member email', 'uncanny-automator' ),
 					'tokenType'       => 'email',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBER_FIRST_NAME',
-					'tokenName'       => __( 'Member first name', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Member first name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBER_LAST_NAME',
-					'tokenName'       => __( 'Member last name', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Member last name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBER_ROLE',
-					'tokenName'       => __( 'Member role', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Member role', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBER_STATUS',
-					'tokenName'       => __( 'Member status', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Member status', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'ARM_MEMBER_JOINED_DATE',
-					'tokenName'       => __( 'Member joined date', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Member joined date', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -207,7 +207,7 @@ class Armember_Tokens {
 			case 'ARM_MEMBERSHIP_TYPE':
 				$value = ucfirst( $plan['arm_subscription_plan_options']['access_type'] ) . ' - ' . ucfirst( str_replace( '_', ' ', $plan['arm_subscription_plan_options']['payment_type'] ) );
 				break;
-			case 'ARM_MEMBER_STATUS';
+			case 'ARM_MEMBER_STATUS':
 				$status_arm = array(
 					1 => 'Active',
 					2 => 'Inactive',
@@ -216,7 +216,7 @@ class Armember_Tokens {
 				$value      = $status_arm[ arm_get_member_status( $member_id ) ];
 				break;
 			case 'ARM_MEMBER_JOINED_DATE':
-				$value = date( 'F j, Y', strtotime( $member->user_registered ) );
+				$value = wp_date( 'F j, Y', strtotime( $member->user_registered ) );
 				break;
 			case 'ARM_MEMBER_USERNAME':
 				$value = $member->user_login;

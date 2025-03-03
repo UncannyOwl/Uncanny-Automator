@@ -456,7 +456,7 @@ trait Action_Helpers_Email {
 		if ( empty( $path_info['extension'] ) ) {
 			return new WP_Error(
 				'file_extension_empty',
-				__( 'Please ensure that the URL you entered ends with a valid file extension, such as .pdf, .png, or .doc. This ensures the file can be properly accessed and opened.', 'uncanny-automator' ),
+				esc_html__( 'Please ensure that the URL you entered ends with a valid file extension, such as .pdf, .png, or .doc. This ensures the file can be properly accessed and opened.', 'uncanny-automator' ),
 			);
 		}
 

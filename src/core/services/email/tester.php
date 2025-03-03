@@ -264,7 +264,7 @@ class Tester {
 
 		$args = array(
 			'to'      => $email_address,
-			'subject' => __( 'Uncanny Automator Test', 'uncanny-automator' ),
+			'subject' => esc_html__( 'Uncanny Automator Test', 'uncanny-automator' ),
 			'body'    => $email_body,
 		);
 

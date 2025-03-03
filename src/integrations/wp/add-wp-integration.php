@@ -36,7 +36,7 @@ class Add_Wp_Integration {
 			// Add the "every_minute" schedule
 			$schedules['every_minute'] = array(
 				'interval' => 60, // Interval in seconds (60 seconds = 1 minute)
-				'display'  => __( 'Every minute', 'uncanny-automator' ),
+				'display'  => esc_html__( 'Every minute', 'uncanny-automator' ),
 			);
 		}
 

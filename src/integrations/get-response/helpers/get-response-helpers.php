@@ -143,7 +143,6 @@ class Get_Response_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -291,7 +290,7 @@ class Get_Response_Helpers {
 
 		uasort(
 			$fields,
-			function( $a, $b ) {
+			function ( $a, $b ) {
 				return strcmp( $a['name'], $b['name'] );
 			}
 		);
@@ -460,7 +459,7 @@ class Get_Response_Helpers {
 
 		// Check for error.
 		if ( ! empty( $response['data']['error'] ) ) {
-			throw new \Exception( $response['data']['error'], 400 );
+			throw new \Exception( esc_html( $response['data']['error'] ), 400 );
 		}
 
 		if ( $response['statusCode'] >= 400 ) {
@@ -484,19 +483,28 @@ class Get_Response_Helpers {
 						}
 					}
 
-					throw new \Exception( $message, 400 );
+					throw new \Exception( esc_html( $message ), 400 );
 				}
 			}
 
 			switch ( $response['statusCode'] ) {
 				case 401:
-					throw new \Exception( _x( 'Invalid API key', 'GetResponse', 'uncanny-automator' ), 400 );
+					throw new \Exception(
+						esc_html_x( 'Invalid API key', 'GetResponse', 'uncanny-automator' ),
+						400
+					);
+
 				case 429:
-					$message = _x( 'The throttling limit has been reached', 'GetResponse', 'uncanny-automator' );
-					throw new \Exception( $message, 400 );
+					throw new \Exception(
+						esc_html_x( 'The throttling limit has been reached', 'GetResponse', 'uncanny-automator' ),
+						400
+					);
+
 				default:
-					$message = _x( 'GetResponse API error', 'GetResponse', 'uncanny-automator' );
-					throw new \Exception( $message, 400 );
+					throw new \Exception(
+						esc_html_x( 'GetResponse API error', 'GetResponse', 'uncanny-automator' ),
+						400
+					);
 			}
 		}
 	}
@@ -555,5 +563,4 @@ class Get_Response_Helpers {
 	public function get_const( $const ) {
 		return constant( 'self::' . $const );
 	}
-
 }

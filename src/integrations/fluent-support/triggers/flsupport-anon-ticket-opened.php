@@ -45,37 +45,37 @@ class FLSUPPORT_ANON_TICKET_OPENED extends \Uncanny_Automator\Recipe\Trigger {
 		$trigger_tokens = array(
 			array(
 				'tokenId'   => 'TICKET_ID',
-				'tokenName' => __( 'Ticket ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Ticket ID', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'TICKET_TITLE',
-				'tokenName' => __( 'Ticket subject', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Ticket subject', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'TICKET_CONTENT',
-				'tokenName' => __( 'Ticket details', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Ticket details', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'TICKET_PRIORITY',
-				'tokenName' => __( 'Ticket priority', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Ticket priority', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'TICKET_PRODUCT_TITLE',
-				'tokenName' => __( 'Ticket product', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Ticket product', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'TICKET_ADMIN_URL',
-				'tokenName' => __( 'Ticket admin URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Ticket admin URL', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CUSTOMER_EMAIL',
-				'tokenName' => __( 'Customer email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Customer email', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);

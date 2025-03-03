@@ -61,7 +61,7 @@ class Admin_Tools_Tab_Debug {
 		}
 
 		// Finally delete the file. Redirects with success if the file is deleted.
-		if ( unlink( $log_file_path ) ) {
+		if ( wp_delete_file( $log_file_path ) ) {
 			$this->redirect( true );
 		}
 

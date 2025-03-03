@@ -56,7 +56,7 @@ class Twilio_Settings extends Settings\Premium_Integration_Settings {
 			$this->user   = automator_get_option( 'uap_twilio_connected_user', array() );
 
 			if ( empty( $this->user['sid'] ) ) {
-				throw new \Exception( __( 'User account error', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User account error', 'uncanny-automator' ) );
 			}
 
 			$this->is_connected = true;

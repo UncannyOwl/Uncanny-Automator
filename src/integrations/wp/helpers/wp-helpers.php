@@ -95,7 +95,7 @@ class Wp_Helpers {
 		$is_any = 'WP_OLD_POST_TYPE' !== $field_id;
 
 		$args = array(
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page'   => apply_filters( 'automator_select_custom_post_limit', 999, $post_type ),
 			'orderby'          => 'title',
 			'order'            => 'ASC',
@@ -113,6 +113,7 @@ class Wp_Helpers {
 			if ( $is_any ) {
 				$fields[] = array(
 					'value' => '-1',
+					// translators: 1: Post type label
 					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
 				);
 			}
@@ -120,7 +121,7 @@ class Wp_Helpers {
 			foreach ( $posts_list as $post_id => $title ) {
 
 				$post_title = ! empty( $title ) ? $title : sprintf(
-				/* translators: %1$s The ID of the post */
+					// translators: 1: Post ID
 					esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ),
 					$post_id
 				);
@@ -140,6 +141,7 @@ class Wp_Helpers {
 			if ( $is_any ) {
 				$fields[] = array(
 					'value' => '-1',
+					// translators: 1: Post type label
 					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
 				);
 			}
@@ -169,7 +171,7 @@ class Wp_Helpers {
 		}
 
 		$args = array(
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page' => apply_filters( 'automator_select_all_posts_limit', 999, 'post' ),
 			'orderby'        => 'title',
 			'order'          => 'DESC',
@@ -224,7 +226,7 @@ class Wp_Helpers {
 		}
 
 		$args = array(
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page' => apply_filters( 'automator_select_all_pages_limit', 999, 'page' ),
 			'orderby'        => 'title',
 			'order'          => 'ASC',
@@ -338,7 +340,7 @@ class Wp_Helpers {
 
 		$fields[] = array(
 			'value' => '0',
-			'text'  => __( 'Any taxonomy', 'uncanny-automator' ),
+			'text'  => esc_html__( 'Any taxonomy', 'uncanny-automator' ),
 		);
 
 		$post_type = automator_filter_input( 'value', INPUT_POST );
@@ -459,7 +461,7 @@ class Wp_Helpers {
 
 		$fields[] = array(
 			'value' => '0',
-			'text'  => __( 'Any taxonomy term', 'uncanny-automator' ),
+			'text'  => esc_html__( 'Any taxonomy term', 'uncanny-automator' ),
 		);
 
 		$taxonomy = automator_filter_input( 'value', INPUT_POST );
@@ -480,7 +482,7 @@ class Wp_Helpers {
 				if ( ! empty( $terms ) ) {
 					foreach ( $terms as $term ) {
 						/* translators: %1$s The ID of the post. */
-						$term_name = ! empty( $term->name ) ? $term->name : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $term->term_id );
+						$term_name = ! empty( $term->name ) ? $term->name : sprintf( esc_html__( 'ID: %1$s (no title)', 'uncanny-automator' ), $term->term_id );
 
 						$fields[] = array(
 							'value' => $term->term_id,
@@ -517,7 +519,7 @@ class Wp_Helpers {
 		$group_id  = automator_filter_input( 'group_id', INPUT_POST );
 
 		$args       = array(
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page'   => apply_filters( 'automator_select_posts_by_post_type_limit', 999, $post_type ),
 			'orderby'          => 'title',
 			'order'            => 'ASC',
@@ -526,7 +528,7 @@ class Wp_Helpers {
 			'suppress_filters' => true,
 			'fields'           => array( 'ids', 'titles' ),
 		);
-		$posts_list = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, __( 'Any post', 'uncanny-automator' ) );
+		$posts_list = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, esc_html__( 'Any post', 'uncanny-automator' ) );
 
 		if ( 'CREATEPOST' === $group_id ) {
 			$fields[] = array(
@@ -542,12 +544,14 @@ class Wp_Helpers {
 			if ( 'CREATEPOST' !== $group_id ) {
 				$fields[] = array(
 					'value' => '-1',
+					// translators: 1: Post type label
 					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
 				);
 			}
 			foreach ( $posts_list as $post_id => $post_title ) {
 				// Check if the post title is defined
-				$post_title = ! empty( $post_title ) ? $post_title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
+				// translators: 1: Post ID
+				$post_title = ! empty( $post_title ) ? $post_title : sprintf( esc_html__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
 
 				$fields[] = array(
 					'value' => $post_id,
@@ -564,6 +568,7 @@ class Wp_Helpers {
 
 				$fields[] = array(
 					'value' => '-1',
+					// translators: 1: Post type label
 					'text'  => sprintf( _x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
 				);
 			}
@@ -622,12 +627,12 @@ class Wp_Helpers {
 		if ( true === $apply_relevant_tokens ) {
 
 			$defaults['relevant_tokens'] = array(
-				$option_code                => __( 'Post title', 'uncanny-automator' ),
-				$option_code . '_ID'        => __( 'Post ID', 'uncanny-automator' ),
-				$option_code . '_URL'       => __( 'Post URL', 'uncanny-automator' ),
-				$option_code . '_POSTNAME'  => __( 'Post slug', 'uncanny-automator' ),
-				$option_code . '_THUMB_ID'  => __( 'Post featured image ID', 'uncanny-automator' ),
-				$option_code . '_THUMB_URL' => __( 'Post featured image URL', 'uncanny-automator' ),
+				$option_code                => esc_html__( 'Post title', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_html__( 'Post ID', 'uncanny-automator' ),
+				$option_code . '_URL'       => esc_html__( 'Post URL', 'uncanny-automator' ),
+				$option_code . '_POSTNAME'  => esc_html__( 'Post slug', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'  => esc_html__( 'Post featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL' => esc_html__( 'Post featured image URL', 'uncanny-automator' ),
 			);
 
 		}
@@ -641,7 +646,7 @@ class Wp_Helpers {
 			$zero_as_default = ( intval( '-1' ) !== intval( $args['use_zero_as_default'] ) ) ? 0 : intval( '-1' );
 
 			// Backwards compatibility for Any option with value of '0' instead of '-1'.
-			$options[ $zero_as_default ] = __( 'Any post type', 'uncanny-automator' );
+			$options[ $zero_as_default ] = esc_html__( 'Any post type', 'uncanny-automator' );
 
 		}
 
@@ -678,7 +683,7 @@ class Wp_Helpers {
 		$option = array(
 			'input_type'      => 'select',
 			'option_code'     => $option_code,
-			'label'           => ! empty( $label ) ? $label : __( 'Post type', 'uncanny-automator' ),
+			'label'           => ! empty( $label ) ? $label : esc_html__( 'Post type', 'uncanny-automator' ),
 			'required'        => true,
 			'supports_tokens' => $args['token'],
 			'is_ajax'         => $args['is_ajax'],

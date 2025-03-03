@@ -77,7 +77,6 @@ class Migrate_Schedules extends Migration {
 
 			$this->check_actions( $recipe['actions'] );
 		}
-
 	}
 
 	/**
@@ -96,7 +95,6 @@ class Migrate_Schedules extends Migration {
 
 			$this->convert_schedule( $action );
 		}
-
 	}
 
 	/**
@@ -138,7 +136,6 @@ class Migrate_Schedules extends Migration {
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage(), $this->name );
 		}
-
 	}
 
 	/**
@@ -156,11 +153,17 @@ class Migrate_Schedules extends Migration {
 		$date_time = \DateTime::createFromFormat( $wp_date_format, $old_date, wp_timezone() );
 
 		if ( ! $date_time ) {
-			throw new \Exception( 'Error extracting a timestamp from ' . $old_date . ' using format ' . $wp_date_format );
+			throw new \Exception(
+				sprintf(
+					// translators: 1. The old date, 2. The WordPress date format.
+					esc_html__( 'Error extracting a timestamp from %1$s using format %2$s', 'uncanny-automator' ),
+					esc_html( $old_date ),
+					esc_html( $wp_date_format )
+				)
+			);
 		}
 
 		return $date_time->format( self::NEW_DATE_FORMAT );
-
 	}
 
 	/**
@@ -184,7 +187,7 @@ class Migrate_Schedules extends Migration {
 	 */
 	public function intercept_date_format_option_calls( $intercept, $option, $default ) {
 
-		$backtrace = debug_backtrace( 2, 10 ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
+		$backtrace = debug_backtrace( 2, 10 ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 
 		foreach ( $backtrace as $function ) {
 			if ( $this->called_by_automator_pro( $function ) ) {
@@ -219,7 +222,6 @@ class Migrate_Schedules extends Migration {
 
 		return true;
 	}
-
 }
 
 new Migrate_Schedules();

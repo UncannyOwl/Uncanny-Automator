@@ -41,10 +41,9 @@ class ConvertKit_Helpers {
 
 		}
 
-		require_once dirname( dirname( __FILE__ ) ) . '/settings/convertkit-settings.php';
+		require_once dirname( __DIR__ ) . '/settings/convertkit-settings.php';
 
 		new ConvertKit_Settings( $this );
-
 	}
 
 	/**
@@ -69,7 +68,6 @@ class ConvertKit_Helpers {
 		$this->handle_errors( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -83,21 +81,27 @@ class ConvertKit_Helpers {
 
 		if ( 200 !== $response['statusCode'] ) {
 
-			if ( isset( $response['data']['error'] ) && isset( $response['data']['message'] ) ) {
+			if ( isset( $response['data']['error'], $response['data']['message'] ) ) {
 				throw new \Exception(
-					'ConvertKit API has responded with an error message: ' . implode( ' - ', array_values( $response['data'] ) ),
-					$response['statusCode']
+					sprintf(
+					/* translators: %s: ConvertKit API error message */
+						esc_html__( 'ConvertKit API has responded with an error message: %s', 'uncanny-automator' ),
+						esc_html( implode( ' - ', array_values( $response['data'] ) ) )
+					),
+					absint( $response['statusCode'] )
 				);
 			}
 
 			// Throw generic error instead.
 			throw new \Exception(
-				'ConvertKit API has responded with unknow error. Result: ' . wp_json_encode( $response['data'] ),
-				$response['statusCode']
+				sprintf(
+				/* translators: %s: ConvertKit API response data in JSON format */
+					esc_html__( 'ConvertKit API has responded with an unknown error. Result: %s', 'uncanny-automator' ),
+					esc_html( wp_json_encode( $response['data'] ) )
+				),
+				absint( $response['statusCode'] )
 			);
-
 		}
-
 	}
 
 	/**
@@ -138,7 +142,6 @@ class ConvertKit_Helpers {
 		}
 
 		wp_send_json( $option_values );
-
 	}
 
 	/**
@@ -179,7 +182,6 @@ class ConvertKit_Helpers {
 		}
 
 		wp_send_json( $option_values );
-
 	}
 
 	/**
@@ -220,7 +222,6 @@ class ConvertKit_Helpers {
 		}
 
 		wp_send_json( $option_values );
-
 	}
 
 	/**
@@ -242,12 +243,14 @@ class ConvertKit_Helpers {
 
 		if ( 200 !== $status_code ) {
 
-			throw new \Exception( implode( ': ', array_values( $body ) ), $status_code );
+			throw new \Exception(
+				esc_html( implode( ': ', array_map( 'esc_html', array_values( $body ) ) ) ),
+				absint( $status_code )
+			);
 
 		}
 
 		return $body;
-
 	}
 
 	/**
@@ -269,22 +272,19 @@ class ConvertKit_Helpers {
 
 		if ( 200 !== $status_code ) {
 
-			throw new \Exception( implode( ': ', array_values( $body ) ), $status_code );
+			throw new \Exception( esc_html( implode( ': ', array_values( $body ) ) ), absint( $status_code ) );
 
 		}
 
 		return $body;
-
 	}
 
 	/**
 	 * get_client
-	 *
 	 */
 	public function get_client() {
 
 		return automator_get_option( 'automator_convertkit_client', null );
-
 	}
 
 	/**
@@ -301,7 +301,6 @@ class ConvertKit_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -338,7 +337,6 @@ class ConvertKit_Helpers {
 		);
 
 		die;
-
 	}
 
 	/**
@@ -357,7 +355,6 @@ class ConvertKit_Helpers {
 			),
 			admin_url( 'edit.php' )
 		);
-
 	}
 
 
@@ -379,8 +376,5 @@ class ConvertKit_Helpers {
 		}
 
 		return $date->format( sprintf( '%s %s', get_option( 'date_format', 'F j, Y' ), get_option( 'time_format', 'g:i a' ) ) );
-
 	}
-
-
 }

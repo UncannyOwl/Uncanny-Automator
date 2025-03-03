@@ -546,7 +546,7 @@ class Discord_Helpers {
 
 		$required_error = esc_html_x( 'Message is required', 'Discord', 'uncanny-automator' );
 		if ( ! isset( $parsed[ $meta_key ] ) ) {
-			throw new Exception( $required_error );
+			throw new Exception( esc_html( $required_error ) );
 		}
 
 		// Sanitize the message
@@ -559,7 +559,7 @@ class Discord_Helpers {
 		$message = preg_replace( '/[^\x{0000}-\x{10FFFF}]/u', '', $message );
 
 		if ( empty( $message ) ) {
-			throw new Exception( $required_error );
+			throw new Exception( esc_html( $required_error ) );
 		}
 
 		return $message;
@@ -577,13 +577,13 @@ class Discord_Helpers {
 	 */
 	public function get_text_value_from_parsed( $parsed, $meta_key, $error ) {
 		if ( ! isset( $parsed[ $meta_key ] ) ) {
-			throw new Exception( $error );
+			throw new Exception( esc_html( $error ) );
 		}
 
 		$value = sanitize_text_field( $parsed[ $meta_key ] );
 
 		if ( empty( $value ) ) {
-			throw new Exception( $error );
+			throw new Exception( esc_html( $error ) );
 		}
 
 		return $value;

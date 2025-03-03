@@ -55,21 +55,21 @@ class DRIP_ADD_TAG {
 
 		$email = array(
 			'option_code' => 'EMAIL',
-			'label'       => __( 'Email', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
 		);
 
 		$tag = array(
 			'option_code'           => $this->action_meta,
-			'label'                 => __( 'Tag', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Tag', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'options'               => $this->functions->get_tags_options(),
 			'required'              => true,
 			'supports_custom_value' => true,
 			'supports_tokens'       => true,
 			'options_show_id'       => false,
-			'placeholder'           => __( 'Select a tag', 'uncanny-automator' ),
+			'placeholder'           => esc_html__( 'Select a tag', 'uncanny-automator' ),
 		);
 
 		return array(

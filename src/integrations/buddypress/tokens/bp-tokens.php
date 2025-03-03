@@ -119,25 +119,25 @@ class Bp_Tokens {
 
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_ID',
-				'tokenName'       => __( 'Activity ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Activity ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'BPUSERACTIVITY',
 			);
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_URL',
-				'tokenName'       => __( 'Activity URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Activity URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BPUSERACTIVITY',
 			);
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_STREAM_URL',
-				'tokenName'       => __( 'Activity stream URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Activity stream URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BPUSERACTIVITY',
 			);
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_CONTENT',
-				'tokenName'       => __( 'Activity content', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Activity content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BPUSERACTIVITY',
 			);
@@ -147,25 +147,25 @@ class Bp_Tokens {
 			$trigger_code = $args['triggers_meta']['code'];
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_ID',
-				'tokenName'       => __( 'Friend ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Friend ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_FIRSTNAME',
-				'tokenName'       => __( 'Friend first name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Friend first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_LASTNAME',
-				'tokenName'       => __( 'Friend last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Friend last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_EMAIL',
-				'tokenName'       => __( 'Friend email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Friend email', 'uncanny-automator' ),
 				'tokenType'       => 'email',
 				'tokenIdentifier' => $trigger_code,
 			);

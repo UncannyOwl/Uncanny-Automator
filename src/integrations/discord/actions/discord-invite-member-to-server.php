@@ -140,7 +140,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 				),
 				'description'               => sprintf(
 					// translators: %s Available token codes
-					__( 'Use following tokens in email:<br />%s', 'uncanny-automator' ),
+					__( 'Use following tokens in email:<br />%s', 'uncanny-automator' ), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 					join( '<br />', $available_codes )
 				),
 			),
@@ -196,7 +196,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		$subject    = $this->helpers->get_text_value_from_parsed( $parsed, 'SUBJECT', _x( 'Email subject is required', 'Discord', 'uncanny-automator' ) );
 		$email_body = isset( $action_data['meta']['EMAILBODY'] ) ? $action_data['meta']['EMAILBODY'] : '';
 		if ( empty( $email_body ) ) {
-			throw new Exception( _x( 'Email body is required', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Email body is required', 'Discord', 'uncanny-automator' ) );
 		}
 
 		// Make request for invite URL.
@@ -237,7 +237,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		$mailed = wp_mail( $email_to, $subject, $email_body, $headers );
 
 		if ( ! $mailed ) {
-			throw new Exception( _x( 'Error sending email.', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Error sending email.', 'Discord', 'uncanny-automator' ) );
 		}
 
 		return true;
@@ -265,7 +265,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 				_x( '%s field is not a valid email.', 'Discord', 'uncanny-automator' ),
 				$field_name
 			);
-			throw new Exception( $error );
+			throw new Exception( esc_html( $error ) );
 		}
 
 		return $email;
@@ -287,13 +287,13 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		// Validate the expiration.
 		$expiration = absint( $this->get_parsed_meta_value( 'EXPIRATION', 0 ) );
 		if ( $expiration < 0 || $expiration > 604800 ) {
-			throw new Exception( _x( 'Expiration must be between 0 and 604800 seconds', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Expiration must be between 0 and 604800 seconds', 'Discord', 'uncanny-automator' ) );
 		}
 
 		// Validate the use count.
 		$use_count = absint( $this->get_parsed_meta_value( 'USE_COUNT', 0 ) );
 		if ( $use_count < 0 || $use_count > 100 ) {
-			throw new Exception( _x( 'Use count must be between 0 and 100', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Use count must be between 0 and 100', 'Discord', 'uncanny-automator' ) );
 		}
 
 		// Prepare the body.
@@ -312,16 +312,15 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		// Check for errors.
 		$status_code = isset( $response['statusCode'] ) ? absint( $response['statusCode'] ) : 0;
 		if ( 200 !== $status_code ) {
-			throw new Exception( $error );
+			throw new Exception( esc_html( $error ) );
 		}
 
 		$code = isset( $response['data']['code'] ) ? $response['data']['code'] : '';
 
 		if ( empty( $code ) ) {
-			throw new Exception( $error );
+			throw new Exception( esc_html( $error ) );
 		}
 
 		return 'https://discord.gg/' . $code;
 	}
-
 }

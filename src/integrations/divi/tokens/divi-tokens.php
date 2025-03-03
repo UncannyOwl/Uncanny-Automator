@@ -34,17 +34,17 @@ class Divi_Tokens {
 		$form_fields  = array(
 			array(
 				'field_id'    => 'name',
-				'field_title' => __( 'Name (if available)', 'uncanny-automator' ),
+				'field_title' => esc_html__( 'Name (if available)', 'uncanny-automator' ),
 				'field_type'  => 'text',
 			),
 			array(
 				'field_id'    => 'email',
-				'field_title' => __( 'Email address (if available)', 'uncanny-automator' ),
+				'field_title' => esc_html__( 'Email address (if available)', 'uncanny-automator' ),
 				'field_type'  => 'email',
 			),
 			array(
 				'field_id'    => 'message',
-				'field_title' => __( 'Message (if available)', 'uncanny-automator' ),
+				'field_title' => esc_html__( 'Message (if available)', 'uncanny-automator' ),
 				'field_type'  => 'text',
 			),
 		);
@@ -108,7 +108,7 @@ class Divi_Tokens {
 				if ( isset( $trigger['meta'][ $pieces[2] . '_readable' ] ) ) {
 					$value = $trigger['meta'][ $pieces[2] . '_readable' ];
 					if ( 'Any form' === $value ) {
-						$value = __( 'Divi form', 'uncanny-automator' );
+						$value = esc_html__( 'Divi form', 'uncanny-automator' );
 					}
 				}
 				return $value;

@@ -44,7 +44,7 @@ if ( $removable_statuses ) {
 		<?php echo $is_enabled ? 'checked' : ''; ?>
 
 		status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>"
-		helper="<?php echo esc_attr( sprintf( '%s %s', __( 'Turning on this setting will automatically purge new recipe log entries with any of the following statuses:', 'uncanny-automator' ), '"' . join( '", "', $statuses ) . '"' ) ); ?>"
+		helper="<?php echo esc_attr( sprintf( '%s %s', esc_html__( 'Turning on this setting will automatically purge new recipe log entries with any of the following statuses:', 'uncanny-automator' ), '"' . join( '", "', $statuses ) . '"' ) ); ?>"
 		class="uap-spacing-top"
 	></uo-switch>
 	<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">

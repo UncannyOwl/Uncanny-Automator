@@ -111,7 +111,7 @@ class Zoom_Helpers {
 	/**
 	 * @param Zoom_Helpers $options
 	 */
-	public function setOptions( Zoom_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Zoom_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
@@ -132,14 +132,14 @@ class Zoom_Helpers {
 	public function get_meetings_field( $label = null, $option_code = 'ZOOMMEETING', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Meeting', 'uncanny-automator' );
+			$label = esc_html__( 'Meeting', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any Meeting', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any Meeting', 'uncanny-automator' ),
 			)
 		);
 
@@ -161,11 +161,11 @@ class Zoom_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch meetngs from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch meetings from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			if ( empty( $response['data']['meetings'] ) || count( $response['data']['meetings'] ) < 1 ) {
-				throw new \Exception( __( 'No meetings were found in your account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No meetings were found in your account', 'uncanny-automator' ) );
 			}
 
 			foreach ( $response['data']['meetings'] as $meeting ) {
@@ -177,7 +177,7 @@ class Zoom_Helpers {
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
-				'text'  => $e->getMessage(),
+				'text'  => esc_html( $e->getMessage() ),
 			);
 		}
 
@@ -216,11 +216,11 @@ class Zoom_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch users from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch users from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			if ( empty( $response['data']['users'] ) || count( $response['data']['users'] ) < 1 ) {
-				throw new \Exception( __( 'No users were found in your account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No users were found in your account', 'uncanny-automator' ) );
 			}
 
 			foreach ( $response['data']['users'] as $user ) {
@@ -232,7 +232,7 @@ class Zoom_Helpers {
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
-				'text'  => $e->getMessage(),
+				'text'  => esc_html( $e->getMessage() ),
 			);
 		}
 
@@ -253,7 +253,7 @@ class Zoom_Helpers {
 			'option_code'       => 'MEETINGQUESTIONS',
 			'input_type'        => 'repeater',
 			'relevant_tokens'   => array(),
-			'label'             => __( 'Meeting questions', 'uncanny-automator' ),
+			'label'             => esc_html__( 'Meeting questions', 'uncanny-automator' ),
 			/* translators: 1. Button */
 			'description'       => '',
 			'required'          => false,
@@ -266,16 +266,16 @@ class Zoom_Helpers {
 			'fields'            => array(
 				array(
 					'option_code' => 'QUESTION_NAME',
-					'label'       => __( 'Question', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Question', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 					'read_only'   => true,
 					'options'     => array(),
 				),
-				Automator()->helpers->recipe->field->text_field( 'QUESTION_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+				Automator()->helpers->recipe->field->text_field( 'QUESTION_VALUE', esc_html__( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
 			),
-			'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
-			'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+			'add_row_button'    => esc_html__( 'Add pair', 'uncanny-automator' ),
+			'remove_row_button' => esc_html__( 'Remove pair', 'uncanny-automator' ),
 			'hide_actions'      => true,
 		);
 	}
@@ -302,10 +302,10 @@ class Zoom_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch meeting questions from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch meeting questions from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
-			wp_send_json_success( $response['data'], $response['statusCode'] );
+			wp_send_json_success( $response['data'], absint( $response['statusCode'] ) );
 
 		} catch ( \Exception $e ) {
 			$error = new \WP_Error( $e->getCode(), $e->getMessage() );
@@ -340,11 +340,11 @@ class Zoom_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch user meetings from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch user meetings from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			if ( empty( $response['data']['meetings'] ) ) {
-				throw new \Exception( __( 'User meetings were not found', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'User meetings were not found', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			foreach ( $response['data']['meetings'] as $meeting ) {
@@ -363,7 +363,7 @@ class Zoom_Helpers {
 			}
 		} catch ( \Exception $e ) {
 			$options[] = array(
-				'text'  => $e->getMessage(),
+				'text'  => esc_html( $e->getMessage() ),
 				'value' => '',
 			);
 		}
@@ -387,15 +387,15 @@ class Zoom_Helpers {
 	public function add_to_meeting( $user, $meeting_key, $meeting_occurrences, $action_data ) {
 
 		if ( empty( $user['email'] ) || false === is_email( $user['email'] ) ) {
-			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $user['first_name'] ) ) {
-			throw new \Exception( __( 'First name is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'First name is missing', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $meeting_key ) ) {
-			throw new \Exception( __( 'Meeting key is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Meeting key is missing', 'uncanny-automator' ) );
 		}
 
 		$body = array(
@@ -412,7 +412,7 @@ class Zoom_Helpers {
 		$response = $this->api_request( $body, $action_data );
 
 		if ( 201 !== $response['statusCode'] ) {
-			throw new \Exception( __( 'User could not be added to the meeting', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'User could not be added to the meeting', 'uncanny-automator' ) );
 		}
 
 		return $response;
@@ -429,7 +429,7 @@ class Zoom_Helpers {
 	public function unregister_user( $email, $meeting_key, $action_data ) {
 
 		if ( empty( $email ) || ! is_email( $email ) ) {
-			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
 		$body = array(
@@ -441,10 +441,15 @@ class Zoom_Helpers {
 		$response = $this->api_request( $body, $action_data );
 
 		if ( 201 !== $response['statusCode'] && 204 !== $response['statusCode'] ) {
-			throw new \Exception( __( 'Could not unregister the user', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Could not unregister the user', 'uncanny-automator' ) );
 		}
 	}
 
+	/**
+	 * Returns the disconnect URL.
+	 *
+	 * @return string
+	 */
 	public function disconnect_url() {
 		return add_query_arg(
 			array(
@@ -469,7 +474,7 @@ class Zoom_Helpers {
 		$response = $this->api_request( $body );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( __( 'Could not fetch user info', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Could not fetch user info', 'uncanny-automator' ) );
 		}
 
 		$user_info = $response['data'];
@@ -498,7 +503,6 @@ class Zoom_Helpers {
 		}
 
 		return $client;
-
 	}
 
 	/**
@@ -516,7 +520,7 @@ class Zoom_Helpers {
 		$client_secret = trim( automator_get_option( 'uap_automator_zoom_api_client_secret', '' ) );
 
 		if ( empty( $account_id ) || empty( $client_id ) || empty( $client_secret ) ) {
-			throw new \Exception( __( 'Zoom credentials are missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Zoom credentials are missing', 'uncanny-automator' ) );
 		}
 
 		$params = array(
@@ -534,7 +538,7 @@ class Zoom_Helpers {
 		$this->check_for_errors( $response );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( __( 'Could not fetch the token. Please check the credentials.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Could not fetch the token. Please check the credentials.', 'uncanny-automator' ) );
 		}
 
 		$client['access_token'] = $response['data']['access_token'];
@@ -544,7 +548,6 @@ class Zoom_Helpers {
 		automator_update_option( '_uncannyowl_zoom_settings', $client );
 
 		return $client;
-
 	}
 
 	/**
@@ -561,7 +564,6 @@ class Zoom_Helpers {
 		wp_safe_redirect( $this->tab_url );
 
 		exit;
-
 	}
 
 	/**
@@ -624,9 +626,8 @@ class Zoom_Helpers {
 		}
 
 		if ( ! empty( $error ) ) {
-			throw new \Exception( $error, $response['statusCode'] );
+			throw new \Exception( esc_html( $error ), absint( $response['statusCode'] ) );
 		}
-
 	}
 
 	/**
@@ -684,7 +685,7 @@ class Zoom_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch meeting occurrences from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch meeting occurrences from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			if ( ! empty( $response['data']['occurrences'] ) ) {
@@ -702,7 +703,7 @@ class Zoom_Helpers {
 			}
 		} catch ( \Exception $e ) {
 			$options[] = array(
-				'text'  => $e->getMessage(),
+				'text'  => esc_html( $e->getMessage() ),
 				'value' => '',
 			);
 		}

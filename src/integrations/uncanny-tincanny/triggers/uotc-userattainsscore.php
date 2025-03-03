@@ -45,9 +45,9 @@ class UOTC_USERATTAINSSCORE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Uncanny Reporting */
-			'sentence'            => sprintf( __( 'A user attains a score {{greater than, less than or equal to:%1$s}} {{a score:%2$s}} on {{a Tin Can module:%3$s}}', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'TCMODULEINTERACTION' ),
+			'sentence'            => sprintf( esc_html__( 'A user attains a score {{greater than, less than or equal to:%1$s}} {{a score:%2$s}} on {{a Tin Can module:%3$s}}', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'TCMODULEINTERACTION' ),
 			/* translators: Logged-in trigger - Uncanny Reporting */
-			'select_option_name'  => __( 'A user attains {{a score}} {{greater than, less than or equal to}} on {{a Tin Can module}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A user attains {{a score}} {{greater than, less than or equal to}} on {{a Tin Can module}}', 'uncanny-automator' ),
 			'action'              => 'tincanny_module_result_processed',
 			'priority'            => 99,
 			'accepted_args'       => 3,

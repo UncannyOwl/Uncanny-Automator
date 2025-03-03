@@ -736,7 +736,7 @@ class Wc_Tokens {
 						break;
 					case 'SHIP_DATE':
 						$value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( 'WOOORDER_SHIP_DATE', $trigger_id, $trigger_log_id, $user_id );
-						$value = $value ? date( 'Y-m-d H:i:s', $value ) : ''; //phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+						$value = $value ? wp_date( 'Y-m-d H:i:s', $value ) : '';
 						break;
 					case 'order_summary':
 						$value = $this->build_summary_style_html( $order );

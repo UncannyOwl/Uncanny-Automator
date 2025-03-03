@@ -20,6 +20,7 @@ class PRLI_LINK_CLICKED extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_code( 'PRLI_LINK_CLICKED' );
 		$this->set_trigger_meta( 'PRLI_LINKS' );
 		// Trigger sentence - Pretty Links
+		// translators: 1: Pretty link
 		$this->set_sentence( sprintf( esc_attr_x( 'A user clicks {{a pretty link:%1$s}}', 'Pretty Links', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A user clicks {{a pretty link}}', 'Pretty Links', 'uncanny-automator' ) );
 		$this->add_action( 'prli_record_click' );

@@ -23,7 +23,6 @@ class GCALENDAR_ADDEVENT {
 	public function __construct() {
 
 		$this->setup_action();
-
 	}
 
 	/**
@@ -217,7 +216,6 @@ class GCALENDAR_ADDEVENT {
 		$this->set_background_processing( true );
 
 		$this->register_action();
-
 	}
 
 	/**
@@ -230,7 +228,6 @@ class GCALENDAR_ADDEVENT {
 	protected function get_formatted_code( $option_code = '' ) {
 
 		return sprintf( '%1$s_%2$s', self::PREFIX, $option_code );
-
 	}
 
 
@@ -301,7 +298,6 @@ class GCALENDAR_ADDEVENT {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 
 		}
-
 	}
 
 	/**
@@ -314,11 +310,16 @@ class GCALENDAR_ADDEVENT {
 		try {
 			$dt = new \DateTime( $time ); // Accept whatever date.
 		} catch ( \Exception $e ) {
-			throw new \Exception( sprintf( 'Error: Invalid time provided (%s)', $time ) );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Time */
+					esc_html__( 'Error: Invalid time provided (%s)', 'uncanny-automator' ),
+					esc_html( $time )
+				)
+			);
 		}
 
 		return $dt->format( $this->get_time_format() );
-
 	}
 	/**
 	 * Autoformats the given date base on the format from WordPress.
@@ -330,11 +331,16 @@ class GCALENDAR_ADDEVENT {
 		try {
 			$dt = new \DateTime( $date ); // Accept whatever date.
 		} catch ( \Exception $e ) {
-			throw new \Exception( sprintf( 'Error: Invalid date provided (%s)', $date ) );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Date */
+					esc_html__( 'Error: Invalid date provided (%s)', 'uncanny-automator' ),
+					esc_html( $date )
+				)
+			);
 		}
 
 		return $dt->format( $this->get_date_format() );
-
 	}
 
 	/**
@@ -345,7 +351,6 @@ class GCALENDAR_ADDEVENT {
 	protected function get_date_format() {
 
 		return apply_filters( 'automator_google_calendar_date_format', get_option( 'date_format', 'F j, Y' ), $this );
-
 	}
 
 	/**
@@ -356,7 +361,5 @@ class GCALENDAR_ADDEVENT {
 	protected function get_time_format() {
 
 		return apply_filters( 'automator_google_calendar_time_format', get_option( 'time_format', 'g:i a' ), $this );
-
 	}
-
 }

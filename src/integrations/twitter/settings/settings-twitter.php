@@ -110,7 +110,7 @@ class Twitter_Settings extends Settings\Premium_Integration_Settings {
 			$this->add_alert(
 				array(
 					'type'    => 'success',
-					'heading' => __( 'You have successfully connected your X/Twitter account.', 'uncanny-automator' ),
+					'heading' => esc_html__( 'You have successfully connected your X/Twitter account.', 'uncanny-automator' ),
 				)
 			);
 
@@ -124,7 +124,7 @@ class Twitter_Settings extends Settings\Premium_Integration_Settings {
 				array(
 					'type'    => 'error',
 					'heading' => 'Connection error',
-					'content' => __( 'There was an error connecting your X/Twitter account: ', 'uncanny-automator' ) . wp_json_encode( $e->getMessage() ),
+					'content' => esc_html__( 'There was an error connecting your X/Twitter account:', 'uncanny-automator' ) . wp_json_encode( $e->getMessage() ),
 				)
 			);
 

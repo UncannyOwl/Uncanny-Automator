@@ -64,12 +64,12 @@ class ADVANCED_COUPONS_USER_RECEIVES_CREDIT {
 		$options = Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->advanced_coupons->get_options_for_credit( __( 'Condition', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => false ) ),
+					Automator()->helpers->recipe->advanced_coupons->get_options_for_credit( esc_html__( 'Condition', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => false ) ),
 					Automator()->helpers->recipe->field->text(
 						array(
 							'option_code' => 'ACFWC_AMOUNT',
-							'label'       => __( 'Amount', 'uncanny-automator' ),
-							'token_name'  => __( 'Store credit spent', 'uncanny-automator' ),
+							'label'       => esc_html__( 'Amount', 'uncanny-automator' ),
+							'token_name'  => esc_html__( 'Store credit spent', 'uncanny-automator' ),
 							'input_type'  => 'float',
 							'tokens'      => false,
 						)

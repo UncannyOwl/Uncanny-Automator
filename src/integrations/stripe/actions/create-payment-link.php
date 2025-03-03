@@ -25,9 +25,8 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 
 		/* translators: %1$s Contact Email */
-		$this->set_sentence( sprintf( esc_attr_x( 'Create a payment link for {{a product:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( 'Create a payment link for {{a product}}', 'uncanny-automator' ) );
-
+		$this->set_sentence( sprintf( esc_attr_x( 'Create a payment link for {{a product:%1$s}}', 'Stripe', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_attr_x( 'Create a payment link for {{a product}}', 'Stripe', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -40,12 +39,12 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		$products_repeater = array(
 			'option_code'       => 'PRICES',
 			'input_type'        => 'repeater',
-			'label'             => __( 'Items', 'uncanny-automator' ),
+			'label'             => esc_html__( 'Items', 'uncanny-automator' ),
 			'required'          => true,
 			'fields'            => array(
 				array(
 					'option_code' => 'PRICE',
-					'label'       => __( 'Product and price', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Product and price', 'uncanny-automator' ),
 					'input_type'  => 'select',
 					'required'    => true,
 					'read_only'   => false,
@@ -54,15 +53,15 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 				Automator()->helpers->recipe->field->text(
 					array(
 						'option_code' => 'QUANTITY',
-						'label'       => __( 'Quantity', 'uncanny-automator' ),
+						'label'       => esc_html__( 'Quantity', 'uncanny-automator' ),
 						'input_type'  => 'text',
 						'tokens'      => true,
 						'default'     => 1,
 					)
 				),
 			),
-			'add_row_button'    => __( 'Add product', 'uncanny-automator' ),
-			'remove_row_button' => __( 'Remove product', 'uncanny-automator' ),
+			'add_row_button'    => esc_html__( 'Add product', 'uncanny-automator' ),
+			'remove_row_button' => esc_html__( 'Remove product', 'uncanny-automator' ),
 			'hide_actions'      => false,
 			'relevant_tokens'   => array(),
 		);
@@ -191,7 +190,7 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 	public function define_tokens() {
 		return array(
 			'LINK' => array(
-				'name' => __( 'Link', 'uncanny-automator' ),
+				'name' => esc_html__( 'Link', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 		);
@@ -268,7 +267,7 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 
 			$error = _x( 'Link could not be created', 'Stripe', 'uncanny-automator' );
 
-			throw new \Exception( $error );
+			throw new \Exception( esc_html( $error ) );
 		}
 
 		$this->hydrate_tokens(
@@ -355,4 +354,3 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		return $options;
 	}
 }
-

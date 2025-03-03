@@ -220,11 +220,7 @@ class Admin_Menu {
 				if ( $tab_settings->fields ) {
 					foreach ( $tab_settings->fields as $field_id => $field_settings ) {
 						$args = isset( $field_settings->field_args ) ? $field_settings->field_args : array();
-						if ( empty( $args ) ) {
-							register_setting( $tab_settings->settings_field, $field_id );
-						} else {
-							register_setting( $tab_settings->settings_field, $field_id, $args );
-						}
+						register_setting( $tab_settings->settings_field, $field_id, $args ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
 					}
 				}
 			}
@@ -360,8 +356,8 @@ class Admin_Menu {
 		add_submenu_page(
 			'edit.php?post_type=uo-recipe',
 			/* translators: 1. Trademarked term */
-			__( 'App integrations', 'uncanny-automator' ),
-			__( 'App integrations', 'uncanny-automator' ),
+			esc_html__( 'App integrations', 'uncanny-automator' ),
+			esc_html__( 'App integrations', 'uncanny-automator' ),
 			'manage_options',
 			admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations' )
 		);
@@ -461,7 +457,7 @@ class Admin_Menu {
 
 		$paid_usage_count = isset( $is_connected['paid_usage_count'] ) ? $is_connected['paid_usage_count'] : 0;
 		$usage_limit      = isset( $is_connected['usage_limit'] ) ? $is_connected['usage_limit'] : 250;
-		$first_name       = isset( $is_connected['customer_name'] ) ? $is_connected['customer_name'] : __( 'Guest', 'uncanny-automator' );
+		$first_name       = isset( $is_connected['customer_name'] ) ? $is_connected['customer_name'] : esc_html__( 'Guest', 'uncanny-automator' );
 		$avatar           = isset( $is_connected['user_avatar'] ) ? $is_connected['user_avatar'] : esc_url( get_avatar_url( $user->ID ) );
 
 		$connected_sites = isset( $is_connected['license_id'] ) && isset( $is_connected['payment_id'] )
@@ -701,10 +697,10 @@ class Admin_Menu {
 			foreach ( $tabs as $tab => $tab_settings ) {
 				$class = ( (string) $tab === (string) $current ) ? 'nav-tab-active' : '';
 				$url   = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings';
-				$html  .= '<a class="nav-tab ' . $class . '" href="' . $url . '&tab=' . $tab . '">' . $tab_settings->name . '</a>'; //phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+				$html  .= '<a class="nav-tab ' . $class . '" href="' . $url . '&tab=' . $tab . '">' . $tab_settings->name . '</a>'; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 			}
 			$html .= '</h2>';
-			echo $html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 
@@ -793,7 +789,10 @@ class Admin_Menu {
 			if ( 'lifetime' !== $license_data->expires ) {
 				automator_update_option( 'uap_automator_pro_license_expiry', $license_data->expires );
 			} else {
-				automator_update_option( 'uap_automator_pro_license_expiry', date( 'Y-m-d H:i:s', mktime( 12, 59, 59, 12, 31, 2099 ) ) );
+				automator_update_option(
+					'uap_automator_pro_license_expiry',
+					wp_date( 'Y-m-d H:i:s', mktime( 12, 59, 59, 12, 31, 2099 ) )
+				);
 			}
 
 			if ( 'lifetime' !== $license_data->expires ) {
@@ -964,73 +963,73 @@ class Admin_Menu {
 				'error'           => array(
 					'request' => array(
 						'badRequest'   => array(
-							'title' => __( 'Bad request', 'uncanny-automator' ),
+							'title' => esc_html__( 'Bad request', 'uncanny-automator' ),
 						),
 
 						'accessDenied' => array(
-							'title' => __( 'Access denied', 'uncanny-automator' ),
+							'title' => esc_html__( 'Access denied', 'uncanny-automator' ),
 						),
 
 						'notFound'     => array(
-							'title' => __( 'Not found', 'uncanny-automator' ),
+							'title' => esc_html__( 'Not found', 'uncanny-automator' ),
 						),
 
 						'timeout'      => array(
-							'title' => __( 'Request timeout', 'uncanny-automator' ),
+							'title' => esc_html__( 'Request timeout', 'uncanny-automator' ),
 						),
 
 						'serverError'  => array(
-							'title' => __( 'Internal error', 'uncanny-automator' ),
+							'title' => esc_html__( 'Internal error', 'uncanny-automator' ),
 						),
 
 						'parserError'  => array(
-							'title' => __( 'Parser error', 'uncanny-automator' ),
+							'title' => esc_html__( 'Parser error', 'uncanny-automator' ),
 						),
 
 						'generic'      => array(
-							'title' => __( 'Unknown error', 'uncanny-automator' ),
+							'title' => esc_html__( 'Unknown error', 'uncanny-automator' ),
 						),
 					),
 				),
 				'proLabel'        => array(
-					'pro' => __( 'Pro', 'uncanny-automator' ),
+					'pro' => esc_html__( 'Pro', 'uncanny-automator' ),
 				),
-				'notSaved'        => __( 'Changes you made may not be saved.', 'uncanny-automator' ),
+				'notSaved'        => esc_html__( 'Changes you made may not be saved.', 'uncanny-automator' ),
 
 				'utilities'       => array(
 					'confirm'      => array(
-						'heading'            => __( 'Are you sure?', 'uncanny-automator' ),
+						'heading'            => esc_html__( 'Are you sure?', 'uncanny-automator' ),
 						// UncannyAutomatorBackend.i18n.utilities.confirm.heading
-						'confirmButtonLabel' => __( 'Confirm', 'uncanny-automator' ),
+						'confirmButtonLabel' => esc_html__( 'Confirm', 'uncanny-automator' ),
 						// UncannyAutomatorBackend.i18n.utilities.confirm.confirmButtonLabel
-						'cancelButtonLabel'  => __( 'Cancel', 'uncanny-automator' ),
+						'cancelButtonLabel'  => esc_html__( 'Cancel', 'uncanny-automator' ),
 						// UncannyAutomatorBackend.i18n.utilities.confirm.cancelButtonLabel
 					),
 					// UncannyAutomatorBackend.i18n.utilities.relativeTime
 					'relativeTime' => array(
 						/* translators: 1. A relative time in the future, like "in 5 seconds" or "in 1 year" */
-						'future' => __( 'in %s', 'uncanny-automator' ),
+						'future' => esc_html__( 'in %s', 'uncanny-automator' ),
 						/* translators: 1. A relative time in the past, like "5 seconds ago" or "1 year ago" */
-						'past'   => __( '%s ago', 'uncanny-automator' ),
-						's'      => __( 'a second', 'uncanny-automator' ),
+						'past'   => esc_html__( '%s ago', 'uncanny-automator' ),
+						's'      => esc_html__( 'a second', 'uncanny-automator' ),
 						/* translators: 1. Number of seconds */
-						'ss'     => __( '%d seconds', 'uncanny-automator' ),
-						'm'      => __( 'a minute', 'uncanny-automator' ),
+						'ss'     => esc_html__( '%d seconds', 'uncanny-automator' ),
+						'm'      => esc_html__( 'a minute', 'uncanny-automator' ),
 						/* translators: 1. Number of minutes */
-						'mm'     => __( '%d minutes', 'uncanny-automator' ),
-						'h'      => __( 'an hour', 'uncanny-automator' ),
+						'mm'     => esc_html__( '%d minutes', 'uncanny-automator' ),
+						'h'      => esc_html__( 'an hour', 'uncanny-automator' ),
 						/* translators: 1. Number of hours */
-						'hh'     => __( '%d hours', 'uncanny-automator' ),
-						'd'      => __( 'a day', 'uncanny-automator' ),
+						'hh'     => esc_html__( '%d hours', 'uncanny-automator' ),
+						'd'      => esc_html__( 'a day', 'uncanny-automator' ),
 						/* translators: 1. Number of days */
-						'dd'     => __( '%d days', 'uncanny-automator' ),
-						'M'      => __( 'a month', 'uncanny-automator' ),
+						'dd'     => esc_html__( '%d days', 'uncanny-automator' ),
+						'M'      => esc_html__( 'a month', 'uncanny-automator' ),
 						/* translators: 1. Number of months */
-						'MM'     => __( '%d months', 'uncanny-automator' ),
-						'y'      => __( 'a year', 'uncanny-automator' ),
+						'MM'     => esc_html__( '%d months', 'uncanny-automator' ),
+						'y'      => esc_html__( 'a year', 'uncanny-automator' ),
 						/* translators: 1. Number of years */
-						'yy'     => __( '%d years', 'uncanny-automator' ),
-						'now'    => __( 'now', 'uncanny-automator' ),
+						'yy'     => esc_html__( '%d years', 'uncanny-automator' ),
+						'now'    => esc_html__( 'now', 'uncanny-automator' ),
 					),
 				),
 
@@ -1038,12 +1037,12 @@ class Admin_Menu {
 				// UncannyAutomatorBackend.i18n.copyToClipboard
 
 				'setupWizard'     => array(
-					'skipThis'            => __( 'Skip this', 'uncanny-automator' ),
-					'areYouSure'          => __( 'Are you sure?', 'uncanny-automator' ),
-					'freeAccountFeatures' => __( 'Your free account gives you access to Slack, Google Sheets, Facebook, exclusive discounts, updates and much more.', 'uncanny-automator' ),
-					'proAccountFeatures'  => __( 'Your pro license gives you access to unlimited app credits, pro updates, premium support and much more.', 'uncanny-automator' ),
-					'skipForNow'          => __( 'Skip for now', 'uncanny-automator' ),
-					'signUpNow'           => __( 'Sign up now!', 'uncanny-automator' ),
+					'skipThis'            => esc_html__( 'Skip this', 'uncanny-automator' ),
+					'areYouSure'          => esc_html__( 'Are you sure?', 'uncanny-automator' ),
+					'freeAccountFeatures' => esc_html__( 'Your free account gives you access to Slack, Google Sheets, Facebook, exclusive discounts, updates and much more.', 'uncanny-automator' ),
+					'proAccountFeatures'  => esc_html__( 'Your pro license gives you access to unlimited app credits, pro updates, premium support and much more.', 'uncanny-automator' ),
+					'skipForNow'          => esc_html__( 'Skip for now', 'uncanny-automator' ),
+					'signUpNow'           => esc_html__( 'Sign up now!', 'uncanny-automator' ),
 				),
 				// UncannyAutomatorBackend.i18n.setupWizard
 			),
@@ -1053,31 +1052,32 @@ class Admin_Menu {
 			'components' => array(
 				'userCard' => array(
 					'i18n' => array(
-						'userNotFound' => __( 'User not found', 'uncanny-automator' ),
-						'userID'       => __( 'User ID #%1$s', 'uncanny-automator' ),
-						'unknownError' => __( 'Error: The user data could not be retrieved because of an unknown problem', 'uncanny-automator' ),
-						'idRequired'   => __( "Error: User ID can't be empty", 'uncanny-automator' ),
+						'userNotFound' => esc_html__( 'User not found', 'uncanny-automator' ),
+						/* translators: 1. The user ID */
+						'userID'       => esc_html__( 'User ID #%1$s', 'uncanny-automator' ),
+						'unknownError' => esc_html__( 'Error: The user data could not be retrieved because of an unknown problem', 'uncanny-automator' ),
+						'idRequired'   => esc_html__( "Error: User ID can't be empty", 'uncanny-automator' ),
 					),
 				),
 				'field'    => array(
 					'file' => array(
 						'i18n' => array(
-							'selectFile'       => __( 'Select file', 'uncanny-automator' ),
-							'selectFiles'      => __( 'Select files', 'uncanny-automator' ),
-							'changeFile'       => __( 'Change file', 'uncanny-automator' ),
-							'changeFiles'      => __( 'Change files', 'uncanny-automator' ),
+							'selectFile'       => esc_html__( 'Select file', 'uncanny-automator' ),
+							'selectFiles'      => esc_html__( 'Select files', 'uncanny-automator' ),
+							'changeFile'       => esc_html__( 'Change file', 'uncanny-automator' ),
+							'changeFiles'      => esc_html__( 'Change files', 'uncanny-automator' ),
 							/* translators: 1. The number of rows */
-							'csvRows'          => __( '%1$s rows', 'uncanny-automator' ),
+							'csvRows'          => esc_html__( '%1$s rows', 'uncanny-automator' ),
 							/* translators: 1. The list of headers */
-							'csvHeaders'       => __( 'Headers: %1$s', 'uncanny-automator' ),
+							'csvHeaders'       => esc_html__( 'Headers: %1$s', 'uncanny-automator' ),
 							/* translators: 1. The number of items */
-							'jsonItems'        => __( '%1$s items', 'uncanny-automator' ),
+							'jsonItems'        => esc_html__( '%1$s items', 'uncanny-automator' ),
 							/* translators: 1. The list of keys */
-							'jsonKeys'         => __( 'Keys: %1$s', 'uncanny-automator' ),
+							'jsonKeys'         => esc_html__( 'Keys: %1$s', 'uncanny-automator' ),
 							/* translators: 1. Child elements */
-							'xmlChildElements' => __( '%1$s elements', 'uncanny-automator' ),
+							'xmlChildElements' => esc_html__( '%1$s elements', 'uncanny-automator' ),
 							/* translators: 1. The name of the root element */
-							'xmlRootElement'   => __( 'Root element: %1$s', 'uncanny-automator' ),
+							'xmlRootElement'   => esc_html__( 'Root element: %1$s', 'uncanny-automator' ),
 						),
 					),
 				),
@@ -1089,109 +1089,111 @@ class Admin_Menu {
 				'components' => array(
 					'log'                => array(
 						'i18n' => array(
-							'somethingWentWrong'   => __( 'Something went wrong', 'uncanny-automator' ),
-							'unknownError'         => __( 'Unknown error', 'uncanny-automator' ),
+							'somethingWentWrong'   => esc_html__( 'Something went wrong', 'uncanny-automator' ),
+							'unknownError'         => esc_html__( 'Unknown error', 'uncanny-automator' ),
 							'tryAgain'             => _x( 'Try again', 'Button label', 'uncanny-automator' ),
 							/* translators: 1. Name of the attribute */
-							'attributeMissing'     => __( 'Error: The required attribute "%1$s" is missing', 'uncanny-automator' ),
-							'triggeredBy'          => __( 'User', 'uncanny-automator' ),
-							'userRunNumber'        => __( 'User run number', 'uncanny-automator' ),
-							'recipeStatus'         => __( 'Status', 'uncanny-automator' ),
-							'recipeStartDate'      => __( 'Start date', 'uncanny-automator' ),
-							'recipeEndDate'        => __( 'End date', 'uncanny-automator' ),
-							'triggersSectionTitle' => __( 'Triggers', 'uncanny-automator' ),
-							'actionsSectionTitle'  => __( 'Actions', 'uncanny-automator' ),
-							'refreshingLog'        => __( 'Reloading this log', 'uncanny-automator' ),
-							'userIDNumber'         => __( 'User ID #%1$s', 'uncanny-automator' ),
+							'attributeMissing'     => esc_html__( 'Error: The required attribute "%1$s" is missing', 'uncanny-automator' ),
+							'triggeredBy'          => esc_html__( 'User', 'uncanny-automator' ),
+							'userRunNumber'        => esc_html__( 'User run number', 'uncanny-automator' ),
+							'recipeStatus'         => esc_html__( 'Status', 'uncanny-automator' ),
+							'recipeStartDate'      => esc_html__( 'Start date', 'uncanny-automator' ),
+							'recipeEndDate'        => esc_html__( 'End date', 'uncanny-automator' ),
+							'triggersSectionTitle' => esc_html__( 'Triggers', 'uncanny-automator' ),
+							'actionsSectionTitle'  => esc_html__( 'Actions', 'uncanny-automator' ),
+							'refreshingLog'        => esc_html__( 'Reloading this log', 'uncanny-automator' ),
+							/* translators: 1. The user ID */
+							'userIDNumber'         => esc_html__( 'User ID #%1$s', 'uncanny-automator' ),
 							'anyTrigger'           => _x( 'Any', 'Trigger', 'uncanny-automator' ),
 							'allTriggers'          => _x( 'All', 'Trigger', 'uncanny-automator' ),
 							'actions'              => array(
-								'closeLogDetails'    => __( 'Close log details', 'uncanny-automator' ),
-								'reload'             => __( 'Reload this log entry', 'uncanny-automator' ),
-								'editRecipe'         => __( 'Edit recipe', 'uncanny-automator' ),
-								'deleteLogEntry'     => __( 'Delete this log entry', 'uncanny-automator' ),
-								'downloadLogEntry'   => __( 'Download this log entry', 'uncanny-automator' ),
+								'closeLogDetails'    => esc_html__( 'Close log details', 'uncanny-automator' ),
+								'reload'             => esc_html__( 'Reload this log entry', 'uncanny-automator' ),
+								'editRecipe'         => esc_html__( 'Edit recipe', 'uncanny-automator' ),
+								'deleteLogEntry'     => esc_html__( 'Delete this log entry', 'uncanny-automator' ),
+								'downloadLogEntry'   => esc_html__( 'Download this log entry', 'uncanny-automator' ),
 
-								'irreversibleAction' => __( 'This action is irreversible', 'uncanny-automator' ),
-								'sureDeleteRun'      => __( 'Are you sure you want to delete this entry?', 'uncanny-automator' ),
-								'confirm'            => __( 'Confirm', 'uncanny-automator' ),
+								'irreversibleAction' => esc_html__( 'This action is irreversible', 'uncanny-automator' ),
+								'sureDeleteRun'      => esc_html__( 'Are you sure you want to delete this entry?', 'uncanny-automator' ),
+								'confirm'            => esc_html__( 'Confirm', 'uncanny-automator' ),
 
 								/* translators: 1. The recipe name */
-								'downloadFilename'   => __( 'Log %1$s', 'uncanny-automator' ),
+								'downloadFilename'   => esc_html__( 'Log %1$s', 'uncanny-automator' ),
 
-								'downloading'        => __( 'Downloading', 'uncanny-automator' ),
+								'downloading'        => esc_html__( 'Downloading', 'uncanny-automator' ),
 							),
 						),
 					),
 					'logDialogButton'    => array(
 						'i18n' => array(
-							'details'     => __( 'Details', 'uncanny-automator' ),
-							'viewDetails' => __( 'View details', 'uncanny-automator' ),
+							'details'     => esc_html__( 'Details', 'uncanny-automator' ),
+							'viewDetails' => esc_html__( 'View details', 'uncanny-automator' ),
 						),
 					),
 					'logItemItem'        => array(
 						'i18n' => array(
 							/* translators: 1 and 2 are dates */
-							'dateRange'     => __( '%1$s to %2$s', 'uncanny-automator' ),
+							'dateRange'     => esc_html__( '%1$s to %2$s', 'uncanny-automator' ),
 							/* translators: 1. Is a number */
-							'runs'          => __( '%1$s runs', 'uncanny-automator' ),
+							'runs'          => esc_html__( '%1$s runs', 'uncanny-automator' ),
 
-							'openInSidebar' => __( 'Open in sidebar', 'uncanny-automator' ),
-							'closeSidebar'  => __( 'Close sidebar', 'uncanny-automator' ),
+							'openInSidebar' => esc_html__( 'Open in sidebar', 'uncanny-automator' ),
+							'closeSidebar'  => esc_html__( 'Close sidebar', 'uncanny-automator' ),
 						),
 					),
 					'logItemTrigger'     => array(
 						'i18n' => array(
-							'sidebarTitle' => __( 'Trigger', 'uncanny-automator' ),
+							'sidebarTitle' => esc_html__( 'Trigger', 'uncanny-automator' ),
 							'summary'      => array(
-								'date'      => __( 'Date', 'uncanny-automator' ),
-								'startDate' => __( 'Start date', 'uncanny-automator' ),
-								'endDate'   => __( 'End date', 'uncanny-automator' ),
-								'status'    => __( 'Status', 'uncanny-automator' ),
-								'runs'      => __( 'Runs', 'uncanny-automator' ),
+								'date'      => esc_html__( 'Date', 'uncanny-automator' ),
+								'startDate' => esc_html__( 'Start date', 'uncanny-automator' ),
+								'endDate'   => esc_html__( 'End date', 'uncanny-automator' ),
+								'status'    => esc_html__( 'Status', 'uncanny-automator' ),
+								'runs'      => esc_html__( 'Runs', 'uncanny-automator' ),
 							),
-							'timesNumber'  => __( '%1$s times', 'uncanny-automator' ),
 							/* translators: 1. Number */
-							'runNumber'    => __( 'Run %1$s', 'uncanny-automator' ),
-							'missingItem'  => __( 'Note: The information about this trigger is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
+							'timesNumber'  => esc_html__( '%1$s times', 'uncanny-automator' ),
+							/* translators: 1. Number */
+							'runNumber'    => esc_html__( 'Run %1$s', 'uncanny-automator' ),
+							'missingItem'  => esc_html__( 'Note: The information about this trigger is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
 						),
 					),
 					'logItemAction'      => array(
 						'i18n' => array(
-							'sidebarTitle'           => __( 'Action', 'uncanny-automator' ),
+							'sidebarTitle'           => esc_html__( 'Action', 'uncanny-automator' ),
 							'summary'                => array(
-								'date'      => __( 'Date', 'uncanny-automator' ),
-								'startDate' => __( 'Start date', 'uncanny-automator' ),
-								'endDate'   => __( 'End date', 'uncanny-automator' ),
-								'status'    => __( 'Status', 'uncanny-automator' ),
-								'runs'      => __( 'Runs', 'uncanny-automator' ),
-								'message'   => __( 'Notes', 'uncanny-automator' ),
-								'events'    => __( 'Events', 'uncanny-automator' ),
+								'date'      => esc_html__( 'Date', 'uncanny-automator' ),
+								'startDate' => esc_html__( 'Start date', 'uncanny-automator' ),
+								'endDate'   => esc_html__( 'End date', 'uncanny-automator' ),
+								'status'    => esc_html__( 'Status', 'uncanny-automator' ),
+								'runs'      => esc_html__( 'Runs', 'uncanny-automator' ),
+								'message'   => esc_html__( 'Notes', 'uncanny-automator' ),
+								'events'    => esc_html__( 'Events', 'uncanny-automator' ),
 							),
 							/* translators: 1. Is a number */
-							'tries'                  => __( '%1$s tries', 'uncanny-automator' ),
+							'tries'                  => esc_html__( '%1$s tries', 'uncanny-automator' ),
 							/* translators: 1. Number */
-							'tryNumber'              => __( 'Try %1$s', 'uncanny-automator' ),
-							'resend'                 => __( 'Resend', 'uncanny-automator' ),
-							'cancel'                 => __( 'Cancel', 'uncanny-automator' ),
-							'runNow'                 => __( 'Run now', 'uncanny-automator' ),
-							'unknownError'           => __( 'Unknown error', 'uncanny-automator' ),
-							'cancelConfirm'          => __( 'Are you sure you want to cancel this action?', 'uncanny-automator' ),
-							'cantResendInImportMode' => __( 'Resending is not possible in import mode', 'uncanny-automator' ),
-							'cantCancelInImportMode' => __( 'Cancelling is not possible in import mode', 'uncanny-automator' ),
-							'missingItem'            => __( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
+							'tryNumber'              => esc_html__( 'Try %1$s', 'uncanny-automator' ),
+							'resend'                 => esc_html__( 'Resend', 'uncanny-automator' ),
+							'cancel'                 => esc_html__( 'Cancel', 'uncanny-automator' ),
+							'runNow'                 => esc_html__( 'Run now', 'uncanny-automator' ),
+							'unknownError'           => esc_html__( 'Unknown error', 'uncanny-automator' ),
+							'cancelConfirm'          => esc_html__( 'Are you sure you want to cancel this action?', 'uncanny-automator' ),
+							'cantResendInImportMode' => esc_html__( 'Resending is not possible in import mode', 'uncanny-automator' ),
+							'cantCancelInImportMode' => esc_html__( 'Cancelling is not possible in import mode', 'uncanny-automator' ),
+							'missingItem'            => esc_html__( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
 						),
 					),
 					'logItemLoop'        => array(
 						'i18n' => array(
-							'actionInsideTitle' => __( 'Action inside loop', 'uncanny-automator' ),
-							'missingItem'       => __( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
+							'actionInsideTitle' => esc_html__( 'Action inside loop', 'uncanny-automator' ),
+							'missingItem'       => esc_html__( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
 							'summary'           => array(
-								'status'    => __( 'Status', 'uncanny-automator' ),
-								'date'      => __( 'Date', 'uncanny-automator' ),
-								'startDate' => __( 'Start date', 'uncanny-automator' ),
-								'endDate'   => __( 'End date', 'uncanny-automator' ),
-								'message'   => __( 'Notes', 'uncanny-automator' ),
+								'status'    => esc_html__( 'Status', 'uncanny-automator' ),
+								'date'      => esc_html__( 'Date', 'uncanny-automator' ),
+								'startDate' => esc_html__( 'Start date', 'uncanny-automator' ),
+								'endDate'   => esc_html__( 'End date', 'uncanny-automator' ),
+								'message'   => esc_html__( 'Notes', 'uncanny-automator' ),
 							),
 						),
 					),
@@ -1204,58 +1206,59 @@ class Admin_Menu {
 							'all'           => _x( 'All', 'Conditions logic', 'uncanny-automator' ),
 							'anyFull'       => _x( 'of the following conditions is met', 'Conditions logic', 'uncanny-automator' ),
 							'allFull'       => _x( 'of the following conditions are met', 'Conditions logic', 'uncanny-automator' ),
-							'openInSidebar' => __( 'Open in sidebar', 'uncanny-automator' ),
-							'closeSidebar'  => __( 'Close sidebar', 'uncanny-automator' ),
-							'sidebarTitle'  => __( 'Condition', 'uncanny-automator' ),
-							'properties'    => __( 'Properties', 'uncanny-automator' ),
+							'openInSidebar' => esc_html__( 'Open in sidebar', 'uncanny-automator' ),
+							'closeSidebar'  => esc_html__( 'Close sidebar', 'uncanny-automator' ),
+							'sidebarTitle'  => esc_html__( 'Condition', 'uncanny-automator' ),
+							'properties'    => esc_html__( 'Properties', 'uncanny-automator' ),
 							'summary'       => array(
-								'status' => __( 'Status', 'uncanny-automator' ),
-								'notes'  => __( 'Notes', 'uncanny-automator' ),
+								'status' => esc_html__( 'Status', 'uncanny-automator' ),
+								'notes'  => esc_html__( 'Notes', 'uncanny-automator' ),
 							),
 						),
 					),
 					'logSidebar'         => array(
 						'i18n' => array(
-							'details'      => __( 'Details', 'uncanny-automator' ),
-							'closeSidebar' => __( 'Close sidebar', 'uncanny-automator' ),
-							'closeDialog'  => __( 'Close log details', 'uncanny-automator' ),
+							'details'      => esc_html__( 'Details', 'uncanny-automator' ),
+							'closeSidebar' => esc_html__( 'Close sidebar', 'uncanny-automator' ),
+							'closeDialog'  => esc_html__( 'Close log details', 'uncanny-automator' ),
 						),
 					),
 					'logStatus'          => array(
 						'i18n' => array(
-							'invalidStatus'               => __( 'Error: "%1$s" is not a valid status ID.', 'uncanny-automator' ),
-							'completedStatus'             => __( 'Completed', 'uncanny-automator' ),
-							'completedDoNothingStatus'    => __( 'Completed, do nothing', 'uncanny-automator' ),
-							'completedDidNothingStatus'   => __( 'Completed, did nothing', 'uncanny-automator' ),
-							'cancelledStatus'             => __( 'Cancelled', 'uncanny-automator' ),
-							'pausedStatus'                => __( 'Paused', 'uncanny-automator' ),
-							'completedWithNoticeStatus'   => __( 'Completed with notice', 'uncanny-automator' ),
-							'notCompletedStatus'          => __( 'Not completed', 'uncanny-automator' ),
-							'skipped'                     => __( 'Skipped', 'uncanny-automator' ),
-							'queuedStatus'                => __( 'Queued', 'uncanny-automator' ),
-							'completedWithErrorsStatus'   => __( 'Completed with errors', 'uncanny-automator' ),
-							'inProgressStatus'            => __( 'In progress', 'uncanny-automator' ),
-							'inProgressWithErrorsStatus'  => __( 'In progress with errors', 'uncanny-automator' ),
-							'scheduledStatus'             => __( 'Scheduled', 'uncanny-automator' ),
-							'delayedStatus'               => __( 'Delayed', 'uncanny-automator' ),
-							'failedStatus'                => __( 'Failed', 'uncanny-automator' ),
-							'completedAwaitingStatus'     => __( 'Completed awaiting', 'uncanny-automator' ),
-							'conditionMetStatus'          => __( 'Met', 'uncanny-automator' ),
-							'conditionNotMetStatus'       => __( 'Not met', 'uncanny-automator' ),
-							'conditionNotEvaluatedStatus' => __( 'Not evaluated', 'uncanny-automator' ),
+							/* translators: 1. The status ID */
+							'invalidStatus'               => esc_html__( 'Error: "%1$s" is not a valid status ID.', 'uncanny-automator' ),
+							'completedStatus'             => esc_html__( 'Completed', 'uncanny-automator' ),
+							'completedDoNothingStatus'    => esc_html__( 'Completed, do nothing', 'uncanny-automator' ),
+							'completedDidNothingStatus'   => esc_html__( 'Completed, did nothing', 'uncanny-automator' ),
+							'cancelledStatus'             => esc_html__( 'Cancelled', 'uncanny-automator' ),
+							'pausedStatus'                => esc_html__( 'Paused', 'uncanny-automator' ),
+							'completedWithNoticeStatus'   => esc_html__( 'Completed with notice', 'uncanny-automator' ),
+							'notCompletedStatus'          => esc_html__( 'Not completed', 'uncanny-automator' ),
+							'skipped'                     => esc_html__( 'Skipped', 'uncanny-automator' ),
+							'queuedStatus'                => esc_html__( 'Queued', 'uncanny-automator' ),
+							'completedWithErrorsStatus'   => esc_html__( 'Completed with errors', 'uncanny-automator' ),
+							'inProgressStatus'            => esc_html__( 'In progress', 'uncanny-automator' ),
+							'inProgressWithErrorsStatus'  => esc_html__( 'In progress with errors', 'uncanny-automator' ),
+							'scheduledStatus'             => esc_html__( 'Scheduled', 'uncanny-automator' ),
+							'delayedStatus'               => esc_html__( 'Delayed', 'uncanny-automator' ),
+							'failedStatus'                => esc_html__( 'Failed', 'uncanny-automator' ),
+							'completedAwaitingStatus'     => esc_html__( 'Completed awaiting', 'uncanny-automator' ),
+							'conditionMetStatus'          => esc_html__( 'Met', 'uncanny-automator' ),
+							'conditionNotMetStatus'       => esc_html__( 'Not met', 'uncanny-automator' ),
+							'conditionNotEvaluatedStatus' => esc_html__( 'Not evaluated', 'uncanny-automator' ),
 						),
 					),
 					'logSidebarProperty' => array(
 						'i18n' => array(
-							'viewPreview'  => __( 'View preview', 'uncanny-automator' ),
+							'viewPreview'  => esc_html__( 'View preview', 'uncanny-automator' ),
 							/* translators: 1. Label of field */
-							'previewLabel' => __( '"%1$s" preview', 'uncanny-automator' ),
-							'empty'        => __( '(empty)', 'uncanny-automator' ),
-							'plainText'    => __( 'Plain text', 'uncanny-automator' ),
+							'previewLabel' => esc_html__( '"%1$s" preview', 'uncanny-automator' ),
+							'empty'        => esc_html__( '(empty)', 'uncanny-automator' ),
+							'plainText'    => esc_html__( 'Plain text', 'uncanny-automator' ),
 							/* translators: 1. Number of lines */
-							'expandLines'  => __( 'Expand %1$s lines', 'uncanny-automator' ),
-							'collapse'     => __( 'Collapse', 'uncanny-automator' ),
-							'viewFile'     => __( 'View file', 'uncanny-automator' ),
+							'expandLines'  => esc_html__( 'Expand %1$s lines', 'uncanny-automator' ),
+							'collapse'     => esc_html__( 'Collapse', 'uncanny-automator' ),
+							'viewFile'     => esc_html__( 'View file', 'uncanny-automator' ),
 						),
 					),
 					// UncannyAutomatorBackend.logs.components.logLoop.i18n
@@ -1263,27 +1266,27 @@ class Admin_Menu {
 						'i18n' => array(
 							/* translators: Noun */
 							'loop'                      => _x( 'Loop', 'Block name, noun', 'uncanny-automator' ),
-							'users'                     => __( 'Users', 'uncanny-automator' ),
-							'posts'                     => __( 'Posts', 'uncanny-automator' ),
+							'users'                     => esc_html__( 'Users', 'uncanny-automator' ),
+							'posts'                     => esc_html__( 'Posts', 'uncanny-automator' ),
 							/* translators: 1. Number of items processed. 2. Total number of items */
-							'progressStatus'            => __( '%1$s/%2$s processed', 'uncanny-automator' ),
+							'progressStatus'            => esc_html__( '%1$s/%2$s processed', 'uncanny-automator' ),
 							/* translators: 1. Number of items processed */
-							'progressStatusCompleted'   => __( '%1$s processed', 'uncanny-automator' ),
-							'inProgress'                => __( 'In progress', 'uncanny-automator' ),
-							'matchTheFollowingCriteria' => __( 'that match the following criteria', 'uncanny-automator' ),
-							'timeElapsed'               => __( 'Elapsed:', 'uncanny-automator' ),
-							'nextBatch'                 => __( 'Next batch:', 'uncanny-automator' ),
-							'started'                   => __( 'Started:', 'uncanny-automator' ),
+							'progressStatusCompleted'   => esc_html__( '%1$s processed', 'uncanny-automator' ),
+							'inProgress'                => esc_html__( 'In progress', 'uncanny-automator' ),
+							'matchTheFollowingCriteria' => esc_html__( 'that match the following criteria', 'uncanny-automator' ),
+							'timeElapsed'               => esc_html__( 'Elapsed:', 'uncanny-automator' ),
+							'nextBatch'                 => esc_html__( 'Next batch:', 'uncanny-automator' ),
+							'started'                   => esc_html__( 'Started:', 'uncanny-automator' ),
 							/* translators: 1 and 2 are dates */
-							'dateRange'                 => __( '%1$s to %2$s', 'uncanny-automator' ),
-							'openInSidebar'             => __( 'Open in sidebar', 'uncanny-automator' ),
-							'closeSidebar'              => __( 'Close sidebar', 'uncanny-automator' ),
-							'sidebarTitle'              => __( 'Loop filter', 'uncanny-automator' ),
-							'properties'                => __( 'Properties', 'uncanny-automator' ),
+							'dateRange'                 => esc_html__( '%1$s to %2$s', 'uncanny-automator' ),
+							'openInSidebar'             => esc_html__( 'Open in sidebar', 'uncanny-automator' ),
+							'closeSidebar'              => esc_html__( 'Close sidebar', 'uncanny-automator' ),
+							'sidebarTitle'              => esc_html__( 'Loop filter', 'uncanny-automator' ),
+							'properties'                => esc_html__( 'Properties', 'uncanny-automator' ),
 							'cancel'                    => array(
-								'buttonLabel'            => __( 'Cancel', 'uncanny-automator' ),
-								'cancelConfirm'          => __( "You won't be able to resume this loop later.", 'uncanny-automator' ),
-								'cantCancelInImportMode' => __( 'Cancelling a loop is not possible in import mode', 'uncanny-automator' ),
+								'buttonLabel'            => esc_html__( 'Cancel', 'uncanny-automator' ),
+								'cancelConfirm'          => esc_html__( "You won't be able to resume this loop later.", 'uncanny-automator' ),
+								'cantCancelInImportMode' => esc_html__( 'Cancelling a loop is not possible in import mode', 'uncanny-automator' ),
 							),
 						),
 					),
@@ -1350,15 +1353,15 @@ class Admin_Menu {
 					// Add strings
 					$data['i18n']['credits'] = array(
 						'recipesUsingCredits' => array(
-							'noRecipes' => __( 'No recipes using app credits on this site', 'uncanny-automator' ),
+							'noRecipes' => esc_html__( 'No recipes using app credits on this site', 'uncanny-automator' ),
 							'table'     => array(
-								'recipe'             => __( 'Recipe', 'uncanny-automator' ),
-								'completionsAllowed' => __( 'Completions allowed', 'uncanny-automator' ),
-								'completedRuns'      => __( 'Completed runs', 'uncanny-automator' ),
+								'recipe'             => esc_html__( 'Recipe', 'uncanny-automator' ),
+								'completionsAllowed' => esc_html__( 'Completions allowed', 'uncanny-automator' ),
+								'completedRuns'      => esc_html__( 'Completed runs', 'uncanny-automator' ),
 								/* translators: 1. Number */
-								'perUser'            => __( 'Per user: %1$s', 'uncanny-automator' ),
+								'perUser'            => esc_html__( 'Per user: %1$s', 'uncanny-automator' ),
 								/* translators: 1. Number */
-								'total'              => __( 'Total: %1$s', 'uncanny-automator' ),
+								'total'              => esc_html__( 'Total: %1$s', 'uncanny-automator' ),
 								/* translators: Unlimited times */
 								'unlimited'          => _x( 'Unlimited', 'Times', 'uncanny-automator' ),
 							),
@@ -1761,7 +1764,7 @@ class Admin_Menu {
 		);
 
 		// Convert array to JSON and then encode it with Base64
-		$encoded_data = base64_encode( wp_json_encode( $data ) ); //phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+		$encoded_data = base64_encode( wp_json_encode( $data ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 
 		$item_name    = AUTOMATOR_FREE_ITEM_NAME;
 		$item_version = AUTOMATOR_PLUGIN_VERSION;

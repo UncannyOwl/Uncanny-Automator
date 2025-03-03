@@ -97,7 +97,7 @@ class Csv_To_Json_Converter {
 		}
 
 		// Local file.
-		$csv_data = file_get_contents( $file_path ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$csv_data = file_get_contents( $file_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$this->parse_csv( $csv_data );
 		return $this;
 	}

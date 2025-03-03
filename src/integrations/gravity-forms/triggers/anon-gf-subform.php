@@ -80,13 +80,13 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
 		$tokens[] = array(
 			'tokenId'   => 'ANONGFFORMS',
-			'tokenName' => __( 'Form title', 'uncanny-automator' ),
+			'tokenName' => esc_html__( 'Form title', 'uncanny-automator' ),
 			'tokenType' => 'text',
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'ANONGFFORMS_ID',
-			'tokenName' => __( 'Form ID', 'uncanny-automator' ),
+			'tokenName' => esc_html__( 'Form ID', 'uncanny-automator' ),
 			'tokenType' => 'int',
 		);
 

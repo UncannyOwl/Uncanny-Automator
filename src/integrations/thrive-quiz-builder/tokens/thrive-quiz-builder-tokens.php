@@ -72,37 +72,37 @@ class Thrive_Quiz_Builder_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'TQB_QUIZ_ID',
-				'tokenName'       => __( 'Quiz ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Quiz ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'TQB_QUIZ_TITLE',
-				'tokenName'       => __( 'Quiz title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Quiz title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'TQB_QUIZ_RESULT',
-				'tokenName'       => __( 'Quiz result', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Quiz result', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'TQB_QUIZ_TYPE',
-				'tokenName'       => __( 'Quiz type', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Quiz type', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'TQB_USER_ID',
-				'tokenName'       => __( 'User ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'User ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'TQB_USER_EMAIL',
-				'tokenName'       => __( 'User email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'User email', 'uncanny-automator' ),
 				'tokenType'       => 'email',
 				'tokenIdentifier' => $trigger_code,
 			),

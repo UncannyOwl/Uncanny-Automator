@@ -45,7 +45,7 @@ class PeepSo_USERFOLLOWSAUSER {
 			/* translators: Logged-in trigger - PeepSo Core */
 			'sentence'            => sprintf( esc_attr__( 'A user follows {{another PeepSo member:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - PeepSo Core */
-			'select_option_name'  => __( 'A user follows {{another PeepSo member}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A user follows {{another PeepSo member}}', 'uncanny-automator' ),
 			'action'              => 'peepso_ajax_start',
 			'priority'            => 100,
 			'accepted_args'       => 1,
@@ -63,7 +63,7 @@ class PeepSo_USERFOLLOWSAUSER {
 	public function load_options() {
 		$options = array(
 			'options' => array(
-				Automator()->helpers->recipe->peepso->get_users( __( 'PeepSo member', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => true ), true ),
+				Automator()->helpers->recipe->peepso->get_users( esc_html__( 'PeepSo member', 'uncanny-automator' ), $this->trigger_meta, array( 'uo_include_any' => true ), true ),
 			),
 		);
 
@@ -103,7 +103,7 @@ class PeepSo_USERFOLLOWSAUSER {
 		}
 
 		if ( 'followerajax.set_follow_status' === $data ) {
-			//phpcs:ignore PeepSo.Native.Ajax.Methods
+			// phpcs:ignore PeepSo.Native.Ajax.Methods
 			if ( automator_filter_has_var( 'follow', INPUT_POST ) && 0 === automator_filter_input( 'follow', INPUT_POST ) ) {
 				return;
 			}

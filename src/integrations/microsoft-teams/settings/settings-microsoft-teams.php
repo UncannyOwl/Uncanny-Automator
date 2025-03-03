@@ -76,7 +76,7 @@ class Microsoft_Teams_Settings extends \Uncanny_Automator\Settings\Premium_Integ
 
 		<?php } else { ?>
 
-			<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Uncanny Automator only supports connecting to one Microsoft Teams account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
+			<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Uncanny Automator only supports connecting to one Microsoft Teams account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
 				<?php esc_html_e( 'You can only connect to a Microsoft Teams account for which you have read and write access.', 'uncanny-automator' ); ?>
 			</uo-alert>
 

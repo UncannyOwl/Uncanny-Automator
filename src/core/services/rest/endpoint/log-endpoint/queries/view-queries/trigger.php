@@ -44,19 +44,19 @@ return $wpdb->get_results(
             r.date_time               AS recipe_date_time,
             r.completed               AS recipe_completed,
             r.run_number              AS recipe_run_number
-      FROM wp_uap_trigger_log t
-            LEFT JOIN wp_users u
+      FROM {$wpdb->prefix}uap_trigger_log t
+            LEFT JOIN $wpdb->users u
                ON u.id = t.user_id
-            LEFT JOIN wp_posts p
+            LEFT JOIN $wpdb->posts p
                ON p.id = t.automator_recipe_id
-            LEFT JOIN wp_posts pt
+            LEFT JOIN $wpdb->posts pt
                ON pt.id = t.automator_trigger_id
-            LEFT JOIN wp_uap_trigger_log_meta tm
+            LEFT JOIN {$wpdb->prefix}uap_trigger_log_meta tm
                ON tm.automator_trigger_log_id = t.id
                AND tm.meta_key = 'sentence_human_readable'
-            LEFT JOIN wp_uap_recipe_log r
+            LEFT JOIN {$wpdb->prefix}uap_recipe_log r
                ON t.automator_recipe_log_id = r.id
-            LEFT JOIN wp_postmeta pm
+            LEFT JOIN $wpdb->postmeta pm
                ON pm.post_id = t.automator_trigger_id
                AND pm.meta_key = 'NUMTIMES'
       WHERE  ( 1 = 1

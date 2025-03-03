@@ -15,11 +15,13 @@ class UNCANNYCEUS_EARNS_NUMBERS_MORE_THAN extends \Uncanny_Automator\Recipe\Trig
 			return;
 		}
 
-		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		$this->set_integration( 'UNCANNYCEUS' );
 		$this->set_trigger_code( 'EARNS_NUMBERS_MORE_THAN' );
 		$this->set_trigger_meta( 'CEUS_EARN_NUMBERS' );
+		// translators: 1: Number, 2: Credit designation label (plural)
 		$this->set_sentence( sprintf( esc_attr_x( 'A user earns {{number:%1$s}} or more %2$s', 'Uncanny CEUs', 'uncanny-automator' ), $this->get_trigger_meta(), $credit_designation_label_plural ) );
+		// translators: 1: Credit designation label (plural)
 		$this->set_readable_sentence( sprintf( esc_attr_x( 'A user earns {{a number of}} or more %1$s', 'Uncanny CEUs', 'uncanny-automator' ), $credit_designation_label_plural ) );
 		$this->add_action( 'ceus_after_updated_user_ceu_record', 20, 7 );
 	}
@@ -28,7 +30,7 @@ class UNCANNYCEUS_EARNS_NUMBERS_MORE_THAN extends \Uncanny_Automator\Recipe\Trig
 	 * @return array[]
 	 */
 	public function options() {
-		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 		return array(
 			array(
@@ -109,7 +111,7 @@ class UNCANNYCEUS_EARNS_NUMBERS_MORE_THAN extends \Uncanny_Automator\Recipe\Trig
 			'CEUS_AMOUNT'       => $hook_args[6],
 			'CEUS_TITLE'        => $hook_args[4],
 			'CEUS_DATE_AWARDED' => date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), absint( $hook_args[2] ) ),
-			'CEUS_LABEL'        => get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ),
+			'CEUS_LABEL'        => get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		);
 
 		return $token_values;

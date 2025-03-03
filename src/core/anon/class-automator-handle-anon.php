@@ -26,7 +26,7 @@ class Automator_Handle_Anon {
 	 */
 	public function uap_meta_box_title_func( $default, $recipe_type ) {
 		if ( 'anonymous' === (string) $recipe_type ) {
-			return __( 'Trigger', 'uncanny-automator' );
+			return esc_html__( 'Trigger', 'uncanny-automator' );
 		}
 
 		return $default;
@@ -52,7 +52,7 @@ class Automator_Handle_Anon {
 	 */
 	public function uap_error_messages_func( $error_messages ) {
 
-		$error_messages['anon-user-action-do-nothing'] = __( 'Anonymous recipe user action set to do nothing.', 'uncanny-automator' );
+		$error_messages['anon-user-action-do-nothing'] = esc_html__( 'Anonymous recipe user action set to do nothing.', 'uncanny-automator' );
 
 		return $error_messages;
 	}

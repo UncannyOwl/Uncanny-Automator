@@ -16,7 +16,6 @@ class Mautic_Helpers {
 		if ( ! empty( filter_input( INPUT_POST, 'automator_mautic_credentials' ) ) && is_admin() && current_user_can( 'manage_options' ) ) {
 			$this->create_settings();
 		}
-
 	}
 
 	/**
@@ -45,12 +44,11 @@ class Mautic_Helpers {
 				if ( false === $error ) {
 					$error = 'API has returned an error with unknown format';
 				}
-				throw new \Exception( $error, $response['statusCode'] );
+				throw new \Exception( esc_html( $error ), absint( $response['statusCode'] ) );
 			}
 		}
 
 		return $response;
-
 	}
 
 	/**
@@ -107,7 +105,6 @@ class Mautic_Helpers {
 		);
 
 		wp_send_json( $segments );
-
 	}
 
 	/**
@@ -163,7 +160,6 @@ class Mautic_Helpers {
 		);
 
 		wp_send_json( $fields );
-
 	}
 
 	/**
@@ -178,7 +174,6 @@ class Mautic_Helpers {
 		}
 
 		$this->create_settings();
-
 	}
 
 	/**
@@ -207,7 +202,6 @@ class Mautic_Helpers {
 		wp_safe_redirect( $referer );
 
 		exit;
-
 	}
 
 	/**
@@ -221,8 +215,5 @@ class Mautic_Helpers {
 		$settings->set_client_auth( $client_auth );
 
 		return $settings;
-
 	}
-
-
 }

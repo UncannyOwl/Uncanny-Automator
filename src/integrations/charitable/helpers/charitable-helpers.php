@@ -31,7 +31,7 @@ class CHARITABLE_HELPERS {
 		$campaigns = $this->get_active_campaign_posts();
 		if ( ! empty( $campaigns ) ) {
 			$options[] = array(
-				'text'  => __( 'Any campaign', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any campaign', 'uncanny-automator' ),
 				'value' => -1,
 			);
 
@@ -55,7 +55,7 @@ class CHARITABLE_HELPERS {
 		return array(
 			'input_type'  => 'select',
 			'option_code' => 'CHARITABLE_CAMPAIGN',
-			'label'       => __( 'Campaign', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Campaign', 'uncanny-automator' ),
 			'required'    => true,
 			'options'     => $this->get_campaign_options(),
 		);
@@ -69,7 +69,7 @@ class CHARITABLE_HELPERS {
 	public function donation_amount_conditions_select() {
 		// Equal to, not equal to, less than, greater than, greater or equal to, less or equal to.
 		$amount_condition          = Automator()->helpers->recipe->field->less_or_greater_than();
-		$amount_condition['label'] = __( 'Condition', 'uncanny-automator' );
+		$amount_condition['label'] = esc_html__( 'Condition', 'uncanny-automator' );
 		$conditions                = array();
 		foreach ( $amount_condition['options'] as $value => $text ) {
 			$conditions[] = array(
@@ -241,171 +241,171 @@ class CHARITABLE_HELPERS {
 			// Campaign tokens.
 			array(
 				'tokenId'   => 'CAMPAIGN_TITLE',
-				'tokenName' => __( 'Campaign title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_LINK',
-				'tokenName' => __( 'Campaign link', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign link', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_ID',
-				'tokenName' => __( 'Campaign ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_TAGS',
-				'tokenName' => __( 'Campaign tags', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign tags', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_CATEGORIES',
-				'tokenName' => __( 'Campaign categories', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign categories', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_THUMB_URL',
-				'tokenName' => __( 'Featured image URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Featured image URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_THUMB_ID',
-				'tokenName' => __( 'Featured image ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Featured image ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_END_DATE',
-				'tokenName' => __( 'Campaign end date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign end date', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_MIN_DONATION_AMOUNT',
-				'tokenName' => __( 'Campaign minimum donation amount', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign minimum donation amount', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_GOAL',
-				'tokenName' => __( 'Campaign goal', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign goal', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_CREATOR_ID',
-				'tokenName' => __( 'Campaign creator ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign creator ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_CREATOR_NAME',
-				'tokenName' => __( 'Campaign creator name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign creator name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'CAMPAIGN_CREATOR_EMAIL',
-				'tokenName' => __( 'Campaign creator email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Campaign creator email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 
 			// Donation tokens.
 			array(
 				'tokenId'   => 'DONATION_AMOUNT_DONATED',
-				'tokenName' => __( 'Amount donated', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Amount donated', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			/* REVIEW - Not Sure what's being requested.
 			array(
 				'tokenId'   => 'DONATION_PAYMENT_ID',
-				'tokenName' => __( 'Donation payment ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donation payment ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			*/
 			array(
 				'tokenId'   => 'DONATION_ID',
-				'tokenName' => __( 'Donation ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donation ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'DONATION_TITLE',
-				'tokenName' => __( 'Donation title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donation title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_STATUS',
-				'tokenName' => __( 'Donation status', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donation status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_ID',
-				'tokenName' => __( 'Donation donor ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donation donor ID', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_NAME',
-				'tokenName' => __( 'Donor name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_EMAIL',
-				'tokenName' => __( 'Donor email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_ADDRESS',
-				'tokenName' => __( 'Donor formatted address', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor formatted address', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_ADDRESS_LINE_1',
-				'tokenName' => __( 'Donor address line 1', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor address line 1', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_ADDRESS_LINE_2',
-				'tokenName' => __( 'Donor address line 2', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor address line 2', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_CITY',
-				'tokenName' => __( 'Donor city', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor city', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_STATE',
-				'tokenName' => __( 'Donor state', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor state', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_POSTCODE',
-				'tokenName' => __( 'Donor postcode', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor postcode', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_COUNTRY',
-				'tokenName' => __( 'Donor country', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor country', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_COUNTRY_CODE',
-				'tokenName' => __( 'Donor country code', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor country code', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_DONOR_PHONE',
-				'tokenName' => __( 'Donor phone number', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donor phone number', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_PAYMENT_METHOD',
-				'tokenName' => __( 'Payment method', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Payment method', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_KEY',
-				'tokenName' => __( 'Donation key', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Donation key', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DONATION_TRANSACTION_ID',
-				'tokenName' => __( 'Gateway transaction ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Gateway transaction ID', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);

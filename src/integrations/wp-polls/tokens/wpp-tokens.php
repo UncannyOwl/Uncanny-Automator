@@ -88,24 +88,26 @@ LIMIT 0, 1",
 						$start_timestamp = $wpdb->get_var( $wpdb->prepare( "SELECT pollq_timestamp FROM $wpdb->pollsq WHERE pollq_id = %d", $poll_id ) );
 
 						if ( null !== $start_timestamp && absint( $start_timestamp ) ) {
-							$poll_date = mysql2date( sprintf( __( '%1$s @ %2$s', 'wp-polls' ), get_option( 'date_format' ), get_option( 'time_format' ) ), gmdate( 'Y-m-d H:i:s', $start_timestamp ) );
+							// translators: 1: Date, 2: Time
+							$poll_date = mysql2date( sprintf( __( '%1$s @ %2$s', 'wp-polls' ), get_option( 'date_format' ), get_option( 'time_format' ) ), gmdate( 'Y-m-d H:i:s', $start_timestamp ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 							return $poll_date;
 						}
 
-						return __( 'Not set', 'uncanny-automator' );
+						return esc_html__( 'Not set', 'uncanny-automator' );
 						break;
 					case 'WPPOLL_END':
 						// Get Poll end timestamp
 						$end_timestamp = $wpdb->get_var( $wpdb->prepare( "SELECT pollq_expiry FROM $wpdb->pollsq WHERE pollq_id = %d", $poll_id ) );
 
 						if ( null !== $end_timestamp && absint( $end_timestamp ) ) {
-							$poll_date = mysql2date( sprintf( __( '%1$s @ %2$s', 'wp-polls' ), get_option( 'date_format' ), get_option( 'time_format' ) ), gmdate( 'Y-m-d H:i:s', $end_timestamp ) );
+							// translators: 1: Date, 2: Time
+							$poll_date = mysql2date( sprintf( __( '%1$s @ %2$s', 'wp-polls' ), get_option( 'date_format' ), get_option( 'time_format' ) ), gmdate( 'Y-m-d H:i:s', $end_timestamp ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 							return $poll_date;
 						}
 
-						return __( 'Not set', 'uncanny-automator' );
+						return esc_html__( 'Not set', 'uncanny-automator' );
 						break;
 					case 'WPPOLLANSWER':
 					case 'WPPOLL_WPPOLLANSWER':
@@ -130,7 +132,7 @@ LIMIT 0, 1",
 							$ids        = join( "','", $answer_ids );
 
 							// Get user's Poll Answers
-							$answers = $wpdb->get_results( "SELECT polla_answers FROM $wpdb->pollsa WHERE polla_qid = $poll_id AND polla_aid IN ('$ids') ORDER BY polla_aid DESC" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+							$answers = $wpdb->get_results( "SELECT polla_answers FROM $wpdb->pollsa WHERE polla_qid = $poll_id AND polla_aid IN ('$ids') ORDER BY polla_aid DESC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 							if ( null !== $answers ) {
 								$value = '';

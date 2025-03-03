@@ -165,7 +165,7 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		/* -- Pagination parameters -- */
-		$total_items = $wpdb->query( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$total_items = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		$perpage = 100;
 
@@ -1007,7 +1007,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			// Use PRO filters if available.
 			if ( class_exists( '\uncanny_automator_pro\Pro_Filters' ) ) {
-				echo Pro_Filters::activities_filters_html( $this->tab ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo Pro_Filters::activities_filters_html( $this->tab ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				do_action( 'automator_admin_logs_list_table_extra_nav_after' );
 
 				return;
@@ -1312,17 +1312,17 @@ class Logs_List_Table extends WP_List_Table {
 		}
 		$recipe_ids = array_column( $recipes, 'automator_recipe_id' );
 		global $wpdb;
-		//phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$sql     = $wpdb->prepare(
 			"SELECT p.post_parent, p.post_type, pm.meta_value AS integration
 FROM $wpdb->postmeta pm
 JOIN $wpdb->posts p
 ON p.ID = pm.post_id
 WHERE pm.meta_key = %s
-AND p.post_parent IN (" . join( ',', $recipe_ids ) . ')', //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+AND p.post_parent IN (" . join( ',', $recipe_ids ) . ')', // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 			'integration'
 		);
-		$results = $wpdb->get_results( $sql ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		if ( empty( $results ) ) {
 			return;
 		}

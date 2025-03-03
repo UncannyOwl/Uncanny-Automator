@@ -130,7 +130,7 @@ class Api_Log {
 				class="uap-logs-details-re-run-action"
 				data-item="' . $action_log_id . '"
 			>
-				<uo-icon id="repeat"></uo-icon> ' . __( 'Resend', 'uncanny-automator' ) . '
+				<uo-icon id="repeat"></uo-icon> ' . esc_html__( 'Resend', 'uncanny-automator' ) . '
 			</uo-button>
 
 		</div>';

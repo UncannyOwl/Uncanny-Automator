@@ -59,7 +59,7 @@ class UC_ADD_BATCH_CODES {
 						)
 					),
 					Automator()->helpers->recipe->uncanny_codes->options->get_all_code_batch(
-						__( 'Batch', 'uncanny-automator' ),
+						esc_html__( 'Batch', 'uncanny-automator' ),
 						$this->get_action_meta(),
 						false
 					),
@@ -67,7 +67,7 @@ class UC_ADD_BATCH_CODES {
 						array(
 							'option_code' => 'UCADDPREFIX',
 							'label'       => esc_attr__( 'Prefix', 'uncanny-automator' ),
-							'placeholder' => esc_attr__( '', 'uncanny-automator' ),
+							'placeholder' => '',
 							'required'    => false,
 						)
 					),
@@ -75,7 +75,7 @@ class UC_ADD_BATCH_CODES {
 						array(
 							'option_code' => 'UCADDUSFFIX',
 							'label'       => esc_attr__( 'Suffix', 'uncanny-automator' ),
-							'placeholder' => esc_attr__( '', 'uncanny-automator' ),
+							'placeholder' => '',
 							'required'    => false,
 						)
 					),

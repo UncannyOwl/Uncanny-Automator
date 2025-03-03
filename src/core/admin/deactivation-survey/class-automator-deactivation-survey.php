@@ -77,7 +77,6 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 		 *
 		 * @return bool True if the constant is set; otherwise, it's false.
 		 * @since  1.3.0
-		 *
 		 */
 		public function has_deactivation_url() {
 			return (
@@ -109,7 +108,7 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 			if ( false === strpos( $url, 'http://' ) && false === strpos( $url, 'https://' ) ) {
 				$url = 'http://' . $url;
 			}
-			$url_parts = parse_url( $url );
+			$url_parts = wp_parse_url( $url );
 			$host      = ! empty( $url_parts['host'] ) ? $url_parts['host'] : false;
 			if ( ! empty( $url ) && ! empty( $host ) ) {
 				if ( false !== ip2long( $host ) ) {
@@ -172,8 +171,8 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 			<script type="text/javascript">
 				(function ($) {
 					$(function () {
-						var $deactivateLink = $('#the-list').find('[data-slug="<?php echo $this->plugin; //phpcs:ignore ?>"] span.deactivate a'),
-							$overlay = $('#ua-deactivate-survey-<?php echo $this->plugin; //phpcs:ignore ?>'),
+						var $deactivateLink = $('#the-list').find('[data-slug="<?php echo $this->plugin; // phpcs:ignore ?>"] span.deactivate a'),
+							$overlay = $('#ua-deactivate-survey-<?php echo $this->plugin; // phpcs:ignore ?>'),
 							$form = $overlay.find('form'),
 							formOpen = false;
 
@@ -184,7 +183,7 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 						 * If not, we'll do it this way.
 						 */
 						if (0 === $deactivateLink.length) {
-							$deactivateLink = $('#deactivate-<?php echo $this->plugin; //phpcs:ignore ?>');
+							$deactivateLink = $('#deactivate-<?php echo $this->plugin; // phpcs:ignore ?>');
 						}
 
 						// Plugin listing table deactivate link.
@@ -210,7 +209,7 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 						$form.submit(function (event) {
 							event.preventDefault();
 							if (!$form.find('input[type=radio]:checked').val()) {
-								$form.find('.ua-deactivate-survey-footer').prepend('<span class="error"><?php echo esc_js( __( 'Please select an option', 'uncanny-automator' ) ); ?></span>');
+								$form.find('.ua-deactivate-survey-footer').prepend('<span class="error"><?php echo esc_js( esc_html__( 'Please select an option', 'uncanny-automator' ) ); ?></span>');
 								return;
 							}
 
@@ -224,7 +223,7 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 							}
 
 							var submitSurvey = $.post(
-								'<?php echo $this->api_url; //phpcs:ignore ?>',
+								'<?php echo $this->api_url; // phpcs:ignore ?>',
 								data
 							);
 							submitSurvey.always(function () {
@@ -400,29 +399,29 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 				),
 			);
 			?>
-			<div class="ua-deactivate-survey-modal" id="ua-deactivate-survey-<?php echo $this->plugin; //phpcs:ignore ?>">
+			<div class="ua-deactivate-survey-modal" id="ua-deactivate-survey-<?php echo $this->plugin; // phpcs:ignore ?>">
 				<div class="ua-deactivate-survey-wrap">
 					<form class="ua-deactivate-survey" method="post">
 						<span class="ua-deactivate-survey-title"><span
-								class="dashicons dashicons-testimonial"></span><?php echo ' ' . esc_html__( 'Quick Feedback', 'uncanny-automator' ); //phpcs:ignore ?></span>
+								class="dashicons dashicons-testimonial"></span><?php echo ' ' . esc_html__( 'Quick Feedback', 'uncanny-automator' ); // phpcs:ignore ?></span>
 						<span
-							class="ua-deactivate-survey-desc"><?php echo sprintf( esc_html__( 'If you have a moment, please share why you are deactivating %s:', 'uncanny-automator' ), $this->name ); //phpcs:ignore ?></span>
+							class="ua-deactivate-survey-desc"><?php echo sprintf( esc_html__( 'If you have a moment, please share why you are deactivating %s:', 'uncanny-automator' ), $this->name ); // phpcs:ignore ?></span>
 						<div class="ua-deactivate-survey-options">
 							<?php foreach ( $options as $id => $option ) : ?>
 								<div class="ua-deactivate-survey-option">
 									<label
-										for="ua-deactivate-survey-option-<?php echo $this->plugin; //phpcs:ignore ?>-<?php echo $id; //phpcs:ignore ?>"
+										for="ua-deactivate-survey-option-<?php echo $this->plugin; // phpcs:ignore ?>-<?php echo $id; // phpcs:ignore ?>"
 										class="ua-deactivate-survey-option-label">
 										<input
-											id="ua-deactivate-survey-option-<?php echo $this->plugin; //phpcs:ignore ?>-<?php echo $id; //phpcs:ignore ?>"
+											id="ua-deactivate-survey-option-<?php echo $this->plugin; // phpcs:ignore ?>-<?php echo $id; // phpcs:ignore ?>"
 											class="ua-deactivate-survey-option-input" type="radio" name="code"
-											value="<?php echo $id; //phpcs:ignore ?>"/>
+											value="<?php echo $id; // phpcs:ignore ?>"/>
 										<span
-											class="ua-deactivate-survey-option-reason"><?php echo $option['title']; //phpcs:ignore ?></span>
+											class="ua-deactivate-survey-option-reason"><?php echo $option['title']; // phpcs:ignore ?></span>
 									</label>
 									<?php if ( ! empty( $option['details'] ) ) : ?>
 										<input class="ua-deactivate-survey-option-details" type="text"
-											   placeholder="<?php echo $option['details']; //phpcs:ignore ?>"/>
+											   placeholder="<?php echo $option['details']; // phpcs:ignore ?>"/>
 									<?php endif; ?>
 								</div>
 							<?php endforeach; ?>
@@ -430,16 +429,38 @@ if ( ! class_exists( 'Automator_Deactivation_Survey' ) ) {
 								for="ua-deactivate-survey-option-uncanny-automator-additional-feedback"
 								class="ua-deactivate-survey-option-label">
 										<span
-											class="ua-deactivate-survey-option-uncanny-automator-additional-feedback"><?php _e( 'Additional feedback', 'uncanny-automator' ); //phpcs:ignore ?></span>
+											class="ua-deactivate-survey-option-uncanny-automator-additional-feedback"><?php _e( 'Additional feedback', 'uncanny-automator' ); // phpcs:ignore ?></span>
 							</label>
 							<br/><textarea rows="2" class="ua-deactivate-survey-option-textarea"
 										   name="additional-feedback" id="additional-feedback"></textarea>
 						</div>
 						<div class="ua-deactivate-survey-footer">
 							<button type="submit"
-									class="ua-deactivate-survey-submit button button-primary button-large"><?php echo sprintf( esc_html__( 'Submit %s Deactivate', 'uncanny-automator' ), '&amp;' ); ?></button>
+									class="ua-deactivate-survey-submit button button-primary button-large"
+								>
+								<?php
+								echo esc_html(
+									sprintf(
+										/* translators: %s: Ampersand character (&) */
+										esc_html__( 'Submit %s Deactivate', 'uncanny-automator' ),
+										'&amp;'
+									)
+								);
+								?>
+							</button>
 							<a href="#"
-							   class="ua-deactivate-survey-deactivate"><?php echo sprintf( esc_html__( 'Skip %s Deactivate', 'uncanny-automator' ), '&amp;' ); ?></a>
+							   class="ua-deactivate-survey-deactivate"
+							>
+								<?php
+								echo esc_html(
+									sprintf(
+										/* translators: %s: Ampersand character (&) */
+										esc_html__( 'Skip %s Deactivate', 'uncanny-automator' ),
+										'&amp;'
+									)
+								);
+								?>
+							</a>
 						</div>
 					</form>
 				</div>

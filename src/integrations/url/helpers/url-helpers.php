@@ -8,16 +8,11 @@ namespace Uncanny_Automator\Integrations\URL;
  * @package Uncanny_Automator
  */
 class URL_Helpers {
-	/**
-	 * @var string
-	 */
-	private $trigger_code;
 
 	/**
 	 * URL_Helpers constructor.
 	 */
 	public function __construct() {
-		$this->trigger_code = 'URL_HAS_PARAM';
 	}
 
 	/**
@@ -32,7 +27,7 @@ class URL_Helpers {
 			array(
 				'option_code'              => 'URL_CONDITION',
 				'label'                    => esc_attr_x( 'Condition', 'URL', 'uncanny-automator' ),
-				'description'              => esc_attr_x( 'Whether any or all of the following parameters are set in the URL', 'uncanny-automator' ),
+				'description'              => esc_attr_x( 'Whether any or all of the following parameters are set in the URL', 'URL', 'uncanny-automator' ),
 				'input_type'               => 'select',
 				'required'                 => true,
 				'options_show_id'          => false,
@@ -65,14 +60,6 @@ class URL_Helpers {
 						'supports_tokens'       => true,
 						'supports_custom_value' => true,
 					),
-					array(
-						'option_code'           => 'PARAM_VALUE',
-						'label'                 => esc_attr__( 'Parameter value', 'uncanny-automator' ),
-						'input_type'            => 'text',
-						'required'              => true,
-						'supports_tokens'       => true,
-						'supports_custom_value' => true,
-					),
 				),
 				'add_row_button'    => esc_attr__( 'Add parameter', 'uncanny-automator' ),
 				'remove_row_button' => esc_attr__( 'Remove parameter', 'uncanny-automator' ),
@@ -89,42 +76,33 @@ class URL_Helpers {
 	 * @return bool
 	 */
 	public function url_has_param_validate_trigger( $trigger_data, $hook_args ) {
-		if ( ! isset( $trigger_data['meta']['URL_CONDITION'], $trigger_data['meta']['URL_PARAMETERS'] ) ) {
+		if ( empty( $trigger_data['meta']['URL_CONDITION'] ) || empty( $trigger_data['meta']['URL_PARAMETERS'] ) ) {
 			return false;
 		}
 
-		$request_data = isset( $hook_args['request'] ) ? $hook_args['request'] : array();
-		$get_params   = isset( $request_data['get'] ) ? $request_data['get'] : $_GET;
-		$post_params  = isset( $request_data['post'] ) ? $request_data['post'] : $_POST;
+		// Get request data, fallback to GET and POST superglobals securely
+		$request_data = $hook_args['request'] ?? array();
+		$get_params   = $request_data['get'] ?? filter_input_array( INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? array();
+		$post_params  = $request_data['post'] ?? filter_input_array( INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? array();
 
-		$condition  = $trigger_data['meta']['URL_CONDITION'];
-		$parameters = (array) json_decode( $trigger_data['meta']['URL_PARAMETERS'], true );
+		$condition  = sanitize_text_field( $trigger_data['meta']['URL_CONDITION'] );
+		$parameters = json_decode( $trigger_data['meta']['URL_PARAMETERS'], true ) ?? array();
 
-		if ( empty( $parameters ) ) {
+		if ( empty( $parameters ) || false === is_array( $parameters ) ) {
 			return false;
 		}
 
 		$found_params = 0;
 
 		foreach ( $parameters as $param ) {
-			if ( ! isset( $param['PARAM_NAME'], $param['PARAM_VALUE'] ) ) {
-				continue;
-			}
+			$name = sanitize_text_field( $param['PARAM_NAME'] ?? '' );
 
-			$name  = sanitize_text_field( $param['PARAM_NAME'] );
-			$value = sanitize_text_field( $param['PARAM_VALUE'] );
-
-			if ( ( isset( $get_params[ $name ] ) && $value === $get_params[ $name ] ) ||
-				 ( isset( $post_params[ $name ] ) && $value === $post_params[ $name ] ) ) {
-				$found_params ++;
+			if ( '' !== $name && ( isset( $get_params[ $name ] ) || isset( $post_params[ $name ] ) ) ) {
+				++ $found_params;
 			}
 		}
 
-		if ( '-1' === $condition ) {
-			return $found_params > 0;
-		}
-
-		return 'all' === $condition && $found_params === count( $parameters );
+		return '-1' === $condition ? 0 < $found_params : ( 'all' === $condition && count( $parameters ) === $found_params );
 	}
 
 	/**
@@ -160,26 +138,8 @@ class URL_Helpers {
 		return array(
 			array(
 				'tokenId'         => 'URL',
-				'tokenName'       => esc_attr__( 'Current URL', 'uncanny-automator' ),
+				'tokenName'       => esc_attr__( 'URL visited', 'uncanny-automator' ),
 				'tokenType'       => 'url',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'ALL_REPEATER_PARAMS',
-				'tokenName'       => esc_attr__( 'All repeater parameters', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'ALL_POST_PARAMS',
-				'tokenName'       => esc_attr__( 'All POST parameters', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'ALL_GET_PARAMS',
-				'tokenName'       => esc_attr__( 'All GET parameters', 'uncanny-automator' ),
-				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 		);
@@ -198,18 +158,9 @@ class URL_Helpers {
 			return '';
 		}
 
-		$trigger   = array_shift( $trigger_data );
-		$hook_args = isset( $trigger['hook_args'] ) ? $trigger['hook_args'] : array();
-
 		switch ( $token_id ) {
 			case 'URL':
 				return $this->get_current_url();
-			case 'ALL_REPEATER_PARAMS':
-				return $this->get_repeater_params( $trigger );
-			case 'ALL_POST_PARAMS':
-				return $this->get_post_params( $hook_args );
-			case 'ALL_GET_PARAMS':
-				return $this->get_get_params( $hook_args );
 		}
 
 		return '';
@@ -223,59 +174,15 @@ class URL_Helpers {
 	private function get_current_url() {
 		$protocol = is_ssl() ? 'https://' : 'http://';
 
-		return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-	}
+		// Retrieve and sanitize HTTP_HOST safely
+		$host = wp_unslash( $_SERVER['HTTP_HOST'] ) ?? wp_parse_url( site_url(), PHP_URL_HOST ); //phpcs:ignore
+		$host = sanitize_text_field( $host ); // Sanitize
 
-	/**
-	 * Get repeater parameters
-	 *
-	 * @param $trigger
-	 *
-	 * @return string
-	 */
-	private function get_repeater_params( $trigger ) {
-		if ( empty( $trigger ) ) {
-			return '';
-		}
+		// Retrieve and sanitize REQUEST_URI safely
+		$uri = wp_unslash( $_SERVER['REQUEST_URI'] ) ?? '/'; //phpcs:ignore
+		$uri = esc_url_raw( $uri ); // Ensure safe URL
 
-		$parameters       = (array) json_decode( $trigger['meta']['URL_PARAMETERS'], true );
-		$formatted_params = array();
-
-		foreach ( $parameters as $param ) {
-			if ( isset( $param['PARAM_NAME'], $param['PARAM_VALUE'] ) ) {
-				$formatted_params[ $param['PARAM_NAME'] ] = $param['PARAM_VALUE'];
-			}
-		}
-
-		return wp_json_encode( $formatted_params, JSON_PRETTY_PRINT );
-	}
-
-	/**
-	 * Get POST parameters
-	 *
-	 * @param $hook_args
-	 *
-	 * @return string
-	 */
-	private function get_post_params( $hook_args ) {
-		$request_data = isset( $hook_args['request'] ) ? $hook_args['request'] : array();
-		$post_params  = isset( $request_data['post'] ) ? $request_data['post'] : $_POST;
-
-		return wp_json_encode( $post_params, JSON_PRETTY_PRINT );
-	}
-
-	/**
-	 * Get GET parameters
-	 *
-	 * @param $hook_args
-	 *
-	 * @return string
-	 */
-	private function get_get_params( $hook_args ) {
-		$request_data = isset( $hook_args['request'] ) ? $hook_args['request'] : array();
-		$get_params   = isset( $request_data['get'] ) ? $request_data['get'] : $_GET;
-
-		return wp_json_encode( $get_params, JSON_PRETTY_PRINT );
+		return $protocol . $host . $uri;
 	}
 }
 

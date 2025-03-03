@@ -60,7 +60,6 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$this->set_action_tokens( $action_tokens, $this->get_action_code() );
-
 	}
 
 	/**
@@ -90,7 +89,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		$column_search = array(
 			'option_code'     => 'COLUMN_SEARCH',
 			'input_type'      => 'select',
-			'label'           => __( 'Column search', 'uncanny-automator' ),
+			'label'           => esc_html__( 'Column search', 'uncanny-automator' ),
 			'required'        => true,
 			'relevant_tokens' => array(),
 			'options_show_id' => false,
@@ -134,7 +133,6 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 			$value,
 			$key_value_pairs,
 		);
-
 	}
 
 	/**
@@ -193,7 +191,6 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		$this->hydrate_tokens( $at_key_values );
 
 		return true;
-
 	}
 
 	/**
@@ -227,7 +224,14 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		$parts = Notion_Helpers::extract_field_parameters_columns( $column_name );
 
 		if ( count( $parts ) !== 5 ) {
-			throw new Exception( 'Invalid column length after extracting: ' . $column_name, 400 );
+			throw new Exception(
+				sprintf(
+				/* translators: %s: Column name */
+					esc_html__( 'Invalid column length after extracting: %s', 'uncanny-automator' ),
+					esc_html( $column_name )
+				),
+				400
+			);
 		}
 
 		list( $notion, $field, $name, $id, $type ) = $parts;
@@ -255,5 +259,4 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 
 		return $string;
 	}
-
 }

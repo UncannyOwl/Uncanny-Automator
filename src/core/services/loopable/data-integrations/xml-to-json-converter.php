@@ -62,12 +62,24 @@ class Xml_To_Json_Converter {
 
 		$response = wp_remote_get( $url, $args );
 		if ( is_wp_error( $response ) ) {
-			throw new RuntimeException( 'Failed to fetch the XML from the provided URL. ' . $response->get_error_message() );
+			throw new RuntimeException(
+				sprintf(
+				/* translators: %s: Error message */
+					esc_html__( 'Failed to fetch the XML from the provided URL. %s', 'uncanny-automator' ),
+					esc_html( $response->get_error_message() )
+				)
+			);
 		}
 
 		$xml_data = wp_remote_retrieve_body( $response );
 		if ( empty( $xml_data ) ) {
-			throw new RuntimeException( 'No content found in the provided URL:' . $url );
+			throw new RuntimeException(
+				sprintf(
+				/* translators: %s: URL */
+					esc_html__( 'No content found in the provided URL: %s', 'uncanny-automator' ),
+					esc_url( $url )
+				)
+			);
 		}
 
 		$this->xml_content = $xml_data;
@@ -87,9 +99,8 @@ class Xml_To_Json_Converter {
 		if ( ! file_exists( $file_path ) || ! is_readable( $file_path ) ) {
 			throw new RuntimeException( 'The file does not exist or is not readable.' );
 		}
-
 		// Local file.
-		$xml_data          = file_get_contents( $file_path ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$xml_data          = file_get_contents( $file_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$this->xml_content = $xml_data;
 
 		return $this;
@@ -161,7 +172,7 @@ class Xml_To_Json_Converter {
 		$filtered_xml = $xml->xpath( $xpath );
 
 		if ( empty( $filtered_xml ) ) {
-			throw new RuntimeException( "No results found for the specified XPath: $xpath." );
+			throw new RuntimeException( esc_html( "No results found for the specified XPath: $xpath." ) );
 		}
 
 		// Convert the filtered XML result into JSON.
@@ -210,5 +221,4 @@ class Xml_To_Json_Converter {
 
 		return $json_array;
 	}
-
 }

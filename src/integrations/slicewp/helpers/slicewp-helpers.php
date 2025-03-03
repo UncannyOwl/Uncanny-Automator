@@ -35,57 +35,57 @@ class Slicewp_Helpers {
 		$tokens = array(
 			array(
 				'tokenId'   => 'SWP_AFFILIATE_USER_ID',
-				'tokenName' => __( 'User ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'User ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'SWP_AFFILIATE_ID',
-				'tokenName' => __( 'Affiliate ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Affiliate ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'SWP_AFFILIATE_EMAIL',
-				'tokenName' => __( 'Affiliate email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Affiliate email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'SWP_AFFILIATE_NAME',
-				'tokenName' => __( 'Affiliate name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Affiliate name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'SWP_REGISTRATION_DATE',
-				'tokenName' => __( 'Registration date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Registration date', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'SWP_PAYMENT_EMAIL',
-				'tokenName' => __( 'Payment email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Payment email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'SWP_WEBSITE',
-				'tokenName' => __( 'Website', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Website', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'SWP_SUBJECT',
-				'tokenName' => __( 'How will you promote us?', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'How will you promote us?', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'SWP_STATUS',
-				'tokenName' => __( 'Status', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'SWP_AFFILIATE_URL',
-				'tokenName' => __( 'Affiliate URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Affiliate URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'SWP_NOTES',
-				'tokenName' => __( 'Notes', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Notes', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);

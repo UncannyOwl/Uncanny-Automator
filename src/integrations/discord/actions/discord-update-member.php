@@ -139,7 +139,7 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 			if ( ! is_null( $timeout ) ) {
 				// Check for max timeout.
 				if ( $timeout > 28 ) {
-					throw new Exception( _x( 'Timeout can not be more than 28 days.', 'Discord', 'uncanny-automator' ) );
+					throw new Exception( esc_html_x( 'Timeout can not be more than 28 days.', 'Discord', 'uncanny-automator' ) );
 				}
 				// Convert # of days to ISO8601 timestamp.
 				$timeout = gmdate( 'c', strtotime( "+{$timeout} days" ) );
@@ -156,7 +156,7 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		if ( empty( $update ) ) {
-			throw new Exception( _x( 'No update fields provided.', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'No update fields provided.', 'Discord', 'uncanny-automator' ) );
 		}
 
 		// Prepare the body.
@@ -172,7 +172,7 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		// Check for errors.
 		$status_code = isset( $response['statusCode'] ) ? absint( $response['statusCode'] ) : 0;
 		if ( 200 !== $status_code ) {
-			throw new Exception( _x( 'Error updating member.', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Error updating member.', 'Discord', 'uncanny-automator' ) );
 		}
 
 		// Hydrate tokens.
@@ -187,5 +187,4 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 
 		return true;
 	}
-
 }

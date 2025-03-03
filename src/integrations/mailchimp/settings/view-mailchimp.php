@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php if ( 1 === $connect_code && $this->is_connected ) { ?>
 					<?php /* translators: Success message */ ?>
-					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php echo esc_attr( sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $this->client->login->login_name ) ); ?>"></uo-alert>
+					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php echo esc_attr( sprintf( esc_html__( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $this->client->login->login_name ) ); ?>"></uo-alert>
 				<?php } ?>
 
 				<?php if ( 2 === $connect_code ) { ?>
@@ -82,7 +82,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 									echo esc_attr(
 										sprintf(
 											/* translators: Settings field description */
-											__( 'Use this URL to create a webhook in %s of the audiences that you want to trigger recipes.', 'uncanny-automator' ),
+											esc_html__( 'Use this URL to create a webhook in %s of the audiences that you want to trigger recipes.', 'uncanny-automator' ),
 											'<strong>' . _x( 'each', 'Refers to the individual audience', 'uncanny-automator' ) . '</strong>'
 										)
 									);

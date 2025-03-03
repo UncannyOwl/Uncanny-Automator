@@ -77,7 +77,7 @@ class Twitter_Functions {
 	public function textarea_field( $option_code = 'TEXT', $label = null, $tokens = true, $type = 'text', $default = null, $required = true, $description = '', $placeholder = null, $max_length = null ) {
 
 		if ( ! $label ) {
-			$label = __( 'Text', 'uncanny-automator' );
+			$label = esc_html__( 'Text', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {

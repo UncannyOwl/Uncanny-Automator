@@ -167,7 +167,7 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$account_user_id   = $this->get_parsed_meta_value( 'ACCOUNT_USER_ID', false );
 		$validated_user_id = $this->helpers->get_valid_account_user_selection( $account_user_id );
 		if ( is_wp_error( $validated_user_id ) ) {
-			throw new \Exception( $validated_user_id->get_error_message() );
+			throw new \Exception( esc_html( $validated_user_id->get_error_message() ) );
 		}
 
 		$note = array(
@@ -236,5 +236,4 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			),
 		);
 	}
-
 }

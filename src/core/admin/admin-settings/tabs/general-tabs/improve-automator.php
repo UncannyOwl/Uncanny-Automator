@@ -81,7 +81,13 @@ class Admin_Settings_General_Improve_Automator {
 				'admin_init',
 				function() {
 					// Allow usage tracking switch
-					register_setting( 'uncanny_automator_improve_automator_usage_tracking', 'automator_reporting' );
+					register_setting(
+						'uncanny_automator_improve_automator_usage_tracking',
+						'automator_reporting',
+						array(
+							'sanitize_callback' => 'absint',
+						)
+					);
 				}
 			);
 

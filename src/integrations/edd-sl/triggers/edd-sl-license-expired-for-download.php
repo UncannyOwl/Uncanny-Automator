@@ -21,6 +21,7 @@ class EDD_SL_LICENSE_EXPIRED_FOR_DOWNLOAD extends \Uncanny_Automator\Recipe\Trig
 		$this->set_trigger_meta( 'EDD_SL_LICENSES' );
 		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - EDD - Software Licensing
+		// translators: 1: Download name
 		$this->set_sentence( sprintf( esc_attr_x( 'A license for {{a download:%1$s}} expires', 'EDD - Software Licensing', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A license for {{a download}} expires', 'EDD - Software Licensing', 'uncanny-automator' ) );
 		$this->add_action( 'edd_sl_post_set_expiration', 20, 2 );

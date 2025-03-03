@@ -69,13 +69,14 @@ class WPP_POLLSUBMIT {
 
 		$questions_options = array();
 
-		$questions_options[0] = __( 'Any poll', 'uncanny-automator' );
+		$questions_options[0] = esc_html__( 'Any poll', 'uncanny-automator' );
 
 		foreach ( $questions as $question ) {
 			$title = $question->pollq_question;
 
 			if ( empty( $title ) ) {
-				$title = sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $question->pollq_id );
+				// translators: 1: Poll ID
+				$title = sprintf( esc_html__( 'ID: %s (no title)', 'uncanny-automator' ), $question->pollq_id );
 			}
 
 			$questions_options[ $question->pollq_id ] = $title;
@@ -92,11 +93,11 @@ class WPP_POLLSUBMIT {
 						'',
 						false,
 						array(
-							$this->trigger_meta            => __( 'Poll question', 'uncanny-automator' ),
-							$this->trigger_meta . '_ANSWERS' => __( 'Poll answers', 'uncanny-automator' ),
-							$this->trigger_meta . '_START' => __( 'Poll start date', 'uncanny-automator' ),
-							$this->trigger_meta . '_END'   => __( 'Poll end date', 'uncanny-automator' ),
-							$this->trigger_meta . '_WPPOLLANSWER' => __( 'Poll selected answer(s)', 'uncanny-automator' ),
+							$this->trigger_meta            => esc_html__( 'Poll question', 'uncanny-automator' ),
+							$this->trigger_meta . '_ANSWERS' => esc_html__( 'Poll answers', 'uncanny-automator' ),
+							$this->trigger_meta . '_START' => esc_html__( 'Poll start date', 'uncanny-automator' ),
+							$this->trigger_meta . '_END'   => esc_html__( 'Poll end date', 'uncanny-automator' ),
+							$this->trigger_meta . '_WPPOLLANSWER' => esc_html__( 'Poll selected answer(s)', 'uncanny-automator' ),
 						)
 					),
 				),

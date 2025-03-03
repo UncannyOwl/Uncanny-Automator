@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\URL;
 
 /**
  * Class URL_HAS_PARAM
+ *
  * @package Uncanny_Automator
  */
 class URL_HAS_PARAM extends \Uncanny_Automator\Recipe\Trigger {
@@ -22,7 +23,7 @@ class URL_HAS_PARAM extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-			//translators: %1$s is the trigger condition
+				// translators: 1: URL parameter
 				esc_attr_x( 'A URL with {{a URL parameter:%1$s}} is visited', 'URL', 'uncanny-automator' ),
 				'NON_EXISTING:URL_CONDITION'
 			)

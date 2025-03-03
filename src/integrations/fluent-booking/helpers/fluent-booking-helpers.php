@@ -20,67 +20,67 @@ class Fluent_Booking_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'booking_title',
-				'tokenName' => __( 'Meeting title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Meeting title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'invitee_name',
-				'tokenName' => __( 'Invitee name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Invitee name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'invitee_email',
-				'tokenName' => __( 'Invitee email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Invitee email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'invitee_timezone',
-				'tokenName' => __( 'Invitee timezone', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Invitee timezone', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'booked_at',
-				'tokenName' => __( 'Booked at', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booked at', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'meeting_host_name',
-				'tokenName' => __( 'Meeting host name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Meeting host name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'meeting_host_email',
-				'tokenName' => __( 'Meeting host email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Meeting host email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'meeting_time',
-				'tokenName' => __( 'Meeting time', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Meeting time', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'meeting_duration',
-				'tokenName' => __( 'Meeting duration', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Meeting duration', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'location',
-				'tokenName' => __( 'Location', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Location', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'status',
-				'tokenName' => __( 'Status', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'booking_url',
-				'tokenName' => __( 'Booking URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'note',
-				'tokenName' => __( 'Note', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Note', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -93,12 +93,12 @@ class Fluent_Booking_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'cancelled_at',
-				'tokenName' => __( 'Cancellation date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Cancellation date', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'reason_for_cancellation',
-				'tokenName' => __( 'Cancellation reason', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Cancellation reason', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -118,7 +118,10 @@ class Fluent_Booking_Helpers {
 			'invitee_name'       => $bookingData['first_name'] . ' ' . $bookingData['last_name'],
 			'invitee_email'      => $bookingData['email'],
 			'invitee_timezone'   => $bookingData['person_time_zone'],
-			'booked_at'          => date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $date->date ),
+			'booked_at'          => wp_date(
+				sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) ),
+				$date->date
+			),
 			'meeting_host_name'  => $user_host->first_name . ' ' . $user_host->last_name,
 			'meeting_host_email' => $user_host->user_email,
 			'meeting_time'       => $booking->getFullBookingDateTimeText( $bookingData['person_time_zone'] ),
@@ -140,8 +143,8 @@ class Fluent_Booking_Helpers {
 	 */
 	public function parse_cancellation_token_values( $cancellation_reason, $cancellation_date ) {
 		return array(
-			'cancelled_at'            => date(
-				get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
+			'cancelled_at'            => wp_date(
+				sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) ),
 				strtotime( $cancellation_date )
 			),
 			'reason_for_cancellation' => $cancellation_reason,
@@ -242,7 +245,7 @@ class Fluent_Booking_Helpers {
 	public function get_event_meeting_duration() {
 		Automator()->utilities->verify_nonce();
 		// Ignore nonce, already handled above.
-		$event_id       = isset( $_POST['values']['FB_BOOKING_EVENT'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['FB_BOOKING_EVENT'] ) ) : '';
+		$event_id       = $this->get_posted_booking_event_id();
 		$options        = array();
 		$event_duration = CalendarSlot::where( 'id', $event_id )->pluck( 'duration' )->toArray();
 
@@ -267,7 +270,7 @@ class Fluent_Booking_Helpers {
 	public function get_event_meeting_location() {
 		Automator()->utilities->verify_nonce();
 		// Ignore nonce, already handled above.
-		$event_id       = isset( $_POST['values']['FB_BOOKING_EVENT'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['FB_BOOKING_EVENT'] ) ) : '';
+		$event_id       = $this->get_posted_booking_event_id();
 		$options        = array();
 		$event_location = CalendarSlot::where( 'id', $event_id )->pluck( 'location_settings' )->toArray();
 		$event_location = maybe_unserialize( $event_location[0] );
@@ -311,6 +314,16 @@ class Fluent_Booking_Helpers {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Get the booking event ID from POST data
+	 *
+	 * @return string The sanitized booking event ID
+	 */
+	private function get_posted_booking_event_id() {
+		$values = automator_filter_input_array( 'values', INPUT_POST );
+		return isset( $values['FB_BOOKING_EVENT'] ) ? sanitize_text_field( $values['FB_BOOKING_EVENT'] ) : '';
 	}
 
 }

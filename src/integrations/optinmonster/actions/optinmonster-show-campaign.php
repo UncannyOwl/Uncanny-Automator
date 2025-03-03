@@ -111,7 +111,7 @@ class OPTINMONSTER_SHOW_CAMPAIGN {
 
 		if ( ! Automator()->helpers->recipe->optinmonster->campaign_is_active( $campaign ) ) {
 
-			$error_message                       = __( 'The campaign is not active', 'uncanny-automator' );
+			$error_message                       = esc_html__( 'The campaign is not active', 'uncanny-automator' );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 

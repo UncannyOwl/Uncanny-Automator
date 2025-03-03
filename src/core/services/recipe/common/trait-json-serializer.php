@@ -9,7 +9,7 @@ namespace Uncanny_Automator\Services\Recipe\Common;
  */
 trait Trait_JSON_Serializer {
 	#[\ReturnTypeWillChange] // PHP 8 Compatibility.
-	public function jsonSerialize() { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function jsonSerialize() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		return get_object_vars( $this );
 	}
 }

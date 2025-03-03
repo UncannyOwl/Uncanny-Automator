@@ -35,6 +35,7 @@ class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\Action {
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/bitly/' ) );
 		$this->set_requires_user( false );
+		// translators: 1: Long URL
 		$this->set_sentence( sprintf( esc_attr_x( 'Shorten {{a URL:%1$s}}', 'Bitly', 'uncanny-automator' ), $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Shorten {{a URL}}', 'Bitly', 'uncanny-automator' ) );
 		$this->set_background_processing( true );

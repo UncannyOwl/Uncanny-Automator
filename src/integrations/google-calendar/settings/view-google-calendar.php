@@ -33,14 +33,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php if ( ! empty( $auth_error ) ) { ?>
 					<?php /* translators: Error message */ ?>
-					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Authentication Error', 'uncanny-automator' ) ) ); ?>" type="error" class="uap-spacing-bottom">
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Authentication Error', 'uncanny-automator' ) ) ); ?>" type="error" class="uap-spacing-bottom">
 						<?php echo esc_html( $auth_error ); ?>
 					</uo-alert>
 				<?php } ?>
 
 				<?php if ( $client && ! empty( $auth_success ) ) { ?>
 					<?php /* translators: Success message */ ?>
-					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $user_info['email'] ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $user_info['email'] ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
 				<?php } ?>
 
 				<?php if ( ! $client ) { ?>
@@ -71,7 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php } else { ?>
 
-					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Uncanny Automator only supports connecting to one Google Calendar account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Uncanny Automator only supports connecting to one Google Calendar account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
 						<?php esc_html_e( 'You can only link Google Calendars that you have read and write access to.', 'uncanny-automator' ); ?>
 					</uo-alert>
 

@@ -73,7 +73,6 @@ class Constant_Contact_Helpers {
 			),
 			trailingslashit( AUTOMATOR_API_URL ) . self::API_ENDPOINT
 		);
-
 	}
 
 	/**
@@ -114,7 +113,6 @@ class Constant_Contact_Helpers {
 			</uo-alert>
 			<?php
 		}
-
 	}
 
 	/**
@@ -193,7 +191,6 @@ class Constant_Contact_Helpers {
 		);
 
 		wp_send_json( $response );
-
 	}
 
 	/**
@@ -242,7 +239,6 @@ class Constant_Contact_Helpers {
 		);
 
 		wp_send_json( $response );
-
 	}
 
 	/**
@@ -312,7 +308,6 @@ class Constant_Contact_Helpers {
 				)
 			);
 		}
-
 	}
 
 	/**
@@ -330,7 +325,6 @@ class Constant_Contact_Helpers {
 		);
 
 		die;
-
 	}
 
 	/**
@@ -349,7 +343,6 @@ class Constant_Contact_Helpers {
 			),
 			admin_url( 'edit.php' )
 		);
-
 	}
 
 	/**
@@ -362,7 +355,6 @@ class Constant_Contact_Helpers {
 		$credentials = automator_get_option( self::OPTION_KEY, false );
 
 		return ! empty( $credentials ) ? 'success' : '';
-
 	}
 
 	/**
@@ -373,7 +365,6 @@ class Constant_Contact_Helpers {
 	public function is_connected() {
 
 		return '' !== $this->integration_status();
-
 	}
 
 	/**
@@ -390,7 +381,6 @@ class Constant_Contact_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -409,7 +399,6 @@ class Constant_Contact_Helpers {
 				'disconnected' => 'yes',
 			)
 		);
-
 	}
 
 	/**
@@ -448,7 +437,6 @@ class Constant_Contact_Helpers {
 		$this->check_for_errors( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -499,7 +487,6 @@ class Constant_Contact_Helpers {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -521,7 +508,6 @@ class Constant_Contact_Helpers {
 			(array) automator_get_option( self::OPTION_KEY ),
 			$defaults
 		);
-
 	}
 
 	/**
@@ -535,7 +521,7 @@ class Constant_Contact_Helpers {
 
 		if ( ! empty( $response['data']['error_key'] ) ) {
 			$message = sprintf( '[%s] &mdash; %s', $response['data']['error_key'], $response['data']['error_message'] );
-			throw new \Exception( $message, $response['statusCode'] );
+			throw new \Exception( esc_html( $message ), absint( $response['statusCode'] ) );
 		}
 
 		if ( ! in_array( $response['statusCode'], array( 200, 201, 204 ), true ) ) {
@@ -546,10 +532,8 @@ class Constant_Contact_Helpers {
 				wp_json_encode( $response['data'] )
 			);
 
-			throw new \Exception( $error_message );
+			throw new \Exception( esc_html( $error_message ) );
 
 		}
-
 	}
-
 }

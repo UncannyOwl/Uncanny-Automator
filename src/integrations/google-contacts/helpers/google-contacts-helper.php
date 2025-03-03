@@ -38,7 +38,6 @@ class Google_Contacts_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		die;
-
 	}
 
 	/**
@@ -52,7 +51,6 @@ class Google_Contacts_Helpers {
 		delete_transient( self::RESOURCE_OWNER_KEY );
 
 		return true;
-
 	}
 
 	/**
@@ -83,7 +81,6 @@ class Google_Contacts_Helpers {
 		$this->redirect_with_error( 'generic_error' );
 
 		wp_die();
-
 	}
 
 	/**
@@ -107,7 +104,6 @@ class Google_Contacts_Helpers {
 		if ( ! empty( $invoked_errors ) ) {
 			$this->redirect_with_error( str_replace( ' ', '_', strtolower( rawurlencode( $invoked_errors ) ) ) );
 		}
-
 	}
 
 	/**
@@ -152,7 +148,6 @@ class Google_Contacts_Helpers {
 		);
 
 		exit;
-
 	}
 
 	/**
@@ -218,7 +213,6 @@ class Google_Contacts_Helpers {
 		}
 
 		return $has_missing_scope;
-
 	}
 
 	/**
@@ -272,7 +266,6 @@ class Google_Contacts_Helpers {
 		$creds = automator_get_option( self::OPTION_KEY, array() );
 
 		return $creds;
-
 	}
 
 	/**
@@ -294,7 +287,6 @@ class Google_Contacts_Helpers {
 		);
 
 		return $this->api_call( $body, null );
-
 	}
 
 	/**
@@ -318,11 +310,10 @@ class Google_Contacts_Helpers {
 		$response = Api_Server::api_call( $payload );
 
 		if ( ! in_array( $response['statusCode'], array( 200, 201 ), true ) ) {
-			throw new \Exception( wp_json_encode( $response ), $response['statusCode'] );
+			throw new \Exception( esc_html( wp_json_encode( $response ) ), absint( $response['statusCode'] ) );
 		}
 
 		return $response;
-
 	}
 
 	/**
@@ -371,7 +362,5 @@ class Google_Contacts_Helpers {
 		);
 
 		wp_send_json( $response );
-
 	}
-
 }

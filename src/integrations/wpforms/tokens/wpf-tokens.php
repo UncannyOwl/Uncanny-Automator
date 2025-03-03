@@ -1,4 +1,4 @@
-<?php //phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
 namespace Uncanny_Automator;
 
@@ -100,7 +100,7 @@ class Wpf_Tokens {
 					continue;
 				}
 				$input_id    = $field['id'];
-				$input_title = isset( $field['label'] ) ? $field['label'] : sprintf( '%d- %s', $field['id'], __( 'No name', 'uncanny-automator' ) );
+				$input_title = isset( $field['label'] ) ? $field['label'] : sprintf( '%d- %s', $field['id'], esc_html__( 'No name', 'uncanny-automator' ) );
 				$token_id    = "$form_id|$input_id";
 				$input_title = 'address' === $field['type'] ? _x( 'Address (full)', 'WPForms', 'uncanny-automator' ) : $input_title;
 				$fields[]    = array(
@@ -113,37 +113,37 @@ class Wpf_Tokens {
 				if ( 'address' === $field['type'] ) {
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|address1',
-						'tokenName'       => __( 'Address - Line 1', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Address - Line 1', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|address2',
-						'tokenName'       => __( 'Address - Line 2', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Address - Line 2', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|city',
-						'tokenName'       => __( 'Address - City', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Address - City', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|state',
-						'tokenName'       => __( 'Address - State/Province/Region', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Address - State/Province/Region', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|postal',
-						'tokenName'       => __( 'Address - Zip/Postal code', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Address - Zip/Postal code', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|country',
-						'tokenName'       => __( 'Address - Country', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Address - Country', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
@@ -286,7 +286,7 @@ class Wpf_Tokens {
 		if ( class_exists( 'WPForms_Lite' ) ) {
 			// Check for Pro Only Fields.
 			if ( $this->is_pro_field( $field_type ) ) {
-				$value = __( 'This token requires WPForms Pro', 'uncanny-automator' );
+				$value = esc_html__( 'This token requires WPForms Pro', 'uncanny-automator' );
 			}
 		}
 
@@ -463,19 +463,19 @@ class Wpf_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'WPFENTRYID',
-				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'WPFENTRYIP',
-				'tokenName'       => __( 'User IP', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'User IP', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'WPFENTRYDATE',
-				'tokenName'       => __( 'Entry submission date', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry submission date', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPFENTRYTOKENS',
 			),
@@ -506,7 +506,7 @@ class Wpf_Tokens {
 					$meta_key       = $pieces[2];
 					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 					if ( class_exists( 'WPForms_Lite' ) ) {
-						$meta_value = __( 'This token requires WPForms Pro', 'uncanny-automator' );
+						$meta_value = esc_html__( 'This token requires WPForms Pro', 'uncanny-automator' );
 					}
 					if ( ! empty( $meta_value ) ) {
 						$value = maybe_unserialize( $meta_value );

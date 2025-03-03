@@ -106,10 +106,13 @@ class KEAP_ADD_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$results  = $response['data']['results'] ?? array();
 		$contact  = $response['data']['contact'] ?? 0;
 		$statuses = array(
-			// Translators: %s Tag ID(s)
+			// translators: %s Tag ID(s)
 			'DUPLICATE'        => _x( 'Tag(s) %s already applied.', 'Keap', 'uncanny-automator' ),
+			// translators: %s Tag ID(s)
 			'TAG_ID_NOT_FOUND' => _x( 'Invalid tag(s) %s.', 'Keap', 'uncanny-automator' ),
+			// translators: %s Tag ID(s)
 			'FAILURE'          => _x( 'Failed to apply tag(s) %s.', 'Keap', 'uncanny-automator' ),
+			// translators: %s Tag ID(s)
 			'NO_PERMISSION'    => _x( 'Invalid permission to apply tag(s) %s.', 'Keap', 'uncanny-automator' ),
 		);
 

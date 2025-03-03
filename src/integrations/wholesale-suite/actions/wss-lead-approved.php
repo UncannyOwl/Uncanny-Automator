@@ -78,7 +78,7 @@ class WSS_LEAD_APPROVED {
 		if ( empty( $user_email_id ) ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, __( 'User field is empty.', 'uncanny-automator' ) );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_html__( 'User field is empty.', 'uncanny-automator' ) );
 
 			return;
 		}
@@ -98,6 +98,7 @@ class WSS_LEAD_APPROVED {
 
 		$action_data['do-nothing']           = true;
 		$action_data['complete_with_errors'] = true;
-		Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf( __( 'A user matching (%s) was not found', 'uncanny-automator' ), $user_email_id ) );
+		// translators: 1: User email id
+		Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf( esc_html__( 'A user matching (%s) was not found', 'uncanny-automator' ), $user_email_id ) );
 	}
 }

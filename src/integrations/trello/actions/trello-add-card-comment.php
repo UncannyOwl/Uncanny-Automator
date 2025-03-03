@@ -47,11 +47,11 @@ class TRELLO_ADD_CARD_COMMENT {
 		$this->set_action_tokens(
 			array(
 				'ID'  => array(
-					'name' => __( 'Comment ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Comment ID', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'URL' => array(
-					'name' => __( 'Comment URL', 'uncanny-automator' ),
+					'name' => esc_html__( 'Comment URL', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),
@@ -70,23 +70,23 @@ class TRELLO_ADD_CARD_COMMENT {
 
 		$user_boards_field = array(
 			'option_code'           => 'BOARD',
-			'label'                 => __( 'Board', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Board', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => $this->functions->user_boards_options(),
 			'supports_custom_value' => false,
-			'token_name'            => __( 'Board ID', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Board ID', 'uncanny-automator' ),
 		);
 
 		$board_lists_field = array(
 			'option_code'           => 'LIST',
-			'label'                 => __( 'List', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'List', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,
 			'options'               => array(),
 			'supports_custom_value' => false,
-			'token_name'            => __( 'List ID', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'List ID', 'uncanny-automator' ),
 			'ajax'                  => array(
 				'endpoint'      => 'automator_trello_get_board_lists',
 				'event'         => 'parent_fields_change',
@@ -96,12 +96,12 @@ class TRELLO_ADD_CARD_COMMENT {
 
 		$list_cards_field = array(
 			'option_code'           => $this->get_action_meta(),
-			'label'                 => __( 'Card', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Card', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
 			'supports_custom_value' => true,
-			'token_name'            => __( 'Card ID', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Card ID', 'uncanny-automator' ),
 			'ajax'                  => array(
 				'endpoint'      => 'automator_trello_get_list_cards',
 				'event'         => 'parent_fields_change',

@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\Bricks_Builder;
 
 /**
  * Class BRICKS_BUILDER_ANON_FORM_SUBMIT
+ *
  * @pacakge Uncanny_Automator
  */
 class BRICKS_BUILDER_ANON_FORM_SUBMIT extends \Uncanny_Automator\Recipe\Trigger {
@@ -92,6 +93,7 @@ class BRICKS_BUILDER_ANON_FORM_SUBMIT extends \Uncanny_Automator\Recipe\Trigger 
 		$this->set_trigger_meta( 'BB_FORMS' );
 		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - Bricks Builder
+		// translators: 1: Form name
 		$this->set_sentence( sprintf( esc_attr_x( '{{A form:%1$s}} is submitted', 'Bricks Builder', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( '{{A form}} is submitted', 'Bricks Builder', 'uncanny-automator' ) );
 		$this->add_action( 'bricks/form/custom_action', 20, 1 );

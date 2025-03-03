@@ -41,7 +41,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 	 */
 	public function define_trigger() {
 
-		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -68,7 +68,7 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 	 */
 	public function load_options() {
 
-		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 		return Automator()->utilities->keep_order_of_options(
 			array(
@@ -81,7 +81,9 @@ class UNCANNYCEUS_EARNS_NUMBER_CEUS {
 						'validation_type' => 'integer',
 						'required'        => true,
 						'relevant_tokens' => array(
+							/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
 							$this->trigger_meta            => sprintf( esc_attr__( '%1$s amount', 'uncanny-automator' ), $credit_designation_label_plural ),
+							/* translators: Uncanny CEUs. 1. Credit designation label (plural) */
 							$this->trigger_meta . '_title' => sprintf( esc_attr__( 'Course or %1$s title', 'uncanny-automator' ), $credit_designation_label_plural ),
 							$this->trigger_meta . '_date'  => esc_attr__( 'Date awarded', 'uncanny-automator' ),
 						),

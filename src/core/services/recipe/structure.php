@@ -19,28 +19,73 @@ final class Structure implements JsonSerializable {
 	use Common\Trait_JSON_Serializer;
 	use Common\Trait_Setter_Getter;
 
-	protected $recipe_id     = 0;
+	/**
+	 * @var int
+	 */
+	protected $recipe_id = 0;
+	/**
+	 * @var bool
+	 */
 	protected $is_pro_active = false;
-	protected $has_pro_item  = false;
-	protected $is_recipe_on  = false;
-	protected $title         = '';
-	protected $recipe_type   = '';
-	protected $stats         = null;
+	/**
+	 * @var bool
+	 */
+	protected $has_pro_item = false;
+	/**
+	 * @var bool
+	 */
+	protected $is_recipe_on = false;
+	/**
+	 * @var string
+	 */
+	protected $title = '';
+	/**
+	 * @var string
+	 */
+	protected $recipe_type = '';
+	/**
+	 * @var null
+	 */
+	protected $stats = null;
+	/**
+	 * @var null
+	 */
 	protected $miscellaneous = null;
-	protected $triggers      = null;
-	protected $actions       = null;
+	/**
+	 * @var null
+	 */
+	protected $triggers = null;
+	/**
+	 * @var null
+	 */
+	protected $actions = null;
 
 	// Basic config we can use to manipulate the structures.
+	/**
+	 * @var array
+	 */
 	protected $_config = array( // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
-		'fields'       => array(
+								'fields'       => array(
 			'show_original_field_resolver_structure' => false,
 		),
-		'publish_only' => false,
+								'publish_only' => false,
 	);
 
+	/**
+	 * @var null
+	 */
 	protected static $meta = null;
+	/**
+	 * @var null
+	 */
 	protected static $post = null;
 
+	/**
+	 * @param $recipe_id
+	 * @param $config
+	 *
+	 * @throws \Uncanny_Automator\Automator_Exception
+	 */
 	public function __construct( $recipe_id = null, $config = array() ) {
 
 		if ( empty( $recipe_id ) || ! is_int( $recipe_id ) ) {
@@ -62,7 +107,6 @@ final class Structure implements JsonSerializable {
 		);
 
 		$this->retrieve_record()->hydrate_properties();
-
 	}
 
 	/**
@@ -108,16 +152,23 @@ final class Structure implements JsonSerializable {
 		$data = Automator()->get_recipe_data_by_recipe_id( $this->recipe_id );
 
 		if ( ! is_array( $data ) || empty( $data ) ) {
-			throw new Automator_Exception( 'No recipe found with ID: ' . $this->recipe_id, 404 );
+			throw new Automator_Exception(
+				esc_html(
+					sprintf(
+				/* translators: %d: Recipe ID */
+					esc_html__( 'No recipe found with ID: %d', 'uncanny-automator' ),
+					absint( $this->recipe_id )
+					)
+				),
+				404
+			);
 		}
-
 		$data = $data[ $this->recipe_id ];
 
 		self::$meta = $this->get_meta();
 		self::$post = get_post( $this->recipe_id, ARRAY_A );
 
 		return $this;
-
 	}
 
 	/**
@@ -140,10 +191,9 @@ final class Structure implements JsonSerializable {
 		$this->miscellaneous = apply_filters( 'automator_recipe_main_object\structure\miscellaneous', $miscellaneous, $this );
 		$this->triggers      = apply_filters( 'automator_recipe_main_object\structure\triggers', $triggers, $this );
 		// @see Conditions_Pluggable::register_hooks().
-		$this->actions = apply_filters( 'automator_recipe_main_object\structure\actions', $actions, $this ); //phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		$this->actions = apply_filters( 'automator_recipe_main_object\structure\actions', $actions, $this ); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 
 		return $this;
-
 	}
 
 	/**
@@ -159,7 +209,6 @@ final class Structure implements JsonSerializable {
 		}
 
 		return $this;
-
 	}
 
 	/**
@@ -199,7 +248,6 @@ final class Structure implements JsonSerializable {
 		}
 
 		return $decoded;
-
 	}
 
 	/**
@@ -213,7 +261,5 @@ final class Structure implements JsonSerializable {
 		}
 
 		return isset( $list ) ? $list : array();
-
 	}
-
 }

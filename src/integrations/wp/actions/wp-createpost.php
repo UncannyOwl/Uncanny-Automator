@@ -35,7 +35,6 @@ class WP_CREATEPOST {
 	public function __construct() {
 
 		$this->define_action();
-
 	}
 
 	/**
@@ -63,15 +62,15 @@ class WP_CREATEPOST {
 		$this->set_action_tokens(
 			array(
 				'POST_ID'       => array(
-					'name' => __( 'Post ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Post ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'POST_URL'      => array(
-					'name' => __( 'Post URL', 'uncanny-automator' ),
+					'name' => esc_html__( 'Post URL', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 				'POST_URL_EDIT' => array(
-					'name' => __( 'Post edit URL', 'uncanny-automator' ),
+					'name' => esc_html__( 'Post edit URL', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),
@@ -79,7 +78,6 @@ class WP_CREATEPOST {
 		);
 
 		Automator()->register->action( $action );
-
 	}
 
 	/**
@@ -376,8 +374,9 @@ class WP_CREATEPOST {
 		if ( 'true' === $unique_title_field_val && true === $this->post_title_exists( $post_title, $post_type ) ) {
 			throw new LogicException(
 				sprintf(
-					"Error: Post title must be unique. A post with the title '%s' already exists.",
-					$post_title
+				/* translators: %s: Post title */
+					esc_html__( "Error: Post title must be unique. A post with the title '%s' already exists.", 'uncanny-automator' ),
+					esc_html( $post_title )
 				),
 				1001 // Exception code for duplicate title.
 			);
@@ -511,7 +510,6 @@ class WP_CREATEPOST {
 		);
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
 	}
 
 	/**
@@ -541,7 +539,6 @@ class WP_CREATEPOST {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -582,7 +579,6 @@ class WP_CREATEPOST {
 		}
 
 		return $attachment_id;
-
 	}
 
 	/**
@@ -619,7 +615,6 @@ class WP_CREATEPOST {
 		$status_options = $this->remove_post_statuses( $status_options );
 
 		return $status_options;
-
 	}
 
 	/**
@@ -643,7 +638,6 @@ class WP_CREATEPOST {
 		}
 
 		return $status_options;
-
 	}
 
 	/**
@@ -668,7 +662,6 @@ class WP_CREATEPOST {
 		unset( $field['options']['-1'] );
 
 		return $field;
-
 	}
 
 	/**
@@ -683,19 +676,16 @@ class WP_CREATEPOST {
 
 		$title = sanitize_title( $title );
 
-		// Modify the query for case-insensitive comparison
-		$query = $wpdb->prepare(
-			"SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
-			$title,
-			$post_type
-		);
-
 		// Execute the query
-		$post_id = $wpdb->get_var( $query );
+		$post_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
+				$title,
+				$post_type
+			)
+		);
 
 		// Check if a post ID was returned
 		return ! empty( $post_id );
-
 	}
-
 }

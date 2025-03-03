@@ -91,13 +91,13 @@ class Jetfb_Tokens {
 
 		return array(
 			'__form_id'  => array(
-				'name' => __( 'Form ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Form ID', 'uncanny-automator' ),
 			),
 			'FORM_TITLE' => array(
-				'name' => __( 'Form title', 'uncanny-automator' ),
+				'name' => esc_html__( 'Form title', 'uncanny-automator' ),
 			),
 			'__refer'    => array(
-				'name' => __( 'Referer URL', 'uncanny-automator' ),
+				'name' => esc_html__( 'Referer URL', 'uncanny-automator' ),
 			),
 		);
 

@@ -71,13 +71,13 @@ class Wpjm_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		$options['-1'] = __( 'Any type', 'uncanny-automator' );
+		$options['-1'] = esc_html__( 'Any type', 'uncanny-automator' );
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			// WP Job Manager is hidding terms on non job template
 			$terms = get_terms(
-				'job_listing_type',
 				array(
+					'taxonomy'   => 'job_listing_type',
 					'hide_empty' => false,
 					'public'     => false,
 				)
@@ -131,7 +131,7 @@ class Wpjm_Helpers {
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$options      = array();
 
-		$options['-1'] = __( 'Any job', 'uncanny-automator' );
+		$options['-1'] = esc_html__( 'Any job', 'uncanny-automator' );
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
 			// WP Job Manager is hidding terms on non job template
@@ -164,8 +164,8 @@ class Wpjm_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => __( 'Job title', 'uncanny-automator' ),
-				$option_code . '_ID' => __( 'Job ID', 'uncanny-automator' ),
+				$option_code         => esc_html__( 'Job title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_html__( 'Job ID', 'uncanny-automator' ),
 			),
 		);
 

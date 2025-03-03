@@ -79,7 +79,7 @@ class Pretty_Links_Helpers {
 
 		foreach ( $links as $link ) {
 			$all_links[] = array(
-				'text'  => esc_attr_x( $link['name'], 'Pretty Links', 'uncanny-automator' ),
+				'text'  => esc_attr( $link['name'] ),
 				'value' => $link['id'],
 			);
 		}
@@ -97,27 +97,27 @@ class Pretty_Links_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'LINK_TITLE',
-				'tokenName' => __( 'Link title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Link title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'LINK_ID',
-				'tokenName' => __( 'Link ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Link ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'LINK_REDIRECTION_TYPE',
-				'tokenName' => __( 'Redirection type', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Redirection type', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'PRETTY_LINK',
-				'tokenName' => __( 'Pretty Link', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Pretty Link', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'LINK_TARGET_URL',
-				'tokenName' => __( 'Target URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Target URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 		);
@@ -134,32 +134,32 @@ class Pretty_Links_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'LINK_ID',
-				'tokenName' => __( 'Link ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Link ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'CLICK_ID',
-				'tokenName' => __( 'Click ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Click ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'TARGET_URL',
-				'tokenName' => __( 'Target URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Target URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'PRLI_REFERER',
-				'tokenName' => __( 'Referer', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Referer', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'PRLI_HOST',
-				'tokenName' => __( 'Host', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Host', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'PRLI_BROWSER',
-				'tokenName' => __( 'Browser', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Browser', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 		);

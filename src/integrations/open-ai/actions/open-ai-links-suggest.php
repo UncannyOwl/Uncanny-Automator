@@ -58,7 +58,7 @@ class OPEN_AI_LINKS_SUGGEST {
 		$this->set_action_tokens(
 			array(
 				'GENERATED_LINKS_LIST' => array(
-					'name' => __( 'Generated list of links', 'uncanny-automator' ),
+					'name' => esc_html__( 'Generated list of links', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

@@ -50,7 +50,6 @@ class Brevo_Helpers {
 	public function __construct() {
 
 		$this->invalid_key_message = _x( 'Invalid API Key : ', 'Brevo', 'uncanny-automator' );
-
 	}
 
 	/**
@@ -173,7 +172,6 @@ class Brevo_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -191,7 +189,6 @@ class Brevo_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -355,7 +352,9 @@ class Brevo_Helpers {
 		$contact = $this->get_contact( $email );
 		if ( ! empty( $contact ) ) {
 			if ( ! $update_existing ) {
-				throw new \Exception( _x( 'Contact with that email already exists', 'Brevo', 'uncanny-automator' ) );
+				throw new \Exception(
+					esc_html_x( 'Contact with that email already exists', 'Brevo', 'uncanny-automator' )
+				);
 			}
 			// TODO REVIEW - could compare attributes and update only if needed.
 			return $this->create_contact( $email, $attributes, $update_existing, $action_data );
@@ -462,7 +461,7 @@ class Brevo_Helpers {
 
 		usort(
 			$attributes,
-			function( $a, $b ) {
+			function ( $a, $b ) {
 				return strcmp( $a['text'], $b['text'] );
 			}
 		);
@@ -620,7 +619,7 @@ class Brevo_Helpers {
 		// Sort by text value.
 		usort(
 			$options,
-			function( $a, $b ) {
+			function ( $a, $b ) {
 				return strcmp( $a['text'], $b['text'] );
 			}
 		);
@@ -688,20 +687,19 @@ class Brevo_Helpers {
 	public function check_for_errors( $response ) {
 
 		if ( ! empty( $response['data']['error'] ) ) {
-			throw new \Exception( $response['data']['error'], 400 );
+			throw new \Exception( esc_html( $response['data']['error'] ), 400 );
 		}
 
 		if ( $response['statusCode'] >= 400 ) {
 			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : _x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
-			throw new \Exception( $message, 400 );
+			throw new \Exception( esc_html( $message ), 400 );
 		}
 
 		if ( isset( $response['data']['code'] ) && ! empty( $response['data']['code'] ) ) {
 			if ( 'unauthorized' === $response['data']['code'] ) {
-				throw new \Exception( $this->invalid_key_message, 400 );
+				throw new \Exception( esc_html( $this->invalid_key_message ), 400 );
 			}
 		}
-
 	}
 
 	/**

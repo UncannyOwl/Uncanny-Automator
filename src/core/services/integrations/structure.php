@@ -577,7 +577,7 @@ class Structure {
 	 *
 	 * @return string the JSON encoded property of the structure.
 	 */
-	public function toJSON() { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function toJSON() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		return (string) wp_json_encode( $this->structure );
 	}
 

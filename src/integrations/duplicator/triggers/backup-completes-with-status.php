@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\Duplicator;
 
 /**
  * Class BACKUP_COMPLETES_WITH_STATUS
+ *
  * @package Uncanny_Automator
  */
 class BACKUP_COMPLETES_WITH_STATUS extends \Uncanny_Automator\Recipe\Trigger {
@@ -17,6 +18,7 @@ class BACKUP_COMPLETES_WITH_STATUS extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_meta( 'DUPLICATOR_BACKUP_STATUS' );
 		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - Duplicator
+		// translators: 1: Status
 		$this->set_sentence( sprintf( esc_attr_x( 'A backup completes with {{a specific status:%1$s}}', 'Duplicator', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A backup completes with {{a specific status}}', 'Duplicator', 'uncanny-automator' ) );
 		$this->add_action(
@@ -37,17 +39,17 @@ class BACKUP_COMPLETES_WITH_STATUS extends \Uncanny_Automator\Recipe\Trigger {
 			array(
 				'input_type'      => 'select',
 				'option_code'     => $this->get_trigger_meta(),
-				'label'           => _x( 'Status', 'Duplicator', 'uncanny-automator-pro' ),
+				'label'           => _x( 'Status', 'Duplicator', 'uncanny-automator' ),
 				'default_value'   => null,
 				'required'        => true,
 				'options'         => array(
 					array(
 						'value' => '100',
-						'text'  => esc_attr_x( 'Package build completed', 'Duplicator', 'uncanny-automator-pro' ),
+						'text'  => esc_attr_x( 'Package build completed', 'Duplicator', 'uncanny-automator' ),
 					),
 					array(
 						'value' => '-1',
-						'text'  => esc_attr_x( 'Failed with error', 'Duplicator', 'uncanny-automator-pro' ),
+						'text'  => esc_attr_x( 'Failed with error', 'Duplicator', 'uncanny-automator' ),
 					),
 				),
 				'relevant_tokens' => array(),
@@ -88,17 +90,17 @@ class BACKUP_COMPLETES_WITH_STATUS extends \Uncanny_Automator\Recipe\Trigger {
 		return array(
 			array(
 				'tokenId'   => 'BACKUP_STATUS',
-				'tokenName' => __( 'Status', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'BACKUP_FILENAME',
-				'tokenName' => __( 'Backup name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Backup name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			//          array(
 			//              'tokenId'   => 'BACKUP_ERROR',
-			//              'tokenName' => __( 'Error', 'uncanny-automator' ),
+			//              'tokenName' => esc_html__( 'Error', 'uncanny-automator' ),
 			//              'tokenType' => 'text',
 			//          ),
 		);

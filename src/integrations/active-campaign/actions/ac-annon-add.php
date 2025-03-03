@@ -164,7 +164,7 @@ class AC_ANNON_ADD {
 			'option_code' => $this->prefix . '_UPDATE_IF_CONTACT_EXISTS',
 			'label'       => esc_attr__( 'If the contact already exists, update their info.', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
-			'description' => __( 'To delete a value from a field, set its value to [delete], including the square brackets.', 'uncanny-automator' ),
+			'description' => esc_html__( 'To delete a value from a field, set its value to [delete], including the square brackets.', 'uncanny-automator' ),
 		);
 
 		return $fields;

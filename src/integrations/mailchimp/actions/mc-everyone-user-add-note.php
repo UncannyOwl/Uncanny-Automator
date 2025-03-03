@@ -47,7 +47,7 @@ class MC_EVERYONE_USER_ADD_NOTE {
 
 	public function load_options() {
 
-		$textarea = Automator()->helpers->recipe->field->text_field( 'MCNOTE', __( 'Note', 'uncanny-automator' ), true, 'textarea', null, false, __( 'Note length is limited to 1,000 characters.', 'uncanny-automator' ) );
+		$textarea = Automator()->helpers->recipe->field->text_field( 'MCNOTE', esc_html__( 'Note', 'uncanny-automator' ), true, 'textarea', null, false, __( 'Note length is limited to 1,000 characters.', 'uncanny-automator' ) );
 
 		$textarea['supports_tinymce'] = false;
 
@@ -57,7 +57,7 @@ class MC_EVERYONE_USER_ADD_NOTE {
 			),
 			'options_group' => array(
 				$this->action_meta => array(
-					Automator()->helpers->recipe->mailchimp->options->get_all_lists( __( 'Audience', 'uncanny-automator' ), 'MCLIST' ),
+					Automator()->helpers->recipe->mailchimp->options->get_all_lists( esc_html__( 'Audience', 'uncanny-automator' ), 'MCLIST' ),
 					$textarea,
 				),
 			),

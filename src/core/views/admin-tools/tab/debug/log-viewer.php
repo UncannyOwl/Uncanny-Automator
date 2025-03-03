@@ -38,7 +38,13 @@
 			$file_size_in_bytes = filesize( $file_path );
 			$file_size_in_mb    = round( $file_size_in_bytes / 1024 / 1024, 2 ); // Convert to MB and round to 2 decimal places
 
-			echo esc_html( automator_filter_input( 'debug' ) ) . " ({$file_size_in_mb} MB)";
+			printf(
+			/* translators: %1$s: Log file name, %2$s: File size in MB */
+				esc_html__( '%1$s (%2$s MB)', 'uncanny-automator' ),
+				esc_html( automator_filter_input( 'debug' ) ),
+				esc_html( $file_size_in_mb )
+			);
+
 			?>
 		</div>
 

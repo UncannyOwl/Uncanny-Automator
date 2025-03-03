@@ -52,8 +52,8 @@ class SHEET_ADDARECORD {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			/* translators: Action sentence */
-			'sentence'              => sprintf( __( 'Create a row in a {{Google Sheet:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Create a row in a {{Google Sheet}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Create a row in a {{Google Sheet:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Create a row in a {{Google Sheet}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'requires_user'         => false,
@@ -62,7 +62,7 @@ class SHEET_ADDARECORD {
 			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get columns', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Get columns', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => $this->get_samples_js(),
 					'modules'     => array( 'modal', 'markdown' ),
@@ -84,7 +84,7 @@ class SHEET_ADDARECORD {
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->google_sheet->options->get_google_drives(
-						__( 'Drive', 'uncanny-automator' ),
+						esc_html__( 'Drive', 'uncanny-automator' ),
 						'GSDRIVE',
 						array(
 							'is_ajax'      => true,
@@ -93,7 +93,7 @@ class SHEET_ADDARECORD {
 						)
 					),
 					Automator()->helpers->recipe->google_sheet->get_google_spreadsheets(
-						__( 'Spreadsheet', 'uncanny-automator' ),
+						esc_html__( 'Spreadsheet', 'uncanny-automator' ),
 						'GSSPREADSHEET',
 						array(
 							'is_ajax'      => true,
@@ -102,7 +102,7 @@ class SHEET_ADDARECORD {
 						)
 					),
 					Automator()->helpers->recipe->google_sheet->get_google_worksheets(
-						__( 'Worksheet', 'uncanny-automator' ),
+						esc_html__( 'Worksheet', 'uncanny-automator' ),
 						'GSWORKSHEET',
 						array(
 							'is_ajax' => true,
@@ -112,7 +112,7 @@ class SHEET_ADDARECORD {
 						'option_code'       => 'WORKSHEET_FIELDS',
 						'input_type'        => 'repeater',
 						'relevant_tokens'   => array(),
-						'label'             => __( 'Row', 'uncanny-automator' ),
+						'label'             => esc_html__( 'Row', 'uncanny-automator' ),
 						'description'       => '',
 						'required'          => true,
 						'default_value'     => array(
@@ -124,16 +124,16 @@ class SHEET_ADDARECORD {
 						'fields'            => array(
 							array(
 								'option_code' => 'GS_COLUMN_NAME',
-								'label'       => __( 'Column', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Column', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
 								'read_only'   => true,
 								'options'     => array(),
 							),
-							Automator()->helpers->recipe->field->text_field( 'GS_COLUMN_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+							Automator()->helpers->recipe->field->text_field( 'GS_COLUMN_VALUE', esc_html__( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
 						),
-						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+						'add_row_button'    => esc_html__( 'Add pair', 'uncanny-automator' ),
+						'remove_row_button' => esc_html__( 'Remove pair', 'uncanny-automator' ),
 						'hide_actions'      => true,
 					),
 				),
@@ -416,7 +416,7 @@ class SHEET_ADDARECORD {
 
 		if ( $check_all_empty ) {
 			// log error no heading found.
-			$error_msg                           = __( 'Trying to add an empty row.', 'uncanny-automator' );
+			$error_msg                           = esc_html__( 'Trying to add an empty row.', 'uncanny-automator' );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 

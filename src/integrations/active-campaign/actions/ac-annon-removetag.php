@@ -19,7 +19,6 @@ class AC_ANNON_REMOVETAG {
 	public function __construct() {
 
 		$this->setup_action();
-
 	}
 
 	/**
@@ -52,7 +51,6 @@ class AC_ANNON_REMOVETAG {
 		$this->set_background_processing( true );
 
 		$this->register_action();
-
 	}
 
 	public function load_options() {
@@ -121,7 +119,7 @@ class AC_ANNON_REMOVETAG {
 			$response = $ac_helper->api_request( $body, $action_data );
 
 			if ( ! empty( $response['data']['message'] ) ) {
-				throw new \Exception( $response['data']['message'], $response['statusCode'] );
+				throw new \Exception( esc_html( $response['data']['message'] ), absint( $response['statusCode'] ) );
 			}
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );

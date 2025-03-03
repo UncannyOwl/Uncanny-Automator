@@ -15,27 +15,27 @@ class Gravity_Forms_Tokens {
 
 		$tokens[] = array(
 			'tokenId'   => 'ENTRY_ID',
-			'tokenName' => __( 'Entry ID', 'automator-sample' ),
+			'tokenName' => __( 'Entry ID', 'uncanny-automator' ),
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'ENTRY_DATE_SUBMITTED',
-			'tokenName' => __( 'Entry submission date', 'automator-sample' ),
+			'tokenName' => __( 'Entry submission date', 'uncanny-automator' ),
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'ENTRY_DATE_UPDATED',
-			'tokenName' => __( 'Entry date updated', 'automator-sample' ),
+			'tokenName' => __( 'Entry date updated', 'uncanny-automator' ),
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'ENTRY_URL_SOURCE',
-			'tokenName' => __( 'Entry source URL', 'automator-sample' ),
+			'tokenName' => __( 'Entry source URL', 'uncanny-automator' ),
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'USER_IP',
-			'tokenName' => __( 'User IP', 'automator-sample' ),
+			'tokenName' => __( 'User IP', 'uncanny-automator' ),
 		);
 
 		return $tokens;
@@ -77,12 +77,12 @@ class Gravity_Forms_Tokens {
 
 		$tokens[] = array(
 			'tokenId'   => 'FORM_TITLE',
-			'tokenName' => __( 'Form title', 'automator-sample' ),
+			'tokenName' => __( 'Form title', 'uncanny-automator' ),
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'FORM_ID',
-			'tokenName' => __( 'Form ID', 'automator-sample' ),
+			'tokenName' => __( 'Form ID', 'uncanny-automator' ),
 		);
 
 		$form_selected = \GFAPI::get_form( $form_id );

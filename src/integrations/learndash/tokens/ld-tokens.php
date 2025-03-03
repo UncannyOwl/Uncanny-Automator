@@ -92,14 +92,14 @@ class Ld_Tokens {
 		if ( 'LD_QUIZPERCENT' === $trigger_code ) {
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_achieved_percent',
-				'tokenName'       => __( "User's quiz percentage", 'uncanny-automator' ),
+				'tokenName'       => esc_html__( "User's quiz percentage", 'uncanny-automator' ),
 				'tokenType'       => 'float',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_quiz_passing_percentage',
-				'tokenName'       => __( 'Passing score %', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Passing score %', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -109,7 +109,7 @@ class Ld_Tokens {
 		if ( 'LD_QUIZSCORE' === $trigger_code ) {
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_achieved_score',
-				'tokenName'       => __( "User's quiz score", 'uncanny-automator' ),
+				'tokenName'       => esc_html__( "User's quiz score", 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -119,7 +119,7 @@ class Ld_Tokens {
 		if ( 'LD_QUIZPOINT' === $trigger_code ) {
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_achieved_points',
-				'tokenName'       => __( "User's quiz points", 'uncanny-automator' ),
+				'tokenName'       => esc_html__( "User's quiz points", 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -156,55 +156,55 @@ class Ld_Tokens {
 
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Course title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Course title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Course ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Course ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Course URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Course URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_url',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Lesson title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Lesson ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Lesson URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_url',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Topic title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Topic URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_url',
 			);
@@ -422,7 +422,7 @@ class Ld_Tokens {
 					global $wpdb;
 
 					$table_name   = $wpdb->prefix . Database::TABLE_REPORTING;
-					$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 					if ( ! empty( $tin_can_data ) ) {
 						if ( in_array( 'TCMODULEINTERACTION_maybe_course', $pieces, true ) && ! empty( $tin_can_data->course_id ) ) {
@@ -613,13 +613,13 @@ class Ld_Tokens {
 		if ( 'COURSEDONE' === $trigger_code ) {
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_course_completed_on',
-				'tokenName'       => __( 'Course completion date', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Course completion date', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_course_points',
-				'tokenName'       => __( 'Course points', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Course points', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -915,7 +915,7 @@ class Ld_Tokens {
 			if ( ! isset( $scores[ $category_id ] ) ) {
 				$scores[ $category_id ] = array(
 					'id'           => $category_id,
-					'name'         => $category_id ? $statistic->getCategoryName() : esc_html__( 'No category', 'learndash' ),
+					'name'         => $category_id ? $statistic->getCategoryName() : esc_html__( 'No category', 'learndash' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 					'points'       => 0,
 					'total_points' => 0,
 					'score'        => 0,
@@ -1079,7 +1079,7 @@ class Ld_Tokens {
 								// Output.
 								$data[ $question_post_id ]['answer'][] = sprintf(
 								// translators: placeholder: Answer, Sort Text.
-									esc_html_x( '%1$s { %2$s }', 'placeholder: Answer, Sort Text', 'learndash' ),
+									esc_html_x( '%1$s { %2$s }', 'placeholder: Answer, Sort Text', 'learndash' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 									do_shortcode( $answer_text ),
 									do_shortcode( $sort_text )
 								);
@@ -1369,9 +1369,9 @@ class Ld_Tokens {
 			$essay_post = get_post( $graded_id );
 			if ( $essay_post instanceof \WP_Post ) {
 				if ( 'graded' === $essay_post->post_status ) {
-					$answer = __( 'Status: Graded', 'learndash' );
+					$answer = __( 'Status: Graded', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				} else {
-					$answer = __( 'Status: Not Graded', 'learndash' );
+					$answer = __( 'Status: Not Graded', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 				}
 				if ( 'text' === $graded_type ) {
 					$answer .= '<br>' . do_shortcode( nl2br( $essay_post->post_content ) );
@@ -1384,7 +1384,7 @@ class Ld_Tokens {
 			}
 			// Not Submitted.
 		} else {
-			$answer = __( 'Essay not submitted', '', 'learndash' );
+			$answer = __( 'Essay not submitted', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		}
 
 		return $answer;

@@ -338,7 +338,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 
 				$link = $this->get_oauth_url( 'live' );
 
-				$button_label = __( 'Connect Stripe', 'uncanny-automator' );
+				$button_label = esc_html__( 'Connect Stripe', 'uncanny-automator' );
 
 			?>
 
@@ -350,7 +350,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 
 				$link = $this->get_oauth_url( 'test' );
 
-				$button_label = __( 'Connect Stripe in test mode', 'uncanny-automator' );
+				$button_label = esc_html__( 'Connect Stripe in test mode', 'uncanny-automator' );
 
 				?>
 
@@ -371,7 +371,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			$mode_prefix  = '';
 
 			if ( 'test' === $this->mode ) {
-				$mode_prefix = __( '(Test mode)', 'uncanny-automator' ) . ' ';
+				$mode_prefix = esc_html__( '(Test mode)', 'uncanny-automator' ) . ' ';
 			}
 
 			if ( empty( $user_details ) ) {
@@ -455,7 +455,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			wp_safe_redirect(
 				add_query_arg(
 					array(
-						'error' => __( 'Missing credentials', 'uncanny-automator' ),
+						'error' => esc_html__( 'Missing credentials', 'uncanny-automator' ),
 					),
 					$this->get_settings_page_url()
 				)

@@ -52,8 +52,8 @@ class TWITTER_POSTSTATUS_2 {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			/* translators: Tweet text */
-			'sentence'              => sprintf( __( 'Post {{a tweet:%1$s}} to X/Twitter', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Post {{a tweet}} to X/Twitter', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Post {{a tweet:%1$s}} to X/Twitter', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Post {{a tweet}} to X/Twitter', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'requires_user'         => false,
@@ -68,7 +68,7 @@ class TWITTER_POSTSTATUS_2 {
 						'',
 						true,
 						esc_attr__( 'Messages posted to X/Twitter have a 280 character limit.', 'uncanny-automator' ),
-						__( 'Enter the message', 'uncanny-automator' ),
+						esc_html__( 'Enter the message', 'uncanny-automator' ),
 						278
 					),
 					// Image field.
@@ -91,7 +91,7 @@ class TWITTER_POSTSTATUS_2 {
 		$this->set_action_tokens(
 			array(
 				'POST_LINK' => array(
-					'name' => __( 'Link to Tweet', 'uncanny-automator' ),
+					'name' => esc_html__( 'Link to Tweet', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),

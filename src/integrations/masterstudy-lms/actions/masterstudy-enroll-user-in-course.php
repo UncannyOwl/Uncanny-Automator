@@ -12,6 +12,7 @@ class MASTERSTUDY_ENROLL_USER_IN_COURSE extends \Uncanny_Automator\Recipe\Action
 		$this->set_action_code( 'MSLMS_ENROLL_USER' );
 		$this->set_action_meta( 'MSLMS_COURSES' );
 		$this->set_requires_user( true );
+		// translators: 1: Course name
 		$this->set_sentence( sprintf( esc_attr_x( 'Enroll the user in {{a course:%1$s}}', 'MasterStudy LMS', 'uncanny-automator' ), $this->get_action_meta(), 'EXPIRATION_DATE:' . $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Enroll the user in {{a course}}', 'MasterStudy LMS', 'uncanny-automator' ) );
 	}
@@ -58,19 +59,19 @@ class MASTERSTUDY_ENROLL_USER_IN_COURSE extends \Uncanny_Automator\Recipe\Action
 	public function define_tokens() {
 		return array(
 			'COURSE_ID'       => array(
-				'name' => __( 'Course ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Course ID', 'uncanny-automator' ),
 				'type' => 'int',
 			),
 			'COURSE_TITLE'    => array(
-				'name' => __( 'Course title', 'uncanny-automator' ),
+				'name' => esc_html__( 'Course title', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'COURSE_CATEGORY' => array(
-				'name' => __( 'Course category', 'uncanny-automator' ),
+				'name' => esc_html__( 'Course category', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'COURSE_AUTHOR'   => array(
-				'name' => __( 'Course author', 'uncanny-automator' ),
+				'name' => esc_html__( 'Course author', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 		);
@@ -117,6 +118,7 @@ class MASTERSTUDY_ENROLL_USER_IN_COURSE extends \Uncanny_Automator\Recipe\Action
 
 		$already_enrolled = stm_lms_get_user_course( $user_id, $course_id );
 		if ( ! empty( $already_enrolled ) ) {
+			// translators: 1: Course ID
 			$this->add_log_error( sprintf( esc_attr_x( 'The user is already enrolled into a course (%d).', 'MasterStudy LMS', 'uncanny-automator' ), $course_id ) );
 
 			return false;

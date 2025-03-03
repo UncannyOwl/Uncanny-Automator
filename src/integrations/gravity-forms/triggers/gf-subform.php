@@ -85,13 +85,13 @@ class GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
 		$tokens[] = array(
 			'tokenId'   => self::TRIGGER_META,
-			'tokenName' => __( 'Form title', 'uncanny-automator' ),
+			'tokenName' => esc_html__( 'Form title', 'uncanny-automator' ),
 			'tokenType' => 'text',
 		);
 
 		$tokens[] = array(
 			'tokenId'   => self::TRIGGER_META . '_ID',
-			'tokenName' => __( 'Form ID', 'uncanny-automator' ),
+			'tokenName' => esc_html__( 'Form ID', 'uncanny-automator' ),
 			'tokenType' => 'int',
 		);
 

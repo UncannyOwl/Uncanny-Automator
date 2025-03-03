@@ -198,7 +198,7 @@ class Migrate_58 {
 		$injected_spreadsheets = array();
 
 		if ( self::ACTION_CODES_NEW === $action_code ) {
-			throw new Exception( "Skipping action: [{$action_id}]. Already contains new action code.", 400 );
+			throw new Exception( esc_html( "Skipping action: [{$action_id}]. Already contains new action code." ), 400 );
 		}
 
 		// Determines whether the action is legacy or not.
@@ -262,11 +262,11 @@ class Migrate_58 {
 		$updated = update_post_meta( $action_id, self::ACTION_CODE_KEY, $action_code );
 
 		if ( false === $updated ) {
-			throw new Exception( "Migration of {$action_sentence} failed. DB error or the action was already migrated.", 400 );
+			throw new Exception( esc_html( "Migration of {$action_sentence} failed. DB error or the action was already migrated." ), 400 );
 		}
 
 		if ( is_numeric( $updated ) ) {
-			throw new Exception( "Migration of {$action_sentence} failed. Meta does not exist.", 400 );
+			throw new Exception( esc_html( "Migration of {$action_sentence} failed. Meta does not exist." ), 400 );
 		}
 	}
 
@@ -279,7 +279,6 @@ class Migrate_58 {
 	private function include_template( $relative_path, $args ) {
 
 		include trailingslashit( UA_ABSPATH ) . $relative_path . '.php';
-
 	}
 
 	/**
@@ -303,7 +302,6 @@ class Migrate_58 {
 		$has_drive_scope = in_array( 'https://www.googleapis.com/auth/drive', (array) $scopes, true );
 
 		return apply_filters( 'automator_google_sheet_migrations_migrated_58_has_drive_scope', $has_drive_scope );
-
 	}
 
 	/**
@@ -359,7 +357,6 @@ class Migrate_58 {
 				)
 			);
 		}
-
 	}
 
 	/**
@@ -372,4 +369,3 @@ class Migrate_58 {
 		$log[] = $message;
 	}
 }
-

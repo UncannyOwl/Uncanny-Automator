@@ -59,7 +59,7 @@ class Wp_Discuz_Helpers {
 		$post_type = automator_filter_input( 'value', INPUT_POST );
 
 		$args       = array(
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page'   => apply_filters( 'automator_select_posts_by_post_type_limit', 999, $post_type ),
 			'orderby'          => 'title',
 			'order'            => 'ASC',
@@ -68,11 +68,12 @@ class Wp_Discuz_Helpers {
 			'suppress_filters' => true,
 			'fields'           => array( 'ids', 'titles' ),
 		);
-		$posts_list = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any post', 'uncanny-automator' ) );
+		$posts_list = Automator()->helpers->recipe->options->wp_query( $args, true, esc_html__( 'Any post', 'uncanny-automator' ) );
 
 		foreach ( $posts_list as $post_id => $post_title ) {
 			// Check if the post title is defined
-			$post_title = ! empty( $post_title ) ? $post_title : sprintf( __( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
+			// translators: 1: Post ID
+			$post_title = ! empty( $post_title ) ? $post_title : sprintf( esc_html__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
 
 			$options[] = array(
 				'value' => $post_id,
@@ -91,117 +92,117 @@ class Wp_Discuz_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'POSTID',
-				'tokenName' => __( 'Post ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'POSTTITLE',
-				'tokenName' => __( 'Post title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTURL',
-				'tokenName' => __( 'Post URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'POSTCONTENT',
-				'tokenName' => __( 'Post content (raw)', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post content (raw)', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTCONTENT_BEAUTIFIED',
-				'tokenName' => __( 'Post content (formatted)', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post content (formatted)', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTEXCERPT',
-				'tokenName' => __( 'Post excerpt', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post excerpt', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'WPPOSTTYPES',
-				'tokenName' => __( 'Post type', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post type', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTIMAGEURL',
-				'tokenName' => __( 'Post featured image URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post featured image URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'POSTIMAGEID',
-				'tokenName' => __( 'Post featured image ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post featured image ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'POSTAUTHORID',
-				'tokenName' => __( 'Post author ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post author ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'POSTAUTHORURL',
-				'tokenName' => __( 'Post author URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post author URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'POSTAUTHORFN',
-				'tokenName' => __( 'Post author first name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post author first name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTAUTHORLN',
-				'tokenName' => __( 'Post author last name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post author last name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTAUTHORDN',
-				'tokenName' => __( 'Post author display name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post author display name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTAUTHOREMAIL',
-				'tokenName' => __( 'Post author email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Post author email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'POSTCOMMENTID',
-				'tokenName' => __( 'Comment ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Comment ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'POSTCOMMENTERNAME',
-				'tokenName' => __( 'Commenter name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Commenter name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTCOMMENTEREMAIL',
-				'tokenName' => __( 'Commenter email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Commenter email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'POSTCOMMENTERWEBSITE',
-				'tokenName' => __( 'Commenter website', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Commenter website', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTCOMMENTCONTENT',
-				'tokenName' => __( 'Comment content', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Comment content', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'POSTCOMMENTURL',
-				'tokenName' => __( 'Comment URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Comment URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'POSTCOMMENTDATE',
-				'tokenName' => __( 'Comment submitted date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Comment submitted date', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'POSTCOMMENTSTATUS',
-				'tokenName' => __( 'Comment status', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Comment status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -240,8 +241,21 @@ class Wp_Discuz_Helpers {
 			'POSTCOMMENTERWEBSITE'   => $comment->comment_author_url,
 			'POSTCOMMENTCONTENT'     => $comment->comment_content,
 			'POSTCOMMENTURL'         => get_comment_link( $comment_id ),
-			'POSTCOMMENTDATE'        => sprintf( __( '%1$s at %2$s' ), date_i18n( _x( 'M j, Y', 'publish box date format' ), strtotime( $comment->comment_date ) ), date_i18n( _x( 'H:i', 'publish box time format' ), strtotime( $comment->comment_date ) ) ),
-			'POSTCOMMENTSTATUS'      => ( $comment->comment_approved ) ? 'approved' : 'pending',
+			'POSTCOMMENTDATE'        => esc_html(
+				sprintf(
+					// translators: 1: Date, 2: Time
+					__( '%1$s at %2$s', 'uncanny-automator' ),
+					date_i18n(
+						_x( 'M j, Y', 'publish box date format', 'uncanny-automator' ),
+						strtotime( $comment->comment_date )
+					),
+					date_i18n(
+						_x( 'H:i', 'publish box time format', 'uncanny-automator' ),
+						strtotime( $comment->comment_date )
+					)
+				)
+			),
+			'POSTCOMMENTSTATUS'      => $comment->comment_approved ? 'approved' : 'pending',
 		);
 
 	}

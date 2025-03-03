@@ -148,7 +148,7 @@ class WPFF_SUBFORM {
 								Automator()->insert_trigger_meta( $wp_ff_args );
 
 								$wp_ff_args['meta_key']   = 'WPFFENTRYDATE';
-								$wp_ff_args['meta_value'] = maybe_serialize( date( 'Y-m-d H:i:s', strtotime( $insert_data['created_at'] ) ) );
+								$wp_ff_args['meta_value'] = maybe_serialize( wp_date( 'Y-m-d H:i:s', strtotime( $insert_data['created_at'] ) ) );
 								Automator()->insert_trigger_meta( $wp_ff_args );
 
 								Automator()->maybe_trigger_complete( $r['args'] );

@@ -52,7 +52,7 @@ class Trello_Settings extends Settings\Premium_Integration_Settings {
 			$this->add_alert(
 				array(
 					'type'    => 'success',
-					'heading' => __( 'Your Trello account has been connected successfully!', 'uncanny-automator' ),
+					'heading' => esc_html__( 'Your Trello account has been connected successfully!', 'uncanny-automator' ),
 				)
 			);
 		} elseif ( ! empty( $connect ) ) {
@@ -60,7 +60,11 @@ class Trello_Settings extends Settings\Premium_Integration_Settings {
 				array(
 					'type'    => 'error',
 					'heading' => 'Connection error',
-					'content' => __( 'There was an error connecting your Trello account: ', 'uncanny-automator' ) . $connect,
+					'content' => sprintf(
+						// translators: %s: Error message
+						esc_html__( 'There was an error connecting your Trello account: %s', 'uncanny-automator' ),
+						esc_html( $connect )
+					),
 				)
 			);
 		}

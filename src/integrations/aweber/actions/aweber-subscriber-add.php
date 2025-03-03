@@ -39,7 +39,6 @@ class AWEBER_SUBSCRIBER_ADD extends \Uncanny_Automator\Recipe\Action {
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Add {{a subscriber}} to a {{list}}', 'AWeber', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
 	}
 
 	/**
@@ -89,25 +88,25 @@ class AWEBER_SUBSCRIBER_ADD extends \Uncanny_Automator\Recipe\Action {
 				'option_code'     => 'CUSTOM_FIELDS',
 				'input_type'      => 'repeater',
 				'relevant_tokens' => array(),
-				'label'           => __( 'Custom fields', 'uncanny-automator' ),
+				'label'           => esc_html__( 'Custom fields', 'uncanny-automator' ),
 				'required'        => false,
 				'fields'          => array(
 					array(
 						'input_type'  => 'text',
 						'option_code' => 'FIELD_ID',
-						'label'       => __( 'ID', 'uncanny-automator' ),
+						'label'       => esc_html__( 'ID', 'uncanny-automator' ),
 						'read_only'   => true,
 					),
 					array(
 						'input_type'  => 'text',
 						'option_code' => 'FIELD_NAME',
-						'label'       => __( 'Name', 'uncanny-automator' ),
+						'label'       => esc_html__( 'Name', 'uncanny-automator' ),
 						'read_only'   => true,
 					),
 					array(
 						'input_type'  => 'text',
 						'option_code' => 'FIELD_VALUE',
-						'label'       => __( 'Name', 'uncanny-automator' ),
+						'label'       => esc_html__( 'Name', 'uncanny-automator' ),
 						'read_only'   => false,
 					),
 
@@ -121,7 +120,6 @@ class AWEBER_SUBSCRIBER_ADD extends \Uncanny_Automator\Recipe\Action {
 				),
 			),
 		);
-
 	}
 
 	/**
@@ -152,7 +150,14 @@ class AWEBER_SUBSCRIBER_ADD extends \Uncanny_Automator\Recipe\Action {
 		try {
 
 			if ( false === filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-				throw new Exception( sprintf( 'The email address [%s] is invalid', $email ) );
+				/* translators: Email address */
+				throw new Exception(
+					sprintf(
+						// translators: 1. Email address
+						esc_html__( 'The email address [%s] is invalid', 'uncanny-automator' ),
+						esc_html( $email )
+					)
+				);
 			}
 
 			$body = array(
@@ -169,9 +174,7 @@ class AWEBER_SUBSCRIBER_ADD extends \Uncanny_Automator\Recipe\Action {
 			return true;
 
 		} catch ( Exception $e ) {
-			throw new Exception( $e->getMessage() );
+			throw new Exception( esc_html( $e->getMessage() ) );
 		}
-
 	}
-
 }

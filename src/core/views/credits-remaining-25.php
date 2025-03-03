@@ -6,7 +6,15 @@ namespace Uncanny_Automator;
 <div id="uap-review-banner" class="uap notice">
 
 	<uo-alert
-		heading="<?php echo sprintf( esc_attr__( 'Warning! Only %d app credits left in your Uncanny Automator account!', 'uncanny-automator' ), absint( $vars['credits_remaining'] ) ); ?>"
+		heading="
+		<?php
+		echo sprintf(
+			/* translators: 1. Number of credits remaining */
+			esc_attr__( 'Warning! Only %d app credits left in your Uncanny Automator account!', 'uncanny-automator' ),
+			absint( $vars['credits_remaining'] )
+		);
+		?>
+		"
 		type="white"
 		custom-icon
 	>

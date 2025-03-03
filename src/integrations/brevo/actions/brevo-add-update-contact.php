@@ -271,7 +271,7 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 				implode( ', ', $errors )
 			);
 
-			throw new \Exception( $error_message );
+			throw new \Exception( esc_html( $error_message ) );
 		}
 
 		$response = $this->helpers->create_contact_with_double_optin( $email, $attributes, $template_id, $redirect_url, $list_id, $update_existing, $action_data );
@@ -347,7 +347,6 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			default:
 				return 'invalid';
 		}
-
 	}
 
 	/**
@@ -410,5 +409,4 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		}
 		return 'invalid';
 	}
-
 }

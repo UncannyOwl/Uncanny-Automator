@@ -92,7 +92,7 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 			)
 		);
 		if ( empty( $level_ids ) ) {
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, __( 'You must have at least one active membership level.', 'rcp' ) );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, _x( 'You must have at least one active membership level.', 'Restrict Content', 'uncanny-automator' ) );
 
 			return;
 		}
@@ -100,7 +100,7 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 		$customer    = rcp_get_customer_by_user_id( $user_id );
 		$newest_time = ( ! empty( $registered_date ) ) ? strtotime( $registered_date ) : current_time( 'timestamp' );
 
-		$created_date = date( 'Y-m-d H:i:s', $newest_time );
+		$created_date = wp_date( 'Y-m-d H:i:s', $newest_time );
 		// Create a new customer record if one does not exist.
 		if ( empty( $customer ) ) {
 			$customer_id = rcp_add_customer(
@@ -130,7 +130,7 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 			'subscription_key' => rcp_generate_subscription_key(),
 		);
 		if ( ! empty( $expiry_date ) ) {
-			$membership_args['expiration_date'] = date( 'Y-m-d H:i:s', strtotime( $expiry_date ) );
+			$membership_args['expiration_date'] = wp_date( 'Y-m-d H:i:s', strtotime( $expiry_date ) );
 		}
 
 		$membership_id = rcp_add_membership( $membership_args );
@@ -142,7 +142,7 @@ class RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL {
 
 		// Generate a transaction ID.
 		$auth_key       = defined( 'AUTH_KEY' ) ? AUTH_KEY : '';
-		$transaction_id = strtolower( md5( $membership_args['subscription_key'] . date( 'Y-m-d H:i:s' ) . $auth_key . uniqid( 'rcp', true ) ) );
+		$transaction_id = strtolower( md5( $membership_args['subscription_key'] . wp_date( 'Y-m-d H:i:s' ) . $auth_key . uniqid( 'rcp', true ) ) );
 
 		// Create a corresponding payment record.
 		$payment_args = array(

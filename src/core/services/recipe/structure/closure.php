@@ -19,7 +19,7 @@ final class Closure implements \JsonSerializable {
 	 */
 	private static $recipe = null;
 
-	public $_ui_order = 10000000000; //phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
+	public $_ui_order = 10000000000; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	protected $type             = 'closure';
 	protected $is_item_on       = false;

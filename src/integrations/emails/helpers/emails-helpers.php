@@ -109,7 +109,8 @@ class Emails_Helpers {
 	public static function get_file_attachment_field_description() {
 
 		$attachment_description = sprintf(
-			__( 'Please ensure the file has a valid extension (e.g., .pdf, .png, .doc) and does not exceed the file size limit of %d MB.', 'uncanny-automator' ),
+			// translators: 1: File size limit
+			esc_html__( 'Please ensure the file has a valid extension (e.g., .pdf, .png, .doc) and does not exceed the file size limit of %d MB.', 'uncanny-automator' ),
 			Validator::to_megabytes(
 				Validator::get_file_size_limit()
 			)

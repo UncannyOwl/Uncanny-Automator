@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\Logging;
 
 /**
  * Class WRITE_DATA_TO_LOG
+ *
  * @package Uncanny_Automator
  */
 class WRITE_DATA_TO_LOG extends \Uncanny_Automator\Recipe\Action {
@@ -19,6 +20,7 @@ class WRITE_DATA_TO_LOG extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_code( 'WRITE_DATA_TO_LOG' );
 		$this->set_action_meta( 'LOGGING_DATA' );
 		$this->set_requires_user( false );
+		// translators: 1: Data title
 		$this->set_sentence( sprintf( esc_attr_x( 'Write {{data:%1$s}} to the log', 'Logging', 'uncanny-automator' ), $this->get_action_meta() . '_TITLE:' . $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Write {{data}} to the log', 'Logging', 'uncanny-automator' ) );
 	}

@@ -165,7 +165,7 @@ class Automator_Translations {
 
 						'customDescription'          => esc_attr__( 'Run the action after a custom delay or at a custom date and time', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.customDescription
-
+						// translators: 1. Unix timestamp
 						'customFieldDescription'     => esc_attr__( 'Use tokens and/or text to enter any supported format. Examples: "Friday at 1pm", "November 9", "2 hours", Unix timestamps %1$s.', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.customFieldDescription
 
@@ -177,8 +177,7 @@ class Automator_Translations {
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.timezoneLink
 						'dateFormat'                 => get_option( 'date_format' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.dateFormat
-						'today'                      => date( get_option( 'date_format' ) ),
-						//phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+						'today'                      => wp_date( get_option( 'date_format' ) ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.today
 						'timeFormat'                 => get_option( 'time_format' ),
 						// UncannyAutomator._core.i18n.action.asyncActions.modal.timeFormat
@@ -211,7 +210,7 @@ class Automator_Translations {
 
 				'addFilter'                            => esc_html__( 'Add filter', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.conditions.addFilter
-
+				/* translators: Uncanny Automator Pro */
 				'unlockConditions'                     => sprintf( esc_attr__( 'Get %s to unlock conditions', 'uncanny-automator' ), 'Uncanny Automator Pro' ),
 				// UncannyAutomator._core.i18n.conditions.unlockConditions
 
@@ -326,6 +325,7 @@ class Automator_Translations {
 						/* translators: Non-personal infinitive verb */
 						'customValue'      => esc_attr__( 'Use a token/custom value', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.validation.field.select.customValue
+						/* translators: 1. Token name */
 						'customValueToken' => esc_attr__( '%s (custom value)', 'uncanny-automator' ),
 						// UncannyAutomator._core.i18n.validation.field.select.customValueToken
 					),
@@ -542,6 +542,7 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.tokens.global.postMetaKeyTemplate
 					'calculation'                => esc_attr_x( 'Calculation', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.tokens.global.calculationKey
+					/* translators: 1. The calculation */
 					'calculationTemplate'        => esc_attr_x( 'Calculation: %1$s', 'Token', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.tokens.global.userMetaKeyTemplate
 					'currentDate'                => esc_attr_x( 'Current date', 'Token', 'uncanny-automator' ),
@@ -582,6 +583,7 @@ class Automator_Translations {
 							// UncannyAutomator._core.i18n.tokens.specialTokens.postMeta.modal.confirmButton
 							'postFieldLabel'       => esc_attr__( 'Post ID', 'uncanny-automator' ),
 							// UncannyAutomator._core.i18n.tokens.specialTokens.postMeta.modal.postFieldLabel
+							/* translators: 1. Post ID */
 							'postFieldDescription' => esc_attr__( 'The ID of the post that contains the meta data. %1$s.', 'uncanny-automator' ),
 							// UncannyAutomator._core.i18n.tokens.specialTokens.postMeta.modal.postFieldDescription
 							'keyFieldLabel'        => esc_attr__( 'Meta key', 'uncanny-automator' ),
@@ -614,6 +616,7 @@ class Automator_Translations {
 				// UncannyAutomator._core.i18n.tokens.includeTokenID
 				'addTokens'                      => esc_attr__( 'Add tokens', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.tokens.addTokens
+				/* translators: 1. Group name 2. Field name */
 				'addAllDescription'              => esc_attr__( 'On confirmation, all the tokens in the group "%1$s" will be added to the field  "%2$s".', 'uncanny-automator' ),
 				// UncannyAutomator._core.i18n.tokens.addAllDescription
 
@@ -1007,11 +1010,11 @@ class Automator_Translations {
 					/* translators: 1. Field name, 2. Field value */
 					'matches'            => esc_attr_x( '%1$s matches %2$s', 'User selector', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.userSelector.summary.matches
-					'email'              => esc_attr__( 'Email', 'quickbooks-training' ),
+					'email'              => esc_attr__( 'Email', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.userSelector.summary.email
-					'id'                 => esc_attr__( 'ID', 'quickbooks-training' ),
+					'id'                 => esc_attr__( 'ID', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.userSelector.summary.id
-					'username'           => esc_attr__( 'Username', 'quickbooks-training' ),
+					'username'           => esc_attr__( 'Username', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.userSelector.summary.username
 					/* translators: 1. An email address */
 					'withEmail'          => esc_attr_x( 'With the email %1$s', 'User selector', 'uncanny-automator' ),
@@ -1066,6 +1069,7 @@ class Automator_Translations {
 					// UncannyAutomator._core.i18n.userSelector.newUser.displayName
 					'password'                         => esc_attr__( 'Password', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.userSelector.newUser.password
+					/* translators: 1. Token name */
 					'passwordDescription'              => sprintf( esc_attr__( 'If left empty, the user will need to reset their password to log in. Send an email containing the %1$s token to simplify the process.', 'uncanny-automator' ), '<em>' . esc_attr__( 'User reset password link', 'uncanny-automator' ) . '</em>' ),
 					// UncannyAutomator._core.i18n.userSelector.newUser.passwordDescription
 					/* translators: WordPress roles */
@@ -1375,32 +1379,32 @@ class Automator_Translations {
 				// UncannyAutomator._core.i18n.components.itemLoop
 				'itemLoop' => array(
 					'loop'                   => _x( 'Loop', 'Block name, noun', 'uncanny-automator' ),
-					'users'                  => __( 'Users', 'uncanny-automator' ),
-					'posts'                  => __( 'Posts', 'uncanny-automator' ),
-					'addAction'              => __( 'Add action', 'uncanny-automator' ),
-					'addFilter'              => __( 'Add filter', 'uncanny-automator' ),
+					'users'                  => esc_html__( 'Users', 'uncanny-automator' ),
+					'posts'                  => esc_html__( 'Posts', 'uncanny-automator' ),
+					'addAction'              => esc_html__( 'Add action', 'uncanny-automator' ),
+					'addFilter'              => esc_html__( 'Add filter', 'uncanny-automator' ),
 					'delete'                 => esc_html__( 'Delete', 'uncanny-automator' ),
 					'support'                => _x( 'Support', 'Noun', 'uncanny-automator' ),
-					'matchCriteria'          => __( 'that match the following criteria', 'uncanny-automator' ),
-					'filterUsersButtonLabel' => __( 'Filter users', 'uncanny-automator' ),
-					'filterPostsButtonLabel' => __( 'Filter posts', 'uncanny-automator' ),
-					'filterTokenButtonLabel' => __( 'Filter data', 'uncanny-automator' ),
-					'editLoopFilter'         => __( 'Edit filter', 'uncanny-automator' ),
-					'deleteLoopFilter'       => __( 'Delete filter', 'uncanny-automator' ),
-					'configureTheFilter'     => __( 'Configure the loop filter', 'uncanny-automator' ),
-					'filterUsers'            => __( 'Filter users', 'uncanny-automator' ),
-					'filterPosts'            => __( 'Filter posts', 'uncanny-automator' ),
-					'filterData'             => __( 'Filter data', 'uncanny-automator' ),
-					'cancel'                 => __( 'Cancel', 'uncanny-automator' ),
-					'confirm'                => __( 'Confirm', 'uncanny-automator' ),
-					'searchLoopFilters'      => __( 'Search loop filters', 'uncanny-automator' ),
-					'noResultsLoopFilters'   => __( 'No results found', 'uncanny-automator' ),
-					'instructionsHeading'    => __( "What's a loop filter?", 'uncanny-automator' ),
-					'instructionsContent'    => __( 'Loop filters decide which users will be included in the loop. Action filters within the block, on the other hand, choose what actions are performed for each individual user.', 'uncanny-automator' ),
-					'userLoop'               => __( 'User loop', 'uncanny-automator' ),
-					'postLoop'               => __( 'Post loop', 'uncanny-automator' ),
-					'tokenLoop'              => __( 'Token loop', 'uncanny-automator' ),
-					'setDataDialogHeading'   => __( 'Set data', 'uncanny-automator' ),
+					'matchCriteria'          => esc_html__( 'that match the following criteria', 'uncanny-automator' ),
+					'filterUsersButtonLabel' => esc_html__( 'Filter users', 'uncanny-automator' ),
+					'filterPostsButtonLabel' => esc_html__( 'Filter posts', 'uncanny-automator' ),
+					'filterTokenButtonLabel' => esc_html__( 'Filter data', 'uncanny-automator' ),
+					'editLoopFilter'         => esc_html__( 'Edit filter', 'uncanny-automator' ),
+					'deleteLoopFilter'       => esc_html__( 'Delete filter', 'uncanny-automator' ),
+					'configureTheFilter'     => esc_html__( 'Configure the loop filter', 'uncanny-automator' ),
+					'filterUsers'            => esc_html__( 'Filter users', 'uncanny-automator' ),
+					'filterPosts'            => esc_html__( 'Filter posts', 'uncanny-automator' ),
+					'filterData'             => esc_html__( 'Filter data', 'uncanny-automator' ),
+					'cancel'                 => esc_html__( 'Cancel', 'uncanny-automator' ),
+					'confirm'                => esc_html__( 'Confirm', 'uncanny-automator' ),
+					'searchLoopFilters'      => esc_html__( 'Search loop filters', 'uncanny-automator' ),
+					'noResultsLoopFilters'   => esc_html__( 'No results found', 'uncanny-automator' ),
+					'instructionsHeading'    => esc_html__( "What's a loop filter?", 'uncanny-automator' ),
+					'instructionsContent'    => esc_html__( 'Loop filters decide which users will be included in the loop. Action filters within the block, on the other hand, choose what actions are performed for each individual user.', 'uncanny-automator' ),
+					'userLoop'               => esc_html__( 'User loop', 'uncanny-automator' ),
+					'postLoop'               => esc_html__( 'Post loop', 'uncanny-automator' ),
+					'tokenLoop'              => esc_html__( 'Token loop', 'uncanny-automator' ),
+					'setDataDialogHeading'   => esc_html__( 'Set data', 'uncanny-automator' ),
 				),
 				// UncannyAutomator._core.i18n.components.token
 				'token'    => array(
@@ -1525,13 +1529,14 @@ class Automator_Translations {
 						'name'         => esc_html__( 'Token loop', 'uncanny-automator' ),
 						'fields'       => array(
 							'token' => array(
-								'label' => __( 'Token', 'uncanny-automator' ),
+								'label' => esc_html__( 'Token', 'uncanny-automator' ),
 							),
 						),
-						'sentence'     => sprintf( __( '{{Token:%1$s}}', 'uncanny-automator' ), 'TOKEN' ),
+						/* translators: 1. Token name */
+						'sentence'     => sprintf( esc_html__( '{{Token:%1$s}}', 'uncanny-automator' ), 'TOKEN' ),
 						'dialogHelper' => array(
-							'loopTokens'          => __( 'Loop through tokens that contain multiple items, such as Woo products, LearnDash courses, BuddyBoss memberships, and more.', 'uncanny-automator' ),
-							'loopTokensLearnMore' => __( 'Learn more', 'uncanny-automator' ),
+							'loopTokens'          => esc_html__( 'Loop through tokens that contain multiple items, such as Woo products, LearnDash courses, BuddyBoss memberships, and more.', 'uncanny-automator' ),
+							'loopTokensLearnMore' => esc_html__( 'Learn more', 'uncanny-automator' ),
 						),
 					),
 				),
@@ -1542,14 +1547,14 @@ class Automator_Translations {
 				'dialog'            => array(
 					'heading'            => esc_html__( 'The recipe run has been initiated', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.runNow.dialog.heading
-					'contentLine1'       => __( 'Actions are now running in the background and results will be available in the logs.', 'uncanny-automator' ),
+					'contentLine1'       => esc_html__( 'Actions are now running in the background and results will be available in the logs.', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.runNow.dialog.contentLine1
-					'contentLine2'       => __( "Changes cannot be made to the recipe while it's running. Progress can be monitored from the logs and actions that haven't run yet can be cancelled.", 'uncanny-automator' ),
+					'contentLine2'       => esc_html__( "Changes cannot be made to the recipe while it's running. Progress can be monitored from the logs and actions that haven't run yet can be cancelled.", 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.runNow.dialog.contentLine2
-					'contentLine3'       => __( 'You can also return to the list of recipes or create a copy of this recipe.', 'uncanny-automator' ),
+					'contentLine3'       => esc_html__( 'You can also return to the list of recipes or create a copy of this recipe.', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.runNow.dialog.contentLine3
 
-					'duplicateRecipe'    => __( 'Duplicate this recipe', 'uncanny-automator' ),
+					'duplicateRecipe'    => esc_html__( 'Duplicate this recipe', 'uncanny-automator' ),
 					// UncannyAutomator._core.i18n.runNow.dialog.duplicateRecipe
 
 					'viewItsLogs'        => esc_html__( 'View log entry', 'uncanny-automator' ),
@@ -1617,11 +1622,11 @@ class Automator_Translations {
 			'loadingMoreResults'     => esc_attr__( 'Loading more results...', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.loadingMoreResults
 			/* translators: 1. Post ID */
-			'postIDPlaceholder'      => esc_attr__( 'ID: %1$s' ),
+			'postIDPlaceholder'      => esc_attr__( 'ID: %1$s', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.postIDPlaceholder
 			'emptyValue'             => esc_html__( '(empty)', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.emptyValue
-			'debuggingTools'         => esc_attr__( 'Debugging tools' ),
+			'debuggingTools'         => esc_attr__( 'Debugging tools', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.debuggingTools
 			'itemMissing'            => esc_attr__( 'This item was disabled because it could not be found on the system. To re-enable, ensure the associated plugin is installed and activated.', 'uncanny-automator' ),
 			// UncannyAutomator._core.i18n.itemMissing

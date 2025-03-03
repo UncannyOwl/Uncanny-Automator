@@ -57,15 +57,15 @@ class LD_ACHIEVEMENTS_AWARD {
 		$this->set_action_tokens(
 			array(
 				'ACHIEVEMENT_TITLE'   => array(
-					'name' => __( 'Achievement title', 'uncanny-automator' ),
+					'name' => esc_html__( 'Achievement title', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'ACHIEVEMENT_MESSAGE' => array(
-					'name' => __( 'Achievement message', 'uncanny-automator' ),
+					'name' => esc_html__( 'Achievement message', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'ACHIEVEMENT_POINTS'  => array(
-					'name' => __( 'Achievement points', 'uncanny-automator' ),
+					'name' => esc_html__( 'Achievement points', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

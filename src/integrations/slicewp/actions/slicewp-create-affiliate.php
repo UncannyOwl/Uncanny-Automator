@@ -17,6 +17,7 @@ class SLICEWP_CREATE_AFFILIATE extends Action {
 		$this->set_action_code( 'SLICEWP_CREATE_AFFILIATE' );
 		$this->set_action_meta( 'SLICEWP_AFFILIATE' );
 		$this->set_requires_user( true );
+		// translators: 1: Affiliate name
 		$this->set_sentence( sprintf( esc_attr_x( 'Add {{a new affiliate:%1$s}}', 'SliceWP', 'uncanny-automator' ), $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Add {{a new affiliate}}', 'SliceWP', 'uncanny-automator' ) );
 	}

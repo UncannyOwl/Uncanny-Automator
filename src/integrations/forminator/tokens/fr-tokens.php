@@ -146,7 +146,10 @@ class Fr_Tokens {
 					$value = $value['formatting_result'];
 					// Check for datefield with text input or dropdown settings.
 				} elseif ( key_exists( 'year', $value ) && key_exists( 'month', $value ) && key_exists( 'day', $value ) && key_exists( 'format', $value ) ) {
-					$value = date( $value['format'], strtotime( $value['year'] . '-' . $value['month'] . '-' . $value['day'] ) );
+					$value = wp_date(
+						$value['format'],
+						strtotime( sprintf( '%s-%s-%s', $value['year'], $value['month'], $value['day'] ) )
+					);
 					// Default join array values.
 				} else {
 					$value = join( ' ', $value );

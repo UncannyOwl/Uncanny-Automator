@@ -53,6 +53,7 @@ class Armember_Helpers {
 
 		foreach ( $plans as $plan_id => $plan_name ) {
 			if ( empty( $plan_name ) ) {
+				// translators: 1: Plan ID
 				$plan_id = sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $plan_id );
 			}
 
@@ -60,11 +61,11 @@ class Armember_Helpers {
 		}
 
 		if ( true === $args['is_any'] ) {
-			$options = array( '-1' => __( 'Any membership', 'uncanny-automator' ) ) + $options;
+			$options = array( '-1' => esc_html__( 'Any membership', 'uncanny-automator' ) ) + $options;
 		}
 
 		if ( true === $args['is_all'] ) {
-			$options = array( '-1' => __( 'All memberships', 'uncanny-automator' ) ) + $options;
+			$options = array( '-1' => esc_html__( 'All memberships', 'uncanny-automator' ) ) + $options;
 		}
 
 		$option = array(
