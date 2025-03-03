@@ -246,7 +246,7 @@ $setup_wizard_link = add_query_arg(
 							target="_blank" class="uap-dashboard-video">
 								<div class="uap-dashboard-video__thumbnail">
 									<img
-										src="<?php echo esc_url_raw( Utilities::automator_get_media( 'multiple-triggers-landscape-2@2x.png' ) ); ?>">
+										src="<?php echo esc_url_raw( Utilities::automator_get_media( 'multiple-triggers-landscape-2-2x.png' ) ); ?>">
 								</div>
 								<div class="uap-dashboard-video__title">
 									<?php esc_attr_e( 'Create an Uncanny Automator recipe with multiple triggers', 'uncanny-automator' ); ?>
@@ -262,7 +262,7 @@ $setup_wizard_link = add_query_arg(
 							target="_blank" class="uap-dashboard-video">
 								<div class="uap-dashboard-video__thumbnail">
 									<img
-										src="<?php echo esc_url_raw( Utilities::automator_get_media( 'multiple-actions-landscape-2@2x.png' ) ); ?>">
+										src="<?php echo esc_url_raw( Utilities::automator_get_media( 'multiple-actions-landscape-2-2x.png' ) ); ?>">
 								</div>
 								<div class="uap-dashboard-video__title">
 									<?php esc_attr_e( 'Create an Uncanny Automator recipe with multiple actions', 'uncanny-automator' ); ?>
@@ -278,7 +278,7 @@ $setup_wizard_link = add_query_arg(
 							target="_blank" class="uap-dashboard-video">
 								<div class="uap-dashboard-video__thumbnail">
 									<img
-										src="<?php echo esc_url_raw( Utilities::automator_get_media( 'delay-or-schedule-actions-landscape-2@2x.png' ) ); ?>">
+										src="<?php echo esc_url_raw( Utilities::automator_get_media( 'delay-or-schedule-actions-landscape-2-2x.png' ) ); ?>">
 								</div>
 								<div class="uap-dashboard-video__title">
 									<?php esc_attr_e( 'Delay and schedule actions for your WordPress automations', 'uncanny-automator' ); ?>
@@ -290,7 +290,7 @@ $setup_wizard_link = add_query_arg(
 							</a>
 						</div>
 					</div>
-						
+
 				</div>
 				<div class="uap-dashboard-box-footer">
 					<a href="https://www.youtube.com/@UncannyAutomator/videos"
@@ -1145,7 +1145,7 @@ $setup_wizard_link = add_query_arg(
 								echo esc_html__( 'App credits used', 'uncanny-automator' );
 								?>
 							</div>
-							
+
 							<div class="uap-dashboard-box-content-higlight" style="display: block; margin: 15px auto 0 auto; color: var(--uap-font-color-secondary);">
 								<?php echo esc_html_e( 'You have', 'uncanny-automator' ); ?>
 								<span style="color: #6bc45a">
