@@ -120,7 +120,7 @@ class GP_AWARDPOINTS_A {
 					'post_type'   => 'points-type',
 					'points'      => $points,
 					'points_type' => $points_type,
-					'date'        => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
+					'date'        => wp_date( 'Y-m-d H:i:s' ),
 				)
 			);
 

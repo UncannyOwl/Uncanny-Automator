@@ -36,7 +36,7 @@ class Linkedin_Helpers {
 			// Capture OAuthentication credentials.
 			add_action(
 				'wp_ajax_automator_linkedin_capture_tokens',
-				function() {
+				function () {
 					$this->capture_tokens();
 				}
 			);
@@ -62,7 +62,6 @@ class Linkedin_Helpers {
 		require_once __DIR__ . '/../settings/settings-linkedin.php';
 
 		new LinkedIn_Settings( $this );
-
 	}
 
 	/**
@@ -106,7 +105,6 @@ class Linkedin_Helpers {
 				'code'   => 200,
 			)
 		);
-
 	}
 
 	/**
@@ -115,7 +113,6 @@ class Linkedin_Helpers {
 	public function get_client() {
 
 		return automator_get_option( self::LINKEDIN_CLIENT );
-
 	}
 
 	/**
@@ -185,7 +182,6 @@ class Linkedin_Helpers {
 		}
 
 		wp_send_json( $pages );
-
 	}
 
 	/**
@@ -222,7 +218,6 @@ class Linkedin_Helpers {
 			);
 
 		}
-
 	}
 
 	/**
@@ -240,7 +235,6 @@ class Linkedin_Helpers {
 		);
 
 		return wp_parse_args( $in_record, $defaults );
-
 	}
 
 	/**
@@ -254,7 +248,6 @@ class Linkedin_Helpers {
 		wp_safe_redirect( add_query_arg( $args, $redirect_url ) );
 
 		exit;
-
 	}
 
 	/**
@@ -271,7 +264,6 @@ class Linkedin_Helpers {
 			),
 			admin_url( 'edit.php' )
 		);
-
 	}
 
 	/**
@@ -289,7 +281,6 @@ class Linkedin_Helpers {
 			),
 			AUTOMATOR_API_URL . 'v2/linkedin'
 		);
-
 	}
 
 	/**
@@ -318,7 +309,6 @@ class Linkedin_Helpers {
 				)
 			);
 		}
-
 	}
 
 	/**
@@ -341,7 +331,6 @@ class Linkedin_Helpers {
 				'code'   => 200,
 			)
 		);
-
 	}
 
 	/**
@@ -356,7 +345,6 @@ class Linkedin_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -383,7 +371,6 @@ class Linkedin_Helpers {
 		$this->maybe_throw_exception( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -396,7 +383,6 @@ class Linkedin_Helpers {
 		if ( $n_days <= 30 ) {
 			$this->fetch_access_tokens();
 		}
-
 	}
 
 	/**
@@ -415,7 +401,6 @@ class Linkedin_Helpers {
 		$days_passed = floor( $seconds_passed / ( 60 * 60 * 24 ) );
 
 		return $days_passed;
-
 	}
 
 	/**
@@ -458,7 +443,6 @@ class Linkedin_Helpers {
 			automator_log( 'Error refreshing access tokens: ' . $e->getMessage(), 'LinkedIn refresh token', true );
 
 		}
-
 	}
 
 	/**
@@ -476,8 +460,7 @@ class Linkedin_Helpers {
 
 		$error_message = 'API Error: ' . wp_json_encode( $response['data'] );
 
-		throw new \Exception( $error_message, $response['statusCode'] );
-
+		throw new \Exception( esc_html( $error_message ), absint( $response['statusCode'] ) );
 	}
 
 	/**
@@ -492,7 +475,6 @@ class Linkedin_Helpers {
 		$days_remaining = floor( $seconds_passed / ( 60 * 60 * 24 ) );
 
 		return apply_filters( 'automator_linkedin_get_refresh_token_remaining_days', $days_remaining, $this );
-
 	}
 
 	/**
@@ -514,7 +496,6 @@ class Linkedin_Helpers {
 			add_action( 'automator_show_internal_admin_notice', array( $this, 'admin_notice_show_reminder' ) );
 
 		}
-
 	}
 
 	/**
@@ -523,7 +504,6 @@ class Linkedin_Helpers {
 	public function is_refresh_token_expiring() {
 
 		return $this->get_refresh_token_remaining_days() <= self::N_DAYS_REFRESH_TOKEN_EXPIRE_NOTICE;
-
 	}
 
 	/**
@@ -573,7 +553,5 @@ class Linkedin_Helpers {
 			esc_html__( 'Click here to reauthorize', 'uncanny-automator' ),
 			esc_html__( 'to continue using your LinkedIn account in your recipes.', 'uncanny-automator' )
 		);
-
 	}
-
 }

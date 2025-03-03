@@ -75,13 +75,13 @@ class Ec_Tokens {
 				$new_tokens   = array(
 					array(
 						'tokenId'         => 'holder_name',
-						'tokenName'       => __( 'Attendee name', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Attendee name', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_code,
 					),
 					array(
 						'tokenId'         => 'holder_email',
-						'tokenName'       => __( 'Attendee email', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Attendee email', 'uncanny-automator' ),
 						'tokenType'       => 'email',
 						'tokenIdentifier' => $trigger_code,
 					),

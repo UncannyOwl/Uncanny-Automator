@@ -4,6 +4,7 @@ namespace UncannyAutomator\Integrations\Bricks_Builder;
 
 /**
  * Class BRICKS_BUILDER_USER_SUBMITS_FORM
+ *
  * @pacakge Uncanny_Automator
  */
 class BRICKS_BUILDER_USER_SUBMITS_FORM extends \Uncanny_Automator\Recipe\Trigger {
@@ -91,6 +92,7 @@ class BRICKS_BUILDER_USER_SUBMITS_FORM extends \Uncanny_Automator\Recipe\Trigger
 		$this->set_trigger_code( 'BB_USER_SUBMITS_FORM' );
 		$this->set_trigger_meta( 'BB_FORMS' );
 		// Trigger sentence - Bricks Builder
+		// translators: 1: Form name
 		$this->set_sentence( sprintf( esc_attr_x( 'A user submits {{a form:%1$s}}', 'Bricks Builder', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A user submits {{a form}}', 'Bricks Builder', 'uncanny-automator' ) );
 		$this->add_action( 'bricks/form/custom_action', 20, 1 );

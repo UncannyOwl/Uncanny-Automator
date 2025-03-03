@@ -92,7 +92,7 @@ class Zoom_Webinar_Settings extends Settings\Premium_Integration_Settings {
 			$this->add_alert(
 				array(
 					'type'    => 'success',
-					'heading' => __( 'You have successfully connected your Zoom Webinars account', 'uncanny-automator' ),
+					'heading' => esc_html__( 'You have successfully connected your Zoom Webinars account', 'uncanny-automator' ),
 				)
 			);
 
@@ -101,7 +101,7 @@ class Zoom_Webinar_Settings extends Settings\Premium_Integration_Settings {
 				array(
 					'type'    => 'error',
 					'heading' => 'Connection error',
-					'content' => __( 'There was an error connecting your Zoom Webinars account: ', 'uncanny-automator' ) . $e->getMessage(),
+					'content' => esc_html__( 'There was an error connecting your Zoom Webinars account:', 'uncanny-automator' ) . $e->getMessage(),
 				)
 			);
 			return;

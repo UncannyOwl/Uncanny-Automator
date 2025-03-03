@@ -387,7 +387,7 @@ abstract class Premium_Integration_Settings {
 		// Return a placeholder
 		// Each Premium Integration will have its own output method
 		// Don't translate the string, it's just for internal use
-		//echo $this->content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		//echo $this->content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		$this->output_form();
 
@@ -593,7 +593,7 @@ abstract class Premium_Integration_Settings {
 		}
 
 		foreach ( $this->get_options() as $option_name ) {
-			register_setting( $this->get_settings_id(), $option_name );
+			register_setting( $this->get_settings_id(), $option_name ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
 		}
 	}
 

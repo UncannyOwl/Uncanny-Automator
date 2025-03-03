@@ -81,85 +81,85 @@ class Wpai_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'POSTTITLE',
-					'tokenName'       => __( 'Post title', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post title', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTID',
-					'tokenName'       => __( 'Post ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTURL',
-					'tokenName'       => __( 'Post URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post URL', 'uncanny-automator' ),
 					'tokenType'       => 'url',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTCONTENT',
-					'tokenName'       => __( 'Post content (raw)', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post content (raw)', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTCONTENT_BEAUTIFIED',
-					'tokenName'       => __( 'Post content (formatted)', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post content (formatted)', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTEXCERPT',
-					'tokenName'       => __( 'Post excerpt', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post excerpt', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTTYPE',
-					'tokenName'       => __( 'Post type', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post type', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTIMAGEURL',
-					'tokenName'       => __( 'Post featured image URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post featured image URL', 'uncanny-automator' ),
 					'tokenType'       => 'url',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTIMAGEID',
-					'tokenName'       => __( 'Post featured image ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post featured image ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTAUTHORFN',
-					'tokenName'       => __( 'Post author first name', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post author first name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTAUTHORLN',
-					'tokenName'       => __( 'Post author last name', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post author last name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTAUTHORDN',
-					'tokenName'       => __( 'Post author display name', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post author display name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTAUTHOREMAIL',
-					'tokenName'       => __( 'Post author email', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post author email', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'POSTAUTHORURL',
-					'tokenName'       => __( 'Post author URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Post author URL', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -191,37 +191,37 @@ class Wpai_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'IMPORT_ID',
-					'tokenName'       => __( 'Import ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Import ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'IMPORT_FILE_NAME',
-					'tokenName'       => __( 'Import file name', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Import file name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'IMPORT_DATE',
-					'tokenName'       => __( 'Import date', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Import date', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'IMPORT_TYPE',
-					'tokenName'       => __( 'Import type', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Import type', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'IMPORT_RUN_TIME',
-					'tokenName'       => __( 'Import run time', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Import run time', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'IMPORT_SUMMARY',
-					'tokenName'       => __( 'Import summary', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Import summary', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -308,7 +308,7 @@ class Wpai_Tokens {
 			case 'POSTCONTENT_BEAUTIFIED':
 				$content = get_the_content( $post->ID );
 				$content = apply_filters( 'the_content', $content );
-				$content = str_replace( ']]>', ']]&gt;', $content ); //phpcs:ignore Generic.PHP.Syntax.PHPSyntax
+				$content = str_replace( ']]>', ']]&gt;', $content ); // phpcs:ignore Generic.PHP.Syntax.PHPSyntax
 				$value   = $content;
 				break;
 			case 'POSTIMAGEID':

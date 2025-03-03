@@ -20,7 +20,7 @@ $bot_name       = ! empty( $bot_info['first_name'] ) ? $bot_info['first_name'] :
 $bot_username   = ! empty( $bot_info['username'] ) ? $bot_info['username'] : '';
 
 $kb_url  = esc_attr( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/telegram/', 'settings', 'telegram-kb_article' ) );
-$kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr( __( 'Knowledge Base article', 'uncanny-automator' ) ), '<uo-icon id="external-link"></uo-icon>' );
+$kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr( esc_html__( 'Knowledge Base article', 'uncanny-automator' ) ), '<uo-icon id="external-link"></uo-icon>' );
 
 
 ?>
@@ -68,12 +68,12 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr(
 						</li>
 					</ul>
 
-					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Setup instructions', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Setup instructions', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
 						<?php
 						echo sprintf(
 							/* translators: Knowledge base article link */
-							_x( 'Connecting to Telegram requires creating a Telegram bot and retrieving an HTTP access token value (a.k.a. "Bot secret"). Visit our %s for instructions.', 'Telegram', 'uncanny-automator' ), //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							$kb_link //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							_x( 'Connecting to Telegram requires creating a Telegram bot and retrieving an HTTP access token value (a.k.a. "Bot secret"). Visit our %s for instructions.', 'Telegram', 'uncanny-automator' ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							$kb_link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						);
 						?>
 					</uo-alert>
@@ -86,7 +86,7 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr(
 						array(
 							'id'       => 'automator_telegram_bot_secret',
 							'value'    => $bot_token ? $bot_token : '',
-							'label'    => __( 'Bot secret', 'uncanny-automator' ),
+							'label'    => esc_html__( 'Bot secret', 'uncanny-automator' ),
 							'required' => true,
 							'class'    => 'uap-spacing-top',
 							'hidden'   => $hide_fields,
@@ -97,7 +97,7 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr(
 				} else {
 					?>
 
-					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Uncanny Automator only supports connecting to one Telegram account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Uncanny Automator only supports connecting to one Telegram account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
 						<?php esc_html_e( 'You can only connect to a Telegram bot for which you have read and write access.', 'uncanny-automator' ); ?>
 					</uo-alert>
 

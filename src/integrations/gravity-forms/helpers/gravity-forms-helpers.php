@@ -39,14 +39,14 @@ class Gravity_Forms_Helpers {
 	/**
 	 * @param Gravity_Forms_Helpers $options
 	 */
-	public function setOptions( Gravity_Forms_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Gravity_Forms_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Gravity_Forms_Pro_Helpers $pro
 	 */
-	public function setPro( Gravity_Forms_Pro_Helpers $pro ) {  //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( Gravity_Forms_Pro_Helpers $pro ) {  // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -105,8 +105,8 @@ class Gravity_Forms_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => __( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID' => __( 'Form ID', 'uncanny-automator' ),
+				$option_code         => esc_html__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_html__( 'Form ID', 'uncanny-automator' ),
 			),
 		);
 
@@ -335,7 +335,7 @@ class Gravity_Forms_Helpers {
 
 		$forms = \GFAPI::get_forms();
 
-		$options[- 1] = __( 'Any form', 'uncanny-automator' );
+		$options[- 1] = esc_html__( 'Any form', 'uncanny-automator' );
 
 		foreach ( $forms as $form ) {
 

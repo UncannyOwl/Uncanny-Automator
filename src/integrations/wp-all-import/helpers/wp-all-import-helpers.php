@@ -41,7 +41,7 @@ class Wp_All_Import_Helpers {
 			$zero_as_default = ( intval( '-1' ) !== intval( $args['use_zero_as_default'] ) ) ? 0 : intval( '-1' );
 
 			// Backwards compatibility for Any option with value of '0' instead of '-1'.
-			$options[ $zero_as_default ] = __( 'Any post type', 'uncanny-automator' );
+			$options[ $zero_as_default ] = esc_html__( 'Any post type', 'uncanny-automator' );
 		}
 
 		$post_types = get_post_types( array(), 'objects' );
@@ -74,7 +74,7 @@ class Wp_All_Import_Helpers {
 		$option = array(
 			'input_type'      => 'select',
 			'option_code'     => $option_code,
-			'label'           => ! empty( $label ) ? $label : __( 'Post type', 'uncanny-automator' ),
+			'label'           => ! empty( $label ) ? $label : esc_html__( 'Post type', 'uncanny-automator' ),
 			'required'        => true,
 			'supports_tokens' => $args['token'],
 			'is_ajax'         => $args['is_ajax'],

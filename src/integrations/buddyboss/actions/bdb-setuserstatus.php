@@ -95,7 +95,7 @@ class BDB_SETUSERSTATUS {
 		} else {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete->user->action( $user_id, $action_data, $recipe_id, __( 'To change members status in your network, please activate the Moderation component.' ) );
+			Automator()->complete->user->action( $user_id, $action_data, $recipe_id, esc_html__( 'To change members status in your network, please activate the Moderation component.', 'uncanny-automator' ) );
 		}
 
 	}

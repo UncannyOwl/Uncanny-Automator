@@ -56,7 +56,7 @@ trait Webhooks {
 			$new_tokens[] = array(
 				'tokenId'     => $tag,
 				'tokenParent' => get_post_meta( $action_id, 'code', true ),
-				'tokenName'   => sprintf( '%s - %s', __( 'Response', 'uncanny-automator' ), $action_token['key'] ),
+				'tokenName'   => sprintf( '%s - %s', esc_html__( 'Response', 'uncanny-automator' ), $action_token['key'] ),
 				'tokenType'   => $action_token['type'],
 			);
 		}

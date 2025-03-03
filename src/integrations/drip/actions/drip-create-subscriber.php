@@ -48,7 +48,7 @@ class DRIP_CREATE_SUBSCRIBER {
 		$this->set_action_tokens(
 			array(
 				'SUBSCRIBER_ID' => array(
-					'name' => __( 'Drip subscriber ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Drip subscriber ID', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -67,7 +67,7 @@ class DRIP_CREATE_SUBSCRIBER {
 
 		$email = array(
 			'option_code'     => $this->action_meta,
-			'label'           => __( 'Email', 'uncanny-automator' ),
+			'label'           => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'      => 'email',
 			'required'        => true,
 			'supports_tokens' => true,
@@ -75,32 +75,32 @@ class DRIP_CREATE_SUBSCRIBER {
 
 		$custom_fields = array(
 			'option_code'       => 'FIELDS',
-			'label'             => __( 'Fields', 'uncanny-automator' ),
+			'label'             => esc_html__( 'Fields', 'uncanny-automator' ),
 			'input_type'        => 'repeater',
 			'relevant_tokens'   => array(),
 			'fields'            => array(
 				array(
 					'option_code'     => 'FIELD_NAME',
-					'label'           => __( 'Field', 'uncanny-automator' ),
+					'label'           => esc_html__( 'Field', 'uncanny-automator' ),
 					'input_type'      => 'select',
 					'supports_tokens' => false,
 					'required'        => true,
 					'read_only'       => false,
 					'options_show_id' => false,
 					'options'         => $this->functions->get_fields_options(),
-					'placeholder'     => __( 'Select a field', 'uncanny-automator' ),
+					'placeholder'     => esc_html__( 'Select a field', 'uncanny-automator' ),
 				),
 				array(
 					'option_code'     => 'FIELD_VALUE',
-					'label'           => __( 'Value', 'uncanny-automator' ),
+					'label'           => esc_html__( 'Value', 'uncanny-automator' ),
 					'input_type'      => 'text',
 					'supports_tokens' => true,
 					'required'        => false,
 					'read_only'       => false,
 				),
 			),
-			'add_row_button'    => __( 'Add field', 'uncanny-automator' ),
-			'remove_row_button' => __( 'Remove field', 'uncanny-automator' ),
+			'add_row_button'    => esc_html__( 'Add field', 'uncanny-automator' ),
+			'remove_row_button' => esc_html__( 'Remove field', 'uncanny-automator' ),
 			'hide_actions'      => false,
 		);
 

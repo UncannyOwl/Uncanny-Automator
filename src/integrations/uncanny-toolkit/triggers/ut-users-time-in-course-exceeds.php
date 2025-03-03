@@ -77,7 +77,7 @@ class UT_USERS_TIME_IN_COURSE_EXCEEDS {
 			'input_type'  => 'text',
 			'label'       => esc_attr__( 'Minutes', 'uncanny-automator' ),
 			'required'    => true,
-			'token_name'  => __( 'Time in minutes', 'uncanny-automator' ),
+			'token_name'  => esc_html__( 'Time in minutes', 'uncanny-automator' ),
 		);
 
 		$options = array(

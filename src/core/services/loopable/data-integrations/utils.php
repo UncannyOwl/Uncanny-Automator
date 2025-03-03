@@ -306,7 +306,7 @@ class Utils {
 	public static function encode_url( $url ) {
 
 		// Parse the URL into components (scheme, host, path, etc.).
-		$parsed_url = parse_url( $url );
+		$parsed_url = wp_parse_url( $url );
 
 		if ( false === $parsed_url ) {
 			return false; // If the URL can't be parsed, return false.

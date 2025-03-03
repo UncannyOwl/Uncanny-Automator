@@ -90,7 +90,7 @@ class FACEBOOK_PAGE_PUBLISH_POST {
 		$this->set_action_tokens(
 			array(
 				'POST_LINK' => array(
-					'name' => __( 'Link to Facebook post', 'uncanny-automator' ),
+					'name' => esc_html__( 'Link to Facebook post', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),

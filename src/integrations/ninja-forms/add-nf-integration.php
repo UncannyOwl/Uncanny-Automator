@@ -24,7 +24,7 @@ class Add_Nf_Integration {
 	protected function setup() {
 		$this->set_integration( 'NF' );
 		$this->set_name( 'Ninja Forms' );
-		$this->set_icon( 'integration-ninjaforms@2x.png' );
+		$this->set_icon( 'ninjaforms-icon.png' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'ninja-forms/ninja-forms.php' );
 	}

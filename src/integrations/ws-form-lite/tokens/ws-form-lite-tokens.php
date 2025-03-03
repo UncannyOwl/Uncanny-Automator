@@ -72,13 +72,13 @@ class Ws_Form_Lite_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'FORM_ID',
-					'tokenName'       => __( 'Form ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Form ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'FORM_TITLE',
-					'tokenName'       => __( 'Form title', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Form title', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -89,7 +89,7 @@ class Ws_Form_Lite_Tokens {
 				foreach ( $form_fields as $field ) {
 					$fields[] = array(
 						'tokenId'         => "wsf_$form_id|field_$field->id",
-						'tokenName'       => __( $field->label, 'uncanny-automator' ),
+						'tokenName'       => esc_html( $field->label ),
 						'tokenType'       => $field->type,
 						'tokenIdentifier' => $trigger_code,
 					);

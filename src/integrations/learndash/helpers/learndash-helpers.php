@@ -94,14 +94,14 @@ class Learndash_Helpers {
 	/**
 	 * @param Learndash_Helpers $options
 	 */
-	public function setOptions( Learndash_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Learndash_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Learndash_Pro_Helpers $pro
 	 */
-	public function setPro( Learndash_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( Learndash_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -125,7 +125,7 @@ class Learndash_Helpers {
 
 		$args = array(
 			'post_type'      => 'sfwd-courses',
-			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
@@ -138,8 +138,8 @@ class Learndash_Helpers {
 			$courses_relevant_tokens = wp_list_pluck( $this->get_course_relevant_tokens( 'trigger', $option_code ), 'name' );
 
 			if ( self::is_course_timer_activated() ) {
-				$courses_relevant_tokens[ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = __( 'Course cumulative time', 'uncanny-automator' );
-				$courses_relevant_tokens[ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = __( 'Course time at completion', 'uncanny-automator' );
+				$courses_relevant_tokens[ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = esc_html__( 'Course cumulative time', 'uncanny-automator' );
+				$courses_relevant_tokens[ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = esc_html__( 'Course time at completion', 'uncanny-automator' );
 			}
 
 			if ( is_array( $relevant_tokens ) && ! empty( $relevant_tokens ) ) {
@@ -280,7 +280,7 @@ class Learndash_Helpers {
 
 		$args = array(
 			'post_type'      => 'sfwd-lessons',
-			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		'orderby'            => 'title',
 		'order'              => 'ASC',
 		'post_status'        => 'publish',
@@ -393,7 +393,7 @@ class Learndash_Helpers {
 
 		$args = array(
 			'post_type'      => 'sfwd-topic',
-			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		'orderby'            => 'title',
 		'order'              => 'ASC',
 		'post_status'        => 'publish',
@@ -510,7 +510,7 @@ class Learndash_Helpers {
 
 		$args = array(
 			'post_type'      => 'groups',
-			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
@@ -635,7 +635,7 @@ class Learndash_Helpers {
 
 		$args = array(
 			'post_type'      => 'sfwd-quiz',
-			'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		'orderby'            => 'title',
 		'order'              => 'ASC',
 		'post_status'        => 'publish',
@@ -1056,7 +1056,7 @@ class Learndash_Helpers {
 	 */
 	public function submitted_quiz_pased( $data ) {
 		if ( empty( $data ) || ! is_array( $data ) ) {
-			return new \WP_Error( 'no_data', __( 'No data provided', 'uncanny-automator' ) );
+			return new \WP_Error( 'no_data', esc_html__( 'No data provided', 'uncanny-automator' ) );
 		}
 
 		$passed = ! empty( (int) $data['pass'] );
@@ -1075,7 +1075,7 @@ class Learndash_Helpers {
 				foreach ( $graded as $grade_item ) {
 					// Quiz has not been graded yet.
 					if ( isset( $grade_item['status'] ) && 'not_graded' === $grade_item['status'] ) {
-						return new \WP_Error( 'not_graded', __( 'Quiz has not been graded', 'uncanny-automator' ) );
+						return new \WP_Error( 'not_graded', esc_html__( 'Quiz has not been graded', 'uncanny-automator' ) );
 					}
 				}
 			}
@@ -1096,12 +1096,12 @@ class Learndash_Helpers {
 	public function graded_quiz_passed( $essay, $pro_quiz_id ) {
 
 		if ( ! is_a( $essay, 'WP_Post' ) || 'sfwd-essays' !== $essay->post_type ) {
-			return new \WP_Error( 'essay', __( 'Not an essay post.', 'uncanny-automator' ) );
+			return new \WP_Error( 'essay', esc_html__( 'Not an essay post.', 'uncanny-automator' ) );
 		}
 
 		// Not graded yet.
 		if ( 'graded' !== $essay->post_status ) {
-			return new \WP_Error( 'not_graded', __( 'Quiz has not been graded', 'uncanny-automator' ) );
+			return new \WP_Error( 'not_graded', esc_html__( 'Quiz has not been graded', 'uncanny-automator' ) );
 		}
 
 		// Set vars to determine if the Quiz passed.
@@ -1111,7 +1111,7 @@ class Learndash_Helpers {
 		$user_quiz_meta = get_user_meta( $essay->post_author, '_sfwd-quizzes', true );
 		$user_quiz_meta = maybe_unserialize( $user_quiz_meta );
 		if ( ! is_array( $user_quiz_meta ) ) {
-			return new \WP_Error( 'no_data', __( 'No user quiz data recorded', 'uncanny-automator' ) );
+			return new \WP_Error( 'no_data', esc_html__( 'No user quiz data recorded', 'uncanny-automator' ) );
 		}
 		// Reverse the array so we can loop from the latest quiz attempt.
 		$user_quiz_meta = array_reverse( $user_quiz_meta );
@@ -1127,7 +1127,7 @@ class Learndash_Helpers {
 					}
 					// Validate all graded items have been graded.
 					if ( in_array( 'not_graded', $graded_posts, true ) ) {
-						return new \WP_Error( 'not_graded', __( 'All quizzes have not been graded', 'uncanny-automator' ) );
+						return new \WP_Error( 'not_graded', esc_html__( 'All quizzes have not been graded', 'uncanny-automator' ) );
 					}
 					// All graded items have been graded return pass or fail bool.
 					return absint( $quiz['pass'] );
@@ -1135,7 +1135,7 @@ class Learndash_Helpers {
 			}
 		}
 
-		return new \WP_Error( 'no_data', __( 'No quiz data recorded', 'uncanny-automator' ) );
+		return new \WP_Error( 'no_data', esc_html__( 'No quiz data recorded', 'uncanny-automator' ) );
 	}
 
 	/**

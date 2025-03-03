@@ -48,7 +48,7 @@ class TRELLO_UPDATE_CARD {
 			array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get custom fields', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Get custom fields', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => 'automator_trello_get_custom_fields',
 					'modules'     => array( 'modal', 'markdown' ),
@@ -68,8 +68,8 @@ class TRELLO_UPDATE_CARD {
 
 		$user_boards_field = array(
 			'option_code'           => 'BOARD',
-			'label'                 => __( 'Board', 'uncanny-automator' ),
-			'token_name'            => __( 'Board ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Board', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Board ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,
@@ -79,8 +79,8 @@ class TRELLO_UPDATE_CARD {
 
 		$board_lists_field = array(
 			'option_code'           => 'LIST',
-			'label'                 => __( 'List', 'uncanny-automator' ),
-			'token_name'            => __( 'List ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'List', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'List ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,
@@ -95,8 +95,8 @@ class TRELLO_UPDATE_CARD {
 
 		$list_cards_field = array(
 			'option_code'           => 'CARD',
-			'label'                 => __( 'Card', 'uncanny-automator' ),
-			'token_name'            => __( 'Card ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Card', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Card ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -177,7 +177,7 @@ class TRELLO_UPDATE_CARD {
 			'supports_multiple_values' => true,
 			'options'                  => array(),
 			'label'                    => esc_attr__( 'Members', 'uncanny-automator' ),
-			'placeholder'              => __( 'No member', 'uncanny-automator' ),
+			'placeholder'              => esc_html__( 'No member', 'uncanny-automator' ),
 			'tokens'                   => true,
 			'default'                  => '',
 			'ajax'                     => array(
@@ -193,7 +193,7 @@ class TRELLO_UPDATE_CARD {
 			'supports_multiple_values' => true,
 			'options'                  => array(),
 			'label'                    => esc_attr__( 'Labels', 'uncanny-automator' ),
-			'placeholder'              => __( 'No label', 'uncanny-automator' ),
+			'placeholder'              => esc_html__( 'No label', 'uncanny-automator' ),
 			'tokens'                   => true,
 			'default'                  => '',
 			'options_show_id'          => false,
@@ -208,8 +208,8 @@ class TRELLO_UPDATE_CARD {
 			'option_code'     => 'CUSTOMFIELDS',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => __( 'Custom fields', 'uncanny-automator' ),
-			'description'     => __( 'Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets.', 'uncanny-automator' ),
+			'label'           => esc_html__( 'Custom fields', 'uncanny-automator' ),
+			'description'     => esc_html__( 'Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets.', 'uncanny-automator' ),
 			'required'        => false,
 			'default_value'   => array(
 				array(
@@ -221,7 +221,7 @@ class TRELLO_UPDATE_CARD {
 			'fields'          => array(
 				array(
 					'option_code' => 'FIELD_NAME',
-					'label'       => __( 'Field name', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Field name', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 					'read_only'   => true,
@@ -237,7 +237,7 @@ class TRELLO_UPDATE_CARD {
 				),
 				array(
 					'option_code' => 'FIELD_VALUE',
-					'label'       => __( 'Value', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Value', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 				),

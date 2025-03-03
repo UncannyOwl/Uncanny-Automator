@@ -89,7 +89,6 @@ class Bitly_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -116,7 +115,6 @@ class Bitly_Helpers {
 		// Then redirect to settings page. Flag as connected with success=yes.
 		wp_safe_redirect( $this->get_settings_page_url() . '&success=yes' );
 		die;
-
 	}
 
 	/**
@@ -165,7 +163,6 @@ class Bitly_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -215,9 +212,8 @@ class Bitly_Helpers {
 
 		if ( $response['statusCode'] !== 201 || $response['statusCode'] !== 200 ) {
 			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : _x( 'Bitly API Error', 'Bitly', 'uncanny-automator' );
-			throw new \Exception( $message, $response['statusCode'] );
+			throw new \Exception( esc_html( $message ), absint( $response['statusCode'] ) );
 		}
-
 	}
 
 	/**

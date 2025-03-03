@@ -59,7 +59,7 @@ class Wpsp_Helpers {
 		$forms = get_posts(
 			array(
 				'post_type'      => 'simple-pay',
-				'posts_per_page' => 9999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'fields'         => 'ids',
 			)
 		);
@@ -100,7 +100,7 @@ class Wpsp_Helpers {
 			}
 		}
 		if ( true === $is_any ) {
-			$options = array( '-1' => __( 'Any form', 'uncanny-automator' ) ) + $options;
+			$options = array( '-1' => esc_html__( 'Any form', 'uncanny-automator' ) ) + $options;
 		}
 		$option = array(
 			'option_code'     => $option_code,

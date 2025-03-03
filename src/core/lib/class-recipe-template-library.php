@@ -246,7 +246,7 @@ class Recipe_Template_Library {
 			'is_pro'             => 1,
 			'is_elite'           => 0,
 			'is_built_in'        => 0,
-			'short_description'  => __( 'Automator Pro includes conditions, delays and loops, thousands of additional triggers, actions and tokens, and unlimited app credits for app integrations.', 'uncanny-automator' ),
+			'short_description'  => esc_html__( 'Automator Pro includes conditions, delays and loops, thousands of additional triggers, actions and tokens, and unlimited app credits for app integrations.', 'uncanny-automator' ),
 			'external_permalink' => 'https://automatorplugin.com/pricing/',
 			'is_installed'       => is_automator_pro_active(),
 			'is_app'             => false,
@@ -276,7 +276,7 @@ class Recipe_Template_Library {
 			'is_pro'             => 0,
 			'is_elite'           => 1,
 			'is_built_in'        => 0,
-			'short_description'  => __( 'The Elite Integrations Addon for Uncanny Automator adds additional integrations with enterprise-level software.', 'uncanny-automator' ),
+			'short_description'  => esc_html__( 'The Elite Integrations Addon for Uncanny Automator adds additional integrations with enterprise-level software.', 'uncanny-automator' ),
 			'external_permalink' => 'https://automatorplugin.com/elite-integrations-addon/',
 			'is_installed'       => defined( 'UAEI_PLUGIN_VERSION' ),
 			'is_app'             => false,
@@ -376,7 +376,7 @@ class Recipe_Template_Library {
 			// Fetch the template export.
 			$response = wp_remote_get( $this->api_base . $this->library_directory . $template_id . '.json' );
 			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response->get_error_message(), 400 );
+				throw new Exception( esc_html( $response->get_error_message() ), 400 );
 			}
 
 			if ( 404 === wp_remote_retrieve_response_code( $response ) ) {
@@ -396,7 +396,7 @@ class Recipe_Template_Library {
 			// Import the recipe.
 			$new_recipe_id = $this->importer()->import_recipe_json( $recipe_json );
 			if ( is_wp_error( $new_recipe_id ) ) {
-				throw new Exception( $new_recipe_id->get_error_message(), 400 );
+				throw new Exception( esc_html( $new_recipe_id->get_error_message() ), 400 );
 			}
 
 			do_action( 'automator_recipe_imported', $new_recipe_id );

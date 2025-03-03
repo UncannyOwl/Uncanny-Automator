@@ -20,6 +20,7 @@ class HT_KB_USER_GIVES_POSITIVE_RATING extends \Uncanny_Automator\Recipe\Trigger
 		$this->set_trigger_code( 'HT_KB_POSITIVE_RATING' );
 		$this->set_trigger_meta( 'HT_KB_ARTICLES' );
 		// Trigger sentence - Heroic Knowledge Base
+		// translators: 1: Article
 		$this->set_sentence( sprintf( esc_attr_x( 'A user gives a positive rating to {{an article:%1$s}}', 'Heroic Knowledge Base', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A user gives a positive rating to {{an article}}', 'Heroic Knowledge Base', 'uncanny-automator' ) );
 		$this->add_action( 'ht_voting_vote_post_action', 20, 3 );

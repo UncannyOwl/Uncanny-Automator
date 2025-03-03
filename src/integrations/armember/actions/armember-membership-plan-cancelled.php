@@ -24,10 +24,10 @@ class ARMEMBER_MEMBERSHIP_PLAN_CANCELLED {
 		$this->set_requires_user( true );
 
 		/* translators: Action - ARMember */
-		$this->set_sentence( sprintf( esc_attr__( "Cancel the user's {{membership plan:%1\$s}}", 'uncanny-automator-pro' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_attr__( "Cancel the user's {{membership plan:%1\$s}}", 'uncanny-automator' ), $this->get_action_meta() ) );
 
 		/* translators: Action - ARMember */
-		$this->set_readable_sentence( esc_attr__( "Cancel the user's {{membership plan}}", 'uncanny-automator-pro' ) );
+		$this->set_readable_sentence( esc_attr__( "Cancel the user's {{membership plan}}", 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->register_action();
@@ -72,7 +72,7 @@ class ARMEMBER_MEMBERSHIP_PLAN_CANCELLED {
 
 		if ( empty( $plan_id ) ) {
 			$action_data['complete_with_errors'] = true;
-			$message                             = __( 'Plan does not exist.', 'uncanny-automator-pro' );
+			$message                             = esc_html__( 'Plan does not exist.', 'uncanny-automator' );
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
 
 			return;

@@ -61,10 +61,10 @@ class UC_GENERATE_CODES {
 		$this->set_action_tokens(
 			array(
 				'BATCH_ID'        => array(
-					'name' => __( 'Batch ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Batch ID', 'uncanny-automator' ),
 				),
 				'CODES_GENERATED' => array(
-					'name' => __( 'Generated codes', 'uncanny-automator' ),
+					'name' => esc_html__( 'Generated codes', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -178,7 +178,7 @@ class UC_GENERATE_CODES {
 
 		$tbl_codes = $wpdb->prefix . \uncanny_learndash_codes\Config::$tbl_codes;
 
-		$codes = $wpdb->get_col( $wpdb->prepare( "SELECT `code` FROM $tbl_codes WHERE code_group = %d", $group_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$codes = $wpdb->get_col( $wpdb->prepare( "SELECT `code` FROM $tbl_codes WHERE code_group = %d", $group_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return implode( ', ', $codes );
 

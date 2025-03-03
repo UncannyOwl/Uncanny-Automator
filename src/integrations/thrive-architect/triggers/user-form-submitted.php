@@ -36,7 +36,7 @@ class USER_FORM_SUBMITTED extends FORM_SUBMITTED {
 
 		$this->set_readable_sentence(
 			/* Translators: Trigger sentence */
-			esc_html__( 'A user submits a {{form}}', 'Thrive Architect', 'uncanny-automator' )
+			esc_html_x( 'A user submits a {{form}}', 'Thrive Architect', 'uncanny-automator' )
 		);
 
 		$this->set_helper( new Thrive_Architect_Helpers() );

@@ -84,7 +84,7 @@ class WA_MESSAGE_STATUS_UPDATED {
 				'options' => array(
 					array(
 						'option_code'     => $this->get_trigger_meta(),
-						'label'           => __( 'Status', 'uncanny-automator' ),
+						'label'           => esc_html__( 'Status', 'uncanny-automator' ),
 						'input_type'      => 'select',
 						'required'        => true,
 						'options'         => array(

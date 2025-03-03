@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Background_Actions
+ *
  * @package Uncanny_Automator
  */
 class Background_Actions {
@@ -173,7 +174,7 @@ class Background_Actions {
 	public function not_scheduled() {
 
 		if ( ! empty( $this->action['action_data']['meta']['async_mode'] ) ) {
-			throw new \Exception( __( 'This action is scheduled or delayed', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'This action is scheduled or delayed', 'uncanny-automator' ) );
 		}
 
 		return $this;
@@ -189,7 +190,7 @@ class Background_Actions {
 	public function can_process_further() {
 
 		if ( isset( $this->action['process_further'] ) && false === $this->action['process_further'] ) {
-			throw new \Exception( __( 'This action was prevented from processing earlier', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'This action was prevented from processing earlier', 'uncanny-automator' ) );
 		}
 
 		return $this;
@@ -207,7 +208,7 @@ class Background_Actions {
 		$process_in_bg = apply_filters( 'automator_action_should_process_in_background', $process_in_bg, $this->action );
 
 		if ( ! $process_in_bg ) {
-			throw new \Exception( __( 'This action is not set to run in background', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'This action is not set to run in background', 'uncanny-automator' ) );
 		}
 
 		return $this;
@@ -224,7 +225,7 @@ class Background_Actions {
 	 */
 	public function is_not_doing_cron() {
 		if ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) {
-			throw new \Exception( __( 'WP cron is running', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'WP cron is running', 'uncanny-automator' ) );
 		}
 
 		return $this;
@@ -239,7 +240,13 @@ class Background_Actions {
 		$action_tokens_used_in = get_post_meta( $action_id, self::IS_USED_FOR_ACTION_TOKEN, true );
 		if ( ! empty( $action_tokens_used_in ) && is_numeric( $action_tokens_used_in ) && 0 !== absint( $action_tokens_used_in ) ) {
 			/* translators: Action ID */
-			throw new \Exception( sprintf( __( "Action's token used in ID: %d action", 'uncanny-automator' ), $action_tokens_used_in ) );
+			throw new \Exception(
+				sprintf(
+				/* translators: %d refers to the action ID where the token is used. */
+					esc_html__( "Action's token used in ID: %d action", 'uncanny-automator' ),
+					intval( $action_tokens_used_in )
+				)
+			);
 		}
 
 		return $this;
@@ -366,7 +373,7 @@ class Background_Actions {
 			return $body['message'];
 		}
 
-		return __( 'Unknown REST API error', 'uncanny-automator' );
+		return esc_html__( 'Unknown REST API error', 'uncanny-automator' );
 	}
 
 	/**
@@ -504,14 +511,13 @@ class Background_Actions {
 		?>
 
 		<uo-alert class="uap-spacing-top" type="error"
-				  heading="<?php esc_html_e( 'Background actions have been automatically disabled because an error was detected:', 'uncanny-automator' ); ?>">
+					heading="<?php esc_html_e( 'Background actions have been automatically disabled because an error was detected:', 'uncanny-automator' ); ?>">
 
 			<?php echo esc_html( $error_message ); ?>
 
 		</uo-alert>
 
 		<?php
-
 	}
 
 	/**

@@ -77,7 +77,6 @@ class Ontraport_Helpers {
 		$options['options'] = $tags;
 
 		wp_send_json( $options );
-
 	}
 
 	/**
@@ -149,7 +148,6 @@ class Ontraport_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -178,7 +176,6 @@ class Ontraport_Helpers {
 		} catch ( Exception $e ) {
 			return new WP_Error( $e->getCode(), $e->getMessage() );
 		}
-
 	}
 
 	/**
@@ -215,7 +212,6 @@ class Ontraport_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -290,12 +286,12 @@ class Ontraport_Helpers {
 
 			$message = isset( $response['data']['message'] )
 				? $response['data']['message']
+				// translators: 1: Status code
 				: sprintf( _x( 'Ontraport API error: Received unexpected status code %1$s.', 'Ontraport', 'uncanny-automator' ), $status );
 
-			throw new \Exception( $message, $status );
+			throw new \Exception( esc_html( $message ), absint( $status ) );
 
 		}
-
 	}
 
 	/**
@@ -311,5 +307,4 @@ class Ontraport_Helpers {
 			AUTOMATOR_API_URL . 'v2/ontraport'
 		);
 	}
-
 }

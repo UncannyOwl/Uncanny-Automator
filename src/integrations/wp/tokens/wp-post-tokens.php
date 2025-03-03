@@ -134,97 +134,97 @@ class Wp_Post_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => $post_title,
-				'tokenName'       => __( 'Post title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => $post_id,
-				'tokenName'       => __( 'Post ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => $post_url,
-				'tokenName'       => __( 'Post URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post URL', 'uncanny-automator' ),
 				'tokenType'       => 'url',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTNAME',
-				'tokenName'       => __( 'Post slug', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post slug', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCONTENT',
-				'tokenName'       => __( 'Post content (raw)', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post content (raw)', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCONTENT_BEAUTIFIED',
-				'tokenName'       => __( 'Post content (formatted)', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post content (formatted)', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => $post_excerpt,
-				'tokenName'       => __( 'Post excerpt', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post excerpt', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'WPPOSTTYPES',
-				'tokenName'       => __( 'Post type', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post type', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTIMAGEURL',
-				'tokenName'       => __( 'Post featured image URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post featured image URL', 'uncanny-automator' ),
 				'tokenType'       => 'url',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTIMAGEID',
-				'tokenName'       => __( 'Post featured image ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post featured image ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORFN',
-				'tokenName'       => __( 'Post author first name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORLN',
-				'tokenName'       => __( 'Post author last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORDN',
-				'tokenName'       => __( 'Post author display name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author display name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHOREMAIL',
-				'tokenName'       => __( 'Post author email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORID',
-				'tokenName'       => __( 'Post author ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORURL',
-				'tokenName'       => __( 'Post author URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -251,139 +251,139 @@ class Wp_Post_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'POSTTITLE',
-				'tokenName'       => __( 'Post title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTID',
-				'tokenName'       => __( 'Post ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTURL',
-				'tokenName'       => __( 'Post URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post URL', 'uncanny-automator' ),
 				'tokenType'       => 'url',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCONTENT',
-				'tokenName'       => __( 'Post content (raw)', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post content (raw)', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCONTENT_BEAUTIFIED',
-				'tokenName'       => __( 'Post content (formatted)', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post content (formatted)', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTEXCERPT',
-				'tokenName'       => __( 'Post excerpt', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post excerpt', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'WPPOSTTYPES',
-				'tokenName'       => __( 'Post type', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post type', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTIMAGEURL',
-				'tokenName'       => __( 'Post featured image URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post featured image URL', 'uncanny-automator' ),
 				'tokenType'       => 'url',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTIMAGEID',
-				'tokenName'       => __( 'Post featured image ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post featured image ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORFN',
-				'tokenName'       => __( 'Post author first name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORLN',
-				'tokenName'       => __( 'Post author last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORDN',
-				'tokenName'       => __( 'Post author display name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author display name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHOREMAIL',
-				'tokenName'       => __( 'Post author email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORID',
-				'tokenName'       => __( 'Post author ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTAUTHORURL',
-				'tokenName'       => __( 'Post author URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Post author URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTID',
-				'tokenName'       => __( 'Comment ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Comment ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTERNAME',
-				'tokenName'       => __( 'Commenter name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Commenter name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTEREMAIL',
-				'tokenName'       => __( 'Commenter email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Commenter email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTERWEBSITE',
-				'tokenName'       => __( 'Commenter website', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Commenter website', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTCONTENT',
-				'tokenName'       => __( 'Comment content', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Comment content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTURL',
-				'tokenName'       => __( 'Comment URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Comment URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTDATE',
-				'tokenName'       => __( 'Comment submitted date', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Comment submitted date', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'POSTCOMMENTSTATUS',
-				'tokenName'       => __( 'Comment status', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Comment status', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -448,7 +448,7 @@ class Wp_Post_Tokens {
 			case 'POSTCONTENT_BEAUTIFIED':
 				$content = get_the_content( $comment->comment_post_ID );
 				$content = apply_filters( 'the_content', $content );
-				$content = str_replace( ']]>', ']]&gt;', $content ); //phpcs:ignore Generic.PHP.Syntax.PHPSyntax
+				$content = str_replace( ']]>', ']]&gt;', $content ); // phpcs:ignore Generic.PHP.Syntax.PHPSyntax
 				$value   = $content;
 				break;
 			case 'POSTIMAGEID':
@@ -505,12 +505,12 @@ class Wp_Post_Tokens {
 				break;
 			case 'POSTCOMMENTDATE':
 				$value = sprintf(
-				/* translators: 1: Comment date, 2: Comment time. */
-					__( '%1$s at %2$s' ),
+					/* translators: 1: Comment date, 2: Comment time. */
+					__( '%1$s at %2$s', 'uncanny-automator' ),
 					/* translators: Publish box date format, see https://www.php.net/manual/datetime.format.php */
-					date_i18n( _x( 'M j, Y', 'publish box date format' ), strtotime( $comment->comment_date ) ),
+					date_i18n( _x( 'M j, Y', 'publish box date format', 'uncanny-automator' ), strtotime( $comment->comment_date ) ),
 					/* translators: Publish box time format, see https://www.php.net/manual/datetime.format.php */
-					date_i18n( _x( 'H:i', 'publish box time format' ), strtotime( $comment->comment_date ) )
+					date_i18n( _x( 'H:i', 'publish box time format', 'uncanny-automator' ), strtotime( $comment->comment_date ) )
 				);
 				break;
 			case 'POSTCOMMENTURL':
@@ -622,7 +622,7 @@ class Wp_Post_Tokens {
 			case 'WPPOSTTYPES_CONTENT_BEAUTIFIED':
 				$content = get_the_content( null, false, $post->ID );
 				$content = apply_filters( 'the_content', $content );
-				$content = str_replace( ']]>', ']]&gt;', $content ); //phpcs:ignore Generic.PHP.Syntax.PHPSyntax
+				$content = str_replace( ']]>', ']]&gt;', $content ); // phpcs:ignore Generic.PHP.Syntax.PHPSyntax
 				$value   = $content;
 				break;
 			case 'WPPOSTTYPES_THUMB_ID':

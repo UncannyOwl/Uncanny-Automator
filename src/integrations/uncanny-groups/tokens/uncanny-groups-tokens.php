@@ -56,22 +56,22 @@ class Uncanny_Groups_Tokens {
 
 		return array(
 			'GROUP_ID'              => array(
-				'name' => __( 'Group ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group ID', 'uncanny-automator' ),
 			),
 			'GROUP_TITLE'           => array(
-				'name' => __( 'Group title', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group title', 'uncanny-automator' ),
 			),
 			'SEATS_ADDED'           => array(
-				'name' => __( 'Seats added', 'uncanny-automator' ),
+				'name' => esc_html__( 'Seats added', 'uncanny-automator' ),
 			),
 			'GROUP_LEADER_EMAILS'   => array(
-				'name' => __( 'Group leader email(s)', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group leader email(s)', 'uncanny-automator' ),
 			),
 			'GROUP_REMAINING_SEATS' => array(
-				'name' => __( 'Remaining seats', 'uncanny-automator' ),
+				'name' => esc_html__( 'Remaining seats', 'uncanny-automator' ),
 			),
 			'GROUP_TOTAL_SEATS'     => array(
-				'name' => __( 'Total seats', 'uncanny-automator' ),
+				'name' => esc_html__( 'Total seats', 'uncanny-automator' ),
 			),
 		);
 	}
@@ -85,22 +85,22 @@ class Uncanny_Groups_Tokens {
 
 		return array(
 			'GROUP_ID'              => array(
-				'name' => __( 'Group ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group ID', 'uncanny-automator' ),
 			),
 			'GROUP_TITLE'           => array(
-				'name' => __( 'Group title', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group title', 'uncanny-automator' ),
 			),
 			'SEATS_REMOVED'         => array(
-				'name' => __( 'Seats removed', 'uncanny-automator' ),
+				'name' => esc_html__( 'Seats removed', 'uncanny-automator' ),
 			),
 			'GROUP_LEADER_EMAILS'   => array(
-				'name' => __( 'Group leader email(s)', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group leader email(s)', 'uncanny-automator' ),
 			),
 			'GROUP_REMAINING_SEATS' => array(
-				'name' => __( 'Remaining seats', 'uncanny-automator' ),
+				'name' => esc_html__( 'Remaining seats', 'uncanny-automator' ),
 			),
 			'GROUP_TOTAL_SEATS'     => array(
-				'name' => __( 'Total seats', 'uncanny-automator' ),
+				'name' => esc_html__( 'Total seats', 'uncanny-automator' ),
 			),
 		);
 	}
@@ -209,14 +209,14 @@ class Uncanny_Groups_Tokens {
 		if ( in_array( $trigger_meta, $additional_tokens, true ) ) {
 			$fields[] = array(
 				'tokenId'         => 'UNCANNYGROUPS_REMAINING_SEATS',
-				'tokenName'       => __( 'Remaining seats', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Remaining seats', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'UNCANNYGROUPS_TOTAL_SEATS',
-				'tokenName'       => __( 'Total seats', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Total seats', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -243,37 +243,37 @@ class Uncanny_Groups_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'UNCANNYGROUP',
-				'tokenName'       => __( 'Group title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Group title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'UNCANNYGROUP_ID',
-				'tokenName'       => __( 'Group ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Group ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'UNCANNYGROUP_URL',
-				'tokenName'       => __( 'Group URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Group URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'UNCANNYGROUP_SEATS',
-				'tokenName'       => __( 'Group seats', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Group seats', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'UNCANNYGROUP_COURSES',
-				'tokenName'       => __( 'Group courses', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Group courses', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'UNCANNYGROUP_LEADER',
-				'tokenName'       => __( 'Group leader email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Group leader email', 'uncanny-automator' ),
 				'tokenType'       => 'email',
 				'tokenIdentifier' => $trigger_meta,
 			),
@@ -282,7 +282,7 @@ class Uncanny_Groups_Tokens {
 		if ( Uncanny_Toolkit_Helpers::is_group_sign_up_activated() ) {
 			$fields[] = array(
 				'tokenId'         => 'UNCANNYGROUP_SIGNUP_URL',
-				'tokenName'       => __( 'Group signup URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Group signup URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);

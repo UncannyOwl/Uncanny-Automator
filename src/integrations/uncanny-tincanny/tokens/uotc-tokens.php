@@ -65,55 +65,55 @@ class UOTC_Tokens {
 
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Course title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Course title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Course ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Course ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Course URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Course URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_url',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Lesson title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Lesson ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Lesson URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Lesson URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_url',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Topic title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => __( 'Topic URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_url',
 			);
@@ -209,7 +209,7 @@ class UOTC_Tokens {
 					global $wpdb;
 
 					$table_name   = $wpdb->prefix . Database::TABLE_REPORTING;
-					$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$tin_can_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE user_id = %d AND module LIKE %s ORDER BY xstored DESC LIMIT 0,1", $user_id, '%%/uncanny-snc/' . $module_id . '/%%' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 					if ( ! empty( $tin_can_data ) ) {
 						if ( in_array( $trigger_key_maybe_prefix . 'course', $pieces, true ) && ! empty( $tin_can_data->course_id ) ) {

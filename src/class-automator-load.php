@@ -65,7 +65,7 @@ class Automator_Load {
 		// Load text domain
 		add_action(
 			'init',
-			function() {
+			function () {
 				Automator()->automator_load_textdomain();
 			}
 		);
@@ -207,10 +207,9 @@ class Automator_Load {
 		if ( is_array( $_SERVER ) && isset( $_SERVER['SERVER_SOFTWARE'] ) && 'php.wasm' === strtolower( trim( $_SERVER['SERVER_SOFTWARE'] ) ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 
 			echo '<div class="notice notice-error"><p>'
-				 . esc_html_x( 'Uncanny Automator cannot currently run in WP Playground environments because Playground cannot support custom tables, cURL or SSL PHP functions. Please consider trying the free Uncanny Automator plugin in your own environment instead.', 'Uncanny Automator', 'uncanny-automator' ) //phpcs:ignore WordPress.WhiteSpace.PrecisionAlignment.Found
-				 . '</p></div>'; //phpcs:ignore WordPress.WhiteSpace.PrecisionAlignment.Found
+				. esc_html_x( 'Uncanny Automator cannot currently run in WP Playground environments because Playground cannot support custom tables, cURL or SSL PHP functions. Please consider trying the free Uncanny Automator plugin in your own environment instead.', 'Uncanny Automator', 'uncanny-automator' ) // phpcs:ignore WordPress.WhiteSpace.PrecisionAlignment.Found
+				. '</p></div>'; // phpcs:ignore WordPress.WhiteSpace.PrecisionAlignment.Found
 		}
-
 	}
 
 	/**
@@ -235,7 +234,6 @@ class Automator_Load {
 			},
 			100
 		);
-
 	}
 
 	/**
@@ -320,12 +318,12 @@ class Automator_Load {
 
 		// If the site is not previously connected, let's redirect to Setup Wizard
 		if ( class_exists( '\Uncanny_Automator\Api_Server' ) && empty( Api_Server::get_license_key() ) ) {
-			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-setup-wizard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-setup-wizard' ) ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			exit();
 		}
 
 		// Else, redirect back to Dashboard
-		wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-dashboard' ) ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit();
 	}
 
@@ -343,14 +341,13 @@ class Automator_Load {
 
 			$link = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=plugins_page&utm_content=update_to_pro';
 
-			$settings_link = sprintf( '<a href="%s" target="_blank" style="color: rgb(0, 163, 42); font-weight: 700;">%s</a>', $link, __( 'Upgrade to Pro', 'uncanny-automator' ) );
+			$settings_link = sprintf( '<a href="%s" target="_blank" style="color: rgb(0, 163, 42); font-weight: 700;">%s</a>', $link, esc_html__( 'Upgrade to Pro', 'uncanny-automator' ) );
 
 			array_unshift( $links, $settings_link );
 
 		}
 
 		return $links;
-
 	}
 
 	/**
@@ -452,7 +449,6 @@ class Automator_Load {
 		require_once UA_ABSPATH . 'src/core/services/logger.php';
 
 		\Uncanny_Automator\Logger\fields_logger_register_listeners();
-
 	}
 
 	/**
@@ -590,12 +586,18 @@ class Automator_Load {
 		$upgrade_notice = '';
 		if ( isset( $response->upgrade_notice ) && ! empty( $response->upgrade_notice ) ) {
 			$upgrade_notice .= '<div class="ua_plugin_upgrade_notice">';
-			$upgrade_notice .= sprintf( '<strong>%s</strong>', __( 'Heads up!', 'uncanny-automator' ) );
+			$upgrade_notice .= sprintf( '<strong>%s</strong>', esc_html__( 'Heads up!', 'uncanny-automator' ) );
 			$upgrade_notice .= preg_replace( '~\[([^\]]*)\]\(([^\)]*)\)~', '<a href="${2}">${1}</a>', $response->upgrade_notice );
 			$upgrade_notice .= '</div>';
 		}
 
-		echo apply_filters( 'uap_in_plugin_update_message', $upgrade_notice ? '</p>' . wp_kses_post( $upgrade_notice ) . '<p class="dummy">' : '', $args ); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+		echo wp_kses_post(
+			apply_filters(
+				'uap_in_plugin_update_message',
+				$upgrade_notice ? '</p>' . wp_kses_post( $upgrade_notice ) . '<p class="dummy">' : '',
+				$args
+			)
+		);
 	}
 
 	/**

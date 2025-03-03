@@ -60,7 +60,7 @@ class UNCANNYCEUS_EARNSCEUS {
 	 */
 	public function define_trigger() {
 
-		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
@@ -87,7 +87,7 @@ class UNCANNYCEUS_EARNSCEUS {
 	 */
 	public function load_options() {
 
-		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 		return Automator()->utilities->keep_order_of_options(
 			array(

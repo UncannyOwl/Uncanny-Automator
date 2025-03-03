@@ -46,8 +46,8 @@ class SLACK_SENDDIRECTMESSAGE {
 			'code'                  => $this->action_code,
 			'requires_user'         => false,
 			// translators: slack username
-			'sentence'              => sprintf( __( 'Send a direct message to {{a Slack user:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Send a direct message to {{a Slack user}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Send a direct message to {{a Slack user:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Send a direct message to {{a Slack user}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'send_message' ),
@@ -74,8 +74,8 @@ class SLACK_SENDDIRECTMESSAGE {
 			'textarea',
 			'',
 			true,
-			__( '* Markdown is supported', 'uncanny-automator' ),
-			__( 'Enter the message', 'uncanny-automator' )
+			esc_html__( '* Markdown is supported', 'uncanny-automator' ),
+			esc_html__( 'Enter the message', 'uncanny-automator' )
 		);
 
 		return array(

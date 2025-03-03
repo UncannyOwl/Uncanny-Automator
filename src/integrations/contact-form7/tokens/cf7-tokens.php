@@ -105,7 +105,7 @@ class Cf7_Tokens {
 					$request_tag_name = automator_filter_input_array( $tag->name, INPUT_POST );
 				} elseif ( 'file' === $tag->type ) {
 					$request_tag_name = '';
-					$file             = isset( $_FILES[ $tag->name ] ) && isset( $_FILES[ $tag->name ]['name'] ) ? filter_var( wp_unslash( $_FILES[ $tag->name ]['name'] ), FILTER_SANITIZE_FULL_SPECIAL_CHARS ) : null;
+					$file             = isset( $_FILES[ $tag->name ] ) && isset( $_FILES[ $tag->name ]['name'] ) ? filter_var( wp_unslash( $_FILES[ $tag->name ]['name'] ), FILTER_SANITIZE_FULL_SPECIAL_CHARS ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 					$request_tag_name = $file ? basename( $file ) : '';
 
 				} elseif ( 'textarea' === $tag->type ) {

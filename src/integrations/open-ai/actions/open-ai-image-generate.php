@@ -341,15 +341,15 @@ class OPEN_AI_IMAGE_GENERATE {
 	private function create_action_tokens() {
 		return array(
 			'ATTACHMENT_ID'        => array(
-				'name' => __( 'Attachment ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Attachment ID', 'uncanny-automator' ),
 				'type' => 'int',
 			),
 			'ATTACHMENT_URL'       => array(
-				'name' => __( 'Attachment URL', 'uncanny-automator' ),
+				'name' => esc_html__( 'Attachment URL', 'uncanny-automator' ),
 				'type' => 'url',
 			),
 			'OPENAI_GEN_IMAGE_URL' => array(
-				'name' => __( 'OpenAI generated image URL', 'uncanny-automator' ),
+				'name' => esc_html__( 'OpenAI generated image URL', 'uncanny-automator' ),
 				'type' => 'url',
 			),
 		);

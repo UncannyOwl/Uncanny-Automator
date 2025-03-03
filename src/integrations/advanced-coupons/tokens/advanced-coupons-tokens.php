@@ -54,13 +54,13 @@ class Advanced_Coupons_Tokens {
 		$fields    = array();
 		$fields[]  = array(
 			'tokenId'         => 'USERTOTALCREDIT',
-			'tokenName'       => __( "User's total store credit", 'uncanny-automator' ),
+			'tokenName'       => esc_html__( "User's total store credit", 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => $args['meta'],
 		);
 		$fields[]  = array(
 			'tokenId'         => 'USERLIFETIMECREDIT',
-			'tokenName'       => __( "User's lifetime store credit", 'uncanny-automator' ),
+			'tokenName'       => esc_html__( "User's lifetime store credit", 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => $args['meta'],
 		);

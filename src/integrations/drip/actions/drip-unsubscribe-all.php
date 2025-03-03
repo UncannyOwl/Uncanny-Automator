@@ -55,7 +55,7 @@ class DRIP_UNSUBSCRIBE_ALL {
 
 		$email = array(
 			'option_code' => 'EMAIL',
-			'label'       => __( 'Email', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
 		);

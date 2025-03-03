@@ -174,25 +174,25 @@ class Gf_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'GFENTRYID',
-				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'GFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'GFUSERIP',
-				'tokenName'       => __( 'User IP', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'User IP', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'GFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'GFENTRYDATE',
-				'tokenName'       => __( 'Entry submission date', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry submission date', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'GFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'GFENTRYSOURCEURL',
-				'tokenName'       => __( 'Entry source URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry source URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'GFENTRYTOKENS',
 			),

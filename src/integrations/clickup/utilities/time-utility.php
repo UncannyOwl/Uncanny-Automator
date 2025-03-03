@@ -98,17 +98,17 @@ class Time_Utility {
 		if ( false === $date_time_object ) {
 			throw new \Exception(
 				sprintf(
-					'Failed to parse date/time: "%s". Ensure inputs match "%s %s".',
-					$date_time_string,
-					$this->date_format,
-					$this->time_format
+				/* translators: %1$s: Date/time string, %2$s: Expected date format, %3$s: Expected time format */
+					esc_html__( 'Failed to parse date/time: "%1$s". Ensure inputs match "%2$s %3$s".', 'uncanny-automator' ),
+					esc_html( $date_time_string ),
+					esc_html( $this->date_format ),
+					esc_html( $this->time_format )
 				)
 			);
 		}
 
 		// Return the Unix timestamp in milliseconds.
 		return (int) $date_time_object->format( 'U' ) * 1000;
-
 	}
 
 	/**
@@ -126,7 +126,6 @@ class Time_Utility {
 		}
 
 		return $this->date_format;
-
 	}
 
 	/**
@@ -144,7 +143,6 @@ class Time_Utility {
 		}
 
 		return $this->time_format;
-
 	}
 
 	/**
@@ -157,7 +155,6 @@ class Time_Utility {
 
 		$pattern = '/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})/';
 		return (bool) preg_match( $pattern, $date );
-
 	}
 
 	/**
@@ -174,7 +171,6 @@ class Time_Utility {
 		$dateTime = DateTime::createFromFormat( $format, $date );
 
 		return $dateTime && $dateTime->format( $format ) === $date;
-
 	}
 
 	/**
@@ -191,7 +187,5 @@ class Time_Utility {
 		$date   = DateTime::createFromFormat( $format, $time_string );
 
 		return $date && empty( DateTime::getLastErrors()['warning_count'] ) && empty( DateTime::getLastErrors()['error_count'] );
-
 	}
-
 }

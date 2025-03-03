@@ -177,12 +177,11 @@ class HTTP_Client {
 
 			$err_message = sprintf( 'OpenAI error: [%s] %s', $response_body['error']['type'], $response_body['error']['message'] );
 
-			throw new \Exception( $err_message, (int) $status_code );
+			throw new \Exception( esc_html( $err_message ), (int) $status_code );
 
 		}
 
 		$this->response = $response_body;
-
 	}
 
 	/**
@@ -212,7 +211,6 @@ class HTTP_Client {
 				'timeout'  => 30,
 			)
 		);
-
 	}
 
 	/**
@@ -233,7 +231,5 @@ class HTTP_Client {
 		}
 
 		return $response_text;
-
 	}
-
 }

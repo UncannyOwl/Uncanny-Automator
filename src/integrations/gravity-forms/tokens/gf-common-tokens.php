@@ -104,16 +104,16 @@ class GF_COMMON_TOKENS {
 
 		return array(
 			'ENTRY_ID'             => array(
-				'name'         => __( 'Entry ID', 'uncanny-automator' ),
+				'name'         => esc_html__( 'Entry ID', 'uncanny-automator' ),
 				'hydrate_with' => 'trigger_args|1',
 			),
-			'ENTRY_DATE_SUBMITTED' => array( 'name' => __( 'Entry submission date', 'uncanny-automator' ) ),
-			'ENTRY_DATE_UPDATED'   => array( 'name' => __( 'Entry date updated', 'uncanny-automator' ) ),
-			'ENTRY_ID'             => array( 'name' => __( 'Entry ID', 'uncanny-automator' ) ),
-			'ENTRY_URL_SOURCE'     => array( 'name' => __( 'Entry source URL', 'uncanny-automator' ) ),
-			'FORM_TITLE'           => array( 'name' => __( 'Form title', 'uncanny-automator' ) ),
-			'FORM_ID'              => array( 'name' => __( 'Form ID', 'uncanny-automator' ) ),
-			'USER_IP'              => array( 'name' => __( 'User IP', 'uncanny-automator' ) ),
+			'ENTRY_DATE_SUBMITTED' => array( 'name' => esc_html__( 'Entry submission date', 'uncanny-automator' ) ),
+			'ENTRY_DATE_UPDATED'   => array( 'name' => esc_html__( 'Entry date updated', 'uncanny-automator' ) ),
+			'ENTRY_ID'             => array( 'name' => esc_html__( 'Entry ID', 'uncanny-automator' ) ),
+			'ENTRY_URL_SOURCE'     => array( 'name' => esc_html__( 'Entry source URL', 'uncanny-automator' ) ),
+			'FORM_TITLE'           => array( 'name' => esc_html__( 'Form title', 'uncanny-automator' ) ),
+			'FORM_ID'              => array( 'name' => esc_html__( 'Form ID', 'uncanny-automator' ) ),
+			'USER_IP'              => array( 'name' => esc_html__( 'User IP', 'uncanny-automator' ) ),
 		);
 
 	}

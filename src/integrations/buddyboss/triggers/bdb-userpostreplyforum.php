@@ -39,9 +39,9 @@ class BDB_USERPOSTREPLYFORUM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - bbPress */
-			'sentence'            => sprintf( __( 'A user replies to {{a topic:%1$s}} in {{a forum:%2$s}}', 'uncanny-automator' ), $this->trigger_meta, 'BDBFORUMS:' . $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( 'A user replies to {{a topic:%1$s}} in {{a forum:%2$s}}', 'uncanny-automator' ), $this->trigger_meta, 'BDBFORUMS:' . $this->trigger_meta ),
 			/* translators: Logged-in trigger - bbPress */
-			'select_option_name'  => __( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A user replies to {{a topic}} in {{a forum}}', 'uncanny-automator' ),
 			'action'              => 'bbp_new_reply',
 			'priority'            => 10,
 			'accepted_args'       => 3,
@@ -65,17 +65,17 @@ class BDB_USERPOSTREPLYFORUM {
 			'post_status'    => array( 'publish', 'private' ),
 		);
 
-		$options               = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any forum', 'uncanny-automator' ) );
+		$options               = Automator()->helpers->recipe->options->wp_query( $args, true, esc_html__( 'Any forum', 'uncanny-automator' ) );
 		$forum_relevant_tokens = array(
-			'BDBFORUMS'     => __( 'Forum title', 'uncanny-automator' ),
-			'BDBFORUMS_ID'  => __( 'Forum ID', 'uncanny-automator' ),
-			'BDBFORUMS_URL' => __( 'Forum URL', 'uncanny-automator' ),
+			'BDBFORUMS'     => esc_html__( 'Forum title', 'uncanny-automator' ),
+			'BDBFORUMS_ID'  => esc_html__( 'Forum ID', 'uncanny-automator' ),
+			'BDBFORUMS_URL' => esc_html__( 'Forum URL', 'uncanny-automator' ),
 		);
 
 		$relevant_tokens = array(
-			$this->trigger_meta          => __( 'Topic title', 'uncanny-automator' ),
-			$this->trigger_meta . '_ID'  => __( 'Topic ID', 'uncanny-automator' ),
-			$this->trigger_meta . '_URL' => __( 'Topic URL', 'uncanny-automator' ),
+			$this->trigger_meta          => esc_html__( 'Topic title', 'uncanny-automator' ),
+			$this->trigger_meta . '_ID'  => esc_html__( 'Topic ID', 'uncanny-automator' ),
+			$this->trigger_meta . '_URL' => esc_html__( 'Topic URL', 'uncanny-automator' ),
 		);
 
 		return Automator()->utilities->keep_order_of_options(
@@ -84,7 +84,7 @@ class BDB_USERPOSTREPLYFORUM {
 					$this->trigger_meta => array(
 						Automator()->helpers->recipe->field->select_field_ajax(
 							'BDBFORUMS',
-							__( 'Forum', 'uncanny-automator' ),
+							esc_html__( 'Forum', 'uncanny-automator' ),
 							$options,
 							'',
 							'',
@@ -96,7 +96,7 @@ class BDB_USERPOSTREPLYFORUM {
 							),
 							$forum_relevant_tokens
 						),
-						Automator()->helpers->recipe->field->select_field( $this->trigger_meta, __( 'Topic', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
+						Automator()->helpers->recipe->field->select_field( $this->trigger_meta, esc_html__( 'Topic', 'uncanny-automator' ), array(), false, false, false, $relevant_tokens ),
 					),
 				),
 			)

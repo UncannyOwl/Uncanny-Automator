@@ -62,67 +62,61 @@ class Wpsp_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'BILLING_NAME',
-				'tokenName'       => __( 'Billing name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_EMAIL',
-				'tokenName'       => __( 'Billing email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing email', 'uncanny-automator' ),
 				'tokenType'       => 'email',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_TELEPHONE',
-				'tokenName'       => __( 'Billing phone', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing phone', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
-			//			array(
-			//				'tokenId'         => 'BILLING_TAX_ID',
-			//				'tokenName'       => __( 'Billing tax ID', 'uncanny-automator' ),
-			//				'tokenType'       => 'text',
-			//				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
-			//			),
 			array(
 				'tokenId'         => 'BILLING_STREET_ADDRESS',
-				'tokenName'       => __( 'Billing address', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing address', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_CITY',
-				'tokenName'       => __( 'Billing city', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing city', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_STATE',
-				'tokenName'       => __( 'Billing state', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing state', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_POSTAL_CODE',
-				'tokenName'       => __( 'Billing postal code', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing postal code', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_COUNTRY',
-				'tokenName'       => __( 'Billing country', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing country', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'PRICE_OPTION',
-				'tokenName'       => __( 'Price option', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Price option', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'QUANTITY_PURCHASED',
-				'tokenName'       => __( 'Quantity', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Quantity', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
@@ -166,7 +160,7 @@ class Wpsp_Tokens {
 		if ( $plain ) {
 			$fields[] = array(
 				'tokenId'         => 'AMOUNT_PAID',
-				'tokenName'       => __( 'Amount paid', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Amount paid', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMS',
 			);
@@ -175,19 +169,19 @@ class Wpsp_Tokens {
 		if ( ! $plain ) {
 			$fields[] = array(
 				'tokenId'         => 'AMOUNT_DUE',
-				'tokenName'       => __( 'Amount due', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Amount due', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_DUE',
 			);
 			$fields[] = array(
 				'tokenId'         => 'AMOUNT_PAID',
-				'tokenName'       => __( 'Amount paid', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Amount paid', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_PAID',
 			);
 			$fields[] = array(
 				'tokenId'         => 'AMOUNT_REMAINING',
-				'tokenName'       => __( 'Amount remaining', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Amount remaining', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_REMAINING',
 			);
@@ -237,7 +231,7 @@ class Wpsp_Tokens {
 				return $form->company_name;
 			}
 
-			return __( 'N/A', 'uncanny-automator' );
+			return esc_html__( 'N/A', 'uncanny-automator' );
 		}
 		// Form meta
 		if ( 'WPSPFORMFIELDS_META' === $pieces[1] ) {

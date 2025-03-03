@@ -69,7 +69,7 @@ class PEEPSO_FOLLOWAUSER {
 	public function load_options() {
 		$options = array(
 			'options' => array(
-				Automator()->helpers->recipe->peepso->get_users( __( 'Users', 'uncanny-automator' ), $this->action_meta, array( 'uo_include_any' => false ) ),
+				Automator()->helpers->recipe->peepso->get_users( esc_html__( 'Users', 'uncanny-automator' ), $this->action_meta, array( 'uo_include_any' => false ) ),
 			),
 		);
 
@@ -91,7 +91,7 @@ class PEEPSO_FOLLOWAUSER {
 		$userdata       = get_userdata( $follow_user_id );
 
 		if ( ! $userdata ) {
-			$error_message = __( "The user doesn't exist", 'uncanny-automator' );
+			$error_message = esc_html__( "The user doesn't exist", 'uncanny-automator' );
 			$recipe_log_id = $action_data['recipe_log_id'];
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args );
 

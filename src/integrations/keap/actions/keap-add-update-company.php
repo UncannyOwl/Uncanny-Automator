@@ -53,7 +53,6 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Add/Update {{a company}}', 'Keap', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
 	}
 
 	/**
@@ -153,9 +152,9 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 		if ( ! $update_existing && ! empty( $company_id ) ) {
 			throw new \Exception(
 				sprintf(
-					// translators: %s Company name.
-					_x( 'Company with name %s already exists and Update existing company option is set to No.', 'Keap', 'uncanny-automator' ),
-					$company_name
+				/* translators: %s: Company name */
+					esc_html_x( 'Company with name %s already exists and Update existing company option is set to No.', 'Keap', 'uncanny-automator' ),
+					esc_html( $company_name )
 				)
 			);
 		}
@@ -247,6 +246,7 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 			$validated = $this->helpers->is_delete_value( $value ) ? '' : $this->helpers->$validation_method( $value );
 			if ( false === $validated ) {
 				$this->complete_with_notice_messages[] = sprintf(
+					// translators: 1: Field key, 2: Field value
 					_x( 'Invalid %1$s: "%2$s"', 'Keap', 'uncanny-automator' ),
 					strtolower( $key ),
 					$value
@@ -294,5 +294,4 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 
 		return $company;
 	}
-
 }

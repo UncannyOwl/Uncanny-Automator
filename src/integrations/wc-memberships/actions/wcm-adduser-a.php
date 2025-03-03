@@ -38,8 +38,8 @@ class WCM_ADDUSER_A {
 			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/woocommerce-memberships/' ),
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
-			/* translators: Action - WooCommerce Memberships */
 			'sentence'           => sprintf(
+				// translators: 1: Membership plan
 				esc_attr__(
 					'Add the user to {{a membership plan:%1$s}}',
 					'uncanny-automator'

@@ -180,7 +180,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 									echo esc_html(
 										sprintf(
 											/* translators: 1. ID */
-											__( 'ID: %1$d', 'uncanny-automator' ),
+											esc_html__( 'ID: %1$d', 'uncanny-automator' ),
 											$user_info['user_id']
 										)
 									);

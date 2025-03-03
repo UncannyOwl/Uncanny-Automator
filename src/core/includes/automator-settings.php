@@ -39,7 +39,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 									<?php echo isset( $tab->title ) ? esc_html( $tab->title ) : ''; ?>
 								</div>
 								<div class="uo-settings-content-description">
-									<?php echo isset( $tab->description ) ? $tab->description : ''; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+									<?php echo isset( $tab->description ) ? $tab->description : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								</div>
 								<?php if ( isset( $tab->is_pro ) && $tab->is_pro && ( ! defined( 'AUTOMATOR_PRO_FILE' ) || ! class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) ) { ?>
 									<div class="uap-report-filters__pro-notice">
@@ -129,8 +129,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 								);
 								$extra_content = apply_filters( 'automator_after_settings_extra_content', $extra_content, $active, $tab );
 								ob_start();
-								echo $extra_content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo $extra_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 							</div>
 						</div>
@@ -158,8 +158,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 							);
 							$extra_buttons = apply_filters( 'automator_after_settings_extra_buttons', $extra_buttons, $active, $tab );
 							ob_start();
-							echo $extra_buttons; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo $extra_buttons; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							?>
 						</div>
 						<?php
@@ -201,8 +201,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 
 						$header_content = apply_filters( 'automator_settings_header', '', $active, $tab );
 						ob_start();
-						echo $header_content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						$header_content = ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo $header_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						$header_content = ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 						?>
 
@@ -210,7 +210,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 
 							<div
 								class="uo-settings-content-header<?php echo esc_attr( apply_filters( 'automator_content_header_css_class', '', $active, $tab ) ); ?>">
-								<?php echo $header_content;  //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+								<?php echo $header_content;  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							</div>
 
 						<?php } ?>
@@ -221,7 +221,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 									<?php echo isset( $tab->title ) ? esc_html( $tab->title ) : ''; ?>
 								</div>
 								<div class="uo-settings-content-description">
-									<?php echo isset( $tab->description ) ? $tab->description : ''; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+									<?php echo isset( $tab->description ) ? $tab->description : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								</div>
 								<?php if ( isset( $tab->is_pro ) && $tab->is_pro && ( ! defined( 'AUTOMATOR_PRO_FILE' ) || ! class_exists( '\Uncanny_Automator_Pro\InitializePlugin' ) ) ) { ?>
 									<div class="uap-report-filters__pro-notice">
@@ -287,8 +287,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 								);
 								$extra_content = apply_filters( 'automator_after_settings_extra_content', $extra_content, $active, $tab );
 								ob_start();
-								echo $extra_content; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo $extra_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 							</div>
 						</div>
@@ -316,8 +316,8 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 							);
 							$extra_buttons = apply_filters( 'automator_after_settings_extra_buttons', $extra_buttons, $active, $tab );
 							ob_start();
-							echo $extra_buttons; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-							echo ob_get_clean(); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo $extra_buttons; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							?>
 						</div>
 						<?php

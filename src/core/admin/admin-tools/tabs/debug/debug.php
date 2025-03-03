@@ -38,9 +38,21 @@ class Admin_Tools_Debug_Debug {
 	 */
 	public function register_settings() {
 
-		register_setting( self::SETTINGS_GROUP_NAME, 'automator_settings_debug_enabled' );
+		register_setting(
+			self::SETTINGS_GROUP_NAME,
+			'automator_settings_debug_enabled',
+			array(
+				'sanitize_callback' => 'absint',
+			)
+		);
 
-		register_setting( self::SETTINGS_GROUP_NAME, 'automator_settings_debug_notices_enabled' );
+		register_setting(
+			self::SETTINGS_GROUP_NAME,
+			'automator_settings_debug_notices_enabled',
+			array(
+				'sanitize_callback' => 'absint',
+			)
+		);
 
 	}
 

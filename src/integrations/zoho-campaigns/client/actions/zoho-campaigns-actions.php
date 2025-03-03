@@ -1,7 +1,7 @@
 <?php
 namespace Uncanny_Automator;
 
-use \Uncanny_Automator\Api_Server as Automator_Client;
+use Uncanny_Automator\Api_Server as Automator_Client;
 
 /**
  * This class acts like a Sub Client to our API Client.
@@ -43,7 +43,6 @@ class Zoho_Campaigns_Actions {
 		$this->auth->maybe_refresh_token( $this->client );
 
 		return $this;
-
 	}
 
 	/**
@@ -76,7 +75,6 @@ class Zoho_Campaigns_Actions {
 		);
 
 		return $this->request( $body, $action_data );
-
 	}
 
 	/**
@@ -110,7 +108,6 @@ class Zoho_Campaigns_Actions {
 		);
 
 		return $this->request( $body, $action_data );
-
 	}
 
 	/**
@@ -144,7 +141,6 @@ class Zoho_Campaigns_Actions {
 		);
 
 		return $this->request( $body, $action_data );
-
 	}
 
 	/**
@@ -165,7 +161,6 @@ class Zoho_Campaigns_Actions {
 		$body['contact'] = $contact;
 
 		return $this->request( $body, $action_data );
-
 	}
 
 	/**
@@ -192,7 +187,6 @@ class Zoho_Campaigns_Actions {
 		$this->handle_zoho_campaigns_errors( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -216,13 +210,19 @@ class Zoho_Campaigns_Actions {
 		if ( isset( $response['data']['message'] ) && isset( $response['data']['code'] ) ) {
 
 			// Throw error from Zoho if there are any.
-			throw new \Exception( 'Zoho Campaigns API has responded with error code ' . $response['data']['code'] . ': ' . $response['data']['message'], 400 );
-
+			throw new \Exception(
+				sprintf(
+				/* translators: %1$s: Error code, %2$s: Error message */
+					esc_html__( 'Zoho Campaigns API has responded with error code %1$s: %2$s', 'uncanny-automator' ),
+					esc_html( $response['data']['code'] ),
+					esc_html( $response['data']['message'] )
+				),
+				400
+			);
 		}
 
 		// Otherwise, throw anything is useful.
 		throw new \Exception( wp_json_encode( $response['data'] ), 400 );
-
 	}
 
 	/**
@@ -247,7 +247,6 @@ class Zoho_Campaigns_Actions {
 		if ( empty( $args['email_ids'] ) ) {
 			throw new \Exception( 'Error: parameter `email_ids` is empty.', 400 );
 		}
-
 	}
 
 	/**
@@ -289,7 +288,6 @@ class Zoho_Campaigns_Actions {
 		);
 
 		return $response;
-
 	}
 
 	/**
@@ -328,7 +326,6 @@ class Zoho_Campaigns_Actions {
 		);
 
 		return $response;
-
 	}
 
 	/**
@@ -378,7 +375,5 @@ class Zoho_Campaigns_Actions {
 		);
 
 		return $response;
-
 	}
-
 }

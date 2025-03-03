@@ -38,8 +38,9 @@ class GTW_UNREGISTERUSER {
 			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/gotowebinar/' ),
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
-			'sentence'              => sprintf( __( 'Remove the user from {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Remove the user from {{a webinar}}', 'uncanny-automator' ),
+			// translators: 1: Webinar
+			'sentence'              => sprintf( esc_html__( 'Remove the user from {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Remove the user from {{a webinar}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'gtw_unregister_user' ),
@@ -84,13 +85,13 @@ class GTW_UNREGISTERUSER {
 		try {
 
 			if ( empty( $user_id ) ) {
-				throw new \Exception( __( 'User not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User not found.', 'uncanny-automator' ) );
 			}
 
 			$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
 			if ( empty( $webinar_key ) ) {
-				throw new \Exception( __( 'Webinar not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Webinar not found.', 'uncanny-automator' ) );
 			}
 
 			$webinar_key = str_replace( '-objectkey', '', $webinar_key );
@@ -98,7 +99,7 @@ class GTW_UNREGISTERUSER {
 			$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtw_webinar_' . $webinar_key . '_registrantKey', true );
 
 			if ( empty( $user_registrant_key ) ) {
-				throw new \Exception( __( 'User was not registered for webinar.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User was not registered for webinar.', 'uncanny-automator' ) );
 			}
 
 			$result = Automator()->helpers->recipe->gotowebinar->gtw_unregister_user( $user_id, $webinar_key, $action_data );

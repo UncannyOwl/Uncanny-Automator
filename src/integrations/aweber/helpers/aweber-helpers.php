@@ -96,7 +96,7 @@ class Aweber_Helpers {
 		Automator()->utilities->verify_nonce();
 
 		// Ignore nonce, already handled above.
-		$account_id = isset( $_POST['values']['ACCOUNT'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['ACCOUNT'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$account_id = isset( $_POST['values']['ACCOUNT'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['ACCOUNT'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		try {
 
@@ -140,8 +140,8 @@ class Aweber_Helpers {
 	 */
 	public function custom_fields_fetch() {
 
-		$account_id = isset( $_POST['values']['ACCOUNT'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['ACCOUNT'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$list       = isset( $_POST['values']['LIST'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['LIST'] ) ) : ''; //phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$account_id = isset( $_POST['values']['ACCOUNT'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['ACCOUNT'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$list       = isset( $_POST['values']['LIST'] ) ? sanitize_text_field( wp_unslash( $_POST['values']['LIST'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$rows       = array();
 
 		try {
@@ -179,7 +179,6 @@ class Aweber_Helpers {
 		}
 
 		wp_send_json( $response );
-
 	}
 
 	/**
@@ -213,7 +212,6 @@ class Aweber_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -240,7 +238,6 @@ class Aweber_Helpers {
 		// Then redirect to settings page. Flag as connected with success=yes.
 		wp_safe_redirect( $this->get_settings_page_url() . '&success=yes' );
 		die;
-
 	}
 
 	/**
@@ -277,7 +274,6 @@ class Aweber_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -350,7 +346,6 @@ class Aweber_Helpers {
 		$expiry = $date_authenticated + $expires_in;
 
 		return ( $expiry - time() ) <= 0;
-
 	}
 
 	/**
@@ -385,7 +380,6 @@ class Aweber_Helpers {
 		automator_update_option( self::CREDENTIALS, $credentials );
 
 		return $response;
-
 	}
 
 	/**
@@ -398,12 +392,13 @@ class Aweber_Helpers {
 	public function check_for_errors( $response ) {
 
 		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] && 209 !== $response['statusCode'] ) {
-			$message = isset( $response['data']['error_description'] )
-				? '(' . $response['statusCode'] . ') [' . $response['data']['error'] . '] ' . $response['data']['error_description']
-				: _x( 'API Exception (status code: ' . $response['statusCode'] . '). An error has occured while performing the action. Please try again later.', 'AWeber', 'uncanny-automator' );
-			throw new \Exception( $message, $response['statusCode'] );
+			$message = sprintf(
+				/* translators: %d: HTTP status code */
+				_x( 'API Exception (status code: %d). An error has occurred while performing the action. Please try again later.', 'AWeber', 'uncanny-automator' ),
+				absint( $response['statusCode'] )
+			);
+			throw new \Exception( esc_html( $message ), absint( $response['statusCode'] ) );
 		}
-
 	}
 
 	/**
@@ -419,5 +414,4 @@ class Aweber_Helpers {
 			AUTOMATOR_API_URL . 'v2/aweber'
 		);
 	}
-
 }

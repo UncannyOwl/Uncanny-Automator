@@ -117,7 +117,7 @@
 										echo esc_html(
 											sprintf(
 												/* translators: 1. ID */
-												__( 'Hub Domain: %1$s', 'uncanny-automator' ),
+												esc_html__( 'Hub Domain: %1$s', 'uncanny-automator' ),
 												$token_info['hub_domain']
 											)
 										);

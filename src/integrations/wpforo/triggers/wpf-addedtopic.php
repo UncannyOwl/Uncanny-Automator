@@ -66,13 +66,13 @@ class WPF_ADDEDTOPIC {
 		}
 
 		$forum_relevant_tokens = array(
-			'WPFORO_FORUM'         => __( 'Forum title', 'uncanny-automator' ),
-			'WPFORO_FORUM_ID'      => __( 'Forum ID', 'uncanny-automator' ),
-			'WPFORO_FORUM_URL'     => __( 'Forum URL', 'uncanny-automator' ),
-			'WPFORO_TOPIC'         => __( 'Topic title', 'uncanny-automator' ),
-			'WPFORO_TOPIC_ID'      => __( 'Topic ID', 'uncanny-automator' ),
-			'WPFORO_TOPIC_URL'     => __( 'Topic URL', 'uncanny-automator' ),
-			'WPFORO_TOPIC_CONTENT' => __( 'Topic content', 'uncanny-automator' ),
+			'WPFORO_FORUM'         => esc_html__( 'Forum title', 'uncanny-automator' ),
+			'WPFORO_FORUM_ID'      => esc_html__( 'Forum ID', 'uncanny-automator' ),
+			'WPFORO_FORUM_URL'     => esc_html__( 'Forum URL', 'uncanny-automator' ),
+			'WPFORO_TOPIC'         => esc_html__( 'Topic title', 'uncanny-automator' ),
+			'WPFORO_TOPIC_ID'      => esc_html__( 'Topic ID', 'uncanny-automator' ),
+			'WPFORO_TOPIC_URL'     => esc_html__( 'Topic URL', 'uncanny-automator' ),
+			'WPFORO_TOPIC_CONTENT' => esc_html__( 'Topic content', 'uncanny-automator' ),
 		);
 
 		return Automator()->utilities->keep_order_of_options(

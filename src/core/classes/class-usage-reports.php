@@ -415,7 +415,7 @@ class Usage_Reports {
 	public function get_user_count() {
 		$usercount = count_users();
 
-		return isset( $usercount['total_users'] ) ? $usercount['total_users'] : __( 'Not set', 'uncanny-automator' );
+		return isset( $usercount['total_users'] ) ? $usercount['total_users'] : esc_html__( 'Not set', 'uncanny-automator' );
 	}
 
 	/**
@@ -620,7 +620,8 @@ class Usage_Reports {
 	public function get_loop_recipes() {
 		global $wpdb;
 
-		$qry = $wpdb->prepare(
+		$result = $wpdb->get_var(
+			$wpdb->prepare(
 			"SELECT COUNT(p1.ID) as recipes
 FROM $wpdb->posts p
     JOIN $wpdb->posts p1
@@ -629,9 +630,8 @@ WHERE p.post_type LIKE %s
   AND p1.post_type = %s",
 			'uo-recipe',
 			'uo-loop'
+		)
 		);
-
-		$result = $wpdb->get_var( $qry );
 
 		return absint( $result );
 	}
@@ -980,7 +980,7 @@ WHERE p.post_type LIKE %s
 			$response = Api_Server::api_call( $params );
 
 			if ( 201 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Something went wrong', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Something went wrong', 'uncanny-automator' ) );
 			}
 
 			automator_delete_option( self::STATS_OPTION_NAME );

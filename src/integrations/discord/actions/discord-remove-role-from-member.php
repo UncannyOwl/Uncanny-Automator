@@ -117,7 +117,7 @@ class DISCORD_REMOVE_ROLE_FROM_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		// Check for errors.
 		$status_code = isset( $response['statusCode'] ) ? absint( $response['statusCode'] ) : 0;
 		if ( 204 !== $status_code ) {
-			throw new Exception( _x( 'Error removing role from user.', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Error removing role from user.', 'Discord', 'uncanny-automator' ) );
 		}
 
 		// Hydrate tokens.
@@ -132,5 +132,4 @@ class DISCORD_REMOVE_ROLE_FROM_MEMBER extends \Uncanny_Automator\Recipe\Action {
 
 		return true;
 	}
-
 }

@@ -20,7 +20,7 @@ if ( $this->client ) { ?>
 </p>
 <div id="spreadsheetContainerWrap">
 	<?php $spreadsheets = Google_Sheet_Helpers::get_spreadsheets(); ?>
-	<?php if ( ! empty( $spreadsheets ) ) { ?> 
+	<?php if ( ! empty( $spreadsheets ) ) { ?>
 		<table id="spreadSheetTable">
 			<tbody>
 				<?php foreach ( $spreadsheets as $spreadsheet ) { ?>
@@ -34,15 +34,15 @@ if ( $this->client ) { ?>
 							<?php echo esc_html( $spreadsheet['name'] ); ?>
 						</td>
 						<td>
-							<uo-button 
-								class="uap-logs-action-button uap-logs-action-button--delete" 
-								size="small" 
-								color="transparent" 
-								href="<?php echo esc_url( $remove_url ); ?>" 
-								uap-tooltip="Remove" 
-								needs-confirmation="" 
-								confirmation-heading="This action is irreversible" 
-								confirmation-content="Are you sure you want to remove this spreadsheet?" 
+							<uo-button
+								class="uap-logs-action-button uap-logs-action-button--delete"
+								size="small"
+								color="transparent"
+								href="<?php echo esc_url( $remove_url ); ?>"
+								uap-tooltip="Remove"
+								needs-confirmation=""
+								confirmation-heading="This action is irreversible"
+								confirmation-content="Are you sure you want to remove this spreadsheet?"
 								confirmation-button-label="Confirm">
 								<uo-icon id="trash"></uo-icon>
 							</uo-button>
@@ -66,32 +66,32 @@ if ( $this->client ) { ?>
 
 <div class="uap-spacing-top" id="filePickerBtn">
 
-	<uo-button 
-		uap-tooltip="Hold down the Shift key to select multiple sheets, or use Ctrl (Cmd on Mac) to select specific sheets." 
-		id="filePickerBtnComponent" 
+	<uo-button
+		uap-tooltip="Hold down the Shift key to select multiple sheets, or use Ctrl (Cmd on Mac) to select specific sheets."
+		id="filePickerBtnComponent"
 		onclick="createFilePickerButton();"
 		color="secondary">
 		<?php echo esc_html_x( 'Select new sheet(s)', 'Google Sheets', 'uncanny-automator' ); ?>
 	</uo-button>
-	
+
 </div>
 
 <script>
 /**
  * The delete placeholder.
  */
-let deleteUrlPlaceHolder = '<?php echo admin_url( "admin-ajax.php?nonce={$nonce}&action=automator_google_sheet_remove_spreadsheet&id={{__ID__}}" ); ?>';
+let deleteUrlPlaceHolder = '<?php echo esc_url( admin_url( "admin-ajax.php?nonce={$nonce}&action=automator_google_sheet_remove_spreadsheet&id={{__ID__}}" ) ); ?>';
 
 /**
  * Determines whether the picker is initiated already or not.
- * 
+ *
  * @var bool
  */
 let pickerInited = false;
 
 /**
  * Callback after api.js <https://apis.google.com/js/api.js> is loaded.
- * 
+ *
  * @return void
  */
 function gapiLoaded() {
@@ -100,7 +100,7 @@ function gapiLoaded() {
 
 /**
  * Callback after the API client is loaded. Loads the discovery doc to initialize the API.
- * 
+ *
  * @return void
  */
 async function initializePicker() {
@@ -119,7 +119,7 @@ async function createFilePickerButton() {
 
 /**
  * Sends POST request method.
- * 
+ *
  * @return void
  */
 async function sendPostRequest(url, data, callback) {
@@ -161,7 +161,7 @@ async function sendPostRequest(url, data, callback) {
 
 /**
  * Create and render a Picker object for searching Spreadsheets.
- * 
+ *
  * @return void
  */
 function createFilePickerFromAuth( auth ) {
@@ -185,7 +185,7 @@ function createFilePickerFromAuth( auth ) {
 
 /**
  * Show some error message.
- * 
+ *
  * @return void
  */
 function showError( errorMessage ){
@@ -256,7 +256,7 @@ function createPicker() {
 
 /**
  * Displays the file details of the user's selection.
- * 
+ *
  * @param {object} data - Containers the user selection from the picker
  */
 async function pickerCallback(data) {
@@ -273,9 +273,9 @@ async function pickerCallback(data) {
 		}, ( response ) => {
 
 			let spreadSheetsHtmlItems = '';
-			
+
 			response.data.forEach( item=>{
-				
+
 				let itemRemoveUrl = deleteUrlPlaceHolder.replaceAll( '{{__ID__}}', item.id );
 
 				spreadSheetsHtmlItems += `
@@ -284,15 +284,15 @@ async function pickerCallback(data) {
 								${item.name}
 							</td>
 							<td>
-								<uo-button 
-									class="uap-logs-action-button uap-logs-action-button--delete" 
-									size="small" 
-									color="transparent" 
-									href="${itemRemoveUrl}" 
-									uap-tooltip="Remove" 
-									needs-confirmation="" 
-									confirmation-heading="This action is irreversible" 
-									confirmation-content="Are you sure you want to remove this spreadsheet?" 
+								<uo-button
+									class="uap-logs-action-button uap-logs-action-button--delete"
+									size="small"
+									color="transparent"
+									href="${itemRemoveUrl}"
+									uap-tooltip="Remove"
+									needs-confirmation=""
+									confirmation-heading="This action is irreversible"
+									confirmation-content="Are you sure you want to remove this spreadsheet?"
 									confirmation-button-label="Confirm">
 									<uo-icon id="trash"></uo-icon>
 								</uo-button
@@ -314,5 +314,5 @@ async function pickerCallback(data) {
 
 </script>
 
-<script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script><?php //phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+<script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 <?php } // Endif. ?>

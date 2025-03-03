@@ -66,7 +66,7 @@ class MASTERSTUDY_QUIZFAILED {
 			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_html__( 'Any course', 'uncanny-automator' ) );
 
 		$course_relevant_tokens = array(
 			'MSLMSCOURSE'           => esc_attr__( 'Course title', 'uncanny-automator' ),

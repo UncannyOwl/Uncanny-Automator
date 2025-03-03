@@ -79,15 +79,15 @@ class PRLI_CREATE_LINK extends \Uncanny_Automator\Recipe\Action {
 	public function define_tokens() {
 		return array(
 			'LINK_ID'     => array(
-				'name' => __( 'Link ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Link ID', 'uncanny-automator' ),
 				'type' => 'int',
 			),
 			'LINK_TITLE'  => array(
-				'name' => __( 'Link title', 'uncanny-automator' ),
+				'name' => esc_html__( 'Link title', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'PRETTY_LINK' => array(
-				'name' => __( 'Pretty link', 'uncanny-automator' ),
+				'name' => esc_html__( 'Pretty link', 'uncanny-automator' ),
 				'type' => 'url',
 			),
 		);

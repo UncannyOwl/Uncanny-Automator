@@ -176,6 +176,7 @@ class Zoho_Campaigns_Contact_List_Sub {
 			if ( false === $contact_fields || ! is_array( $contact_fields ) ) {
 				throw new Exception(
 					sprintf(
+						// translators: 1: JSON input
 						_x( 'Failed to decode the contact fields from given the JSON input: %s', 'ZohoCampaigns', 'uncanny-automator' ),
 						$fields
 					)

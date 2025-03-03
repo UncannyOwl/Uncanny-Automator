@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\Everest_Forms;
 
 /**
  * Class ANON_FORM_SUBMITTED
+ *
  * @package Uncanny_Automator
  */
 class ANON_FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
@@ -19,6 +20,7 @@ class ANON_FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_code( 'EVF_ANON_SUBMITS_FORM' );
 		$this->set_trigger_meta( 'EVF_FORMS' );
 		$this->set_trigger_type( 'anonymous' );
+		// translators: 1: Form name
 		$this->set_sentence( sprintf( esc_attr_x( '{{A form:%1$s}} is submitted', 'Everest Forms', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( '{{A form}} is submitted', 'Everest Forms', 'uncanny-automator' ) );
 		$this->add_action( 'everest_forms_process_complete', 10, 4 );

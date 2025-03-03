@@ -241,7 +241,7 @@ class Automator_DB_Handler_Triggers {
 
 		return $wpdb->get_var(
 			$wpdb->prepare(
-			//phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SELECT meta_value FROM {$wpdb->prefix}{$tbl}
 						WHERE 1=1
 						AND user_id = %d
@@ -273,7 +273,7 @@ class Automator_DB_Handler_Triggers {
 		$tbl        = Automator()->db->tables->trigger_meta;
 		$meta_value = $wpdb->get_var(
 			$wpdb->prepare(
-			//phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"SELECT meta_value FROM {$wpdb->prefix}$tbl
 						WHERE 1=1
 						AND user_id = %d
@@ -317,16 +317,14 @@ class Automator_DB_Handler_Triggers {
 
 		$tbl = Automator()->db->tables->trigger_meta;
 
-		$query_string_prepared = $wpdb->prepare(
-			"SELECT meta_value FROM {$wpdb->prefix}$tbl WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d",
-			$user_id,
-			$meta_key,
-			$trigger_id,
-			$trigger_log_id
-		);
-
 		$results = (array) $wpdb->get_results(
-			$query_string_prepared,
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->prefix}$tbl WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d",
+				$user_id,
+				$meta_key,
+				$trigger_id,
+				$trigger_log_id
+			),
 			ARRAY_A
 		);
 
@@ -453,7 +451,7 @@ class Automator_DB_Handler_Triggers {
 							AND r.completed = 1
 							AND a.completed = 1";
 		}
-		$results = $wpdb->get_var( $wpdb->prepare( $q, $user_id, $trigger_id, $recipe_id, $recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$results = $wpdb->get_var( $wpdb->prepare( $q, $user_id, $trigger_id, $recipe_id, $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! empty( $results ) ) {
 			return true;
@@ -489,7 +487,7 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$trigger_tbl      = $wpdb->prefix . Automator()->db->tables->trigger;
 		$trigger_meta_tbl = $wpdb->prefix . Automator()->db->tables->trigger_meta;
-		$triggers         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $trigger_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$triggers         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $trigger_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $triggers ) {
 			foreach ( $triggers as $automator_trigger_log_id ) {
 				// delete from uap_trigger_log_meta
@@ -519,7 +517,7 @@ class Automator_DB_Handler_Triggers {
 		global $wpdb;
 		$trigger_tbl      = $wpdb->prefix . Automator()->db->tables->trigger;
 		$trigger_meta_tbl = $wpdb->prefix . Automator()->db->tables->trigger_meta;
-		$triggers         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $trigger_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$triggers         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $trigger_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $triggers ) {
 			foreach ( $triggers as $automator_trigger_log_id ) {
 				// delete from uap_trigger_log_meta

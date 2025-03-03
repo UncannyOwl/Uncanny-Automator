@@ -58,7 +58,7 @@ class OPEN_AI_TWITTER_EXCERPT_GENERATE {
 		$this->set_action_tokens(
 			array(
 				'GENERATED_EXCERPT' => array(
-					'name' => __( 'Generated excerpt', 'uncanny-automator' ),
+					'name' => esc_html__( 'Generated excerpt', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

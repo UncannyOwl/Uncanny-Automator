@@ -254,25 +254,25 @@ class Fi_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'FIENTRYID',
-				'tokenName'       => __( 'Entry ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'FIENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'FIUSERIP',
-				'tokenName'       => __( 'User IP', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'User IP', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'FIENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'FIENTRYDATE',
-				'tokenName'       => __( 'Entry submission date', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry submission date', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'FIENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'FIENTRYSOURCEURL',
-				'tokenName'       => __( 'Entry source URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Entry source URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'FIENTRYTOKENS',
 			),

@@ -45,7 +45,6 @@ class Registry {
 		do_action( 'automator_action_tokens_parser_loaded' );
 
 		return true;
-
 	}
 
 	/**
@@ -73,7 +72,6 @@ class Registry {
 			$this->renderable_priority,
 			$this->renderable_number_args
 		);
-
 	}
 
 	/**
@@ -102,12 +100,10 @@ class Registry {
 
 				$formatted_tokens[] = $action_token->toArray();
 			} catch ( Exception $e ) {
-				_doing_it_wrong( __FUNCTION__, $e->getMessage(), '6.0' );
+				_doing_it_wrong( __FUNCTION__, esc_html( $e->getMessage() ), '6.0' );
 			}
 		}
 
 		return $formatted_tokens;
-
 	}
-
 }

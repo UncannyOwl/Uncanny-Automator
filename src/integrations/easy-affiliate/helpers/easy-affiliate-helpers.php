@@ -20,7 +20,7 @@ class Easy_Affiliate_Helpers {
 		$options = array();
 
 		if ( $add_any ) {
-			$options['-1'] = __( 'Any affiliate', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'Any affiliate', 'uncanny-automator' );
 		}
 
 		$args = array(

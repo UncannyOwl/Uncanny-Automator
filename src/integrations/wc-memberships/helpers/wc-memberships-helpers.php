@@ -39,7 +39,7 @@ class Wc_Memberships_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = __( 'Membership plan', 'uncanny-automator' );
+			$label = esc_html__( 'Membership plan', 'uncanny-automator' );
 		}
 
 		$token       = key_exists( 'token', $args ) ? $args['token'] : false;

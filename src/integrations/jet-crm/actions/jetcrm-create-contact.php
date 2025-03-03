@@ -36,7 +36,7 @@ class JETCRM_CREATE_CONTACT {
 		$this->set_action_tokens(
 			array(
 				'CUSTOMER_ID' => array(
-					'name' => __( 'Customer ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Customer ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 			),

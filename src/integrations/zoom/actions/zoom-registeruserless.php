@@ -43,8 +43,8 @@ class ZOOM_REGISTERUSERLESS {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			/* translators: Meeting topic */
-			'sentence'              => sprintf( __( 'Add an attendee to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Add an attendee to {{a meeting}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Add an attendee to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Add an attendee to {{a meeting}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'zoom_register_user' ),
@@ -53,7 +53,7 @@ class ZOOM_REGISTERUSERLESS {
 			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get meeting questions', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Get meeting questions', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => 'uap_zoom_get_meeting_questions',
 					'modules'     => array( 'modal', 'markdown' ),
@@ -112,7 +112,7 @@ class ZOOM_REGISTERUSERLESS {
 
 		$account_users_field = array(
 			'option_code'           => 'ZOOMUSER',
-			'label'                 => __( 'Account user', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Account user', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => false,
 			'is_ajax'               => true,
@@ -125,7 +125,7 @@ class ZOOM_REGISTERUSERLESS {
 
 		$user_meetings_field = array(
 			'option_code'           => $this->action_meta,
-			'label'                 => __( 'Meeting', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Meeting', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -138,7 +138,7 @@ class ZOOM_REGISTERUSERLESS {
 
 		$meeting_occurrences_field = array(
 			'option_code'              => 'OCCURRENCES',
-			'label'                    => __( 'Occurrences', 'uncanny-automator' ),
+			'label'                    => esc_html__( 'Occurrences', 'uncanny-automator' ),
 			'input_type'               => 'select',
 			'required'                 => false,
 			'options'                  => array(),
@@ -178,7 +178,7 @@ class ZOOM_REGISTERUSERLESS {
 			$meeting_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
 			if ( empty( $meeting_key ) ) {
-				throw new \Exception( __( 'Meeting was not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Meeting was not found.', 'uncanny-automator' ) );
 			}
 
 			$meeting_key  = str_replace( '-objectkey', '', $meeting_key );
@@ -187,11 +187,11 @@ class ZOOM_REGISTERUSERLESS {
 			$meeting_user['email'] = Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
 
 			if ( empty( $meeting_user['email'] ) ) {
-				throw new \Exception( __( 'Email address is missing.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Email address is missing.', 'uncanny-automator' ) );
 			}
 
 			if ( false === is_email( $meeting_user['email'] ) ) {
-				throw new \Exception( __( 'Invalid email address.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Invalid email address.', 'uncanny-automator' ) );
 			}
 
 			$meeting_user['first_name'] = Automator()->parse->text( $action_data['meta']['FIRSTNAME'], $recipe_id, $user_id, $args );

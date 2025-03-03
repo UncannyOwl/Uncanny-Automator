@@ -54,7 +54,7 @@ class MC_EVERYONE_USER_ADD_TAG {
 			'options_group' => array(
 				$this->get_action_meta() => array(
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						__( 'Audience', 'uncanny-automator' ),
+						esc_html__( 'Audience', 'uncanny-automator' ),
 						'MCLIST',
 						array(
 							'is_ajax'      => true,
@@ -63,7 +63,7 @@ class MC_EVERYONE_USER_ADD_TAG {
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_list_tags(
-						__( 'Tags', 'uncanny-automator' ),
+						esc_html__( 'Tags', 'uncanny-automator' ),
 						'MCLISTTAGS',
 						array(
 							'is_ajax'                  => true,

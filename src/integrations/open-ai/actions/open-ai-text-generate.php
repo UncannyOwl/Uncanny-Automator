@@ -58,7 +58,7 @@ class OPEN_AI_TEXT_GENERATE {
 		$this->set_action_tokens(
 			array(
 				'RESPONSE' => array(
-					'name' => __( 'Response', 'uncanny-automator' ),
+					'name' => esc_html__( 'Response', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

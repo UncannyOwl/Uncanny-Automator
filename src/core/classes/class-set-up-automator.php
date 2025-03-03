@@ -40,6 +40,7 @@ class Set_Up_Automator {
 
 	/**
 	 * Store namespaces of external integrations
+	 *
 	 * @var array
 	 */
 	public static $external_integrations_namespace = array();
@@ -86,7 +87,7 @@ class Set_Up_Automator {
 			$legacy_integrations = new Legacy_Integrations();
 			$integrations        = $legacy_integrations->generate_integrations_file_map();
 		} catch ( Exception $e ) {
-			throw new Automator_Exception( $e->getTraceAsString() );
+			throw new Automator_Exception( esc_html( $e->getTraceAsString() ) );
 		}
 		$integrations           = apply_filters_deprecated( 'uncanny_automator_integrations', array( $integrations ), '3.0', 'automator_integrations_setup' );
 		self::$all_integrations = apply_filters( 'automator_integrations_setup', $integrations );
@@ -151,7 +152,7 @@ class Set_Up_Automator {
 				}
 			}
 		} catch ( Exception $e ) {
-			throw new Automator_Exception( $e->getTraceAsString() );
+			throw new Automator_Exception( esc_html( $e->getTraceAsString() ) );
 		}
 
 		return $integration_files;
@@ -233,6 +234,7 @@ class Set_Up_Automator {
 				/**
 				 * Store all the integrations, regardless of the status,
 				 * to get integration name and the icon
+				 *
 				 * @since v4.6
 				 */
 				$integration_name = method_exists( $i, 'get_name' ) ? $i->get_name() : '';
@@ -447,12 +449,12 @@ class Set_Up_Automator {
 	 */
 	public static function validate_namespace( $class_name, $file_name, $file, $integration_name = '' ) {
 		$class_name = strtoupper( $class_name );
-		//		try {
+		//      try {
 		//          $is_free = new ReflectionClass( 'Uncanny_Automator\\' . $class_name );
 		//          if ( $is_free->inNamespace() ) {
 		//              return 'Uncanny_Automator\\' . $class_name;
 		//          }
-		//      } catch ( ReflectionException $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		//      } catch ( ReflectionException $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 		//      }
 		//
 		//      try {
@@ -460,7 +462,7 @@ class Set_Up_Automator {
 		//          if ( $is_pro->inNamespace() ) {
 		//              return 'Uncanny_Automator_Pro\\' . $class_name;
 		//          }
-		//      } catch ( ReflectionException $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		//      } catch ( ReflectionException $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 		//      }
 
 		try {
@@ -468,7 +470,7 @@ class Set_Up_Automator {
 			if ( $is_custom->inNamespace() ) {
 				return true;
 			}
-		} catch ( ReflectionException $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		} catch ( ReflectionException $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 		}
 
 		return false;

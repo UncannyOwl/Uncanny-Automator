@@ -40,8 +40,8 @@ class AUDIENCE_ADDAUSER {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			// translators: the selected Mailchimp's audience name
-			'sentence'              => sprintf( __( 'Add the user to {{an audience:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Add the user to {{an audience}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Add the user to {{an audience:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Add the user to {{an audience}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'add_update_audience_member' ),
@@ -50,7 +50,7 @@ class AUDIENCE_ADDAUSER {
 			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => __( 'Load fields', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Load fields', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => $this->get_samples_js(),
 					'modules'     => array( 'modal', 'markdown' ),
@@ -71,7 +71,7 @@ class AUDIENCE_ADDAUSER {
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						__( 'Audience', 'uncanny-automator' ),
+						esc_html__( 'Audience', 'uncanny-automator' ),
 						'MCLIST',
 						array(
 							'is_ajax'      => true,
@@ -80,69 +80,69 @@ class AUDIENCE_ADDAUSER {
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						__( 'Double opt-in', 'uncanny-automator' ),
+						esc_html__( 'Double opt-in', 'uncanny-automator' ),
 						'MCDOUBLEOPTIN',
 						array(
-							'description' => __( 'When set to "yes", a confirmation email will be sent before the user is added to the selected audience.', 'uncanny-automator' ),
+							'description' => esc_html__( 'When set to "yes", a confirmation email will be sent before the user is added to the selected audience.', 'uncanny-automator' ),
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						__( 'Update existing', 'uncanny-automator' ),
+						esc_html__( 'Update existing', 'uncanny-automator' ),
 						'MCUPDATEEXISTING',
 						array(
-							'description' => __( 'If this is set to Yes, the information provided will be used to update the existing user. Fields that are left blank will not be updated.', 'uncanny-automator' ),
+							'description' => esc_html__( 'If this is set to Yes, the information provided will be used to update the existing user. Fields that are left blank will not be updated.', 'uncanny-automator' ),
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						__( 'Change groups?', 'uncanny-automator' ),
+						esc_html__( 'Change groups?', 'uncanny-automator' ),
 						'MCCHANGEGROUPS',
 						array(
 							'options'     => array(
 								array(
 									'value' => 'replace-all',
-									'text'  => __( 'Replace all', 'uncanny-automator' ),
+									'text'  => esc_html__( 'Replace all', 'uncanny-automator' ),
 								),
 								array(
 									'value' => 'add-only',
-									'text'  => __( 'Add only', 'uncanny-automator' ),
+									'text'  => esc_html__( 'Add only', 'uncanny-automator' ),
 								),
 								array(
 									'value' => 'replace-matching',
-									'text'  => __( 'Remove matching', 'uncanny-automator' ),
+									'text'  => esc_html__( 'Remove matching', 'uncanny-automator' ),
 								),
 							),
-							'description' => __( "Add only: The group(s) specified below will be added to the subscriber's existing groups/interests. Replace All: All of the subscriber's existing groups will be cleared, and replaced with the groups selected below. \n Remove Matching: Clears any existing group selections only for the groups specified below.", 'uncanny-automator' ),
+							'description' => esc_html__( "Add only: The group(s) specified below will be added to the subscriber's existing groups/interests. Replace All: All of the subscriber's existing groups will be cleared, and replaced with the groups selected below. \n Remove Matching: Clears any existing group selections only for the groups specified below.", 'uncanny-automator' ),
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_list_groups(
-						__( 'Groups', 'uncanny-automator' ),
+						esc_html__( 'Groups', 'uncanny-automator' ),
 						'MCLISTGROUPS',
 						array(
 							'required' => false,
 						)
 					),
-					Automator()->helpers->recipe->field->text_field( 'MCLANGUAGECODE', __( 'Language code', 'uncanny-automator' ), true, 'text', null, false ),
+					Automator()->helpers->recipe->field->text_field( 'MCLANGUAGECODE', esc_html__( 'Language code', 'uncanny-automator' ), true, 'text', null, false ),
 					array(
 						'option_code'       => 'MERGE_FIELDS',
 						'input_type'        => 'repeater',
 						'relevant_tokens'   => array(),
-						'label'             => __( 'Merge fields', 'uncanny-automator' ),
+						'label'             => esc_html__( 'Merge fields', 'uncanny-automator' ),
 						/* translators: 1. Button */
 						'description'       => '',
 						'required'          => true,
 						'fields'            => array(
 							array(
 								'option_code' => 'FIELD_NAME',
-								'label'       => __( 'Field', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Field', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
 								'read_only'   => true,
 								'options'     => array(),
 							),
-							Automator()->helpers->recipe->field->text_field( 'FIELD_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+							Automator()->helpers->recipe->field->text_field( 'FIELD_VALUE', esc_html__( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
 						),
-						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+						'add_row_button'    => esc_html__( 'Add pair', 'uncanny-automator' ),
+						'remove_row_button' => esc_html__( 'Remove pair', 'uncanny-automator' ),
 						'hide_actions'      => true,
 					),
 				),
@@ -406,7 +406,7 @@ class AUDIENCE_ADDAUSER {
 			if ( false !== $existing_user ) {
 
 				if ( 'no' === $update_existing ) {
-					throw new \Exception( __( 'User already subscribed to the list.', 'uncanny-automator' ) );
+					throw new \Exception( esc_html__( 'User already subscribed to the list.', 'uncanny-automator' ) );
 				}
 
 				$user_interests = $helpers->compile_user_interests( $existing_user, $change_groups, $groups_list );

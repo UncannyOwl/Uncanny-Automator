@@ -107,6 +107,7 @@ class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$results  = $data['results'] ?? array();
 		$contact  = $data['contact'] ?? 0;
 		$statuses = array(
+			// translators: %s Tag ID(s)
 			'DUPLICATE' => esc_attr__( 'Contact did not have tag(s) %s', 'uncanny-automator' ),
 		);
 

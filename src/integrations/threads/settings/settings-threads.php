@@ -36,7 +36,6 @@ class Threads_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 	public function get_status() {
 
 		return $this->helpers->integration_status();
-
 	}
 
 	/**
@@ -53,7 +52,6 @@ class Threads_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		if ( automator_filter_has_var( 'error_message' ) ) {
 			$this->display_errors( automator_filter_input( 'error_message' ) );
 		}
-
 	}
 
 	public function display_errors( $error_message ) {
@@ -133,7 +131,6 @@ class Threads_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 
 			<?php
 		}
-
 	}
 
 	/**
@@ -170,7 +167,13 @@ class Threads_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 					<div class="uap-settings-panel-user-info__additional">
 						<?php $account = automator_get_option( Threads_Helpers::CREDENTIALS, array() ); ?>
 						<?php if ( ! empty( $account['user_id'] ) ) { ?>
-							<?php echo sprintf( esc_html_x( 'User ID: %d', 'Threads', 'uncanny-automator' ), $account['user_id'] ); ?>
+							<?php
+							printf(
+							/* translators: %d: User ID */
+								esc_html_x( 'User ID: %d', 'Threads', 'uncanny-automator' ),
+								absint( $account['user_id'] )
+							);
+							?>
 						<?php } ?>
 					</div>
 				</div>
@@ -197,5 +200,4 @@ class Threads_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 
 		}
 	}
-
 }

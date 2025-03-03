@@ -72,7 +72,7 @@ class FACEBOOK_GROUP_PUBLISH_PHOTO {
 		$this->set_action_tokens(
 			array(
 				'POST_LINK' => array(
-					'name' => __( 'Link to Facebook post', 'uncanny-automator' ),
+					'name' => esc_html__( 'Link to Facebook post', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),

@@ -91,6 +91,7 @@ class Events_Manager_Helpers {
 		foreach ( $all_events as $event ) {
 			$title = $event->event_name;
 			if ( empty( $title ) ) {
+				// translators: 1: Event ID
 				$title = sprintf( esc_attr__( 'ID: %s (no title)', 'uncanny-automator' ), $event->event_id );
 			}
 			$options[ $event->event_id ] = $title;

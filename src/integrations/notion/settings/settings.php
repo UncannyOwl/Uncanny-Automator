@@ -54,13 +54,13 @@ class Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings 
 
 			<ul>
 				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Notion', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Create a database item', 'uncanny-automator' ); ?>
+					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Notion', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Create a database item', 'Notion', 'uncanny-automator' ); ?>
 				</li>
 				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Notion', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Create a page', 'uncanny-automator' ); ?>
+					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Notion', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Create a page', 'Notion', 'uncanny-automator' ); ?>
 				</li>
 				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Notion', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Update a database item', 'uncanny-automator' ); ?>
+					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Notion', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Update a database item', 'Notion', 'uncanny-automator' ); ?>
 				</li>
 			</ul>
 
@@ -84,7 +84,7 @@ class Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings 
 			?>
 
 			<uo-button class="uap-settings-button-notion" href="<?php echo esc_url( $this->auth_url ); ?>">
-				<?php echo esc_html_x( 'Connect Notion account', 'uncanny-automator' ); ?>
+				<?php echo esc_html_x( 'Connect Notion account', 'Notion', 'uncanny-automator' ); ?>
 			</uo-button>
 
 		<?php } else { ?>
@@ -127,7 +127,7 @@ class Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings 
 		?>
 		<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
 			<uo-icon id="right-from-bracket"></uo-icon>
-			<?php echo esc_html_x( 'Disconnect', 'uncanny-automator' ); ?>
+			<?php echo esc_html_x( 'Disconnect', 'Notion', 'uncanny-automator' ); ?>
 		</uo-button>
 		<?php
 	}

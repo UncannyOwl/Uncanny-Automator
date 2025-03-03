@@ -187,7 +187,7 @@ class Uncanny_Codes_Helpers {
 
 		$options = array();
 		if ( $is_any ) {
-			$options['-1'] = __( 'Any batch', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'Any batch', 'uncanny-automator' );
 		}
 		$option      = array(
 			'option_code'     => $option_code,
@@ -228,8 +228,8 @@ class Uncanny_Codes_Helpers {
 		$tbl_groups = $wpdb->prefix . 'uncanny_codes_groups';
 		$tbl_codes  = $wpdb->prefix . 'uncanny_codes_codes';
 
-		$batch_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl_groups} WHERE `ID` = %d GROUP BY ID", $batch_id ), OBJECT );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$codes_data = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT(`code`) as codes FROM {$tbl_codes} WHERE `code_group` = %d", $batch_id ), OBJECT );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$batch_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl_groups} WHERE `ID` = %d GROUP BY ID", $batch_id ), OBJECT );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$codes_data = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT(`code`) as codes FROM {$tbl_codes} WHERE `code_group` = %d", $batch_id ), OBJECT );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return array(
 			'batch_data' => $batch_data,
@@ -246,7 +246,7 @@ class Uncanny_Codes_Helpers {
 	public function uc_get_code_redeemed( $coupon_id ) {
 		global $wpdb;
 		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
-		$code      = $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM {$tbl_codes} WHERE `ID` = %d", $coupon_id ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$code      = $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM {$tbl_codes} WHERE `ID` = %d", $coupon_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $code;
 
@@ -261,7 +261,7 @@ class Uncanny_Codes_Helpers {
 	public function uc_get_code_group_by_code( $code ) {
 		global $wpdb;
 		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
-		$code      = $wpdb->get_var( $wpdb->prepare( "SELECT `code_group` FROM {$tbl_codes} WHERE `code` = %s", $code ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$code      = $wpdb->get_var( $wpdb->prepare( "SELECT `code_group` FROM {$tbl_codes} WHERE `code` = %s", $code ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return (int) $code;
 
@@ -277,7 +277,7 @@ class Uncanny_Codes_Helpers {
 	public function uc_get_id_by_code( $code ) {
 		global $wpdb;
 		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
-		$id        = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM {$tbl_codes} WHERE `code` = %s", $code ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$id        = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM {$tbl_codes} WHERE `code` = %s", $code ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return (int) $id;
 
@@ -292,7 +292,7 @@ class Uncanny_Codes_Helpers {
 	public function uc_get_code_group_row( $group_id ) {
 		global $wpdb;
 		$tbl_groups = $wpdb->prefix . 'uncanny_codes_groups';
-		$group      = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $tbl_groups . ' WHERE ID = %d', $group_id ) );   //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$group      = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $tbl_groups . ' WHERE ID = %d', $group_id ) );   // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( empty( $group ) ) {
 			return array();

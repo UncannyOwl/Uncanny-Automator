@@ -75,31 +75,31 @@ class Flsupport_Tokens {
 				$fields_tickets = array(
 					array(
 						'tokenId'         => 'FLSUPPORT-TICKET-ID',
-						'tokenName'       => __( 'Ticket ID', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Ticket ID', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-TICKET-TITLE',
-						'tokenName'       => __( 'Ticket subject', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Ticket subject', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-TICKET-CONTENT',
-						'tokenName'       => __( 'Ticket details', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Ticket details', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-TICKET-PRIORITY',
-						'tokenName'       => __( 'Ticket priority', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Ticket priority', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-TICKET-PRODUCT_TITLE', /* $ticket->product->title */
-						'tokenName'       => __( 'Ticket product', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Ticket product', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
@@ -109,7 +109,7 @@ class Flsupport_Tokens {
 
 					$fields_tickets[] = array(
 						'tokenId'         => 'FLSUPPORT-CONVERSATION-CONTENT',
-						'tokenName'       => __( 'Ticket response', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Ticket response', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
@@ -119,14 +119,14 @@ class Flsupport_Tokens {
 				if ( in_array( $add_action, $agent_token_actions, true ) ) {
 					$fields_tickets[] = array(
 						'tokenId'         => 'FLSUPPORT-AGENT-USERNAME', /* $agent->username */
-						'tokenName'       => __( 'Ticket assignee username', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Ticket assignee username', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 
 					$fields_tickets[] = array(
 						'tokenId'         => 'FLSUPPORT-AGENT-EMAIL', /* $agent->email */
-						'tokenName'       => __( 'Ticket assignee email', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Ticket assignee email', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
@@ -134,7 +134,7 @@ class Flsupport_Tokens {
 
 				$fields_tickets[] = array(
 					'tokenId'         => 'FLSUPPORT-TICKET-ADMIN-URL',
-					'tokenName'       => __( 'Ticket admin URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Ticket admin URL', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				);
@@ -142,67 +142,67 @@ class Flsupport_Tokens {
 				$fields_customers = array(
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-EMAIL', /* $customer->email */
-						'tokenName'       => __( 'Customer email', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer email', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-FIRST-NAME',
-						'tokenName'       => __( 'Customer first name', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer first name', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-LAST-NAME',
-						'tokenName'       => __( 'Customer last name', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer last name', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-TITLE',
-						'tokenName'       => __( 'Customer job title', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer job title', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-NOTE',
-						'tokenName'       => __( 'Customer note', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer note', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-STATUS',
-						'tokenName'       => __( 'Customer status', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer status', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-ADDRESS-LINE-1', /* $customer->address_line_1 */
-						'tokenName'       => __( 'Customer address line 1', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer address line 1', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-CITY', /* $customer->city */
-						'tokenName'       => __( 'Customer city', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer city', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-STATE',
-						'tokenName'       => __( 'Customer state', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer state', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-ZIPCODE',
-						'tokenName'       => __( 'Customer zip code', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer zip code', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),
 					array(
 						'tokenId'         => 'FLSUPPORT-CUSTOMER-COUNTRY',
-						'tokenName'       => __( 'Customer country', 'uncanny-automator' ),
+						'tokenName'       => esc_html__( 'Customer country', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					),

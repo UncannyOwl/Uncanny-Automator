@@ -77,7 +77,7 @@ class Event_Tickets_Helpers {
 			'post_status'    => 'publish',
 		);
 
-		$all_events = Automator()->helpers->recipe->options->wp_query( $args, true, __( 'Any event', 'uncanny-automator' ) );
+		$all_events = Automator()->helpers->recipe->options->wp_query( $args, true, esc_html__( 'Any event', 'uncanny-automator' ) );
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -134,6 +134,7 @@ class Event_Tickets_Helpers {
 				//$title = $post->post_title;
 
 				if ( empty( $title ) ) {
+					// translators: 1: Event ID
 					$title = sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post_id );
 				}
 

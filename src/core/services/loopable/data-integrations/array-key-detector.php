@@ -158,7 +158,7 @@ class Array_Key_Detector {
 			}
 			if ( null === $first_keys ) {
 				$first_keys = array_keys( $subarray );
-			} elseif ( $first_keys !== array_keys( $subarray ) ) { //phpcs:ignore WordPress.PHP.YodaConditions.NotYoda
+			} elseif ( $first_keys !== array_keys( $subarray ) ) { // phpcs:ignore WordPress.PHP.YodaConditions.NotYoda
 				return false;
 			}
 		}

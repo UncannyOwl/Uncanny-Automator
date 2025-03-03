@@ -42,7 +42,7 @@ class Advanced_Coupons_Helpers {
 	/**
 	 * @param Advanced_Coupons_Helpers $options
 	 */
-	public function setOptions( Advanced_Coupons_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Advanced_Coupons_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
@@ -51,7 +51,7 @@ class Advanced_Coupons_Helpers {
 	 *
 	 * @param Advanced_Coupons_Pro_Helpers $pro
 	 */
-	public function setPro( Advanced_Coupons_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( Advanced_Coupons_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -119,12 +119,12 @@ class Advanced_Coupons_Helpers {
 			$options['-1'] = $args['uo_any_label'];
 		}
 
-		$options['EQ']     = __( 'equal to', 'uncanny-automator' );
-		$options['NOT_EQ'] = __( 'not equal to', 'uncanny-automator' );
-		$options['LT']     = __( 'less than', 'uncanny-automator' );
-		$options['GT']     = __( 'greater than', 'uncanny-automator' );
-		$options['GT_EQ']  = __( 'greater or equal to', 'uncanny-automator' );
-		$options['LT_EQ']  = __( 'less or equal to', 'uncanny-automator' );
+		$options['EQ']     = esc_html__( 'equal to', 'uncanny-automator' );
+		$options['NOT_EQ'] = esc_html__( 'not equal to', 'uncanny-automator' );
+		$options['LT']     = esc_html__( 'less than', 'uncanny-automator' );
+		$options['GT']     = esc_html__( 'greater than', 'uncanny-automator' );
+		$options['GT_EQ']  = esc_html__( 'greater or equal to', 'uncanny-automator' );
+		$options['LT_EQ']  = esc_html__( 'less or equal to', 'uncanny-automator' );
 
 		$option = array(
 			'option_code'     => $option_code,

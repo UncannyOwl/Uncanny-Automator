@@ -49,9 +49,9 @@ class ANON_CF_SUBFORM {
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
 			/* translators: Anonymous trigger - Caldera Forms */
-			'sentence'            => sprintf( __( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Anonymous trigger - Caldera Forms */
-			'select_option_name'  => __( '{{A form}} is submitted', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( '{{A form}} is submitted', 'uncanny-automator' ),
 			'action'              => 'caldera_forms_submit_complete',
 			'type'                => 'anonymous',
 			'priority'            => 99,

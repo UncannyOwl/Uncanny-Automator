@@ -692,11 +692,11 @@ class AMELIABOOKING_TOKENS {
 	public function get_additional_tokens() {
 		return array(
 			array(
-				'name' => esc_html__( 'Service name' ),
+				'name' => esc_html__( 'Service name', 'uncanny-automator' ),
 				'id'   => 'service_name',
 			),
 			array(
-				'name' => esc_html__( 'Category name' ),
+				'name' => esc_html__( 'Category name', 'uncanny-automator' ),
 				'id'   => 'category_name',
 			),
 		);

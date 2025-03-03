@@ -65,7 +65,6 @@ class Api_Server {
 		add_filter( 'http_request_args', array( $this, 'add_api_headers' ), 10, 2 );
 		add_filter( 'http_request_timeout', array( $this, 'default_api_timeout' ), 10, 2 );
 		add_filter( 'automator_trigger_should_complete', array( $this, 'maybe_log_trigger' ), 10, 3 );
-
 	}
 
 	/**
@@ -89,7 +88,6 @@ class Api_Server {
 		}
 
 		return self::$instance;
-
 	}
 
 	/**
@@ -307,12 +305,11 @@ class Api_Server {
 	 *
 	 * @return void
 	 * @throws Exception If there is an error with the response.
-	 *
 	 */
 	private function maybe_throw_exception( $response_body = array(), $code = 200 ) {
 
 		if ( ! is_array( $response_body ) ) {
-			automator_log( var_export( $response_body, true ), 'Invalid API response: ' ); //phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
+			automator_log( var_export( $response_body, true ), 'Invalid API response: ' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
 			throw new \Exception( 'Invalid API response', 500 );
 		}
 
@@ -324,14 +321,13 @@ class Api_Server {
 		if ( isset( $response_body['error'] ) && isset( $response_body['error']['description'] ) ) {
 			$error = $response_body['error']['description'];
 			automator_log( $error, 'api_call returned an error: ' );
-			throw new \Exception( $error, $response_body['statusCode'] );
+			throw new \Exception( esc_html( $error ), absint( $response_body['statusCode'] ) );
 		}
 
 		// Handle response body that has [data][error][message] (e.g. Instagram user media publish limit exceeded).
 		if ( isset( $response_body['data']['error'] ) && isset( $response_body['data']['error']['message'] ) ) {
-			throw new \Exception( 'API has responded with an error message: ' . $response_body['data']['error']['message'], $response_body['statusCode'] );
+			throw new \Exception( 'API has responded with an error message: ' . esc_html( $response_body['data']['error']['message'] ), absint( $response_body['statusCode'] ) );
 		}
-
 	}
 
 	/**
@@ -380,7 +376,7 @@ class Api_Server {
 		$api_log_id = $api->maybe_log_action( $params, $request, self::$last_response );
 
 		if ( is_wp_error( self::$last_response ) ) {
-			throw new \Exception( 'WordPress was not able to make a request: ' . self::$last_response->get_error_message(), 500 );
+			throw new \Exception( esc_html( 'WordPress was not able to make a request: ' . self::$last_response->get_error_message() ), 500 );
 		}
 
 		self::$last_response['api_log_id'] = $api_log_id;
@@ -476,7 +472,7 @@ class Api_Server {
 
 			set_transient( self::TRANSIENT_LICENSE_CHECK_FAILED, $error_message );
 
-			throw new \Exception( $error_message );
+			throw new \Exception( esc_html( $error_message ) );
 
 		}
 	}
@@ -491,7 +487,7 @@ class Api_Server {
 		$license = self::get_license();
 
 		if ( ! isset( $license['license'] ) || 'valid' !== $license['license'] ) {
-			throw new \Exception( __( 'License is not valid', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'License is not valid', 'uncanny-automator' ) );
 		}
 
 		return $license;
@@ -511,7 +507,7 @@ class Api_Server {
 		}
 
 		if ( intval( $license['paid_usage_count'] ) >= intval( $license['usage_limit'] ) ) {
-			throw new \Exception( __( 'Not enough credits', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Not enough credits', 'uncanny-automator' ) );
 		}
 
 		return true;
@@ -540,7 +536,6 @@ class Api_Server {
 		set_transient( 'automator_api_license', $license['data'], self::$transient_api_license_expires );
 
 		return $license;
-
 	}
 
 	/**
@@ -620,7 +615,6 @@ class Api_Server {
 		}
 
 		return $response_body['credits'];
-
 	}
 
 	/**
@@ -692,7 +686,6 @@ class Api_Server {
 		$this->add_log( $log );
 
 		return $process_further;
-
 	}
 
 	/**
@@ -770,7 +763,6 @@ class Api_Server {
 	public static function set_connection_error_message( $error_message ) {
 
 		set_transient( 'automator_setup_wizard_error', $error_message, MINUTE_IN_SECONDS );
-
 	}
 }
 

@@ -26,7 +26,12 @@
 		>
 
 		<p>
-			<?php printf( esc_attr_x( 'You just used your first %1$s free app credits %2$s with Uncanny Automator. Are you finding Automator useful?', 'Reviews banner', 'uncanny-automator' ), absint( $vars['credits_used'] ), '🙌' ); ?>
+			<?php printf(
+				// translators: 1: Number of credits used, 2: Emoji
+				esc_attr_x( 'You just used your first %1$s free app credits %2$s with Uncanny Automator. Are you finding Automator useful?', 'Reviews banner', 'uncanny-automator' ), 
+				absint( $vars['credits_used'] ), 
+				'🙌' 
+				); ?>
 		</p>
 
 		<div class="uap-spacing-top">

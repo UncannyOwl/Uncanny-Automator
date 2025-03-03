@@ -82,25 +82,25 @@ class Thrive_Leads_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'FORM_ID',
-				'tokenName'       => __( 'Form ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Form ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'FORM_NAME',
-				'tokenName'       => __( 'Form name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Form name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'GROUP_ID',
-				'tokenName'       => __( 'Lead group ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Lead group ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'GROUP_NAME',
-				'tokenName'       => __( 'Lead group name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Lead group name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -114,7 +114,7 @@ class Thrive_Leads_Tokens {
 				$type     = in_array( $input['type'], $valid_types, true ) ? $input['type'] : 'text';
 				$fields[] = array(
 					'tokenId'         => 'FORM_FIELD|' . $id,
-					'tokenName'       => __( $input['label'], 'uncanny-automator' ),
+					'tokenName'       => esc_html( $input['label'] ),
 					'tokenType'       => $type,
 					'tokenIdentifier' => $trigger_code,
 				);

@@ -22,14 +22,14 @@ class URL_HAS_PARAM_LOGGED_IN extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-			//translators: %1$s is the trigger condition
-				esc_attr_x( 'A user visits a URL with {{a URL parameter(s):%1$s}} set', 'URL', 'uncanny-automator' ),
+			/* translators: %1$s is the trigger condition */
+				esc_attr_x( 'A user visits a URL with {{a URL parameter:%1$s}} set', 'URL', 'uncanny-automator' ),
 				'NON_EXISTING:URL_CONDITION'
 			)
 		);
 
 		$this->set_readable_sentence(
-			esc_attr_x( 'A user visits a URL with {{a URL parameter(s)}} set', 'URL', 'uncanny-automator' )
+			esc_attr_x( 'A user visits a URL with {{a URL parameter}} set', 'URL', 'uncanny-automator' )
 		);
 
 		$this->add_action( 'wp', 10, 3 );

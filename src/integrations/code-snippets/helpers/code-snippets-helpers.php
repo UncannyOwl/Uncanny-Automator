@@ -198,27 +198,27 @@ class Code_Snippets_Helpers {
 
 		return array(
 			'SNIPPET_NAME'        => array(
-				'name' => _x( 'Title', 'Code Snippets', 'uncanny-automator-pro' ),
+				'name' => _x( 'Title', 'Code Snippets', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'SNIPPET_CODE'        => array(
-				'name' => _x( 'Code', 'Code Snippets', 'uncanny-automator-pro' ),
+				'name' => _x( 'Code', 'Code Snippets', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'SNIPPET_TYPE'        => array(
-				'name' => _x( 'Type', 'Code Snippets', 'uncanny-automator-pro' ),
+				'name' => _x( 'Type', 'Code Snippets', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'SNIPPET_DESCRIPTION' => array(
-				'name' => _x( 'Description', 'Code Snippets', 'uncanny-automator-pro' ),
+				'name' => _x( 'Description', 'Code Snippets', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'SNIPPET_TAGS'        => array(
-				'name' => _x( 'Tags', 'Code Snippets', 'uncanny-automator-pro' ),
+				'name' => _x( 'Tags', 'Code Snippets', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'SNIPPET_PRIORITY'    => array(
-				'name' => _x( 'Priority', 'Code Snippets', 'uncanny-automator-pro' ),
+				'name' => _x( 'Priority', 'Code Snippets', 'uncanny-automator' ),
 				'type' => 'int',
 			),
 		);

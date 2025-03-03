@@ -111,13 +111,13 @@ class Automator_Review {
 
 		if ( ! empty( $redirect_url ) ) {
 
-			wp_redirect( $redirect_url ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+			wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 
 			exit;
 
 		}
 
-		wp_redirect( wp_get_referer() ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		wp_redirect( wp_get_referer() ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 
 		exit;
 
@@ -143,7 +143,7 @@ class Automator_Review {
 
 		}
 
-		wp_redirect( wp_get_referer() ); //phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		wp_redirect( wp_get_referer() ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 
 		exit;
 
@@ -293,7 +293,7 @@ class Automator_Review {
 		$response = (object) array();
 
 		// Default return message
-		$response->message       = __( 'Information is missing.', 'automator-plugin' );
+		$response->message       = __( 'Information is missing.', 'uncanny-automator' );
 		$response->success       = true;
 		$response->credits_left  = 0;
 		$response->total_credits = 0;

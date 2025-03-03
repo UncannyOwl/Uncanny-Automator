@@ -43,9 +43,9 @@ class ANON_MAKE_DONATION {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - GiveWP */
-			'sentence'            => sprintf( __( 'A donation is made via {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( 'A donation is made via {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - GiveWP */
-			'select_option_name'  => __( 'A donation is made via {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A donation is made via {{a form}}', 'uncanny-automator' ),
 			'action'              => 'give_update_payment_status',
 			'priority'            => 10,
 			'accepted_args'       => 3,
@@ -65,7 +65,7 @@ class ANON_MAKE_DONATION {
 			array(
 				'options' => array(
 					Automator()->helpers->recipe->give->options->list_all_give_forms(
-						__( 'Form', 'uncanny-automator' ),
+						esc_html__( 'Form', 'uncanny-automator' ),
 						$this->trigger_meta,
 						array(),
 						array(
@@ -117,7 +117,7 @@ class ANON_MAKE_DONATION {
 		$payment_data['price']           = $payment->total;
 		$payment_data['user_info']       = give_get_payment_meta_user_info( $payment_id );
 		$payment_data['user_email']      = $payment_data['user_info']['email'];
-		$payment_data['give_comment']    = __( '-', 'uncanny-automator' );
+		$payment_data['give_comment']    = esc_html__( '-', 'uncanny-automator' );
 
 		if ( give_is_donor_comment_field_enabled( $give_form_id ) ) {
 			global $wpdb;

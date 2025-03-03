@@ -58,7 +58,7 @@ class Telegram_Api {
 		$reponse_data = $response['data'];
 
 		if ( ! isset( $reponse_data['ok'] ) ) {
-			throw new \Exception( __( 'Invalid response from the API', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Invalid response from the API', 'uncanny-automator' ) );
 		}
 
 		if ( true === $reponse_data['ok'] ) {
@@ -69,7 +69,7 @@ class Telegram_Api {
 
 		$error_code = ! empty( $reponse_data['error_code'] ) ? $reponse_data['error_code'] : null;
 
-		throw new \Exception( $error, $error_code );
+		throw new \Exception( esc_html( $error ), absint( $error_code ) );
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Telegram_Api {
 		$bot_info = $bot_info['data'];
 
 		if ( empty( $bot_info['result'] ) ) {
-			throw new \Exception( __( 'Bot token verification failed.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Bot token verification failed.', 'uncanny-automator' ) );
 		}
 
 		automator_update_option( Telegram_Functions::BOT_INFO, $bot_info['result'] );

@@ -1,4 +1,4 @@
-<?php use \Uncanny_Automator\Utilities; ?>
+<?php use Uncanny_Automator\Utilities; ?>
 <div id="uap-review-banner" class="uap notice">
 
 	<uo-alert
@@ -27,9 +27,10 @@
 			$threshold_size = \Uncanny_Automator\Prune_Logs::format_number_in_kb_mb_gb( $threshold_size );
 			?>
 			<?php
-			echo sprintf(
-				esc_attr_x( 'U-bot has been working hard on your automations and noticed that the size of your logs now exceeds %s. Consider removing records you no longer need by clicking the button below to set up data management options.', 'Reviews banner', 'uncanny-automator' ),
-				$threshold_size
+			printf(
+			/* translators: %s: Size threshold (e.g., "1 GB") */
+				esc_html_x( 'U-bot has been working hard on your automations and noticed that the size of your logs now exceeds %s. Consider removing records you no longer need by clicking the button below to set up data management options.', 'Reviews banner', 'uncanny-automator' ),
+				esc_html( $threshold_size )
 			);
 			?>
 		</p>

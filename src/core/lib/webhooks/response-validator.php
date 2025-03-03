@@ -34,8 +34,13 @@ class Response_Validator {
 			return self::handle_validation( $response );
 		}
 
-		throw new Exception( 'Invalid parameter#1 passed to Response_Validator::validate_webhook_response. Expecting array|WP_Error. Received ' . gettype( $response ) );
-
+		throw new \Exception(
+			sprintf(
+			/* translators: %s will be replaced with the actual type of the response. */
+				esc_html__( 'Invalid parameter #1 passed to Response_Validator::validate_webhook_response. Expecting array|WP_Error. Received %s.', 'uncanny-automator' ),
+				esc_html( gettype( $response ) ) // Escape only the dynamic value
+			)
+		);
 	}
 
 	/**
@@ -56,8 +61,7 @@ class Response_Validator {
 		);
 
 		// Converts blank error code to 0.
-		throw new Exception( $error_message, absint( $wp_error->get_error_code() ) );
-
+		throw new Exception( esc_html( $error_message ), absint( $wp_error->get_error_code() ) );
 	}
 
 	/**
@@ -102,7 +106,7 @@ class Response_Validator {
 				Automator_Http_Response_Code::text( $response_code ),
 				$response_code
 			);
-			throw new Exception( $error_message, $response_code );
+			throw new Exception( esc_html( $error_message ), absint( $response_code ) );
 		}
 
 		// Handle 500-599 status code error response.
@@ -117,14 +121,16 @@ class Response_Validator {
 				Automator_Http_Response_Code::text( $response_code ),
 				$response_code
 			);
-			throw new Exception( $error_message, $response_code );
+			throw new Exception( esc_html( $error_message ), absint( $response_code ) );
 		}
 
 		throw new Exception(
-			'Server has responded with invalid status code: ' . $response_code,
-			$response_code
+			sprintf(
+				/* translators: Response code */
+				esc_html_x( 'Server has responded with invalid status code: %d', 'Webhook', 'uncanny-automator' ),
+				absint( $response_code )
+			)
 		);
-
 	}
 
 	/**
@@ -140,7 +146,7 @@ class Response_Validator {
 		if ( self::response_has_errors( $response ) ) {
 
 			throw new Exception(
-				sprintf( 'The server has responded with a status code of %d, but has an "error" property.', $response_code ),
+				esc_html( sprintf( 'The server has responded with a status code of %d, but has an "error" property.', $response_code ) ),
 				400 // Send 400 status code.
 			);
 
@@ -151,7 +157,6 @@ class Response_Validator {
 			'error_message' => null,
 			'response_code' => $response_code,
 		);
-
 	}
 
 	/**
@@ -178,7 +183,6 @@ class Response_Validator {
 			'error_message' => $error_message,
 			'response_code' => $response_code,
 		);
-
 	}
 
 	/**
@@ -196,7 +200,5 @@ class Response_Validator {
 			! empty( $response->data->error ) ||
 			! empty( $response->error ) ||
 			! empty( $response->errors );
-
 	}
-
 }

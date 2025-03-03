@@ -307,7 +307,7 @@ class Fluent_Crm_Helpers {
 		} elseif ( ! empty( $subscriber->email ) ) {
 
 			// Lets see if a WP user has an email associated with them
-			$user = get_user_by_email( $subscriber->email );
+			$user = get_user_by( 'email', $subscriber->email );
 
 			if ( false !== $user ) {
 				// A user was found with the subscriber email
@@ -440,11 +440,11 @@ class Fluent_Crm_Helpers {
 		$formatted_statues = array();
 
 		$trans_maps = array(
-			'subscribed'   => __( 'Subscribed', 'uncanny-automator' ),
-			'pending'      => __( 'Pending', 'uncanny-automator' ),
-			'unsubscribed' => __( 'Unsubscribed', 'uncanny-automator' ),
-			'bounced'      => __( 'Bounced', 'uncanny-automator' ),
-			'complained'   => __( 'Complained', 'uncanny-automator' ),
+			'subscribed'   => esc_html__( 'Subscribed', 'uncanny-automator' ),
+			'pending'      => esc_html__( 'Pending', 'uncanny-automator' ),
+			'unsubscribed' => esc_html__( 'Unsubscribed', 'uncanny-automator' ),
+			'bounced'      => esc_html__( 'Bounced', 'uncanny-automator' ),
+			'complained'   => esc_html__( 'Complained', 'uncanny-automator' ),
 		);
 
 		if ( true === $any ) {

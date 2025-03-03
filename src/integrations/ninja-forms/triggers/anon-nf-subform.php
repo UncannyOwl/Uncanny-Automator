@@ -46,9 +46,9 @@ class ANON_NF_SUBFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Anonymous triggers - Ninja Forms */
-			'sentence'            => sprintf( __( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Anonymous triggers - Ninja Forms */
-			'select_option_name'  => __( '{{A form}} is submitted', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( '{{A form}} is submitted', 'uncanny-automator' ),
 			'action'              => 'ninja_forms_after_submission',
 			'type'                => 'anonymous',
 			'priority'            => 20,

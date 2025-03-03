@@ -34,77 +34,77 @@ class Studiocart_Tokens {
 
 			$fields[] = array(
 				'tokenId'         => 'product_title',
-				'tokenName'       => __( 'Product title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Product title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'product_id',
-				'tokenName'       => __( 'Product ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Product ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'product_url',
-				'tokenName'       => __( 'Product URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Product URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'billing_address',
-				'tokenName'       => __( 'Billing address', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing address', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'billing_city',
-				'tokenName'       => __( 'Billing city', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing city', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'billing_state',
-				'tokenName'       => __( 'Billing state', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing state', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'billing_postcode',
-				'tokenName'       => __( 'Billing postcode', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing postcode', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'billing_phone',
-				'tokenName'       => __( 'Billing phone', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Billing phone', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'order_id',
-				'tokenName'       => __( 'Order ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Order ID', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'order_amount',
-				'tokenName'       => __( 'Order amount', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Order amount', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$fields[] = array(
 				'tokenId'         => 'payment_option_label',
-				'tokenName'       => __( 'Payment option label', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Payment option label', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);

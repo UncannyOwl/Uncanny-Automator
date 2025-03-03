@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita70220d756a0ac2f65b3eb9c92052084
+class ComposerStaticInitbd0f82aeb556ee2186acdabc06f12caa
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -755,6 +755,7 @@ class ComposerStaticInita70220d756a0ac2f65b3eb9c92052084
         'Uncanny_Automator\\Integrations\\URL\\URL_HAS_PARAM_LOGGED_IN' => __DIR__ . '/../..' . '/src/integrations/url/triggers/url-has-param-logged-in.php',
         'Uncanny_Automator\\Integrations\\URL\\URL_Helpers' => __DIR__ . '/../..' . '/src/integrations/url/helpers/url-helpers.php',
         'Uncanny_Automator\\Integrations\\URL\\URL_Integration' => __DIR__ . '/../..' . '/src/integrations/url/url-integration.php',
+        'Uncanny_Automator\\Integrations\\URL\\URL_Tokens' => __DIR__ . '/../..' . '/src/integrations/url/tokens/url-tokens.php',
         'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Post_Categories' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/post-categories.php',
         'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Post_Tags' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/post-tags.php',
         'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Utils\\Taxonomy_Fetcher' => __DIR__ . '/../..' . '/src/integrations/wp/tokens/loopable/universal/utils/terms.php',
@@ -1328,8 +1329,8 @@ class ComposerStaticInita70220d756a0ac2f65b3eb9c92052084
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInita70220d756a0ac2f65b3eb9c92052084::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInita70220d756a0ac2f65b3eb9c92052084::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInitbd0f82aeb556ee2186acdabc06f12caa::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitbd0f82aeb556ee2186acdabc06f12caa::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -37,7 +37,7 @@ class FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_readable_sentence(
 			/* Translators: Trigger sentence */
-			esc_html__( 'A {{form}} is submitted', 'Thrive Architect', 'uncanny-automator' )
+			esc_html_x( 'A {{form}} is submitted', 'Thrive Architect', 'uncanny-automator' )
 		);
 
 		$this->set_helper( new Thrive_Architect_Helpers() );

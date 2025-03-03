@@ -44,10 +44,10 @@ class GTT_UNREGISTERUSER {
 			'code'                  => $this->action_code,
 			'sentence'              => sprintf(
 				/* translators: Action sentence. */
-				__( 'Remove the user from {{a training session:%1$s}}', 'uncanny-automator' ),
+				esc_html__( 'Remove the user from {{a training session:%1$s}}', 'uncanny-automator' ),
 				$this->action_meta
 			),
-			'select_option_name'    => __( 'Remove the user from {{a training session}}', 'uncanny-automator' ),
+			'select_option_name'    => esc_html__( 'Remove the user from {{a training session}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'gtt_unregister_user' ),
@@ -69,7 +69,7 @@ class GTT_UNREGISTERUSER {
 					array(
 						'option_code'     => 'GTTTRAINING',
 						'input_type'      => 'select',
-						'label'           => __( 'Training', 'uncanny-automator' ),
+						'label'           => esc_html__( 'Training', 'uncanny-automator' ),
 						'description'     => '',
 						'required'        => true,
 						'supports_tokens' => true,
@@ -95,11 +95,11 @@ class GTT_UNREGISTERUSER {
 			$training_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
 			if ( empty( $user_id ) ) {
-				throw new \Exception( __( 'User not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User not found.', 'uncanny-automator' ) );
 			}
 
 			if ( empty( $training_key ) ) {
-				throw new \Exception( __( 'Training not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Training not found.', 'uncanny-automator' ) );
 			}
 
 			$training_key = str_replace( '-objectkey', '', $training_key );
@@ -107,7 +107,7 @@ class GTT_UNREGISTERUSER {
 			$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', true );
 
 			if ( empty( $user_registrant_key ) ) {
-				throw new \Exception( __( 'User was not registered for training session.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User was not registered for training session.', 'uncanny-automator' ) );
 			}
 
 			$result = Automator()->helpers->recipe->gototraining->gtt_unregister_user( $user_id, $training_key, $action_data );

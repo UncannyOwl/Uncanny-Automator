@@ -43,8 +43,8 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			/* translators: Webinar topic */
-			'sentence'              => sprintf( __( 'Add an attendee to {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Add an attendee to {{a webinar}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Add an attendee to {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Add an attendee to {{a webinar}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'zoom_webinar_register_user' ),
@@ -53,7 +53,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get webinar questions', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Get webinar questions', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => 'uap_zoom_get_webinar_questions',
 					'modules'     => array( 'modal', 'markdown' ),
@@ -112,7 +112,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 
 		$account_users_field = array(
 			'option_code'           => 'ZOOMUSER',
-			'label'                 => __( 'Account user', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Account user', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => false,
 			'is_ajax'               => true,
@@ -125,7 +125,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 
 		$user_webinars_field = array(
 			'option_code'           => $this->action_meta,
-			'label'                 => __( 'Webinar', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Webinar', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -138,7 +138,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 
 		$webinar_occurrences_field = array(
 			'option_code'              => 'OCCURRENCES',
-			'label'                    => __( 'Occurrences', 'uncanny-automator' ),
+			'label'                    => esc_html__( 'Occurrences', 'uncanny-automator' ),
 			'input_type'               => 'select',
 			'required'                 => false,
 			'options'                  => array(),
@@ -181,7 +181,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 			$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
 			if ( empty( $webinar_key ) ) {
-				throw new \Exception( __( 'Webinar was not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Webinar was not found.', 'uncanny-automator' ) );
 			}
 
 			$webinar_key  = str_replace( '-objectkey', '', $webinar_key );
@@ -190,11 +190,11 @@ class ZOOM_WEBINAR_REGISTERUSERLESS {
 			$webinar_user['email'] = Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
 
 			if ( empty( $webinar_user['email'] ) ) {
-				throw new \Exception( __( 'Email address is missing.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Email address is missing.', 'uncanny-automator' ) );
 			}
 
 			if ( false === is_email( $webinar_user['email'] ) ) {
-				throw new \Exception( __( 'Invalid email address.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Invalid email address.', 'uncanny-automator' ) );
 			}
 
 			$webinar_user['first_name'] = Automator()->parse->text( $action_data['meta']['FIRSTNAME'], $recipe_id, $user_id, $args );

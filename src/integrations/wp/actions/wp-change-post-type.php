@@ -16,6 +16,7 @@ class WP_CHANGE_POST_TYPE extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_code( 'WP_CHANGE_POST_TYPE' );
 		$this->set_action_meta( 'WP_POST_TYPES' );
 		$this->set_requires_user( false );
+		// translators: 1: New post type, 2: Post title
 		$this->set_sentence( sprintf( esc_attr_x( 'Change the post type of {{a post:%2$s}} to {{a post type:%1$s}}', 'WordPress', 'uncanny-automator' ), $this->get_action_meta(), 'WP_POSTS:' . $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Change the post type of {{a post}} to {{a post type}}', 'WordPress', 'uncanny-automator' ) );
 	}
@@ -28,7 +29,7 @@ class WP_CHANGE_POST_TYPE extends \Uncanny_Automator\Recipe\Action {
 		$post_types        = array();
 		foreach ( $post_type_options['options'] as $k => $post_type_option ) {
 			$post_types[] = array(
-				'text'  => esc_attr_x( $post_type_option, 'WordPress', 'uncanny-automator' ),
+				'text'  => esc_attr( $post_type_option ),
 				'value' => $k,
 			);
 		}
@@ -79,6 +80,7 @@ class WP_CHANGE_POST_TYPE extends \Uncanny_Automator\Recipe\Action {
 		$post_type     = sanitize_text_field( $parsed[ $this->get_action_meta() ] );
 
 		if ( $old_post_type === $post_type ) {
+			// translators: 1: Current post type, 2: New post type
 			$this->add_log_error( sprintf( esc_attr_x( 'Current post type (%1$s) is already set to new post type (%2$s)', 'WordPress', 'uncanny-automator' ), $old_post_type, $post_type ) );
 
 			return null;
@@ -93,7 +95,8 @@ class WP_CHANGE_POST_TYPE extends \Uncanny_Automator\Recipe\Action {
 		$post_type_updated = set_post_type( $post_id, $post_type );
 
 		if ( false === $post_type_updated ) {
-			$this->add_log_error( sprintf( esc_attr_x( 'Sorry, we were unable to change the post type of the selected post (%s)', 'WordPress', 'uncanny-automator-pro' ), get_the_title( $post_id ) ) );
+			// translators: 1: Post title
+			$this->add_log_error( sprintf( esc_attr_x( 'Sorry, we were unable to change the post type of the selected post (%s)', 'WordPress', 'uncanny-automator' ), get_the_title( $post_id ) ) );
 
 			return false;
 		}

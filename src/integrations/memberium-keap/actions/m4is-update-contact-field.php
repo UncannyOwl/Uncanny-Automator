@@ -116,14 +116,13 @@ class M4IS_UPDATE_CONTACT_FIELD extends \Uncanny_Automator\Recipe\Action {
 		if ( is_wp_error( $response ) ) {
 			throw new \Exception(
 				sprintf(
-					/* translators: %s - error message */
-					esc_attr_x( 'Error updating contact field(s). %s', 'M4IS - update contact field action', 'uncanny-automator' ),
-					$error_message
+				/* translators: %s: Error message */
+					esc_html_x( 'Error updating contact field(s). %s', 'M4IS - update contact field action', 'uncanny-automator' ),
+					esc_html( $response->get_error_message() )
 				)
 			);
 		}
 
 		return true;
 	}
-
 }

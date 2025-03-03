@@ -40,8 +40,8 @@ class AUDIENCE_ADDUSERNOTE {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			// translators: Note
-			'sentence'              => sprintf( __( 'Add {{a note:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Add {{a note}} to the user', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Add {{a note:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Add {{a note}} to the user', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'options_callback'      => array( $this, 'load_options' ),
@@ -59,14 +59,14 @@ class AUDIENCE_ADDUSERNOTE {
 	 */
 	public function load_options() {
 
-		$textarea                     = Automator()->helpers->recipe->field->text_field( 'MCNOTE', __( 'Note', 'uncanny-automator' ), true, 'textarea', null, false, __( 'Note length is limited to 1,000 characters.', 'uncanny-automator' ) );
+		$textarea                     = Automator()->helpers->recipe->field->text_field( 'MCNOTE', esc_html__( 'Note', 'uncanny-automator' ), true, 'textarea', null, false, __( 'Note length is limited to 1,000 characters.', 'uncanny-automator' ) );
 		$textarea['supports_tinymce'] = false;
 
 		return array(
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						__( 'Audience', 'uncanny-automator' ),
+						esc_html__( 'Audience', 'uncanny-automator' ),
 						'MCLIST'
 					),
 					$textarea,

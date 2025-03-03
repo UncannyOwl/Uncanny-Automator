@@ -63,11 +63,11 @@ class UOG_ADDSEATSTOGROUP {
 		$this->set_action_tokens(
 			array(
 				$this->action_meta . '_TOTAL_SEATS'     => array(
-					'name' => __( 'Total seats', 'uncanny-automator' ),
+					'name' => esc_html__( 'Total seats', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				$this->action_meta . '_REMAINING_SEATS' => array(
-					'name' => __( 'Remaining seats', 'uncanny-automator' ),
+					'name' => esc_html__( 'Remaining seats', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 			),
@@ -124,7 +124,7 @@ class UOG_ADDSEATSTOGROUP {
 		$uo_group_num_seats = absint( Automator()->parse->text( $action_data['meta']['NUMOFSEATS'], $recipe_id, $user_id, $args ) );
 		$code_group_id      = ulgm()->group_management->seat->get_code_group_id( $uo_group_id );
 		if ( empty( $code_group_id ) ) {
-			$error_message                       = __( 'Group management is not enabled on the selected group.', 'uncanny-automator' );
+			$error_message                       = esc_html__( 'Group management is not enabled on the selected group.', 'uncanny-automator' );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 

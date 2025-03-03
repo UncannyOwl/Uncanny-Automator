@@ -75,6 +75,7 @@ class EDD_CANCEL_USERS_SUBSCRIPTION extends \Uncanny_Automator\Recipe\Action {
 		$subscriber    = new \EDD_Recurring_Subscriber( $user_id, true );
 		$subscriptions = $subscriber->get_subscriptions( $download_id, array( 'active', 'trialling' ) );
 		if ( empty( $subscriptions ) ) {
+			// translators: 1: Download name
 			$this->add_log_error( sprintf( esc_attr_x( 'The user does not have any active subscription for download: %s.', 'EDD Recurring', 'uncanny-automator' ), $download_name ) );
 
 			return false;
@@ -83,6 +84,7 @@ class EDD_CANCEL_USERS_SUBSCRIPTION extends \Uncanny_Automator\Recipe\Action {
 		foreach ( $subscriptions as $subscription ) {
 			$subs = new \EDD_Subscription( $subscription->id );
 			if ( false === $subs->can_cancel() ) {
+				// translators: 1: Subscription ID
 				$this->add_log_error( sprintf( esc_attr_x( 'Sorry, unable to cancel the subscription ID: %d.', 'EDD Recurring', 'uncanny-automator' ), $subscription->id ) );
 
 				return false;

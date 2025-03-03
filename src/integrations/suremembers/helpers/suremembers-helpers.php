@@ -71,15 +71,15 @@ class SureMembers_Helpers {
 	public function grant_access( $user_id, $group_id ) {
 
 		if ( empty( $user_id ) ) {
-			throw new \Exception( __( 'Missing user ID', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Missing user ID', 'uncanny-automator' ) );
 		}
 
 		if ( ! Access_Groups::is_active_access_group( $group_id ) ) {
-			throw new \Exception( __( "Group wasn't found", 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( "Group wasn't found", 'uncanny-automator' ) );
 		}
 
 		if ( Access_Groups::check_plan_active( absint( $user_id ), absint( $group_id ) ) ) {
-			throw new \Exception( __( 'The user was already in the specified group', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'The user was already in the specified group', 'uncanny-automator' ) );
 		}
 
 		Access::grant( $user_id, $group_id );
@@ -95,15 +95,15 @@ class SureMembers_Helpers {
 	public function revoke_access( $user_id, $group_id ) {
 
 		if ( empty( $user_id ) ) {
-			throw new \Exception( __( 'Missing user ID', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Missing user ID', 'uncanny-automator' ) );
 		}
 
 		if ( ! Access_Groups::is_active_access_group( $group_id ) ) {
-			throw new \Exception( __( "Group wasn't found", 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( "Group wasn't found", 'uncanny-automator' ) );
 		}
 
 		if ( ! Access_Groups::check_plan_active( absint( $user_id ), absint( $group_id ) ) ) {
-			throw new \Exception( __( 'The user was not in the specified group', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'The user was not in the specified group', 'uncanny-automator' ) );
 		}
 
 		Access::revoke( $user_id, $group_id );

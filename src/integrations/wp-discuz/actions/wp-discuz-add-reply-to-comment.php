@@ -17,6 +17,7 @@ class WP_DISCUZ_ADD_REPLY_TO_COMMENT extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_code( 'WPD_ADD_REPLY_TO_COMMENT' );
 		$this->set_action_meta( 'WPD_REPLY' );
 		$this->set_requires_user( false );
+		// translators: 1: Reply
 		$this->set_sentence( sprintf( esc_attr_x( 'Add {{a reply:%1$s}} to a comment', 'wpDiscuz', 'uncanny-automator' ), $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Add {{a reply}} to a comment', 'wpDiscuz', 'uncanny-automator' ) );
 	}

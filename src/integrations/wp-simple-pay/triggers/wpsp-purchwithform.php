@@ -39,15 +39,15 @@ class WPSP_PURCHWITHFORM {
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-simple-pay/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WP Job Manager */
 			'sentence'            => sprintf(
+				// translators: WP Job Manager form name.
 				esc_attr__(
 					'A user completes a purchase with {{a form:%1$s}}',
 					'uncanny-automator'
 				),
 				$this->trigger_meta
 			),
-			/* translators: Logged-in trigger - WP Job Manager */
+			// translators: Logged-in trigger - WP Job Manager
 			'select_option_name'  => esc_attr__(
 				'A user completes a purchase with {{a form}}',
 				'uncanny-automator'

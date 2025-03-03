@@ -240,7 +240,6 @@ class Sendy_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -258,7 +257,6 @@ class Sendy_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -442,7 +440,7 @@ class Sendy_Helpers {
 					_x( 'No %s were found', 'Sendy API', 'uncanny-automator' ),
 					$type
 				);
-				throw new \Exception( $message );
+				throw new \Exception( esc_html( $message ) );
 			}
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage(), "Sendy::{$error_id} Error", true, 'sendy' );
@@ -526,14 +524,13 @@ class Sendy_Helpers {
 
 		if ( ! empty( $response['data']['error'] ) ) {
 			$this->check_connection_error( $response['data']['error'] );
-			throw new \Exception( $response['data']['error'], 400 );
+			throw new \Exception( esc_html( $response['data']['error'] ), 400 );
 		}
 
 		if ( $response['statusCode'] >= 400 ) {
 			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : _x( 'Sendy API Error', 'Sendy', 'uncanny-automator' );
-			throw new \Exception( $message, 400 );
+			throw new \Exception( esc_html( $message ), 400 );
 		}
-
 	}
 
 	/**

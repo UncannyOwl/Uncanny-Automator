@@ -69,9 +69,9 @@ class Initialize_Automator extends Set_Up_Automator {
 		try {
 			$this->initialize_add_integrations();
 		} catch ( Error $e ) {
-			throw new Automator_Error( $e->getMessage() );
+			throw new Automator_Error( esc_html( $e->getMessage() ) );
 		} catch ( Exception $e ) {
-			throw new Automator_Exception( $e->getMessage() );
+			throw new Automator_Exception( esc_html( $e->getMessage() ) );
 		}
 
 		//Let others hook in to the directories and add their integration's actions / triggers etc
@@ -87,7 +87,6 @@ class Initialize_Automator extends Set_Up_Automator {
 
 		// Load Recipe parts
 		$this->load_recipe_parts();
-
 	}
 
 	/**
@@ -119,9 +118,9 @@ class Initialize_Automator extends Set_Up_Automator {
 		try {
 			$this->initialize_integration_helpers();
 		} catch ( Error $e ) {
-			throw new Automator_Error( $e->getMessage() );
+			throw new Automator_Error( esc_html( $e->getMessage() ) );
 		} catch ( Exception $e ) {
-			throw new Automator_Exception( $e->getMessage() );
+			throw new Automator_Exception( esc_html( $e->getMessage() ) );
 		}
 
 		// Let others hook in and add options
@@ -138,9 +137,9 @@ class Initialize_Automator extends Set_Up_Automator {
 		try {
 			$this->initialize_triggers_actions_closures();
 		} catch ( Error $e ) {
-			throw new Automator_Error( $e->getMessage() );
+			throw new Automator_Error( esc_html( $e->getMessage() ) );
 		} catch ( Exception $e ) {
-			throw new Automator_Exception( $e->getMessage() );
+			throw new Automator_Exception( esc_html( $e->getMessage() ) );
 		}
 
 		// Let others hook in and add triggers actions or tokens

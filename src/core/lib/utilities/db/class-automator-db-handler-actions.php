@@ -264,7 +264,7 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
-		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $table_name WHERE meta_key =%s AND automator_action_log_id =%d", $meta_key, $action_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $table_name WHERE meta_key =%s AND automator_action_log_id =%d", $meta_key, $action_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( ! $result ) {
 			return $result;
@@ -311,7 +311,7 @@ class Automator_DB_Handler_Actions {
 	public function get_meta_by_id( $meta_id ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
-		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID =%s", $meta_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result     = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE ID =%s", $meta_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( ! $result ) {
 			return $result;
@@ -351,7 +351,7 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 		$tbl = Automator()->db->tables->action;
 
-		return $wpdb->get_row( $wpdb->prepare( "SELECT error_message, completed FROM {$wpdb->prefix}{$tbl} WHERE error_message != '' AND automator_recipe_log_id =%d", $recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return $wpdb->get_row( $wpdb->prepare( "SELECT error_message, completed FROM {$wpdb->prefix}{$tbl} WHERE error_message != '' AND automator_recipe_log_id =%d", $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	/**
@@ -381,7 +381,7 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 		$action_tbl      = $wpdb->prefix . Automator()->db->tables->action;
 		$action_meta_tbl = $wpdb->prefix . Automator()->db->tables->action_meta;
-		$actions         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$actions         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $actions ) {
 			foreach ( $actions as $automator_action_log_id ) {
 				// delete from uap_action_log_meta
@@ -428,7 +428,7 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 		$action_tbl      = $wpdb->prefix . Automator()->db->tables->action;
 		$action_meta_tbl = $wpdb->prefix . Automator()->db->tables->action_meta;
-		$actions         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$actions         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $actions ) {
 			foreach ( $actions as $automator_action_log_id ) {
 				// delete from uap_action_log_meta

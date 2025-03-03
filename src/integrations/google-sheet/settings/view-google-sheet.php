@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( $this->client && 1 === $connect ) { ?>
 
 					<?php /* translators: Success message */ ?>
-					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $user_info['email'] ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $user_info['email'] ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
 
 				<?php } ?>
 

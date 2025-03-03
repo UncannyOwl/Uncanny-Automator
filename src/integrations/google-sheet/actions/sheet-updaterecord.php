@@ -76,7 +76,7 @@ class SHEET_UPDATERECORD {
 			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get columns', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Get columns', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => $this->get_samples_js(),
 					'modules'     => array( 'modal', 'markdown' ),
@@ -98,7 +98,7 @@ class SHEET_UPDATERECORD {
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->google_sheet->options->get_google_drives(
-						__( 'Drive', 'uncanny-automator' ),
+						esc_html__( 'Drive', 'uncanny-automator' ),
 						'GSDRIVE',
 						array(
 							'is_ajax'      => true,
@@ -107,7 +107,7 @@ class SHEET_UPDATERECORD {
 						)
 					),
 					Automator()->helpers->recipe->google_sheet->get_google_spreadsheets(
-						__( 'Spreadsheet', 'uncanny-automator' ),
+						esc_html__( 'Spreadsheet', 'uncanny-automator' ),
 						'GSSPREADSHEET',
 						array(
 							'is_ajax'      => true,
@@ -116,7 +116,7 @@ class SHEET_UPDATERECORD {
 						)
 					),
 					Automator()->helpers->recipe->google_sheet->get_google_worksheets(
-						__( 'Worksheet', 'uncanny-automator' ),
+						esc_html__( 'Worksheet', 'uncanny-automator' ),
 						'GSWORKSHEET',
 						array(
 							'is_ajax'      => true,
@@ -125,7 +125,7 @@ class SHEET_UPDATERECORD {
 						)
 					),
 					Automator()->helpers->recipe->google_sheet->get_google_sheet_columns(
-						__( 'Column search', 'uncanny-automator' ),
+						esc_html__( 'Column search', 'uncanny-automator' ),
 						'GSWORKSHEETCOLUMN',
 						array(
 							'is_ajax' => true,
@@ -142,14 +142,14 @@ class SHEET_UPDATERECORD {
 						'option_code'       => 'WORKSHEET_FIELDS',
 						'input_type'        => 'repeater',
 						'relevant_tokens'   => array(),
-						'label'             => __( 'Row', 'uncanny-automator' ),
+						'label'             => esc_html__( 'Row', 'uncanny-automator' ),
 						/* translators: 1. Button */
 						'description'       => '',
 						'required'          => true,
 						'fields'            => array(
 							array(
 								'option_code' => 'GS_COLUMN_NAME',
-								'label'       => __( 'Column', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Column', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
 								'read_only'   => true,
@@ -157,22 +157,22 @@ class SHEET_UPDATERECORD {
 							),
 							array(
 								'option_code' => 'COLUMN_UPDATE',
-								'label'       => __( 'Update?', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Update?', 'uncanny-automator' ),
 								'input_type'  => 'checkbox',
 								'is_toggle'   => true,
 							),
 
-							Automator()->helpers->recipe->field->text_field( 'GS_COLUMN_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+							Automator()->helpers->recipe->field->text_field( 'GS_COLUMN_VALUE', esc_html__( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
 						),
-						'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+						'add_row_button'    => esc_html__( 'Add pair', 'uncanny-automator' ),
+						'remove_row_button' => esc_html__( 'Remove pair', 'uncanny-automator' ),
 						'hide_actions'      => true,
 						'can_sort_rows'     => false,
 					),
 					array(
 						'option_code' => 'UPDATE_MULTIPLE_ROWS',
 						'input_type'  => 'checkbox',
-						'label'       => __( 'If multiple matches are found, update all matching rows instead of the first matching row only.', 'uncanny-automator' ),
+						'label'       => esc_html__( 'If multiple matches are found, update all matching rows instead of the first matching row only.', 'uncanny-automator' ),
 					),
 				),
 			),

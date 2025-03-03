@@ -78,7 +78,7 @@ class Copy_Recipe_Parts {
 		unset( $actions['hide-if-no-js'] );
 		unset( $actions['view'] );
 		$action                 = sprintf( '%s?action=%s&post=%d&return_to_recipe=yes&_wpnonce=%s', admin_url( 'edit.php' ), 'copy_recipe_parts', $post->ID, wp_create_nonce( 'Aut0Mat0R' ) );
-		$actions['copy_recipe'] = sprintf( '<a href="%s" title="%s">%s</a>', $action, __( 'Duplicate this recipe', 'uncanny-automator' ), __( 'Duplicate this recipe', 'uncanny-automator' ) );
+		$actions['copy_recipe'] = sprintf( '<a href="%s" title="%s">%s</a>', $action, esc_html__( 'Duplicate this recipe', 'uncanny-automator' ), __( 'Duplicate this recipe', 'uncanny-automator' ) );
 
 		return $actions;
 	}
@@ -110,7 +110,7 @@ class Copy_Recipe_Parts {
 		$recipe_id = absint( automator_filter_input( 'post' ) );
 
 		if ( 'uo-recipe' !== get_post_type( $recipe_id ) ) {
-			wp_die( esc_attr( sprintf( '%s %s', __( 'Copy creation failed, could not find original recipe:', 'uncanny-automator' ), htmlspecialchars( $recipe_id ) ) ) );
+			wp_die( esc_attr( sprintf( '%s %s', esc_html__( 'Copy creation failed, could not find original recipe:', 'uncanny-automator' ), htmlspecialchars( $recipe_id ) ) ) );
 		}
 
 		// Copy the post and insert it
@@ -271,9 +271,9 @@ class Copy_Recipe_Parts {
 		if ( 'uo-recipe' === $post->post_type ) {
 			$post_title = $this->is_import
 				/* translators: Original Post title */
-				? sprintf( __( '%1$s (Imported)', 'uncanny-automator' ), $post->post_title )
+				? sprintf( esc_html__( '%1$s (Imported)', 'uncanny-automator' ), $post->post_title )
 				/* translators: Original Post title & Post ID */
-				: sprintf( __( '%1$s (Duplicated from #%2$d)', 'uncanny-automator' ), $post->post_title, $post_id );
+				: sprintf( esc_html__( '%1$s (Duplicated from #%2$d)', 'uncanny-automator' ), $post->post_title, $post_id );
 		}
 
 		$new_post = array(
@@ -644,7 +644,7 @@ class Copy_Recipe_Parts {
 					'menu_order' => 'ASC',
 					'ID'         => 'ASC',
 				),
-				'posts_per_page' => '99999', //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page' => '99999', // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			)
 		);
 	}

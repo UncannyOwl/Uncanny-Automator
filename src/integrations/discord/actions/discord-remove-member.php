@@ -109,7 +109,7 @@ class DISCORD_REMOVE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		// Check for errors.
 		$status_code = isset( $response['statusCode'] ) ? absint( $response['statusCode'] ) : 0;
 		if ( 204 !== $status_code ) {
-			throw new Exception( _x( 'Error removing member.', 'Discord', 'uncanny-automator' ) );
+			throw new Exception( esc_html_x( 'Error removing member.', 'Discord', 'uncanny-automator' ) );
 		}
 
 		// Remove the member from the cached list.
@@ -149,7 +149,5 @@ class DISCORD_REMOVE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 			);
 			automator_update_option( $key, $members, false );
 		}
-
 	}
-
 }

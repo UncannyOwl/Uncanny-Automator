@@ -56,8 +56,8 @@ class TRELLO_ADD_CARD_MEMBER {
 
 		$user_boards_field = array(
 			'option_code'           => 'BOARD',
-			'label'                 => __( 'Board', 'uncanny-automator' ),
-			'token_name'            => __( 'Board ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Board', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Board ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,
@@ -67,8 +67,8 @@ class TRELLO_ADD_CARD_MEMBER {
 
 		$board_lists_field = array(
 			'option_code'           => 'LIST',
-			'label'                 => __( 'List', 'uncanny-automator' ),
-			'token_name'            => __( 'List ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'List', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'List ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -82,8 +82,8 @@ class TRELLO_ADD_CARD_MEMBER {
 
 		$list_cards_field = array(
 			'option_code'           => 'CARD',
-			'label'                 => __( 'Card', 'uncanny-automator' ),
-			'token_name'            => __( 'Card ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Card', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Card ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -100,9 +100,9 @@ class TRELLO_ADD_CARD_MEMBER {
 			'input_type'               => 'select',
 			'supports_multiple_values' => false,
 			'options'                  => array(),
-			'label'                    => __( 'Member', 'uncanny-automator' ),
-			'token_name'               => __( 'Member ID', 'uncanny-automator' ),
-			'placeholder'              => __( 'Select a member', 'uncanny-automator' ),
+			'label'                    => esc_html__( 'Member', 'uncanny-automator' ),
+			'token_name'               => esc_html__( 'Member ID', 'uncanny-automator' ),
+			'placeholder'              => esc_html__( 'Select a member', 'uncanny-automator' ),
 			'supports_custom_value'    => true,
 			'required'                 => true,
 			'default'                  => '',

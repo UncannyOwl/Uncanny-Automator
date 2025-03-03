@@ -167,7 +167,7 @@ GROUP BY p.post_parent",
 
 		$error_could_not_install = sprintf(
 			wp_kses( /* translators: %s - Lite plugin download URL. */
-				__( 'Could not install plugin. Please <a href="%s">download</a> and install manually.', 'uncanny-automator' ),
+				__( 'Could not install plugin. Please <a href="%s">download</a> and install manually.', 'uncanny-automator' ), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				array(
 					'a' => array(
 						'href' => true,
@@ -179,7 +179,7 @@ GROUP BY p.post_parent",
 
 		$error_could_not_activate = sprintf(
 			wp_kses( /* translators: %s - Lite plugin download URL. */
-				__( 'Could not activate plugin. Please activate from the <a href="%s">Plugins page</a>.', 'uncanny-automator' ),
+				__( 'Could not activate plugin. Please activate from the <a href="%s">Plugins page</a>.', 'uncanny-automator' ), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 				array(
 					'a' => array(
 						'href' => true,
@@ -248,15 +248,15 @@ GROUP BY p.post_parent",
 	 */
 	public function builder_output_after() {
 		$this_form_anyone = sprintf(
-			__( 'When anyone submits %s form', 'uncanny-automator' ), //phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
-			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', __( 'this', 'uncanny-automator' ) )
+			esc_html__( 'When anyone submits %s form', 'uncanny-automator' ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', esc_html__( 'this', 'uncanny-automator' ) )
 		);
 
 		$field_form_anoynone = sprintf(
-			__( 'When anyone submits %1$s form with %2$s in %3$s', 'uncanny-automator' ), //phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
-			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', __( 'this', 'uncanny-automator' ) ),
-			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', __( 'a specific value', 'uncanny-automator' ) ),
-			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', __( 'a specific field', 'uncanny-automator' ) )
+			esc_html__( 'When anyone submits %1$s form with %2$s in %3$s', 'uncanny-automator' ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', esc_html__( 'this', 'uncanny-automator' ) ),
+			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', esc_html__( 'a specific value', 'uncanny-automator' ) ),
+			sprintf( '<span class="uap-wpf-integration-trigger__field">%s</span>', esc_html__( 'a specific field', 'uncanny-automator' ) )
 		);
 
 		$triggers            = array(
@@ -286,7 +286,7 @@ GROUP BY p.post_parent",
 			</h2>
 
 			<p class="uap-wpf-integration__description">
-				<?php esc_attr_e( "Uncanny Automator can connect this form to your favorite WordPress plugins, sites and non-WordPress apps. Let's get started!", 'uncanny_automator' ); ?>
+				<?php esc_attr_e( "Uncanny Automator can connect this form to your favorite WordPress plugins, sites and non-WordPress apps. Let's get started!", 'uncanny-automator' ); ?>
 			</p>
 
 			<div class="uap-wpf-integration-steps">
@@ -316,13 +316,13 @@ GROUP BY p.post_parent",
 										<?php echo esc_attr( $disabled ); ?>
 										<?php echo esc_attr( $checked ); ?>
 									>
-									<?php echo $trigger_sentence; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+									<?php echo $trigger_sentence; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 									<?php if ( $disabled ) { ?>
 
 										<span class="uap-wpf-integration-recipe-trigger-pro">
 											<i class="fa fa-lock"></i>
-											<?php echo wp_kses_post( sprintf( '%1$s <strong>%2$s</strong>', __( 'Requires', 'uncanny-automator' ), 'Uncanny Automator Pro' ) ); ?>
+											<?php echo wp_kses_post( sprintf( '%1$s <strong>%2$s</strong>', esc_html__( 'Requires', 'uncanny-automator' ), 'Uncanny Automator Pro' ) ); ?>
 											<a href="https://automatorplugin.com/pricing/?utm_source=wpforms&utm_medium=form_marketing&utm_content=learn_more_pro_link&utm_r=wpforms"
 											   target="_blank">
 												<?php esc_html_e( 'Get it now', 'uncanny-automator' ); ?>
@@ -359,13 +359,26 @@ GROUP BY p.post_parent",
 				<p>&nbsp;</p>
 				<p>&nbsp;</p>
 				<h5 class="uap-wpf-integration__title">
-					<?php echo esc_attr( _nx( 'Recipe using this form', 'Recipes using this form', count( $this->configured_recipes ), 'uncanny-automator' ) ); ?>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %d: Number of recipes */
+							_n(
+								'Recipe using this form',
+								'Recipes using this form',
+								count( $this->configured_recipes ),
+								'uncanny-automator'
+							),
+							count( $this->configured_recipes )
+						)
+					);
+					?>
 				</h5>
 				<div class="uap-wpdf-connected-recipes">
 					<ul>
 						<?php foreach ( $this->configured_recipes as $recipe_id ) { ?>
 							<li>
-								<a href="<?php echo esc_url( get_edit_post_link( $recipe_id ) ); ?>"><?php echo esc_html( sprintf( '#%d- %s %s', $recipe_id, empty( get_the_title( $recipe_id ) ) ? __( 'no title', 'uncanny-automator' ) : get_the_title( $recipe_id ), 'draft' === get_post_status( $recipe_id ) ? __( '(Draft)', 'uncanny-automator' ) : '' ) ); ?></a>
+								<a href="<?php echo esc_url( get_edit_post_link( $recipe_id ) ); ?>"><?php echo esc_html( sprintf( '#%d- %s %s', $recipe_id, empty( get_the_title( $recipe_id ) ) ? esc_html__( 'no title', 'uncanny-automator' ) : get_the_title( $recipe_id ), 'draft' === get_post_status( $recipe_id ) ? __( '(Draft)', 'uncanny-automator' ) : '' ) ); ?></a>
 							</li>
 						<?php } ?>
 					</ul>

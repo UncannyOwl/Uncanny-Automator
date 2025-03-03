@@ -73,8 +73,14 @@ class Pmp_Tokens {
 			$meta . '_SUBSCRIPTION_AMOUNT' => $billing_amount,
 			$meta . '_SUBSCRIPTION_PERIOD' => $billing_period,
 			$meta . '_SUBSCRIPTION_CYCLE'  => $billing_cycle,
-			$meta . '_SUBSCRIPTION_START'  => ! empty( $billing_start ) ? date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $billing_start ) : '',
-			$meta . '_SUBSCRIPTION_END'    => ! empty( $billing_end ) ? date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $billing_start ) : '',
+			$meta . '_SUBSCRIPTION_START'  => ! empty( $billing_start ) ? wp_date(
+				sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) ),
+				$billing_start
+			) : '',
+			$meta . '_SUBSCRIPTION_END'    => ! empty( $billing_end ) ? wp_date(
+				sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) ),
+				$billing_end
+			) : '',
 		);
 
 		$args = array(

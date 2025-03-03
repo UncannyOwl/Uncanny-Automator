@@ -104,7 +104,7 @@ class Calculation_Token extends Universal_Token {
 	public function get_formula( $replace_args ) {
 
 		if ( empty( $replace_args['pieces'][3] ) ) {
-			throw new \Exception( __( 'Error: Missing formula.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Error: Missing formula.', 'uncanny-automator' ) );
 		}
 
 		$formula = $replace_args['pieces'][3];

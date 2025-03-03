@@ -57,7 +57,7 @@ class CONVERTKIT_SUBSCRIBER_TAG_REMOVE {
 		$this->set_action_tokens(
 			array(
 				'TAG_NAME' => array(
-					'name' => __( 'Tag name', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag name', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

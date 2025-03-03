@@ -81,8 +81,6 @@ class MP_USER_REMOVE_FROM_RECURRING_MEMBERSHIP {
 	 */
 	public function mp_user_removed_from_recurring( \MeprSubscription $sub ) {
 
-		error_log( 'mkk-- ' . print_r( $sub, true ) . PHP_EOL );
-
 		$product_id = $sub->product_id;
 		$user_id    = absint( $sub->user_id );
 

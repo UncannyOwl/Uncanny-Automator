@@ -61,18 +61,18 @@ class Zoho_Campaigns_Settings extends Settings\Premium_Integration_Settings {
 
 		// Actions.
 		$vars['actions'] = array(
-			__( 'Create a list', 'uncanny-automator' ),
-			__( 'Move a contact to Do-Not-Mail', 'uncanny-automator' ),
-			__( 'Subscribe a contact to a list', 'uncanny-automator' ),
-			__( 'Unsubscribe a contact from a list', 'uncanny-automator' ),
+			esc_html__( 'Create a list', 'uncanny-automator' ),
+			esc_html__( 'Move a contact to Do-Not-Mail', 'uncanny-automator' ),
+			esc_html__( 'Subscribe a contact to a list', 'uncanny-automator' ),
+			esc_html__( 'Unsubscribe a contact from a list', 'uncanny-automator' ),
 		);
 
 		if ( filter_has_var( INPUT_GET, 'auth_error' ) ) {
 			$vars['errors'] = array(
 				array(
-					'headline' => __( 'Authorization error', 'uncanny-automator' ),
+					'headline' => esc_html__( 'Authorization error', 'uncanny-automator' ),
 					/* translators: Error message */
-					'body'     => sprintf( __( 'Error message: %s', 'uncanny-automator' ), automator_filter_input( 'auth_error' ) ),
+					'body'     => sprintf( esc_html__( 'Error message: %s', 'uncanny-automator' ), automator_filter_input( 'auth_error' ) ),
 				),
 			);
 		}

@@ -46,9 +46,9 @@ class WP_USERROLEUPDATED {
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
 			/* translators: Logged-in trigger - WordPress Core */
-			'sentence'            => sprintf( __( "A user's role changes to {{a specific role:%1\$s}}", 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( "A user's role changes to {{a specific role:%1\$s}}", 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WordPress Core */
-			'select_option_name'  => __( "A user's role changes to {{a specific role}}", 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( "A user's role changes to {{a specific role}}", 'uncanny-automator' ),
 			'action'              => 'set_user_role',
 			'priority'            => 90,
 			'accepted_args'       => 3,

@@ -72,7 +72,7 @@ class Wp_User_Manager_Helpers {
 		$options      = array();
 
 		if ( $is_any ) {
-			$options['-1'] = __( 'Any form', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'Any form', 'uncanny-automator' );
 		}
 
 		$forms = wpumrf_registration_forms();

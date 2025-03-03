@@ -136,7 +136,7 @@ class WP_USERCREATESPOST {
 			'code'                => $this->trigger_code,
 			'sentence'            => sprintf(
 			/* translators: Logged-in trigger - WordPress */
-				__( 'A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}', 'uncanny-automator' ),
+				esc_html__( 'A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}', 'uncanny-automator' ),
 				$this->trigger_meta,
 				'WPTAXONOMYTERM:' . $this->trigger_meta,
 				'WPTAXONOMIES:' . $this->trigger_meta

@@ -68,13 +68,13 @@ class Mp_Tokens {
 		if ( $mepr_options->show_fname_lname ) {
 			$fields[] = array(
 				'tokenId'         => 'first_name',
-				'tokenName'       => __( 'First name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'First name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 			$fields[] = array(
 				'tokenId'         => 'last_name',
-				'tokenName'       => __( 'Last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);

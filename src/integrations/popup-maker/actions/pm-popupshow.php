@@ -109,7 +109,7 @@ class PM_POPUPSHOW {
 		$popup    = get_post( $popup_id );
 
 		if ( ! $popup instanceof \WP_Post ) {
-			$error_message                       = sprintf( '%s: %d', __( 'The popup no longer exists. Popup ID', 'uncanny-automator' ), $popup_id );
+			$error_message                       = sprintf( '%s: %d', esc_html__( 'The popup no longer exists. Popup ID', 'uncanny-automator' ), $popup_id );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
@@ -120,7 +120,7 @@ class PM_POPUPSHOW {
 		$settings = get_post_meta( $popup->ID, 'popup_settings', true );
 
 		if ( empty( $settings ) || ! isset( $settings['triggers'] ) ) {
-			$error_message                       = sprintf( '%s: %d', __( 'No settings found with this popup. Popup ID', 'uncanny-automator' ), $popup_id );
+			$error_message                       = sprintf( '%s: %d', esc_html__( 'No settings found with this popup. Popup ID', 'uncanny-automator' ), $popup_id );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
@@ -144,7 +144,7 @@ class PM_POPUPSHOW {
 		}
 
 		if ( ! $found || empty( $found_recipes ) ) {
-			$error_message                       = sprintf( '%s: %d', __( 'Recipes are not set for this popup. Popup ID', 'uncanny-automator' ), $popup_id );
+			$error_message                       = sprintf( '%s: %d', esc_html__( 'Recipes are not set for this popup. Popup ID', 'uncanny-automator' ), $popup_id );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
@@ -152,7 +152,7 @@ class PM_POPUPSHOW {
 		}
 
 		if ( 'publish' !== $popup->post_status || 0 === absint( get_post_meta( $popup_id, 'enabled', true ) ) ) {
-			$error_message                       = sprintf( '%s: %d', __( 'The popup is no longer active. Popup ID', 'uncanny-automator' ), $popup_id );
+			$error_message                       = sprintf( '%s: %d', esc_html__( 'The popup is no longer active. Popup ID', 'uncanny-automator' ), $popup_id );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
@@ -162,7 +162,7 @@ class PM_POPUPSHOW {
 		$popup_recipes = array_map( 'absint', $found_recipes );
 
 		if ( ! in_array( absint( $recipe_id ), $popup_recipes, true ) ) {
-			$error_message                       = sprintf( '%s: %d', __( 'The recipe is not linked with this popup. Popup ID', 'uncanny-automator' ), $popup_id );
+			$error_message                       = sprintf( '%s: %d', esc_html__( 'The recipe is not linked with this popup. Popup ID', 'uncanny-automator' ), $popup_id );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
@@ -181,7 +181,7 @@ class PM_POPUPSHOW {
 			return;
 		}
 
-		$error_message                       = sprintf( '%s: %d', __( 'The popup failed to display. Popup ID', 'uncanny-automator' ), $popup_id );
+		$error_message                       = sprintf( '%s: %d', esc_html__( 'The popup failed to display. Popup ID', 'uncanny-automator' ), $popup_id );
 		$action_data['complete_with_errors'] = true;
 		$action_data['do_nothing']           = true;
 		Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );

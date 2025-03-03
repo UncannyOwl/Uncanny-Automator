@@ -386,22 +386,22 @@ KEY `autoload` (`autoload`)
 
 		$recipe_view       = "{$wpdb->prefix}uap_recipe_logs_view";
 		$recipe_view_query = self::recipe_log_view_query();
-		$wpdb->query( "CREATE OR REPLACE VIEW $recipe_view AS $recipe_view_query" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "CREATE OR REPLACE VIEW $recipe_view AS $recipe_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$trigger_view       = "{$wpdb->prefix}uap_trigger_logs_view";
 		$trigger_view_query = self::trigger_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE VIEW $trigger_view AS $trigger_view_query" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "CREATE OR REPLACE VIEW $trigger_view AS $trigger_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$action_view       = "{$wpdb->prefix}uap_action_logs_view";
 		$action_view_query = self::action_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE VIEW $action_view AS $action_view_query" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "CREATE OR REPLACE VIEW $action_view AS $action_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$api_view       = "{$wpdb->prefix}uap_api_logs_view";
 		$api_view_query = self::api_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE VIEW $api_view AS $api_view_query" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "CREATE OR REPLACE VIEW $api_view AS $api_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		automator_update_option( 'uap_database_views_version', AUTOMATOR_DATABASE_VIEWS_VERSION );
 	}
 
@@ -668,7 +668,7 @@ FROM {$wpdb->prefix}uap_recipe_log r
 
 		global $wpdb;
 		$db      = DB_NAME;
-		$results = $wpdb->get_results( "SHOW FULL TABLES IN `$db` WHERE TABLE_TYPE LIKE '%VIEW%'" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_results( "SHOW FULL TABLES IN `$db` WHERE TABLE_TYPE LIKE '%VIEW%'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$return  = array(
 			"{$wpdb->prefix}uap_recipe_logs_view",
 			"{$wpdb->prefix}uap_trigger_logs_view",
@@ -714,7 +714,7 @@ FROM {$wpdb->prefix}uap_recipe_log r
 	 *
 	 * @param string $table_name
 	 *
-	 * @return void
+	 * @return bool|int|\mysqli_result|null
 	 */
 	public static function empty_table( $table_name = '' ) {
 
@@ -723,7 +723,6 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		$prefixed_tb_name = $wpdb->prefix . $table_name;
 
 		return $wpdb->query( "TRUNCATE `$prefixed_tb_name`" );
-
 	}
 
 	/**
@@ -858,7 +857,7 @@ ON DUPLICATE KEY UPDATE
 	                   autoload = VALUES(autoload)";
 
 		// Execute the query
-		$wpdb->query( $sql_query );
+		$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		$async_actions = self::get_automator_async_run_with_hash();
 

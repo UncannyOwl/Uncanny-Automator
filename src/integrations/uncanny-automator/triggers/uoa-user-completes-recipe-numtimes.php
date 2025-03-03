@@ -92,7 +92,7 @@ class UOA_USER_COMPLETES_RECIPE_NUMTIMES {
 		global $wpdb;
 		// get recipe actions
 		$table_name    = $wpdb->prefix . Automator()->db->tables->action;
-		$recipe_status = $wpdb->get_var( $wpdb->prepare( "SELECT completed FROM $table_name WHERE automator_recipe_log_id = %d", $recipe_log_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$recipe_status = $wpdb->get_var( $wpdb->prepare( "SELECT completed FROM $table_name WHERE automator_recipe_log_id = %d", $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( 0 === absint( $recipe_status ) || 5 === absint( $recipe_status ) ) {
 			return false;

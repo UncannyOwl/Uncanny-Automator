@@ -49,8 +49,8 @@ class HUBSPOT_ADDCONTACTTOLIST {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			// translators: the selected HubSpot static list name
-			'sentence'              => sprintf( __( 'Add a HubSpot contact to {{a static list:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Add a HubSpot contact to {{a static list}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Add a HubSpot contact to {{a static list:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Add a HubSpot contact to {{a static list}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'requires_user'         => false,

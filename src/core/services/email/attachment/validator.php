@@ -68,7 +68,7 @@ class Validator {
 		$status_code = $this->get_status_code();
 
 		if ( ! $this->is_file_accessible( $status_code ) ) {
-
+			// translators: 1: Status code
 			return new WP_Error( 'file_not_accessible', sprintf( _x( 'The file could not be accessed. Please check the URL and try again. Status code: %s.', 'Email Validator', 'uncanny-automator' ), $status_code ), array( 'status_code' => $status_code ) );
 
 		}
@@ -78,6 +78,7 @@ class Validator {
 			return new WP_Error(
 				'file_too_large',
 				sprintf(
+					// translators: 1: File size limit in MB
 					_x(
 						'The file exceeds the maximum allowed size of %d MB.',
 						'Email Validator',
@@ -162,6 +163,7 @@ class Validator {
 	 */
 	private function is_file_accessible( $status_code ) {
 		if ( $status_code !== 200 ) {
+			// translators: 1: Status code
 			$this->log_error( sprintf( _x( 'The file is not accessible. Please check the URL and try again. HTTP status code: %s.', 'Email Validator', 'uncanny-automator' ), $status_code ) );
 			return false;
 		}
@@ -180,6 +182,7 @@ class Validator {
 		$temp_file = download_url( $this->url, 5 * 60 ); // 5 minutes timeout.
 
 		if ( is_wp_error( $temp_file ) ) {
+			// translators: 1: Error message
 			$this->log_error( sprintf( _x( 'Failed to download the file: %s.', 'Email Validator', 'uncanny-automator' ), $temp_file->get_error_message() ) );
 			return false; // The file could not be downloaded.
 		}
@@ -187,13 +190,14 @@ class Validator {
 		$file_size = filesize( $temp_file );
 
 		// Delete the temporary file.
-		@unlink( $temp_file );
+		wp_delete_file( $temp_file );
 
 		$limit_size = apply_filters( 'automator_email_file_size_limit', $this->file_size_limit );
 
 		if ( $file_size > $limit_size ) { // 5 MB in bytes.
 			$this->log_error(
 				sprintf(
+					// translators: 1: File size limit in MB, 2: File size in MB
 					_x( 'File size exceeds %1$d MB. The uploaded file is: %2$s MB.', 'Email Validator', 'uncanny-automator' ),
 					self::to_megabytes( $limit_size ),
 					self::to_megabytes( $file_size )

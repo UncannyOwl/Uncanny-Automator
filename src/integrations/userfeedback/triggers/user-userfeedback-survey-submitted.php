@@ -23,6 +23,7 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 		$this->set_trigger_code( 'USER_USERFEEDBACK_SURVEY_SUBMITTED' );
 		$this->set_trigger_meta( 'UFSURVEY' );
 		$this->set_is_login_required( false );
+		// translators: 1: Survey
 		$this->set_sentence( sprintf( esc_attr__( 'A user submits {{a survey:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ) );
 		$this->set_readable_sentence( esc_attr__( 'A user submits {{a survey}}', 'uncanny-automator' ) );
 		// The action hook to attach this trigger into.
@@ -33,49 +34,49 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 				array(
 					'tokenId'         => 'USERFEEDBACK_SURVEY_ID',
 					'tokenIdentifier' => $this->get_trigger_code(),
-					'tokenName'       => __( 'Survey ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Survey ID', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 				),
 				array(
 					'tokenId'         => 'USERFEEDBACK_SURVEY_TITLE',
 					'tokenIdentifier' => $this->get_trigger_code(),
-					'tokenName'       => __( 'Survey title', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Survey title', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 				),
 				array(
 					'tokenId'         => 'USERFEEDBACK_SURVEY_RESPONSE',
 					'tokenIdentifier' => $this->get_trigger_code(),
-					'tokenName'       => __( 'Survey response', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Survey response', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 				),
 				array(
 					'tokenId'         => 'USERFEEDBACK_SURVEY_RESPONSE_JSON',
 					'tokenIdentifier' => $this->get_trigger_code(),
-					'tokenName'       => __( 'Survey response (JSON)', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Survey response (JSON)', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 				),
 				array(
 					'tokenId'         => 'USERFEEDBACK_SURVEY_USER_IP',
 					'tokenIdentifier' => $this->get_trigger_code(),
-					'tokenName'       => __( 'User IP address', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'User IP address', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 				),
 				array(
 					'tokenId'         => 'USERFEEDBACK_SURVEY_USER_BROWSER',
 					'tokenIdentifier' => $this->get_trigger_code(),
-					'tokenName'       => __( 'User browser', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'User browser', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 				),
 				array(
 					'tokenId'         => 'USERFEEDBACK_SURVEY_USER_OS',
 					'tokenIdentifier' => $this->get_trigger_code(),
-					'tokenName'       => __( 'User OS', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'User OS', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 				),
 				array(
 					'tokenId'         => 'USERFEEDBACK_SURVEY_USER_DEVICE',
 					'tokenIdentifier' => $this->get_trigger_code(),
-					'tokenName'       => __( 'User device', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'User device', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 				),
 			)
@@ -88,12 +89,13 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 
 	/**
 	 * Populate the dropdown for the trigger options.
+	 *
 	 * @return array
 	 */
 	public function load_options() {
 		global $wpdb;
 		$surveys = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_surveys WHERE status = %s", 'publish' ) );
-		$options = array( '-1' => esc_html( __( 'Any survey', 'uncanny-automator' ) ) );
+		$options = array( '-1' => esc_html( esc_html__( 'Any survey', 'uncanny-automator' ) ) );
 		foreach ( $surveys as $survey ) {
 			$options[ $survey->id ] = $survey->title;
 		}
@@ -106,7 +108,7 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 							'input_type'            => 'select',
 							'option_code'           => $this->trigger_meta,
 							/* translators: HTTP request method */
-							'label'                 => esc_html( __( 'Survey', 'uncanny-automator' ) ),
+							'label'                 => esc_html( esc_html__( 'Survey', 'uncanny-automator' ) ),
 							'required'              => true,
 							'supports_custom_value' => false,
 							'options'               => $options,
@@ -206,6 +208,7 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 
 	/**
 	 * Run validation functions on the trigger.
+	 *
 	 * @return bool
 	 */
 	public function validate_trigger( ...$args ) {

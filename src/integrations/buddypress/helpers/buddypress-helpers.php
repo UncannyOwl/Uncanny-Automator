@@ -176,7 +176,7 @@ class Buddypress_Helpers {
 
 			$fields[] = array(
 				'value' => - 1,
-				'text'  => __( 'Any topic', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any topic', 'uncanny-automator' ),
 			);
 
 			$value = automator_filter_input( 'value', INPUT_POST );

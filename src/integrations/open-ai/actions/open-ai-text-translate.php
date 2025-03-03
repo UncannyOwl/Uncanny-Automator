@@ -58,7 +58,7 @@ class OPEN_AI_TEXT_TRANSLATE {
 		$this->set_action_tokens(
 			array(
 				'TEXT_TRANSLATED' => array(
-					'name' => __( 'Translated text', 'uncanny-automator' ),
+					'name' => esc_html__( 'Translated text', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

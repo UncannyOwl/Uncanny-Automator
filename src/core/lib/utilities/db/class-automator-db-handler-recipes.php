@@ -182,7 +182,7 @@ class Automator_DB_Handler_Recipes {
 		global $wpdb;
 		$tbl = Automator()->db->tables->recipe;
 
-		return $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}{$tbl} WHERE completed = %d AND automator_recipe_id = %d AND user_id = %d", '-1', $recipe_id, $user_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}{$tbl} WHERE completed = %d AND automator_recipe_id = %d AND user_id = %d", '-1', $recipe_id, $user_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	/**
@@ -199,7 +199,7 @@ class Automator_DB_Handler_Recipes {
 
 		$tbl = Automator()->db->tables->action;
 
-		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed = 5 AND automator_recipe_log_id = $recipe_log_id" ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed = 5 AND automator_recipe_log_id = $recipe_log_id" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return apply_filters( 'automator_has_scheduled_actions', absint( $results ), $recipe_log_id, $args );
 	}

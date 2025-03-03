@@ -59,7 +59,7 @@ class MICROSOFT_TEAMS_CREATE_TEAM extends \Uncanny_Automator\Recipe\Action {
 
 		$team_specialization_field = array(
 			'option_code'           => 'SPECIALIZATION',
-			'label'                 => __( 'Type', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Type', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,

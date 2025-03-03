@@ -55,7 +55,7 @@ class WP_USERROLE {
 		$this->set_action_tokens(
 			array(
 				'USER_ROLES' => array(
-					'name' => __( "List of user's roles", 'uncanny-automator' ),
+					'name' => esc_html__( "List of user's roles", 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

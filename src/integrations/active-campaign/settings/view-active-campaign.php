@@ -23,12 +23,12 @@
 
 							$connect = automator_filter_input( 'connect' );
 
-							$alert_heading = __( 'There was an error connecting your ActiveCampaign account. Please try again or contact support.', 'uncanny-automator' );
+							$alert_heading = esc_html__( 'There was an error connecting your ActiveCampaign account. Please try again or contact support.', 'uncanny-automator' );
 							$alert_type    = 'error';
-							$alert_content = __( 'Error: ', 'uncanny-automator' ) . $connect;
+							$alert_content = esc_html__( 'Error:', 'uncanny-automator' ) . $connect;
 
 							if ( 1 == $connect ) {
-								$alert_heading = __( 'You have successfully connected your ActiveCampaign account', 'uncanny-automator' );
+								$alert_heading = esc_html__( 'You have successfully connected your ActiveCampaign account', 'uncanny-automator' );
 								$alert_type    = 'success';
 								$alert_content = '';
 							}
@@ -121,7 +121,7 @@
 							<li>
 								<?php
 								echo wp_kses(
-									__( 'Log in to your <a target="_blank" href="https://www.activecampaign.com/login" target="_blank">ActiveCampaign account</a>.', 'uncanny-automator' ),
+									__( 'Log in to your <a target="_blank" href="https://www.activecampaign.com/login" target="_blank">ActiveCampaign account</a>.', 'uncanny-automator' ), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 									array(
 										'a' => array(
 											'href'   => array(),
@@ -213,8 +213,7 @@
 
 							<uo-button
 								onclick="return confirm('<?php echo esc_html( $this->regenerate_alert ); ?>');"
-								href="<?php esc_attr_e( $this->regenerate_key_url ); ?>"
-								size="small"
+								href="<?php echo esc_url( $this->regenerate_key_url ); ?>"								size="small"
 								color="secondary"
 								class="uap-spacing-top"
 							>
@@ -305,5 +304,5 @@
 		</div>
 
 	</div>
-	<input type="hidden" name="uap_active_campaign_settings_timestamp" value="<?php esc_attr_e( time() ); ?>" >
+	<input type="hidden" name="uap_active_campaign_settings_timestamp" value="<?php echo esc_attr( time() ); ?>" >
 </form>

@@ -82,7 +82,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 
 		} catch ( \Exception $e ) {
 
-			automator_add_settings_error( 'automator_convertkit_connection_alerts', __( 'API Key verification failed.', 'uncanny-automator' ), $e->getMessage(), 'error' );
+			automator_add_settings_error( 'automator_convertkit_connection_alerts', esc_html__( 'API Key verification failed.', 'uncanny-automator' ), $e->getMessage(), 'error' );
 
 			return false;
 
@@ -129,7 +129,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 			$client = $this->helpers->get_client();
 
 			/* translators: Settings flash message */
-			$heading = sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $client['primary_email_address'] );
+			$heading = sprintf( esc_html__( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $client['primary_email_address'] );
 
 			automator_add_settings_error( 'automator_convertkit_connection_alerts', $heading, '', 'success' );
 
@@ -137,7 +137,7 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 
 		} catch ( \Exception $e ) {
 
-			automator_add_settings_error( 'automator_convertkit_connection_alerts', __( 'API Secret verification failed.', 'uncanny-automator' ), $e->getMessage(), 'error' );
+			automator_add_settings_error( 'automator_convertkit_connection_alerts', esc_html__( 'API Secret verification failed.', 'uncanny-automator' ), $e->getMessage(), 'error' );
 
 			return false;
 
@@ -169,10 +169,10 @@ class ConvertKit_Settings extends Settings\Premium_Integration_Settings {
 		);
 
 		$vars['actions'] = array(
-			__( 'Add a subscriber to a form', 'uncanny-automator' ),
-			__( 'Add a subscriber to a sequence', 'uncanny-automator' ),
-			__( 'Add a tag to a subscriber', 'uncanny-automator' ),
-			__( 'Remove a tag from a subscriber', 'uncanny-automator' ),
+			esc_html__( 'Add a subscriber to a form', 'uncanny-automator' ),
+			esc_html__( 'Add a subscriber to a sequence', 'uncanny-automator' ),
+			esc_html__( 'Add a tag to a subscriber', 'uncanny-automator' ),
+			esc_html__( 'Remove a tag from a subscriber', 'uncanny-automator' ),
 		);
 
 		include_once 'convertkit-view-settings.php';

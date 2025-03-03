@@ -19,11 +19,11 @@ class Wp_Download_Manager_Helpers {
 		$options = array();
 
 		if ( true === $is_any ) {
-			$options['-1'] = __( 'Any file', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'Any file', 'uncanny-automator' );
 		}
 
 		if ( true === $is_all ) {
-			$options['-1'] = __( 'All files', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'All files', 'uncanny-automator' );
 		}
 		$args  = array(
 			'post_type'      => 'wpdmpro',

@@ -190,7 +190,7 @@ class Automator_System_Report {
 			'version'                 => sprintf( '%s %s', AUTOMATOR_PLUGIN_VERSION, $last_updated ),
 			'pro_version'             => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : null,
 			'log_directory'           => UA_DEBUG_LOGS_DIR,
-			'log_directory_writable'  => is_writable( dirname( UA_DEBUG_LOGS_DIR . 'test.log' ) ),
+			'log_directory_writable'  => wp_is_writable( dirname( UA_DEBUG_LOGS_DIR . 'test.log' ) ),
 			'wp_version'              => get_bloginfo( 'version' ),
 			'wp_multisite'            => is_multisite(),
 			'wp_memory_limit'         => $wp_memory_limit,
@@ -289,7 +289,7 @@ class Automator_System_Report {
 			echo esc_html(
 				sprintf(
 				// translators: Comma seperated list of missing tables.
-					__( 'Missing base tables: %s. Some Automator functionality may not work as expected.', 'uncanny-automator' ),
+					esc_html__( 'Missing base tables: %s. Some Automator functionality may not work as expected.', 'uncanny-automator' ),
 					implode( ', ', $missing_tables )
 				)
 			);
@@ -459,10 +459,12 @@ class Automator_System_Report {
 				"SELECT TABLE_NAME AS `table_name`, ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024, 2) AS `size_mb`
 					FROM information_schema.TABLES
 				WHERE TABLE_SCHEMA = %s
-				AND TABLE_NAME like '%uap%' AND TABLE_NAME NOT LIKE '%_view'
+				AND TABLE_NAME like %s AND TABLE_NAME NOT LIKE %s
 				ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC;
 				",
-				DB_NAME
+				DB_NAME,
+				'%%uap%%',
+				'%%_view'
 			),
 			ARRAY_A
 		);
@@ -668,10 +670,10 @@ class Automator_System_Report {
 		if ( $dashboard->has_site_connected ) {
 			$credits = $dashboard->miscellaneous->free_credits;
 		} else {
-			$credits = __( 'Not connected', 'uncanny-automator' );
+			$credits = esc_html__( 'Not connected', 'uncanny-automator' );
 		}
 		if ( $dashboard->is_pro ) {
-			$credits = __( 'Unlimited', 'uncanny-automator-pro' );
+			$credits = esc_html__( 'Unlimited', 'uncanny-automator' );
 		}
 
 		return array(

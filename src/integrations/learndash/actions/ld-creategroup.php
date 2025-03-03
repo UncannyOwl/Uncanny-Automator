@@ -51,18 +51,18 @@ class LD_CREATEGROUP {
 
 		$tokens = array(
 			'GROUP_ID'            => array(
-				'name' => __( 'Group ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group ID', 'uncanny-automator' ),
 			),
 			'GROUP_COURSES'       => array(
-				'name' => __( 'Group courses', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group courses', 'uncanny-automator' ),
 			),
 			'GROUP_LEADER_EMAILS' => array(
-				'name' => __( 'Group Leader emails', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group Leader emails', 'uncanny-automator' ),
 			),
 		);
 		if ( Uncanny_Toolkit_Helpers::is_group_sign_up_activated() ) {
 			$tokens['GROUP_SIGNUP_URL'] = array(
-				'name' => __( 'Group signup URL', 'uncanny-automator' ),
+				'name' => esc_html__( 'Group signup URL', 'uncanny-automator' ),
 			);
 		}
 
@@ -81,7 +81,7 @@ class LD_CREATEGROUP {
 
 		$args = array(
 			'post_type'      => 'sfwd-courses',
-			'posts_per_page' => 999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
@@ -148,7 +148,7 @@ class LD_CREATEGROUP {
 
 		$user = get_user_by( 'ID', $user_id );
 		if ( ! $user ) {
-			$error_message = __( 'User not found.', 'uncanny-automator' );
+			$error_message = esc_html__( 'User not found.', 'uncanny-automator' );
 
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );

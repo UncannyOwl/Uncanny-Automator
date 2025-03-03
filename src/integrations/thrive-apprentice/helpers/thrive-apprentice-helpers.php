@@ -211,8 +211,8 @@ class Thrive_Apprentice_Helpers {
 	public function get_products() {
 
 		$products = get_terms(
-			'tva_product',
 			array(
+				'taxonomy'   => 'tva_product',
 				'hide_empty' => false,
 			)
 		);

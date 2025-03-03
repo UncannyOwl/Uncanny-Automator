@@ -74,7 +74,7 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 
 			$action_data = $helper->get_action_data_by_wamid( $response['data']['messages'][0]['id'] );
 
-			$error_message = esc_html__( 'No response was received from Meta after 1 minute. Make sure you have set-up your webhook configuration correctly.' );
+			$error_message = esc_html__( 'No response was received from Meta after 1 minute. Make sure you have set-up your webhook configuration correctly.', 'uncanny-automator' );
 
 			$recipe_error_message = Automator()->db->action->get_error_message( $action_data['recipe_log_id'] );
 
@@ -125,7 +125,7 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 
 	public function set_action_completed_label( $labels = array() ) {
 
-		$labels[10] = __( 'Completed, pending response', 'uncanny-automator' );
+		$labels[10] = esc_html__( 'Completed, pending response', 'uncanny-automator' );
 
 		return $labels;
 
@@ -140,7 +140,7 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 
 		if ( key_exists( 'await', $args ) ) {
 			// Completed is stored as tiny int. Maybe update it to enum?
-			$message = __( 'Message template sent. Waiting for response. The status will be updated once the response is received.', 'uncanny-automatar' );
+			$message = esc_html__( 'Message template sent. Waiting for response. The status will be updated once the response is received.', 'uncanny-automator' );
 		}
 
 		return $message;
@@ -195,7 +195,7 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 			array(
 				array(
 					'show_in'     => $this->get_action_meta(),
-					'text'        => __( 'Get variables', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Get variables', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => 'uap_whatsapp_render_fields',
 					'modules'     => array( 'modal', 'markdown' ),
@@ -236,14 +236,14 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 								'input_type'  => 'text',
 								'read_only'   => true,
 								'required'    => false,
-								'label'       => __( 'Type', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Type', 'uncanny-automator' ),
 							),
 							array(
 								'option_code' => 'HEADER_VARIABLE_VALUE',
 								'input_type'  => 'text',
 								'placeholder' => '{1}',
 								'required'    => false,
-								'label'       => __( 'Value', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Value', 'uncanny-automator' ),
 							),
 						),
 					),
@@ -259,7 +259,7 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 								'option_code' => 'BODY_VARIABLE',
 								'placeholder' => '{}',
 								'required'    => false,
-								'label'       => __( 'Value', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Value', 'uncanny-automator' ),
 							),
 						),
 					),
@@ -277,14 +277,14 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 								'placeholder' => '{N/A}',
 								'read_only'   => true,
 								'required'    => false,
-								'label'       => __( 'Format', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Format', 'uncanny-automator' ),
 							),
 							array(
 								'input_type'  => 'text',
 								'option_code' => 'BUTTON_VARIABLE',
 								'placeholder' => '{1}',
 								'required'    => false,
-								'label'       => __( 'Value', 'uncanny-automator' ),
+								'label'       => esc_html__( 'Value', 'uncanny-automator' ),
 							),
 						),
 					),

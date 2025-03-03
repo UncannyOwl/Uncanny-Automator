@@ -258,12 +258,12 @@ class PeepSo_Helpers {
 			}
 		};
 
-		$options['peepso_is_profile_likable'] = __( 'Allow others to "like" my profile', 'uncanny-automator' );
-		$options['peepso_hide_birthday_year'] = __( 'Hide my birthday year', 'uncanny-automator' );
-		$options['usr_profile_acc']           = __( 'Who can see my profile', 'uncanny-automator' );
-		$options['peepso_profile_post_acc']   = __( 'Who can post on my profile', 'uncanny-automator' );
-		$options['peepso_hide_online_status'] = __( "Don't show my online status", 'uncanny-automator' );
-		$options['peepso_gmt_offset']         = __( 'My timezone', 'uncanny-automator' );
+		$options['peepso_is_profile_likable'] = esc_html__( 'Allow others to "like" my profile', 'uncanny-automator' );
+		$options['peepso_hide_birthday_year'] = esc_html__( 'Hide my birthday year', 'uncanny-automator' );
+		$options['usr_profile_acc']           = esc_html__( 'Who can see my profile', 'uncanny-automator' );
+		$options['peepso_profile_post_acc']   = esc_html__( 'Who can post on my profile', 'uncanny-automator' );
+		$options['peepso_hide_online_status'] = esc_html__( "Don't show my online status", 'uncanny-automator' );
+		$options['peepso_gmt_offset']         = esc_html__( 'My timezone', 'uncanny-automator' );
 
 		return $options;
 	}

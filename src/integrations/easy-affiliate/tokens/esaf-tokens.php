@@ -93,85 +93,85 @@ class Esaf_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'AFFILIATE_ID',
-					'tokenName'       => __( 'Affiliate ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_USERNAME',
-					'tokenName'       => __( 'Affiliate username', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate username', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_EMAIL',
-					'tokenName'       => __( 'Affiliate email', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate email', 'uncanny-automator' ),
 					'tokenType'       => 'email',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_NAME',
-					'tokenName'       => __( 'Affiliate name', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_STATUS',
-					'tokenName'       => __( 'Affiliate status', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate status', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_ADDRESS_LINE1',
-					'tokenName'       => __( 'Affiliate address - Line 1', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate address - Line 1', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_ADDRESS_LINE2',
-					'tokenName'       => __( 'Affiliate address - Line 2', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate address - Line 2', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_ADDRESS_CITY',
-					'tokenName'       => __( 'Affiliate address - City', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate address - City', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_ADDRESS_STATE',
-					'tokenName'       => __( 'Affiliate address - State', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate address - State', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_ADDRESS_ZIP',
-					'tokenName'       => __( 'Affiliate address - Zip', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate address - Zip', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_ADDRESS_COUNTRY',
-					'tokenName'       => __( 'Affiliate address - Country', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate address - Country', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_SIGNUP_DATE',
-					'tokenName'       => __( 'Affiliate sign-up date', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate sign-up date', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_REFERRER',
-					'tokenName'       => __( 'Affiliate referrer', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate referrer', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_NOTES',
-					'tokenName'       => __( 'Affiliate notes', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate notes', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -204,25 +204,25 @@ class Esaf_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'AFFILIATE_MTD_CLICKS',
-					'tokenName'       => __( 'Affiliate MTD-clicks', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate MTD-clicks', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_YTD_CLICKS',
-					'tokenName'       => __( 'Affiliate YTD-clicks', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate YTD-clicks', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_MTD_COMMISSIONS',
-					'tokenName'       => __( 'Affiliate MTD commissions', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate MTD commissions', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'AFFILIATE_YTD_COMMISSIONS',
-					'tokenName'       => __( 'Affiliate YTD commissions', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Affiliate YTD commissions', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -248,13 +248,13 @@ class Esaf_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'SALE_AMOUNT',
-				'tokenName'       => __( 'Sale amount', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Sale amount', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
 			array(
 				'tokenId'         => 'ORDER_SOURCE',
-				'tokenName'       => __( 'Order source', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Order source', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -383,9 +383,9 @@ class Esaf_Tokens {
 	public function get_mtd_clicks( $affiliate_id ) {
 		$db = Db::fetch();
 		global $wpdb;
-		$year       = date( 'Y' );
-		$month      = date( 'm' );
-		$mtd_clicks = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(COUNT(*),0) FROM {$db->clicks} as clk WHERE clk.affiliate_id = %d AND created_at BETWEEN '{$year}-{$month}-01 00:00:00' AND NOW()", $affiliate_id ) ); //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$year       = wp_date( 'Y' );
+		$month      = wp_date( 'm' );
+		$mtd_clicks = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(COUNT(*),0) FROM {$db->clicks} as clk WHERE clk.affiliate_id = %d AND created_at BETWEEN '{$year}-{$month}-01 00:00:00' AND NOW()", $affiliate_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $mtd_clicks;
 	}
@@ -398,8 +398,8 @@ class Esaf_Tokens {
 	public function get_ytd_clicks( $affiliate_id ) {
 		$db = Db::fetch();
 		global $wpdb;
-		$year       = date( 'Y' );
-		$ytd_clicks = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(COUNT(*),0) FROM {$db->clicks} as clk WHERE clk.affiliate_id = %d AND created_at BETWEEN '{$year}-01-01 00:00:00' AND NOW()", $affiliate_id ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$year       = wp_date( 'Y' );
+		$ytd_clicks = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(COUNT(*),0) FROM {$db->clicks} as clk WHERE clk.affiliate_id = %d AND created_at BETWEEN '{$year}-01-01 00:00:00' AND NOW()", $affiliate_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $ytd_clicks;
 	}
@@ -412,9 +412,9 @@ class Esaf_Tokens {
 	public function get_mtd_commissions( $affiliate_id ) {
 		$db = Db::fetch();
 		global $wpdb;
-		$year            = date( 'Y' );
-		$month           = date( 'm' );
-		$mtd_commissions = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(SUM(commish.commission_amount),0.00) FROM {$db->commissions} AS commish LEFT JOIN {$db->transactions} txn ON commish.transaction_id = txn.id WHERE txn.status = 'complete' AND commish.affiliate_id = %d AND commish.created_at BETWEEN '{$year}-{$month}-01 00:00:00' AND NOW()", $affiliate_id ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$year            = wp_date( 'Y' );
+		$month           = wp_date( 'm' );
+		$mtd_commissions = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(SUM(commish.commission_amount),0.00) FROM {$db->commissions} AS commish LEFT JOIN {$db->transactions} txn ON commish.transaction_id = txn.id WHERE txn.status = 'complete' AND commish.affiliate_id = %d AND commish.created_at BETWEEN '{$year}-{$month}-01 00:00:00' AND NOW()", $affiliate_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $mtd_commissions;
 	}
@@ -427,8 +427,8 @@ class Esaf_Tokens {
 	public function get_ytd_commissions( $affiliate_id ) {
 		$db = Db::fetch();
 		global $wpdb;
-		$year            = date( 'Y' );
-		$ytd_commissions = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(SUM(commish.commission_amount),0.00) FROM {$db->commissions} AS commish LEFT JOIN {$db->transactions} txn ON commish.transaction_id = txn.id WHERE txn.status = 'complete' AND commish.affiliate_id = %d AND commish.created_at BETWEEN '{$year}-01-01 00:00:00' AND NOW()", $affiliate_id ) );  //phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$year            = wp_date( 'Y' );
+		$ytd_commissions = $wpdb->get_var( $wpdb->prepare( "SELECT IFNULL(SUM(commish.commission_amount),0.00) FROM {$db->commissions} AS commish LEFT JOIN {$db->transactions} txn ON commish.transaction_id = txn.id WHERE txn.status = 'complete' AND commish.affiliate_id = %d AND commish.created_at BETWEEN '{$year}-01-01 00:00:00' AND NOW()", $affiliate_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $ytd_commissions;
 	}

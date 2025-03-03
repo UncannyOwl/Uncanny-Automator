@@ -76,7 +76,6 @@ class Google_Calendar_Helpers {
 		require_once __DIR__ . '/../settings/settings-google-calendar.php';
 
 		new Google_Calendar_Settings( $this );
-
 	}
 
 	/**
@@ -89,7 +88,7 @@ class Google_Calendar_Helpers {
 	public function parse_response( $response ) {
 
 		return array_map(
-			function( $response ) {
+			function ( $response ) {
 				return array(
 					'text'  => $response['summary'],
 					'value' => $response['id'],
@@ -97,7 +96,6 @@ class Google_Calendar_Helpers {
 			},
 			$response
 		);
-
 	}
 
 	/**
@@ -152,7 +150,6 @@ class Google_Calendar_Helpers {
 		echo wp_json_encode( $items );
 
 		wp_die();
-
 	}
 
 	/**
@@ -202,7 +199,6 @@ class Google_Calendar_Helpers {
 			);
 
 		}
-
 	}
 
 	/**
@@ -284,7 +280,6 @@ class Google_Calendar_Helpers {
 		}
 
 		wp_send_json( $items );
-
 	}
 
 	/**
@@ -315,7 +310,6 @@ class Google_Calendar_Helpers {
 		$this->redirect_with_error( 'generic_error' );
 
 		wp_die();
-
 	}
 
 	/**
@@ -339,7 +333,6 @@ class Google_Calendar_Helpers {
 		if ( ! empty( $invoked_errors ) ) {
 			$this->redirect_with_error( str_replace( ' ', '_', strtolower( rawurlencode( $invoked_errors ) ) ) );
 		}
-
 	}
 
 	/**
@@ -384,7 +377,6 @@ class Google_Calendar_Helpers {
 		);
 
 		exit;
-
 	}
 
 	/**
@@ -447,7 +439,6 @@ class Google_Calendar_Helpers {
 		}
 
 		return $has_missing_scope;
-
 	}
 
 	/**
@@ -532,7 +523,6 @@ class Google_Calendar_Helpers {
 	public function get_client() {
 
 		return automator_get_option( self::OPTION_KEY, false );
-
 	}
 
 
@@ -649,7 +639,6 @@ class Google_Calendar_Helpers {
 		}
 
 		return $items;
-
 	}
 
 
@@ -661,7 +650,6 @@ class Google_Calendar_Helpers {
 	public function is_user_connected() {
 
 		return ! empty( $this->get_client() );
-
 	}
 
 	/**
@@ -694,7 +682,6 @@ class Google_Calendar_Helpers {
 		}
 
 		return $response;
-
 	}
 
 	/**
@@ -719,7 +706,6 @@ class Google_Calendar_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
-
 	}
 
 	/**
@@ -742,7 +728,6 @@ class Google_Calendar_Helpers {
 			automator_log( $e->getMessage(), true );
 
 		}
-
 	}
 
 	/**
@@ -761,7 +746,6 @@ class Google_Calendar_Helpers {
 		automator_delete_option( self::OPTION_KEY );
 
 		return true;
-
 	}
 
 
@@ -787,11 +771,15 @@ class Google_Calendar_Helpers {
 		$response = Api_Server::api_call( $params );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( $params['endpoint'] . ' failed' );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: API endpoint */
+					esc_html__( '%s failed', 'uncanny-automator' ),
+					esc_html( $params['endpoint'] )
+				)
+			);
 		}
 
 		return $response;
-
 	}
-
 }

@@ -76,7 +76,7 @@ $connected      = $this->helpers->functions->get_client();
 
 				<?php } else { ?>
 
-					<uo-alert heading="<?php echo esc_attr( sprintf( __( 'Uncanny Automator only supports connecting to one Trello account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Uncanny Automator only supports connecting to one Trello account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
 					</uo-alert>
 
 				<?php } ?>

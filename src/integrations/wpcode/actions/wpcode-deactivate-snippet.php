@@ -122,7 +122,8 @@ class WPCODE_DEACTIVATE_SNIPPET {
 
 		if ( empty( $snippet->id ) ) {
 			$action_data['complete_with_errors'] = true;
-			$error_message                       = sprintf( esc_attr_x( 'The snippet id: %s is not valid.', 'WPCode', 'uncanny-automator' ), $snippet_id );
+			// translators: 1: Snippet ID
+			$error_message = sprintf( esc_attr_x( 'The snippet id: %s is not valid.', 'WPCode', 'uncanny-automator' ), $snippet_id );
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
@@ -131,7 +132,8 @@ class WPCODE_DEACTIVATE_SNIPPET {
 		if ( false === $snippet->is_active() ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			$error_message                       = sprintf( esc_attr_x( 'The snippet %s is already inactive.', 'WPCode', 'uncanny-automator' ), $snippet->get_title() );
+			// translators: 1: Snippet name
+			$error_message = sprintf( esc_attr_x( 'The snippet %s is already inactive.', 'WPCode', 'uncanny-automator' ), $snippet->get_title() );
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;

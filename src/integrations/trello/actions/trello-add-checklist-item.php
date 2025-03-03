@@ -47,7 +47,7 @@ class TRELLO_ADD_CHECKLIST_ITEM {
 		$this->set_action_tokens(
 			array(
 				'ID' => array(
-					'name' => __( 'Checklist item ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Checklist item ID', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -66,8 +66,8 @@ class TRELLO_ADD_CHECKLIST_ITEM {
 
 		$user_boards_field = array(
 			'option_code'           => 'BOARD',
-			'label'                 => __( 'Board', 'uncanny-automator' ),
-			'token_name'            => __( 'Board ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Board', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Board ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => $this->functions->user_boards_options(),
@@ -76,8 +76,8 @@ class TRELLO_ADD_CHECKLIST_ITEM {
 
 		$board_lists_field = array(
 			'option_code'           => 'LIST',
-			'label'                 => __( 'List', 'uncanny-automator' ),
-			'token_name'            => __( 'List ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'List', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'List ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -91,8 +91,8 @@ class TRELLO_ADD_CHECKLIST_ITEM {
 
 		$list_cards_field = array(
 			'option_code'           => $this->get_action_meta(),
-			'label'                 => __( 'Card', 'uncanny-automator' ),
-			'token_name'            => __( 'Card ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Card', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Card ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'supports_custom_value' => false,
@@ -106,8 +106,8 @@ class TRELLO_ADD_CHECKLIST_ITEM {
 
 		$card_checklists_field = array(
 			'option_code'           => 'CHECKLIST',
-			'label'                 => __( 'Checklist', 'uncanny-automator' ),
-			'token_name'            => __( 'Checklist ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Checklist', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Checklist ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -144,7 +144,7 @@ class TRELLO_ADD_CHECKLIST_ITEM {
 			'input_type'            => 'select',
 			'options'               => array(),
 			'label'                 => esc_attr__( 'Member', 'uncanny-automator' ),
-			'token_name'            => __( 'Member ID', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Member ID', 'uncanny-automator' ),
 			'placeholder'           => esc_attr__( 'No member', 'uncanny-automator' ),
 			'default'               => '',
 			'supports_custom_value' => false,

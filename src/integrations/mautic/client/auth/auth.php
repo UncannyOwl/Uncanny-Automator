@@ -29,7 +29,6 @@ class Mautic_Client_Auth {
 	public function __construct( Automator_Client $client ) {
 
 		$this->client = $client;
-
 	}
 
 	/**
@@ -49,7 +48,6 @@ class Mautic_Client_Auth {
 		$this->credentials_submitted = $credentials_submitted;
 
 		return $this;
-
 	}
 
 	/**
@@ -99,7 +97,6 @@ class Mautic_Client_Auth {
 			return false;
 
 		}
-
 	}
 
 	/**
@@ -121,7 +118,6 @@ class Mautic_Client_Auth {
 		}
 
 		return $credentials;
-
 	}
 
 	/**
@@ -137,7 +133,6 @@ class Mautic_Client_Auth {
 		$response = $this->api_call( $body );
 
 		return $response;
-
 	}
 
 	/**
@@ -154,7 +149,6 @@ class Mautic_Client_Auth {
 		automator_delete_option( 'automator_mautic_resource_owner' );
 
 		return true;
-
 	}
 
 	/**
@@ -181,12 +175,10 @@ class Mautic_Client_Auth {
 				if ( false === $error ) {
 					$error = 'An error with unknown format has been returned';
 				}
-				throw new \Exception( $error, $response['statusCode'] );
+				throw new \Exception( esc_html( $error ), absint( $response['statusCode'] ) );
 			}
 		}
 
 		return $response;
-
 	}
-
 }

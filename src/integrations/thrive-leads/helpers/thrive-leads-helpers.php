@@ -38,11 +38,11 @@ class Thrive_Leads_Helpers {
 		}
 
 		if ( true === $args['is_any'] ) {
-			$all_forms = array( '-1' => __( 'Any form', 'uncanny-automator' ) ) + $all_forms;
+			$all_forms = array( '-1' => esc_html__( 'Any form', 'uncanny-automator' ) ) + $all_forms;
 		}
 
 		if ( true === $args['is_all'] ) {
-			$all_forms = array( '-1' => __( 'All forms', 'uncanny-automator' ) ) + $all_forms;
+			$all_forms = array( '-1' => esc_html__( 'All forms', 'uncanny-automator' ) ) + $all_forms;
 		}
 
 		$option = array(

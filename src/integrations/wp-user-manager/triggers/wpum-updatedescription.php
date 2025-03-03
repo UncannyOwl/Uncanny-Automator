@@ -37,16 +37,15 @@ class WPUM_UPDATEDESCRIPTION {
 	 */
 	public function define_trigger() {
 
-
 		$trigger = array(
 			'author'              => Automator()->get_author_name( $this->trigger_code ),
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-user-manager/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP User Manager */
-			'sentence'            => __( 'A user updates their profile description', 'uncanny-automator' ),
+			'sentence'            => esc_html__( 'A user updates their profile description', 'uncanny-automator' ),
 			/* translators: Logged-in trigger - WP User Manager */
-			'select_option_name'  => __( 'A user updates their profile description', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A user updates their profile description', 'uncanny-automator' ),
 			'action'              => 'wpum_before_user_update',
 			'priority'            => 99,
 			'accepted_args'       => 3,
@@ -64,7 +63,6 @@ class WPUM_UPDATEDESCRIPTION {
 	 */
 	public function wpum_description_update( $obj, $values, $updated_id ) {
 
-
 		if ( 0 === absint( $updated_id ) ) {
 			// Its a logged in recipe and
 			// user ID is 0. Skip process
@@ -77,24 +75,24 @@ class WPUM_UPDATEDESCRIPTION {
 			return;
 		}
 
-		$pass_args = [
+		$pass_args = array(
 			'code'           => $this->trigger_code,
 			'meta'           => $this->trigger_meta,
 			'user_id'        => $updated_id,
 			'ignore_post_id' => true,
-		];
+		);
 
 		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
 
 		if ( $args ) {
 			foreach ( $args as $result ) {
 				if ( true === $result['result'] ) {
-					$trigger_meta = [
+					$trigger_meta = array(
 						'user_id'        => $updated_id,
 						'trigger_id'     => $result['args']['trigger_id'],
 						'trigger_log_id' => $result['args']['get_trigger_id'],
 						'run_number'     => $result['args']['run_number'],
-					];
+					);
 
 					foreach ( $values['account'] as $key => $value ) {
 						$trigger_meta['meta_key']   = $key;

@@ -43,7 +43,7 @@ class Divi_Helpers {
 	 *
 	 * @param Divi_Helpers $options
 	 */
-	public function setOptions( Divi_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Divi_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
@@ -52,7 +52,7 @@ class Divi_Helpers {
 	 *
 	 * @param Divi_Pro_Helpers $pro
 	 */
-	public function setPro( Divi_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( Divi_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -197,7 +197,7 @@ class Divi_Helpers {
 					}
 
 					$form_id                    = ( true === $update_form_id ) ? self::generate_divi_form_unique_id( $form_post->ID, $form_attrs, $form_index, $is_theme_builder ) : sprintf( '%d-%s', $form_post->ID, $form_id );
-					$form_title                 = isset( $form_attrs['title'] ) ? $form_attrs['title'] : __( 'No form title', 'uncanny-automator' );
+					$form_title                 = isset( $form_attrs['title'] ) ? $form_attrs['title'] : esc_html__( 'No form title', 'uncanny-automator' );
 					$form_title                 = sprintf( '%s - %s', $form_post->post_title, $form_title );
 					$fields                     = self::extract_fields( $form[0] );
 					$data[ $form_id ]['title']  = $form_title;
@@ -232,7 +232,7 @@ class Divi_Helpers {
 			$field_id            = strtolower( self::array_get( $contact_field_attrs, 'field_id' ) );
 
 			$fields[] = array(
-				'field_title'   => self::array_get( $contact_field_attrs, 'field_title', __( 'No title', 'uncanny-automator' ) ),
+				'field_title'   => self::array_get( $contact_field_attrs, 'field_title', esc_html__( 'No title', 'uncanny-automator' ) ),
 				'field_type'    => self::array_get( $contact_field_attrs, 'field_type', 'text' ),
 				'field_id'      => $field_id,
 				'required_mark' => self::array_get( $contact_field_attrs, 'required_mark', 'on' ),

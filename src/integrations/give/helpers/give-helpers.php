@@ -56,7 +56,7 @@ class Give_Helpers {
 	public function list_all_give_forms( $label = null, $option_code = 'MAKEDONATION', $args = array(), $tokens = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Form', 'uncanny-automator' );
+			$label = esc_html__( 'Form', 'uncanny-automator' );
 		}
 
 		$token          = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -78,7 +78,7 @@ class Give_Helpers {
 			'posts_per_page' => 9999,
 			'post_status'    => 'publish',
 		);
-		$options    = Automator()->helpers->recipe->wp_query( $query_args, true, __( 'Any form', 'uncanny-automator' ) );
+		$options    = Automator()->helpers->recipe->wp_query( $query_args, true, esc_html__( 'Any form', 'uncanny-automator' ) );
 		$type       = 'select';
 
 		$option = array(
@@ -108,79 +108,79 @@ class Give_Helpers {
 			'give_title'    => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'Name title prefix', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Name title prefix', 'uncanny-automator' ),
 				'key'      => 'title',
 			),
 			'give_first'    => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'First name', 'uncanny-automator' ),
+				'label'    => esc_html__( 'First name', 'uncanny-automator' ),
 				'key'      => 'first_name',
 			),
 			'give_last'     => array(
 				'type'     => 'text',
 				'required' => false,
-				'label'    => __( 'Last name', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Last name', 'uncanny-automator' ),
 				'key'      => 'last_name',
 			),
 			'give_email'    => array(
 				'type'     => 'email',
 				'required' => true,
-				'label'    => __( 'Email', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Email', 'uncanny-automator' ),
 				'key'      => 'user_email',
 			),
 			'give-amount'   => array(
 				'type'     => 'tel',
 				'required' => true,
-				'label'    => __( 'Donation amount', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Donation amount', 'uncanny-automator' ),
 				'key'      => 'price',
 			),
 			'give_currency' => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'Currency', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Currency', 'uncanny-automator' ),
 				'key'      => 'currency',
 			),
 			'give_comment'  => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'Comment', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Comment', 'uncanny-automator' ),
 				'key'      => 'give_comment',
 			),
 			'address1'      => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'Address line 1', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Address line 1', 'uncanny-automator' ),
 				'key'      => 'address1',
 			),
 			'address2'      => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'Address line 2', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Address line 2', 'uncanny-automator' ),
 				'key'      => 'address2',
 			),
 			'city'          => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'City', 'uncanny-automator' ),
+				'label'    => esc_html__( 'City', 'uncanny-automator' ),
 				'key'      => 'city',
 			),
 			'state'         => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'State', 'uncanny-automator' ),
+				'label'    => esc_html__( 'State', 'uncanny-automator' ),
 				'key'      => 'state',
 			),
 			'zip'           => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'Zip', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Zip', 'uncanny-automator' ),
 				'key'      => 'zip',
 			),
 			'country'       => array(
 				'type'     => 'text',
 				'required' => true,
-				'label'    => __( 'Country', 'uncanny-automator' ),
+				'label'    => esc_html__( 'Country', 'uncanny-automator' ),
 				'key'      => 'country',
 			),
 		);

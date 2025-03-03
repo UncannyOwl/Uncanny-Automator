@@ -39,7 +39,6 @@ class AWEBER_SUBSCRIBER_TAG_ADD extends \Uncanny_Automator\Recipe\Action {
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Add {{a tag}} to {{a subscriber}}', 'AWeber', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
 	}
 
 	/**
@@ -87,7 +86,6 @@ class AWEBER_SUBSCRIBER_TAG_ADD extends \Uncanny_Automator\Recipe\Action {
 				'required'    => true,
 			),
 		);
-
 	}
 
 	/**
@@ -111,7 +109,14 @@ class AWEBER_SUBSCRIBER_TAG_ADD extends \Uncanny_Automator\Recipe\Action {
 		try {
 
 			if ( false === filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-				throw new Exception( sprintf( 'The email address [%s] is invalid', $email ) );
+				/* translators: Email address */
+				throw new Exception(
+					sprintf(
+					/* translators: %s: Email address */
+						esc_html__( 'The email address [%s] is invalid', 'uncanny-automator' ),
+						esc_html( $email )
+					)
+				);
 			}
 
 			$body = array(
@@ -127,9 +132,7 @@ class AWEBER_SUBSCRIBER_TAG_ADD extends \Uncanny_Automator\Recipe\Action {
 			return true;
 
 		} catch ( Exception $e ) {
-			throw new Exception( $e->getMessage() );
+			throw new Exception( esc_html( $e->getMessage() ) );
 		}
-
 	}
-
 }

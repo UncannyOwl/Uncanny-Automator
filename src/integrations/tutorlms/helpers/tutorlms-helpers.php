@@ -140,7 +140,7 @@ class Tutorlms_Helpers {
 
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, __( 'Any course', 'uncanny-automator' ), $all_label );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_html__( 'Any course', 'uncanny-automator' ), $all_label );
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -278,11 +278,11 @@ class Tutorlms_Helpers {
 
 		if ( absint( '-1' ) === absint( $course_id ) || true === (bool) $this->load_any_options ) {
 			// Use `Any lesson` for triggers.
-			$text = __( 'Any lesson', 'uncanny-automator' );
+			$text = esc_html__( 'Any lesson', 'uncanny-automator' );
 
 			if ( true === $this->load_all_options ) {
 				// Use `All lessons` for this specific endpoint.
-				$text = __( 'All lessons', 'uncanny-automator' );
+				$text = esc_html__( 'All lessons', 'uncanny-automator' );
 			}
 
 			$fields[] = array(

@@ -173,7 +173,6 @@ class Google_Sheet_Helpers {
 		add_action( 'wp_ajax_automator_google_sheet_remove_spreadsheet', array( $this, 'remove_spreadsheet' ) );
 
 		new Google_Sheet_Settings( $this );
-
 	}
 
 	/**
@@ -211,7 +210,6 @@ class Google_Sheet_Helpers {
 		wp_safe_redirect( admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=google-sheet' ) );
 
 		exit;
-
 	}
 
 	/**
@@ -335,7 +333,6 @@ class Google_Sheet_Helpers {
 		wp_send_json_success(
 			(array) automator_get_option( self::SPREADSHEETS_OPTIONS_KEY, array() )
 		);
-
 	}
 
 	/**
@@ -515,7 +512,6 @@ class Google_Sheet_Helpers {
 				'rows'    => $fields,
 			)
 		);
-
 	}
 
 	/**
@@ -553,14 +549,14 @@ class Google_Sheet_Helpers {
 	public function get_google_drives( $label = null, $option_code = 'GSDRIVE', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Drive', 'uncanny-automator' );
+			$label = esc_html__( 'Drive', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any drive', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any drive', 'uncanny-automator' ),
 			)
 		);
 
@@ -608,14 +604,14 @@ class Google_Sheet_Helpers {
 	public function get_google_spreadsheets( $label = null, $option_code = 'GSSPREADSHEET', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Drive', 'uncanny-automator' );
+			$label = esc_html__( 'Drive', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any spreadsheet', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any spreadsheet', 'uncanny-automator' ),
 			)
 		);
 
@@ -698,14 +694,14 @@ class Google_Sheet_Helpers {
 	public function get_google_worksheets( $label = null, $option_code = 'GSWORKSHEET', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Worksheet', 'uncanny-automator' );
+			$label = esc_html__( 'Worksheet', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any worksheet', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any worksheet', 'uncanny-automator' ),
 			)
 		);
 
@@ -761,7 +757,6 @@ class Google_Sheet_Helpers {
 		echo wp_json_encode( $fields );
 
 		die();
-
 	}
 
 	/**
@@ -868,7 +863,6 @@ class Google_Sheet_Helpers {
 			die;
 
 		}
-
 	}
 
 	/**
@@ -905,7 +899,6 @@ class Google_Sheet_Helpers {
 		}
 
 		return $has_missing_scope;
-
 	}
 
 	/**
@@ -935,7 +928,7 @@ class Google_Sheet_Helpers {
 
 			$options[] = array(
 				'value' => '-1',
-				'text'  => __( 'My google drive', 'uncanny-automator' ),
+				'text'  => esc_html__( 'My google drive', 'uncanny-automator' ),
 			);
 
 			if ( ! empty( $response['data'] ) && is_array( $response['data'] ) ) {
@@ -956,7 +949,6 @@ class Google_Sheet_Helpers {
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
 		}
-
 	}
 
 
@@ -984,7 +976,7 @@ class Google_Sheet_Helpers {
 
 			$options[] = array(
 				'value' => '-1',
-				'text'  => __( 'Select a Speadsheet', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Select a Speadsheet', 'uncanny-automator' ),
 			);
 
 			if ( ! empty( $response['data'] ) && is_array( $response['data'] ) ) {
@@ -1004,7 +996,6 @@ class Google_Sheet_Helpers {
 		}
 
 		return $options;
-
 	}
 
 	/**
@@ -1070,7 +1061,6 @@ class Google_Sheet_Helpers {
 		}
 
 		return $options;
-
 	}
 
 	/**
@@ -1144,7 +1134,6 @@ class Google_Sheet_Helpers {
 		}
 
 		return $response;
-
 	}
 
 	/**
@@ -1253,7 +1242,6 @@ class Google_Sheet_Helpers {
 		automator_delete_option( self::SPREADSHEETS_OPTIONS_KEY );
 
 		return true;
-
 	}
 
 	/**
@@ -1276,7 +1264,6 @@ class Google_Sheet_Helpers {
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage() );
 		}
-
 	}
 
 	/**
@@ -1319,14 +1306,14 @@ class Google_Sheet_Helpers {
 	public function get_google_sheet_columns( $label = null, $option_code = 'GSWORKSHEETCOLUMN', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Columns', 'uncanny-automator' );
+			$label = esc_html__( 'Columns', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any column', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any column', 'uncanny-automator' ),
 			)
 		);
 
@@ -1384,7 +1371,6 @@ class Google_Sheet_Helpers {
 		echo wp_json_encode( $fields );
 
 		die();
-
 	}
 
 	/**
@@ -1413,7 +1399,6 @@ class Google_Sheet_Helpers {
 				'options' => $fields,
 			)
 		);
-
 	}
 
 	/**
@@ -1463,7 +1448,6 @@ class Google_Sheet_Helpers {
 		}
 
 		return $fields;
-
 	}
 
 	/**
@@ -1548,7 +1532,6 @@ class Google_Sheet_Helpers {
 
 		// Update the option 'uncanny_automator_google_sheets_migrated'.
 		automator_update_option( 'uncanny_automator_google_sheets_migrated', 'yes', true );
-
 	}
 
 	/**
@@ -1569,7 +1552,6 @@ class Google_Sheet_Helpers {
 		$response = $this->api_call( $body );
 
 		return $response;
-
 	}
 
 	/**
@@ -1617,11 +1599,16 @@ class Google_Sheet_Helpers {
 		$response = Api_Server::api_call( $params );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( $params['endpoint'] . ' failed' );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: API endpoint */
+					esc_html__( '%s failed', 'uncanny-automator' ),
+					esc_html( $params['endpoint'] )
+				)
+			);
 		}
 
 		return $response;
-
 	}
 
 	/**
@@ -1707,7 +1694,6 @@ class Google_Sheet_Helpers {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -1728,7 +1714,6 @@ class Google_Sheet_Helpers {
 		}
 
 		return explode( ' ', $client['scope'] );
-
 	}
 
 	/**
@@ -1741,6 +1726,5 @@ class Google_Sheet_Helpers {
 		$scopes = $this->get_client_scopes();
 
 		return is_array( $scopes ) && in_array( 'https://www.googleapis.com/auth/drive', $scopes, true );
-
 	}
 }

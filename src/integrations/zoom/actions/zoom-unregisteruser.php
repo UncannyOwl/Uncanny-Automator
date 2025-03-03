@@ -43,8 +43,8 @@ class ZOOM_UNREGISTERUSER {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			/* translators: Meeting topic */
-			'sentence'              => sprintf( __( 'Remove the user from {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Remove the user from {{a meeting}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Remove the user from {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Remove the user from {{a meeting}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'zoom_unregister_user' ),
@@ -64,7 +64,7 @@ class ZOOM_UNREGISTERUSER {
 
 		$account_users_field = array(
 			'option_code'           => 'ZOOMUSER',
-			'label'                 => __( 'Account user', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Account user', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => false,
 			'is_ajax'               => true,
@@ -77,7 +77,7 @@ class ZOOM_UNREGISTERUSER {
 
 		$user_meetings_field = array(
 			'option_code'           => $this->action_meta,
-			'label'                 => __( 'Meeting', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Meeting', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -109,13 +109,13 @@ class ZOOM_UNREGISTERUSER {
 		try {
 
 			if ( empty( $user_id ) ) {
-				throw new \Exception( __( 'User was not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User was not found.', 'uncanny-automator' ) );
 			}
 
 			$meeting_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
 			if ( empty( $meeting_key ) ) {
-				throw new \Exception( __( 'Meeting was not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Meeting was not found.', 'uncanny-automator' ) );
 			}
 
 			$meeting_key = str_replace( '-objectkey', '', $meeting_key );

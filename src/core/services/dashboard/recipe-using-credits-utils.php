@@ -193,8 +193,9 @@ class Recipe_Using_Credits_Utils {
 		$recipe_items = array();
 
 		foreach ( $recipes as $recipe ) {
-			$recipe_id    = $recipe['ID'];
-			$recipe_title = ! empty( $recipe['post_title'] ) ? $recipe['post_title'] : sprintf( __( 'ID: %s (no title)', 'uncanny-automator' ), $recipe_id );
+			$recipe_id = $recipe['ID'];
+			// translators: 1: Recipe ID
+			$recipe_title = ! empty( $recipe['post_title'] ) ? $recipe['post_title'] : sprintf( esc_html__( 'ID: %s (no title)', 'uncanny-automator' ), $recipe_id );
 
 			$recipe_edit_url                  = get_edit_post_link( $recipe_id );
 			$recipe_type                      = get_post_type( $recipe_id );

@@ -40,8 +40,8 @@ class AUDIENCE_ADDUSERTAG {
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
 			// translators: Mailchimp tag
-			'sentence'              => sprintf( __( 'Add {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Add {{a tag}} to the user', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Add {{a tag:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Add {{a tag}} to the user', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'options_callback'      => array( $this, 'load_options' ),
@@ -62,7 +62,7 @@ class AUDIENCE_ADDUSERTAG {
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						__( 'Audience', 'uncanny-automator' ),
+						esc_html__( 'Audience', 'uncanny-automator' ),
 						'MCLIST',
 						array(
 							'is_ajax'      => true,
@@ -71,7 +71,7 @@ class AUDIENCE_ADDUSERTAG {
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_list_tags(
-						__( 'Tags', 'uncanny-automator' ),
+						esc_html__( 'Tags', 'uncanny-automator' ),
 						'MCLISTTAGS',
 						array(
 							'is_ajax'                  => true,
@@ -102,7 +102,7 @@ class AUDIENCE_ADDUSERTAG {
 			$tag     = $action_data['meta']['MCLISTTAGS'];
 
 			if ( empty( $tag ) ) {
-				throw new \Exception( __( 'No tag selected.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No tag selected.', 'uncanny-automator' ) );
 			}
 
 			// get current user email

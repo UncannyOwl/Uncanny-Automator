@@ -29,7 +29,6 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 			)
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Create or update {{a contact}}', 'Mautic', 'uncanny-automator' ) );
-
 	}
 
 	/**
@@ -82,7 +81,6 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 			$email,
 			$fields,
 		);
-
 	}
 
 	/**
@@ -107,7 +105,14 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 
 		// Invalid email. Complete with error.
 		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception( 'Invalid email. "' . $email . '"', 500 );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Email address */
+					esc_html__( 'Invalid email: "%s"', 'uncanny-automator' ),
+					esc_html( $email )
+				),
+				500
+			);
 		}
 
 		// Empty fields. Complete with error.
@@ -139,7 +144,5 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		return true;
-
 	}
-
 }

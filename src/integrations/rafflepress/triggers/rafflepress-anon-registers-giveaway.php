@@ -28,6 +28,7 @@ class RAFFLEPRESS_ANON_REGISTERS_GIVEAWAY extends \Uncanny_Automator\Recipe\Trig
 		$this->set_trigger_meta( 'RP_GIVEAWAYS' );
 		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - RafflePress
+		// translators: 1: Giveaway name
 		$this->set_sentence( sprintf( esc_attr_x( 'Someone registers for {{a giveaway:%1$s}}', 'RafflePress', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Someone registers for {{a giveaway}}', 'RafflePress', 'uncanny-automator' ) );
 		$this->add_action( 'rafflepress_giveaway_webhooks', 90, 1 );

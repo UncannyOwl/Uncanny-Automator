@@ -43,7 +43,7 @@ class Admin_Settings_Advanced_Background_Actions {
 
 	public function register_settings() {
 
-		register_setting( self::SETTINGSGROUP, self::SETTINGSGROUP . '_settings_timestamp' );
+		register_setting( self::SETTINGSGROUP, self::SETTINGSGROUP . '_settings_timestamp' ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
 
 	}
 

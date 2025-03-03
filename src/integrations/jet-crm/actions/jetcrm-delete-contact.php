@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class JETCRM_DELETE_CONTACT
+ *
  * @package Uncanny_Automator
  */
 class JETCRM_DELETE_CONTACT {
@@ -85,7 +86,8 @@ class JETCRM_DELETE_CONTACT {
 		}
 		$action_data['do-nothing']           = true;
 		$action_data['complete_with_errors'] = true;
-		Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf( __( 'Contact was not found matching (%s).', 'uncanny-automator' ), $contact ) );
+		// translators: 1: Contact ID or email
+		Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf( esc_html__( 'Contact was not found matching (%s).', 'uncanny-automator' ), $contact ) );
 	}
 
 }

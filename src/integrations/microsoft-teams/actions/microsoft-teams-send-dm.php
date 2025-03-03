@@ -38,7 +38,7 @@ class MICROSOFT_TEAMS_SEND_DM extends \Uncanny_Automator\Recipe\Action {
 
 		$user_teams_field = array(
 			'option_code'           => 'TEAM',
-			'label'                 => __( 'Team', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Team', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,
@@ -51,7 +51,7 @@ class MICROSOFT_TEAMS_SEND_DM extends \Uncanny_Automator\Recipe\Action {
 
 		$members_field = array(
 			'option_code'           => $this->action_meta,
-			'label'                 => __( 'Member', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Member', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,

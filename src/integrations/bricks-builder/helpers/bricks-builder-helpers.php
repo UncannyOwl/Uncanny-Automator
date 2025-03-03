@@ -70,12 +70,12 @@ class Bricks_Builder_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'FORM_ID',
-				'tokenName' => __( 'Form ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Form ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'FORM_NAME',
-				'tokenName' => __( 'Form title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Form title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);

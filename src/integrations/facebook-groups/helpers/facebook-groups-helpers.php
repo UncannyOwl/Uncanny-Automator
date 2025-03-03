@@ -83,12 +83,11 @@ class Facebook_Groups_Helpers {
 		// Defer loading of settings page to current_screen so we can check if its recipe page.
 		add_action(
 			'current_screen',
-			function() {
+			function () {
 				require_once __DIR__ . '/../settings/settings-facebook-groups.php';
 				new Facebook_Group_Settings( $this );
 			}
 		);
-
 	}
 
 	/**
@@ -99,7 +98,6 @@ class Facebook_Groups_Helpers {
 	public function has_live_integration() {
 
 		return ! empty( $this->fetch_live_actions() );
-
 	}
 
 	/**
@@ -112,7 +110,6 @@ class Facebook_Groups_Helpers {
 		$results = Automator()->utilities->fetch_live_integration_actions( 'FACEBOOK_GROUPS' );
 
 		return (array) $results;
-
 	}
 
 	/**
@@ -137,7 +134,6 @@ class Facebook_Groups_Helpers {
 		if ( $n_days <= $token_notice_n_days && $this->has_live_integration() ) {
 			add_action( 'automator_show_internal_admin_notice', array( $this, 'admin_notice_template' ) );
 		}
-
 	}
 
 	/**
@@ -164,7 +160,7 @@ class Facebook_Groups_Helpers {
 				)
 			),
 			esc_url( $this->get_settings_page_url() ),
-			esc_html__( 'refresh your authorization.' )
+			esc_html__( 'refresh your authorization.', 'uncanny-automator' )
 		);
 	}
 
@@ -183,7 +179,6 @@ class Facebook_Groups_Helpers {
 			),
 			AUTOMATOR_API_URL . self::API_ENDPOINT
 		);
-
 	}
 
 	/**
@@ -255,7 +250,7 @@ class Facebook_Groups_Helpers {
 			wp_send_json(
 				array(
 					'success' => true,
-					'message' => esc_html__( 'Groups has been successfully fetched.' ),
+					'message' => esc_html__( 'Groups has been successfully fetched.', 'uncanny-automator' ),
 					'items'   => $items,
 				)
 			);
@@ -271,7 +266,6 @@ class Facebook_Groups_Helpers {
 			);
 
 		}
-
 	}
 
 	/**
@@ -311,7 +305,6 @@ class Facebook_Groups_Helpers {
 			);
 
 		}
-
 	}
 	/**
 	 * Endpoint wp_ajax callback. Capture user token.
@@ -369,7 +362,6 @@ class Facebook_Groups_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() . '&connection=new' );
 
 		exit;
-
 	}
 
 	/**
@@ -416,7 +408,6 @@ class Facebook_Groups_Helpers {
 		}
 
 		wp_die( esc_html__( 'Nonce Verification Failed', 'uncanny-automator' ) );
-
 	}
 
 	/**
@@ -441,12 +432,11 @@ class Facebook_Groups_Helpers {
 
 		} catch ( \Exception $e ) {
 
-			throw new \Exception( $e->getMessage(), $e->getCode() );
+			throw new \Exception( esc_html( $e->getMessage() ), absint( $e->getCode() ) );
 
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -481,7 +471,6 @@ class Facebook_Groups_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -503,7 +492,6 @@ class Facebook_Groups_Helpers {
 		$user_connected = $this->get_user_connected();
 
 		return ! empty( $settings ) && ! empty( $user_connected['user']['id'] );
-
 	}
 
 	/**
@@ -521,7 +509,6 @@ class Facebook_Groups_Helpers {
 		}
 
 		return automator_get_option( self::OPTION_KEY );
-
 	}
 
 	/**
@@ -546,7 +533,6 @@ class Facebook_Groups_Helpers {
 		automator_delete_option( '_automator_facebook_groups_last_requested' );
 
 		return true;
-
 	}
 	/**
 	 * Get the connected user information.
@@ -586,7 +572,6 @@ class Facebook_Groups_Helpers {
 		}
 
 		return $response;
-
 	}
 
 	/**
@@ -599,7 +584,6 @@ class Facebook_Groups_Helpers {
 		$option = automator_get_option( self::OPTION_KEY );
 
 		return isset( $option['user']['token'] ) ? $option['user']['token'] : '';
-
 	}
 
 	/**
@@ -620,7 +604,6 @@ class Facebook_Groups_Helpers {
 		}
 
 		return $items;
-
 	}
 
 	/**
@@ -757,7 +740,6 @@ class Facebook_Groups_Helpers {
 		$this->check_for_errors( $response );
 
 		return $response;
-
 	}
 
 	/**
@@ -771,7 +753,7 @@ class Facebook_Groups_Helpers {
 
 		if ( isset( $response['data']['error']['message'] ) ) {
 
-			throw new \Exception( $response['data']['error']['message'], $response['statusCode'] );
+			throw new \Exception( esc_html( $response['data']['error']['message'] ), absint( $response['statusCode'] ) );
 
 		}
 	}
@@ -802,7 +784,6 @@ class Facebook_Groups_Helpers {
 		}
 
 		return $this->check_credentials();
-
 	}
 
 	/**
@@ -840,7 +821,6 @@ class Facebook_Groups_Helpers {
 			return false;
 
 		}
-
 	}
 
 	/**
@@ -851,7 +831,6 @@ class Facebook_Groups_Helpers {
 	public function get_token_info() {
 
 		return automator_get_option( self::TOKEN_INFO, false );
-
 	}
 
 	/**
@@ -881,7 +860,6 @@ class Facebook_Groups_Helpers {
 		}
 
 		return ceil( $time_remaining );
-
 	}
 
 	/**
@@ -910,7 +888,5 @@ class Facebook_Groups_Helpers {
 			&& 'edit' === automator_filter_input( 'action' );
 
 		return $is_facebook_groups_settings || $is_capturing_token || $is_automator_recipe_page;
-
 	}
-
 }

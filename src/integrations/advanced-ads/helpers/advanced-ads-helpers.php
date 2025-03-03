@@ -24,7 +24,7 @@ class Advanced_Ads_Helpers {
 	public function get_all_ads( $option_code, $is_any = false, $all_option = false, $label = null ) {
 		$options = array();
 		$args    = array(
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page' => apply_filters( 'automator_select_all_posts_limit', 999, 'post' ),
 			'orderby'        => 'title',
 			'order'          => 'DESC',
@@ -32,13 +32,14 @@ class Advanced_Ads_Helpers {
 			'post_status'    => array( 'publish', 'draft' ),
 		);
 		if ( true === $all_option ) {
-			$all_ads = Automator()->helpers->recipe->options->wp_query( $args, $all_option, __( 'All ads', 'uncanny-automator' ) );
+			$all_ads = Automator()->helpers->recipe->options->wp_query( $args, $all_option, esc_html__( 'All ads', 'uncanny-automator' ) );
 		} else {
-			$all_ads = Automator()->helpers->recipe->options->wp_query( $args, $is_any, __( 'Any ad', 'uncanny-automator' ) );
+			$all_ads = Automator()->helpers->recipe->options->wp_query( $args, $is_any, esc_html__( 'Any ad', 'uncanny-automator' ) );
 		}
 
 		foreach ( $all_ads as $ad_id => $title ) {
 			if ( empty( $title ) ) {
+				// translators: 1: Ad ID
 				$title = sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $ad_id );
 			}
 
@@ -73,14 +74,14 @@ class Advanced_Ads_Helpers {
 		$expiry_key = defined( '\Advanced_Ads_Ad_Expiration::POST_STATUS' ) ? \Advanced_Ads_Ad_Expiration::POST_STATUS : 'advanced_ads_expired';
 
 		$statuses = array(
-			'draft'     => __( 'Draft', 'uncanny-automator' ),
-			'pending'   => __( 'Pending Review', 'uncanny-automator' ),
-			'publish'   => __( 'Publish', 'uncanny-automator' ),
-			$expiry_key => __( 'Expired', 'uncanny-automator' ),
+			'draft'     => esc_html__( 'Draft', 'uncanny-automator' ),
+			'pending'   => esc_html__( 'Pending Review', 'uncanny-automator' ),
+			'publish'   => esc_html__( 'Publish', 'uncanny-automator' ),
+			$expiry_key => esc_html__( 'Expired', 'uncanny-automator' ),
 		);
 
 		if ( true === $is_any ) {
-			$statuses = array( '-1' => __( 'Any status', 'uncanny-automator' ) ) + $statuses;
+			$statuses = array( '-1' => esc_html__( 'Any status', 'uncanny-automator' ) ) + $statuses;
 		}
 
 		$option = array(

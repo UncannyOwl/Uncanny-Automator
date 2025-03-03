@@ -145,7 +145,7 @@ class Handler {
 		$dir = trailingslashit( $uploads_dir['path'] ) . 'uncanny-automator';
 
 		if ( ! is_dir( $dir ) ) {
-			mkdir( $dir );
+			mkdir( $dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 		}
 
 		$this->new_file_path = trailingslashit( $dir ) . basename( $this->file_url );
@@ -170,12 +170,12 @@ class Handler {
 	 */
 	public function cleanup() {
 		if ( $this->temp_file_path && file_exists( $this->temp_file_path ) ) {
-			@unlink( $this->temp_file_path );
+			wp_delete_file( $this->temp_file_path );
 			$this->temp_file_path = null;
 		}
 
 		if ( $this->new_file_path && file_exists( $this->new_file_path ) ) {
-			@unlink( $this->new_file_path );
+			wp_delete_file( $this->new_file_path );
 			$this->new_file_path = null;
 		}
 	}

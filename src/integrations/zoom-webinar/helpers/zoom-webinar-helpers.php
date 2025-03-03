@@ -86,7 +86,6 @@ class Zoom_Webinar_Helpers {
 			'purchasing_time_frame',
 			'role_in_purchase_process',
 		);
-
 	}
 
 	/**
@@ -125,14 +124,14 @@ class Zoom_Webinar_Helpers {
 	/**
 	 * @param Zoom_Webinar_Helpers $options
 	 */
-	public function setOptions( Zoom_Webinar_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Zoom_Webinar_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Zoom_Webinar_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Zoom_Webinar_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( \Uncanny_Automator_Pro\Zoom_Webinar_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -147,14 +146,14 @@ class Zoom_Webinar_Helpers {
 	public function get_webinars_field( $label = null, $option_code = 'ZOOMWEBINAR', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = __( 'Webinar', 'uncanny-automator' );
+			$label = esc_html__( 'Webinar', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => __( 'Any Webinar', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html__( 'Any Webinar', 'uncanny-automator' ),
 			)
 		);
 
@@ -176,7 +175,7 @@ class Zoom_Webinar_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( empty( $response['data']['webinars'] ) || count( $response['data']['webinars'] ) < 1 ) {
-				throw new \Exception( __( 'No webinars were found in your account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No webinars were found in your account', 'uncanny-automator' ) );
 			}
 
 			foreach ( $response['data']['webinars'] as $webinar ) {
@@ -227,11 +226,11 @@ class Zoom_Webinar_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch users from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch users from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			if ( empty( $response['data']['users'] ) || count( $response['data']['users'] ) < 1 ) {
-				throw new \Exception( __( 'No users were found in your account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No users were found in your account', 'uncanny-automator' ) );
 			}
 
 			foreach ( $response['data']['users'] as $user ) {
@@ -275,11 +274,11 @@ class Zoom_Webinar_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch user webinars from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch user webinars from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			if ( empty( $response['data']['webinars'] ) ) {
-				throw new \Exception( __( 'User webinars were not found', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'User webinars were not found', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			foreach ( $response['data']['webinars'] as $webinar ) {
@@ -322,15 +321,15 @@ class Zoom_Webinar_Helpers {
 	public function add_to_webinar( $user, $webinar_key, $webinar_occurrences, $action_data ) {
 
 		if ( empty( $user['email'] ) || false === is_email( $user['email'] ) ) {
-			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $user['first_name'] ) ) {
-			throw new \Exception( __( 'First name is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'First name is missing', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $webinar_key ) ) {
-			throw new \Exception( __( 'Webinar key is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Webinar key is missing', 'uncanny-automator' ) );
 		}
 
 		$body = array(
@@ -347,7 +346,7 @@ class Zoom_Webinar_Helpers {
 		$response = $this->api_request( $body, $action_data );
 
 		if ( 201 !== $response['statusCode'] ) {
-			throw new \Exception( __( 'User could not be added to the webinar', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'User could not be added to the webinar', 'uncanny-automator' ) );
 		}
 
 		return $response;
@@ -364,7 +363,7 @@ class Zoom_Webinar_Helpers {
 	public function unregister_user( $email, $webinar_key, $action_data ) {
 
 		if ( empty( $email ) || ! is_email( $email ) ) {
-			throw new \Exception( __( 'Email address is missing or invalid.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Email address is missing or invalid.', 'uncanny-automator' ) );
 		}
 
 		$body = array(
@@ -376,7 +375,7 @@ class Zoom_Webinar_Helpers {
 		$response = $this->api_request( $body, $action_data );
 
 		if ( 201 !== $response['statusCode'] && 204 !== $response['statusCode'] ) {
-			throw new \Exception( __( 'Could not unregister the user', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Could not unregister the user', 'uncanny-automator' ) );
 		}
 	}
 
@@ -394,7 +393,7 @@ class Zoom_Webinar_Helpers {
 		$response = $this->api_request( $body );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( __( 'Could not fetch user info', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Could not fetch user info', 'uncanny-automator' ) );
 		}
 
 		$user_info = $response['data'];
@@ -423,7 +422,6 @@ class Zoom_Webinar_Helpers {
 		}
 
 		return $client;
-
 	}
 
 	/**
@@ -441,7 +439,7 @@ class Zoom_Webinar_Helpers {
 		$client_secret = trim( automator_get_option( 'uap_automator_zoom_webinar_api_client_secret', '' ) );
 
 		if ( empty( $account_id ) || empty( $client_id ) || empty( $client_secret ) ) {
-			throw new \Exception( __( 'Zoom Webinars credentials are missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Zoom Webinars credentials are missing', 'uncanny-automator' ) );
 		}
 
 		$params = array(
@@ -459,7 +457,7 @@ class Zoom_Webinar_Helpers {
 		$this->check_for_errors( $response );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( __( 'Could not fetch the token. Please check the credentials.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Could not fetch the token. Please check the credentials.', 'uncanny-automator' ) );
 		}
 
 		$client['access_token'] = $response['data']['access_token'];
@@ -469,7 +467,6 @@ class Zoom_Webinar_Helpers {
 		automator_update_option( '_uncannyowl_zoom_webinar_settings', $client );
 
 		return $client;
-
 	}
 
 	/**
@@ -486,7 +483,6 @@ class Zoom_Webinar_Helpers {
 		wp_safe_redirect( $this->tab_url );
 
 		exit;
-
 	}
 
 	/**
@@ -564,9 +560,8 @@ class Zoom_Webinar_Helpers {
 		}
 
 		if ( ! empty( $error ) ) {
-			throw new \Exception( $error, $response['statusCode'] );
+			throw new \Exception( esc_html( $error ), absint( $response['statusCode'] ) );
 		}
-
 	}
 
 	/**
@@ -583,7 +578,7 @@ class Zoom_Webinar_Helpers {
 			'option_code'       => 'WEBINARQUESTIONS',
 			'input_type'        => 'repeater',
 			'relevant_tokens'   => array(),
-			'label'             => __( 'Webinar questions', 'uncanny-automator' ),
+			'label'             => esc_html__( 'Webinar questions', 'uncanny-automator' ),
 			/* translators: 1. Button */
 			'description'       => '',
 			'required'          => false,
@@ -596,16 +591,16 @@ class Zoom_Webinar_Helpers {
 			'fields'            => array(
 				array(
 					'option_code' => 'QUESTION_NAME',
-					'label'       => __( 'Question', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Question', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 					'read_only'   => true,
 					'options'     => array(),
 				),
-				Automator()->helpers->recipe->field->text_field( 'QUESTION_VALUE', __( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+				Automator()->helpers->recipe->field->text_field( 'QUESTION_VALUE', esc_html__( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
 			),
-			'add_row_button'    => __( 'Add pair', 'uncanny-automator' ),
-			'remove_row_button' => __( 'Remove pair', 'uncanny-automator' ),
+			'add_row_button'    => esc_html__( 'Add pair', 'uncanny-automator' ),
+			'remove_row_button' => esc_html__( 'Remove pair', 'uncanny-automator' ),
 			'hide_actions'      => true,
 		);
 	}
@@ -632,10 +627,10 @@ class Zoom_Webinar_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch webinar questions from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch webinar questions from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
-			wp_send_json_success( $response['data'], $response['statusCode'] );
+			wp_send_json_success( $response['data'], absint( $response['statusCode'] ) );
 
 		} catch ( \Exception $e ) {
 			$error = new \WP_Error( $e->getCode(), $e->getMessage() );
@@ -700,7 +695,7 @@ class Zoom_Webinar_Helpers {
 			$response = $this->api_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Could not fetch webinar occurrences from Zoom', 'uncanny-automator' ), $response['statusCode'] );
+				throw new \Exception( esc_html__( 'Could not fetch webinar occurrences from Zoom', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 			}
 
 			if ( ! empty( $response['data']['occurrences'] ) ) {

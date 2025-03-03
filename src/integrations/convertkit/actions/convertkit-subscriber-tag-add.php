@@ -57,43 +57,43 @@ class CONVERTKIT_SUBSCRIBER_TAG_ADD {
 		$this->set_action_tokens(
 			array(
 				'TAG_NAME'                => array(
-					'name' => __( 'Tag name', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag name', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SUBSCRIPTION_ID'         => array(
-					'name' => __( 'Tag subscription ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag subscription ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'SUBSCRIPTION_STATE'      => array(
-					'name' => __( 'Tag subscription state', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag subscription state', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SUBSCRIPTION_DATE'       => array(
-					'name' => __( 'Tag subscription date', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag subscription date', 'uncanny-automator' ),
 					'type' => 'date',
 				),
 				'SUBSCRIBABLE_ID'         => array(
-					'name' => __( 'Tag subscribable ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag subscribable ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'SUBSCRIBABLE_TYPE'       => array(
-					'name' => __( 'Tag subscription type', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag subscription type', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SUBSCRIBER_ID'           => array(
-					'name' => __( 'Tag subscriber ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag subscriber ID', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'SUBSCRIBER_FIRST_NAME'   => array(
-					'name' => __( 'Tag subscriber name', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag subscriber name', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SUBSCRIBER_STATE'        => array(
-					'name' => __( 'Tag subscriber state', 'uncanny-automator' ),
+					'name' => esc_html__( 'Tag subscriber state', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SUBSCRIBER_DATE_CREATED' => array(
-					'name' => __( 'Date subscribed', 'uncanny-automator' ),
+					'name' => esc_html__( 'Date subscribed', 'uncanny-automator' ),
 					'type' => 'date',
 				),
 			),

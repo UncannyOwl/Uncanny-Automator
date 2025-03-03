@@ -38,57 +38,57 @@ class Wc_Bookings_Helpers {
 		$tokens = array(
 			array(
 				'tokenId'   => 'WCB_BOOKING_ORDER_ID',
-				'tokenName' => __( 'Booking order ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking order ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'WCB_BOOKING_ID',
-				'tokenName' => __( 'Booking ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'WCB_CUSTOMER_EMAIL',
-				'tokenName' => __( 'Customer email', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Customer email', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'WCB_CUSTOMER_NAME',
-				'tokenName' => __( 'Customer name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Customer name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'WCB_PRODUCT_TITLE',
-				'tokenName' => __( 'Booking product title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking product title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'WCB_PRODUCT_URL',
-				'tokenName' => __( 'Booking product URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking product URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'WCB_PRODUCT_DETAILS',
-				'tokenName' => __( 'Booking details', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking details', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'WCB_PRODUCT_PRICE',
-				'tokenName' => __( 'Booking product price', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking product price', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'WCB_BOOKING_START',
-				'tokenName' => __( 'Booking start', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking start', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'WCB_BOOKING_END',
-				'tokenName' => __( 'Booking end', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking end', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'WCB_BOOKING_STATUS',
-				'tokenName' => __( 'Booking status', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Booking status', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -105,7 +105,8 @@ class Wc_Bookings_Helpers {
 	public function get_booked_details_token_value( $product, $booking ) {
 		$booked_data = '';
 		if ( $product->has_resources() ) {
-			$booked_data .= esc_html( sprintf( __( 'Type: %s', 'woocommerce-bookings' ), $product->get_resource( $booking->get_resource_id() )->get_title() ) ) . "\n";
+			// translators: 1: Resource title
+			$booked_data .= esc_html( sprintf( __( 'Type: %s', 'woocommerce-bookings' ), $product->get_resource( $booking->get_resource_id() )->get_title() ) ) . "\n"; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 		}
 		if ( $product->has_persons() ) {
 			if ( $product->has_person_types() ) {
@@ -124,7 +125,7 @@ class Wc_Bookings_Helpers {
 				}
 			} else {
 				/* translators: 1: person count */
-				$booked_data = esc_html( sprintf( __( '%d Persons', 'woocommerce-bookings' ), array_sum( $booking->get_person_counts() ) ) ) . "\n";
+				$booked_data = esc_html( sprintf( __( '%d Persons', 'woocommerce-bookings' ), array_sum( $booking->get_person_counts() ) ) ) . "\n"; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			}
 		}
 

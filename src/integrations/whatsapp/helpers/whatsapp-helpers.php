@@ -9,14 +9,29 @@ namespace Uncanny_Automator;
  */
 class WhatsApp_Helpers {
 
+	/**
+	 *
+	 */
 	const GRAPH_URL = 'https://graph.facebook.com/debug_token';
 
+	/**
+	 *
+	 */
 	const CLIENT = 'automator_whatsapp_client';
 
+	/**
+	 *
+	 */
 	const API_ENDPOINT = 'v2/whatsapp';
 
+	/**
+	 *
+	 */
 	const WEBHOOK_KEY = 'uap_active_campaign_webhook_key';
 
+	/**
+	 * @var string|\Uncanny_Automator\WhatsApp_Settings
+	 */
 	protected $whatsapp_settings = '';
 
 	/**
@@ -41,9 +56,11 @@ class WhatsApp_Helpers {
 	public function setOptions( Whatsapp_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 
 		$this->options = $options;
-
 	}
 
+	/**
+	 *
+	 */
 	public function __construct() {
 
 		// Disconnect.
@@ -71,7 +88,6 @@ class WhatsApp_Helpers {
 		$this->webhook_endpoint = apply_filters( 'automator_meta_webhook_endpoint', '/whatsapp', $this );
 
 		$this->whatsapp_settings = new WhatsApp_Settings( $this );
-
 	}
 
 	/**
@@ -80,7 +96,6 @@ class WhatsApp_Helpers {
 	public function flush_transient( $name = '' ) {
 
 		delete_transient( $name );
-
 	}
 
 	/**
@@ -120,13 +135,24 @@ class WhatsApp_Helpers {
 		}
 
 		return $is_valid;
-
 	}
 
+	/**
+	 * @param $message
+	 *
+	 * @return true
+	 */
 	public function validate_incoming_message( $message ) {
 		return true;
 	}
 
+	/**
+	 * @param $wa_timestamp
+	 * @param $acceptable_interval
+	 *
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function is_timestamp_acceptable( $wa_timestamp = 0, $acceptable_interval = 10 ) {
 
 		$wp_current_datetime = current_time( 'mysql' );
@@ -164,7 +190,6 @@ class WhatsApp_Helpers {
 		);
 		// Compare if it was recently accepted.
 		return absint( $wp_current_datetime_utc - $wa_timestamp ) <= $acceptable_interval;
-
 	}
 
 	/**
@@ -189,7 +214,6 @@ class WhatsApp_Helpers {
 		}
 
 		return $this->extract_sending_message_response( $response );
-
 	}
 
 	/**
@@ -254,7 +278,6 @@ class WhatsApp_Helpers {
 		do_action( 'automator_whatsapp_webhook_message_received', $args );
 
 		return wp_parse_args( $args, $default );
-
 	}
 
 	/**
@@ -286,7 +309,6 @@ class WhatsApp_Helpers {
 				$default = sprintf( '(%s) %s', $type, $message['id'] );
 				return apply_filters( 'automator_whatsapp_default_type_message_return', $default, $message );
 		}
-
 	}
 
 	/**
@@ -334,9 +356,13 @@ class WhatsApp_Helpers {
 		);
 
 		return wp_parse_args( $args, $default );
-
 	}
 
+	/**
+	 * @param $response
+	 *
+	 * @return array
+	 */
 	public function extract_errors( $response = array() ) {
 
 		$error = array(
@@ -353,7 +379,6 @@ class WhatsApp_Helpers {
 		}
 
 		return $error;
-
 	}
 
 	/**
@@ -396,7 +421,6 @@ class WhatsApp_Helpers {
 		// e.g. `automator_whatsapp_message_delivery_failed`.
 		do_action( 'automator_whatsapp_message_delivery_' . $incoming_data['status'], $incoming_data );
 		do_action( 'automator_whatsapp_message_status', $incoming_data, $incoming_data['status'] );
-
 	}
 
 	/**
@@ -422,14 +446,18 @@ class WhatsApp_Helpers {
 
 			$this->complete_action( $action_data, $incoming_data );
 
-		} catch ( \Exception $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing for now.
 			automator_log( $e->getMessage(), 'WhatsApp: An Exception has occured', AUTOMATOR_DEBUG_MODE, 'whatsapp' );
 
 		}
-
 	}
 
+	/**
+	 * @param $wamid
+	 *
+	 * @return array
+	 */
 	public function get_action_data_by_wamid( $wamid = '' ) {
 
 		global $wpdb;
@@ -464,9 +492,11 @@ class WhatsApp_Helpers {
 			'recipe_log_id' => $action_meta->recipe_log_id,
 			'meta'          => $action_meta,
 		);
-
 	}
 
+	/**
+	 * @return void
+	 */
 	public function init_webhook() {
 
 		if ( $this->is_connected() ) {
@@ -481,7 +511,6 @@ class WhatsApp_Helpers {
 				)
 			);
 		}
-
 	}
 
 	/**
@@ -533,7 +562,6 @@ class WhatsApp_Helpers {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -566,7 +594,6 @@ class WhatsApp_Helpers {
 		http_response_code( 200 );
 
 		exit;
-
 	}
 
 	/**
@@ -583,7 +610,6 @@ class WhatsApp_Helpers {
 		wp_safe_redirect( $uri );
 
 		exit;
-
 	}
 
 	/**
@@ -598,7 +624,6 @@ class WhatsApp_Helpers {
 		automator_update_option( self::WEBHOOK_KEY, $new_key );
 
 		return $new_key;
-
 	}
 
 	/**
@@ -634,9 +659,11 @@ class WhatsApp_Helpers {
 				get_rest_url() . AUTOMATOR_REST_API_END_POINT . $this->webhook_endpoint
 			)
 		);
-
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_disconnect_url() {
 
 		return add_query_arg(
@@ -646,9 +673,11 @@ class WhatsApp_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
+	/**
+	 * @return void
+	 */
 	public function disconnect() {
 
 		// Delete the message template dropdown transient.
@@ -674,9 +703,14 @@ class WhatsApp_Helpers {
 		);
 
 		die;
-
 	}
 
+	/**
+	 * @param $access_token
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function verify_token( $access_token = '' ) {
 
 		$response = wp_remote_get(
@@ -697,35 +731,52 @@ class WhatsApp_Helpers {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			throw new \Exception( $response->get_error_message(), 400 );
+			throw new \Exception( esc_html( $response->get_error_message() ), 400 );
 		}
 
 		$data = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		// Check for any errors.
 		if ( ! empty( $data['error']['message'] ) ) {
-			throw new \Exception( 'Meta OAuthException: ' . $data['error']['message'], 403 );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Error message */
+					esc_html__( 'Meta OAuthException: %s', 'uncanny-automator' ),
+					esc_html( $data['error']['message'] )
+				),
+				403
+			);
+
 		}
 
 		// Check for missing scopes.
 		if ( $this->has_missing_scopes( $data['data'] ) ) {
-			throw new \Exception( __( 'The provided access token contains missing permissions. Make sure both whatsapp_business_management and whatsapp_business_messaging permissions are included.' ), 400 );
+			throw new \Exception(
+				esc_html__( 'The provided access token contains missing permissions. Make sure both whatsapp_business_management and whatsapp_business_messaging permissions are included.', 'uncanny-automator' ),
+				400
+			);
 		}
 
 		return array(
 			'data' => $data,
 		);
-
 	}
 
+	/**
+	 * @return array|mixed
+	 */
 	public function get_client() {
 
 		$option = automator_get_option( self::CLIENT, array() );
 
 		return ! empty( $option['data']['data'] ) ? $option['data']['data'] : array();
-
 	}
 
+	/**
+	 * @param $client
+	 *
+	 * @return bool
+	 */
 	public function has_missing_scopes( $client = array() ) {
 
 		if ( empty( $client ) || empty( $client['scopes'] ) ) {
@@ -739,27 +790,35 @@ class WhatsApp_Helpers {
 
 		// Would return false if either one of the required scopes is missing.
 		return count( array_intersect( $client['scopes'], $required_scopes ) ) < 2;
-
 	}
 
+	/**
+	 * @return int
+	 */
 	public function get_phone_number_id() {
 
 		return absint( automator_get_option( WhatsApp_Settings::PHONE_ID, 0 ) );
-
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_access_token() {
 
 		return trim( automator_get_option( WhatsApp_Settings::ACCESS_TOKEN, '' ) );
-
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_connected() {
 
 		return ! empty( $this->get_client() ) && ! $this->has_missing_scopes( $this->get_client() );
-
 	}
 
+	/**
+	 * @return void
+	 */
 	public function list_message_templates() {
 
 		Automator()->utilities->ajax_auth_check();
@@ -798,13 +857,18 @@ class WhatsApp_Helpers {
 		}
 
 		wp_send_json( $dropdown_values );
-
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_dropdown_transient_key() {
 		return 'automator_whatsapp_message_templates_dropdown_' . automator_get_option( WhatsApp_Settings::BUSINESS_ID, '' );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function retrieve_template() {
 
 		Automator()->utilities->ajax_auth_check();
@@ -834,7 +898,7 @@ class WhatsApp_Helpers {
 
 			wp_send_json_error(
 				array(
-					'message' => __( 'Cannot find the structure for the selected template. Please refresh the page and try again later.', 'uncanny-automator' ),
+					'message' => esc_html__( 'Cannot find the structure for the selected template. Please refresh the page and try again later.', 'uncanny-automator' ),
 				),
 				400
 			);
@@ -844,7 +908,7 @@ class WhatsApp_Helpers {
 			wp_send_json_error(
 				array(
 					'message' => strtr(
-						__( 'An unexpected error has with status code [{{status_code}}] has occured. Message: {{error_message}}', 'uncanny-automator' ),
+						esc_html__( 'An unexpected error has with status code [{{status_code}}] has occured. Message: {{error_message}}', 'uncanny-automator' ),
 						array(
 							'{{status_code}}'   => $e->getCode(),
 							'{{error_message}}' => $e->getMessage(),
@@ -857,9 +921,13 @@ class WhatsApp_Helpers {
 		}
 
 		die;
-
 	}
 
+	/**
+	 * @param $response
+	 *
+	 * @return array
+	 */
 	public function interpret_whatsapp_response_as_dropdown( $response ) {
 
 		$list = array();
@@ -902,11 +970,15 @@ class WhatsApp_Helpers {
 		$response = Api_Server::api_call( $params );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( $params['endpoint'] . ' failed' );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: API endpoint */
+					esc_html__( '%s failed', 'uncanny-automator' ),
+					esc_html( $params['endpoint'] )
+				)
+			);
 		}
 
 		return $response;
-
 	}
-
 }

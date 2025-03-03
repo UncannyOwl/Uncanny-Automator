@@ -59,7 +59,7 @@ class Zoho_Campaigns_Contact_List_Unsub {
 		$this->set_action_tokens(
 			array(
 				'LIST_NAME' => array(
-					'name' => __( 'List name', 'uncanny-automator-pro' ),
+					'name' => esc_html__( 'List name', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

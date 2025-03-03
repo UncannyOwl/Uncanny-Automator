@@ -16,7 +16,7 @@ class Edd_Sl_Helpers {
 		$all_downloads = array();
 		if ( true === $is_any ) {
 			$all_downloads[] = array(
-				'text'  => _x( 'Any download', 'uncanny-automator' ),
+				'text'  => _x( 'Any download', 'EDD SL', 'uncanny-automator' ),
 				'value' => '-1',
 			);
 		}
@@ -50,57 +50,57 @@ class Edd_Sl_Helpers {
 		return array(
 			array(
 				'tokenId'   => 'DOWNLOAD_ID',
-				'tokenName' => __( 'Download ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Download ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'DOWNLOAD_NAME',
-				'tokenName' => __( 'Download name', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Download name', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'DOWNLOAD_QTY',
-				'tokenName' => __( 'Download quantity', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Download quantity', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'DOWNLOAD_SUBTOTAL',
-				'tokenName' => __( 'Download subtotal', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Download subtotal', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'DOWNLOAD_TAX',
-				'tokenName' => __( 'Download tax', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Download tax', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'DOWNLOAD_PRICE',
-				'tokenName' => __( 'Download price', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Download price', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'LICENSE_KEY',
-				'tokenName' => __( 'License key', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'License key', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'LICENSE_PURCHASE_DATE',
-				'tokenName' => __( 'License purchase date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'License purchase date', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'LICENSE_EXPIRATION_DATE',
-				'tokenName' => __( 'License expiration date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'License expiration date', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'LICENSE_TERM',
-				'tokenName' => __( 'License term', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'License term', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'LICENSE_ACTIVATION_LIMIT',
-				'tokenName' => __( 'License activation limit', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'License activation limit', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 		);
@@ -128,8 +128,14 @@ class Edd_Sl_Helpers {
 		$tokens['LICENSE_KEY']              = $license->license_key;
 		$tokens['LICENSE_TERM']             = $license->license_term();
 		$tokens['LICENSE_ACTIVATION_LIMIT'] = $license->get_activation_limit();
-		$tokens['LICENSE_PURCHASE_DATE']    = date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $license->date_created ) );
-		$tokens['LICENSE_EXPIRATION_DATE']  = date( get_option( 'date_format' ), $license->expiration );
+		$tokens['LICENSE_PURCHASE_DATE']    = wp_date(
+			sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) ),
+			strtotime( $license->date_created )
+		);
+		$tokens['LICENSE_EXPIRATION_DATE']  = wp_date(
+			get_option( 'date_format' ),
+			$license->expiration
+		);
 
 		return $tokens;
 

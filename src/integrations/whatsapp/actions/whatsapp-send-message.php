@@ -50,7 +50,7 @@ class WHATSAPP_SEND_MESSAGE {
 
 			$action_data = $helper->get_action_data_by_wamid( $response['data']['messages'][0]['id'] );
 
-			$error_message = esc_html__( 'No response was received from Meta after 1 minute. Make sure you have set-up your webhook configuration correctly.' );
+			$error_message = esc_html__( 'No response was received from Meta after 1 minute. Make sure you have set-up your webhook configuration correctly.', 'uncanny-automator' );
 
 			$recipe_error_message = Automator()->db->action->get_error_message( $action_data['recipe_log_id'] );
 
@@ -112,7 +112,7 @@ class WHATSAPP_SEND_MESSAGE {
 	 */
 	public function set_action_completed_label( $labels = array() ) {
 
-		$labels[10] = __( 'Completed, pending response', 'uncanny-automator' );
+		$labels[10] = esc_html__( 'Completed, pending response', 'uncanny-automator' );
 
 		return $labels;
 
@@ -144,7 +144,7 @@ class WHATSAPP_SEND_MESSAGE {
 		if ( key_exists( 'await', $args ) ) {
 
 			// Completed is stored as tiny int. Maybe update it to enum?
-			$message = __( 'Message sent. Waiting for response. The status will be updated once the response is received.', 'uncanny-automatar' );
+			$message = esc_html__( 'Message sent. Waiting for response. The status will be updated once the response is received.', 'uncanny-automator' );
 
 		}
 

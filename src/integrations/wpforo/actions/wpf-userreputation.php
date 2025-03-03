@@ -61,7 +61,7 @@ class WPF_USERREPUTATION {
 		$levels             = WPF()->member->levels();
 
 		foreach ( $levels as $level ) {
-			$title                                        = esc_attr__( 'Level', 'wpforo' ) . ' ' . $level . ' - ' . WPF()->member->rating( $level, 'title' );
+			$title                                        = esc_attr__( 'Level', 'wpforo' ) . ' ' . $level . ' - ' . WPF()->member->rating( $level, 'title' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 			$reputation_options[ 'L' . strval( $level ) ] = $title;
 		}
 

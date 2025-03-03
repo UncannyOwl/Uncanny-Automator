@@ -83,7 +83,6 @@ class Notion_Helpers {
 			),
 			$this->auth_url
 		);
-
 	}
 
 	/**
@@ -120,7 +119,6 @@ class Notion_Helpers {
 				'success' => 1,
 			)
 		);
-
 	}
 
 	/**
@@ -191,7 +189,6 @@ class Notion_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -387,7 +384,6 @@ class Notion_Helpers {
 				'options' => $options,
 			)
 		);
-
 	}
 
 	/**
@@ -452,7 +448,6 @@ class Notion_Helpers {
 				),
 			)
 		);
-
 	}
 
 	public function automator_notion_list_users() {
@@ -530,7 +525,7 @@ class Notion_Helpers {
 		$response = Api_Server::api_call( $params );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new Exception( $response['data']['message'], $response['statusCode'] );
+			throw new Exception( esc_html( $response['data']['message'] ), absint( $response['statusCode'] ) );
 		}
 
 		return $response;
@@ -551,7 +546,14 @@ class Notion_Helpers {
 		$column_value_decoded = json_decode( $field_column_value, true );
 
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			throw new Exception( 'Invalid JSON detected: ' . json_last_error_msg(), 400 );
+			throw new Exception(
+				sprintf(
+				/* translators: %s: JSON error message */
+					esc_html__( 'Invalid JSON detected: %s', 'uncanny-automator' ),
+					esc_html( json_last_error_msg() )
+				),
+				400
+			);
 		}
 
 		$fields_id_value = array();
@@ -585,7 +587,6 @@ class Notion_Helpers {
 		}
 
 		return wp_json_encode( $fields_id_value );
-
 	}
 
 	/**
@@ -600,7 +601,6 @@ class Notion_Helpers {
 		$date = new DateTime( $date_string );
 		// Return the date in ISO 8601 format
 		return $date->format( DateTime::ATOM ); // ATOM is an ISO 8601 compatible format
-
 	}
 
 
@@ -663,7 +663,6 @@ class Notion_Helpers {
 			. '{{TYPE}}';
 
 		return $string;
-
 	}
 
 	/**
@@ -688,7 +687,6 @@ class Notion_Helpers {
 		$parts[3] = ltrim( $parts[3], '_' );
 
 		return $parts;
-
 	}
 
 	/**
@@ -713,7 +711,5 @@ class Notion_Helpers {
 		$parts[3] = ltrim( $parts[4], '_' );
 
 		return $parts;
-
 	}
-
 }

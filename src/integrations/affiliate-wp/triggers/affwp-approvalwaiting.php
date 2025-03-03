@@ -39,9 +39,9 @@ class AFFWP_APPROVALWAITING {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Affiliate WP */
-			'sentence'            => sprintf( __( 'A new affiliate is awaiting approval', 'uncanny-automator' ) ),
+			'sentence'            => sprintf( esc_html__( 'A new affiliate is awaiting approval', 'uncanny-automator' ) ),
 			/* translators: Logged-in trigger - Affiliate WP */
-			'select_option_name'  => __( 'A new affiliate is awaiting approval', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A new affiliate is awaiting approval', 'uncanny-automator' ),
 			'action'              => 'affwp_register_user',
 			'priority'            => 99,
 			'accepted_args'       => 3,

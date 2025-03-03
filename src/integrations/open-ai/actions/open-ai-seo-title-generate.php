@@ -58,7 +58,7 @@ class OPEN_AI_SEO_TITLE_GENERATE {
 		$this->set_action_tokens(
 			array(
 				'SEO_TITLE_GENERATED' => array(
-					'name' => __( 'Generated SEO title', 'uncanny-automator' ),
+					'name' => esc_html__( 'Generated SEO title', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

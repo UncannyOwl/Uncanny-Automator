@@ -42,8 +42,9 @@ class GTW_REGISTERUSER {
 			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/gotowebinar/' ),
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
-			'sentence'              => sprintf( __( 'Add the user to {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Add the user to {{a webinar}}', 'uncanny-automator' ),
+			// translators: 1: Webinar
+			'sentence'              => sprintf( esc_html__( 'Add the user to {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Add the user to {{a webinar}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'gtw_register_user' ),
@@ -90,7 +91,7 @@ class GTW_REGISTERUSER {
 			$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
 
 			if ( empty( $webinar_key ) ) {
-				throw new \Exception( __( 'Webinar not found.', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Webinar not found.', 'uncanny-automator' ) );
 			}
 
 			$webinar_key = str_replace( '-objectkey', '', $webinar_key );

@@ -58,7 +58,7 @@
 
 					$this->alert_html(
 						array(
-							'heading' => __( 'Setup instructions', 'uncanny-automator' ),
+							'heading' => esc_html__( 'Setup instructions', 'uncanny-automator' ),
 							'content' => sprintf(
 								esc_html__( "Connecting to Zoom requires setting up a Server-to-Server OAuth app and getting 3 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
 								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
@@ -74,7 +74,7 @@
 					array(
 						'id'       => 'uap_automator_zoom_webinar_api_account_id',
 						'value'    => $this->account_id,
-						'label'    => __( 'Account ID', 'uncanny-automator' ),
+						'label'    => esc_html__( 'Account ID', 'uncanny-automator' ),
 						'required' => true,
 						'class'    => 'uap-spacing-top',
 						'hidden'   => $hide_fields,
@@ -86,7 +86,7 @@
 					array(
 						'id'       => 'uap_automator_zoom_webinar_api_client_id',
 						'value'    => $this->api_key,
-						'label'    => __( 'Client ID', 'uncanny-automator' ),
+						'label'    => esc_html__( 'Client ID', 'uncanny-automator' ),
 						'required' => true,
 						'class'    => 'uap-spacing-top',
 						'hidden'   => $hide_fields,
@@ -98,7 +98,7 @@
 					array(
 						'id'       => 'uap_automator_zoom_webinar_api_client_secret',
 						'value'    => $this->api_secret,
-						'label'    => __( 'Client secret', 'uncanny-automator' ),
+						'label'    => esc_html__( 'Client secret', 'uncanny-automator' ),
 						'required' => true,
 						'class'    => 'uap-spacing-top',
 						'hidden'   => $hide_fields,
@@ -119,7 +119,7 @@
 
 					$this->alert_html(
 						array(
-							'heading' => __( 'Uncanny Automator only supports connecting to one Zoom Webinars account.', 'uncanny-automator' ),
+							'heading' => esc_html__( 'Uncanny Automator only supports connecting to one Zoom Webinars account.', 'uncanny-automator' ),
 						)
 					);
 				}

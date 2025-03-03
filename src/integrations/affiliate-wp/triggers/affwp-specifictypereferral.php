@@ -51,9 +51,9 @@ class AFFWP_SPECIFICTYPEREFERRAL {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Affiliate WP */
-			'sentence'            => sprintf( __( 'An affiliate makes a referral of a {{specific type:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( 'An affiliate makes a referral of a {{specific type:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Affiliate WP */
-			'select_option_name'  => __( 'An affiliate makes a referral of a {{specific type}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'An affiliate makes a referral of a {{specific type}}', 'uncanny-automator' ),
 			'action'              => 'affwp_insert_referral',
 			'priority'            => 99,
 			'accepted_args'       => 1,

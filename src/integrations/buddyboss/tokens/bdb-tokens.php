@@ -47,7 +47,7 @@ class Bdb_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'BDBUSER',
-				'tokenName'       => __( 'Avatar URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Avatar URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERAVATAR',
 			),
@@ -105,25 +105,25 @@ class Bdb_Tokens {
 
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_ID',
-				'tokenName'       => __( 'Activity ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Activity ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
 			);
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_URL',
-				'tokenName'       => __( 'Activity URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Activity URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
 			);
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_STREAM_URL',
-				'tokenName'       => __( 'Activity stream URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Activity stream URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
 			);
 			$fields[] = array(
 				'tokenId'         => 'ACTIVITY_CONTENT',
-				'tokenName'       => __( 'Activity content', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Activity content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERACTIVITY',
 			);
@@ -133,25 +133,25 @@ class Bdb_Tokens {
 			$trigger_code = $args['triggers_meta']['code'];
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_ID',
-				'tokenName'       => __( 'Friend ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Friend ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_FIRSTNAME',
-				'tokenName'       => __( 'Friend first name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Friend first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_LASTNAME',
-				'tokenName'       => __( 'Friend last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Friend last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FRIEND_EMAIL',
-				'tokenName'       => __( 'Friend email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Friend email', 'uncanny-automator' ),
 				'tokenType'       => 'email',
 				'tokenIdentifier' => $trigger_code,
 			);
@@ -159,25 +159,25 @@ class Bdb_Tokens {
 			$trigger_code = $args['triggers_meta']['code'];
 			$fields[]     = array(
 				'tokenId'         => 'FOLLOWER_ID',
-				'tokenName'       => __( 'Follower ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Follower ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FOLLOWER_FIRSTNAME',
-				'tokenName'       => __( 'Follower first name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Follower first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FOLLOWER_LASTNAME',
-				'tokenName'       => __( 'Follower last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Follower last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			);
 			$fields[]     = array(
 				'tokenId'         => 'FOLLOWER_EMAIL',
-				'tokenName'       => __( 'Follower email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Follower email', 'uncanny-automator' ),
 				'tokenType'       => 'email',
 				'tokenIdentifier' => $trigger_code,
 			);
@@ -207,7 +207,7 @@ class Bdb_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'BDBTOPICREPLY',
-				'tokenName'       => __( 'Reply content', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Reply content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBUSERPOSTREPLYFORUM',
 			),
@@ -420,25 +420,25 @@ class Bdb_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'BDBTOPICID',
-				'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
 			),
 			array(
 				'tokenId'         => 'BDBTOPICTITLE',
-				'tokenName'       => __( 'Topic title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
 			),
 			array(
 				'tokenId'         => 'BDBTOPICURL',
-				'tokenName'       => __( 'Topic URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
 			),
 			array(
 				'tokenId'         => 'BDBTOPICCONTENT',
-				'tokenName'       => __( 'Topic content', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Topic content', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'BDBNEWTOPIC',
 			),

@@ -30,7 +30,7 @@ class Wpcode_Helpers {
 		$args = wp_parse_args( $args, $defaults );
 
 		$query_args = array(
-			//phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page' => apply_filters( 'automator_select_all_posts_limit', 9999, 'post' ),
 			'orderby'        => 'title',
 			'order'          => 'DESC',
@@ -41,11 +41,11 @@ class Wpcode_Helpers {
 		$snippets = Automator()->helpers->recipe->options->wp_query( $query_args );
 
 		if ( true === $args['is_any'] ) {
-			$snippets = array( '-1' => __( 'Any snippet', 'uncanny-automator' ) ) + $snippets;
+			$snippets = array( '-1' => esc_html__( 'Any snippet', 'uncanny-automator' ) ) + $snippets;
 		}
 
 		if ( true === $args['is_all'] ) {
-			$snippets = array( '-1' => __( 'All snippets', 'uncanny-automator' ) ) + $snippets;
+			$snippets = array( '-1' => esc_html__( 'All snippets', 'uncanny-automator' ) ) + $snippets;
 		}
 
 		$option = array(

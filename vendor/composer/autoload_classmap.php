@@ -744,6 +744,7 @@ return array(
     'Uncanny_Automator\\Integrations\\URL\\URL_HAS_PARAM_LOGGED_IN' => $baseDir . '/src/integrations/url/triggers/url-has-param-logged-in.php',
     'Uncanny_Automator\\Integrations\\URL\\URL_Helpers' => $baseDir . '/src/integrations/url/helpers/url-helpers.php',
     'Uncanny_Automator\\Integrations\\URL\\URL_Integration' => $baseDir . '/src/integrations/url/url-integration.php',
+    'Uncanny_Automator\\Integrations\\URL\\URL_Tokens' => $baseDir . '/src/integrations/url/tokens/url-tokens.php',
     'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Post_Categories' => $baseDir . '/src/integrations/wp/tokens/loopable/universal/post-categories.php',
     'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Post_Tags' => $baseDir . '/src/integrations/wp/tokens/loopable/universal/post-tags.php',
     'Uncanny_Automator\\Integrations\\WP\\Tokens\\Loopable\\Universal\\Utils\\Taxonomy_Fetcher' => $baseDir . '/src/integrations/wp/tokens/loopable/universal/utils/terms.php',

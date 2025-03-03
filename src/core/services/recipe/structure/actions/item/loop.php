@@ -32,7 +32,7 @@ final class Loop implements \JsonSerializable {
 	 *
 	 * 0 = normal actions; 1 = closures; 2 = loop; 5 = Delays
 	 */
-	protected $_ui_order = 2; //phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
+	protected $_ui_order = 2; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
 	 * @var array The loopable expression for the loop.

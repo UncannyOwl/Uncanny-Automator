@@ -67,8 +67,8 @@ class CAMPAIGN_CREATEANDSEND {
 			'code'                  => $this->action_code,
 			'requires_user'         => false,
 			// translators: Campaign
-			'sentence'              => sprintf( __( 'Create and send {{a campaign:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => __( 'Create and send {{a campaign}}', 'uncanny-automator' ),
+			'sentence'              => sprintf( esc_html__( 'Create and send {{a campaign:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
+			'select_option_name'    => esc_html__( 'Create and send {{a campaign}}', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'requires_user'         => false,
@@ -96,9 +96,9 @@ class CAMPAIGN_CREATEANDSEND {
 		return array(
 			'options_group' => array(
 				$this->action_meta => array(
-					Automator()->helpers->recipe->field->text_field( 'MCCAMPAIGNTITLE', __( 'Campaign name', 'uncanny-automator' ), true, 'text', null ),
+					Automator()->helpers->recipe->field->text_field( 'MCCAMPAIGNTITLE', esc_html__( 'Campaign name', 'uncanny-automator' ), true, 'text', null ),
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						__( 'Audience', 'uncanny-automator' ),
+						esc_html__( 'Audience', 'uncanny-automator' ),
 						'MCLIST',
 						array(
 							'is_ajax'      => true,
@@ -107,28 +107,28 @@ class CAMPAIGN_CREATEANDSEND {
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_list_tags(
-						__( 'Segment or Tag', 'uncanny-automator' ),
+						esc_html__( 'Segment or Tag', 'uncanny-automator' ),
 						'MCLISTTAGS',
 						array(
 							'required'    => false,
 							'is_ajax'     => true,
-							'description' => __( 'If no segment/tag is selected, the campaign will be sent to the entire audience.', 'uncanny-automator' ),
+							'description' => esc_html__( 'If no segment/tag is selected, the campaign will be sent to the entire audience.', 'uncanny-automator' ),
 						)
 					),
-					Automator()->helpers->recipe->field->text_field( 'MCEMAILSUBJECT', __( 'Email subject', 'uncanny-automator' ), true, 'text', null ),
-					Automator()->helpers->recipe->field->text_field( 'MCPREVIEWTEXT', __( 'Preview text', 'uncanny-automator' ), true, 'text', null, false ),
-					Automator()->helpers->recipe->field->text_field( 'MCFROMNAME', __( 'From name', 'uncanny-automator' ), true, 'text', null ),
-					Automator()->helpers->recipe->field->text_field( 'MCFROMEMAILADDRESS', __( 'From email address', 'uncanny-automator' ), true, 'email', $user_email, false, $from_email_description, null ),
+					Automator()->helpers->recipe->field->text_field( 'MCEMAILSUBJECT', esc_html__( 'Email subject', 'uncanny-automator' ), true, 'text', null ),
+					Automator()->helpers->recipe->field->text_field( 'MCPREVIEWTEXT', esc_html__( 'Preview text', 'uncanny-automator' ), true, 'text', null, false ),
+					Automator()->helpers->recipe->field->text_field( 'MCFROMNAME', esc_html__( 'From name', 'uncanny-automator' ), true, 'text', null ),
+					Automator()->helpers->recipe->field->text_field( 'MCFROMEMAILADDRESS', esc_html__( 'From email address', 'uncanny-automator' ), true, 'email', $user_email, false, $from_email_description, null ),
 					//   $required = true, $description = '', $placeholder = null
-					Automator()->helpers->recipe->field->text_field( 'MCTONAME', __( 'To name', 'uncanny-automator' ), true, 'text', null, false, __( 'Supports merge tags such as *|FNAME|*, *|LNAME|*, *|FNAME|* *|LNAME|*, etc.', 'uncanny-automator' ) ),
+					Automator()->helpers->recipe->field->text_field( 'MCTONAME', esc_html__( 'To name', 'uncanny-automator' ), true, 'text', null, false, __( 'Supports merge tags such as *|FNAME|*, *|LNAME|*, *|FNAME|* *|LNAME|*, etc.', 'uncanny-automator' ) ),
 					Automator()->helpers->recipe->mailchimp->options->get_all_email_templates(
-						__( 'Template', 'uncanny-automator' ),
+						esc_html__( 'Template', 'uncanny-automator' ),
 						'MCEMAILTEMPLATE',
 						array(
-							'description' => __( 'If a template is selected, the Email Content field below will be ignored.', 'uncanny-automator' ),
+							'description' => esc_html__( 'If a template is selected, the Email Content field below will be ignored.', 'uncanny-automator' ),
 						)
 					),
-					Automator()->helpers->recipe->field->text_field( 'MCEMAILCONTENT', __( 'Email content', 'uncanny-automator' ), true, 'textarea', null, false ),
+					Automator()->helpers->recipe->field->text_field( 'MCEMAILCONTENT', esc_html__( 'Email content', 'uncanny-automator' ), true, 'textarea', null, false ),
 				),
 			),
 		);

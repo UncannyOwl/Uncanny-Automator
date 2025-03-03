@@ -39,7 +39,7 @@ class Autonami_Helpers {
 		if ( $add_any ) {
 			$list_options[] = array(
 				'value' => -1,
-				'text'  => __( 'Any list', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any list', 'uncanny-automator' ),
 			);
 		}
 
@@ -93,7 +93,7 @@ class Autonami_Helpers {
 		if ( $add_any ) {
 			$tag_options[] = array(
 				'value' => -1,
-				'text'  => __( 'Any tag', 'uncanny-automator' ),
+				'text'  => esc_html__( 'Any tag', 'uncanny-automator' ),
 			);
 		}
 
@@ -110,7 +110,6 @@ class Autonami_Helpers {
 		);
 
 		return $dropdown;
-
 	}
 
 	/**
@@ -145,7 +144,7 @@ class Autonami_Helpers {
 	public function extract_contact_from_args( $args ) {
 
 		if ( empty( $args[0][1] ) ) {
-			throw new \Exception( __( 'Contact not found', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Contact not found', 'uncanny-automator' ) );
 		}
 
 		return $args[0][1];
@@ -164,11 +163,10 @@ class Autonami_Helpers {
 		$user = get_user_by( 'email', $email );
 
 		if ( false === $user ) {
-			throw new \Exception( __( 'WP user not found', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'WP user not found', 'uncanny-automator' ) );
 		}
 
 		return $user->ID;
-
 	}
 
 	/**
@@ -180,13 +178,13 @@ class Autonami_Helpers {
 	public function extract_list_id_from_args( $args ) {
 
 		if ( ! is_array( $args ) ) {
-			throw new \Exception( __( 'List not found', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'List not found', 'uncanny-automator' ) );
 		}
 
 		$list = array_shift( $args );
 
 		if ( empty( $list ) ) {
-			throw new \Exception( __( 'List not found', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'List not found', 'uncanny-automator' ) );
 		}
 
 		if ( ! is_numeric( $list ) ) {
@@ -204,7 +202,7 @@ class Autonami_Helpers {
 	public function extract_tag_id_from_args( $args ) {
 
 		if ( ! is_array( $args ) ) {
-			throw new \Exception( __( 'Tag not found', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Tag not found', 'uncanny-automator' ) );
 		}
 
 		$tag = array_shift( $args );
@@ -214,7 +212,6 @@ class Autonami_Helpers {
 		}
 
 		return $tag;
-
 	}
 
 	/**
@@ -238,16 +235,21 @@ class Autonami_Helpers {
 		$result = $autonami_contact->add_tags( $tags_to_add );
 
 		if ( is_wp_error( $result ) ) {
-			throw new \Exception( $result->get_error_message() );
+			throw new \Exception( esc_html( $result->get_error_message() ) );
 		}
 
 		if ( empty( $result ) ) {
 			/* translators: %s - the tag name. */
-			throw new \Exception( sprintf( __( 'User already has the %s tag', 'uncanny-automator' ), $tag_readable ) );
+			throw new \Exception(
+				sprintf(
+					// translators: 1. The tag name.
+					esc_html__( 'User already has the %s tag', 'uncanny-automator' ),
+					esc_html( $tag_readable )
+				)
+			);
 		}
 
 		$autonami_contact->save();
-
 	}
 
 	/**

@@ -79,25 +79,25 @@ class Bbpress_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'BBTOPIC_ID',
-					'tokenName'       => __( 'Topic ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Topic ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'BBTOPIC_URL',
-					'tokenName'       => __( 'Topic URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Topic URL', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'BBTOPIC',
-					'tokenName'       => __( 'Topic title', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Topic title', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'BBTOPIC_CONTENT',
-					'tokenName'       => __( 'Topic content', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Topic content', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),

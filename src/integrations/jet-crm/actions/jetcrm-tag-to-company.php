@@ -94,6 +94,7 @@ class JETCRM_TAG_TO_COMPANY {
 
 		$action_data['do-nothing']           = true;
 		$action_data['complete_with_errors'] = true;
-		Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf( __( 'Company was not found matching (%s)', 'uncanny-automator' ), $company_email ) );
+		// translators: 1: Company email
+		Automator()->complete->action( $user_id, $action_data, $recipe_id, sprintf( esc_html__( 'Company was not found matching (%s)', 'uncanny-automator' ), $company_email ) );
 	}
 }

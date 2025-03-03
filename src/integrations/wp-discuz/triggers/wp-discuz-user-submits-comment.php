@@ -19,6 +19,7 @@ class WP_DISCUZ_USER_SUBMITS_COMMENT extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_integration( 'WPDISCUZ' );
 		$this->set_trigger_code( 'WPD_USER_SUBMITS_COMMENT' );
 		$this->set_trigger_meta( 'WPD_POST' );
+		// translators: 1: Post name, 2: Number of times
 		$this->set_sentence( sprintf( esc_attr_x( 'A user submits a comment on {{a post:%1$s}} {{a number of times:%2$s}}', 'wpDiscuz', 'uncanny-automator' ), $this->get_trigger_meta(), 'NUMTIMES:' . $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A user submits a comment on {{a post}}', 'wpDiscuz', 'uncanny-automator' ) );
 		$this->add_action( 'comment_post', 10, 3 );

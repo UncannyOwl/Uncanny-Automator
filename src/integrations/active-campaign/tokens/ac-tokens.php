@@ -37,42 +37,42 @@ class AC_TOKENS {
 
 		$tokens[] = array(
 			'tokenId'         => 'EMAIL',
-			'tokenName'       => __( 'Email address', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'Email address', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'CONTACT_TAG_ADDED',
 		);
 
 		$tokens[] = array(
 			'tokenId'         => 'TAGS',
-			'tokenName'       => __( 'All contact tags (comma separated)', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'All contact tags (comma separated)', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'CONTACT_TAG_ADDED',
 		);
 
 		$tokens[] = array(
 			'tokenId'         => 'FIRST_NAME',
-			'tokenName'       => __( 'First Name', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'First name', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'CONTACT_TAG_ADDED',
 		);
 
 		$tokens[] = array(
 			'tokenId'         => 'LAST_NAME',
-			'tokenName'       => __( 'Last name', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'Last name', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'CONTACT_TAG_ADDED',
 		);
 
 		$tokens[] = array(
 			'tokenId'         => 'PHONE',
-			'tokenName'       => __( 'Phone', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'Phone', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'CONTACT_TAG_ADDED',
 		);
 
 		$tokens[] = array(
 			'tokenId'         => 'CUSTOMER_ACCT_NAME',
-			'tokenName'       => __( 'Account', 'uncanny-automator' ),
+			'tokenName'       => esc_html__( 'Account', 'uncanny-automator' ),
 			'tokenType'       => 'text',
 			'tokenIdentifier' => 'CONTACT_TAG_ADDED',
 		);

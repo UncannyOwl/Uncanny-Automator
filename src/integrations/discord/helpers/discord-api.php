@@ -105,7 +105,7 @@ class Discord_Api {
 
 		// Check for error.
 		if ( ! empty( $response['error'] ) ) {
-			throw new \Exception( $response['error'] );
+			throw new \Exception( esc_html( $response['error'] ) );
 		}
 		// Check for 400 level status codes.
 		$status = isset( $response['statusCode'] ) ? $response['statusCode'] : 0;
@@ -145,7 +145,7 @@ class Discord_Api {
 					);
 				}
 
-				throw new \Exception( $message );
+				throw new \Exception( esc_html( $message ) );
 			}
 
 			throw new \Exception( 'Discord authorization error' );
@@ -320,7 +320,7 @@ class Discord_Api {
 			// Filter out managed roles ( bots )
 			$roles = array_filter(
 				$response['data'],
-				function( $role ) {
+				function ( $role ) {
 					return empty( $role['managed'] );
 				}
 			);

@@ -245,7 +245,7 @@ class Mapper {
 	 */
 	protected function create_files_field() {
 		$this->create_field_property( 'input_type', 'url' );
-		$this->create_field_property( 'description', __( 'Supports file paths that begin with http:// or https://', 'uncanny-automator' ) );
+		$this->create_field_property( 'description', esc_html__( 'Supports file paths that begin with http:// or https://', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -304,7 +304,7 @@ class Mapper {
 
 		$this->create_field_property( 'input_type', 'select' );
 		$this->create_field_property( 'supports_multiple_values', true );
-		$this->create_field_property( 'placeholder', esc_html__( 'Click to select a person from the list' ) );
+		$this->create_field_property( 'placeholder', esc_html__( 'Click to select a person from the list', 'uncanny-automator' ) );
 		$this->create_field_property( 'options_show_id', false );
 
 		if ( false !== $persons_cached ) {

@@ -44,7 +44,6 @@ class Ontraport_Add_Contact_Tag extends \Uncanny_Automator\Recipe\Action {
 		$this->set_sentence( $sentence );
 		$this->set_readable_sentence( esc_attr_x( 'Add {{a tag}} to {{a contact}}', 'Ontraport', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
 	}
 
 	/**
@@ -77,7 +76,6 @@ class Ontraport_Add_Contact_Tag extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		return array( $tags, $email );
-
 	}
 
 	/**
@@ -97,7 +95,14 @@ class Ontraport_Add_Contact_Tag extends \Uncanny_Automator\Recipe\Action {
 		$tags  = $this->get_parsed_meta_value( $this->get_action_meta(), '' );
 
 		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new Exception( "Invalid email provided: {$email}", 400 );
+			throw new Exception(
+				sprintf(
+				/* translators: %s: Email address */
+					esc_html__( 'Invalid email provided: %s', 'uncanny-automator' ),
+					esc_html( $email )
+				),
+				400
+			);
 		}
 
 		$body = array(
@@ -106,7 +111,5 @@ class Ontraport_Add_Contact_Tag extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$this->helpers->api_request( 'contact_add_tag', $body, $action_data );
-
 	}
-
 }

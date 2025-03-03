@@ -70,7 +70,7 @@ class Pro_Upsell {
 		$upgrade_link_position = key(
 			array_filter(
 				$submenu['edit.php?post_type=uo-recipe'],
-				function( $item ) {
+				function ( $item ) {
 					return strpos( $item[2], 'uncanny-automator-pro-upgrade' ) !== false;
 				}
 			)
@@ -105,8 +105,8 @@ class Pro_Upsell {
 
 		<style>
 			/* stylelint-disable */
-			<?php echo $base_selector; ?> a.uap-sidebar-upgrade-pro,
-			<?php echo $base_selector; ?>.current a.uap-sidebar-upgrade-pro {
+			<?php echo esc_attr( $base_selector ); ?> a.uap-sidebar-upgrade-pro,
+			<?php echo esc_attr( $base_selector ); ?>.current a.uap-sidebar-upgrade-pro {
 				/**
 				 * Make the item more prominent only if the user has Lite
 				 */
@@ -129,7 +129,7 @@ class Pro_Upsell {
 				gap: 3px;
 			}
 
-			<?php echo $base_selector; ?> span.dashicons {
+			<?php echo esc_attr( $base_selector ); ?> span.dashicons {
 				/* 0.9 of the original size */
 				font-size: calc(20px * 0.9);
 

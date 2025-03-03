@@ -32,7 +32,7 @@ class UNCANNYCEUS_AWARDCEUS {
 	 */
 	public function define_action() {
 
-		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 		$action = array(
 			'author'             => Automator()->get_author_name( $this->action_code ),
@@ -57,7 +57,7 @@ class UNCANNYCEUS_AWARDCEUS {
 	 */
 	public function load_options() {
 
-		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) );
+		$credit_designation_label_plural = get_option( 'credit_designation_label_plural', __( 'CEUs', 'uncanny-ceu' ) ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 
 		return Automator()->utilities->keep_order_of_options(
 			array(
@@ -70,7 +70,7 @@ class UNCANNYCEUS_AWARDCEUS {
 									'label'       => esc_attr__( 'Date', 'uncanny-automator' ),
 									'input_type'  => 'text',
 									'required'    => true,
-									'description' => __( 'Format: MM/DD/YYYY Example: 12/05/2020', 'uncanny-automator' ),
+									'description' => esc_html__( 'Format: MM/DD/YYYY Example: 12/05/2020', 'uncanny-automator' ),
 								),
 								array(
 									'option_code' => 'AWARDCEUSCOURSE',
@@ -106,7 +106,7 @@ class UNCANNYCEUS_AWARDCEUS {
 		$ceus   = Automator()->parse->text( $action_data['meta']['AWARDCEUS'], $recipe_id, $user_id, $args );
 
 		// convert date from user input to accepted input
-		$date = date( 'F d Y, g:i:s a', strtotime( $date ) );
+		$date = wp_date( 'F d Y, g:i:s a', strtotime( $date ) );
 
 		$data = array(
 			'course'       => 0, // It is not a real course

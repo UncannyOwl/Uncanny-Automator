@@ -39,9 +39,9 @@ class AFFWP_NEWAFFILIATE {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Affiliate WP */
-			'sentence'            => sprintf( __( 'A user becomes an affiliate', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html__( 'A user becomes an affiliate', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Affiliate WP */
-			'select_option_name'  => __( 'A user becomes an affiliate', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A user becomes an affiliate', 'uncanny-automator' ),
 			'action'              => 'affwp_set_affiliate_status',
 			'priority'            => 10,
 			'accepted_args'       => 3,

@@ -21,6 +21,7 @@ class PRLI_ANON_CREATE_A_LINK extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_meta( 'PRLI_REDIRECTION' );
 		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - Pretty Links
+		// translators: 1: Redirection type
 		$this->set_sentence( sprintf( esc_attr_x( 'A pretty link of {{a specific redirect type:%1$s}} is created', 'Pretty Links', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'A pretty link of {{a specific redirect type}} is created', 'Pretty Links', 'uncanny-automator' ) );
 		$this->add_action( 'prli-create-link', 10, 2 );

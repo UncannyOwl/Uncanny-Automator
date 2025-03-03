@@ -49,7 +49,7 @@ class WhatsApp_Settings extends Settings\Premium_Integration_Settings {
 			$client = $this->get_helper()->get_client();
 
 			/* translators: Settings flash message */
-			$heading = sprintf( __( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $client['application'] );
+			$heading = sprintf( esc_html__( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $client['application'] );
 
 			automator_add_settings_error( 'automator_whatsapp_connection_alerts', $heading, '', 'success' );
 
@@ -60,7 +60,7 @@ class WhatsApp_Settings extends Settings\Premium_Integration_Settings {
 
 		} catch ( \Exception $e ) {
 
-			automator_add_settings_error( 'automator_whatsapp_connection_alerts', __( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
+			automator_add_settings_error( 'automator_whatsapp_connection_alerts', esc_html__( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
 
 			return false;
 
@@ -146,17 +146,17 @@ class WhatsApp_Settings extends Settings\Premium_Integration_Settings {
 
 		$access_token_description = sprintf(
 			'%4$s <a href="%2$s#section-access-token" title="%3$s" target="blank">%3$s</a> %1$s ',
-			__( 'to learn how to create a permanent access token.', 'uncanny-automator' ),
+			esc_html__( 'to learn how to create a permanent access token.', 'uncanny-automator' ),
 			automator_utm_parameters( self::KNOWLEDGEBASE_URL, 'premium-integrations', 'whatsapp' ),
-			__( 'Click here', 'uncanny-automator' ),
-			__( 'You may use the temporary access token found in your WhatsApp product for testing purposes.', 'uncanny-automator' )
+			esc_html__( 'Click here', 'uncanny-automator' ),
+			esc_html__( 'You may use the temporary access token found in your WhatsApp product for testing purposes.', 'uncanny-automator' )
 		);
 
 		$phone_business_description = sprintf(
 			'%1$s <a href="%2$s#section-phone-id" title="%3$s" target="blank">%3$s</a>',
-			__( 'Your Phone number ID and WhatsApp Business Account ID can be found in your Meta developer app settings under WhatsApp product.', 'uncanny-automator' ),
+			esc_html__( 'Your Phone number ID and WhatsApp Business Account ID can be found in your Meta developer app settings under WhatsApp product.', 'uncanny-automator' ),
 			automator_utm_parameters( self::KNOWLEDGEBASE_URL, 'premium-integrations', 'whatsapp' ),
-			__( 'Learn more', 'uncanny-automator' )
+			esc_html__( 'Learn more', 'uncanny-automator' )
 		);
 
 		$webhook_url = $this->get_helper()->get_webhook_url();

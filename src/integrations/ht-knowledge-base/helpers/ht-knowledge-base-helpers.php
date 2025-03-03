@@ -55,37 +55,37 @@ class Ht_Knowledge_Base_Helpers {
 		$common_tokens = array(
 			array(
 				'tokenId'   => 'ARTICLE_TITLE',
-				'tokenName' => __( 'Article title', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Article title', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'ARTICLE_ID',
-				'tokenName' => __( 'Article ID', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Article ID', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'ARTICLE_URL',
-				'tokenName' => __( 'Article URL', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Article URL', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'ARTICLE_CATEGORIES',
-				'tokenName' => __( 'Article categories', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Article categories', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'ARTICLE_TAGS',
-				'tokenName' => __( 'Article tags', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Article tags', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'ARTICLE_COMMENT',
-				'tokenName' => __( 'Comments', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Comments', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'VOTE_DATE',
-				'tokenName' => __( 'Date', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Date', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 		);
@@ -93,7 +93,7 @@ class Ht_Knowledge_Base_Helpers {
 		if ( 'user' === $type ) {
 			$common_tokens[] = array(
 				'tokenId'   => 'USERNAME',
-				'tokenName' => __( 'Username', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'Username', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			);
 		}
@@ -101,7 +101,7 @@ class Ht_Knowledge_Base_Helpers {
 		if ( 'anon' === $type ) {
 			$common_tokens[] = array(
 				'tokenId'   => 'USER_IP',
-				'tokenName' => __( 'IP', 'uncanny-automator' ),
+				'tokenName' => esc_html__( 'IP', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			);
 		}
@@ -140,7 +140,10 @@ class Ht_Knowledge_Base_Helpers {
 		$tokens['ARTICLE_COMMENT']    = $object->comments;
 		$tokens['USERNAME']           = get_userdata( $object->user_id )->user_login;
 		$tokens['USER_IP']            = $object->ip;
-		$tokens['VOTE_DATE']          = date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $object->time );
+		$tokens['VOTE_DATE']          = wp_date(
+			sprintf( '%s %s', get_option( 'date_format' ), get_option( 'time_format' ) ),
+			$object->time
+		);
 
 		return $tokens;
 

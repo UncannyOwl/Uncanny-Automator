@@ -20,12 +20,16 @@
 
 						$connect = automator_filter_input( 'connect' );
 
-						$alert_heading = __( 'There was an error connecting your Twilio account. Please try again or contact support.', 'uncanny-automator' );
+						$alert_heading = esc_html__( 'There was an error connecting your Twilio account. Please try again or contact support.', 'uncanny-automator' );
 						$alert_type    = 'error';
-						$alert_content = __( 'Error: ', 'uncanny-automator' ) . $connect;
+						$alert_content = sprintf(
+							// translators: %s: Error message
+							esc_html__( 'Error: %s', 'uncanny-automator' ),
+							esc_html( $connect )
+						);
 
 						if ( 1 == $connect ) {
-							$alert_heading = __( 'You have successfully connected your Twilio account', 'uncanny-automator' );
+							$alert_heading = esc_html__( 'You have successfully connected your Twilio account', 'uncanny-automator' );
 							$alert_type    = 'success';
 							$alert_content = '';
 						}
@@ -109,8 +113,8 @@
 
 				$phone_number_helper = sprintf(
 					/* translators: 1. URL */
-					__( 'See your list of active phone numbers on the %1$s page.', 'uncanny-automator' ),
-					'<a href="https://www.twilio.com/console/phone-numbers/incoming" target="_blank">' . __( 'Active numbers', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+					esc_html__( 'See your list of active phone numbers on the %1$s page.', 'uncanny-automator' ),
+					'<a href="https://www.twilio.com/console/phone-numbers/incoming" target="_blank">' . esc_html__( 'Active numbers', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 				);
 
 				?>
@@ -219,5 +223,5 @@
 		</div>
 
 	</div>
-	<input type="hidden" name="uap_automator_twilio_api_settings_timestamp" value="<?php esc_attr_e( time() ); ?>" >
+	<input type="hidden" name="uap_automator_twilio_api_settings_timestamp" value="<?php echo esc_attr( time() ); ?>" >
 </form>

@@ -78,7 +78,7 @@ class Badgeos_Helpers {
 		$options      = array();
 
 		if ( $is_any == true ) {
-			$options['-1'] = __( 'Any achievement', 'uncanny-automator' );
+			$options['-1'] = esc_html__( 'Any achievement', 'uncanny-automator' );
 		}
 
 		global $wpdb;

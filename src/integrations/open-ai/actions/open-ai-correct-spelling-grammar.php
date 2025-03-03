@@ -58,7 +58,7 @@ class OPEN_AI_CORRECT_SPELLING_GRAMMAR {
 		$this->set_action_tokens(
 			array(
 				'REVISED_TEXT' => array(
-					'name' => __( 'Revised text', 'uncanny-automator' ),
+					'name' => esc_html__( 'Revised text', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

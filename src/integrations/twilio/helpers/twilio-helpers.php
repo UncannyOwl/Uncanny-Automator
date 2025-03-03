@@ -7,6 +7,7 @@ use Uncanny_Automator_Pro\Twilio_Pro_Helpers;
 
 /**
  * Class Twilio_Helpers
+ *
  * @package Uncanny_Automator
  */
 class Twilio_Helpers {
@@ -64,7 +65,6 @@ class Twilio_Helpers {
 		add_action( 'wp_ajax_automator_twilio_disconnect', array( $this, 'automator_twilio_disconnect' ), 100 );
 
 		$this->load_settings();
-
 	}
 
 	/**
@@ -108,7 +108,7 @@ class Twilio_Helpers {
 		if ( empty( $from ) ) {
 			return array(
 				'result'  => false,
-				'message' => __( 'Twilio number is missing.', 'uncanny-automator' ),
+				'message' => esc_html__( 'Twilio number is missing.', 'uncanny-automator' ),
 			);
 		}
 
@@ -117,7 +117,7 @@ class Twilio_Helpers {
 		if ( ! $to ) {
 			return array(
 				'result'  => false,
-				'message' => __( 'To number is not valid.', 'uncanny-automator' ),
+				'message' => esc_html__( 'To number is not valid.', 'uncanny-automator' ),
 			);
 		}
 
@@ -141,7 +141,6 @@ class Twilio_Helpers {
 			'result'  => true,
 			'message' => '',
 		);
-
 	}
 
 	/**
@@ -182,7 +181,6 @@ class Twilio_Helpers {
 			'account_sid' => $sid,
 			'auth_token'  => $token,
 		);
-
 	}
 
 	/**
@@ -200,7 +198,6 @@ class Twilio_Helpers {
 		automator_update_option( 'uap_twilio_connected_user', $twilio_account );
 
 		return $twilio_account;
-
 	}
 
 	/**
@@ -277,11 +274,16 @@ class Twilio_Helpers {
 		$response = Api_Server::api_call( $params );
 
 		if ( 200 !== $response['statusCode'] ) {
-			throw new \Exception( $params['endpoint'] . ' failed' );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: API endpoint */
+					esc_html__( '%s failed', 'uncanny-automator' ),
+					esc_html( $params['endpoint'] )
+				)
+			);
 		}
 
 		return $response['data'];
-
 	}
 
 	/**
@@ -333,7 +335,7 @@ class Twilio_Helpers {
 			$user   = automator_get_option( 'uap_twilio_connected_user', array() );
 
 			if ( empty( $user['sid'] ) ) {
-				throw new \Exception( __( 'User account error', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'User account error', 'uncanny-automator' ) );
 			}
 
 			$is_connected = true;

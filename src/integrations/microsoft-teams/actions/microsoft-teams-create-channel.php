@@ -30,11 +30,11 @@ class MICROSOFT_TEAMS_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'CHANNEL_ID'  => array(
-					'name' => __( 'Channel ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Channel ID', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CHANNEL_URL' => array(
-					'name' => __( 'Channel URL', 'uncanny-automator' ),
+					'name' => esc_html__( 'Channel URL', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -51,7 +51,7 @@ class MICROSOFT_TEAMS_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 
 		$user_teams_field = array(
 			'option_code'           => 'TEAM',
-			'label'                 => __( 'Team', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Team', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,
@@ -83,7 +83,7 @@ class MICROSOFT_TEAMS_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 
 		$channel_type_field = array(
 			'option_code'           => 'TYPE',
-			'label'                 => __( 'Privacy', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Privacy', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,
@@ -107,11 +107,11 @@ class MICROSOFT_TEAMS_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 	public function define_tokens() {
 		return array(
 			'CHANNEL_ID'  => array(
-				'name' => __( 'Channel ID', 'uncanny-automator' ),
+				'name' => esc_html__( 'Channel ID', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'CHANNEL_URL' => array(
-				'name' => __( 'Channel URL', 'uncanny-automator' ),
+				'name' => esc_html__( 'Channel URL', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 		);

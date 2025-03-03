@@ -91,7 +91,7 @@ class GP_AWARDACHIEVEMENT_A {
 		if ( $earned ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, __( 'Achievement maximum earnings reached.', 'uncanny-automator' ) );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, esc_html__( 'Achievement maximum earnings reached.', 'uncanny-automator' ) );
 			return;
 		}
 

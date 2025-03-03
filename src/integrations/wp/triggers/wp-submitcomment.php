@@ -94,7 +94,7 @@ class WP_SUBMITCOMMENT {
 						$all_post_types,
 						Automator()->helpers->recipe->field->select_field(
 							$this->trigger_meta,
-							__( 'Post', 'uncanny-automator' ),
+							esc_html__( 'Post', 'uncanny-automator' ),
 							array(),
 							null,
 							false,

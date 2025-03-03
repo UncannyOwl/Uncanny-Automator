@@ -26,6 +26,7 @@ class CODE_SNIPPETS_ACTIVATE_SNIPPET extends Action {
 		$this->set_action_code( 'CS_ACTIVATE_SNIPPET' );
 		$this->set_action_meta( 'CS_SNIPPETS' );
 		$this->set_requires_user( false );
+		// translators: 1: Snippet name
 		$this->set_sentence( sprintf( esc_attr_x( 'Activate  {{a snippet:%1$s}}', 'Code Snippets', 'uncanny-automator' ), $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Activate  {{a snippet}}', 'Code Snippets', 'uncanny-automator' ) );
 	}
@@ -75,12 +76,14 @@ class CODE_SNIPPETS_ACTIVATE_SNIPPET extends Action {
 		$snippet_details = \Code_Snippets\get_snippet( $snippet_id );
 
 		if ( ! $snippet_details instanceof \Code_Snippets\Snippet ) {
+			// translators: 1: Snippet ID
 			$this->add_log_error( sprintf( esc_attr_x( 'Invalid snippet id: %d.', 'Code Snippets', 'uncanny-automator' ), $snippet_id ) );
 
 			return false;
 		}
 
 		if ( true === $snippet_details->active ) {
+			// translators: 1: Snippet name
 			$this->add_log_error( sprintf( esc_attr_x( 'The selected snippet (%s) is already active.', 'Code Snippets', 'uncanny-automator' ), $snippet_details->display_name ) );
 
 			return false;
@@ -95,7 +98,7 @@ class CODE_SNIPPETS_ACTIVATE_SNIPPET extends Action {
 		$snippet_activated = \Code_Snippets\activate_snippet( $snippet_id );
 
 		if ( ! $snippet_activated instanceof \Code_Snippets\Snippet ) {
-			$this->add_log_error( esc_attr_x( $snippet_activated, 'Code Snippets', 'uncanny-automator' ) );
+			$this->add_log_error( esc_attr( $snippet_activated ) );
 
 			return false;
 		}

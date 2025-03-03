@@ -54,12 +54,12 @@ class UC_DELETE_BATCH_CODES {
 					Automator()->helpers->recipe->field->int(
 						array(
 							'option_code' => 'UCNUMBERS',
-							'label'       => esc_attr__( 'Number', 'uncanny-automator-pro' ),
-							'placeholder' => esc_attr__( '', 'uncanny-automator-pro' ),
+							'label'       => esc_attr__( 'Number', 'uncanny-automator' ),
+							'placeholder' => '',
 						)
 					),
 					Automator()->helpers->recipe->uncanny_codes->options->get_all_code_batch(
-						__( 'Batch', 'uncanny-automator-pro' ),
+						esc_html__( 'Batch', 'uncanny-automator' ),
 						$this->get_action_meta(),
 						false
 					),
@@ -115,18 +115,13 @@ class UC_DELETE_BATCH_CODES {
 	private function get_unused_group_codes_count( $group, $limit = 0 ) {
 		global $wpdb;
 
-		$limit_str = '';
 		if ( is_numeric( $limit ) && $limit > 0 ) {
-			$limit_str = ' LIMIT ' . $limit;
+			return $wpdb->get_var( $wpdb->prepare( "SELECT count(c.ID) FROM `{$wpdb->prefix}uncanny_codes_codes` c WHERE c.code_group = %d AND used_date IS NULL AND user_id IS NULL LIMIT %d", $group, absint( $limit ) ) );
 		}
 
-		$sql = $wpdb->prepare(
-			"SELECT count(c.ID) FROM {$wpdb->prefix}" . \uncanny_learndash_codes\Config::$tbl_codes . " c 
-			 WHERE c.code_group = %d AND used_date IS NULL AND user_id IS NULL {$limit_str}",
-			$group
+		return $wpdb->get_var(
+			$wpdb->prepare( "SELECT count(c.ID) FROM `{$wpdb->prefix}uncanny_codes_codes` c WHERE c.code_group = %d AND used_date IS NULL AND user_id IS NULL", $group )
 		);
-
-		return $wpdb->get_var( $sql );
 	}
 
 	/**
@@ -141,14 +136,8 @@ class UC_DELETE_BATCH_CODES {
 			return false;
 		}
 
-		$limit_str = ' LIMIT ' . $limit;
-
-		$sql = $wpdb->prepare(
-			"DELETE FROM {$wpdb->prefix}" . \uncanny_learndash_codes\Config::$tbl_codes . " 
-			 WHERE code_group = %d AND used_date IS NULL AND user_id IS NULL {$limit_str}",
-			$group
+		return $wpdb->query(
+			$wpdb->prepare( "DELETE FROM `{$wpdb->prefix}uncanny_codes_codes` WHERE code_group = %d AND used_date IS NULL AND user_id IS NULL LIMIT %d", $group, absint( $limit ) )
 		);
-
-		return $wpdb->query( $sql );
 	}
 }

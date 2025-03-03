@@ -33,7 +33,7 @@ class Studiocart_Helpers {
 	 *
 	 * @param Studiocart_Helpers $options
 	 */
-	public function setOptions( Studiocart_Helpers $options ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setOptions( Studiocart_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
@@ -42,7 +42,7 @@ class Studiocart_Helpers {
 	 *
 	 * @param Studiocart_Pro_Helpers $pro
 	 */
-	public function setPro( \Uncanny_Automator_Pro\Studiocart_Pro_Helpers $pro ) { //phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
+	public function setPro( \Uncanny_Automator_Pro\Studiocart_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -90,7 +90,7 @@ class Studiocart_Helpers {
 
 		$args = array(
 			'post_type'      => 'sc_product',
-			'posts_per_page' => 999, //phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',

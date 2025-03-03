@@ -80,8 +80,9 @@ function automator_get_integration_by_name( $name ) {
 		return $integration;
 	}
 	$return = '';
+	$integration = strtolower( $integration );
 	switch ( $integration ) {
-		case 'wordpress': //phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+		case 'wordpress': // phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText
 			$return = 'wp';
 			break;
 		case 'easy-digital-downloads':
@@ -259,7 +260,7 @@ function automator_filter_input_array( $variable = null, $type = INPUT_GET, $fla
  * @package Uncanny_Automator
  */
 function automator_exception( $message, $code = 999 ) {
-	throw new Automator_Exception( $message, $code );
+	throw new Automator_Exception( esc_html( $message ), absint( $code ) );
 }
 
 /**
@@ -452,7 +453,7 @@ function automator_utm_parameters( $url, $medium = '', $content = '' ) {
 
 			$url = $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'] . '?' . $url_parts['query'];
 		}
-	} catch ( \Exception $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+	} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 	}
 
 	return $url;
@@ -515,6 +516,7 @@ function clear_recipe_logs( $recipe_id ) {
 
 /**
  * Only identify and add tokens IF it's edit recipe page
+ *
  * @return bool
  */
 function automator_do_identify_tokens() {
@@ -524,12 +526,12 @@ function automator_do_identify_tokens() {
 	}
 
 	if (
-		isset( $_REQUEST['action'] ) && //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		isset( $_REQUEST['action'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		(
-			'heartbeat' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) || //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			'wp-remove-post-lock' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'heartbeat' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) || // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'wp-remove-post-lock' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		)
-	) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		// if it's heartbeat, post lock actions bail
 		return false;
 	}
@@ -1023,7 +1025,6 @@ function automator_get_all_options( $force = false ) {
  * @param string $code Slug-name to identify the error. Used as part of 'id' attribute in HTML output.
  * @param string $message The formatted message text to display to the user (will be shown inside styled <div> and <p> tags).
  * @param string $type MMessage type, controls HTML class. Possible values include 'error', 'success', 'warning', 'info'. Default 'error'.
- *
  */
 function automator_add_settings_error( $setting = '', $code = '', $message = '', $type = '' ) {
 
@@ -1186,7 +1187,6 @@ function clear_fastly_cache() {
 function automator_get_allowed_attachment_ext() {
 
 	return apply_filters( 'automator_get_allowed_attachment_ext', Extension_Support::$common_file_extensions );
-
 }
 
 /**

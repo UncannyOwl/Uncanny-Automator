@@ -800,6 +800,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$validated_email = $this->helpers->get_valid_email( $email );
 		if ( false === $validated_email ) {
 			$this->complete_with_notice_messages[] = sprintf(
+				// translators: 1: Email, 2: Field key
 				_x( 'Invalid email: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
 				$email,
 				strtolower( $key )
@@ -828,8 +829,9 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$validate_link = esc_url( $url );
 		if ( ! $validate_link ) {
 			$this->complete_with_notice_messages[] = sprintf(
+				// translators: 1: URL, 2: Field key
 				_x( 'Invalid url: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
-				$email,
+				$url,
 				strtolower( $key )
 			);
 		}
@@ -858,6 +860,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$validated_date = $this->helpers->get_formatted_date( $date, $format );
 		if ( is_wp_error( $validated_date ) ) {
 			$this->complete_with_notice_messages[] = sprintf(
+				// translators: 1: Date, 2: Field key
 				_x( 'Invalid date: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
 				$date,
 				strtolower( $key )
@@ -887,6 +890,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$validate_number = $this->helpers->get_valid_phone_number( $number );
 		if ( false === $validate_number ) {
 			$this->complete_with_notice_messages[] = sprintf(
+				// translators: 1: Phone number, 2: Field key
 				_x( 'Invalid phone number: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
 				$number,
 				strtolower( $key )

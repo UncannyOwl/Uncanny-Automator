@@ -72,97 +72,97 @@ class Wpjm_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'WPJMJOBCATEGORIES',
-				'tokenName'       => __( 'Job categories', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job categories', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBOWNERNAME',
-				'tokenName'       => __( 'Job owner username', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job owner username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBOWNEREMAIL',
-				'tokenName'       => __( 'Job owner email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job owner email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBOWNERFIRSTNAME',
-				'tokenName'       => __( 'Job owner first name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job owner first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBOWNERLASTNAME',
-				'tokenName'       => __( 'Job owner last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job owner last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBTITLE',
-				'tokenName'       => __( 'Job title', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job title', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBID',
-				'tokenName'       => __( 'Job ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job ID', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBLOCATION',
-				'tokenName'       => __( 'Location', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Location', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBDESCRIPTION',
-				'tokenName'       => __( 'Job description', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job description', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBAPPURL',
-				'tokenName'       => __( 'Application email/URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Application email/URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBCOMPANYNAME',
-				'tokenName'       => __( 'Company name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Company name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBWEBSITE',
-				'tokenName'       => __( 'Website', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Website', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBTAGLINE',
-				'tokenName'       => __( 'Tagline', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Tagline', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBVIDEO',
-				'tokenName'       => __( 'Video', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Video', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBTWITTER',
-				'tokenName'       => __( 'Twitter username', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Twitter username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBLOGOURL',
-				'tokenName'       => __( 'Logo URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Logo URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMSUBMITJOB',
 			),
@@ -191,109 +191,109 @@ class Wpjm_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'WPJMAPPLICATIONNAME',
-				'tokenName'       => __( 'Candidate name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Candidate name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
 			),
 			array(
 				'tokenId'         => 'WPJMAPPLICATIONEMAIL',
-				'tokenName'       => __( 'Candidate email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Candidate email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
 			),
 			array(
 				'tokenId'         => 'WPJMAPPLICATIONMESSAGE',
-				'tokenName'       => __( 'Message', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Message', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
 			),
 			array(
 				'tokenId'         => 'WPJMAPPLICATIONCV',
-				'tokenName'       => __( 'CV', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'CV', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATIONID',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBTYPE',
-				'tokenName'       => __( 'Job type', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job type', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBOWNERNAME',
-				'tokenName'       => __( 'Job owner username', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job owner username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBOWNEREMAIL',
-				'tokenName'       => __( 'Job owner email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job owner email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBOWNERFIRSTNAME',
-				'tokenName'       => __( 'Job owner first name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job owner first name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBOWNERLASTNAME',
-				'tokenName'       => __( 'Job owner last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job owner last name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBLOCATION',
-				'tokenName'       => __( 'Location', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Location', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBDESCRIPTION',
-				'tokenName'       => __( 'Job description', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Job description', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBAPPURL',
-				'tokenName'       => __( 'Application email/URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Application email/URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBCOMPANYNAME',
-				'tokenName'       => __( 'Company name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Company name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBWEBSITE',
-				'tokenName'       => __( 'Website', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Website', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBTAGLINE',
-				'tokenName'       => __( 'Tagline', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Tagline', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBVIDEO',
-				'tokenName'       => __( 'Video', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Video', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBTWITTER',
-				'tokenName'       => __( 'Twitter username', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Twitter username', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
 			array(
 				'tokenId'         => 'WPJMJOBLOGOURL',
-				'tokenName'       => __( 'Logo URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Logo URL', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPJMJOBAPPLICATION',
 			),
@@ -333,79 +333,79 @@ class Wpjm_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'WPJMRESUMECATEGORIES',
-					'tokenName'       => __( 'Resume categories', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Resume categories', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJM_RESUME_ID',
-					'tokenName'       => __( 'Resume ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Resume ID', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJM_RESUME_URL',
-					'tokenName'       => __( 'Resume URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Resume URL', 'uncanny-automator' ),
 					'tokenType'       => 'url',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMENAME',
-					'tokenName'       => __( 'Candidate name', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Candidate name', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMEEMAIL',
-					'tokenName'       => __( 'Candidate email', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Candidate email', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMEPROTITLE',
-					'tokenName'       => __( 'Professional title', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Professional title', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMELOCATION',
-					'tokenName'       => __( 'Location', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Location', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMEPHOTO',
-					'tokenName'       => __( 'Photo', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Photo', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMEVIDEO',
-					'tokenName'       => __( 'Video', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Video', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMECONTENT',
-					'tokenName'       => __( 'Resume content', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Resume content', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMEURLS',
-					'tokenName'       => __( 'URL(s)', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'URL(s)', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMEEDUCATION',
-					'tokenName'       => __( 'Education', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Education', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
 				array(
 					'tokenId'         => 'WPJMRESUMEEXPERIENCE',
-					'tokenName'       => __( 'Experience', 'uncanny-automator' ),
+					'tokenName'       => esc_html__( 'Experience', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => 'WPJMSUBMITRESUME',
 				),
@@ -591,13 +591,13 @@ class Wpjm_Tokens {
 						$resume_education_str = '';
 						foreach ( $education as $key => $item ) {
 							// translators: Placeholder is location of education experience.
-							$resume_education_str .= sprintf( __( 'Location: %s', 'wp-job-manager-resumes' ), $item['location'] ) . PHP_EOL;
+							$resume_education_str .= sprintf( __( 'Location: %s', 'wp-job-manager-resumes' ), $item['location'] ) . PHP_EOL; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							// translators: Placeholder is date of education experience.
-							$resume_education_str .= sprintf( __( 'Date: %s', 'wp-job-manager-resumes' ), $item['date'] ) . PHP_EOL;
+							$resume_education_str .= sprintf( __( 'Date: %s', 'wp-job-manager-resumes' ), $item['date'] ) . PHP_EOL; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							// translators: Placeholder is qualifications/degrees of education experience.
-							$resume_education_str .= sprintf( __( 'Qualification: %s', 'wp-job-manager-resumes' ), $item['qualification'] ) . PHP_EOL;
+							$resume_education_str .= sprintf( __( 'Qualification: %s', 'wp-job-manager-resumes' ), $item['qualification'] ) . PHP_EOL; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							// translators: Placeholder is notes for education experience.
-							$resume_education_str .= sprintf( __( 'Notes: %s', 'wp-job-manager-resumes' ), $item['notes'] ) . PHP_EOL;
+							$resume_education_str .= sprintf( __( 'Notes: %s', 'wp-job-manager-resumes' ), $item['notes'] ) . PHP_EOL; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							$resume_education_str .= PHP_EOL;
 						}
 
@@ -613,13 +613,13 @@ class Wpjm_Tokens {
 						$resume_experience_str = '';
 						foreach ( $experience as $key => $item ) {
 							// translators: Placeholder is employer name of experience.
-							$resume_experience_str .= sprintf( __( 'Employer: %s', 'wp-job-manager-resumes' ), $item['employer'] ) . PHP_EOL;
+							$resume_experience_str .= sprintf( __( 'Employer: %s', 'wp-job-manager-resumes' ), $item['employer'] ) . PHP_EOL; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							// translators: Placeholder is date of experience.
-							$resume_experience_str .= sprintf( __( 'Date: %s', 'wp-job-manager-resumes' ), $item['date'] ) . PHP_EOL;
+							$resume_experience_str .= sprintf( __( 'Date: %s', 'wp-job-manager-resumes' ), $item['date'] ) . PHP_EOL; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							// translators: Placeholder is job title of experience.
-							$resume_experience_str .= sprintf( __( 'Job title: %s', 'wp-job-manager-resumes' ), $item['job_title'] ) . PHP_EOL;
+							$resume_experience_str .= sprintf( __( 'Job title: %s', 'wp-job-manager-resumes' ), $item['job_title'] ) . PHP_EOL; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							// translators: Placeholder is notes for experience.
-							$resume_experience_str .= sprintf( __( 'Notes: %s', 'wp-job-manager-resumes' ), $item['notes'] ) . PHP_EOL;
+							$resume_experience_str .= sprintf( __( 'Notes: %s', 'wp-job-manager-resumes' ), $item['notes'] ) . PHP_EOL; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
 							$resume_experience_str .= PHP_EOL;
 						}
 

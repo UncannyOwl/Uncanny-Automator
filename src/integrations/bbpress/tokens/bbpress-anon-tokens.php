@@ -151,19 +151,19 @@ LIMIT 0,1",
 		$fields = array(
 			array(
 				'tokenId'         => 'ANONYMOUS_EMAIL',
-				'tokenName'       => __( 'Guest email', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Guest email', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'ANONYMOUS_GUEST_NAME',
-				'tokenName'       => __( 'Guest name', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Guest name', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'ANONYMOUS_GUEST_WEBSITE',
-				'tokenName'       => __( 'Guest website', 'uncanny-automator' ),
+				'tokenName'       => esc_html__( 'Guest website', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),

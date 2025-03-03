@@ -49,7 +49,7 @@ class WPMSMTP_SPECIFIC_SUBJECT_MAIL_OPENED {
 				'options' => array(
 					array(
 						'option_code'     => $this->get_trigger_meta(),
-						'label'           => __( 'Text to match', 'uncanny-automator' ),
+						'label'           => esc_html__( 'Text to match', 'uncanny-automator' ),
 						'input_type'      => 'text',
 						'required'        => true,
 						'relevant_tokens' => array(),

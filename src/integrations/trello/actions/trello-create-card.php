@@ -47,11 +47,11 @@ class TRELLO_CREATE_CARD {
 		$this->set_action_tokens(
 			array(
 				'CARD_ID'  => array(
-					'name' => __( 'Card ID', 'uncanny-automator' ),
+					'name' => esc_html__( 'Card ID', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CARD_URL' => array(
-					'name' => __( 'Card URL', 'uncanny-automator' ),
+					'name' => esc_html__( 'Card URL', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),
@@ -62,7 +62,7 @@ class TRELLO_CREATE_CARD {
 			array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => __( 'Get custom fields', 'uncanny-automator' ),
+					'text'        => esc_html__( 'Get custom fields', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => 'automator_trello_get_custom_fields',
 					'modules'     => array( 'modal', 'markdown' ),
@@ -82,8 +82,8 @@ class TRELLO_CREATE_CARD {
 
 		$user_boards_field = array(
 			'option_code'           => 'BOARD',
-			'label'                 => __( 'Board', 'uncanny-automator' ),
-			'token_name'            => __( 'Board ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Board', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'Board ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,
@@ -93,8 +93,8 @@ class TRELLO_CREATE_CARD {
 
 		$board_lists_field = array(
 			'option_code'           => 'LIST',
-			'label'                 => __( 'List', 'uncanny-automator' ),
-			'token_name'            => __( 'List ID', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'List', 'uncanny-automator' ),
+			'token_name'            => esc_html__( 'List ID', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => array(),
@@ -175,7 +175,7 @@ class TRELLO_CREATE_CARD {
 			'supports_multiple_values' => true,
 			'options'                  => array(),
 			'label'                    => esc_attr__( 'Members', 'uncanny-automator' ),
-			'placeholder'              => __( 'No member', 'uncanny-automator' ),
+			'placeholder'              => esc_html__( 'No member', 'uncanny-automator' ),
 			'tokens'                   => true,
 			'default'                  => '',
 			'ajax'                     => array(
@@ -206,7 +206,7 @@ class TRELLO_CREATE_CARD {
 			'option_code'     => 'CUSTOMFIELDS',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => __( 'Custom fields', 'uncanny-automator' ),
+			'label'           => esc_html__( 'Custom fields', 'uncanny-automator' ),
 			'description'     => '',
 			'required'        => false,
 			'default_value'   => array(
@@ -219,7 +219,7 @@ class TRELLO_CREATE_CARD {
 			'fields'          => array(
 				array(
 					'option_code' => 'FIELD_NAME',
-					'label'       => __( 'Field name', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Field name', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 					'read_only'   => true,
@@ -235,7 +235,7 @@ class TRELLO_CREATE_CARD {
 				),
 				array(
 					'option_code' => 'FIELD_VALUE',
-					'label'       => __( 'Value', 'uncanny-automator' ),
+					'label'       => esc_html__( 'Value', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 				),

@@ -58,7 +58,7 @@ class OPEN_AI_SENTIMENT_ANALYZE {
 		$this->set_action_tokens(
 			array(
 				'SENTIMENT_ANALYSIS' => array(
-					'name' => __( 'Sentiment analysis', 'uncanny-automator' ),
+					'name' => esc_html__( 'Sentiment analysis', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),

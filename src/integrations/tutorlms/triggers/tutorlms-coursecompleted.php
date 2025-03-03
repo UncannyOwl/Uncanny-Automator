@@ -91,9 +91,9 @@ class TUTORLMS_COURSECOMPLETED {
 			$post = get_post( $course_id );
 		}
 
-		if ( ! is_object( $post ) && isset( $_POST['course_id'] ) ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$course_id = (int) $_POST['course_id']; //phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$post      = get_post( $course_id ); //phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		if ( ! is_object( $post ) && isset( $_POST['course_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$course_id = (int) $_POST['course_id']; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$post      = get_post( $course_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 
 		// Is valid post?

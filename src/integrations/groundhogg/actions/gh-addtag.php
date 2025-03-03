@@ -88,7 +88,7 @@ class GH_ADDTAG {
 		if ( ! $contact ) {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, __( 'Contact was not found.', 'uncanny-automator' ) );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_html__( 'Contact was not found.', 'uncanny-automator' ) );
 
 			return;
 		}

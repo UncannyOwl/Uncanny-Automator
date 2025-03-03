@@ -89,7 +89,7 @@ class BDB_ADDTOGROUP {
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} else {
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, __( ' groups_join_group Function does not exist.' ) );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, esc_html__( ' groups_join_group Function does not exist.', 'uncanny-automator' ) );
 		}
 
 	}

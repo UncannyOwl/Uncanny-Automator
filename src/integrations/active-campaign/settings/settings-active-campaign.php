@@ -111,7 +111,7 @@ class Active_Campaign_Settings extends Settings\Premium_Integration_Settings {
 			admin_url( 'admin-ajax.php' )
 		);
 
-		$this->regenerate_alert = __( 'Regenerating the URL will prevent ActiveCampaign triggers from working until the new webhook URL is set in ActiveCampaign. Continue?', 'uncanny-automator' );
+		$this->regenerate_alert = esc_html__( 'Regenerating the URL will prevent ActiveCampaign triggers from working until the new webhook URL is set in ActiveCampaign. Continue?', 'uncanny-automator' );
 
 		$this->disconnect_url = add_query_arg(
 			array(

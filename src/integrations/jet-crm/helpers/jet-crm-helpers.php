@@ -26,19 +26,19 @@ class Jet_Crm_Helpers {
 		// Load defaults if empty.
 		if ( empty( $options ) ) {
 			$options = array(
-				'Lead'                         => __( 'Lead', 'uncanny-automator' ),
-				'Customer'                     => __( 'Customer', 'uncanny-automator' ),
-				'Blacklisted'                  => __( 'Blacklisted', 'uncanny-automator' ),
-				'Cancelled by Customer'        => __( 'Cancelled by Customer', 'uncanny-automator' ),
-				'Cancelled by Us (Post-Quote)' => __( 'Cancelled by Us (Post-Quote)', 'uncanny-automator' ),
-				'Cancelled by Us (Pre-Quote)'  => __( 'Cancelled by Us (Pre-Quote)', 'uncanny-automator' ),
-				'Refused'                      => __( 'Refused', 'uncanny-automator' ),
+				'Lead'                         => esc_html__( 'Lead', 'uncanny-automator' ),
+				'Customer'                     => esc_html__( 'Customer', 'uncanny-automator' ),
+				'Blacklisted'                  => esc_html__( 'Blacklisted', 'uncanny-automator' ),
+				'Cancelled by Customer'        => esc_html__( 'Cancelled by Customer', 'uncanny-automator' ),
+				'Cancelled by Us (Post-Quote)' => esc_html__( 'Cancelled by Us (Post-Quote)', 'uncanny-automator' ),
+				'Cancelled by Us (Pre-Quote)'  => esc_html__( 'Cancelled by Us (Pre-Quote)', 'uncanny-automator' ),
+				'Refused'                      => esc_html__( 'Refused', 'uncanny-automator' ),
 			);
 		}
 
 		// Add Any Option.
 		if ( true === $is_any ) {
-			$options = array( '-1' => __( 'Any status', 'uncanny-automator' ) ) + $options;
+			$options = array( '-1' => esc_html__( 'Any status', 'uncanny-automator' ) ) + $options;
 		}
 
 		$option = array(
@@ -75,11 +75,11 @@ class Jet_Crm_Helpers {
 		}
 
 		if ( true === $is_any ) {
-			$tags = array( '-1' => __( 'Any tag', 'uncanny-automator' ) ) + $tags;
+			$tags = array( '-1' => esc_html__( 'Any tag', 'uncanny-automator' ) ) + $tags;
 		}
 
 		if ( true === $empty_val ) {
-			$tags = array( '0' => __( 'Select a tag', 'uncanny-automator' ) ) + $tags;
+			$tags = array( '0' => esc_html__( 'Select a tag', 'uncanny-automator' ) ) + $tags;
 		}
 
 		$option = array(
@@ -115,11 +115,11 @@ class Jet_Crm_Helpers {
 		}
 
 		if ( true === $is_any ) {
-			$companies = array( '-1' => __( 'Any company', 'uncanny-automator' ) ) + $companies;
+			$companies = array( '-1' => esc_html__( 'Any company', 'uncanny-automator' ) ) + $companies;
 		}
 
 		if ( true === $empty_val ) {
-			$companies = array( '0' => __( 'Select a company', 'uncanny-automator' ) ) + $companies;
+			$companies = array( '0' => esc_html__( 'Select a company', 'uncanny-automator' ) ) + $companies;
 		}
 
 		$option = array(
@@ -196,28 +196,28 @@ class Jet_Crm_Helpers {
 	 */
 	public function get_contact_fields() {
 		$fields = array(
-			'prefix'      => __( 'Prefix', 'uncanny-automator' ),
-			'fname'       => __( 'First name', 'uncanny-automator' ),
-			'lname'       => __( 'Last name', 'uncanny-automator' ),
-			'addr1'       => __( 'Main address - Address line 1', 'uncanny-automator' ),
-			'addr2'       => __( 'Main address - Address line 2', 'uncanny-automator' ),
-			'city'        => __( 'Main address - City', 'uncanny-automator' ),
-			'county'      => __( 'Main address - County', 'uncanny-automator' ),
-			'country'     => __( 'Main address - Country', 'uncanny-automator' ),
-			'postcode'    => __( 'Main address - Post code', 'uncanny-automator' ),
-			'secaddr1'    => __( 'Second address - Address line 1', 'uncanny-automator' ),
-			'secaddr2'    => __( 'Second address - Address line 2', 'uncanny-automator' ),
-			'seccity'     => __( 'Second address - City', 'uncanny-automator' ),
-			'seccounty'   => __( 'Second address - County', 'uncanny-automator' ),
-			'seccountry'  => __( 'Second address - Country', 'uncanny-automator' ),
-			'secpostcode' => __( 'Second address - Post code', 'uncanny-automator' ),
-			'hometel'     => __( 'Home telephone', 'uncanny-automator' ),
-			'worktel'     => __( 'Work telephone', 'uncanny-automator' ),
-			'mobtel'      => __( 'Mobile telephone', 'uncanny-automator' ),
-			'email'       => __( 'Email', 'uncanny-automator' ),
-			'tw'          => __( 'Social profile - Twitter', 'uncanny-automator' ),
-			'li'          => __( 'Social profile - LinkedIn', 'uncanny-automator' ),
-			'fb'          => __( 'Social profile - Facebook', 'uncanny-automator' ),
+			'prefix'      => esc_html__( 'Prefix', 'uncanny-automator' ),
+			'fname'       => esc_html__( 'First name', 'uncanny-automator' ),
+			'lname'       => esc_html__( 'Last name', 'uncanny-automator' ),
+			'addr1'       => esc_html__( 'Main address - Address line 1', 'uncanny-automator' ),
+			'addr2'       => esc_html__( 'Main address - Address line 2', 'uncanny-automator' ),
+			'city'        => esc_html__( 'Main address - City', 'uncanny-automator' ),
+			'county'      => esc_html__( 'Main address - County', 'uncanny-automator' ),
+			'country'     => esc_html__( 'Main address - Country', 'uncanny-automator' ),
+			'postcode'    => esc_html__( 'Main address - Post code', 'uncanny-automator' ),
+			'secaddr1'    => esc_html__( 'Second address - Address line 1', 'uncanny-automator' ),
+			'secaddr2'    => esc_html__( 'Second address - Address line 2', 'uncanny-automator' ),
+			'seccity'     => esc_html__( 'Second address - City', 'uncanny-automator' ),
+			'seccounty'   => esc_html__( 'Second address - County', 'uncanny-automator' ),
+			'seccountry'  => esc_html__( 'Second address - Country', 'uncanny-automator' ),
+			'secpostcode' => esc_html__( 'Second address - Post code', 'uncanny-automator' ),
+			'hometel'     => esc_html__( 'Home telephone', 'uncanny-automator' ),
+			'worktel'     => esc_html__( 'Work telephone', 'uncanny-automator' ),
+			'mobtel'      => esc_html__( 'Mobile telephone', 'uncanny-automator' ),
+			'email'       => esc_html__( 'Email', 'uncanny-automator' ),
+			'tw'          => esc_html__( 'Social profile - Twitter', 'uncanny-automator' ),
+			'li'          => esc_html__( 'Social profile - LinkedIn', 'uncanny-automator' ),
+			'fb'          => esc_html__( 'Social profile - Facebook', 'uncanny-automator' ),
 		);
 
 		return $fields;

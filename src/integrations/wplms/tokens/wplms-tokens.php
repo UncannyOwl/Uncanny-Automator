@@ -119,11 +119,11 @@ class Wplms_Tokens {
 					break;
 				case 'WPLMS_UNIT_THUMB_ID':
 					$value = get_post_thumbnail_id( $entry['unit_id'] );
-					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 					break;
 				case 'WPLMS_UNIT_THUMB_URL':
 					$value = get_the_post_thumbnail_url( $unit_id );
-					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 					break;
 				case 'WPLMS_COURSESTART':
 				case 'WPLMS_COURSE':
@@ -140,12 +140,12 @@ class Wplms_Tokens {
 				case 'WPLMS_COURSE_THUMB_ID':
 				case 'WPLMS_COURSESTART_THUMB_ID':
 					$value = get_post_thumbnail_id( $course_id );
-					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 					break;
 				case 'WPLMS_COURSE_THUMB_URL':
 				case 'WPLMS_COURSESTART_THUMB_URL':
 					$value = get_the_post_thumbnail_url( $course_id );
-					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 					break;
 				case 'WPLMS_QUIZ':
 					$value = get_the_title( $quiz_id );
@@ -158,11 +158,11 @@ class Wplms_Tokens {
 					break;
 				case 'WPLMS_QUIZ_THUMB_ID':
 					$value = get_post_thumbnail_id( $quiz_id );
-					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 					break;
 				case 'WPLMS_QUIZ_THUMB_URL':
 					$value = get_the_post_thumbnail_url( $quiz_id );
-					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; //phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+					$value = empty( $value ) || 0 == $value ? 'N/A' : $value; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 					break;
 			}
 		}

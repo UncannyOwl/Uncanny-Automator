@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\Thrive_Theme;
 
 /**
  * Class THR_ANON_FORM_SUBMITTED
+ *
  * @package Uncanny_Automator
  */
 class THR_ANON_FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
@@ -20,6 +21,7 @@ class THR_ANON_FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_meta( 'THR_FORMS' );
 		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - Thrive Theme
+		// translators: 1: Form name
 		$this->set_sentence( sprintf( esc_attr_x( '{{A form:%1$s}} is submitted', 'Thrive Theme', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( '{{A form}} is submitted', 'Thrive Theme', 'uncanny-automator' ) );
 		$this->add_action( 'tcb_api_form_submit' );

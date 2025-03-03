@@ -55,20 +55,20 @@ class DRIP_REMOVE_FROM_CAMPAIGN {
 
 		$email_field = array(
 			'option_code' => 'EMAIL',
-			'label'       => __( 'Email', 'uncanny-automator' ),
+			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
 		);
 
 		$campaign_options   = $this->functions->get_campaigns_options();
 		$campaign_options[] = array(
-			'text'  => __( 'Unsubscribe from all campaigns', 'uncanny-automator' ),
+			'text'  => esc_html__( 'Unsubscribe from all campaigns', 'uncanny-automator' ),
 			'value' => 'unsubscribe_from_all',
 		);
 
 		$campaign_field = array(
 			'option_code'           => 'CAMPAIGN',
-			'label'                 => __( 'Campaign', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Campaign', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'options'               => $campaign_options,
 			'required'              => true,

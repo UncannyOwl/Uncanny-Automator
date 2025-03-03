@@ -17,7 +17,6 @@ class FCRM_TAG_TO_CONTACT {
 		$this->setup_action();
 
 		$this->register_action();
-
 	}
 
 	/**
@@ -45,7 +44,6 @@ class FCRM_TAG_TO_CONTACT {
 		$this->set_readable_sentence( esc_attr__( 'Add {{tags}} to a contact', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
-
 	}
 
 	/**
@@ -66,7 +64,6 @@ class FCRM_TAG_TO_CONTACT {
 				),
 			)
 		);
-
 	}
 
 	/**
@@ -108,7 +105,6 @@ class FCRM_TAG_TO_CONTACT {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
 
 		}
-
 	}
 
 	/**
@@ -122,20 +118,31 @@ class FCRM_TAG_TO_CONTACT {
 	public function validate( $email_address = '', $subscriber = array() ) {
 
 		if ( empty( $email_address ) ) {
-			throw new \Exception( 'Cannot assign tag(s) to a contact with empty email address.' );
+			throw new \Exception(
+				esc_html__( 'Cannot assign tag(s) to a contact with an empty email address.', 'uncanny-automator' )
+			);
 		}
 
 		if ( ! filter_var( $email_address, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception( sprintf( 'The email address (%s) contains invalid format.', $email_address ) );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Email address */
+					esc_html__( 'The email address (%s) contains an invalid format.', 'uncanny-automator' ),
+					esc_html( $email_address )
+				)
+			);
 		}
 
 		if ( empty( $subscriber ) ) {
-			throw new \Exception( sprintf( 'Adding tag(s) to a non-existing contact (%s).', $email_address ) );
+			throw new \Exception(
+				sprintf(
+				/* translators: %s: Email address */
+					esc_html__( 'Adding tag(s) to a non-existing contact (%s).', 'uncanny-automator' ),
+					esc_html( $email_address )
+				)
+			);
 		}
 
 		return true;
-
 	}
-
-
 }

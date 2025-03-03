@@ -43,9 +43,9 @@ class PeepSo_USERUPDATESAVATAR {
 			'code'                => $this->trigger_code,
 			'meta'                => $this->trigger_meta,
 			/* translators: Logged-in trigger - PeepSo Core */
-			'sentence'            => __( 'A user updates their avatar', 'uncanny-automator' ),
+			'sentence'            => esc_html__( 'A user updates their avatar', 'uncanny-automator' ),
 			/* translators: Logged-in trigger - PeepSo Core */
-			'select_option_name'  => __( 'A user updates their avatar', 'uncanny-automator' ),
+			'select_option_name'  => esc_html__( 'A user updates their avatar', 'uncanny-automator' ),
 			'action'              => 'peepso_user_after_change_avatar',
 			'priority'            => 10,
 			'accepted_args'       => 4,

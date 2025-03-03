@@ -54,7 +54,7 @@ class Drip_Settings extends Settings\Premium_Integration_Settings {
 				$this->add_alert(
 					array(
 						'type'    => 'success',
-						'heading' => __( 'You have successfully connected your Drip account!', 'uncanny-automator' ),
+						'heading' => esc_html__( 'You have successfully connected your Drip account!', 'uncanny-automator' ),
 					)
 				);
 			} elseif ( '2' === $connect_status ) {
@@ -62,7 +62,7 @@ class Drip_Settings extends Settings\Premium_Integration_Settings {
 					array(
 						'type'    => 'error',
 						'heading' => 'Connection error',
-						'content' => __( 'There was an error connecting your Drip account.', 'uncanny-automator' ),
+						'content' => esc_html__( 'There was an error connecting your Drip account.', 'uncanny-automator' ),
 					)
 				);
 			} else {
@@ -70,7 +70,7 @@ class Drip_Settings extends Settings\Premium_Integration_Settings {
 					array(
 						'type'    => 'error',
 						'heading' => 'Connection error',
-						'content' => __( 'There was an error connecting your Drip account: ', 'uncanny-automator' ) . $connect_status,
+						'content' => esc_html__( 'There was an error connecting your Drip account:', 'uncanny-automator' ) . $connect_status,
 					)
 				);
 			}

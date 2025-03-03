@@ -98,7 +98,7 @@ class Open_AI_Settings {
 				null
 			);
 
-			$heading = __( 'Your account has been connected successfully!', 'uncanny-automator' );
+			$heading = esc_html__( 'Your account has been connected successfully!', 'uncanny-automator' );
 
 			automator_add_settings_error( self::SETTINGS_ERROR, $heading, '', 'success' );
 
@@ -110,7 +110,7 @@ class Open_AI_Settings {
 
 			Automator()->cache->set( $cache_key, true, self::CACHE_GROUP_VALIDATION );
 
-			automator_add_settings_error( self::SETTINGS_ERROR, __( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
+			automator_add_settings_error( self::SETTINGS_ERROR, esc_html__( 'Authentication error', 'uncanny-automator' ), $e->getMessage(), 'error' );
 
 			return false;
 

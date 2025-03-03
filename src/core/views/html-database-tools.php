@@ -19,28 +19,28 @@ $missing_tables = Automator_DB::verify_base_tables();
 		<?php if ( 'yes' === automator_filter_input( 'database_repaired' ) ) { ?>
 
 			<uo-alert class="uap-spacing-bottom" type="success"
-					  heading="<?php echo esc_attr__( 'Database repaired successfully', 'uncanny-automator' ); ?>"></uo-alert>
+						heading="<?php echo esc_attr__( 'Database repaired successfully', 'uncanny-automator' ); ?>"></uo-alert>
 
 		<?php } ?>
 
 		<?php if ( 'true' === automator_filter_input( 'status' ) ) { ?>
 
 			<uo-alert class="uap-spacing-bottom" type="success"
-					  heading="<?php echo esc_attr__( 'Selected view has been successfully dropped.', 'uncanny-automator' ); ?>"></uo-alert>
+						heading="<?php echo esc_attr__( 'Selected view has been successfully dropped.', 'uncanny-automator' ); ?>"></uo-alert>
 
 		<?php } ?>
 
 		<?php if ( 'true' === automator_filter_input( 'purged' ) ) { ?>
 
 			<uo-alert class="uap-spacing-bottom" type="success"
-					  heading="<?php echo esc_attr__( 'Tables have been successfully purged.', 'uncanny-automator' ); ?>"></uo-alert>
+						heading="<?php echo esc_attr__( 'Tables have been successfully purged.', 'uncanny-automator' ); ?>"></uo-alert>
 
 		<?php } ?>
 
 		<?php if ( 'false' === automator_filter_input( 'status' ) ) { ?>
 
 			<uo-alert class="uap-spacing-bottom" type="error"
-					  heading="<?php echo esc_attr__( 'Database operation failed.', 'uncanny-automator' ); ?>"></uo-alert>
+						heading="<?php echo esc_attr__( 'Database operation failed.', 'uncanny-automator' ); ?>"></uo-alert>
 
 		<?php } ?>
 
@@ -48,7 +48,7 @@ $missing_tables = Automator_DB::verify_base_tables();
 		<?php if ( ! empty( $missing_tables ) ) { ?>
 
 			<uo-alert class="uap-spacing-bottom" type="error"
-					  heading="<?php esc_attr_e( 'Missing base tables. Some Automator functionality may not work as expected.', 'uncanny-automator' ); ?>">
+						heading="<?php esc_attr_e( 'Missing base tables. Some Automator functionality may not work as expected.', 'uncanny-automator' ); ?>">
 
 				<?php echo esc_html( implode( ', ', $missing_tables ) ); ?>
 
@@ -60,11 +60,11 @@ $missing_tables = Automator_DB::verify_base_tables();
 		$missing_views = Automator_DB::verify_base_views();
 
 		if ( 0 === count( $missing_tables ) && 0 === count( $missing_views ) && AUTOMATOR_DATABASE_VIEWS_ENABLED ) {
-			echo sprintf( '<uo-alert type="success" style="margin-bottom:5px;">%s</uo-alert>', esc_html__( 'No issues found with Automator DB.', 'uncanny-automator' ) );
+			printf( '<uo-alert type="success" style="margin-bottom:5px;">%s</uo-alert>', esc_html__( 'No issues found with Automator DB.', 'uncanny-automator' ) );
 		}
 
 		if ( ! AUTOMATOR_DATABASE_VIEWS_ENABLED ) {
-			echo sprintf( '<uo-alert type="warning" style="margin-bottom:5px;">%s</uo-alert>', esc_html__( 'Automator DB views are disabled by the site administrator.', 'uncanny-automator' ) );
+			printf( '<uo-alert type="warning" style="margin-bottom:5px;">%s</uo-alert>', esc_html__( 'Automator DB views are disabled by the site administrator.', 'uncanny-automator' ) );
 		}
 		?>
 		<table id="status-database" class="automator_status_table widefat" cellspacing="0">
@@ -102,9 +102,9 @@ $missing_tables = Automator_DB::verify_base_tables();
 								$view_or_table_missing_message =
 									strpos( $table, '_view' )
 										? ( AUTOMATOR_DATABASE_VIEWS_ENABLED
-										? __( 'View does not exist', 'uncanny-automator' )
-										: __( 'DB view is disabled by site administrator', 'uncanny-automator' ) )
-										: __( 'Table does not exist', 'uncanny-automator' );
+										? esc_html__( 'View does not exist', 'uncanny-automator' )
+										: esc_html__( 'DB view is disabled by site administrator', 'uncanny-automator' ) )
+										: esc_html__( 'Table does not exist', 'uncanny-automator' );
 								?>
 
 								<mark class="error">
@@ -117,7 +117,7 @@ $missing_tables = Automator_DB::verify_base_tables();
 								<mark class="yes">
 									<span class="dashicons dashicons-database-view"></span>
 									<?php
-									echo sprintf(
+									printf(
 									/* Translators: %1$f: Table size, %2$f: Index size, %3$s Engine. */
 										esc_html__( 'Data: %1$.2fMB + Index: %2$.2fMB + Engine %3$s', 'uncanny-automator' ),
 										esc_html( $table_data['data'] ),
@@ -173,7 +173,7 @@ $missing_tables = Automator_DB::verify_base_tables();
 											href="<?php echo esc_url( $purge_table_url ); ?>"
 											needs-confirmation
 											confirmation-heading="<?php esc_attr_e( 'This action is irreversible', 'uncanny-automator' ); ?>"
-											confirmation-content="<?php echo sprintf( esc_attr__( 'Click "Proceed" to remove data related to the Resend feature in app integration logs. It will not be possible to resend data related to previous recipe runs.', 'uncanny-automator' ), esc_attr( $table ) ); ?>"
+											confirmation-content="<?php printf( esc_attr__( 'Click "Proceed" to remove data related to the Resend feature in app integration logs. It will not be possible to resend data related to previous recipe runs.', 'uncanny-automator' ), esc_attr( $table ) ); ?>"
 											confirmation-button-label="<?php esc_attr_e( 'Proceed', 'uncanny-automator' ); ?>"
 										>
 											<uo-icon id="broom"></uo-icon>
@@ -193,7 +193,23 @@ $missing_tables = Automator_DB::verify_base_tables();
 											href="<?php echo esc_url( $delete_view_url ); ?>"
 											needs-confirmation
 											confirmation-heading="<?php esc_attr_e( 'This action is irreversible', 'uncanny-automator' ); ?>"
-											confirmation-content="<?php echo sprintf( esc_attr__( 'This will drop the existing view (%s) from the database.', 'uncanny-automator' ), esc_attr( $table ) ); ?>"
+											confirmation-content="
+											<?php
+											printf(
+												// translators: 1: View name
+												esc_attr__( 'This will drop the existing view (%s) from the database.', 'uncanny-automator' ),
+												esc_attr( $table )
+											);
+											?>
+											"
+											<?php
+											echo sprintf(
+												// translators: 1: View name
+												esc_attr__( 'This will drop the existing view (%s) from the database.', 'uncanny-automator' ),
+												esc_attr( $table )
+											);
+											?>
+											"
 											confirmation-button-label="<?php esc_attr_e( 'Proceed', 'uncanny-automator' ); ?>"
 										>
 											<uo-icon id="trash"></uo-icon>
@@ -277,9 +293,10 @@ $missing_tables = Automator_DB::verify_base_tables();
 				<?php
 				$size = automator_get_option( 'automator_db_size', 0 );
 				if ( $size > 0 ) {
-					echo sprintf(
-						esc_html_x( 'Total tables size: %.2f MB', 'Database tables', 'uncanny-automator' ),
-						$size
+					printf(
+						/* translators: %s: Database size in MB */
+						esc_html_x( 'Total tables size: %s MB', 'Database tables', 'uncanny-automator' ),
+						esc_html( number_format_i18n( $size, 2 ) ) // Localized number formatting
 					);
 				}
 				?>

@@ -21,6 +21,7 @@ class PRLI_ANON_LINK_CLICKED extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_meta( 'PRLI_LINKS' );
 		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - Pretty Links
+		// translators: 1: Pretty link
 		$this->set_sentence( sprintf( esc_attr_x( '{{A pretty link:%1$s}} is clicked', 'Pretty Links', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( '{{A pretty link}} is clicked', 'Pretty Links', 'uncanny-automator' ) );
 		$this->add_action( 'prli_record_click' );

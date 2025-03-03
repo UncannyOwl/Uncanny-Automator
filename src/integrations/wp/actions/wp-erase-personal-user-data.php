@@ -78,10 +78,10 @@ class WP_ERASE_PERSONAL_USER_DATA {
 					),
 					array(
 						'option_code' => $this->action_meta . '_flag',
-						'label'       => __( 'Send personal data erasure confirmation email', 'uncanny-automator' ),
+						'label'       => esc_html__( 'Send personal data erasure confirmation email', 'uncanny-automator' ),
 						'input_type'  => 'checkbox',
 						'is_toggle'   => true,
-						'description' => __( 'When this is checked, the user will receive an email to confirm the erasure of data.  If the user does not take action, their data will not be deleted.', 'uncanny-automator' ),
+						'description' => esc_html__( 'When this is checked, the user will receive an email to confirm the erasure of data.  If the user does not take action, their data will not be deleted.', 'uncanny-automator' ),
 					),
 				),
 			),
@@ -107,7 +107,7 @@ class WP_ERASE_PERSONAL_USER_DATA {
 		$the_user = get_user_by( 'email', $user );
 		if ( ! $the_user instanceof \WP_User ) {
 			// translators: Email
-			$message                             = sprintf( __( 'Unable to find a user with the provided email (%s).', 'uncanny-automator' ), $user );
+			$message                             = sprintf( esc_html__( 'Unable to find a user with the provided email (%s).', 'uncanny-automator' ), $user );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
 
@@ -124,7 +124,7 @@ class WP_ERASE_PERSONAL_USER_DATA {
 		}
 
 		if ( ! $request_id ) {
-			$message                             = __( 'Unable to initiate confirmation request.', 'uncanny-automator' );
+			$message                             = esc_html__( 'Unable to initiate confirmation request.', 'uncanny-automator' );
 			$action_data['complete_with_errors'] = true;
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
 

@@ -22,6 +22,7 @@ class KADENCE_ANON_FORM_SUBMITTED extends Trigger {
 		$this->set_trigger_code( 'KADENCE_ANON_SUBMITTED_FORM' );
 		$this->set_trigger_meta( 'KADENCE_FORMS' );
 		$this->set_trigger_type( 'anonymous' );
+		// translators: 1: Form name
 		$this->set_sentence( sprintf( esc_attr_x( '{{A form:%1$s}} is submitted', 'Kadence', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( '{{A form}} is submitted', 'Kadence', 'uncanny-automator' ) );
 		$this->add_action( 'automator_kadence_form_submitted', 10, 3 );
@@ -75,12 +76,12 @@ class KADENCE_ANON_FORM_SUBMITTED extends Trigger {
 	public function define_tokens( $trigger, $tokens ) {
 		$tokens[] = array(
 			'tokenId'   => 'KADENCE_FORM_ID',
-			'tokenName' => __( 'Form ID', 'uncanny-automator' ),
+			'tokenName' => esc_html__( 'Form ID', 'uncanny-automator' ),
 			'tokenType' => 'int',
 		);
 		$tokens[] = array(
 			'tokenId'   => 'KADENCE_FORM_TITLE',
-			'tokenName' => __( 'Form title', 'uncanny-automator' ),
+			'tokenName' => esc_html__( 'Form title', 'uncanny-automator' ),
 			'tokenType' => 'text',
 		);
 		if ( ! isset( $trigger['meta'][ $this->get_trigger_meta() ] ) || intval( '-1' ) === intval( $trigger['meta'][ $this->get_trigger_meta() ] ) ) {

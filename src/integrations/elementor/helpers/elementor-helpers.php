@@ -119,8 +119,8 @@ WHERE p.post_type IS NOT NULL
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => __( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID' => __( 'Form ID', 'uncanny-automator' ),
+				$option_code         => esc_html__( 'Form title', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_html__( 'Form ID', 'uncanny-automator' ),
 			),
 		);
 

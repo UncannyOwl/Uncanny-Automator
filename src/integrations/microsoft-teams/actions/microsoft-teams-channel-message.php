@@ -37,7 +37,7 @@ class MICROSOFT_TEAMS_CHANNEL_MESSAGE extends \Uncanny_Automator\Recipe\Action {
 
 		$user_teams_field = array(
 			'option_code'           => 'TEAM',
-			'label'                 => __( 'Team', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Team', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'options'               => $this->helpers->user_teams_options(),
@@ -49,7 +49,7 @@ class MICROSOFT_TEAMS_CHANNEL_MESSAGE extends \Uncanny_Automator\Recipe\Action {
 
 		$channels_field = array(
 			'option_code'           => $this->action_meta,
-			'label'                 => __( 'Channel', 'uncanny-automator' ),
+			'label'                 => esc_html__( 'Channel', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => false,

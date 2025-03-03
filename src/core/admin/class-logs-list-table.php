@@ -115,7 +115,7 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		/* -- Pagination parameters -- */
-		$total_items = $wpdb->query( $query ); //phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$total_items = $wpdb->query( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		$perpage = 100;
 
@@ -858,7 +858,7 @@ class Logs_List_Table extends WP_List_Table {
 			}
 
 			// There's HTML involved. Ignoring
-			echo $filter_html; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $filter_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 

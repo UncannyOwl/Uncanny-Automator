@@ -61,7 +61,6 @@ class Gototraining_Helpers {
 		add_action( 'wp_ajax_gtt_disconnect', array( $this, 'disconnect' ) );
 
 		$this->load_settings();
-
 	}
 
 	/**
@@ -75,7 +74,6 @@ class Gototraining_Helpers {
 		require_once __DIR__ . '/../settings/gototraining-settings.php';
 
 		new GoToTraining_Settings( $this );
-
 	}
 
 	/**
@@ -112,11 +110,11 @@ class Gototraining_Helpers {
 			$response = $this->remote_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( __( 'Unable to fetch trainings from this account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Unable to fetch trainings from this account', 'uncanny-automator' ) );
 			}
 
 			if ( count( $response['data'] ) < 1 ) {
-				throw new \Exception( __( 'No trainings were found in this account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'No trainings were found in this account', 'uncanny-automator' ) );
 			}
 
 			foreach ( $response['data'] as $training ) {
@@ -136,7 +134,6 @@ class Gototraining_Helpers {
 		}
 
 		return $trainings;
-
 	}
 
 	/**
@@ -152,7 +149,7 @@ class Gototraining_Helpers {
 		$user = get_userdata( $user_id );
 
 		if ( is_wp_error( $user ) ) {
-			throw new \Exception( __( 'GoTo Training user not found.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'GoTo Training user not found.', 'uncanny-automator' ) );
 		}
 
 		$customer_first_name = $user->first_name;
@@ -181,17 +178,16 @@ class Gototraining_Helpers {
 		$code     = $response['statusCode'];
 
 		if ( 201 !== $code ) {
-			throw new \Exception( $jsondata['description'], $code );
+			throw new \Exception( esc_html( $jsondata['description'] ), absint( $code ) );
 		}
 
 		if ( ! isset( $jsondata['joinUrl'] ) ) {
-			throw new \Exception( __( 'Error adding user to GoTo Training', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'Error adding user to GoTo Training', 'uncanny-automator' ) );
 		}
 
 		update_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', $jsondata['registrantKey'] );
 		update_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_joinUrl', $jsondata['joinUrl'] );
 		update_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_confirmationUrl', $jsondata['confirmationUrl'] );
-
 	}
 
 	/**
@@ -207,7 +203,7 @@ class Gototraining_Helpers {
 		$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', true );
 
 		if ( empty( $user_registrant_key ) ) {
-			throw new \Exception( __( 'User was not registered for training session.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'User was not registered for training session.', 'uncanny-automator' ) );
 		}
 
 		$body['action']              = 'gtt_unregister_user';
@@ -226,7 +222,6 @@ class Gototraining_Helpers {
 		delete_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey' );
 		delete_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_joinUrl' );
 		delete_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_confirmationUrl' );
-
 	}
 
 	/**
@@ -249,7 +244,7 @@ class Gototraining_Helpers {
 
 		if ( empty( $current_refresh_token ) ) {
 			automator_update_option( '_uncannyowl_gtt_settings_expired', true );
-			throw new \Exception( __( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
 		}
 
 		$consumer_key    = trim( automator_get_option( 'uap_automator_gtt_api_consumer_key', '' ) );
@@ -273,7 +268,7 @@ class Gototraining_Helpers {
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			automator_update_option( '_uncannyowl_gtt_settings', array() );
 			automator_update_option( '_uncannyowl_gtt_settings_expired', true );
-			throw new \Exception( __( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html__( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
 		}
 
 		$jsondata = array();
@@ -287,7 +282,6 @@ class Gototraining_Helpers {
 
 		//return the array
 		return $jsondata;
-
 	}
 
 	/**
@@ -333,7 +327,6 @@ class Gototraining_Helpers {
 			$this->oauth_redirect();
 
 		}
-
 	}
 
 	/**
@@ -393,7 +386,7 @@ class Gototraining_Helpers {
 			$response = Api_Server::call( $params );
 
 			if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-				throw new \Exception( __( 'Error validating Oauth tokens', 'uncanny-automator' ) );
+				throw new \Exception( esc_html__( 'Error validating Oauth tokens', 'uncanny-automator' ) );
 			}
 
 			$jsondata = array();
@@ -416,7 +409,6 @@ class Gototraining_Helpers {
 
 		wp_safe_redirect( automator_get_premium_integrations_settings_url( 'go-to-training' ) . '&connect=' . $connect );
 		die;
-
 	}
 
 	/**
@@ -461,7 +453,6 @@ class Gototraining_Helpers {
 		wp_safe_redirect( automator_get_premium_integrations_settings_url( 'go-to-training' ) . '&connection=disconnected' );
 
 		die;
-
 	}
 
 	/**
@@ -478,7 +469,6 @@ class Gototraining_Helpers {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
