@@ -460,6 +460,9 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 **Under the hood:**
 
 * Core - Smoothed out some grumpy WordPress Plugin Check errors—because clean code is happy code! #5474
+* Core - Upgraded `__()` calls to `esc_html__()` or `esc_attr__()`—because escaping is not just for magicians! #5474
+* Core - Sprinkled `esc_html()` and `esc_attr()` functions everywhere—now all outputs are safely wrapped up like a burrito! #5474
+* Core - Added those missing `// translators:` comments—because translators deserve some love too! #5474
 * Recipe Logs - Allow Markup text in log messages – Logs can now look fancier, with proper markup support. #5364
 * Recipe UI - Token popup framework - More behind-the-scenes improvements for smoother popups. #4316
 * Token popup framework - Some backend magic happened. Trust us, it's better now. #5137
