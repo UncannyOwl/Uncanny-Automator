@@ -31,10 +31,16 @@ abstract class Tokens_Migration extends Migration {
 	 */
 	public function migrate() {
 
-		$actions = $this->get_all_actions();
+		$actions = $this->get_all_posts( 'uo-action' );
 
 		foreach ( $actions as $action ) {
 			$this->migrate_tokens_in_post( $action );
+		}
+
+		$recipes = $this->get_all_posts( 'uo-recipe' );
+
+		foreach ( $recipes as $recipe ) {
+			$this->migrate_tokens_in_post( $recipe );
 		}
 
 		$this->complete();
@@ -45,10 +51,10 @@ abstract class Tokens_Migration extends Migration {
 	 *
 	 * @return mixed
 	 */
-	public function get_all_actions() {
+	public function get_all_posts( $post_type ) {
 
 		$args = array(
-			'post_type'   => 'uo-action',
+			'post_type'   => $post_type,
 			'numberposts' => -1,
 			'post_status' => 'any',
 		);
@@ -66,9 +72,9 @@ abstract class Tokens_Migration extends Migration {
 	 */
 	public function migrate_tokens_in_post( $post ) {
 
-		$action_post_metas = get_post_meta( $post->ID );
+		$post_metas = get_post_meta( $post->ID );
 
-		foreach ( $action_post_metas as $meta_key => $meta_values ) {
+		foreach ( $post_metas as $meta_key => $meta_values ) {
 			$meta_value = array_shift( $meta_values );
 			$this->maybe_update_meta( $post->ID, $meta_key, $meta_value );
 		}

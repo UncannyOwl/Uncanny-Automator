@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit40369310dc81f3ccda2a44491c0a4136
+class ComposerStaticInitebe22b8a84eeab3f0a435da5d42fa32b
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -251,6 +251,7 @@ class ComposerStaticInit40369310dc81f3ccda2a44491c0a4136
         'Uncanny_Automator\\Api_Server' => __DIR__ . '/../..' . '/src/core/classes/class-api-server.php',
         'Uncanny_Automator\\Armember_Helpers' => __DIR__ . '/../..' . '/src/integrations/armember/helpers/armember-helpers.php',
         'Uncanny_Automator\\Armember_Tokens' => __DIR__ . '/../..' . '/src/integrations/armember/tokens/armember-tokens.php',
+        'Uncanny_Automator\\Auth' => __DIR__ . '/../..' . '/src/core/lib/auth.php',
         'Uncanny_Automator\\Automator_Cache_Handler' => __DIR__ . '/../..' . '/src/core/lib/helpers/class-automator-cache-handler.php',
         'Uncanny_Automator\\Automator_DB' => __DIR__ . '/../..' . '/src/core/class-automator-db.php',
         'Uncanny_Automator\\Automator_DB_Handler' => __DIR__ . '/../..' . '/src/core/lib/utilities/db/class-automator-db-handler.php',
@@ -1329,8 +1330,8 @@ class ComposerStaticInit40369310dc81f3ccda2a44491c0a4136
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit40369310dc81f3ccda2a44491c0a4136::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit40369310dc81f3ccda2a44491c0a4136::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInitebe22b8a84eeab3f0a435da5d42fa32b::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitebe22b8a84eeab3f0a435da5d42fa32b::$classMap;
 
         }, null, ClassLoader::class);
     }

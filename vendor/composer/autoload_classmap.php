@@ -240,6 +240,7 @@ return array(
     'Uncanny_Automator\\Api_Server' => $baseDir . '/src/core/classes/class-api-server.php',
     'Uncanny_Automator\\Armember_Helpers' => $baseDir . '/src/integrations/armember/helpers/armember-helpers.php',
     'Uncanny_Automator\\Armember_Tokens' => $baseDir . '/src/integrations/armember/tokens/armember-tokens.php',
+    'Uncanny_Automator\\Auth' => $baseDir . '/src/core/lib/auth.php',
     'Uncanny_Automator\\Automator_Cache_Handler' => $baseDir . '/src/core/lib/helpers/class-automator-cache-handler.php',
     'Uncanny_Automator\\Automator_DB' => $baseDir . '/src/core/class-automator-db.php',
     'Uncanny_Automator\\Automator_DB_Handler' => $baseDir . '/src/core/lib/utilities/db/class-automator-db-handler.php',

@@ -556,4 +556,3 @@ class Background_Actions {
 		<?php
 	}
 }
-

@@ -1,8 +1,8 @@
 <?php return array (
   'root' => 
   array (
-    'pretty_version' => '6.3.0',
-    'version' => '6.3.0.0',
+    'pretty_version' => '6.3.1',
+    'version' => '6.3.1.0',
     'aliases' => 
     array (
     ),
@@ -22,8 +22,8 @@
     ),
     'uncanny-owl/uncanny-automator' => 
     array (
-      'pretty_version' => '6.3.0',
-      'version' => '6.3.0.0',
+      'pretty_version' => '6.3.1',
+      'version' => '6.3.1.0',
       'aliases' => 
       array (
       ),

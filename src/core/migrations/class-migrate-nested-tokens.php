@@ -15,7 +15,7 @@ class Migrate_Nested_Tokens extends Tokens_Migration {
 	 * @return void
 	 */
 	public function __construct() {
-		parent::__construct( '6.2_nested_tokens' );
+		parent::__construct( '6.3_nested_tokens' );
 		add_filter( 'automator_recipe_part_meta_value', array( $this, 'replace_strings_in_imports' ), 10, 4 );
 	}
 

@@ -5,7 +5,7 @@
 **Requires at least:** 5.6 \
 **Tested up to:** 6.7.2 \
 **Requires PHP:** 7.3 \
-**Stable tag:** 6.3 \
+**Stable tag:** 6.3.0.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -404,6 +404,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 6.3.0.1 [2025-03-14]
+
+**Under the hood:**
+
+* Core - Nested token migration - Some tokens were getting stage fright and refusing to migrate properly in certain situations. We've given them a confidence boost! #5541
+* Core - UI icons - A few icons went on an unannounced vacation. We've tracked them down and put them back to work. #5467
 
 ### 6.3 [2025-03-03]
 
