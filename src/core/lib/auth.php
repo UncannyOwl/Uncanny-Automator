@@ -9,13 +9,6 @@ namespace Uncanny_Automator;
 class Auth {
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var Auth
-	 */
-	private static $instance = null;
-
-	/**
 	 * Secret key for token generation.
 	 *
 	 * @var string
@@ -23,23 +16,20 @@ class Auth {
 	private $secret_key;
 
 	/**
-	 * Private constructor to prevent direct instantiation.
-	 */
-	private function __construct() {
-		$this->secret_key = $this->generate_fallback_secret_key();
-	}
-
-	/**
-	 * Main Auth Instance.
-	 * Ensures only one instance is loaded or can be loaded.
+	 * Constructor to set the secret key.
 	 *
-	 * @return Auth - Main instance.
+	 * @param string $secret_key The secret key for generating tokens.
 	 */
-	public static function get_instance() {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
+	public function __construct( $secret_key = '' ) {
+
+		if ( ! empty( $secret_key ) && is_string( $secret_key ) ) {
+			$this->set_secret_key( hash( 'sha256', $secret_key ) );
 		}
-		return self::$instance;
+
+		if ( empty( $secret_key ) ) {
+			// Fallback if no secret key is provided and SALT constants are not defined.
+			$this->secret_key = $this->generate_fallback_secret_key();
+		}
 	}
 
 	/**
@@ -48,40 +38,44 @@ class Auth {
 	 * @return string The generated fallback secret key.
 	 */
 	private function generate_fallback_secret_key() {
+
 		$unique_key  = defined( 'AUTH_KEY' ) ? AUTH_KEY : '';
 		$unique_salt = defined( 'AUTH_SALT' ) ? AUTH_SALT : '';
 
 		if ( empty( $unique_key ) && empty( $unique_salt ) ) {
-			$unique_key  = php_uname();
-			$unique_salt = uniqid( '', true );
+			// Use server-specific data and a random string as a last resort.
+			$unique_key  = php_uname(); // Get server information.
+			$unique_salt = uniqid( '', true ); // Generate a unique ID.
 		}
 
 		return hash( 'sha256', $unique_key . $unique_salt );
 	}
 
 	/**
-	 * Generate a token based on an action hash and current timestamp.
+	 * Generate a token based on an action and current timestamp.
 	 *
-	 * @param string $action_hash Hash of the action data.
+	 * @param string $action Action name for which the token is generated.
 	 * @param int    $timestamp Optional. The timestamp to use. Defaults to current time.
 	 * @return string The generated token.
 	 */
-	public function generate_token( $action_hash, $timestamp = null ) {
+	public function generate_token( $action, $timestamp = null ) {
+
 		$timestamp = $timestamp ? (int) $timestamp : time();
-		$data      = $action_hash . '|' . $timestamp . '|' . $this->secret_key;
-		$token     = hash_hmac( 'sha256', $data, $this->secret_key );
+		$data      = $action . '|' . $timestamp . '|' . $this->get_secret_key();
+		$token     = hash_hmac( 'sha256', $data, $this->get_secret_key() );
 
 		return base64_encode( $token . '|' . $timestamp );
 	}
 
 	/**
-	 * Validate the token based on the action hash and expected timestamp.
+	 * Validate the token based on the action and expected timestamp.
 	 *
 	 * @param string $token The token to validate.
-	 * @param string $action_hash Hash of the action data.
+	 * @param string $action The action name associated with the token.
 	 * @return bool True if the token is valid, false otherwise.
 	 */
-	public function validate_token( $token, $action_hash ) {
+	public function validate_token( $token, $action ) {
+
 		$decoded = base64_decode( $token, true );
 
 		if ( false === $decoded || strpos( $decoded, '|' ) === false ) {
@@ -91,10 +85,28 @@ class Auth {
 		list( $token_hash, $timestamp ) = explode( '|', $decoded );
 
 		// Regenerate the token to check its validity.
-		$expected_token = $this->generate_token( $action_hash, $timestamp );
+		$expected_token = $this->generate_token( $action, $timestamp );
 		$expected_parts = explode( '|', base64_decode( $expected_token, true ) );
 
 		return hash_equals( $token_hash, $expected_parts[0] );
+	}
+
+	/**
+	 * Set the secret key.
+	 *
+	 * @param string $secret_key The new secret key.
+	 */
+	public function set_secret_key( $secret_key ) {
+		$this->secret_key = $secret_key;
+	}
+
+	/**
+	 * Get the secret key.
+	 *
+	 * @return string The secret key.
+	 */
+	public function get_secret_key() {
+		return $this->secret_key;
 	}
 
 	/**

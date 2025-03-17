@@ -2,82 +2,69 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 6.3.0.1\n"
+"Project-Id-Version: Uncanny Automator 6.3.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-14T19:47:00+00:00\n"
+"POT-Creation-Date: 2025-03-17T15:27:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: uncanny-automator\n"
 
-#: src/recipe-ui/src/js/item/button-schedule.js:822
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:822
 msgid "Delay & schedule"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:831
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:831
 msgid "Add **delayed** or **scheduled actions** to your recipes. With the ability to delay or schedule actions, you can run an action a specific number of **minutes, hours, or days after a user completes the recipe's triggers!**"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:836
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:836
 msgid "Here are a few examples of what is possible with delayed and scheduled actions:"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:843
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:843
 msgid "When a new user registers, **send them an onboarding drip campaign over a period of days or weeks** to help them get up to speed with minimal support"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:850
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:850
 msgid "When a user purchases a product, **send them an email a week later to ask them to leave a review**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:857
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:857
 msgid "When a user registers for an event, **send them a reminder before the event**."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:864
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:864
 msgid "When a user enrolls in a course or event, **send them supporting materials at regular intervals** during the course or before or after the event."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:870
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:870
 msgid "You can also use the scheduled recipe feature to run recipes at regular intervals to do things like:"
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:877
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:877
 msgid "Send **email reminders** to users that haven't completed a key activity."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:884
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:884
 msgid "**Log data for a report** in Google Sheets, AirTable or Notion."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:891
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:891
 msgid "Perform **scheduled maintenance** on a site."
 msgstr ""
 
-#: src/recipe-ui/src/js/item/button-schedule.js:904
-#: src/recipe-ui/dist/bundle.min.js:2
+#: src/js/item/button-schedule.js:904
 msgid "Get Delays"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/recipe-ui/src/js/item/button-schedule.js:912
-#: src/recipe-ui/dist/bundle.min.js:2
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
+#: src/js/item/button-schedule.js:912
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 #: src/core/admin/class-admin-menu.php:1005
 #: src/core/admin/class-admin-menu.php:1178
 #: src/core/admin/class-admin-menu.php:1287
@@ -88,45 +75,65 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 #: src/core/lib/utilities/class-automator-translations.php:1405
 msgid "Post loop"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Post loops let you perform bulk actions on posts that meet specific criteria."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Here are a few examples of what you can do with post loops:"
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Export **all blog posts, products or courses in a category** to a Google Sheet, AirTable or Notion."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Change **all posts of written by one author** to another author."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Update meta values on all **posts that match a specific meta value**."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Automatically generate SEO descriptions with OpenAI for **all blog posts that don't have a meta description**."
 msgstr ""
 
-#: src/recipe-ui/src/builder/components/item/loop/add-loop-button/post/index.js:117
-#: src/recipe-ui/dist/bundle.min.js:2
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
 msgid "Get Post loops"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/field/components/click-to-copy/index.js:58
+msgid "Click to copy"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/field/components/click-to-copy/index.js:141
+msgid "\"%s\" copied to clipboard"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/field/components/click-to-copy/index.js:141
+msgid "Copied to clipboard"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/components/magic-trigger-shortcode/index.js:130
+msgid "Magic link shortcode"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/components/magic-trigger-shortcode/index.js:130
+msgid "Magic button shortcode"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/components/magic-trigger-shortcode/index.js:139
+msgid "Copy magic link shortcode"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/components/magic-trigger-shortcode/index.js:139
+msgid "Copy magic button shortcode"
 msgstr ""
 
 #. Plugin Name of the plugin
@@ -2111,65 +2118,44 @@ msgstr ""
 msgid "This action is not set to run in background"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:232
+#: src/core/classes/class-background-actions.php:230
 msgid "WP cron is running"
 msgstr ""
 
+#: src/core/classes/class-background-actions.php:245
+msgid "Background action already processed"
+msgstr ""
+
 #. translators: %d refers to the action ID where the token is used.
-#: src/core/classes/class-background-actions.php:252
+#: src/core/classes/class-background-actions.php:263
 msgid "Action's token used in ID: %d action"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:412
+#: src/core/classes/class-background-actions.php:398
+msgid "No response from the server"
+msgstr ""
+
+#: src/core/classes/class-background-actions.php:415
 msgid "Unknown REST API error"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:430
-msgid "Request body is empty"
+#: src/core/classes/class-background-actions.php:431
+msgid "Unauthorized request"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:438
-msgid "Action data is missing"
+#: src/core/classes/class-background-actions.php:440
+msgid "Request timestamp expired"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:445
-msgid "Integration is missing"
+#: src/core/classes/class-background-actions.php:450
+msgid "Invalid request signature"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:452
-msgid "Action code is missing"
-msgstr ""
-
-#: src/core/classes/class-background-actions.php:459
-msgid "Action ID is missing"
-msgstr ""
-
-#: src/core/classes/class-background-actions.php:474
-msgid "Authentication token is missing"
-msgstr ""
-
-#: src/core/classes/class-background-actions.php:481
-msgid "Action hash is missing"
-msgstr ""
-
-#. translators: 1. Received hash 2. Computed hash
-#: src/core/classes/class-background-actions.php:490
-msgid "Action hash mismatch. Received: %1$s, Computed: %2$s"
-msgstr ""
-
-#: src/core/classes/class-background-actions.php:505
-msgid "Invalid authentication token"
-msgstr ""
-
-#: src/core/classes/class-background-actions.php:527
-msgid "Background action validation failed: "
-msgstr ""
-
-#: src/core/classes/class-background-actions.php:690
+#: src/core/classes/class-background-actions.php:573
 msgid "Background actions have been automatically disabled because an error was detected:"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:722
+#: src/core/classes/class-background-actions.php:605
 #: src/core/lib/helpers/class-automator-cache-handler.php:606
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:37
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:34
@@ -2181,7 +2167,7 @@ msgstr ""
 msgid "Enabled"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:722
+#: src/core/classes/class-background-actions.php:605
 #: src/core/lib/helpers/class-automator-cache-handler.php:606
 #: src/core/views/admin-settings/tab/general/improve-automator/usage-tracking.php:37
 #: src/core/views/admin-settings/tab/general/logs/auto-prune-logs-tease.php:38
@@ -2193,7 +2179,7 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: src/core/classes/class-background-actions.php:728
+#: src/core/classes/class-background-actions.php:611
 msgid "When enabled, actions that send data to an external site or service will be run in a background process to accelerate the execution of recipes.  We recommend leaving this setting enabled unless instructed otherwise by support."
 msgstr ""
 
@@ -6456,7 +6442,6 @@ msgid "Modifiers"
 msgstr ""
 
 #. translators: Token name
-#. translators: 1: User meta key
 #: src/core/lib/utilities/class-automator-translations.php:532
 #: src/integrations/advanced/tokens/usermeta-token.php:19
 msgctxt "Token"
@@ -6470,7 +6455,6 @@ msgid "User meta: %1$s"
 msgstr ""
 
 #. translators: Token name
-#. translators: 1: Post ID, 2: Meta key
 #: src/core/lib/utilities/class-automator-translations.php:538
 #: src/integrations/advanced/tokens/postmeta-token.php:19
 msgctxt "Token"
@@ -6485,7 +6469,6 @@ msgctxt "Token"
 msgid "Post: %1$s meta: %2$s"
 msgstr ""
 
-#. translators: Calculation formula
 #: src/core/lib/utilities/class-automator-translations.php:543
 #: src/integrations/advanced/tokens/calculation-token.php:79
 msgctxt "Token"
@@ -7026,7 +7009,6 @@ msgstr ""
 msgid "Connect your %1$s account to %2$s."
 msgstr ""
 
-#. translators: Item type (action, trigger)
 #: src/core/lib/utilities/class-automator-translations.php:957
 #: src/core/lib/utilities/class-automator-translations.php:1639
 msgid "Connect account"
@@ -7503,7 +7485,6 @@ msgid "Go to all recipes"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#. translators: 1. Item type (action, trigger), 2. Plugin name
 #: src/core/lib/utilities/class-automator-translations.php:1249
 #: src/core/lib/utilities/class-automator-translations.php:1539
 #: src/core/lib/utilities/class-automator-translations.php:1612
@@ -8246,7 +8227,6 @@ msgstr ""
 msgid "Please enter your Automator Pro license key to use this %s."
 msgstr ""
 
-#. translators: Item type (action, trigger)
 #: src/core/lib/utilities/class-automator-translations.php:1645
 msgid "Enter license key"
 msgstr ""
@@ -8256,7 +8236,6 @@ msgstr ""
 msgid "Automator Pro is required to use this %s."
 msgstr ""
 
-#. translators: Item type (action, trigger)
 #. translators: Non-personal infinitive verb
 #: src/core/lib/utilities/class-automator-translations.php:1651
 #: src/core/lib/utilities/class-automator-translations.php:1671
@@ -8268,7 +8247,6 @@ msgstr ""
 msgid "App integration not connected. Please connect to use this %s."
 msgstr ""
 
-#. translators: Item type (action, trigger)
 #: src/core/lib/utilities/class-automator-translations.php:1657
 msgid "Connect app"
 msgstr ""
@@ -10725,7 +10703,6 @@ msgstr ""
 
 #. translators: Action - WordPress
 #. translators: Action - Groundhogg
-#. translators: Mailchimp tag
 #. translators: Action - WP Fusion
 #: src/integrations/active-campaign/actions/ac-user-add-tag.php:42
 #: src/integrations/autonami/actions/autonami-add-user-tag.php:38
@@ -10780,7 +10757,6 @@ msgstr ""
 
 #. translators: Action - WordPress
 #. translators: Action - Groundhogg
-#. translators: Mailchimp tag
 #: src/integrations/active-campaign/actions/ac-user-remove-tag.php:41
 #: src/integrations/groundhogg/actions/gh-removetag.php:52
 #: src/integrations/mailchimp/actions/audience-removeusertag.php:44
@@ -11182,7 +11158,6 @@ msgstr ""
 msgid "Enabling ActiveCampaign triggers requires setting up a webhook in your ActiveCampaign account using the URL below. A few steps and you'll be up and running in no time. Visit our %1$s for simple instructions."
 msgstr ""
 
-#. translators: 1: Knowledge base article link
 #: src/integrations/active-campaign/settings/view-active-campaign.php:201
 #: src/integrations/gototraining/settings/view-gototraining.php:84
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:84
@@ -12451,7 +12426,6 @@ msgctxt "Bitly"
 msgid "Shorten {{a URL:%1$s}}"
 msgstr ""
 
-#. translators: 1: Long URL
 #: src/integrations/bitly/actions/bitly-shorten-url.php:40
 msgctxt "Bitly"
 msgid "Shorten {{a URL}}"
@@ -13036,7 +13010,6 @@ msgctxt "Bricks Builder"
 msgid "{{A form:%1$s}} is submitted"
 msgstr ""
 
-#. translators: 1: Form name
 #: src/integrations/bricks-builder/triggers/bricks-builder-anon-form-submit.php:98
 msgctxt "Bricks Builder"
 msgid "{{A form}} is submitted"
@@ -13048,7 +13021,6 @@ msgctxt "Bricks Builder"
 msgid "A user submits {{a form:%1$s}}"
 msgstr ""
 
-#. translators: 1: Form name
 #: src/integrations/bricks-builder/triggers/bricks-builder-user-submits-form.php:97
 msgctxt "Bricks Builder"
 msgid "A user submits {{a form}}"
@@ -14268,7 +14240,6 @@ msgctxt "Code Snippets"
 msgid "Activate  {{a snippet:%1$s}}"
 msgstr ""
 
-#. translators: 1: Snippet name
 #: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:31
 msgctxt "Code Snippets"
 msgid "Activate  {{a snippet}}"
@@ -14310,7 +14281,6 @@ msgctxt "Code Snippets"
 msgid "Deactivate  {{a snippet:%1$s}}"
 msgstr ""
 
-#. translators: 1: Snippet name
 #: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:31
 msgctxt "Code Snippets"
 msgid "Deactivate  {{a snippet}}"
@@ -15864,7 +15834,6 @@ msgctxt "Duplicator"
 msgid "A backup completes with {{a specific status:%1$s}}"
 msgstr ""
 
-#. translators: 1: Status
 #: src/integrations/duplicator/triggers/backup-completes-with-status.php:23
 msgctxt "Duplicator"
 msgid "A backup completes with {{a specific status}}"
@@ -16047,7 +16016,6 @@ msgctxt "EDD - Software Licensing"
 msgid "A license for {{a download:%1$s}} is created"
 msgstr ""
 
-#. translators: 1: Download name
 #: src/integrations/edd-sl/triggers/edd-sl-license-created-for-download.php:26
 msgctxt "EDD - Software Licensing"
 msgid "A license for {{a download}} is created"
@@ -16067,7 +16035,6 @@ msgctxt "EDD - Software Licensing"
 msgid "A license for {{a download:%1$s}} expires"
 msgstr ""
 
-#. translators: 1: Download name
 #: src/integrations/edd-sl/triggers/edd-sl-license-expired-for-download.php:26
 msgctxt "EDD - Software Licensing"
 msgid "A license for {{a download}} expires"
@@ -16330,7 +16297,6 @@ msgctxt "Easy Digital Downloads - Recurring Payments"
 msgid "A user subscribes to {{a download:%1$s}}"
 msgstr ""
 
-#. translators: 1: Download
 #: src/integrations/edd/triggers/edd-user-subscribes-to-download.php:26
 msgctxt "Easy Digital Downloads - Recurring Payments"
 msgid "A user subscribes to {{a download}}"
@@ -16648,7 +16614,6 @@ msgctxt "Everest Forms"
 msgid "{{A form:%1$s}} is submitted"
 msgstr ""
 
-#. translators: 1: Form name
 #: src/integrations/everest-froms/triggers/anon-form-submitted.php:25
 msgctxt "Everest Forms"
 msgid "{{A form}} is submitted"
@@ -16666,7 +16631,6 @@ msgctxt "Everest Forms"
 msgid "A user submits {{a form:%1$s}}"
 msgstr ""
 
-#. translators: 1: Form name
 #: src/integrations/everest-froms/triggers/user-submits-form.php:24
 msgctxt "Everest Forms"
 msgid "A user submits {{a form}}"
@@ -17025,7 +16989,6 @@ msgctxt "FluentBooking"
 msgid "Add {{a meeting:%1$s}}"
 msgstr ""
 
-#. translators: 1: Event name
 #: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:32
 msgctxt "FluentBooking"
 msgid "Add a meeting"
@@ -19011,7 +18974,6 @@ msgstr ""
 msgid "Add the user to {{a webinar:%1$s}}"
 msgstr ""
 
-#. translators: 1: Webinar
 #: src/integrations/gotowebinar/actions/gtw-registeruser.php:47
 #: src/integrations/zoom-webinar/actions/zoom-webinar-registeruser.php:47
 msgid "Add the user to {{a webinar}}"
@@ -19039,7 +19001,6 @@ msgstr ""
 msgid "Remove the user from {{a webinar:%1$s}}"
 msgstr ""
 
-#. translators: 1: Webinar
 #: src/integrations/gotowebinar/actions/gtw-unregisteruser.php:43
 #: src/integrations/zoom-webinar/actions/zoom-webinar-unregisteruser.php:47
 msgid "Remove the user from {{a webinar}}"
@@ -19586,7 +19547,6 @@ msgctxt "Heroic Knowledge Base"
 msgid "{{An article:%1$s}} receives a negative rating"
 msgstr ""
 
-#. translators: 1: Article
 #: src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-negative-rating.php:26
 msgctxt "Heroic Knowledge Base"
 msgid "{{An article}} receives a negative rating"
@@ -19606,7 +19566,6 @@ msgctxt "Heroic Knowledge Base"
 msgid "{{An article:%1$s}} receives a positive rating"
 msgstr ""
 
-#. translators: 1: Article
 #: src/integrations/ht-knowledge-base/triggers/ht-kb-anon-gives-positive-rating.php:26
 msgctxt "Heroic Knowledge Base"
 msgid "{{An article}} receives a positive rating"
@@ -19618,7 +19577,6 @@ msgctxt "Heroic Knowledge Base"
 msgid "A user gives a negative rating to {{an article:%1$s}}"
 msgstr ""
 
-#. translators: 1: Article
 #: src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-negative-rating.php:25
 msgctxt "Heroic Knowledge Base"
 msgid "A user gives a negative rating to {{an article}}"
@@ -19630,7 +19588,6 @@ msgctxt "Heroic Knowledge Base"
 msgid "A user gives a positive rating to {{an article:%1$s}}"
 msgstr ""
 
-#. translators: 1: Article
 #: src/integrations/ht-knowledge-base/triggers/ht-kb-user-gives-positive-rating.php:25
 msgctxt "Heroic Knowledge Base"
 msgid "A user gives a positive rating to {{an article}}"
@@ -19641,7 +19598,6 @@ msgstr ""
 msgid "Add a HubSpot contact to {{a static list:%1$s}}"
 msgstr ""
 
-#. translators: the selected HubSpot static list name
 #: src/integrations/hubspot/actions/hubspot-addcontacttolist.php:53
 msgid "Add a HubSpot contact to {{a static list}}"
 msgstr ""
@@ -19658,7 +19614,6 @@ msgstr ""
 msgid "Add/Update {{the user:%1$s}} in HubSpot"
 msgstr ""
 
-#. translators: The user
 #: src/integrations/hubspot/actions/hubspot-adduser.php:53
 msgid "Add/Update {{the user}} in HubSpot"
 msgstr ""
@@ -19685,7 +19640,6 @@ msgstr ""
 msgid "Create/Update {{a contact:%1$s}} in HubSpot"
 msgstr ""
 
-#. translators: A contact
 #: src/integrations/hubspot/actions/hubspot-createcontact.php:53
 msgid "Create/Update {{a contact}} in HubSpot"
 msgstr ""
@@ -19700,7 +19654,6 @@ msgstr ""
 msgid "Remove a HubSpot contact from {{a static list:%1$s}}"
 msgstr ""
 
-#. translators: The selected HubSpot static list name
 #: src/integrations/hubspot/actions/hubspot-removecontactfromlist.php:52
 msgid "Remove a HubSpot contact from {{a static list}}"
 msgstr ""
@@ -20265,7 +20218,6 @@ msgctxt "Kadence"
 msgid "{{A form:%1$s}} is submitted"
 msgstr ""
 
-#. translators: 1: Form name
 #: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:27
 msgctxt "Kadence"
 msgid "{{A form}} is submitted"
@@ -20283,7 +20235,6 @@ msgctxt "Kadence"
 msgid "A user submits {{a form:%1$s}}"
 msgstr ""
 
-#. translators: 1: Form name
 #: src/integrations/kadence/triggers/kadence-form-submitted.php:26
 msgctxt "Kadence"
 msgid "A user submits {{a form}}"
@@ -22238,7 +22189,6 @@ msgctxt "Logging"
 msgid "Write {{data:%1$s}} to the log"
 msgstr ""
 
-#. translators: 1: Data title
 #: src/integrations/logging/actions/write-data-to-log.php:25
 msgctxt "Logging"
 msgid "Write {{data}} to the log"
@@ -22261,7 +22211,6 @@ msgstr ""
 msgid "Add the user to {{an audience:%1$s}}"
 msgstr ""
 
-#. translators: the selected Mailchimp's audience name
 #: src/integrations/mailchimp/actions/audience-addauser.php:44
 msgid "Add the user to {{an audience}}"
 msgstr ""
@@ -22362,7 +22311,6 @@ msgstr ""
 msgid "Add {{a note:%1$s}} to the user"
 msgstr ""
 
-#. translators: Note
 #: src/integrations/mailchimp/actions/audience-addusernote.php:44
 msgid "Add {{a note}} to the user"
 msgstr ""
@@ -22393,7 +22341,6 @@ msgstr ""
 msgid "Unsubscribe the user from {{an audience:%1$s}}"
 msgstr ""
 
-#. translators: Mailchimp audience
 #: src/integrations/mailchimp/actions/audience-unsubscribeauser.php:44
 msgid "Unsubscribe the user from {{an audience}}"
 msgstr ""
@@ -22413,7 +22360,6 @@ msgstr ""
 msgid "Create and send {{a campaign:%1$s}}"
 msgstr ""
 
-#. translators: Campaign
 #: src/integrations/mailchimp/actions/campaign-createandsend.php:71
 msgid "Create and send {{a campaign}}"
 msgstr ""
@@ -22652,7 +22598,6 @@ msgctxt "MasterStudy LMS"
 msgid "Enroll the user in {{a course:%1$s}}"
 msgstr ""
 
-#. translators: 1: Course name
 #: src/integrations/masterstudy-lms/actions/masterstudy-enroll-user-in-course.php:17
 msgctxt "MasterStudy LMS"
 msgid "Enroll the user in {{a course}}"
@@ -23563,7 +23508,6 @@ msgstr ""
 msgid "Send a message to {{a channel:%1$s}}"
 msgstr ""
 
-#. translators: slack channel name
 #: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:27
 #: src/integrations/slack/actions/slack-sendmessage.php:50
 msgid "Send a message to {{a channel}}"
@@ -23580,7 +23524,6 @@ msgstr ""
 msgid "Create {{a channel:%1$s}}"
 msgstr ""
 
-#. translators: slack channel
 #: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:27
 #: src/integrations/slack/actions/slack-createchannel.php:53
 msgid "Create {{a channel}}"
@@ -25249,7 +25192,6 @@ msgctxt "Pretty Links"
 msgid "A pretty link of {{a specific redirect type:%1$s}} is created"
 msgstr ""
 
-#. translators: 1: Redirection type
 #: src/integrations/pretty-links/triggers/prli-anon-create-a-link.php:26
 msgctxt "Pretty Links"
 msgid "A pretty link of {{a specific redirect type}} is created"
@@ -25261,7 +25203,6 @@ msgctxt "Pretty Links"
 msgid "{{A pretty link:%1$s}} is clicked"
 msgstr ""
 
-#. translators: 1: Pretty link
 #: src/integrations/pretty-links/triggers/prli-anon-link-clicked.php:26
 msgctxt "Pretty Links"
 msgid "{{A pretty link}} is clicked"
@@ -25279,7 +25220,6 @@ msgctxt "Pretty Links"
 msgid "A user clicks {{a pretty link:%1$s}}"
 msgstr ""
 
-#. translators: 1: Pretty link
 #: src/integrations/pretty-links/triggers/prli-link-clicked.php:25
 msgctxt "Pretty Links"
 msgid "A user clicks {{a pretty link}}"
@@ -25316,7 +25256,6 @@ msgctxt "RafflePress"
 msgid "Someone registers for {{a giveaway:%1$s}}"
 msgstr ""
 
-#. translators: 1: Giveaway name
 #: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:33
 msgctxt "RafflePress"
 msgid "Someone registers for {{a giveaway}}"
@@ -25774,7 +25713,6 @@ msgstr ""
 msgid "Send a direct message to {{a Slack user:%1$s}}"
 msgstr ""
 
-#. translators: slack username
 #: src/integrations/slack/actions/slack-senddirectmessage.php:50
 msgid "Send a direct message to {{a Slack user}}"
 msgstr ""
@@ -25915,7 +25853,6 @@ msgctxt "SliceWP"
 msgid "Add {{a new affiliate:%1$s}}"
 msgstr ""
 
-#. translators: 1: Affiliate name
 #: src/integrations/slicewp/actions/slicewp-create-affiliate.php:22
 msgctxt "SliceWP"
 msgid "Add {{a new affiliate}}"
@@ -27812,7 +27749,6 @@ msgctxt "Thrive Theme"
 msgid "{{A form:%1$s}} is submitted"
 msgstr ""
 
-#. translators: 1: Form name
 #: src/integrations/thrive-theme/triggers/thr-anon-form-submitted.php:26
 msgctxt "Thrive Theme"
 msgid "{{A form}} is submitted"
@@ -27830,7 +27766,6 @@ msgctxt "Thrive Theme"
 msgid "A user submits {{a form:%1$s}}"
 msgstr ""
 
-#. translators: 1: Form name
 #: src/integrations/thrive-theme/triggers/thr-user-submits-form.php:25
 msgctxt "Thrive Theme"
 msgid "A user submits {{a form}}"
@@ -28222,7 +28157,6 @@ msgstr ""
 msgid "Send an SMS message to {{a number:%1$s}}"
 msgstr ""
 
-#. translators: 1: SMS number
 #: src/integrations/twilio/actions/twilio-sendsms.php:67
 msgid "Send an SMS message to {{a number}}"
 msgstr ""
@@ -29229,7 +29163,6 @@ msgstr ""
 msgid "A visitor submits {{a survey:%1$s}}"
 msgstr ""
 
-#. translators: 1: Survey
 #: src/integrations/userfeedback/triggers/anon-userfeedback-survey-submitted.php:29
 msgid "A visitor submits {{a survey}}"
 msgstr ""
@@ -29290,7 +29223,6 @@ msgstr ""
 msgid "A user submits {{a survey:%1$s}}"
 msgstr ""
 
-#. translators: 1: Survey
 #: src/integrations/userfeedback/triggers/user-userfeedback-survey-submitted.php:28
 msgid "A user submits {{a survey}}"
 msgstr ""
@@ -30353,7 +30285,6 @@ msgctxt "wpDiscuz"
 msgid "Add {{a reply:%1$s}} to a comment"
 msgstr ""
 
-#. translators: 1: Reply
 #: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:22
 msgctxt "wpDiscuz"
 msgid "Add {{a reply}} to a comment"
@@ -30474,7 +30405,6 @@ msgctxt "wpDiscuz"
 msgid "A user submits a comment on {{a post:%1$s}} {{a number of times:%2$s}}"
 msgstr ""
 
-#. translators: 1: Post name, 2: Number of times
 #: src/integrations/wp-discuz/triggers/wp-discuz-user-submits-comment.php:24
 msgctxt "wpDiscuz"
 msgid "A user submits a comment on {{a post}}"
@@ -30873,7 +30803,6 @@ msgstr ""
 msgid "{{A webhook trigger:%1$s}} is triggered"
 msgstr ""
 
-#. translators: 1: Webhook trigger
 #: src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php:50
 msgid "{{A webhook trigger}} is triggered"
 msgstr ""
@@ -30912,7 +30841,6 @@ msgctxt "WordPress"
 msgid "Change the post type of {{a post:%2$s}} to {{a post type:%1$s}}"
 msgstr ""
 
-#. translators: 1: New post type, 2: Post title
 #: src/integrations/wp/actions/wp-change-post-type.php:21
 msgctxt "WordPress"
 msgid "Change the post type of {{a post}} to {{a post type}}"
@@ -31097,7 +31025,6 @@ msgctxt "WordPress"
 msgid "Update the excerpt of {{a post:%1$s}}"
 msgstr ""
 
-#. translators: 1: Post title
 #: src/integrations/wp/actions/wp-update-post-excerpt.php:24
 msgctxt "WordPress"
 msgid "Update the excerpt of {{a post}}"

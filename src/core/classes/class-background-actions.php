@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use WP_Error;
+
 /**
  * Class Background_Actions
  *
@@ -45,7 +47,7 @@ class Background_Actions {
 
 		add_action( 'rest_api_init', array( $this, 'register_rest_endpoint' ) );
 
-		//The priority is important here. We need to make sure we run this filter after scheduling the actions
+		// The priority is important here. We need to make sure we run this filter after scheduling the actions.
 		add_filter( 'automator_before_action_executed', array( $this, 'maybe_send_to_background' ), 200, 2 );
 
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
@@ -153,6 +155,7 @@ class Background_Actions {
 				->not_scheduled()
 				->can_process_further()
 				->should_process_in_background()
+				->is_not_already_processed()
 				->action_tokens_not_used_in_other_actions()
 				->send_to_background();
 
@@ -214,7 +217,6 @@ class Background_Actions {
 		return $this;
 	}
 
-
 	/**
 	 * Because of ticket #42462. When a user submits a post with a term and tax,
 	 * it creates a cron schedule to run the trigger, because of it, the cron fires
@@ -226,6 +228,21 @@ class Background_Actions {
 	public function is_not_doing_cron() {
 		if ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) {
 			throw new \Exception( esc_html__( 'WP cron is running', 'uncanny-automator' ) );
+		}
+
+		return $this;
+	}
+
+	/**
+	 * is_not_already_processed
+	 *
+	 * Will throw an exception if the action was already processed.
+	 *
+	 * @return $this
+	 */
+	public function is_not_already_processed() {
+		if ( isset( $this->action['action_data']['background_action_processed'] ) ) {
+			throw new \Exception( esc_html__( 'Background action already processed', 'uncanny-automator' ) );
 		}
 
 		return $this;
@@ -284,8 +301,25 @@ class Background_Actions {
 
 		$url = get_rest_url() . AUTOMATOR_REST_API_END_POINT . self::ENDPOINT;
 
+		$auth = new Auth( AUTOMATOR_BASE_FILE );
+		$secret_key = $auth->get_secret_key();
+		$timestamp  = time();
+		$action_json = wp_json_encode( $this->action );
+		$data = $action_json . $timestamp;
+		$signature = $auth->generate_token( $data, $secret_key );
+
 		$request = array(
-			'body' => $this->action,
+			'body'    => wp_json_encode(
+				array(
+					'action'    => $this->action,
+					'timestamp' => $timestamp,
+					'signature' => $signature,
+				)
+			),
+			'headers' => array(
+				'Content-Type' => 'application/json',
+				'User-Agent'   => 'UncannyAutomator/' . AUTOMATOR_PLUGIN_VERSION,
+			),
 		);
 
 		if ( false === $blocking ) {
@@ -311,7 +345,7 @@ class Background_Actions {
 	 * @return mixed
 	 */
 	public function remote_post( $url, $request ) {
-		return wp_remote_post( $url, $request );
+		return wp_safe_remote_post( $url, $request );
 	}
 
 	/**
@@ -330,6 +364,7 @@ class Background_Actions {
 		$this->action = array(
 			'process_further' => false,
 			'action_data'     => array(
+				'ID'   => 999,
 				'meta' => array(
 					'integration' => 'WP',
 					'code'        => 'REST_API_TEST',
@@ -341,7 +376,7 @@ class Background_Actions {
 
 		$error = $this->rest_api_error();
 
-		if ( empty( $error ) ) {
+		if ( null === $error || empty( $error ) ) {
 			return '1';
 		}
 
@@ -358,6 +393,10 @@ class Background_Actions {
 	 * @return string
 	 */
 	public function rest_api_error() {
+
+		if ( empty( $this->last_response ) ) {
+			return esc_html__( 'No response from the server', 'uncanny-automator' );
+		}
 
 		if ( is_wp_error( $this->last_response ) ) {
 			return $this->last_response->get_error_message();
@@ -385,10 +424,30 @@ class Background_Actions {
 	 */
 	public function validate_rest_call( $request ) {
 
-		$action = $request->get_body_params();
+		$body_params = $request->get_json_params();
 
-		if ( empty( $action['action_data']['meta']['integration'] ) || empty( $this->get_action_code( $action ) ) ) {
+		// Ensure request contains necessary data.
+		if ( empty( $body_params['action'] ) || empty( $body_params['action']['action_data'] ) || empty( $body_params['signature'] ) || empty( $body_params['timestamp'] ) ) {
+			return new WP_Error( 'unauthorized_request', esc_html__( 'Unauthorized request', 'uncanny-automator' ), array( 'status' => 403 ) );
+		}
+
+		if ( isset( $body_params['action']['action_data']['background_action_processed'] ) ) {
 			return false;
+		}
+
+		// Verify request timstamp (Prevents replay attacks).
+		if ( abs( time() - (int) $body_params['timestamp'] ) > 60 ) { // 1 minutes max difference.
+			return new WP_Error( 'expired_request', esc_html__( 'Request timestamp expired', 'uncanny-automator' ), array( 'status' => 403 ) );
+		}
+
+		// Verify request signature (Prevents tampering).
+		$auth = new Auth( AUTOMATOR_BASE_FILE );
+		$secret_key = $auth->get_secret_key();
+		$data = wp_json_encode( $body_params['action'] ) . $body_params['timestamp'];
+		$expected_signature = $auth->generate_token( $data, $secret_key );
+
+		if ( ! hash_equals( $expected_signature, $body_params['signature'] ) ) {
+			return new WP_Error( 'invalid_signature', esc_html__( 'Invalid request signature', 'uncanny-automator' ), array( 'status' => 403 ) );
 		}
 
 		return true;
@@ -400,15 +459,15 @@ class Background_Actions {
 	 * @return void
 	 */
 	public function background_action_rest( $request ) {
+		// Read request JSON parameters.
+		$params = $request->get_json_params();
 
-		$action = $request->get_body_params();
+		$action = $params['action'];
 
 		$action = apply_filters( 'automator_before_background_action_executed', $action );
 
 		if ( isset( $action['process_further'] ) && false === boolval( $action['process_further'] ) ) {
-
 			automator_log( 'Action was skipped by automator_before_background_action_executed filter.' );
-
 			return;
 		}
 
@@ -434,11 +493,11 @@ class Background_Actions {
 			unset( $action['process_further'] );
 		}
 
-		try {
+		$action['action_data']['background_action_processed'] = time();
 
+		try {
 			call_user_func_array( $action_execution_function, $action );
 			do_action( 'automator_bg_action_after_run', $action );
-
 		} catch ( \Error $e ) {
 			$this->complete_with_error( $action, $e->getMessage() );
 		} catch ( \Exception $e ) {

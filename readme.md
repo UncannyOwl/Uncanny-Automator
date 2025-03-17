@@ -5,7 +5,7 @@
 **Requires at least:** 5.6 \
 **Tested up to:** 6.7.2 \
 **Requires PHP:** 7.3 \
-**Stable tag:** 6.3.0.1 \
+**Stable tag:** 6.3.0.2 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -404,6 +404,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 
 ## Changelog
+
+### 6.3.0.2 [2025-03-17]
+
+**Security update:**
+
+* Core - Background actions - We've reinforced security roles so background actions don't get too adventurous. CVE-2025-2075 #5526
 
 ### 6.3.0.1 [2025-03-14]
 
