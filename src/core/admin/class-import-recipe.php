@@ -87,7 +87,6 @@ class Import_Recipe {
 		add_action( 'automator_recipe_option_updated', array( $this, 'clear_imported_recipe_warning' ), 10, 6 );
 		add_action( 'automator_recipe_status_updated', array( $this, 'clear_imported_recipe_warning' ), 10, 4 );
 		add_action( 'automator_recipe_title_updated', array( $this, 'clear_imported_recipe_warning' ), 10, 3 );
-
 	}
 
 	/**
@@ -318,7 +317,7 @@ class Import_Recipe {
 
 				// Handle loops.
 				if ( ! empty( $part_post_id ) && 'loops' === $part ) {
-					$this->import_loop( $recipe_part, $part_post_id, $new_recipe_id, $recipe->post->ID );
+					$this->import_loop( $recipe_part, $part_post_id );
 				}
 			}
 		}
@@ -372,12 +371,10 @@ class Import_Recipe {
 	 *
 	 * @param object $recipe_part - The recipe part to import.
 	 * @param int $new_loop_id - The new loop ID.
-	 * @param int $new_recipe_id - The new recipe ID.
-	 * @param int $original_recipe_id - The original recipe ID.
 	 *
 	 * @return void
 	 */
-	public function import_loop( $recipe_part, $new_loop_id, $new_recipe_id, $original_recipe_id ) {
+	public function import_loop( $recipe_part, $new_loop_id ) {
 
 		$loops = isset( $recipe_part->loops ) && ! empty( $recipe_part->loops ) ? (array) $recipe_part->loops : null;
 
@@ -558,7 +555,7 @@ class Import_Recipe {
 		foreach ( $recipe_ids as $recipe_id ) {
 			$recipe_title = get_the_title( $recipe_id );
 			$recipe_link  = get_edit_post_link( $recipe_id, 'url' );
-			$message      .= sprintf( '<li><a href="%s" target="_blank">%s</a></li>', esc_url( $recipe_link ), esc_html( $recipe_title ) );
+			$message     .= sprintf( '<li><a href="%s" target="_blank">%s</a></li>', esc_url( $recipe_link ), esc_html( $recipe_title ) );
 		}
 		$message .= '</ul>';
 
@@ -642,7 +639,7 @@ class Import_Recipe {
 			'li' => array(),
 		);
 
-		$html = '<div class="uap notice notice-' . esc_attr( $type ) . '" style="padding:0">';
+		$html  = '<div class="uap notice notice-' . esc_attr( $type ) . '" style="padding:0">';
 		$html .= '<uo-alert type="' . esc_attr( $type ) . '" no-radius>';
 		$html .= '<strong>' . wp_kses( $message, $allowed_html ) . '</strong>';
 		$html .= '</uo-alert>';
@@ -687,5 +684,4 @@ class Import_Recipe {
 			delete_post_meta( $recipe_id, self::IMPORTED_RECIPE_WARNING_META );
 		}
 	}
-
 }

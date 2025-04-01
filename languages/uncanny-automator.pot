@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 6.3.0.2\n"
+"Project-Id-Version: Uncanny Automator 6.4.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-17T15:27:19+00:00\n"
+"POT-Creation-Date: 2025-04-01T16:48:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: uncanny-automator\n"
@@ -65,6 +65,9 @@ msgstr ""
 #. translators: Non-personal infinitive verb
 #: src/js/item/button-schedule.js:912
 #: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/post/index.js:117
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:140
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
 #: src/core/admin/class-admin-menu.php:1005
 #: src/core/admin/class-admin-menu.php:1178
 #: src/core/admin/class-admin-menu.php:1287
@@ -108,6 +111,71 @@ msgstr ""
 msgid "Get Post loops"
 msgstr ""
 
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:140
+#: src/core/lib/utilities/class-automator-translations.php:1406
+#: src/core/lib/utilities/class-automator-translations.php:1529
+msgid "Token loop"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:140
+msgid "Token loops let you perform bulk actions on special *loopable tokens*. Here are a few examples:"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:140
+msgid "When a user purchases a specific product, **loop over their previously purchased products** and if a complementary product is found, send an email with special instructions or a coupon code."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:140
+msgid "Every Friday, **loop over all orders in the past week** and export them to a Google sheet."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:140
+msgid "When a user completes a course, **loop over their previously completed courses** and if a corequisite course is found, enroll the user in a new course or issue a certificate of completion."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:140
+msgid "When a user purchases a subscription, **loop over their active subscriptions** and if a complementary subscription is found, award an achievement or store credit."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/token/index.js:140
+msgid "Get Token loops"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:92
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:94
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+#: src/core/lib/utilities/class-automator-translations.php:1404
+msgid "User loop"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+msgid "A powerful admin tool, user loops let you perform **bulk actions** on any set of **users that meet specific criteria**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+msgid "Here are a few examples of what is possible with user loops:"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+msgid "Send an email or coupon code to all users that **purchased a specific product** or are a **member of a specific group**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+msgid "Add a role to **users with a specific role** or **with a specific membership/access level**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+msgid "Export a list of **users matching specific profile criteria** to Google Sheets, AirTable or Notion."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+msgid "Perform actions in bulk on **users with specific usermeta**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/builder/components/item/loop/add-loop-button/user/index.js:138
+msgid "Get User loops"
+msgstr ""
+
 #: translations/temp/src/recipe-ui/js/field/components/click-to-copy/index.js:58
 msgid "Click to copy"
 msgstr ""
@@ -134,6 +202,58 @@ msgstr ""
 
 #: translations/temp/src/recipe-ui/js/item/components/magic-trigger-shortcode/index.js:139
 msgid "Copy magic button shortcode"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+#: src/core/lib/utilities/class-automator-translations.php:203
+#: src/core/views/admin-logs/filters.php:48
+#: src/core/views/admin-logs/filters.php:95
+#: src/core/views/admin-logs/filters.php:142
+#: src/core/views/filters.php:49
+#: src/core/views/filters.php:96
+#: src/core/views/filters.php:143
+msgid "Filter"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "Add **conditional logic** to your recipes with filters. With the ability to **run actions only if specific conditions are met**, recipes become much more powerful!"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "Here are a few examples of what is possible with filters:"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "In recipes with a form submission trigger, **run different actions depending on the options the user selected on the form**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "In recipes with a purchase trigger, **run different actions depending on which product the user purchased**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "In recipes with a course or group enrollment trigger, **run different actions depending on which course or group the user enrolled in**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "You can also use filters to simply give recipes additional \"intelligence\" about when actions should run, such as:"
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "Whether the user has a **specific role or membership level**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "Whether the user is **enrolled in a specific course or group**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "Whether the user has **specific user meta values**."
+msgstr ""
+
+#: translations/temp/src/recipe-ui/js/item/conditions/components/condition-add-button/index.js:304
+msgid "Get Filters"
 msgstr ""
 
 #. Plugin Name of the plugin
@@ -244,11 +364,8 @@ msgstr ""
 #. translators: 1: Plan ID
 #. translators: 1: Event ID
 #. translators: %1$s The ID of the post.
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:432
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:631
-#: src/core/admin/class-logs-list-table.php:371
-#: src/core/admin/class-logs-list-table.php:479
-#: src/core/admin/class-logs-list-table.php:570
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:427
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:626
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:871
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:43
 #: src/integrations/armember/helpers/armember-helpers.php:57
@@ -261,29 +378,23 @@ msgid "ID: %1$s (no title)"
 msgstr ""
 
 #. translators: Recipe type. Logged-in recipes are triggered only by logged-in users
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:510
 #: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:515
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:520
-#: src/core/admin/class-logs-list-table.php:406
-#: src/core/admin/class-logs-list-table.php:410
-#: src/core/admin/class-logs-list-table.php:514
-#: src/core/admin/class-logs-list-table.php:518
 msgctxt "Recipe"
 msgid "Logged-in"
 msgstr ""
 
 #. translators: Recipe type. Anonymous recipes can be triggered by logged-in or anonymous users. Anonymous recipes can create new users or modify existing users.
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:523
-#: src/core/admin/class-logs-list-table.php:413
-#: src/core/admin/class-logs-list-table.php:521
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:518
 msgctxt "Recipe"
 msgid "Anonymous"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:551
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:546
 msgid "Delete row"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:562
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:557
 #: src/core/admin/class-admin-menu.php:1116
 #: src/core/views/admin-tools/tab/debug/log-viewer.php:84
 #: src/core/views/html-database-tools.php:175
@@ -293,12 +404,12 @@ msgstr ""
 msgid "This action is irreversible"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:563
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:558
 msgid "Are you sure you want to delete this run?"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:564
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:559
 #: src/core/admin/class-admin-menu.php:1003
 #: src/core/admin/class-admin-menu.php:1118
 #: src/core/lib/utilities/class-automator-translations.php:698
@@ -310,50 +421,44 @@ msgid "Confirm"
 msgstr ""
 
 #. translators: 1. Trigger ID
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:649
-#: src/core/admin/class-logs-list-table.php:605
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:644
 msgid "Trigger deleted: %1$s"
 msgstr ""
 
 #. translators: The run number
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:656
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:651
 msgid "Run #: %1$d of %2$d"
 msgstr ""
 
 #. translators: 1. Trademarked term
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:666
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:851
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:661
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:845
 #: src/core/admin/api-log/class-api-log-table.php:239
-#: src/core/admin/class-logs-list-table.php:614
-#: src/core/admin/class-logs-list-table.php:748
 msgid "(Reactivate %1$s to view)"
 msgstr ""
 
 #. translators: 1. Trigger run number 2. Trigger total times
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:731
-#: src/core/admin/class-logs-list-table.php:639
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:726
 msgid "%1$d of %2$d"
 msgstr ""
 
 #. translators: 1. Action ID
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:841
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:835
 #: src/core/admin/api-log/class-api-log-table.php:229
-#: src/core/admin/class-logs-list-table.php:738
 msgid "Action deleted: %1$s"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:991
-#: src/core/admin/class-logs-list-table.php:831
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:985
 msgid "Please upgrade for unlimited app credits"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1132
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1122
 msgid "Deleted user"
 msgstr ""
 
 #. translators: Recipe log user ID column row value.
 #. translators: 1. The user ID
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1134
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1124
 #: src/core/admin/class-admin-menu.php:1057
 #: src/core/admin/class-admin-menu.php:1106
 msgid "User ID #%1$s"
@@ -459,7 +564,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: src/core/admin/admin-tools/tabs/debug.php:139
+#: src/core/admin/admin-tools/tabs/debug.php:136
 #: src/core/views/admin-tools/tab/debug/debug.php:36
 msgid "Debug"
 msgstr ""
@@ -474,17 +579,11 @@ msgid "Database"
 msgstr ""
 
 #: src/core/admin/api-log/class-api-log-table.php:268
-#: src/core/admin/class-logs-list-table.php:599
-#: src/core/admin/class-logs-list-table.php:787
 msgid "Send Email"
 msgstr ""
 
 #. translators: User type
 #: src/core/admin/api-log/class-api-log-table.php:273
-#: src/core/admin/class-logs-list-table.php:378
-#: src/core/admin/class-logs-list-table.php:486
-#: src/core/admin/class-logs-list-table.php:593
-#: src/core/admin/class-logs-list-table.php:792
 msgctxt "User"
 msgid "N/A"
 msgstr ""
@@ -968,8 +1067,6 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:1129
 #: src/core/admin/class-admin-menu.php:1221
-#: src/core/admin/class-logs-list-table.php:436
-#: src/core/admin/class-logs-list-table.php:529
 msgid "Details"
 msgstr ""
 
@@ -1390,175 +1487,59 @@ msgctxt "Export Recipe"
 msgid "Recipe Export Failed : %s"
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:103
-#: src/core/admin/class-import-recipe.php:109
+#: src/core/admin/class-import-recipe.php:102
+#: src/core/admin/class-import-recipe.php:108
 msgctxt "Import Recipe"
 msgid "Security issue, invalid nonce. Please refresh the page and try again."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:115
+#: src/core/admin/class-import-recipe.php:114
 msgctxt "Import Recipe"
 msgid "No recipe .json file uploaded."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:124
-#: src/core/admin/class-import-recipe.php:145
+#: src/core/admin/class-import-recipe.php:123
+#: src/core/admin/class-import-recipe.php:144
 msgctxt "Import Recipe"
 msgid "The uploaded file is not a valid recipe .json file."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:132
+#: src/core/admin/class-import-recipe.php:131
 msgctxt "Import Recipe"
 msgid "Unable to read the uploaded file."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:139
+#: src/core/admin/class-import-recipe.php:138
 msgctxt "Import Recipe"
 msgid "The uploaded file contains invalid JSON."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:274
+#: src/core/admin/class-import-recipe.php:273
 msgctxt "Import Recipe"
 msgid "The Uploaded file is not a valid recipe .json file; the recipe object must contain post and meta."
 msgstr ""
 
 #. translators: %s - Y-m-d date
-#: src/core/admin/class-import-recipe.php:291
+#: src/core/admin/class-import-recipe.php:290
 msgctxt "Import Recipe"
 msgid "Recipe imported on %s. Please make sure to set the correct values before you take this recipe live."
 msgstr ""
 
-#: src/core/admin/class-import-recipe.php:301
+#: src/core/admin/class-import-recipe.php:300
 msgctxt "Import Recipe"
 msgid "Unable to create imported recipe."
 msgstr ""
 
 #. translators: %s - error message
-#: src/core/admin/class-import-recipe.php:519
+#: src/core/admin/class-import-recipe.php:516
 msgctxt "Import Recipe"
 msgid "Recipe Import Error : %s"
 msgstr ""
 
 #. translators: %s - error message
-#: src/core/admin/class-import-recipe.php:569
+#: src/core/admin/class-import-recipe.php:566
 msgctxt "Import Recipe"
 msgid "Recipes Imported Successfully : %s"
-msgstr ""
-
-#. translators: Recipe status
-#: src/core/admin/class-logs-list-table.php:386
-#: src/core/admin/class-logs-list-table.php:494
-msgctxt "Recipe"
-msgid "Completed"
-msgstr ""
-
-#. translators: Recipe status
-#: src/core/admin/class-logs-list-table.php:389
-#: src/core/admin/class-logs-list-table.php:497
-msgctxt "Recipe"
-msgid "Completed with errors"
-msgstr ""
-
-#. translators: Recipe status
-#: src/core/admin/class-logs-list-table.php:392
-#: src/core/admin/class-logs-list-table.php:500
-msgctxt "Recipe"
-msgid "Completed - do nothing"
-msgstr ""
-
-#. translators: Recipe status
-#: src/core/admin/class-logs-list-table.php:395
-#: src/core/admin/class-logs-list-table.php:503
-msgctxt "Recipe"
-msgid "Completed - pending response"
-msgstr ""
-
-#. translators: Recipe status
-#: src/core/admin/class-logs-list-table.php:398
-#: src/core/admin/class-logs-list-table.php:506
-msgctxt "Recipe"
-msgid "In progress"
-msgstr ""
-
-#: src/core/admin/class-logs-list-table.php:440
-msgid "Are you sure you want to delete this run? This action is irreversible."
-msgstr ""
-
-#. translators: Non-personal infinitive verb
-#: src/core/admin/class-logs-list-table.php:440
-#: src/core/lib/utilities/class-automator-translations.php:1373
-#: src/core/lib/utilities/class-automator-translations.php:1386
-#: src/core/lib/utilities/class-automator-translations.php:1600
-msgid "Delete"
-msgstr ""
-
-#: src/core/admin/class-logs-list-table.php:530
-msgid "Are you sure you want to re-run this recipe?"
-msgstr ""
-
-#: src/core/admin/class-logs-list-table.php:530
-msgid "Re-run"
-msgstr ""
-
-#. translators: Trigger status
-#: src/core/admin/class-logs-list-table.php:578
-msgctxt "Trigger"
-msgid "Completed"
-msgstr ""
-
-#. translators: Trigger status
-#: src/core/admin/class-logs-list-table.php:581
-msgctxt "Trigger"
-msgid "Completed with errors"
-msgstr ""
-
-#. translators: Trigger status
-#: src/core/admin/class-logs-list-table.php:584
-msgctxt "Trigger"
-msgid "Completed, do nothing"
-msgstr ""
-
-#. translators: Trigger status
-#: src/core/admin/class-logs-list-table.php:587
-msgctxt "Trigger"
-msgid "In progress"
-msgstr ""
-
-#: src/core/admin/class-logs-list-table.php:725
-#: src/core/lib/utilities/class-automator-translations.php:118
-msgid "Error"
-msgstr ""
-
-#. translators: Action status
-#: src/core/admin/class-logs-list-table.php:728
-#: src/core/admin/class-logs-list-table.php:767
-msgctxt "Action"
-msgid "Completed"
-msgstr ""
-
-#. translators: Action status
-#: src/core/admin/class-logs-list-table.php:731
-#: src/core/admin/class-logs-list-table.php:773
-msgctxt "Action"
-msgid "Completed, do nothing"
-msgstr ""
-
-#. translators: Action status
-#: src/core/admin/class-logs-list-table.php:734
-msgctxt "Action"
-msgid "Completed, awaiting"
-msgstr ""
-
-#. translators: Action status
-#: src/core/admin/class-logs-list-table.php:770
-msgctxt "Action"
-msgid "Completed with errors"
-msgstr ""
-
-#. translators: Action status
-#: src/core/admin/class-logs-list-table.php:776
-msgctxt "Action"
-msgid "In progress"
 msgstr ""
 
 #. translators: 1. Number
@@ -2089,7 +2070,6 @@ msgstr ""
 #: src/integrations/groundhogg/actions/gh-addtag.php:70
 #: src/integrations/groundhogg/actions/gh-removetag.php:69
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:132
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:92
 #: src/integrations/mailchimp/actions/audience-addusertag.php:74
 #: src/integrations/mailchimp/actions/audience-removeusertag.php:74
 #: src/integrations/mailchimp/actions/mc-everyone-user-add-tag.php:66
@@ -2201,7 +2181,7 @@ msgid "Any"
 msgstr ""
 
 #: src/core/deprecated/legacy-token-parser.php:816
-#: src/core/lib/utilities/class-automator-input-parser.php:745
+#: src/core/lib/utilities/class-automator-input-parser.php:760
 msgctxt "Reset password token text"
 msgid "Click here to reset your password."
 msgstr ""
@@ -5383,7 +5363,6 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:69
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:69
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:152
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:39
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:143
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:90
 #: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:74
@@ -5401,7 +5380,6 @@ msgstr ""
 #: src/integrations/learndash/helpers/learndash-helpers.php:289
 #: src/integrations/learnpress/helpers/learnpress-helpers.php:142
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:122
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:98
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:94
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:281
 msgid "Any lesson"
@@ -5673,7 +5651,7 @@ msgstr ""
 #. translators: 1: Poll ID
 #. translators: 1: Form ID
 #: src/core/lib/utilities/class-automator-get-data.php:1528
-#: src/core/services/dashboard/recipe-using-credits-utils.php:198
+#: src/core/services/dashboard/recipe-using-credits-utils.php:199
 #: src/integrations/affiliate-wp/helpers/affwp-helpers.php:77
 #: src/integrations/events-manager/helpers/events-manager-helpers.php:95
 #: src/integrations/wp-polls/triggers/wpp-pollsubmit.php:79
@@ -5809,6 +5787,10 @@ msgstr ""
 msgid "New"
 msgstr ""
 
+#: src/core/lib/utilities/class-automator-translations.php:118
+msgid "Error"
+msgstr ""
+
 #: src/core/lib/utilities/class-automator-translations.php:120
 msgid "Redirect when instant actions are completed"
 msgstr ""
@@ -5936,17 +5918,6 @@ msgstr ""
 #. translators: Uncanny Automator Pro
 #: src/core/lib/utilities/class-automator-translations.php:195
 msgid "Get %s to unlock delays/schedules"
-msgstr ""
-
-#. translators: Non-personal infinitive verb
-#: src/core/lib/utilities/class-automator-translations.php:203
-#: src/core/views/admin-logs/filters.php:48
-#: src/core/views/admin-logs/filters.php:95
-#: src/core/views/admin-logs/filters.php:142
-#: src/core/views/filters.php:49
-#: src/core/views/filters.php:96
-#: src/core/views/filters.php:143
-msgid "Filter"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:206
@@ -7785,6 +7756,13 @@ msgctxt "Date format"
 msgid "Minute"
 msgstr ""
 
+#. translators: Non-personal infinitive verb
+#: src/core/lib/utilities/class-automator-translations.php:1373
+#: src/core/lib/utilities/class-automator-translations.php:1386
+#: src/core/lib/utilities/class-automator-translations.php:1600
+msgid "Delete"
+msgstr ""
+
 #: src/core/lib/utilities/class-automator-translations.php:1374
 #: src/core/lib/utilities/class-automator-translations.php:1387
 msgctxt "Noun"
@@ -7848,15 +7826,6 @@ msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1403
 msgid "Loop filters decide which users will be included in the loop. Action filters within the block, on the other hand, choose what actions are performed for each individual user."
-msgstr ""
-
-#: src/core/lib/utilities/class-automator-translations.php:1404
-msgid "User loop"
-msgstr ""
-
-#: src/core/lib/utilities/class-automator-translations.php:1406
-#: src/core/lib/utilities/class-automator-translations.php:1529
-msgid "Token loop"
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-translations.php:1407
@@ -8454,8 +8423,6 @@ msgid "first_name"
 msgstr ""
 
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:226
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:98
-#: src/integrations/stripe/triggers/product-refunded.php:93
 #: src/integrations/stripe/triggers/subcription-cancelled.php:97
 #: src/integrations/stripe/triggers/subcription-created.php:98
 #: src/integrations/stripe/triggers/subcription-paid.php:98
@@ -8653,6 +8620,21 @@ msgstr ""
 #. translators: %d: Recipe ID
 #: src/core/services/recipe/structure.php:159
 msgid "No recipe found with ID: %d"
+msgstr ""
+
+#: src/core/services/recipe/structure/triggers/trigger/tokens.php:198
+msgctxt "Trigger"
+msgid "Trigger ID"
+msgstr ""
+
+#: src/core/services/recipe/structure/triggers/trigger/tokens.php:203
+msgctxt "Trigger"
+msgid "Trigger title"
+msgstr ""
+
+#: src/core/services/recipe/structure/triggers/trigger/tokens.php:208
+msgctxt "Trigger"
+msgid "Trigger completion date"
 msgstr ""
 
 #: src/core/services/rest/endpoint/log-endpoint.php:109
@@ -10943,6 +10925,7 @@ msgstr ""
 #: src/integrations/aweber/settings/settings-aweber.php:127
 #: src/integrations/aweber/settings/settings-aweber.php:132
 #: src/integrations/bitly/settings/settings-bitly.php:119
+#: src/integrations/bluesky/settings/bluesky-settings.php:269
 #: src/integrations/brevo/settings/settings-brevo.php:138
 #: src/integrations/brevo/settings/settings-brevo.php:141
 #: src/integrations/brevo/settings/settings-brevo.php:144
@@ -11195,6 +11178,7 @@ msgstr ""
 #: src/integrations/active-campaign/settings/view-active-campaign.php:291
 #: src/integrations/aweber/settings/settings-aweber.php:200
 #: src/integrations/bitly/settings/settings-bitly.php:222
+#: src/integrations/bluesky/settings/bluesky-settings.php:411
 #: src/integrations/brevo/settings/settings-brevo.php:265
 #: src/integrations/campaign-monitor/settings/settings-campaign-monitor.php:249
 #: src/integrations/clickup/settings/view-clickup.php:128
@@ -11408,105 +11392,110 @@ msgstr ""
 msgid "Any type"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:50
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:138
-#: src/integrations/easy-affiliate/tokens/esaf-tokens.php:96
-#: src/integrations/membermouse/helpers/membermouse-helpers.php:379
-#: src/integrations/slicewp/helpers/slicewp-helpers.php:43
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:59
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:147
+msgctxt "AffiliateWP token"
 msgid "Affiliate ID"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:56
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:144
-#: src/integrations/slicewp/helpers/slicewp-helpers.php:83
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:65
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:153
+msgctxt "AffiliateWP token"
 msgid "Affiliate URL"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:62
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:150
-#: src/integrations/easy-affiliate/tokens/esaf-tokens.php:120
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:71
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:159
+msgctxt "AffiliateWP token"
 msgid "Affiliate status"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:68
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:156
-#: src/integrations/restrict-content/actions/restrict-content-add-membership-level.php:68
-#: src/integrations/slicewp/helpers/slicewp-helpers.php:58
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:77
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:165
+msgctxt "AffiliateWP token"
 msgid "Registration date"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:74
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:162
-#: src/integrations/slicewp/actions/slicewp-create-affiliate.php:45
-#: src/integrations/slicewp/helpers/slicewp-helpers.php:68
-#: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:141
-#: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:272
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:83
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:171
+msgctxt "AffiliateWP token"
 msgid "Website"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:80
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:168
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:89
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:177
+msgctxt "AffiliateWP token"
 msgid "Referral rate type"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:86
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:174
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:95
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:183
+msgctxt "AffiliateWP token"
 msgid "Referral rate"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:92
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:180
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:101
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:189
+msgctxt "AffiliateWP token"
 msgid "Dynamic coupon"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:98
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:186
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:107
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:195
+msgctxt "AffiliateWP token"
 msgid "Account email"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:104
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:192
-#: src/integrations/slicewp/actions/slicewp-create-affiliate.php:38
-#: src/integrations/slicewp/helpers/slicewp-helpers.php:63
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:113
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:201
+msgctxt "AffiliateWP token"
 msgid "Payment email"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:110
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:198
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:119
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:207
+msgctxt "AffiliateWP token"
 msgid "Promotion methods"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:116
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:204
-#: src/integrations/easy-affiliate/tokens/esaf-tokens.php:174
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:125
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:213
+msgctxt "AffiliateWP token"
 msgid "Affiliate notes"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:210
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:219
+msgctxt "AffiliateWP token"
 msgid "Referral amount"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:216
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:225
+msgctxt "AffiliateWP token"
 msgid "Referral date"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:222
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:231
+msgctxt "AffiliateWP token"
 msgid "Referral description"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:228
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:237
+msgctxt "AffiliateWP token"
 msgid "Referral reference"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:234
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:243
+msgctxt "AffiliateWP token"
 msgid "Referral context"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:240
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:249
+msgctxt "AffiliateWP token"
 msgid "Referral custom"
 msgstr ""
 
-#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:246
+#: src/integrations/affiliate-wp/tokens/affwp-tokens.php:255
+msgctxt "AffiliateWP token"
 msgid "Referral status"
 msgstr ""
 
@@ -11675,7 +11664,6 @@ msgstr ""
 #: src/integrations/fluent-support/triggers/flsupport-anon-ticket-opened.php:78
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:111
 #: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:89
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:87
 #: src/integrations/helpscout/triggers/hs-note-added.php:88
 #: src/integrations/helpscout/triggers/hs-rating-received.php:84
 #: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:51
@@ -12551,6 +12539,242 @@ msgctxt "Bitly"
 msgid "Account email: %1$s"
 msgstr ""
 
+#. translators: the text "a post" placeholder.
+#: src/integrations/bluesky/actions/bluesky-create-post.php:42
+msgctxt "Bluesky"
+msgid "Create {{a post:%1$s}} on Bluesky"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:46
+msgctxt "Bluesky"
+msgid "Create {{a post}} on Bluesky"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:59
+msgctxt "Bluesky"
+msgid "Post"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:62
+msgctxt "Bluesky"
+msgid "Messages posted to Bluesky have a 300 character limit. URLs count as 20 characters regardless of length, and URL protocols (http://, https://) are not counted. You may use links (e.g. https://example.com), mentions (e.g. @user.bsky.social), and hashtags (e.g. #WordPress). HTML is not supported."
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:74
+msgctxt "Bluesky"
+msgid "Media embed"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:80
+msgctxt "Bluesky"
+msgid "None"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:84
+msgctxt "Bluesky"
+msgid "Upload media"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:88
+#: src/integrations/bluesky/actions/bluesky-create-post.php:139
+msgctxt "Bluesky"
+msgid "External media"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:92
+#: src/integrations/bluesky/actions/bluesky-create-post.php:152
+msgctxt "Bluesky"
+msgid "Website"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:118
+msgctxt "Bluesky"
+msgid "Uploaded media"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:119
+msgctxt "Bluesky"
+msgid "Upload / select a media file to embed in the post."
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:142
+msgctxt "Bluesky"
+msgid "Enter the URL of the media you want to embed in the post."
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:155
+msgctxt "Bluesky"
+msgid "Enter the URL of a website to create a preview embed (Social card)."
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:177
+msgctxt "Bluesky"
+msgid "Post URL"
+msgstr ""
+
+#: src/integrations/bluesky/actions/bluesky-create-post.php:219
+msgctxt "Bluesky"
+msgid "The post was not created. Please try again."
+msgstr ""
+
+#. translators: %s: Settings page URL.
+#: src/integrations/bluesky/helpers/bluesky-api.php:118
+msgctxt "BlueSky"
+msgid "Please [reconnect your Bluesky account](%s)."
+msgstr ""
+
+#. translators: 1: Video title 2: Author name 3: Provider name
+#: src/integrations/bluesky/helpers/bluesky-media.php:180
+msgctxt "Bluesky"
+msgid "\"%1$s\" by %2$s on %3$s"
+msgstr ""
+
+#: src/integrations/bluesky/helpers/bluesky-post-record.php:115
+msgctxt "Bluesky"
+msgid "Invalid media embed"
+msgstr ""
+
+#. translators: Minimum text length
+#: src/integrations/bluesky/helpers/bluesky-post-record.php:340
+msgctxt "Bluesky"
+msgid "Post text cannot be shorter than %d characters"
+msgstr ""
+
+#. translators: Maximum text length
+#: src/integrations/bluesky/helpers/bluesky-post-record.php:350
+msgctxt "Bluesky"
+msgid "Post text cannot be longer than %d characters"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:113
+#: src/integrations/bluesky/settings/bluesky-settings.php:154
+msgctxt "Bluesky"
+msgid "Something went wrong"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:114
+msgctxt "Bluesky"
+msgid "Please enter a valid username and app password."
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:134
+msgctxt "Bluesky"
+msgid "Invalid response please refresh the page and try again."
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:142
+msgctxt "Bluesky"
+msgid "Connected"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:143
+msgctxt "Bluesky"
+msgid "The integration has been connected successfully."
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:237
+msgctxt "Bluesky"
+msgid "Uncanny Automator only supports connecting to one Bluesky account at a time."
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:251
+msgctxt "Bluesky"
+msgid "Connect Uncanny Automator to Bluesky"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:255
+msgctxt "Bluesky"
+msgid "Connect Uncanny Automator to Bluesky to streamline automations to post to your account"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:260
+msgctxt "Bluesky"
+msgid "Activating this integration will enable the following for use in your recipes:"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:272
+msgctxt "Bluesky"
+msgid "Create a post on Bluesky"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:276
+msgctxt "Bluesky"
+msgid "Setup instructions"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:277
+msgctxt "Bluesky"
+msgid "To obtain your Bluesky App Password, follow these steps:"
+msgstr ""
+
+#. translators: %s: HTML link to Bluesky app passwords page
+#: src/integrations/bluesky/settings/bluesky-settings.php:284
+msgctxt "Bluesky"
+msgid "Visit your %s in your Bluesky account or navigate to Settings > Security > App Passwords"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:291
+msgctxt "Bluesky"
+msgid "App Password settings"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:296
+msgctxt "Bluesky"
+msgid "Click on the \"Add App Password\" button"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:297
+msgctxt "Bluesky"
+msgid "Give your password a unique name such as \"Automator\""
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:298
+msgctxt "Bluesky"
+msgid "Click \"Next\""
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:299
+msgctxt "Bluesky"
+msgid "Copy your new password using the copy button and paste it directly into the App Password field below"
+msgstr ""
+
+#. translators: %1$s: Note text with strong tags
+#: src/integrations/bluesky/settings/bluesky-settings.php:306
+msgctxt "Bluesky"
+msgid "%1$sNote:%2$s Save this password somewhere safe as it will not be shown again. You will need to create a new App Password if you need to reconnect in the future."
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:317
+msgctxt "Bluesky"
+msgid "Username"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:318
+msgctxt "Bluesky"
+msgid "example.bsky.social"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:326
+msgctxt "Bluesky"
+msgid "App Password"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:348
+msgctxt "Bluesky"
+msgid "Connect Bluesky account"
+msgstr ""
+
+#: src/integrations/bluesky/settings/bluesky-settings.php:363
+msgctxt "Bluesky"
+msgid "Avatar"
+msgstr ""
+
+#. translators: 1. Email address
+#: src/integrations/bluesky/settings/bluesky-settings.php:378
+msgctxt "Bluesky"
+msgid "Account email: %1$s"
+msgstr ""
+
 #. translators: %1$s Contact Email, %2$s List
 #: src/integrations/brevo/actions/brevo-add-contact-to-list.php:32
 msgctxt "Brevo"
@@ -12739,54 +12963,54 @@ msgid "Invalid API Key : "
 msgstr ""
 
 #: src/integrations/brevo/helpers/brevo-helpers.php:268
-#: src/integrations/brevo/helpers/brevo-helpers.php:694
+#: src/integrations/brevo/helpers/brevo-helpers.php:698
 msgctxt "Brevo"
 msgid "Brevo API Error"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:356
+#: src/integrations/brevo/helpers/brevo-helpers.php:360
 msgctxt "Brevo"
 msgid "Contact with that email already exists"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:418
+#: src/integrations/brevo/helpers/brevo-helpers.php:422
 msgctxt "Brevo API"
 msgid "No attributes were returned from the API"
 msgstr ""
 
 #. translators: %s - type of item templates or lists
-#: src/integrations/brevo/helpers/brevo-helpers.php:600
+#: src/integrations/brevo/helpers/brevo-helpers.php:604
 msgctxt "Brevo API"
 msgid "No %s were found"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:641
+#: src/integrations/brevo/helpers/brevo-helpers.php:645
 msgctxt "Brevo"
 msgid "Invalid request"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:646
+#: src/integrations/brevo/helpers/brevo-helpers.php:650
 msgctxt "Brevo"
 msgid "Invalid key"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:666
+#: src/integrations/brevo/helpers/brevo-helpers.php:670
 msgctxt "Brevo"
 msgid "No data returned from the API"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:715
+#: src/integrations/brevo/helpers/brevo-helpers.php:719
 msgctxt "Brevo"
 msgid "Missing email"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:721
+#: src/integrations/brevo/helpers/brevo-helpers.php:725
 msgctxt "Brevo"
 msgid "Invalid email"
 msgstr ""
 
-#: src/integrations/brevo/helpers/brevo-helpers.php:737
-#: src/integrations/brevo/helpers/brevo-helpers.php:743
+#: src/integrations/brevo/helpers/brevo-helpers.php:741
+#: src/integrations/brevo/helpers/brevo-helpers.php:747
 msgctxt "Brevo"
 msgid "List ID is required."
 msgstr ""
@@ -12965,7 +13189,6 @@ msgstr ""
 #: src/integrations/thrive-theme/helpers/thrive-theme-helpers.php:94
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:119
 #: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:102
-#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:114
 #: src/integrations/wpforms/helpers/wpforms-helpers.php:112
 #: src/integrations/ws-form-lite/tokens/ws-form-lite-tokens.php:75
 msgid "Form ID"
@@ -12992,7 +13215,6 @@ msgstr ""
 #: src/integrations/thrive-theme/helpers/thrive-theme-helpers.php:99
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:118
 #: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:101
-#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:113
 #: src/integrations/wpforms/helpers/wpforms-helpers.php:111
 #: src/integrations/ws-form-lite/tokens/ws-form-lite-tokens.php:81
 msgid "Form title"
@@ -13309,7 +13531,6 @@ msgstr ""
 #: src/integrations/ultimate-member/triggers/um-userlogsin.php:65
 #: src/integrations/ultimate-member/triggers/um-userregister.php:69
 #: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:65
-#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:85
 #: src/integrations/wp-user-manager/helpers/wp-user-manager-helpers.php:64
 #: src/integrations/wp-user-manager/triggers/wpum-userregister.php:62
 #: src/integrations/wpforms/helpers/wpforms-helpers.php:78
@@ -14418,7 +14639,6 @@ msgid "Priority"
 msgstr ""
 
 #: src/integrations/common/tokens/current-blog-id.php:41
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:234
 msgid "N/A"
 msgstr ""
 
@@ -15616,7 +15836,6 @@ msgstr ""
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:74
 #: src/integrations/ultimate-member/triggers/um-userlogsin.php:67
 #: src/integrations/ultimate-member/triggers/um-userregister.php:70
-#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:103
 #: src/integrations/wp-user-manager/helpers/wp-user-manager-helpers.php:75
 #: src/integrations/ws-form-lite/helpers/ws-form-lite-helpers.php:39
 msgid "Any form"
@@ -15706,12 +15925,9 @@ msgstr ""
 msgid "Add field"
 msgstr ""
 
-#. translators: Non-personal infinitive verb
 #: src/integrations/drip/actions/drip-create-subscriber.php:103
 #: src/integrations/hubspot/actions/hubspot-adduser.php:95
 #: src/integrations/hubspot/actions/hubspot-createcontact.php:104
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:126
-#: src/integrations/stripe/triggers/product-refunded.php:121
 msgid "Remove field"
 msgstr ""
 
@@ -15867,6 +16083,12 @@ msgstr ""
 msgid "Affiliate"
 msgstr ""
 
+#: src/integrations/easy-affiliate/tokens/esaf-tokens.php:96
+#: src/integrations/membermouse/helpers/membermouse-helpers.php:379
+#: src/integrations/slicewp/helpers/slicewp-helpers.php:43
+msgid "Affiliate ID"
+msgstr ""
+
 #: src/integrations/easy-affiliate/tokens/esaf-tokens.php:102
 msgid "Affiliate username"
 msgstr ""
@@ -15879,6 +16101,10 @@ msgstr ""
 #: src/integrations/easy-affiliate/tokens/esaf-tokens.php:114
 #: src/integrations/slicewp/helpers/slicewp-helpers.php:53
 msgid "Affiliate name"
+msgstr ""
+
+#: src/integrations/easy-affiliate/tokens/esaf-tokens.php:120
+msgid "Affiliate status"
 msgstr ""
 
 #: src/integrations/easy-affiliate/tokens/esaf-tokens.php:126
@@ -15911,6 +16137,10 @@ msgstr ""
 
 #: src/integrations/easy-affiliate/tokens/esaf-tokens.php:168
 msgid "Affiliate referrer"
+msgstr ""
+
+#: src/integrations/easy-affiliate/tokens/esaf-tokens.php:174
+msgid "Affiliate notes"
 msgstr ""
 
 #: src/integrations/easy-affiliate/tokens/esaf-tokens.php:207
@@ -16872,6 +17102,177 @@ msgstr ""
 #: src/integrations/facebook/settings/view-facebook.php:142
 #: src/integrations/instagram/settings/view-instagram.php:145
 msgid "ID: %1$d"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:104
+msgctxt "Facebook_Lead_Ads"
+msgid "Connection established"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:105
+msgctxt "Facebook_Lead_Ads"
+msgid "You are successfully connected."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:121
+msgctxt "Facebook_Lead_Ads"
+msgid "An error exception has occurred"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-bottom-left.php:10
+msgctxt "Facebook Lead Ads"
+msgid "Connect Facebook Lead Ads account"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-bottom-right.php:9
+msgctxt "Facebook Lead Ads"
+msgid "Disconnect"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:15
+msgctxt "Facebook_Lead_Ads"
+msgid "Connect Uncanny Automator to Facebook Lead Ads"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:20
+msgctxt "Facebook_Lead_Ads"
+msgid "Connect Uncanny Automator with Facebook Lead Ads to automate workflows every time a new lead is created. Instantly trigger actions across your favorite apps, saving time and ensuring you never miss a chance to engage with your audience."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:31
+msgctxt "Facebook_Lead_Ads"
+msgid "Activating this integration will enable the following for use in your recipes:"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:43
+msgctxt "Facebook Lead Ads"
+msgid "Trigger:"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:44
+msgctxt "Facebook Lead Ads"
+msgid "A lead is created"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:60
+msgctxt "Facebook Lead Ads"
+msgid "Name"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:61
+msgctxt "Facebook Lead Ads"
+msgid "ID"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:62
+msgctxt "Facebook Lead Ads"
+msgid "Status"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:63
+msgctxt "Facebook Lead Ads"
+msgid "Actions"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:74
+msgctxt "Facebook Lead Ads"
+msgid "Verifying..."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:99
+msgctxt "Facebook Lead Ads"
+msgid "The following pages were selected during the OAuth process. Disconnect and reconnect if there are any pages missing and make sure those pages are selected."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:130
+msgctxt "Facebook Lead Ads"
+msgid "Test your webhook connection"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:134
+msgctxt "Facebook Lead Ads"
+msgid "Click the button below to test your website’s accessibility and confirm API support for your WordPress site."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:141
+msgctxt "Facebook Lead Ads"
+msgid "Test API connection"
+msgstr ""
+
+#. translators: Trigger sentence
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:39
+msgctxt "Facebook Lead Ads"
+msgid "A new lead from {{Page:%1$s}} is created"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:45
+msgctxt "Facebook Lead Ads"
+msgid "{{A new lead}} is created"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:63
+msgctxt "Facebook Lead Ads"
+msgid "Page"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:72
+msgctxt "Facebook Lead Ads"
+msgid "Form"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:73
+msgctxt "Facebook Lead Ads"
+msgid "Updating a form in Facebook generates a new form ID, requiring you to reselect it from the dropdown."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:101
+msgctxt "Facebook Lead Ads"
+msgid "Raw payload (JSON)"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:106
+msgctxt "Facebook Lead Ads"
+msgid "Created time (timestamp)"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:111
+msgctxt "Facebook Lead Ads"
+msgid "Form ID"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:116
+msgctxt "Facebook Lead Ads"
+msgid "Lead Gen ID"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:121
+msgctxt "Facebook Lead Ads"
+msgid "Page ID"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/utilities/connections-manager.php:91
+msgctxt "Facebook Lead Ads"
+msgid "The provided URL is invalid."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/utilities/connections-manager.php:121
+msgctxt "Facebook Lead Ads"
+msgid "The provided page ID is invalid."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/utilities/page-connection-verifier.php:121
+msgctxt "Facebook Lead Ads"
+msgid "Ready"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/utilities/rest-api.php:112
+msgctxt "Facebook Lead Ads"
+msgid "No data provided."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/utilities/rest-api.php:138
+msgctxt "Facebook Lead Ads"
+msgid "Data processed successfully."
 msgstr ""
 
 #. translators: Action - WordPress
@@ -19210,7 +19611,6 @@ msgstr ""
 
 #: src/integrations/helpscout/actions/helpscout-conversation-create.php:57
 #: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:86
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:83
 #: src/integrations/helpscout/triggers/hs-note-added.php:85
 #: src/integrations/helpscout/triggers/hs-rating-received.php:86
 msgid "Conversation URL"
@@ -19349,10 +19749,7 @@ msgstr ""
 msgid "A note is added to a conversation"
 msgstr ""
 
-#. Translators: Trigger sentence
 #: src/integrations/helpscout/settings/view-helpscout.php:165
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:71
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:77
 msgid "A conversation's tags are updated"
 msgstr ""
 
@@ -19379,13 +19776,11 @@ msgid "{{A conversation}} in {{a mailbox}} receives a reply from a customer"
 msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:87
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:86
 #: src/integrations/helpscout/triggers/hs-note-added.php:86
 msgid "Conversation title"
 msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:88
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:88
 #: src/integrations/helpscout/triggers/hs-note-added.php:87
 #: src/integrations/helpscout/triggers/hs-rating-received.php:83
 #: src/integrations/woocommerce-bookings/helpers/wc-bookings-helpers.php:56
@@ -19393,7 +19788,6 @@ msgid "Customer name"
 msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-conversation-customer-reply-received.php:90
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:85
 #: src/integrations/helpscout/triggers/hs-note-added.php:89
 msgid "Conversation status"
 msgstr ""
@@ -19402,25 +19796,65 @@ msgstr ""
 msgid "Tag search query link"
 msgstr ""
 
-#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:82
-msgid "Assigned to"
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:74
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:79
+msgctxt "Help Scout"
+msgid "A conversation's tags are updated"
 msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:84
+msgctxt "Help Scout"
+msgid "Assigned to"
+msgstr ""
+
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:85
+msgctxt "Help Scout"
+msgid "Conversation URL"
+msgstr ""
+
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:86
+msgctxt "Help Scout"
 msgid "Conversation created on"
 msgstr ""
 
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:87
+msgctxt "Help Scout"
+msgid "Conversation status"
+msgstr ""
+
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:88
+msgctxt "Help Scout"
+msgid "Conversation title"
+msgstr ""
+
 #: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:89
-msgid "Customer waiting since"
+msgctxt "Help Scout"
+msgid "Customer email"
 msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:90
-msgid "Folder ID"
+msgctxt "Help Scout"
+msgid "Customer name"
 msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:91
-#: src/integrations/helpscout/triggers/hs-rating-received.php:93
+msgctxt "Help Scout"
+msgid "Customer waiting since"
+msgstr ""
+
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:92
+msgctxt "Help Scout"
+msgid "Folder ID"
+msgstr ""
+
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:93
+msgctxt "Help Scout"
 msgid "Mailbox ID"
+msgstr ""
+
+#: src/integrations/helpscout/triggers/hs-conversation-tag-updated.php:94
+msgctxt "Help Scout"
+msgid "Tags"
 msgstr ""
 
 #. Translators: Trigger sentence
@@ -19475,6 +19909,10 @@ msgstr ""
 #: src/integrations/helpscout/triggers/hs-rating-received.php:92
 #: src/integrations/peepso/tokens/peepso-tokens.php:151
 msgid "User last name"
+msgstr ""
+
+#: src/integrations/helpscout/triggers/hs-rating-received.php:93
+msgid "Mailbox ID"
 msgstr ""
 
 #: src/integrations/helpscout/triggers/hs-rating-received.php:94
@@ -21263,8 +21701,6 @@ msgstr ""
 #: src/integrations/memberpress-courses/actions/mpc-marklessondone.php:79
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:142
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:94
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:94
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:95
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:130
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:101
 #: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:63
@@ -21291,7 +21727,6 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:73
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:162
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:71
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:242
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:156
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:74
 #: src/integrations/uncanny-toolkit/tokens/ut-tokens.php:154
@@ -21311,7 +21746,6 @@ msgstr ""
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:111
 #: src/integrations/memberpress-courses/actions/mpc-marklessondone.php:91
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:106
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:105
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:81
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:113
 msgid "Lesson"
@@ -21328,8 +21762,6 @@ msgstr ""
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:140
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:80
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:79
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:274
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:108
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:107
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:76
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:92
@@ -21601,7 +22033,6 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:72
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:161
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:70
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:246
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:155
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:68
 #: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:86
@@ -21621,7 +22052,6 @@ msgstr ""
 #: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:74
 #: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:163
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:72
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:243
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:157
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:80
 #: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:88
@@ -21636,7 +22066,6 @@ msgstr ""
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:134
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:79
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:78
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:276
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:106
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:75
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:86
@@ -21650,7 +22079,6 @@ msgstr ""
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:136
 #: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:81
 #: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:80
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:275
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:108
 #: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:77
 #: src/integrations/uncanny-tincanny/tokens/uotc-tokens.php:98
@@ -22618,7 +23046,6 @@ msgid "Course category"
 msgstr ""
 
 #: src/integrations/masterstudy-lms/actions/masterstudy-enroll-user-in-course.php:74
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:244
 msgid "Course author"
 msgstr ""
 
@@ -23036,7 +23463,6 @@ msgstr ""
 #: src/integrations/membermouse/helpers/membermouse-helpers.php:67
 #: src/integrations/membermouse/helpers/membermouse-helpers.php:319
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:58
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:83
 msgid "Billing address"
 msgstr ""
 
@@ -23050,7 +23476,6 @@ msgstr ""
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:78
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:102
 #: src/integrations/woocommerce/tokens/wc-tokens.php:35
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:89
 msgid "Billing city"
 msgstr ""
 
@@ -23060,7 +23485,6 @@ msgstr ""
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:79
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:103
 #: src/integrations/woocommerce/tokens/wc-tokens.php:36
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:95
 msgid "Billing state"
 msgstr ""
 
@@ -23074,7 +23498,6 @@ msgstr ""
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:75
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:99
 #: src/integrations/woocommerce/tokens/wc-tokens.php:31
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:107
 msgid "Billing country"
 msgstr ""
 
@@ -25291,6 +25714,11 @@ msgid "Leave empty to use expiry settings from the membership level, or type a s
 msgstr ""
 
 #: src/integrations/restrict-content/actions/restrict-content-add-membership-level.php:68
+#: src/integrations/slicewp/helpers/slicewp-helpers.php:58
+msgid "Registration date"
+msgstr ""
+
+#: src/integrations/restrict-content/actions/restrict-content-add-membership-level.php:68
 msgid "Type a specific date in the format YYYY-MM-DD"
 msgstr ""
 
@@ -25858,6 +26286,18 @@ msgctxt "SliceWP"
 msgid "Add {{a new affiliate}}"
 msgstr ""
 
+#: src/integrations/slicewp/actions/slicewp-create-affiliate.php:38
+#: src/integrations/slicewp/helpers/slicewp-helpers.php:63
+msgid "Payment email"
+msgstr ""
+
+#: src/integrations/slicewp/actions/slicewp-create-affiliate.php:45
+#: src/integrations/slicewp/helpers/slicewp-helpers.php:68
+#: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:141
+#: src/integrations/wp-job-manager/tokens/wpjm-tokens.php:272
+msgid "Website"
+msgstr ""
+
 #: src/integrations/slicewp/actions/slicewp-create-affiliate.php:52
 #: src/integrations/slicewp/helpers/slicewp-helpers.php:73
 msgid "How will you promote us?"
@@ -25865,6 +26305,10 @@ msgstr ""
 
 #: src/integrations/slicewp/actions/slicewp-create-affiliate.php:65
 msgid "Send welcome email after adding an affiliate?"
+msgstr ""
+
+#: src/integrations/slicewp/helpers/slicewp-helpers.php:83
+msgid "Affiliate URL"
 msgstr ""
 
 #: src/integrations/slicewp/triggers/slicewp-affilaite-awaiting-approval.php:24
@@ -26084,7 +26528,7 @@ msgstr ""
 #: src/integrations/stripe/deprecated/charge-refunded.php:92
 #: src/integrations/stripe/deprecated/payment-completed.php:92
 #: src/integrations/stripe/deprecated/subscription-cancelled.php:104
-#: src/integrations/stripe/tokens/stripe-tokens.php:17
+#: src/integrations/stripe/tokens/stripe-tokens.php:22
 msgctxt "Stripe"
 msgid "Customer ID"
 msgstr ""
@@ -26112,27 +26556,27 @@ msgid "Create a payment link for {{a product}}"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-payment-link.php:42
+msgctxt "Stripe"
 msgid "Items"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-payment-link.php:47
+msgctxt "Stripe"
 msgid "Product and price"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-payment-link.php:56
-#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:93
-#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:95
-#: src/integrations/wholesale-suite/tokens/wss-tokens.php:664
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1006
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:119
+msgctxt "Stripe"
 msgid "Quantity"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-payment-link.php:63
+msgctxt "Stripe"
 msgid "Add product"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-payment-link.php:64
+msgctxt "Stripe"
 msgid "Remove product"
 msgstr ""
 
@@ -26172,10 +26616,11 @@ msgid "e.g. custom_text.after_submit.message"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-payment-link.php:193
+msgctxt "Stripe"
 msgid "Link"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:268
+#: src/integrations/stripe/actions/create-payment-link.php:270
 msgctxt "Stripe"
 msgid "Link could not be created"
 msgstr ""
@@ -26257,14 +26702,14 @@ msgid "A charge is refunded"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/charge-refunded.php:68
-#: src/integrations/stripe/tokens/stripe-tokens.php:457
+#: src/integrations/stripe/tokens/stripe-tokens.php:503
 msgctxt "Stripe"
 msgid "Charge ID"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/charge-refunded.php:104
 #: src/integrations/stripe/deprecated/payment-completed.php:98
-#: src/integrations/stripe/tokens/stripe-tokens.php:426
+#: src/integrations/stripe/tokens/stripe-tokens.php:467
 msgctxt "Stripe"
 msgid "Invoice ID"
 msgstr ""
@@ -26289,31 +26734,31 @@ msgid "Email"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:70
-#: src/integrations/stripe/tokens/stripe-tokens.php:29
+#: src/integrations/stripe/tokens/stripe-tokens.php:34
 msgctxt "Stripe"
 msgid "Address city"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:76
-#: src/integrations/stripe/tokens/stripe-tokens.php:35
+#: src/integrations/stripe/tokens/stripe-tokens.php:40
 msgctxt "Stripe"
 msgid "Address line 1"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:82
-#: src/integrations/stripe/tokens/stripe-tokens.php:41
+#: src/integrations/stripe/tokens/stripe-tokens.php:46
 msgctxt "Stripe"
 msgid "Address line 2"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:88
-#: src/integrations/stripe/tokens/stripe-tokens.php:47
+#: src/integrations/stripe/tokens/stripe-tokens.php:52
 msgctxt "Stripe"
 msgid "Address postal code"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:94
-#: src/integrations/stripe/tokens/stripe-tokens.php:53
+#: src/integrations/stripe/tokens/stripe-tokens.php:58
 msgctxt "Stripe"
 msgid "Address state"
 msgstr ""
@@ -26355,49 +26800,49 @@ msgid "Phone"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:154
-#: src/integrations/stripe/tokens/stripe-tokens.php:103
+#: src/integrations/stripe/tokens/stripe-tokens.php:113
 msgctxt "Stripe"
 msgid "Shipping name"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:160
-#: src/integrations/stripe/tokens/stripe-tokens.php:109
+#: src/integrations/stripe/tokens/stripe-tokens.php:119
 msgctxt "Stripe"
 msgid "Shipping address line 1"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:166
-#: src/integrations/stripe/tokens/stripe-tokens.php:115
+#: src/integrations/stripe/tokens/stripe-tokens.php:125
 msgctxt "Stripe"
 msgid "Shipping address line 2"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:172
-#: src/integrations/stripe/tokens/stripe-tokens.php:121
+#: src/integrations/stripe/tokens/stripe-tokens.php:131
 msgctxt "Stripe"
 msgid "Shipping address city"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:178
-#: src/integrations/stripe/tokens/stripe-tokens.php:127
+#: src/integrations/stripe/tokens/stripe-tokens.php:137
 msgctxt "Stripe"
 msgid "Shipping address postal code"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:184
-#: src/integrations/stripe/tokens/stripe-tokens.php:133
+#: src/integrations/stripe/tokens/stripe-tokens.php:143
 msgctxt "Stripe"
 msgid "Shipping address state"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:190
-#: src/integrations/stripe/tokens/stripe-tokens.php:139
+#: src/integrations/stripe/tokens/stripe-tokens.php:149
 msgctxt "Stripe"
 msgid "Shipping phone"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/customer-created.php:196
-#: src/integrations/stripe/tokens/stripe-tokens.php:89
+#: src/integrations/stripe/tokens/stripe-tokens.php:94
 msgctxt "Stripe"
 msgid "Tax exempt"
 msgstr ""
@@ -26420,7 +26865,7 @@ msgid "A subscription is cancelled"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/subscription-cancelled.php:74
-#: src/integrations/stripe/tokens/stripe-tokens.php:202
+#: src/integrations/stripe/tokens/stripe-tokens.php:221
 msgctxt "Stripe"
 msgid "Price ID"
 msgstr ""
@@ -26431,8 +26876,8 @@ msgid "Plan name"
 msgstr ""
 
 #: src/integrations/stripe/deprecated/subscription-cancelled.php:98
-#: src/integrations/stripe/tokens/stripe-tokens.php:269
-#: src/integrations/stripe/triggers/product-refunded.php:149
+#: src/integrations/stripe/tokens/stripe-tokens.php:293
+#: src/integrations/stripe/triggers/product-refunded.php:153
 msgctxt "Stripe"
 msgid "Product ID"
 msgstr ""
@@ -26445,6 +26890,11 @@ msgstr ""
 #: src/integrations/stripe/deprecated/subscription-cancelled.php:116
 msgctxt "Stripe"
 msgid "Latest invoice"
+msgstr ""
+
+#: src/integrations/stripe/helpers/stripe-helpers.php:40
+msgctxt "Stripe"
+msgid "Stripe is not connected"
 msgstr ""
 
 #: src/integrations/stripe/settings/stripe-settings.php:92
@@ -26599,290 +27049,293 @@ msgid "Account ID: %1$s"
 msgstr ""
 
 #: src/integrations/stripe/stripe-integration.php:25
+msgctxt "Stripe"
 msgid "Test mode"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:23
+#: src/integrations/stripe/tokens/stripe-tokens.php:28
 msgctxt "Stripe"
 msgid "Customer email"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:59
+#: src/integrations/stripe/tokens/stripe-tokens.php:64
 msgctxt "Stripe"
 msgid "Address country"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:65
+#: src/integrations/stripe/tokens/stripe-tokens.php:70
 msgctxt "Stripe"
 msgid "Customer balance"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:71
+#: src/integrations/stripe/tokens/stripe-tokens.php:76
 msgctxt "Stripe"
 msgid "Customer date and time created"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:77
+#: src/integrations/stripe/tokens/stripe-tokens.php:82
 msgctxt "Stripe"
 msgid "Customer name"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:83
+#: src/integrations/stripe/tokens/stripe-tokens.php:88
 msgctxt "Stripe"
 msgid "Customer phone"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:153
+#: src/integrations/stripe/tokens/stripe-tokens.php:167
 msgctxt "Stripe"
 msgid "Item quantity"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:159
+#: src/integrations/stripe/tokens/stripe-tokens.php:173
 msgctxt "Stripe"
 msgid "Item discount amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:165
+#: src/integrations/stripe/tokens/stripe-tokens.php:179
 msgctxt "Stripe"
 msgid "Item subtotal amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:171
+#: src/integrations/stripe/tokens/stripe-tokens.php:185
 msgctxt "Stripe"
 msgid "Item tax amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:177
+#: src/integrations/stripe/tokens/stripe-tokens.php:191
 msgctxt "Stripe"
 msgid "Item total amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:183
+#: src/integrations/stripe/tokens/stripe-tokens.php:197
 msgctxt "Stripe"
 msgid "Item currency"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:189
+#: src/integrations/stripe/tokens/stripe-tokens.php:203
 msgctxt "Stripe"
 msgid "Item description"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:208
+#: src/integrations/stripe/tokens/stripe-tokens.php:227
 msgctxt "Stripe"
 msgid "Price type"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:214
+#: src/integrations/stripe/tokens/stripe-tokens.php:233
 msgctxt "Stripe"
 msgid "Price billing scheme"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:220
+#: src/integrations/stripe/tokens/stripe-tokens.php:239
 msgctxt "Stripe"
 msgid "Price created"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:226
+#: src/integrations/stripe/tokens/stripe-tokens.php:245
 msgctxt "Stripe"
 msgid "Price currency"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:232
+#: src/integrations/stripe/tokens/stripe-tokens.php:251
 msgctxt "Stripe"
 msgid "Price unit amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:238
+#: src/integrations/stripe/tokens/stripe-tokens.php:257
 msgctxt "Stripe"
 msgid "Price metadata"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:244
+#: src/integrations/stripe/tokens/stripe-tokens.php:263
 msgctxt "Stripe"
 msgid "Price recurring interval"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:250
+#: src/integrations/stripe/tokens/stripe-tokens.php:269
 msgctxt "Stripe"
 msgid "Price recurring interval count"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:256
+#: src/integrations/stripe/tokens/stripe-tokens.php:275
 msgctxt "Stripe"
 msgid "Price recurring trial period days"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:275
+#: src/integrations/stripe/tokens/stripe-tokens.php:299
 msgctxt "Stripe"
 msgid "Product name"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:281
+#: src/integrations/stripe/tokens/stripe-tokens.php:305
 msgctxt "Stripe"
 msgid "Product description"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:287
+#: src/integrations/stripe/tokens/stripe-tokens.php:311
 msgctxt "Stripe"
 msgid "Product created"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:293
+#: src/integrations/stripe/tokens/stripe-tokens.php:317
 msgctxt "Stripe"
 msgid "Product images"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:299
+#: src/integrations/stripe/tokens/stripe-tokens.php:323
 msgctxt "Stripe"
 msgid "Product metadata"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:305
+#: src/integrations/stripe/tokens/stripe-tokens.php:329
 msgctxt "Stripe"
 msgid "Product URL"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:311
+#: src/integrations/stripe/tokens/stripe-tokens.php:335
 msgctxt "Stripe"
 msgid "Product type"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:317
+#: src/integrations/stripe/tokens/stripe-tokens.php:341
 msgctxt "Stripe"
 msgid "Product tax code"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:323
+#: src/integrations/stripe/tokens/stripe-tokens.php:347
 msgctxt "Stripe"
 msgid "Product unit label"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:329
+#: src/integrations/stripe/tokens/stripe-tokens.php:353
 msgctxt "Stripe"
 msgid "Product shippable"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:335
+#: src/integrations/stripe/tokens/stripe-tokens.php:359
 msgctxt "Stripe"
 msgid "Product statement descriptor"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:365
+#: src/integrations/stripe/tokens/stripe-tokens.php:401
 msgctxt "Stripe"
 msgid "Billing email"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:371
+#: src/integrations/stripe/tokens/stripe-tokens.php:407
 msgctxt "Stripe"
 msgid "Billing name"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:377
+#: src/integrations/stripe/tokens/stripe-tokens.php:413
 msgctxt "Stripe"
 msgid "Billing phone"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:383
+#: src/integrations/stripe/tokens/stripe-tokens.php:419
 msgctxt "Stripe"
 msgid "Billing address line 1"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:389
+#: src/integrations/stripe/tokens/stripe-tokens.php:425
 msgctxt "Stripe"
 msgid "Billing address line 2"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:395
+#: src/integrations/stripe/tokens/stripe-tokens.php:431
 msgctxt "Stripe"
 msgid "Billing address city"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:401
+#: src/integrations/stripe/tokens/stripe-tokens.php:437
 msgctxt "Stripe"
 msgid "Billing address state"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:407
+#: src/integrations/stripe/tokens/stripe-tokens.php:443
 msgctxt "Stripe"
 msgid "Billing address country"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:413
+#: src/integrations/stripe/tokens/stripe-tokens.php:449
 msgctxt "Stripe"
 msgid "Billing address postal code"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:432
+#: src/integrations/stripe/tokens/stripe-tokens.php:473
 msgctxt "Stripe"
 msgid "Hosted invoice URL"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:438
+#: src/integrations/stripe/tokens/stripe-tokens.php:479
 msgctxt "Stripe"
 msgid "Invoice PDF URL"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:444
+#: src/integrations/stripe/tokens/stripe-tokens.php:485
 msgctxt "Stripe"
 msgid "Invoice status"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:463
+#: src/integrations/stripe/tokens/stripe-tokens.php:509
 msgctxt "Stripe"
 msgid "Charge currency"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:469
+#: src/integrations/stripe/tokens/stripe-tokens.php:515
 msgctxt "Stripe"
 msgid "Charge description"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:475
+#: src/integrations/stripe/tokens/stripe-tokens.php:521
 msgctxt "Stripe"
 msgid "Charge paymnet method ID"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:481
+#: src/integrations/stripe/tokens/stripe-tokens.php:527
 msgctxt "Stripe"
 msgid "Charge balance trasnaction"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:487
+#: src/integrations/stripe/tokens/stripe-tokens.php:533
 msgctxt "Stripe"
 msgid "Charge amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:493
+#: src/integrations/stripe/tokens/stripe-tokens.php:539
 msgctxt "Stripe"
 msgid "Captured amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:499
+#: src/integrations/stripe/tokens/stripe-tokens.php:545
 msgctxt "Stripe"
 msgid "Refunded amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:505
+#: src/integrations/stripe/tokens/stripe-tokens.php:551
 msgctxt "Stripe"
 msgid "Charge status"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:511
+#: src/integrations/stripe/tokens/stripe-tokens.php:557
 msgctxt "Stripe"
 msgid "Charge receipt URL"
 msgstr ""
 
-#. Translators: Product name
+#. translators: %s is a Stripe product name
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:43
+msgctxt "Stripe"
 msgid "One-time payment for {{a product:%1$s}} is completed"
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:50
+msgctxt "Stripe"
 msgid "One-time payment for {{a product}} is completed"
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:70
-#: src/integrations/stripe/triggers/product-refunded.php:65
+#: src/integrations/stripe/triggers/product-refunded.php:69
 #: src/integrations/stripe/triggers/subcription-cancelled.php:69
 #: src/integrations/stripe/triggers/subcription-created.php:70
 #: src/integrations/stripe/triggers/subcription-paid.php:70
@@ -26892,79 +27345,79 @@ msgid "Any"
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:77
-#: src/integrations/stripe/triggers/product-refunded.php:72
-#: src/integrations/stripe/triggers/subcription-cancelled.php:76
-#: src/integrations/stripe/triggers/subcription-created.php:77
-#: src/integrations/stripe/triggers/subcription-paid.php:77
-#: src/integrations/stripe/triggers/subcription-payment-failed.php:77
-#: src/integrations/wholesale-suite/tokens/wss-tokens.php:665
-#: src/integrations/woocommerce/tokens/wc-tokens.php:1007
+#: src/integrations/stripe/triggers/product-refunded.php:76
+msgctxt "Stripe"
 msgid "Price"
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:87
-#: src/integrations/stripe/triggers/product-refunded.php:82
+#: src/integrations/stripe/triggers/product-refunded.php:86
+msgctxt "Stripe"
 msgid "Extract checkout metadata"
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:94
-#: src/integrations/stripe/triggers/product-refunded.php:89
-#: src/integrations/stripe/triggers/subcription-cancelled.php:93
-#: src/integrations/stripe/triggers/subcription-created.php:94
-#: src/integrations/stripe/triggers/subcription-paid.php:94
-#: src/integrations/stripe/triggers/subcription-payment-failed.php:94
+#: src/integrations/stripe/triggers/product-refunded.php:93
+msgctxt "Stripe"
 msgid "Metadata key"
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:97
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:120
-#: src/integrations/stripe/triggers/product-refunded.php:92
-#: src/integrations/stripe/triggers/product-refunded.php:115
-#: src/integrations/stripe/triggers/subcription-cancelled.php:96
-#: src/integrations/stripe/triggers/subcription-created.php:97
-#: src/integrations/stripe/triggers/subcription-paid.php:97
-#: src/integrations/stripe/triggers/subcription-payment-failed.php:97
+#: src/integrations/stripe/triggers/product-refunded.php:96
+#: src/integrations/stripe/triggers/product-refunded.php:119
+msgctxt "Stripe"
 msgid "product"
+msgstr ""
+
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:98
+#: src/integrations/stripe/triggers/product-refunded.php:97
+msgctxt "Stripe"
+msgid "Separate keys with / to build nested data."
 msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:102
-#: src/integrations/stripe/triggers/product-refunded.php:97
-#: src/integrations/stripe/triggers/subcription-cancelled.php:101
-#: src/integrations/stripe/triggers/subcription-created.php:102
-#: src/integrations/stripe/triggers/subcription-paid.php:102
-#: src/integrations/stripe/triggers/subcription-payment-failed.php:102
+#: src/integrations/stripe/triggers/product-refunded.php:101
+msgctxt "Stripe"
 msgid "Add a key"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:104
-#: src/integrations/stripe/triggers/product-refunded.php:99
-#: src/integrations/stripe/triggers/subcription-cancelled.php:103
-#: src/integrations/stripe/triggers/subcription-created.php:104
-#: src/integrations/stripe/triggers/subcription-paid.php:104
-#: src/integrations/stripe/triggers/subcription-payment-failed.php:104
+#: src/integrations/stripe/triggers/product-refunded.php:103
+msgctxt "Stripe"
 msgid "Remove key"
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:110
-#: src/integrations/stripe/triggers/product-refunded.php:105
+#: src/integrations/stripe/triggers/product-refunded.php:109
+msgctxt "Stripe"
 msgid "Extract checkout custom fields"
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:117
-#: src/integrations/stripe/triggers/product-refunded.php:112
+#: src/integrations/stripe/triggers/product-refunded.php:116
+msgctxt "Stripe"
 msgid "Custom field key"
 msgstr ""
 
 #. translators: Non-personal infinitive verb
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:124
-#: src/integrations/stripe/triggers/product-refunded.php:119
+#: src/integrations/stripe/triggers/product-refunded.php:123
+msgctxt "Stripe"
 msgid "Add a field"
 msgstr ""
 
+#. translators: Non-personal infinitive verb
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:126
+#: src/integrations/stripe/triggers/product-refunded.php:125
+msgctxt "Stripe"
+msgid "Remove field"
+msgstr ""
+
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:161
-#: src/integrations/stripe/triggers/product-refunded.php:163
+#: src/integrations/stripe/triggers/product-refunded.php:167
 #: src/integrations/stripe/triggers/subcription-cancelled.php:136
 #: src/integrations/stripe/triggers/subcription-created.php:138
 #: src/integrations/stripe/triggers/subcription-paid.php:138
@@ -26974,18 +27427,20 @@ msgid "Metadata key: "
 msgstr ""
 
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:168
-#: src/integrations/stripe/triggers/product-refunded.php:170
+#: src/integrations/stripe/triggers/product-refunded.php:174
 #: src/integrations/stripe/triggers/subcription-cancelled.php:143
 msgctxt "Stripe"
 msgid "Custom field key: "
 msgstr ""
 
-#. Translators: Product name
+#. translators: %s Stripe product name
 #: src/integrations/stripe/triggers/product-refunded.php:43
+msgctxt "Stripe"
 msgid "A payment for {{a product:%1$s}} is refunded"
 msgstr ""
 
 #: src/integrations/stripe/triggers/product-refunded.php:50
+msgctxt "Stripe"
 msgid "A payment for {{a product}} is refunded"
 msgstr ""
 
@@ -26998,11 +27453,50 @@ msgstr ""
 msgid "{{A subscription}} is cancelled"
 msgstr ""
 
+#: src/integrations/stripe/triggers/subcription-cancelled.php:76
+#: src/integrations/stripe/triggers/subcription-created.php:77
+#: src/integrations/stripe/triggers/subcription-paid.php:77
+#: src/integrations/stripe/triggers/subcription-payment-failed.php:77
+#: src/integrations/wholesale-suite/tokens/wss-tokens.php:665
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1007
+msgid "Price"
+msgstr ""
+
 #: src/integrations/stripe/triggers/subcription-cancelled.php:86
 #: src/integrations/stripe/triggers/subcription-created.php:87
 #: src/integrations/stripe/triggers/subcription-paid.php:87
 #: src/integrations/stripe/triggers/subcription-payment-failed.php:87
 msgid "Extract subscription metadata"
+msgstr ""
+
+#: src/integrations/stripe/triggers/subcription-cancelled.php:93
+#: src/integrations/stripe/triggers/subcription-created.php:94
+#: src/integrations/stripe/triggers/subcription-paid.php:94
+#: src/integrations/stripe/triggers/subcription-payment-failed.php:94
+msgid "Metadata key"
+msgstr ""
+
+#: src/integrations/stripe/triggers/subcription-cancelled.php:96
+#: src/integrations/stripe/triggers/subcription-created.php:97
+#: src/integrations/stripe/triggers/subcription-paid.php:97
+#: src/integrations/stripe/triggers/subcription-payment-failed.php:97
+msgid "product"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/stripe/triggers/subcription-cancelled.php:101
+#: src/integrations/stripe/triggers/subcription-created.php:102
+#: src/integrations/stripe/triggers/subcription-paid.php:102
+#: src/integrations/stripe/triggers/subcription-payment-failed.php:102
+msgid "Add a key"
+msgstr ""
+
+#. translators: Non-personal infinitive verb
+#: src/integrations/stripe/triggers/subcription-cancelled.php:103
+#: src/integrations/stripe/triggers/subcription-created.php:104
+#: src/integrations/stripe/triggers/subcription-paid.php:104
+#: src/integrations/stripe/triggers/subcription-payment-failed.php:104
+msgid "Remove key"
 msgstr ""
 
 #. Translators: Product name
@@ -27043,7 +27537,6 @@ msgstr ""
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:81
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:105
 #: src/integrations/woocommerce/tokens/wc-tokens.php:39
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:77
 msgid "Billing phone"
 msgstr ""
 
@@ -27263,7 +27756,6 @@ msgid "Order unit amount"
 msgstr ""
 
 #: src/integrations/surecart/tokens/surecart-tokens.php:213
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:65
 msgid "Billing name"
 msgstr ""
 
@@ -27271,7 +27763,6 @@ msgstr ""
 #: src/integrations/wc-memberships/tokens/wcm-tokens.php:82
 #: src/integrations/wholesale-suite/tokens/wss-tokens.php:106
 #: src/integrations/woocommerce/tokens/wc-tokens.php:40
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:71
 msgid "Billing email"
 msgstr ""
 
@@ -27564,55 +28055,634 @@ msgctxt "Threads"
 msgid "User ID: %d"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:165
-#: src/integrations/uncanny-tincanny/triggers/uotc-moduleinteraction.php:71
-#: src/integrations/uncanny-tincanny/triggers/uotc-userattainsscore.php:72
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:120
+#. translators:  %1$s: Assessment
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:57
+msgctxt "Thrive Apprentice"
+msgid "Grade {{an assessment:%1$s}} in {{a course:%2$s}} for the user"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:64
+msgctxt "Thrive Apprentice"
+msgid "Grade {{an assessment}} in {{a course}} for the user"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:79
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:76
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-unlock-content.php:75
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:76
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:76
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:73
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:74
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:75
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:108
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:76
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:75
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:75
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:75
+msgctxt "Thrive Apprentice"
+msgid "Course"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:87
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:83
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:83
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:83
+msgctxt "Thrive Apprentice"
+msgid "Assessment"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:101
+msgctxt "Thrive Apprentice"
+msgid "Grade automatically"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:106
+msgctxt "Thrive Apprentice"
+msgid "Yes"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:107
+msgctxt "Thrive Apprentice"
+msgid "No"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:114
+msgctxt "Thrive Apprentice"
+msgid "Score/Percentage"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:117
+msgctxt "Thrive Apprentice"
+msgid "Enter a score or percentage"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:155
+msgctxt "Thrive Apprentice"
+msgid "Missing course ID."
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:161
+msgctxt "Thrive Apprentice"
+msgid "Invalid course."
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:167
+msgctxt "Thrive Apprentice"
+msgid "Missing assessment ID."
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:173
+msgctxt "Thrive Apprentice"
+msgid "Invalid assessment."
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:181
+msgctxt "Thrive Apprentice"
+msgid "Score or percentage must be between 0 and 100."
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-grade-assessment.php:203
+msgctxt "Thrive Apprentice"
+msgid "Graded by Automator. Recipe: "
+msgstr ""
+
+#. translators:  %1$s: Course
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:54
+msgctxt "Thrive Apprentice"
+msgid "Issue a certificate for {{a course:%1$s}} for the user"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:60
+msgctxt "Thrive Apprentice"
+msgid "Issue a certificate for {{a course}} for the user"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:99
+msgctxt "Thrive Apprentice"
+msgid "Course ID is missing"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:104
+msgctxt "Thrive Apprentice"
+msgid "Invalid course ID provided"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:141
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:144
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1061
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:260
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:263
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:153
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:156
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:147
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:150
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:142
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:145
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:210
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:213
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:186
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:189
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:148
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:151
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:211
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:214
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:212
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:215
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:219
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:222
+msgctxt "Thrive Apprentice"
+msgid "Course ID"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:147
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:150
+msgctxt "Thrive Apprentice"
+msgid "Course Title"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:153
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:156
+msgctxt "Thrive Apprentice"
+msgid "Course Author"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:159
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:162
+msgctxt "Thrive Apprentice"
+msgid "Certificate Number"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:165
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:168
+msgctxt "Thrive Apprentice"
+msgid "Certificate URL"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:171
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:174
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1062
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:159
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:162
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:154
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:157
+msgctxt "Thrive Apprentice"
+msgid "Course URL"
+msgstr ""
+
+#. translators:  %1$s: Lesson/Module,  %2$s: Course
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-unlock-content.php:53
+msgctxt "Thrive Apprentice"
+msgid "Unlock {{a lesson/module:%1$s}} in {{a course:%2$s}} for the user"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-unlock-content.php:60
+msgctxt "Thrive Apprentice"
+msgid "Unlock {{a lesson/module}} in {{a course}} for the user"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-unlock-content.php:82
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:84
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:272
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:275
+msgctxt "Thrive Apprentice"
+msgid "Content type"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-unlock-content.php:96
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:97
+msgctxt "Thrive Apprentice"
+msgid "Content"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/actions/thrive-apprentice-unlock-content.php:128
+msgctxt "Thrive Apprentice"
+msgid "Content ID is missing."
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:107
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:110
+msgctxt "Thrive Apprentice"
+msgid "Any course"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:176
+msgctxt "Content type selection"
+msgid "Any content type"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:250
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:266
+msgctxt "Thrive Apprentice"
+msgid "Any content"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:326
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:382
+msgctxt "Thrive Apprentice lesson selection"
+msgid "Any lesson"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:431
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:516
+msgctxt "Module selection"
 msgid "Any module"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:245
+#. translators: %s is replaced with the error message
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:473
+msgctxt "Error message"
+msgid "Error loading modules: %s"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:611
+msgctxt "Assessment selection"
+msgid "Any assessment"
+msgstr ""
+
+#. translators: %s is replaced with the content type name
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:946
+msgctxt "Thrive Apprentice"
+msgid "Any %s"
+msgstr ""
+
+#. translators: %s is replaced with the content type name
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:994
+msgctxt "Content type name"
+msgid "Any %s"
+msgstr ""
+
+#. translators: %s is replaced with the content type name
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1013
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1027
+msgctxt "Error message"
+msgid "Error loading %s"
+msgstr ""
+
+#. translators: %s is replaced with the content type name
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1041
+msgctxt "Content type name"
+msgid "No %s found"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1063
+msgctxt "Thrive Apprentice"
+msgid "Course author"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1064
+msgctxt "Thrive Apprentice"
 msgid "Course summary"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:259
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:109
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1065
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:266
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:269
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:159
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:162
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:153
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:156
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:148
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:151
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:216
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:219
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:192
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:195
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:154
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:157
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:217
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:220
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:218
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:221
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:225
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:228
+msgctxt "Thrive Apprentice"
+msgid "Course title"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1078
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:198
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:201
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:162
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:165
+msgctxt "Thrive Apprentice"
 msgid "Module ID"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:260
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1079
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:180
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:183
+msgctxt "Thrive Apprentice"
 msgid "Module URL"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:261
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1080
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:204
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:207
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:168
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:171
+msgctxt "Thrive Apprentice"
 msgid "Module title"
 msgstr ""
 
-#. Translators: Trigger sentence
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:63
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1093
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:174
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:177
+msgctxt "Thrive Apprentice"
+msgid "Lesson ID"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1094
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:180
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:183
+msgctxt "Thrive Apprentice"
+msgid "Lesson URL"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1095
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:186
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:189
+msgctxt "Thrive Apprentice"
+msgid "Lesson title"
+msgstr ""
+
+#. translators:  %1$s: Content,  %2$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:56
+msgctxt "Thrive Apprentice"
+msgid "{{A content:%1$s}} is unlocked for a user in {{a course:%2$s}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:63
+msgctxt "Thrive Apprentice"
+msgid "{{A content}} is unlocked for a user"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:278
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:281
+msgctxt "Thrive Apprentice"
+msgid "Content title"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:284
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:287
+msgctxt "Thrive Apprentice"
+msgid "Content ID"
+msgstr ""
+
+#. translators:  %1$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:57
+msgctxt "Thrive Apprentice"
+msgid "A user's certificate for {{a course:%1$s}} is verified"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:63
+msgctxt "Thrive Apprentice"
+msgid "A user's certificate for {{a course}} is verified"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:141
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:144
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:171
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:174
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:166
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:169
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:166
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:169
+msgctxt "Thrive Apprentice"
+msgid "User ID"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:147
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:150
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:177
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:180
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:172
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:175
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:160
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:163
+msgctxt "Thrive Apprentice"
+msgid "User email"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:165
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:168
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:172
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:175
+msgctxt "Thrive Apprentice"
+msgid "Certificate number"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:171
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:174
+msgctxt "Thrive Apprentice"
+msgid "Verification date"
+msgstr ""
+
+#. translators:  %1$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:54
+msgctxt "Thrive Apprentice"
+msgid "A user completes all free lessons in {{a premium course:%1$s}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:60
+msgctxt "Thrive Apprentice"
+msgid "A user completes all free lessons in {{a premium course}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:165
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:168
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:160
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:163
+msgctxt "Thrive Apprentice"
+msgid "Course description"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:183
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:186
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:178
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:181
+msgctxt "Thrive Apprentice"
+msgid "Membership level"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:189
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:192
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:184
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:187
+msgctxt "Thrive Apprentice"
+msgid "User registered date"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:195
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:198
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:190
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:193
+msgctxt "Thrive Apprentice"
+msgid "User last login date"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:201
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:204
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:196
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:199
+msgctxt "Thrive Apprentice"
+msgid "User IP"
+msgstr ""
+
+#. translators:  %1$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:54
+msgctxt "Thrive Apprentice"
+msgid "A user completes {{a course:%1$s}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:60
+msgctxt "Thrive Apprentice"
+msgid "A user completes {{a course}}"
+msgstr ""
+
+#. translators:  %1$s: Lesson,  %2$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:54
+msgctxt "Thrive Apprentice"
 msgid "A user completes {{a lesson:%1$s}} in {{a course:%2$s}}"
 msgstr ""
 
-#. Translators: Trigger sentence
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:71
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:61
+msgctxt "Thrive Apprentice"
 msgid "A user completes {{a lesson}} in {{a course}}"
 msgstr ""
 
-#. Translators: Trigger sentence
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:63
-msgid "A user completes {{a module:%1$s}} in {{a course:%2$s}}"
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:83
+msgctxt "Thrive Apprentice"
+msgid "Lesson"
 msgstr ""
 
-#. Translators: Trigger sentence
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:71
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:192
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:195
+msgctxt "Thrive Apprentice"
+msgid "Lesson type"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:222
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:225
+msgctxt "Thrive Apprentice"
+msgid "User membership level"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:228
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:231
+msgctxt "Thrive Apprentice"
+msgid "User last login"
+msgstr ""
+
+#. translators:  %1$s: Module,  %2$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:55
+msgctxt "Thrive Apprentice"
+msgid "A user completes {{a module:%2$s}} in {{a course:%1$s}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:62
+msgctxt "Thrive Apprentice"
 msgid "A user completes {{a module}} in {{a course}}"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:106
-#: src/integrations/uncanny-tincanny/triggers/uotc-moduleinteraction.php:83
-#: src/integrations/uncanny-tincanny/triggers/uotc-userattainsscore.php:84
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:110
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:116
+msgctxt "Thrive Apprentice"
 msgid "Module"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:174
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:177
+msgctxt "Thrive Apprentice"
+msgid "Module description"
+msgstr ""
+
+#. translators:  %1$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:57
+msgctxt "Thrive Apprentice"
+msgid "A user downloads a certificate from {{a course:%1$s}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:63
+msgctxt "Thrive Apprentice"
+msgid "A user downloads a certificate from {{a course}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:178
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-downloads-certificate-from-course.php:181
+msgctxt "Thrive Apprentice"
+msgid "Download date"
+msgstr ""
+
+#. translators:  %1$s: Assessment,  %2$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:55
+msgctxt "Thrive Apprentice"
+msgid "A user fails {{an assessment:%2$s}} in {{a course:%1$s}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:62
+msgctxt "Thrive Apprentice"
+msgid "A user fails {{an assessment}} in {{a course}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:187
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:190
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:188
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:191
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:195
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:198
+msgctxt "Thrive Apprentice"
+msgid "Assessment ID"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:193
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:196
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:194
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:197
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:201
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:204
+msgctxt "Thrive Apprentice"
+msgid "Assessment title"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:199
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:202
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:200
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:203
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:207
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:210
+msgctxt "Thrive Apprentice"
+msgid "Assessment type"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:205
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-fail-assessment-in-course.php:208
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:206
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:209
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:213
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:216
+msgctxt "Thrive Apprentice"
+msgid "Submission date"
+msgstr ""
+
+#. translators:  %1$s: Assessment,  %2$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:55
+msgctxt "Thrive Apprentice"
+msgid "A user passes {{an assessment:%2$s}} in {{a course:%1$s}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-pass-assessment-in-course.php:62
+msgctxt "Thrive Apprentice"
+msgid "A user passes {{an assessment}} in {{a course}}"
+msgstr ""
+
+#. translators:  %1$s: Assessment,  %2$s: Course
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:55
+msgctxt "Thrive Apprentice"
+msgid "A user submits {{an assessment:%2$s}} in {{a course:%1$s}}"
+msgstr ""
+
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-submits-assessment-in-course.php:62
+msgctxt "Thrive Apprentice"
+msgid "A user submits {{an assessment}} in {{a course}}"
 msgstr ""
 
 #: src/integrations/thrive-architect/helpers/thrive-architect-helpers.php:86
@@ -27769,6 +28839,32 @@ msgstr ""
 #: src/integrations/thrive-theme/triggers/thr-user-submits-form.php:25
 msgctxt "Thrive Theme"
 msgid "A user submits {{a form}}"
+msgstr ""
+
+#. translators: %1$s: Campaign
+#: src/integrations/thrive-ultimatum/actions/thrive-ultimatum-evergreen-start-campaign.php:50
+msgctxt "Thrive Ultimatum"
+msgid "Start {{a campaign:%1$s}} for the user"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/actions/thrive-ultimatum-evergreen-start-campaign.php:55
+msgctxt "Thrive Ultimatum"
+msgid "Start {{a campaign}} for the user"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/actions/thrive-ultimatum-evergreen-start-campaign.php:70
+msgctxt "Thrive Ultimatum"
+msgid "Evergreen campaign"
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/actions/thrive-ultimatum-evergreen-start-campaign.php:140
+msgctxt "Thrive Ultimatum"
+msgid "Campaign ID is missing."
+msgstr ""
+
+#: src/integrations/thrive-ultimatum/actions/thrive-ultimatum-evergreen-start-campaign.php:146
+msgctxt "Thrive Ultimatum"
+msgid "Thrive Ultimatum functions are not available."
 msgstr ""
 
 #: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:27
@@ -28827,6 +29923,13 @@ msgstr ""
 msgid "Remaining seats"
 msgstr ""
 
+#: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:93
+#: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:95
+#: src/integrations/wholesale-suite/tokens/wss-tokens.php:664
+#: src/integrations/woocommerce/tokens/wc-tokens.php:1006
+msgid "Quantity"
+msgstr ""
+
 #: src/integrations/uncanny-groups/actions/uog-addseatstogroup.php:116
 #: src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php:119
 msgid "The selected group is not found."
@@ -28960,6 +30063,18 @@ msgstr ""
 #. translators: Logged-in trigger - Uncanny Reporting
 #: src/integrations/uncanny-tincanny/triggers/uotc-moduleinteraction.php:50
 msgid "{{A Tin Can verb}} is recorded from {{a Tin Can module}}"
+msgstr ""
+
+#: src/integrations/uncanny-tincanny/triggers/uotc-moduleinteraction.php:71
+#: src/integrations/uncanny-tincanny/triggers/uotc-userattainsscore.php:72
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:120
+msgid "Any module"
+msgstr ""
+
+#: src/integrations/uncanny-tincanny/triggers/uotc-moduleinteraction.php:83
+#: src/integrations/uncanny-tincanny/triggers/uotc-userattainsscore.php:84
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:110
+msgid "Module"
 msgstr ""
 
 #: src/integrations/uncanny-tincanny/triggers/uotc-moduleinteraction.php:91
@@ -30709,25 +31824,105 @@ msgstr ""
 msgid "Poll selected answer(s)"
 msgstr ""
 
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:101
+#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:84
+msgctxt "Wp Simple Pay"
+msgid "Form"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:102
+msgctxt "Wp Simple Pay"
+msgid "Any form"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:112
+msgctxt "Wp Simple Pay"
+msgid "Form title"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/helpers/wpsp-helpers.php:113
+msgctxt "Wp Simple Pay"
+msgid "Form ID"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:59
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:114
+msgctxt "Wp Simple Pay"
+msgid "Billing name"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:65
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:119
+msgctxt "Wp Simple Pay"
+msgid "Billing email"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:71
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:124
+msgctxt "Wp Simple Pay"
+msgid "Billing phone"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:77
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:129
+msgctxt "Wp Simple Pay"
+msgid "Billing address"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:83
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:134
+msgctxt "Wp Simple Pay"
+msgid "Billing city"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:89
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:139
+msgctxt "Wp Simple Pay"
+msgid "Billing state"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:95
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:144
+msgctxt "Wp Simple Pay"
 msgid "Billing postal code"
 msgstr ""
 
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:113
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:101
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:149
+msgctxt "Wp Simple Pay"
+msgid "Billing country"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:107
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:154
+msgctxt "Wp Simple Pay"
 msgid "Price option"
 msgstr ""
 
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:163
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:178
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:113
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:159
+msgctxt "Wp Simple Pay"
+msgid "Quantity"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:125
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:140
+msgctxt "Wp Simple Pay"
 msgid "Amount paid"
 msgstr ""
 
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:172
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:134
+msgctxt "Wp Simple Pay"
 msgid "Amount due"
 msgstr ""
 
-#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:184
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:146
+msgctxt "Wp Simple Pay"
 msgid "Amount remaining"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/tokens/wpsp-tokens.php:244
+msgctxt "Wp Simple Pay"
+msgid "N/A"
 msgstr ""
 
 #. translators: Logged-in trigger - WP Simple Pay
@@ -30748,6 +31943,27 @@ msgstr ""
 #. translators: Logged-in trigger - WP Simple Pay
 #: src/integrations/wp-simple-pay/triggers/wpsp-anonsubscription.php:43
 msgid "A subscription for {{a form}} is created"
+msgstr ""
+
+#. translators: WP Simple Pay form title
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:25
+msgctxt "WP Simple Pay"
+msgid "A payment for {{a form:%1$s}} is fully refunded"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:26
+msgctxt "WP Simple Pay"
+msgid "A payment for {{a form}} is fully refunded"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:53
+msgctxt "WP Simple Pay"
+msgid "Form"
+msgstr ""
+
+#: src/integrations/wp-simple-pay/triggers/wpsp-payment-for-form-fully-refunded.php:164
+msgctxt "Wp Simple Pay"
+msgid "Refunded amount"
 msgstr ""
 
 #. translators: WP Job Manager form name.
@@ -30877,6 +32093,63 @@ msgstr ""
 #: src/integrations/wp/actions/wp-change-post-type.php:99
 msgctxt "WordPress"
 msgid "Sorry, we were unable to change the post type of the selected post (%s)"
+msgstr ""
+
+#. translators: %1$s is the role name/meta field
+#: src/integrations/wp/actions/wp-create-role.php:34
+msgctxt "WordPress"
+msgid "Create {{a new role:%1$s}}"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:38
+msgctxt "WordPress"
+msgid "Create {{a new role}}"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:53
+msgctxt "WordPress"
+msgid "Role name"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:61
+msgctxt "WordPress"
+msgid "Role slug"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:64
+msgctxt "WordPress"
+msgid "The role slug must be unique and contain only lowercase letters, numbers, and underscores."
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:70
+msgctxt "WordPress"
+msgid "Display name"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:79
+msgctxt "WordPress"
+msgid "Capabilities"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:82
+msgctxt "WordPress"
+msgid "Capability"
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:142
+msgctxt "WordPress"
+msgid "The role slug must contain only lowercase letters, numbers, and underscores."
+msgstr ""
+
+#. translators: %s is the role slug
+#: src/integrations/wp/actions/wp-create-role.php:151
+msgctxt "WordPress"
+msgid "The role %s already exists."
+msgstr ""
+
+#: src/integrations/wp/actions/wp-create-role.php:170
+msgctxt "WordPress"
+msgid "Failed to create the new role."
 msgstr ""
 
 #. translators: Action - WordPress Core
@@ -31248,6 +32521,27 @@ msgstr ""
 #: src/integrations/wp/triggers/wp-usercreatespost.php:714
 msgctxt "WordPress"
 msgid "Matched Child Term"
+msgstr ""
+
+#: src/integrations/wp/triggers/anon-wp-reset-password-link-sent.php:32
+#: src/integrations/wp/triggers/anon-wp-reset-password-link-sent.php:35
+msgctxt "WordPress"
+msgid "A reset password link was sent to a user"
+msgstr ""
+
+#: src/integrations/wp/triggers/anon-wp-reset-password-link-sent.php:80
+msgctxt "WordPress"
+msgid "User ID"
+msgstr ""
+
+#: src/integrations/wp/triggers/anon-wp-reset-password-link-sent.php:85
+msgctxt "WordPress"
+msgid "User login"
+msgstr ""
+
+#: src/integrations/wp/triggers/anon-wp-reset-password-link-sent.php:90
+msgctxt "WordPress"
+msgid "User email"
 msgstr ""
 
 #. translators: 1: Post type, 2: Taxonomy term, 3: Taxonomy
@@ -32155,6 +33449,6 @@ msgid "Connect Zoom Meetings account"
 msgstr ""
 
 #. translators: %s: The version number of Uncanny Automator.
-#: uncanny-automator.php:45
+#: uncanny-automator.php:47
 msgid "Notice: Uncanny Automator v%s requires PHP 7.3 or higher to run properly. Your current PHP version is below this requirement, so the plugin has been deactivated and all automations have stopped. Please upgrade your PHP version to ensure that your automations and other plugin features work correctly."
 msgstr ""

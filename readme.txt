@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.7.2
 Requires PHP: 7.3
-Stable tag: 6.3.0.2
+Stable tag: 6.4.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -63,6 +63,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Bluesky](https://automatorplugin.com/integration/bluesky/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Campaign Monitor](https://automatorplugin.com/integration/campaign-monitor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -71,6 +72,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Facebook Lead Ads](https://automatorplugin.com/integration/facebook-lead-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Pages](https://automatorplugin.com/integration/facebook/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GetResponse](https://automatorplugin.com/integration/getresponse/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Calendar](https://automatorplugin.com/integration/google-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -380,80 +382,62 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.3.0.2 [2025-03-17] =
-
-**Security update:**
-
-* Core - Background actions - We've reinforced security roles so background actions don't get too adventurous. #5526 CVE-2025-2075
-
-= 6.3.0.1 [2025-03-14] =
-
-**Under the hood:**
-
-* Core - Nested token migration - Some tokens were getting stage fright and refusing to migrate properly in certain situations. We've given them a confidence boost! #5541
-* Core - UI icons - A few icons went on an unannounced vacation. We've tracked them down and put them back to work. #5467
-
-= 6.3 [2025-03-03] =
-
-* IMPORTANT: Support for PHP 7.0 has been discontinued. If you are running PHP 7.0, you MUST upgrade PHP to version 7.3 or higher before installing Automator v6.3 or up. Failure to do that will disable Automator core functionality.
+= 6.4 [2025-04-01] =
 
 **New App Integration:**
 
-* [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5294
-
-**New Plugin Integrations:**
-
-* [Bricks Builder](https://automatorplugin.com/integration/bricks-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5326
-* [URL](https://automatorplugin.com/integration/url/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4317
+* [Bluesky](https://automatorplugin.com/integration/bluesky/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5427
+* [Facebook Lead Ads](https://automatorplugin.com/integration/facebook-lead-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2613
 
 **New Triggers:**
 
-* Bricks Builder - A form is submitted #5329
-* Bricks Builder - A user submits a form #5330
-* URL - A URL with a URL parameter is visited #5345
-* URL - A user visits a URL with a URL parameter set #5344
+* Facebook Lead Ads - A new lead is created #4834
+* Thrive Apprentice - A user completes a course #5380
+* Thrive Apprentice - A user completes all free lessons in a premium course #5381
+* Thrive Apprentice - A user downloads the certificate from a course #5377
+* Thrive Apprentice - A user fails an assessment in a course #5374
+* Thrive Apprentice - A user passes an assessment in a course #5375
+* Thrive Apprentice - A user submits an assessment in a course #5376
+* Thrive Apprentice - A user's certificate was verified #5378
+* Thrive Apprentice - Content is unlocked for a user #5379
+* WP Simple Pay - A payment for a form is fully refunded #4889
+* WordPress Core - A reset password link was sent to a user #5373
 
 **New Actions:**
 
-* Discord - Add a member to a channel #5298
-* Discord - Assign a role to a member #5295
-* Discord - Create a channel #5300
-* Discord - Remove a member #5297
-* Discord - Remove a role from a member #5296
-* Discord - Send a direct message to a Discord member #5184
-* Discord - Send a message to a channel #5183
-* Discord - Send an invitation to join a server to an email #5350
-* Discord - Update a member #5299
-* Uncanny Codes - Add a number of codes in a batch #4450
+* Bluesky - Make a post on Bluesky #5428
+* Thrive Apprentice - Grade an assessment in a course for the user #5383
+* Thrive Apprentice - Issue a course certificate for the user #5384
+* Thrive Apprentice - Unlock a lesson/module in a course for the user #5533
+* Thrive Ultimatum - Start a campaign for the user #5382
+* WordPress - Create a new role #5483
 
-**Added:**
+**New Tokens:**
 
-* Recipe UI - Copy button added beside Incoming Webhook URL in Automator Pro – Because copying by hand is so 2010. #5399
-* Recipe UI - Copy button added beside Magic button/link shortcode in Automator Pro – Now with 100% more copying convenience! #5424
-
-**Updated:**
-
-* Recipe UI - Email action - File uploader doesn't have a way to remove selected files – You can now say goodbye to accidental uploads. We made deleting files possible! #5422
-* Update content on "Upgrade to Pro" page – Updated with the latest awesome features to make you want to upgrade to Pro even more! #5198
-* Updated Woo branding – WooCommerce got a glow-up, and we made sure to match. #5444
+* Trigger details tokens added to all triggers #3012
+    * Trigger ID
+    * Trigger title
+    * Trigger completion date
 
 **Fixed:**
 
-* Disable App actions if App is disconnected – Apps were trying to act while disconnected, like a Wi-Fi-less smart fridge. We stopped them. #3227
-* Licensing - Duplicate Queries Triggered by Licensing Function – Licensing was a little too enthusiastic, asking the same thing twice. We've calmed it down. #5452
-* Outgoing Webhooks - Patched up a sneaky Server-Side Request Forgery (SSRF) vulnerability—no more unauthorized web wanderings! #5471 CVE-2024-13838
-* Threads - Settings page - Disconnect is not working – Clicking "Disconnect" and nothing happening? That's history now. #5431
-* Webhooks - "Send data to a webhook" Original Authorization meta gets removed when updating action – We accidentally made it forget its credentials. Not anymore! #5396
+* AffiliateWP - Tokens not showing up in some triggers – Turns out the tokens were playing hide and seek. We've coaxed them back into visibility. #5500
+* Brevo - Create or update a contact - Action failing when no attributes are provided – The action got confused when handed a blank slate. Now it rolls with the punches, even when attributes ghost it. #5494
+* Core - Action tokens - Inconsistent results when actions fail in multiple recipe runs – Failed actions were spreading chaos like it was contagious. We've quarantined the inconsistency. #5342
+* Core - Background Actions - We've randomized the Auth() token so it's not just more secure—it's mysterious. #5557
+* Core - automator_get_all_options throwing RedisException in a specific situation – Redis had a meltdown over some edge cases. We calmed it down with some sensible exception handling. #5459
+* HelpScout - A conversation's tags are updated - Conversation URL token not working – This token was lost in the conversation. We gave it directions—it now knows exactly where to go. #5487
+* Recipe UI - Stripe connect modal not working – Stripe modal had stage fright and wouldn't show up. We've boosted its confidence. #5531
+* Stripe - Create payment links - payment_method_types issue – This one was picky about payment methods. We've taught it to be more accepting. #5462
+* Stripe - Customer tokens not rendering properly – These tokens were having an identity crisis. Now they're back to proudly displaying who they are. #5577
+* Thrive Apprentice - A user completes a module in a course - Updated for compatibility – A little compatibility spring cleaning—this trigger now plays nice with the rest of the gang. #5529
+* Thrive Apprentice - A user completes a lesson in a course - Lesson dropdown not populating – That dropdown was feeling shy. We gave it a pep talk—now it shows up with all the lessons. #5392
 
 **Under the hood:**
 
-* Core - Smoothed out some grumpy WordPress Plugin Check errors—because clean code is happy code! #5474
-* Core - Upgraded `__()` calls to `esc_html__()` or `esc_attr__()`—because escaping is not just for magicians! #5474
-* Core - Sprinkled `esc_html()` and `esc_attr()` functions everywhere—now all outputs are safely wrapped up like a burrito! #5474
-* Core - Added those missing `// translators:` comments—because translators deserve some love too! #5474
-* Recipe Logs - Allow Markup text in log messages – Logs can now look fancier, with proper markup support. #5364
-* Recipe UI - Token popup framework - More behind-the-scenes improvements for smoother popups. #4316
-* Token popup framework - Some backend magic happened. Trust us, it's better now. #5137
+* Delete a log file is not working when there are special characters in the log filename – Special characters were too extra for our delete function. We've taught it to handle drama with grace. #5492
+* Resolve ambiguity with class names – We cleaned up a case of mistaken identity among class names. No more doppelgängers. #5560
+* Token parsing - WordPress filter `automator_token_parser_whitelisted_tokens` added to not parse third-party tokens matching token criteria – We've taught our parser to respect boundaries. It can now ignore tokens that don't belong to us. #5469
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

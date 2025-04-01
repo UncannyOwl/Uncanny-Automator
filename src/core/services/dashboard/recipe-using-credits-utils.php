@@ -32,6 +32,7 @@ class Recipe_Using_Credits_Utils {
 		'DRIP',
 		'FACEBOOK',
 		'FACEBOOK_GROUPS',
+		'FACEBOOK_LEAD_ADS',
 		'GETRESPONSE',
 		'GOOGLE_CALENDAR',
 		'GOOGLE_CONTACTS',
@@ -221,5 +222,4 @@ class Recipe_Using_Credits_Utils {
 
 		return (array) $recipe_items;
 	}
-
 }

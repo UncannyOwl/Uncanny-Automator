@@ -49,7 +49,7 @@ class Brevo_Helpers {
 	 */
 	public function __construct() {
 
-		$this->invalid_key_message = _x( 'Invalid API Key : ', 'Brevo', 'uncanny-automator' );
+		$this->invalid_key_message = esc_html_x( 'Invalid API Key : ', 'Brevo', 'uncanny-automator' );
 	}
 
 	/**
@@ -144,8 +144,8 @@ class Brevo_Helpers {
 	 *
 	 * @return string
 	 */
-	public function get_const( $const ) {
-		return constant( 'self::' . $const );
+	public function get_const( $const_name ) {
+		return constant( 'self::' . $const_name );
 	}
 
 	/**
@@ -265,7 +265,7 @@ class Brevo_Helpers {
 			$response = $this->api_request( 'get_account', null, null, false );
 		} catch ( \Exception $e ) {
 			$error            = $e->getMessage();
-			$account['error'] = ! empty( $error ) ? $error : _x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
+			$account['error'] = ! empty( $error ) ? $error : esc_html_x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
 			automator_update_option( self::ACCOUNT_KEY, $account );
 
 			return $account;
@@ -326,6 +326,10 @@ class Brevo_Helpers {
 			'updateEnabled' => $update_enabled ? true : false,
 			'email'         => $email,
 		);
+
+		if ( empty( $contact['attributes'] ) ) {
+			unset( $contact['attributes'] );
+		}
 
 		$body = array(
 			'contact' => wp_json_encode( $contact ),
@@ -415,7 +419,7 @@ class Brevo_Helpers {
 
 			if ( ! isset( $response['data']['attributes'] ) ) {
 				throw new \Exception(
-					_x( 'No attributes were returned from the API', 'Brevo API', 'uncanny-automator' )
+					esc_html_x( 'No attributes were returned from the API', 'Brevo API', 'uncanny-automator' )
 				);
 			}
 		} catch ( \Exception $e ) {
@@ -596,8 +600,8 @@ class Brevo_Helpers {
 			if ( empty( $items ) ) {
 				throw new \Exception(
 					sprintf(
-						/* translators: %s - type of item templates or lists */
-						_x( 'No %s were found', 'Brevo API', 'uncanny-automator' ),
+						// translators: %s - type of item templates or lists
+						esc_html_x( 'No %s were found', 'Brevo API', 'uncanny-automator' ),
 						$param
 					)
 				);
@@ -638,12 +642,12 @@ class Brevo_Helpers {
 	public function ajax_sync_transient_data() {
 
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
-			wp_send_json_error( array( 'message' => _x( 'Invalid request', 'Brevo', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'Invalid request', 'Brevo', 'uncanny-automator' ) ) );
 		}
 
 		$key = automator_filter_input( 'key', INPUT_POST );
 		if ( ! $key || ! in_array( $key, array( 'templates', 'contacts/lists', 'contacts/attributes' ), true ) ) {
-			wp_send_json_error( array( 'message' => _x( 'Invalid key', 'Brevo', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'Invalid key', 'Brevo', 'uncanny-automator' ) ) );
 		}
 
 		// Delete existing transient.
@@ -663,7 +667,7 @@ class Brevo_Helpers {
 		}
 
 		if ( empty( $options ) ) {
-			wp_send_json_error( array( 'message' => _x( 'No data returned from the API', 'Brevo', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'No data returned from the API', 'Brevo', 'uncanny-automator' ) ) );
 		}
 
 		// Ensure everything is set with a slight delay.
@@ -691,7 +695,7 @@ class Brevo_Helpers {
 		}
 
 		if ( $response['statusCode'] >= 400 ) {
-			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : _x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
+			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : esc_html_x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
 			throw new \Exception( esc_html( $message ), 400 );
 		}
 

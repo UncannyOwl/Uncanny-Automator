@@ -1,0 +1,15 @@
+/* General table styling */
+table.uap-fbla-settings-page-table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: left;
+}
+.uap-fbla-settings-page-fbla-repair {
+	margin: 5px;
+}
+#fblaPagesTable div[id^="status-"] .error{
+	color: var(--uap-button-style-custom-color, var(--uap-color-red));
+}
+#fblaPagesTable div[id^="status-"] .ready{
+	color: var(--uap-item-status-completed);
+}

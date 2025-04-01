@@ -80,9 +80,8 @@ function automator_get_integration_by_name( $name ) {
 		return $integration;
 	}
 	$return = '';
-	$integration = strtolower( $integration );
 	switch ( $integration ) {
-		case 'wordpress': // phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText
+		case 'wordpress': //phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled,WordPress.WP.CapitalPDangit.MisspelledInText
 			$return = 'wp';
 			break;
 		case 'easy-digital-downloads':
@@ -155,14 +154,14 @@ function automator_add_action( $path, $integration ) {
  * @throws Automator_Exception
  * @package Uncanny_Automator
  */
-function automator_add_integration_directory( $integration_code, $directory, $namespace = '' ) {
+function automator_add_integration_directory( $integration_code, $directory, $plugin_namespace = '' ) {
 	$int_directory = automator_add_integration( $directory );
 	if ( ! isset( $int_directory['main'] ) ) {
 		return false;
 	}
 	Set_Up_Automator::$auto_loaded_directories[]                            = dirname( $int_directory['main'] );
 	Set_Up_Automator::$all_integrations[ $integration_code ]                = $int_directory;
-	Set_Up_Automator::$external_integrations_namespace[ $integration_code ] = $namespace;
+	Set_Up_Automator::$external_integrations_namespace[ $integration_code ] = $plugin_namespace;
 
 	return true;
 }
@@ -260,7 +259,7 @@ function automator_filter_input_array( $variable = null, $type = INPUT_GET, $fla
  * @package Uncanny_Automator
  */
 function automator_exception( $message, $code = 999 ) {
-	throw new Automator_Exception( esc_html( $message ), absint( $code ) );
+	throw new Automator_Exception( esc_html( $message ), esc_html( $code ) );
 }
 
 /**
@@ -453,7 +452,7 @@ function automator_utm_parameters( $url, $medium = '', $content = '' ) {
 
 			$url = $url_parts['scheme'] . '://' . $url_parts['host'] . $url_parts['path'] . '?' . $url_parts['query'];
 		}
-	} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+	} catch ( \Exception $e ) { //phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 	}
 
 	return $url;
@@ -516,7 +515,6 @@ function clear_recipe_logs( $recipe_id ) {
 
 /**
  * Only identify and add tokens IF it's edit recipe page
- *
  * @return bool
  */
 function automator_do_identify_tokens() {
@@ -526,12 +524,12 @@ function automator_do_identify_tokens() {
 	}
 
 	if (
-		isset( $_REQUEST['action'] ) && // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		isset( $_REQUEST['action'] ) && //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		(
-			'heartbeat' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) || // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			'wp-remove-post-lock' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )  // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'heartbeat' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) ) || //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'wp-remove-post-lock' === (string) sanitize_text_field( wp_unslash( $_REQUEST['action'] ) )  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		)
-	) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		// if it's heartbeat, post lock actions bail
 		return false;
 	}
@@ -585,11 +583,11 @@ function automator_sort_options( $a, $b ) {
  *
  * @return array
  */
-function automator_array_as_options( $array ) {
+function automator_array_as_options( $array_as_options ) {
 
 	$options = array();
 
-	foreach ( $array as $value => $text ) {
+	foreach ( $array_as_options as $value => $text ) {
 		$options[] = array(
 			'value' => $value,
 			'text'  => $text,
@@ -657,12 +655,12 @@ function automator_validate_option_value( $option, $value, $default_value ) {
 	}
 
 	// Return true if the value is true.
-	if ( '__true__' === $value || '' === $value && true === $default_value ) {
+	if ( '__true__' === $value || ( '' === $value && true === $default_value ) ) {
 		return true;
 	}
 
 	// Return null if the value is null.
-	if ( '__null__' === $value || '' === $value && null === $default_value ) {
+	if ( '__null__' === $value || ( '' === $value && null === $default_value ) ) {
 		return $default_value;
 	}
 
@@ -986,11 +984,17 @@ function automator_get_all_options( $force = false ) {
 		return $all_options_cache;
 	}
 
-	$all_options = wp_cache_get( 'automator_options', 'automator_options' );
+	// Attempt to retrieve from cache
+	try {
+		$all_options = wp_cache_get( 'automator_options', 'automator_options' );
+	} catch ( \Exception $e ) {
+		// translators: Cache read error
+		error_log( esc_html__( sprintf( '[Automator] Cache read error: %s', $e->getMessage() ), 'uncanny-automator' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		$all_options = false; // Fallback to database
+	}
 
 	if ( false !== $all_options && ! $force ) {
 		$all_options_cache = $all_options;
-
 		return $all_options;
 	}
 
@@ -1007,15 +1011,19 @@ function automator_get_all_options( $force = false ) {
 		$all_options[ $o->option_name ] = $o->option_value;
 	}
 
-	// Cache the result for future use.
-	wp_cache_set( 'automator_options', $all_options, 'automator_options' );
+	// Attempt to cache the result, but catch Redis failures
+	try {
+		wp_cache_set( 'automator_options', $all_options, 'automator_options' );
+	} catch ( \Exception $e ) {
+		// translators: Cache write error
+		error_log( esc_html__( sprintf( '[Automator] Cache write error: %s', $e->getMessage() ), 'uncanny-automator' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	}
 
 	// Store the result in the static cache.
 	$all_options_cache = $all_options;
 
 	return $all_options;
 }
-
 /**
  * Wrapper function for add_settings_error.
  *
@@ -1025,6 +1033,7 @@ function automator_get_all_options( $force = false ) {
  * @param string $code Slug-name to identify the error. Used as part of 'id' attribute in HTML output.
  * @param string $message The formatted message text to display to the user (will be shown inside styled <div> and <p> tags).
  * @param string $type MMessage type, controls HTML class. Possible values include 'error', 'success', 'warning', 'info'. Default 'error'.
+ *
  */
 function automator_add_settings_error( $setting = '', $code = '', $message = '', $type = '' ) {
 
@@ -1241,8 +1250,8 @@ if ( ! function_exists( 'is_iterable' ) ) {
 	 *
 	 * @return bool
 	 */
-	function is_iterable( $var ) {
-		return is_array( $var ) || $var instanceof Traversable;
+	function is_iterable( $iterable_var ) {
+		return is_array( $iterable_var ) || $iterable_var instanceof Traversable;
 	}
 }
 

@@ -39,22 +39,26 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-			/* Translators: Product name */
-				esc_attr__( 'A payment for {{a product:%1$s}} is refunded', 'uncanny-automator' ),
+				// translators: %s Stripe product name
+				esc_attr_x( 'A payment for {{a product:%1$s}} is refunded', 'Stripe', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
 		);
 
 		// Non-active state sentence to show
 
-		$this->set_readable_sentence( esc_attr__( 'A payment for {{a product}} is refunded', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr_x( 'A payment for {{a product}} is refunded', 'Stripe', 'uncanny-automator' ) );
 
 		// Which do_action() fires this trigger.
 		$this->add_action( Stripe_Webhook::LINE_ITEM_REFUNDED_ACTION );
 
 		$this->set_action_args_count( 3 );
 	}
-
+	/**
+	 * Options.
+	 *
+	 * @return mixed
+	 */
 	public function options() {
 
 		$prices = $this->helpers->api->get_prices_options( 'one_time' );
@@ -62,14 +66,14 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 		array_unshift(
 			$prices,
 			array(
-				'text'  => _x( 'Any', 'Stripe', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Any', 'Stripe', 'uncanny-automator' ),
 				'value' => '-1',
 			)
 		);
 
 		$products = array(
 			'option_code' => $this->get_trigger_meta(),
-			'label'       => esc_html__( 'Price', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Price', 'Stripe', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
 			'read_only'   => false,
@@ -79,46 +83,46 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 		$metadata = array(
 			'input_type'        => 'repeater',
 			'option_code'       => 'METADATA',
-			'label'             => esc_attr__( 'Extract checkout metadata', 'uncanny-automator' ),
+			'label'             => esc_attr_x( 'Extract checkout metadata', 'Stripe', 'uncanny-automator' ),
 			'relevant_tokens'   => array(),
 			'required'          => false,
 			'fields'            => array(
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'KEY',
-					'label'           => esc_attr__( 'Metadata key', 'uncanny-automator' ),
+					'label'           => esc_attr_x( 'Metadata key', 'Stripe', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
-					'placeholder'     => esc_html__( 'product', 'uncanny-automator' ),
-					'description'     => sprintf( '<i>%s</i>', esc_html__( 'Separate keys with / to build nested data.', 'uncanny-automator' ) ),
+					'placeholder'     => esc_html_x( 'product', 'Stripe', 'uncanny-automator' ),
+					'description'     => sprintf( '<i>%s</i>', esc_html_x( 'Separate keys with / to build nested data.', 'Stripe', 'uncanny-automator' ) ),
 				),
 			),
 			/* translators: Non-personal infinitive verb */
-			'add_row_button'    => esc_attr__( 'Add a key', 'uncanny-automator' ),
+			'add_row_button'    => esc_attr_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
 			/* translators: Non-personal infinitive verb */
-			'remove_row_button' => esc_attr__( 'Remove key', 'uncanny-automator' ),
+			'remove_row_button' => esc_attr_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
 		);
 
 		$custom_fields = array(
 			'input_type'        => 'repeater',
 			'option_code'       => 'CUSTOM_FIELDS',
-			'label'             => esc_attr__( 'Extract checkout custom fields', 'uncanny-automator' ),
+			'label'             => esc_attr_x( 'Extract checkout custom fields', 'Stripe', 'uncanny-automator' ),
 			'required'          => false,
 			'relevant_tokens'   => array(),
 			'fields'            => array(
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'KEY',
-					'label'           => esc_attr__( 'Custom field key', 'uncanny-automator' ),
+					'label'           => esc_attr_x( 'Custom field key', 'Stripe', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
-					'placeholder'     => esc_html__( 'product', 'uncanny-automator' ),
+					'placeholder'     => esc_html_x( 'product', 'Stripe', 'uncanny-automator' ),
 				),
 			),
 			/* translators: Non-personal infinitive verb */
-			'add_row_button'    => esc_attr__( 'Add a field', 'uncanny-automator' ),
+			'add_row_button'    => esc_attr_x( 'Add a field', 'Stripe', 'uncanny-automator' ),
 			/* translators: Non-personal infinitive verb */
-			'remove_row_button' => esc_attr__( 'Remove field', 'uncanny-automator' ),
+			'remove_row_button' => esc_attr_x( 'Remove field', 'Stripe', 'uncanny-automator' ),
 		);
 
 		return array(
@@ -146,7 +150,7 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 		$product_tokens = array(
 			array(
 				'tokenId'   => 'PRODUCT_ID',
-				'tokenName' => _x( 'Product ID', 'Stripe', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Product ID', 'Stripe', 'uncanny-automator' ),
 				'tokenType' => 'string',
 			),
 		);
@@ -160,14 +164,14 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 
 		if ( ! empty( $trigger['meta']['METADATA'] ) ) {
 			$metadata_keys   = json_decode( $trigger['meta']['METADATA'], true );
-			$metadata_tokens = $this->helpers->tokens->custom_data_tokens( $metadata_keys, 'METADATA', _x( 'Metadata key: ', 'Stripe', 'uncanny-automator' ) );
+			$metadata_tokens = $this->helpers->tokens->custom_data_tokens( $metadata_keys, 'METADATA', esc_html_x( 'Metadata key: ', 'Stripe', 'uncanny-automator' ) );
 		}
 
 		$custom_fields_tokens = array();
 
 		if ( ! empty( $trigger['meta']['CUSTOM_FIELDS'] ) ) {
 			$custom_fields        = json_decode( $trigger['meta']['CUSTOM_FIELDS'], true );
-			$custom_fields_tokens = $this->helpers->tokens->custom_data_tokens( $custom_fields, 'CUSTOM_FIELD', _x( 'Custom field key: ', 'Stripe', 'uncanny-automator' ) );
+			$custom_fields_tokens = $this->helpers->tokens->custom_data_tokens( $custom_fields, 'CUSTOM_FIELD', esc_html_x( 'Custom field key: ', 'Stripe', 'uncanny-automator' ) );
 		}
 
 		$tokens = array_merge(
@@ -226,7 +230,7 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 
 		$invoice_tokens = $this->helpers->tokens->hydrate_invoice_tokens( $invoice );
 
-		$customer = $session['customer'];
+		$customer = $session['customer_details'];
 
 		$customer_tokens = $this->helpers->tokens->hydrate_customer_tokens( $customer );
 		$shipping_tokens = $this->helpers->tokens->hydrate_shipping_tokens( $customer );

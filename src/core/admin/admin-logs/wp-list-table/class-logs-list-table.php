@@ -74,9 +74,7 @@ class Logs_List_Table extends WP_List_Table {
 	 * @param array $columns
 	 */
 	public function set_columns( $columns ) {
-
 		$this->column_list = $columns;
-
 	}
 
 	/**
@@ -110,18 +108,15 @@ class Logs_List_Table extends WP_List_Table {
 		do_action( 'automator_class_list_table_get_query_adapter_after', $this );
 
 		return isset( $tabs_query[ $tab ] ) ? $tabs_query[ $tab ] : '';
-
 	}
 
 	/**
 	 * @return mixed|string
 	 */
 	private function get_query() {
-
 		return class_exists( '\Uncanny_Automator_Pro\Pro_Filters' ) ?
 			$this->get_query_provider( 'pro', $this->tab ) : // <-- Pro
 			$this->get_query_provider( null, $this->tab ); //<-- Free
-
 	}
 
 	/**
@@ -179,7 +174,7 @@ class Logs_List_Table extends WP_List_Table {
 
 		if ( ! empty( $paged ) && ! empty( $perpage ) ) {
 			$offset = ( $paged - 1 ) * $perpage;
-			$query  .= ' LIMIT ' . (int) $offset . ',' . $perpage;
+			$query .= ' LIMIT ' . (int) $offset . ',' . $perpage;
 		}
 
 		/* -- Register the pagination -- */
@@ -668,7 +663,7 @@ class Logs_List_Table extends WP_List_Table {
 					if ( empty( $trigger_sentence ) ) {
 						$trigger_name = '<div class="uap-logs-table__item-main-sentence">' . esc_html( $trigger_title ) . '</div>';
 					} else {
-						$trigger_name = '<div class="uap-logs-table__item-main-sentence">' . $this->format_human_readable_sentence( $trigger_sentence ) . '</div>';
+						$trigger_name  = '<div class="uap-logs-table__item-main-sentence">' . $this->format_human_readable_sentence( $trigger_sentence ) . '</div>';
 						$trigger_name .= '<div class="uap-logs-table__item-secondary-sentence">' . esc_html( $trigger_title ) . '</div>';
 					}
 				}
@@ -807,7 +802,6 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return $sentence;
-
 	}
 
 	/**
@@ -853,7 +847,7 @@ class Logs_List_Table extends WP_List_Table {
 					if ( empty( $action_sentence ) ) {
 						$action_name = '<div class="uap-logs-table__item-main-sentence">' . $this->format_human_readable_sentence( $action_title ) . '</div>';
 					} else {
-						$action_name = '<div class="uap-logs-table__item-main-sentence">' . $this->format_human_readable_sentence( $action_sentence ) . '</div>';
+						$action_name  = '<div class="uap-logs-table__item-main-sentence">' . $this->format_human_readable_sentence( $action_sentence ) . '</div>';
 						$action_name .= '<div class="uap-logs-table__item-secondary-sentence">' . esc_html( $action_title ) . '</div>';
 					}
 				}
@@ -991,7 +985,6 @@ class Logs_List_Table extends WP_List_Table {
 		$upgrade_link = sprintf( '<a target="_blank" href="%1$s" title="%2$s">%2$s</a>', $link, esc_html__( 'Please upgrade for unlimited app credits', 'uncanny-automator' ) );
 
 		return str_replace( '{{automator_upgrade_link}}', $upgrade_link, $message );
-
 	}
 
 	/**
@@ -1033,7 +1026,6 @@ class Logs_List_Table extends WP_List_Table {
 	protected function column_default( $item, $column_name ) {
 
 		return $item[ $column_name ];
-
 	}
 
 	/**
@@ -1050,7 +1042,6 @@ class Logs_List_Table extends WP_List_Table {
 			array( 'uncanny-automator', 'widefat', 'striped', $mode_class, $this->_args['plural'] ),
 			$this
 		);
-
 	}
 
 	/**
@@ -1099,27 +1090,26 @@ class Logs_List_Table extends WP_List_Table {
 			'date' => $datetime->format( 'Y-m-d' ),
 			'time' => $datetime->format( 'H:i:s' ),
 		);
-
 	}
 
 	/**
 	 * Constructs the user HTML of any log
 	 *
-	 * @param mixed $object The object.
+	 * @param mixed $item_object - The item object.
 	 *
 	 * @return string The HTML of the user log.
 	 */
-	private function get_user_html( $object ) {
+	private function get_user_html( $item_object ) {
 
 		// Safely convert all user id to integer.
-		$user_id = absint( $object->user_id );
+		$user_id = absint( $item_object->user_id );
 
 		// Handle 'everyone' recipe log.
 		if ( empty( $user_id ) ) {
 			return '&mdash;';
 		}
 
-		$deleted = empty( $object->display_name ) && empty( $object->user_email ) && 0 !== absint( $user_id );
+		$deleted = empty( $item_object->display_name ) && empty( $item_object->user_email ) && 0 !== absint( $user_id );
 
 		// Handle logs where user is deleted.
 		if ( $deleted ) {
@@ -1145,10 +1135,9 @@ class Logs_List_Table extends WP_List_Table {
 				. get_avatar( $user_id, 80, '', '', array( 'class' => 'uap-logs-user__avatar' ) ) . '
 			</div>
 		    <div class="uap-logs-user__info">
-			    <a href="' . esc_url( $user_link ) . '" class="uap-logs-user__display-name">' . esc_html( $object->display_name ) . '</a>
-		    <div class="uap-logs-user__email">' . esc_html( $object->user_email ) . '</div>
+			    <a href="' . esc_url( $user_link ) . '" class="uap-logs-user__display-name">' . esc_html( $item_object->display_name ) . '</a>
+		    <div class="uap-logs-user__email">' . esc_html( $item_object->user_email ) . '</div>
 		</div>';
-
 	}
 
 	/**
@@ -1163,7 +1152,6 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return Automator_Status::name( $status );
-
 	}
 
 	/**
@@ -1178,7 +1166,6 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return Automator_Status::get_class_name( $status );
-
 	}
 
 	/**
@@ -1198,7 +1185,6 @@ class Logs_List_Table extends WP_List_Table {
 			absint( $run_number_log ),
 			absint( $recipe_log_id )
 		);
-
 	}
 
 	/**
@@ -1219,7 +1205,6 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return filter_var( $order, FILTER_UNSAFE_RAW );
-
 	}
 
 	/**
@@ -1239,7 +1224,6 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return filter_var( $order_by, FILTER_UNSAFE_RAW );
-
 	}
 
 
@@ -1298,7 +1282,6 @@ class Logs_List_Table extends WP_List_Table {
 		);
 
 		return $recipe_name;
-
 	}
 
 	/**

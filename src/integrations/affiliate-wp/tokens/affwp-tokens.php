@@ -10,6 +10,9 @@ class Affwp_Tokens {
 	 */
 	public static $integration = 'AFFWP';
 
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_affwp_trigger_tokens' ), 20, 6 );
 		add_filter(
@@ -32,88 +35,94 @@ class Affwp_Tokens {
 		);
 	}
 
-	function affwp_possible_affiliate_tokens( $tokens = array(), $args = array() ) {
+	/**
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array|array[]|mixed
+	 */
+	public function affwp_possible_affiliate_tokens( $tokens = array(), $args = array() ) {
 
 		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
 
 		$trigger_integration = $args['integration'];
-		$trigger_meta        = $args['meta'];
+		$trigger_meta        = $args['triggers_meta']['code'];
 
 		$metas = array( 'APPROVEDAFFILIATE', 'NEWAFFILIATE', 'APPROVALWAITING' );
 
-		if ( $trigger_integration === 'AFFWP' && in_array( $trigger_meta, $metas ) ) {
+		if ( 'AFFWP' === $trigger_integration && in_array( $trigger_meta, $metas, true ) ) {
 			$fields = array(
 				array(
 					'tokenId'         => 'AFFILIATEWPID',
-					'tokenName'       => esc_html__( 'Affiliate ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Affiliate ID', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPURL',
-					'tokenName'       => esc_html__( 'Affiliate URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Affiliate URL', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPSTATUS',
-					'tokenName'       => esc_html__( 'Affiliate status', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Affiliate status', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPREGISTERDATE',
-					'tokenName'       => esc_html__( 'Registration date', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Registration date', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPWEBSITE',
-					'tokenName'       => esc_html__( 'Website', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Website', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPREFRATETYPE',
-					'tokenName'       => esc_html__( 'Referral rate type', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Referral rate type', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPREFRATE',
-					'tokenName'       => esc_html__( 'Referral rate', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Referral rate', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPCOUPON',
-					'tokenName'       => esc_html__( 'Dynamic coupon', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Dynamic coupon', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPACCEMAIL',
-					'tokenName'       => esc_html__( 'Account email', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Account email', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPPAYMENTEMAIL',
-					'tokenName'       => esc_html__( 'Payment email', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment email', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPPROMOMETHODS',
-					'tokenName'       => esc_html__( 'Promotion methods', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Promotion methods', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
 				array(
 					'tokenId'         => 'AFFILIATEWPNOTES',
-					'tokenName'       => esc_html__( 'Affiliate notes', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Affiliate notes', 'AffiliateWP token', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				),
@@ -124,7 +133,7 @@ class Affwp_Tokens {
 		return $tokens;
 	}
 
-	function affwp_possible_affiliate_ref_tokens( $tokens = array(), $args = array() ) {
+	public function affwp_possible_affiliate_ref_tokens( $tokens = array(), $args = array() ) {
 		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
@@ -135,115 +144,115 @@ class Affwp_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'AFFILIATEWPID',
-				'tokenName'       => esc_html__( 'Affiliate ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Affiliate ID', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPURL',
-				'tokenName'       => esc_html__( 'Affiliate URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Affiliate URL', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPSTATUS',
-				'tokenName'       => esc_html__( 'Affiliate status', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Affiliate status', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPREGISTERDATE',
-				'tokenName'       => esc_html__( 'Registration date', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Registration date', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPWEBSITE',
-				'tokenName'       => esc_html__( 'Website', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Website', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPREFRATETYPE',
-				'tokenName'       => esc_html__( 'Referral rate type', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral rate type', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPREFRATE',
-				'tokenName'       => esc_html__( 'Referral rate', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral rate', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPCOUPON',
-				'tokenName'       => esc_html__( 'Dynamic coupon', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Dynamic coupon', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPACCEMAIL',
-				'tokenName'       => esc_html__( 'Account email', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Account email', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPPAYMENTEMAIL',
-				'tokenName'       => esc_html__( 'Payment email', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Payment email', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPPROMOMETHODS',
-				'tokenName'       => esc_html__( 'Promotion methods', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Promotion methods', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'AFFILIATEWPNOTES',
-				'tokenName'       => esc_html__( 'Affiliate notes', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Affiliate notes', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'REFERRALAMOUNT',
-				'tokenName'       => esc_html__( 'Referral amount', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral amount', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'REFERRALDATE',
-				'tokenName'       => esc_html__( 'Referral date', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral date', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'REFERRALDESCRIPTION',
-				'tokenName'       => esc_html__( 'Referral description', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral description', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'REFERRALREFERENCE',
-				'tokenName'       => esc_html__( 'Referral reference', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral reference', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'REFERRALCONTEXT',
-				'tokenName'       => esc_html__( 'Referral context', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral context', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'REFERRALCUSTOM',
-				'tokenName'       => esc_html__( 'Referral custom', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral custom', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'REFERRALSTATUS',
-				'tokenName'       => esc_html__( 'Referral status', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Referral status', 'AffiliateWP token', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
@@ -264,18 +273,18 @@ class Affwp_Tokens {
 	 *
 	 * @return int|mixed|string
 	 */
-	function parse_affwp_trigger_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+	public function parse_affwp_trigger_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'SPECIFICETYPEREF', $pieces ) ||
-				 in_array( 'SENTENCE_HUMAN_READABLE', $pieces ) ||
-				 in_array( 'AFFWPAPPROVAL', $pieces ) ||
-				 in_array( 'APPROVALWAITING', $pieces ) ||
-				 in_array( 'APPROVEDAFFILIATE', $pieces ) ||
-				 in_array( 'USERBECOMESAFFILIATE', $pieces ) ||
-				 in_array( 'NEWAFFILIATE', $pieces ) ||
-				 in_array( 'ACCOUNTAPPROVED', $pieces ) ||
-				 in_array( 'AFFWPREJECTREFERRAL', $pieces ) ||
-				 in_array( 'AFFWPPAIDREFERRAL', $pieces )
+			if ( in_array( 'SPECIFICETYPEREF', $pieces, true ) ||
+				in_array( 'SENTENCE_HUMAN_READABLE', $pieces, true ) ||
+				in_array( 'AFFWPAPPROVAL', $pieces, true ) ||
+				in_array( 'APPROVALWAITING', $pieces, true ) ||
+				in_array( 'APPROVEDAFFILIATE', $pieces, true ) ||
+				in_array( 'USERBECOMESAFFILIATE', $pieces, true ) ||
+				in_array( 'NEWAFFILIATE', $pieces, true ) ||
+				in_array( 'ACCOUNTAPPROVED', $pieces, true ) ||
+				in_array( 'AFFWPREJECTREFERRAL', $pieces, true ) ||
+				in_array( 'AFFWPPAIDREFERRAL', $pieces, true )
 			) {
 
 				if ( 'SPECIFICETYPEREF' === $pieces[1] || 'AFFWPREFERRAL' === $pieces[1] ) {
@@ -391,5 +400,4 @@ class Affwp_Tokens {
 
 		return $value;
 	}
-
 }

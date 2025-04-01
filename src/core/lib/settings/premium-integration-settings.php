@@ -153,7 +153,6 @@ abstract class Premium_Integration_Settings {
 		add_action( 'added_option', array( $this, 'add_option_in_uap_options' ), 10, 2 );
 		add_action( 'updated_option', array( $this, 'update_option_in_uap_options' ), 10, 3 );
 		add_action( 'deleted_option', array( $this, 'delete_option_in_uap_optoions' ), 10, 1 );
-
 	}
 
 	/**
@@ -390,7 +389,6 @@ abstract class Premium_Integration_Settings {
 		//echo $this->content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		$this->output_form();
-
 	}
 
 	/**
@@ -465,7 +463,6 @@ abstract class Premium_Integration_Settings {
 	 * @return void
 	 */
 	public function output_panel_content() {
-
 	}
 
 	/**
@@ -638,7 +635,6 @@ abstract class Premium_Integration_Settings {
 		if ( $this->get_js() ) {
 			$this->load_js( $this->get_js() );
 		}
-
 	}
 
 	/**
@@ -646,12 +642,17 @@ abstract class Premium_Integration_Settings {
 	 *
 	 * Add scripts on the settings page output
 	 *
-	 * @param  string $path
+	 * @param string $path Required. The path relative to '/src/integrations/'.
+	 * @param string $post_fix Optional. Useful for loading multiple JS files.
+	 *
 	 * @return void
 	 */
-	public function load_js( $path ) {
+	public function load_js( $path, $post_fix = '' ) {
+
+		$handle = 'uap-premium-integration-' . $this->get_id() . $post_fix;
+
 		wp_enqueue_script(
-			'uap-premium-integration-' . $this->get_id(),
+			$handle,
 			plugins_url( '/src/integrations/' . $path, AUTOMATOR_BASE_FILE ),
 			array( 'uap-admin' ),
 			AUTOMATOR_PLUGIN_VERSION,
@@ -777,7 +778,6 @@ abstract class Premium_Integration_Settings {
 		><?php echo( wp_kses( $alert['content'], $allowed_html ) ); ?></uo-alert>
 
 		<?php
-
 	}
 
 	/**
@@ -878,5 +878,4 @@ abstract class Premium_Integration_Settings {
 
 		<?php
 	}
-
 }

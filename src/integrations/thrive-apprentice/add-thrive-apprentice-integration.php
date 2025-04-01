@@ -1,14 +1,17 @@
 <?php
+
 namespace Uncanny_Automator;
 
 class Add_Thrive_Apprentice_Integration {
 
 	use Recipe\Integrations;
 
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 
 		$this->setup();
-
 	}
 
 	/**
@@ -25,7 +28,6 @@ class Add_Thrive_Apprentice_Integration {
 		$this->set_icon( 'thrive-apprentice-icon.svg' );
 
 		$this->set_icon_path( __DIR__ . '/img/' );
-
 	}
 
 	/**
@@ -38,7 +40,5 @@ class Add_Thrive_Apprentice_Integration {
 	public function plugin_active() {
 
 		return class_exists( '\TVA_Manager' );
-
 	}
-
 }
