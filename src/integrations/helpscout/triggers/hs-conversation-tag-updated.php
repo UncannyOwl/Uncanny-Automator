@@ -26,6 +26,11 @@ class HS_CONVERSATION_TAG_UPDATED {
 	 */
 	const TRIGGER_META = 'HS_CONVERSATION_TAG_UPDATED_META';
 
+	/**
+	 * __construct
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 
 		if ( automator_get_option( 'uap_helpscout_enable_webhook', false ) ) {
@@ -35,7 +40,6 @@ class HS_CONVERSATION_TAG_UPDATED {
 			$this->setup_trigger();
 
 		}
-
 	}
 
 	/**
@@ -67,35 +71,32 @@ class HS_CONVERSATION_TAG_UPDATED {
 
 		$this->set_sentence(
 			sprintf(
-				/* Translators: Trigger sentence */
-				esc_html__( "A conversation's tags are updated", 'uncanny-automator' )
+				esc_html_x( "A conversation's tags are updated", 'Help Scout', 'uncanny-automator' )
 			)
 		);
 
 		$this->set_readable_sentence(
-			/* Translators: Trigger sentence */
-			esc_html__( "A conversation's tags are updated", 'uncanny-automator' )
+			esc_html_x( "A conversation's tags are updated", 'Help Scout', 'uncanny-automator' )
 		);
 
 		$this->set_tokens(
 			array(
-				'assigned_to'            => array( 'name' => esc_html__( 'Assigned to', 'uncanny-automator' ) ),
-				'conversation_url'       => array( 'name' => esc_html__( 'Conversation URL', 'uncanny-automator' ) ),
-				'conversation_created'   => array( 'name' => esc_html__( 'Conversation created on', 'uncanny-automator' ) ),
-				'conversation_status'    => array( 'name' => esc_html__( 'Conversation status', 'uncanny-automator' ) ),
-				'conversation_title'     => array( 'name' => esc_html__( 'Conversation title', 'uncanny-automator' ) ),
-				'customer_email'         => array( 'name' => esc_html__( 'Customer email', 'uncanny-automator' ) ),
-				'customer_name'          => array( 'name' => esc_html__( 'Customer name', 'uncanny-automator' ) ),
-				'customer_waiting_since' => array( 'name' => esc_html__( 'Customer waiting since', 'uncanny-automator' ) ),
-				'folder_id'              => array( 'name' => esc_html__( 'Folder ID', 'uncanny-automator' ) ),
-				'mailbox_id'             => array( 'name' => esc_html__( 'Mailbox ID', 'uncanny-automator' ) ),
-				'tags'                   => array( 'name' => esc_html__( 'Tags', 'uncanny-automator' ) ),
+				'assigned_to'            => array( 'name' => esc_html_x( 'Assigned to', 'Help Scout', 'uncanny-automator' ) ),
+				'conversation_url'       => array( 'name' => esc_html_x( 'Conversation URL', 'Help Scout', 'uncanny-automator' ) ),
+				'conversation_created'   => array( 'name' => esc_html_x( 'Conversation created on', 'Help Scout', 'uncanny-automator' ) ),
+				'conversation_status'    => array( 'name' => esc_html_x( 'Conversation status', 'Help Scout', 'uncanny-automator' ) ),
+				'conversation_title'     => array( 'name' => esc_html_x( 'Conversation title', 'Help Scout', 'uncanny-automator' ) ),
+				'customer_email'         => array( 'name' => esc_html_x( 'Customer email', 'Help Scout', 'uncanny-automator' ) ),
+				'customer_name'          => array( 'name' => esc_html_x( 'Customer name', 'Help Scout', 'uncanny-automator' ) ),
+				'customer_waiting_since' => array( 'name' => esc_html_x( 'Customer waiting since', 'Help Scout', 'uncanny-automator' ) ),
+				'folder_id'              => array( 'name' => esc_html_x( 'Folder ID', 'Help Scout', 'uncanny-automator' ) ),
+				'mailbox_id'             => array( 'name' => esc_html_x( 'Mailbox ID', 'Help Scout', 'uncanny-automator' ) ),
+				'tags'                   => array( 'name' => esc_html_x( 'Tags', 'Help Scout', 'uncanny-automator' ) ),
 			)
 		);
 
 		// Register the trigger.
 		$this->register_trigger();
-
 	}
 
 	/**
@@ -110,7 +111,6 @@ class HS_CONVERSATION_TAG_UPDATED {
 		}
 
 		return $this->get_helper()->is_webhook_request_matches_event( $args[0][1], 'convo.tags' );
-
 	}
 
 	/**
@@ -123,7 +123,6 @@ class HS_CONVERSATION_TAG_UPDATED {
 	public function prepare_to_run( $data ) {
 
 		$this->set_conditional_trigger( false );
-
 	}
 
 	/**
@@ -134,7 +133,6 @@ class HS_CONVERSATION_TAG_UPDATED {
 	public function do_continue_anon_trigger( ...$args ) {
 
 		return true;
-
 	}
 
 	public function parse_additional_tokens( $parsed, $args, $trigger ) {
@@ -159,21 +157,38 @@ class HS_CONVERSATION_TAG_UPDATED {
 			$assign_to = 'Anyone'; // Helpscout `anyone` assignee has id value of 1.
 		}
 
+		$conversation_id = $params['id'] ?? '';
+
+		if ( isset( $params['conversationId'] ) ) {
+			$conversation_id = $params['conversationId'];
+		}
+
+		$conversation_created = '';
+
+		if ( isset( $params['createdAt'] ) ) {
+			$conversation_created = $this->get_helper()->format_date_timestamp( strtotime( $params['createdAt'] ) );
+		}
+
+		$customer_waiting_since = '';
+
+		if ( isset( $params['customerWaitingSince']['time'] ) ) {
+			$customer_waiting_since = $this->get_helper()->format_date_timestamp( strtotime( $params['customerWaitingSince']['time'] ) );
+		}
+
 		$hydrated_tokens = array(
 			'assigned_to'            => $assign_to,
-			'conversation_url'       => 'https://secure.helpscout.net/conversation/' . $params['conversationId'],
-			'conversation_created'   => $this->get_helper()->format_date_timestamp( strtotime( $params['createdAt'] ) ),
-			'conversation_status'    => $params['status'],
-			'conversation_title'     => $params['subject'],
-			'customer_email'         => $params['primaryCustomer']['email'],
-			'customer_name'          => $customer_name,
-			'customer_waiting_since' => $this->get_helper()->format_date_timestamp( strtotime( $params['customerWaitingSince']['time'] ) ),
-			'folder_id'              => $params['folderId'],
-			'mailbox_id'             => $params['mailboxId'],
-			'tags'                   => implode( ', ', array_column( $params['tags'], 'tag' ) ),
+			'conversation_url'       => 'https://secure.helpscout.net/conversation/' . $conversation_id,
+			'conversation_created'   => $conversation_created,
+			'conversation_status'    => $params['status'] ?? '',
+			'conversation_title'     => $params['subject'] ?? '',
+			'customer_email'         => $params['primaryCustomer']['email'] ?? '',
+			'customer_name'          => $customer_name ?? '',
+			'customer_waiting_since' => $customer_waiting_since,
+			'folder_id'              => $params['folderId'] ?? '',
+			'mailbox_id'             => $params['mailboxId'] ?? '',
+			'tags'                   => implode( ', ', array_column( $params['tags'] ?? array(), 'tag' ) ),
 		);
 
 		return $parsed + $hydrated_tokens;
 	}
-
 }

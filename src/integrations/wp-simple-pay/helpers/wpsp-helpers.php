@@ -30,20 +30,19 @@ class Wpsp_Helpers {
 	 * Wpsp_Helpers constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
 	 * @param Wpsp_Helpers $options
 	 */
-	public function setOptions( Wpsp_Helpers $options ) {
+	public function setOptions( Wpsp_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Wpsp_Pro_Helpers $pro
 	 */
-	public function setPro( Wpsp_Pro_Helpers $pro ) {
+	public function setPro( Wpsp_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -82,7 +81,7 @@ class Wpsp_Helpers {
 	public function list_wp_simpay_forms( $label = null, $option_code = 'WPSPFORMS', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr_x( 'Form', 'Wp Simple Pay', 'uncanny-automator' );
 		}
 
 		$token           = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -93,14 +92,14 @@ class Wpsp_Helpers {
 		if ( ! empty( $wpsp_forms ) ) {
 			foreach ( $wpsp_forms as $form_id => $form_title ) {
 				$form = simpay_get_form( $form_id );
-				if ( true === $is_subscription && $form->subscription_type === 'disabled' ) {
+				if ( true === $is_subscription && 'disabled' === $form->subscription_type ) {
 					continue;
 				}
 				$options[ $form_id ] = ! empty( $form_title ) ? $form_title : $form->company_name;
 			}
 		}
 		if ( true === $is_any ) {
-			$options = array( '-1' => esc_html__( 'Any form', 'uncanny-automator' ) ) + $options;
+			$options = array( '-1' => esc_html_x( 'Any form', 'Wp Simple Pay', 'uncanny-automator' ) ) + $options;
 		}
 		$option = array(
 			'option_code'     => $option_code,
@@ -110,11 +109,28 @@ class Wpsp_Helpers {
 			'supports_tokens' => $token,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code         => esc_attr_x( 'Form title', 'Wp Simple Pay', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr_x( 'Form ID', 'Wp Simple Pay', 'uncanny-automator' ),
 			),
 		);
 
 		return apply_filters( 'uap_option_list_wp_simpay_forms', $option );
+	}
+
+	/**
+	 * @param $simpay_price_instances
+	 * @param $form_id
+	 *
+	 * @return mixed|void
+	 */
+	public function get_price_option_value( $simpay_price_instances, $form_id ) {
+		$price_instance = explode( ':', $simpay_price_instances );
+		$price_meta_key = simpay_is_livemode() ? '_simpay_prices_live' : '_simpay_prices_test';
+		$prices         = get_post_meta( $form_id, $price_meta_key, true );
+		foreach ( $prices as $price_key => $price_details ) {
+			if ( $price_key === $price_instance[0] ) {
+				return $price_details['label'];
+			}
+		}
 	}
 }

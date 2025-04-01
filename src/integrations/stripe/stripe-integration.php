@@ -22,12 +22,13 @@ class Stripe_Integration extends \Uncanny_Automator\Integration {
 		$name = 'Stripe';
 
 		if ( 'test' === $this->helpers->get_mode() ) {
-			$name .= ' (' . esc_html__( 'Test mode', 'uncanny-automator' ) . ')';
+			$name .= ' (' . esc_html_x( 'Test mode', 'Stripe', 'uncanny-automator' ) . ')';
 		}
 
 		$this->set_name( $name );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/stripe-icon.svg' );
 		$this->set_connected( $this->helpers->integration_status() );
+		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'stripe' ) );
 	}
 
 	/**

@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use function SimplePay\Pro\Post_Types\Simple_Pay\Util\get_custom_fields;
-
 /**
  * Class Wpsp_Tokens
  *
@@ -54,113 +52,77 @@ class Wpsp_Tokens {
 		if ( null === $form_id ) {
 			return $tokens;
 		}
-		$form_fields = array();
-		if ( function_exists( 'SimplePay\Pro\Post_Types\Simple_Pay\Util\get_custom_fields' ) && intval( '-1' ) !== intval( $form_id ) ) {
-			$form_fields = \SimplePay\Pro\Post_Types\Simple_Pay\Util\get_custom_fields( $form_id );
-		}
 
 		$fields = array(
 			array(
 				'tokenId'         => 'BILLING_NAME',
-				'tokenName'       => esc_html__( 'Billing name', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Billing name', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_EMAIL',
-				'tokenName'       => esc_html__( 'Billing email', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Billing email', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'email',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_TELEPHONE',
-				'tokenName'       => esc_html__( 'Billing phone', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Billing phone', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_STREET_ADDRESS',
-				'tokenName'       => esc_html__( 'Billing address', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Billing address', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_CITY',
-				'tokenName'       => esc_html__( 'Billing city', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Billing city', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_STATE',
-				'tokenName'       => esc_html__( 'Billing state', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Billing state', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_POSTAL_CODE',
-				'tokenName'       => esc_html__( 'Billing postal code', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Billing postal code', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'BILLING_COUNTRY',
-				'tokenName'       => esc_html__( 'Billing country', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Billing country', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'PRICE_OPTION',
-				'tokenName'       => esc_html__( 'Price option', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Price option', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 			array(
 				'tokenId'         => 'QUANTITY_PURCHASED',
-				'tokenName'       => esc_html__( 'Quantity', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Quantity', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_BILLING_FIELDS',
 			),
 		);
 
-		$skip_types = apply_filters(
-			'automator_wp_simpay_skip_field_types',
-			array(
-				'email',
-				'tax_id',
-				'address',
-				'telephone',
-				'customer_name',
-				'plan_select',
-				'card',
-			)
-		);
-		if ( ! empty( $form_fields ) ) {
-			foreach ( $form_fields as $field ) {
-				if ( isset( $field['label'] ) && ! in_array( $field['type'], $skip_types, true ) ) {
-					$input_id = $field['id'];
-					$token_id = "simpay-form-$form_id-field-$input_id";
+		$form_fields = $this->get_custom_field_tokens( $form_id, $tokens, 'WPSPFORMFIELDS_META' );
 
-					if ( isset( $field['metadata'] ) && ! empty( $field['metadata'] ) ) {
-						$token_id = $field['metadata'];
-					}
-
-					$existing_tokens = array_column( $tokens, 'tokenId' );
-					if ( ! in_array( $token_id, $existing_tokens, true ) ) {
-						$fields[] = array(
-							'tokenId'         => $token_id,
-							'tokenName'       => empty( $field['label'] ) ? sprintf( 'Field ID #%s (no label)', $field['uid'] ) : $field['label'],
-							'tokenType'       => 'text',
-							'tokenIdentifier' => 'WPSPFORMFIELDS_META',
-						);
-					}
-				}
-			}
-		}
 		// Non subscription forms
 		if ( $plain ) {
 			$fields[] = array(
 				'tokenId'         => 'AMOUNT_PAID',
-				'tokenName'       => esc_html__( 'Amount paid', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Amount paid', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMS',
 			);
@@ -169,27 +131,75 @@ class Wpsp_Tokens {
 		if ( ! $plain ) {
 			$fields[] = array(
 				'tokenId'         => 'AMOUNT_DUE',
-				'tokenName'       => esc_html__( 'Amount due', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Amount due', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_DUE',
 			);
 			$fields[] = array(
 				'tokenId'         => 'AMOUNT_PAID',
-				'tokenName'       => esc_html__( 'Amount paid', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Amount paid', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_PAID',
 			);
 			$fields[] = array(
 				'tokenId'         => 'AMOUNT_REMAINING',
-				'tokenName'       => esc_html__( 'Amount remaining', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Amount remaining', 'Wp Simple Pay', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPSPFORMFIELDS_PLAN_AMOUNT_REMAINING',
 			);
 		}
-		$tokens = array_merge( $tokens, $fields );
+		$tokens = array_merge( $tokens, $fields, $form_fields );
 
 		return $tokens;
+	}
 
+	/**
+	 * @param $form_id
+	 * @param $tokens
+	 * @param $token_identifier
+	 *
+	 * @return array
+	 */
+	public function get_custom_field_tokens( $form_id, $tokens, $token_identifier = null ) {
+		$fields = array();
+		if ( function_exists( 'SimplePay\Pro\Post_Types\Simple_Pay\Util\get_custom_fields' ) && intval( '-1' ) !== intval( $form_id ) ) {
+			$form_fields = \SimplePay\Pro\Post_Types\Simple_Pay\Util\get_custom_fields( $form_id );
+			$skip_types  = apply_filters(
+				'automator_wp_simpay_skip_field_types',
+				array(
+					'email',
+					'tax_id',
+					'address',
+					'telephone',
+					'customer_name',
+					'plan_select',
+					'card',
+				)
+			);
+
+			if ( ! empty( $form_fields ) ) {
+				foreach ( $form_fields as $field ) {
+					if ( isset( $field['label'] ) && ! in_array( $field['type'], $skip_types, true ) ) {
+						$input_id = $field['id'];
+						$token_id = "simpay-form-$form_id-field-$input_id";
+						if ( isset( $field['metadata'] ) && ! empty( $field['metadata'] ) ) {
+							$token_id = $field['metadata'];
+						}
+						$existing_tokens = array_column( $tokens, 'tokenId' );
+						if ( ! in_array( $token_id, $existing_tokens, true ) ) {
+							$fields[] = array(
+								'tokenId'         => $token_id,
+								'tokenName'       => empty( $field['label'] ) ? sprintf( 'Field ID #%s (no label)', $field['uid'] ) : $field['label'],
+								'tokenType'       => 'text',
+								'tokenIdentifier' => $token_identifier,
+							);
+						}
+					}
+				}
+			}
+		}
+
+		return $fields;
 	}
 
 	/**
@@ -231,7 +241,7 @@ class Wpsp_Tokens {
 				return $form->company_name;
 			}
 
-			return esc_html__( 'N/A', 'uncanny-automator' );
+			return esc_html_x( 'N/A', 'Wp Simple Pay', 'uncanny-automator' );
 		}
 		// Form meta
 		if ( 'WPSPFORMFIELDS_META' === $pieces[1] ) {
@@ -301,14 +311,6 @@ class Wpsp_Tokens {
 
 		}
 
-		$price_instance = explode( ':', $meta_data['simpay_price_instances'] );
-		$price_meta_key = simpay_is_livemode() ? '_simpay_prices_live' : '_simpay_prices_test';
-		$prices         = get_post_meta( $meta_data['simpay_form_id'], $price_meta_key, true );
-		foreach ( $prices as $price_key => $price_details ) {
-			if ( $price_key === $price_instance[0] ) {
-				return $price_details['label'];
-			}
-		}
+		return Automator()->helpers->recipe->wp_simple_pay->options->get_price_option_value( $meta_data['simpay_price_instances'], $meta_data['simpay_form_id'] );
 	}
-
 }

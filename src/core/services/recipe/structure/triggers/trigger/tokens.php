@@ -3,6 +3,7 @@ namespace Uncanny_Automator\Services\Recipe\Structure\Triggers\Trigger;
 
 use stdClass;
 use Uncanny_Automator\Services\Recipe\Common;
+use Uncanny_Automator\Services\Recipe\Structure\Triggers\Tokens\Common\Token;
 
 final class Tokens implements \JsonSerializable {
 
@@ -29,7 +30,6 @@ final class Tokens implements \JsonSerializable {
 
 		self::$trigger    = $trigger;
 		self::$trigger_id = $trigger['ID'];
-
 	}
 
 	/**
@@ -185,9 +185,34 @@ final class Tokens implements \JsonSerializable {
 		}
 
 		return $tokens_collection;
-
 	}
+	/**
+	 * Generate common tokens.
+	 *
+	 * @return mixed
+	 */
+	private function generate_common_tokens() {
 
+		$common_tokens = array(
+			new Token(
+				esc_attr_x( 'Trigger ID', 'Trigger', 'uncanny-automator' ),
+				sprintf( 'TRIGGER_COMMON:%d:ID', self::$trigger_id ),
+				'int' // Data type for this token.
+			),
+			new Token(
+				esc_attr_x( 'Trigger title', 'Trigger', 'uncanny-automator' ),
+				sprintf( 'TRIGGER_COMMON:%d:TITLE', self::$trigger_id )
+				// Using default 'text' as data type and 'trigger_common' as token type.
+			),
+			new Token(
+				esc_attr_x( 'Trigger completion date', 'Trigger', 'uncanny-automator' ),
+				sprintf( 'TRIGGER_COMMON:%d:COMPLETION_DATE', self::$trigger_id ),
+				'date' // Data type for this token.
+			),
+		);
+
+		return $common_tokens;
+	}
 
 	/**
 	 * @param mixed[] $fields
@@ -198,11 +223,11 @@ final class Tokens implements \JsonSerializable {
 
 		$tokens_fields   = $this->generate_field_tokens( $fields );
 		$tokens_custom   = $this->generate_custom_tokens();
+		$tokens_common   = $this->generate_common_tokens();
 		$loopable_tokens = $this->generate_loopable_tokens();
 
-		$this->tokens = array_merge( $tokens_fields, $tokens_custom, $loopable_tokens );
+		$this->tokens = array_merge( $tokens_fields, $tokens_custom, $tokens_common, $loopable_tokens );
 
 		return $this->tokens;
 	}
-
 }

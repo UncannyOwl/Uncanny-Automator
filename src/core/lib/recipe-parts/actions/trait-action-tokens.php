@@ -60,9 +60,15 @@ trait Action_Tokens {
 		$this->dev_input = $dev_input;
 
 		// Hook to automator_action_created.
+		// Remove any existing hooks to prevent duplicate registrations
+		// @see https://app.clickup.com/t/868bh7gyr?comment=90110121861333
+		remove_action( 'automator_action_created', array( $this, 'handle_automator_action_created' ) );
 		add_action( 'automator_action_created', array( $this, 'handle_automator_action_created' ), 10, 1 );
 
 		// Hook to automator_pro_async_action_after_run_execution.
+		// Remove any existing hooks to prevent duplicate registrations
+		// @see https://app.clickup.com/t/868bh7gyr?comment=90110121861333
+		remove_action( 'automator_pro_async_action_after_run_execution', array( $this, 'handle_automator_pro_async_action' ) );
 		add_action( 'automator_pro_async_action_after_run_execution', array( $this, 'handle_automator_pro_async_action' ), 10, 1 );
 
 		return true;
@@ -115,7 +121,5 @@ trait Action_Tokens {
 			$store->set_key_value_pairs( wp_json_encode( $this->dev_input ) );
 			$store->store( $hook_args );
 		}
-
 	}
-
 }

@@ -1,0 +1,164 @@
+<style>
+    table.uap-fbla-settings-page-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .uap-fbla-settings-page-fbla-repair {
+        margin: 5px;
+    }
+
+    #fblaPagesTable div[id^="status-"] .error {
+        color: var(--uap-button-style-custom-color, var(--uap-color-red));
+    }
+
+    #fblaPagesTable div[id^="status-"] .ready {
+        color: var(--uap-item-status-completed);
+    }
+</style>
+<div class="uap-settings-panel">
+    <div class="uap-settings-panel-top">
+        <div class="uap-settings-panel-title">
+            <uo-icon integration="FACEBOOK_LEAD_ADS"></uo-icon> Facebook Lead Ads
+        </div>
+
+        <div class="uap-settings-panel-content">
+            <div class="uap-spacing-bottom">
+                <p>
+                    The following pages were selected during the OAuth process. Disconnect and reconnect if there are
+                    any pages missing and make sure those pages are selected.
+                </p>
+            </div>
+
+            <table id="fblaPagesTable" class="uap-fbla-settings-page-table">
+                <thead>
+                    <tr>
+                        <th style="width:15%;">Name</th>
+                        <th style="width:25%;">ID</th>
+                        <th style="width:35%;">Status</th>
+                        <th style="width:10%; text-align:center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Digital Marketing Hub</td>
+                        <td>123456789012345</td>
+                        <td>
+                            <div id="status-123456789012345">
+                                <span class="status ready">Ready (last checked 3 hours ago)</span>
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <uo-button data-page-id="123456789012345" class="uap-fbla-settings-page-fbla-repair"
+                                color="secondary" size="small" href="#">
+                                <uo-icon id="sync"></uo-icon>
+                            </uo-button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>E-Commerce Solutions</td>
+                        <td>987654321098765</td>
+                        <td>
+                            <div id="status-987654321098765">
+                                <span class="status error">API request failed with status 400: Not found.</span>
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <uo-button data-page-id="987654321098765" class="uap-fbla-settings-page-fbla-repair"
+                                color="secondary" size="small" href="#">
+                                <uo-icon id="sync"></uo-icon>
+                            </uo-button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tech Innovators</td>
+                        <td>112233445566778</td>
+                        <td>
+                            <div id="status-112233445566778">
+                                <span class="status ready">Ready (last checked 2 minutes ago)</span>
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <uo-button data-page-id="112233445566778" class="uap-fbla-settings-page-fbla-repair"
+                                color="secondary" size="small" href="#">
+                                <uo-icon id="sync"></uo-icon>
+                            </uo-button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Gaming Arena</td>
+                        <td>223344556677889</td>
+                        <td>
+                            <div id="status-223344556677889">
+                                <span class="status loading">Loading...</span>
+                            </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <uo-button loading data-page-id="223344556677889" class="uap-fbla-settings-page-fbla-repair"
+                                color="secondary" size="small" href="#">
+                                <uo-icon id="sync"></uo-icon>
+                            </uo-button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h5 class="uap-spacing-top">Test your webhook connection</h5>
+            <p>
+                Click the button below to test your website’s accessibility and confirm API support for your WordPress
+                site.
+            </p>
+            <div id="automatorFblaConnectionResult">
+                <!-- Success message -->
+                <uo-alert type="success" class="uap-spacing-bottom">
+                    Your website has received a webhook, confirming it supports external requests needed for Facebook
+                    Lead Ads
+                </uo-alert>
+
+                <uo-alert type="error" class="uap-spacing-bottom">
+                    Some error message.
+                </uo-alert>
+
+            </div>
+            <uo-button id="FBLAConnectionCheckBtn" color="secondary" size="small">
+                <uo-icon id="sync"></uo-icon> Test API connection
+            </uo-button>
+        </div>
+    </div>
+
+    <script>
+        var automator_fbla_config;
+        document.addEventListener("DOMContentLoaded", function () {
+            automator_fbla_config = {
+                apiUrl: UncannyAutomatorBackend.ajax.url + '?action=facebook_lead_verify_page_connection&nonce=' + UncannyAutomatorBackend.rest.nonce,
+                pages: [
+                    { "page_id": "123456789012345" },
+                    { "page_id": "987654321098765" },
+                    { "page_id": "112233445566778" },
+                    { "page_id": "223344556677889" }
+                ]
+            };
+        });
+    </script>
+
+    <div class="uap-settings-panel-bottom">
+        <div class="uap-settings-panel-bottom-left">
+            <div class="uap-settings-panel-user">
+                <div class="uap-settings-panel-user__avatar">
+                    <uo-icon integration="FACEBOOK_LEAD_ADS"></uo-icon>
+                </div>
+                <div class="uap-settings-panel-user-info">
+                    <div class="uap-settings-panel-user-info__main">Jonny Doe</div>
+                    <div class="uap-settings-panel-user-info__additional">91231169915928540</div>
+                </div>
+            </div>
+        </div>
+        <div class="uap-settings-panel-bottom-right">
+            <uo-button color="danger"
+                href="https://automatordev.local/wp-admin/admin-ajax.php?action=automator_integration_facebook_lead_ads_disconnect&amp;nonce=466f286d58">
+                <uo-icon id="sign-out"></uo-icon> Disconnect
+            </uo-button>
+        </div>
+    </div>
+</div>

@@ -1,16 +1,14 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Recipe;
+use Uncanny_Automator\Recipe\Trigger;
 
 /**
  * Class THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED
  *
  * @package Uncanny_Automator
  */
-class THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED {
-
-	use Recipe\Triggers;
+class THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED extends Trigger {
 
 	/**
 	 * Constant TRIGGER_CODE.
@@ -26,56 +24,42 @@ class THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED {
 	 */
 	const TRIGGER_META = 'THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED_META';
 
-	public function __construct() {
-
-		$this->set_helper( new Thrive_Apprentice_Helpers( false ) );
-
-		$this->setup_trigger();
-
-	}
+	/**
+	 * Helper instance
+	 *
+	 * @var Thrive_Apprentice_Helpers
+	 */
+	protected $helper;
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object.
+	 * Setup trigger
 	 *
-	 * @return void.
+	 * @return void
 	 */
-	public function setup_trigger() {
+	protected function setup_trigger() {
+		$this->helper = new Thrive_Apprentice_Helpers( false );
 
 		$this->set_integration( 'THRIVE_APPRENTICE' );
-
 		$this->set_trigger_code( self::TRIGGER_CODE );
-
 		$this->set_trigger_meta( self::TRIGGER_META );
-
 		$this->set_is_pro( false );
 
-		$this->set_is_login_required( true );
-
-		// The action hook to attach this trigger into.
 		$this->add_action( 'thrive_apprentice_lesson_complete' );
 
-		// The number of arguments that the action hook accepts.
 		$this->set_action_args_count( 2 );
 
 		$this->set_sentence(
 			sprintf(
-				/* Translators: Trigger sentence */
-				esc_html__( 'A user completes {{a lesson:%1$s}} in {{a course:%2$s}}', 'uncanny-automator' ),
-				$this->get_trigger_meta(),
+				// translators:  %1$s: Lesson,  %2$s: Course
+				esc_html_x( 'A user completes {{a lesson:%1$s}} in {{a course:%2$s}}', 'Thrive Apprentice', 'uncanny-automator' ),
+				$this->get_trigger_meta() . ':' . $this->get_trigger_meta(),
 				'COURSE:' . $this->get_trigger_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
-			/* Translators: Trigger sentence */
-			esc_html__( 'A user completes {{a lesson}} in {{a course}}', 'uncanny-automator' )
+			esc_html_x( 'A user completes {{a lesson}} in {{a course}}', 'Thrive Apprentice', 'uncanny-automator' )
 		);
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		// Register the trigger.
-		$this->register_trigger();
-
 	}
 
 	/**
@@ -83,111 +67,170 @@ class THRIVE_APPRENTICE_USER_COURSE_LESSON_COMPLETED {
 	 *
 	 * @return array The available trigger options.
 	 */
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
+	public function options() {
+		return array(
 			array(
-				'options_group' => array(
-					$this->get_trigger_meta() => array(
-						array(
-							'option_code'     => 'COURSE',
-							'required'        => true,
-							'label'           => esc_html__( 'Course', 'uncanny-automator' ),
-							'input_type'      => 'select',
-							'is_ajax'         => true,
-							'endpoint'        => 'automator_thrive_apprentice_lessons_handler',
-							'fill_values_in'  => $this->get_trigger_meta(),
-							'options'         => $this->get_helper()->get_dropdown_options_courses(),
-							'relevant_tokens' => $this->get_helper()->get_relevant_tokens_courses(),
-						),
-						array(
-							'option_code'              => $this->get_trigger_meta(),
-							'required'                 => true,
-							'label'                    => esc_html__( 'Lesson', 'uncanny-automator' ),
-							'input_type'               => 'select',
-							'supports_custom_value'    => true,
-							'custom_value_description' => esc_html__( 'Lesson ID', 'uncanny-automator' ),
-							'options'                  => array(),
-							'relevant_tokens'          => $this->get_helper()->get_relevant_tokens_courses_lessons(),
-						),
-					),
+				'option_code'     => 'COURSE',
+				'required'        => true,
+				'label'           => esc_html_x( 'Course', 'Thrive Apprentice', 'uncanny-automator' ),
+				'input_type'      => 'select',
+				'options'         => $this->helper->get_dropdown_options_courses( true, true ),
+				'relevant_tokens' => array(),
+			),
+			array(
+				'option_code'           => $this->get_trigger_meta(),
+				'required'              => true,
+				'label'                 => esc_html_x( 'Lesson', 'Thrive Apprentice', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'supports_custom_value' => false,
+				'options'               => array(),
+				'relevant_tokens'       => array(),
+				'ajax'                  => array(
+					'event'         => 'parent_fields_change',
+					'endpoint'      => 'automator_thrive_apprentice_updated_lessons_handler',
+					'listen_fields' => array( 'COURSE' ),
 				),
-			)
+			),
 		);
 	}
 
 	/**
-	 * Validates the trigger.
+	 * Validate the trigger.
 	 *
-	 * @return boolean True.
+	 * @param array $trigger The trigger data.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool True if validation was successful.
 	 */
-	public function validate_trigger( ...$args ) {
+	public function validate( $trigger, $hook_args ) {
+		list( $lesson, $user ) = $hook_args;
 
-		list( $lesson, $user ) = $args[0];
+		if ( empty( $lesson ) || empty( $user ) ) {
+			return false;
+		}
 
-		return ! empty( $lesson ) && ! empty( $user );
+		$lesson_id = absint( $lesson['lesson_id'] );
+		$course_id = absint( $lesson['course_id'] );
 
+		$selected_lesson_id = $trigger['meta'][ $this->get_trigger_meta() ];
+		$selected_course_id = $trigger['meta']['COURSE'];
+
+		$this->set_user_id( absint( $user['user_id'] ) );
+
+		// If "Any course" is selected, return true
+		if ( intval( '-1' ) === intval( $selected_course_id ) ) {
+			return true;
+		}
+
+		// If "Any lesson" is selected, but course matches, return true
+		if ( absint( $selected_course_id ) === $course_id && intval( '-1' ) === intval( $selected_lesson_id ) ) {
+			return true;
+		}
+
+		// If "Specific lesson" is selected, but course and lesson matches, return true
+		if ( absint( $selected_course_id ) === $course_id && absint( $selected_lesson_id ) === $lesson_id ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
-	 * Sets some properties before the trigger is run.
+	 * Hydrate tokens with values.
 	 *
-	 * @param array $data The trigger data.
+	 * @param array $trigger The trigger data.
+	 * @param array $hook_args The hook arguments.
 	 *
-	 * @return void.
+	 * @return array The token values.
 	 */
-	public function prepare_to_run( $data ) {
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		list( $lesson, $user ) = $hook_args;
 
-		$this->set_conditional_trigger( true );
-
-	}
-
-	/**
-	 * Validates the conditions.
-	 *
-	 * @param array $args The trigger args.
-	 *
-	 * @return array The matching recipe and trigger IDs.
-	 */
-	public function validate_conditions( ...$args ) {
-
-		list( $lesson, $user ) = $args[0];
-
-		$matching_recipes_triggers = $this->find_all( $this->trigger_recipes() )
-			->where( array( $this->get_trigger_meta(), 'COURSE' ) )
-			->match( array( absint( $lesson['lesson_id'] ), absint( $lesson['course_id'] ) ) )
-			->format( array( 'intval', 'absint' ) )
-			->get();
-
-		return $matching_recipes_triggers;
-
-	}
-
-	/**
-	 * Parses the tokens.
-	 *
-	 * @return The parsed tokens.
-	 */
-	public function parse_additional_tokens( $parsed, $args, $trigger ) {
-
-		$params = array_shift( $args['trigger_args'] );
-
-		$tva_author = get_term_meta( $params['course_id'], 'tva_author', true );
-
-		$user_data = get_userdata( $tva_author['ID'] );
-
-		$hydrated_tokens = array(
-			'COURSE_ID'      => $params['course_id'],
-			'COURSE_URL'     => get_term_link( $params['course_id'] ),
-			'COURSE_TITLE'   => $params['course_title'],
-			'COURSE_AUTHOR'  => is_object( $user_data ) && ! empty( $user_data ) ? $user_data->user_email : '',
-			'COURSE_SUMMARY' => get_term_meta( $params['course_id'], 'tva_excerpt', true ),
-			'LESSON_ID'      => $params['lesson_id'],
-			'LESSON_URL'     => $params['lesson_url'],
-			'LESSON_TITLE'   => $params['lesson_title'],
+		return array(
+			'LESSON_ID'             => $lesson['lesson_id'],
+			'LESSON_URL'            => $lesson['lesson_url'],
+			'LESSON_TITLE'          => $lesson['lesson_title'],
+			'LESSON_TYPE'           => $lesson['lesson_type'],
+			'MODULE_ID'             => $lesson['module_id'],
+			'MODULE_TITLE'          => $lesson['module_title'],
+			'COURSE_ID'             => $lesson['course_id'],
+			'COURSE_TITLE'          => $lesson['course_title'],
+			'USER_MEMBERSHIP_LEVEL' => $user['membership_level'],
+			'USER_LAST_LOGIN'       => $user['last_logged_in'],
 		);
-
-		return $parsed + $hydrated_tokens;
-
 	}
 
+	/**
+	 * Define tokens.
+	 *
+	 * @param array $trigger The trigger configuration.
+	 * @param array $tokens The existing tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+		return array(
+			'LESSON_ID'             => array(
+				'name'      => esc_html_x( 'Lesson ID', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'int',
+				'tokenId'   => 'LESSON_ID',
+				'tokenName' => esc_html_x( 'Lesson ID', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'LESSON_URL'            => array(
+				'name'      => esc_html_x( 'Lesson URL', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'url',
+				'tokenId'   => 'LESSON_URL',
+				'tokenName' => esc_html_x( 'Lesson URL', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'LESSON_TITLE'          => array(
+				'name'      => esc_html_x( 'Lesson title', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'LESSON_TITLE',
+				'tokenName' => esc_html_x( 'Lesson title', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'LESSON_TYPE'           => array(
+				'name'      => esc_html_x( 'Lesson type', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'LESSON_TYPE',
+				'tokenName' => esc_html_x( 'Lesson type', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'MODULE_ID'             => array(
+				'name'      => esc_html_x( 'Module ID', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'int',
+				'tokenId'   => 'MODULE_ID',
+				'tokenName' => esc_html_x( 'Module ID', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'MODULE_TITLE'          => array(
+				'name'      => esc_html_x( 'Module title', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'MODULE_TITLE',
+				'tokenName' => esc_html_x( 'Module title', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'COURSE_ID'             => array(
+				'name'      => esc_html_x( 'Course ID', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'int',
+				'tokenId'   => 'COURSE_ID',
+				'tokenName' => esc_html_x( 'Course ID', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'COURSE_TITLE'          => array(
+				'name'      => esc_html_x( 'Course title', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'COURSE_TITLE',
+				'tokenName' => esc_html_x( 'Course title', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'USER_MEMBERSHIP_LEVEL' => array(
+				'name'      => esc_html_x( 'User membership level', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'USER_MEMBERSHIP_LEVEL',
+				'tokenName' => esc_html_x( 'User membership level', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+			'USER_LAST_LOGIN'       => array(
+				'name'      => esc_html_x( 'User last login', 'Thrive Apprentice', 'uncanny-automator' ),
+				'type'      => 'date',
+				'tokenId'   => 'USER_LAST_LOGIN',
+				'tokenName' => esc_html_x( 'User last login', 'Thrive Apprentice', 'uncanny-automator' ),
+			),
+
+		);
+	}
 }

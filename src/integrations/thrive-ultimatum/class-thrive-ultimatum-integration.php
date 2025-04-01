@@ -30,6 +30,7 @@ class Thrive_Ultimatum_Integration extends \Uncanny_Automator\Integration {
 		// Load triggers.
 		new THRIVE_ULTIMATUM_EVERGREEN_CAMPAIGN_TRIGGERED( $this->helpers );
 		new THRIVE_ULTIMATUM_USER_TRIGGERS_EVERGREEN_CAMPAIGN( $this->helpers );
+		new THRIVE_ULTIMATUM_EVERGREEN_START_CAMPAIGN( $this->helpers );
 	}
 
 	/**

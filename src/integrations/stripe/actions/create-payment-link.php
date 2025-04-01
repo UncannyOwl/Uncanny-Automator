@@ -39,12 +39,12 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		$products_repeater = array(
 			'option_code'       => 'PRICES',
 			'input_type'        => 'repeater',
-			'label'             => esc_html__( 'Items', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Items', 'Stripe', 'uncanny-automator' ),
 			'required'          => true,
 			'fields'            => array(
 				array(
 					'option_code' => 'PRICE',
-					'label'       => esc_html__( 'Product and price', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Product and price', 'Stripe', 'uncanny-automator' ),
 					'input_type'  => 'select',
 					'required'    => true,
 					'read_only'   => false,
@@ -53,15 +53,15 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 				Automator()->helpers->recipe->field->text(
 					array(
 						'option_code' => 'QUANTITY',
-						'label'       => esc_html__( 'Quantity', 'uncanny-automator' ),
+						'label'       => esc_html_x( 'Quantity', 'Stripe', 'uncanny-automator' ),
 						'input_type'  => 'text',
 						'tokens'      => true,
 						'default'     => 1,
 					)
 				),
 			),
-			'add_row_button'    => esc_html__( 'Add product', 'uncanny-automator' ),
-			'remove_row_button' => esc_html__( 'Remove product', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add product', 'Stripe', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove product', 'Stripe', 'uncanny-automator' ),
 			'hide_actions'      => false,
 			'relevant_tokens'   => array(),
 		);
@@ -190,7 +190,7 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 	public function define_tokens() {
 		return array(
 			'LINK' => array(
-				'name' => esc_html__( 'Link', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Link', 'Stripe', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 		);
@@ -234,6 +234,8 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		foreach ( $add_params as $param ) {
 			$temp_array[ $param['PARAM_NAME'] ] = $param['PARAM_VALUE'];
 		}
+
+		$temp_array = $this->helpers->explode_fields( $temp_array, $this->multiselect_fields() );
 
 		$temp_array = $this->helpers->dots_to_array( $temp_array );
 
@@ -279,6 +281,27 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		return true;
 	}
 
+	/**
+	 * fields_to_explode
+	 *
+	 * @return array
+	 */
+	public function multiselect_fields() {
+
+		$fields = array(
+			'payment_method_types',
+			'shipping_address_collection.allowed_countries',
+			'invoice_creation.invoice_data.account_tax_ids',
+		);
+
+		return apply_filters( 'automator_stripe_create_payment_link_multiselect_fields', $fields );
+	}
+
+	/**
+	 * additional_params
+	 *
+	 * @return void
+	 */
 	public function additional_params() {
 
 		$params = apply_filters(
@@ -305,7 +328,7 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 				'customer_creation',
 				'inactive_message',
 				'invoice_creation.enabled',
-				'invoice_creation.account_tax_ids',
+				'invoice_creation.invoice_data.account_tax_ids',
 				'invoice_creation.invoice_data.custom_fields.name',
 				'invoice_creation.invoice_data.custom_fields.value',
 				'invoice_creation.invoice_data.description',

@@ -319,7 +319,7 @@ class Automator_DB_Handler_Triggers {
 
 		$results = (array) $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->prefix}$tbl WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d",
+				"SELECT meta_value FROM {$wpdb->prefix}$tbl WHERE user_id = %d AND meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$user_id,
 				$meta_key,
 				$trigger_id,
@@ -338,7 +338,6 @@ class Automator_DB_Handler_Triggers {
 		}
 
 		return $items;
-
 	}
 
 	/**
@@ -580,7 +579,24 @@ AND r.run_number = %d;",
 		$logic = get_post_meta( wp_get_post_parent_id( $child_id ), 'automator_trigger_logic', true );
 
 		return ! empty( $logic ) ? $logic : 'all';
-
 	}
 
+	/**
+	 * Find a specific column value by log id.
+	 *
+	 * @param string $column
+	 * @param int    $log_id
+	 *
+	 * @return string|null
+	 */
+	public function find_column_value_by_id( string $column, int $log_id ) {
+
+		global $wpdb;
+
+		$column = sanitize_title( $column );
+
+		$id = $wpdb->get_var( $wpdb->prepare( "SELECT {$column} FROM {$wpdb->prefix}uap_trigger_log WHERE ID = %d", $log_id ) ); // phpcs:ignore
+
+		return $id;
+	}
 }

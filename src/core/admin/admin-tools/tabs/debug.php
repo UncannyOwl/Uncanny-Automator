@@ -29,7 +29,6 @@ class Admin_Tools_Tab_Debug {
 		$this->create_tab();
 
 		add_action( 'wp_ajax_automator_log_delete', array( $this, 'delete_log' ) );
-
 	}
 
 	/**
@@ -49,10 +48,10 @@ class Admin_Tools_Tab_Debug {
 			wp_die( 'Invalid nonce.', 403 );
 		}
 
-		// Strips '/' characters. Prevents directory traversal.
-		$requested_log = automator_filter_input( 'log_id', INPUT_GET, FILTER_SANITIZE_ENCODED );
+		// Get the requested log ID.
+		$requested_log = automator_filter_input( 'log_id', INPUT_GET );
 
-		// The absolute path to the log file. Also sanitizes the file name.
+		// The absolute path to the log file. Also sanitizes the file name preventing directory traversal etc.
 		$log_file_path = trailingslashit( UA_DEBUG_LOGS_DIR ) . sanitize_file_name( $requested_log );
 
 		// Make sure the file exists and has a valid extension.
@@ -66,7 +65,6 @@ class Admin_Tools_Tab_Debug {
 		}
 
 		$this->redirect( false );
-
 	}
 
 	/**
@@ -121,7 +119,6 @@ class Admin_Tools_Tab_Debug {
 	private function load_tab( $tab_key ) {
 
 		include __DIR__ . DIRECTORY_SEPARATOR . 'debug/' . $tab_key . '.php';
-
 	}
 
 	/**
@@ -146,7 +143,6 @@ class Admin_Tools_Tab_Debug {
 			self::PRIORITY,
 			self::ACCEPTED_ARGS
 		);
-
 	}
 
 	/**
@@ -181,7 +177,6 @@ class Admin_Tools_Tab_Debug {
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-tools/tab/debug.php' );
-
 	}
 
 	/**
@@ -190,7 +185,6 @@ class Admin_Tools_Tab_Debug {
 	public function get_debug_tabs() {
 
 		return apply_filters( 'automator_admin_tools_debug_tabs', array() );
-
 	}
 
 	/**
@@ -219,9 +213,7 @@ class Admin_Tools_Tab_Debug {
 			$url_parameters,
 			admin_url( 'edit.php' )
 		);
-
 	}
-
 }
 
 new Admin_Tools_Tab_Debug();

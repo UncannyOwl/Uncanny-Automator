@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 use Uncanny_Automator\Services\Loopable\Data_Integrations\Array_Group_Classifier;
+use Uncanny_Automator\Services\Recipe\Structure\Triggers\Tokens\Common\Parser;
+use Uncanny_Automator\Services\Recipe\Structure\Triggers\Tokens\Common\Token;
 use Uncanny_Automator\Traits\Singleton;
 use WP_User;
 
@@ -88,7 +90,6 @@ class Automator_Input_Parser {
 
 		// Attach the new trigger tokens arch for actions that are scheduled.
 		add_filter( 'automator_pro_before_async_action_executed', array( $this, 'attach_trigger_tokens_hook' ), 10, 1 );
-
 	}
 
 	/**
@@ -197,45 +198,50 @@ class Automator_Input_Parser {
 
 		$parsed_tokens_record = $this->automator_functions()->parsed_token_records();
 
-		foreach ( $matches[1] as $match ) {
+		foreach ( $matches[1] as $matching_token ) {
 
-			$token_with_brackets = '{{' . $match . '}}';
+			$token_with_brackets = '{{' . $matching_token . '}}';
 
-			$match = $this->parse_recursively( $match, $args, $trigger_args );
+			// Detect if the token is in the list of tokens that should not be parsed.
+			if ( in_array( $token_with_brackets, $this->get_list_of_tokens_that_should_not_be_parsed(), true ) ) {
+				continue;
+			}
+
+			$matching_token = $this->parse_recursively( $matching_token, $args, $trigger_args );
 
 			$replaceable = '';
 
 			// Check if the matching text contains a colon, which indicates a complex token. Note: there are tokens without ':' on it.
-			$matching_text_has_colon = false !== strpos( $match, ':' );
+			$matching_text_has_colon = false !== strpos( $matching_token, ':' );
 			if ( $matching_text_has_colon ) {
-				$replaceable = $this->parse_colon_delimited_tokens( $match, $args, $trigger_args, $context );
+				$replaceable = $this->parse_colon_delimited_tokens( $matching_token, $args, $trigger_args, $context );
 			}
 
 			// Predefined tokens.
-			$is_predefined_token = in_array( $match, $this->defined_tokens, true );
+			$is_predefined_token = in_array( $matching_token, $this->defined_tokens, true );
 			if ( $is_predefined_token ) {
-				$replaceable = $this->parse_defined_tokens_default( $match, $args, $context );
+				$replaceable = $this->parse_defined_tokens_default( $matching_token, $args, $context );
 			}
 
-			$replaceable = apply_filters( "automator_maybe_parse_{$match}", $replaceable, $field_text, $match, $user_id, $args );
+			$replaceable = apply_filters( "automator_maybe_parse_{$matching_token}", $replaceable, $field_text, $matching_token, $user_id, $args );
 			$replaceable = apply_filters( 'automator_maybe_parse_replaceable', $replaceable );
 
 			// Added fallback fix for action token meta in case it was not recorded earlier.
-			if ( false === strpos( $match, 'ACTION_META' ) ) {
+			if ( false === strpos( $matching_token, 'ACTION_META' ) ) {
 				// Record the token raw vs replaceable with respect to $args for log details consumption.
-				$parsed_tokens_record->record_token( '{{' . $match . '}}', $replaceable, $args );
+				$parsed_tokens_record->record_token( '{{' . $matching_token . '}}', $replaceable, $args );
 			}
 
-			$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $match, $replaceable, $args );
+			$field_text = apply_filters( 'automator_maybe_parse_field_text', $field_text, $matching_token, $replaceable, $args );
 
 			// For Loops.
-			if ( str_starts_with( $match, 'TOKEN_EXTENDED' ) ) {
+			if ( str_starts_with( $matching_token, 'TOKEN_EXTENDED' ) ) {
 				// Each token parts is separated by a ':' colon.
-				$token_parts = (array) explode( ':', strtolower( $match ) );
+				$token_parts = (array) explode( ':', strtolower( $matching_token ) );
 				// We need to extract the first and second argument.
 				list( $extended_flag, $extension_identifier ) = $token_parts;
 				// Then use it as a filter so we dont have to check it. It is also safer.
-				$field_text = apply_filters( "automator_token_parser_extended_{$extension_identifier}", $field_text, $match, $args, $trigger_args );
+				$field_text = apply_filters( "automator_token_parser_extended_{$extension_identifier}", $field_text, $matching_token, $args, $trigger_args );
 			}
 
 			$key_value_pairs[ $token_with_brackets ] = $replaceable;
@@ -255,36 +261,35 @@ class Automator_Input_Parser {
 	}
 
 	/**
-	 * @param string $match
+	 * @param string $matching_token
 	 * @param mixed[] $args
 	 * @param mixed[] $trigger_args
 	 * @param mixed[] $context
 	 *
 	 * @return string
 	 */
-	public function parse_colon_delimited_tokens( $match, $args, $trigger_args, $context ) {
+	public function parse_colon_delimited_tokens( $matching_token, $args, $trigger_args, $context ) {
 
 		/**
 		 * This section handles Trigger tokens.
 		 */
-		$replaceable = $this->get_parsed_data_value( $match, $context );
+		$replaceable = $this->get_parsed_data_value( $matching_token, $context );
 
 		if ( empty( $replaceable ) ) {
-			return $this->process_trigger_token( $match, $args, $trigger_args, $context );
+			return $this->process_trigger_token( $matching_token, $args, $trigger_args, $context );
 		}
 
 		return $replaceable;
-
 	}
 
 	/**
 	 * Get parsed data value from the database, if available.
 	 *
-	 * @param string $match The token match.
+	 * @param string $matching_token The token match.
 	 * @param array  $context The context of the current execution.
 	 * @return string|null The parsed data value or null.
 	 */
-	public function get_parsed_data_value( $match, $context ) {
+	public function get_parsed_data_value( $matching_token, $context ) {
 
 		$parse_args = array(
 			'user_id'        => $context['user_id'],
@@ -298,7 +303,7 @@ class Automator_Input_Parser {
 		if ( ! empty( $parsed_data ) ) {
 
 			$parsed_data = maybe_unserialize( $parsed_data );
-			$token_key   = '{{' . $match . '}}';
+			$token_key   = '{{' . $matching_token . '}}';
 
 			if ( isset( $parsed_data[ $token_key ] ) && ! empty( $parsed_data[ $token_key ] ) ) {
 				return $parsed_data[ $token_key ];
@@ -311,15 +316,15 @@ class Automator_Input_Parser {
 	/**
 	 * Process the trigger token if no parsed data is available.
 	 *
-	 * @param string $match The token match.
+	 * @param string $matching_token The token match.
 	 * @param array  $args The arguments for the current execution.
 	 * @param array  $trigger_args The trigger-specific arguments.
 	 * @param array  $context The context of the current execution.
 	 * @return string The replaceable value.
 	 */
-	public function process_trigger_token( $match, $args, $trigger_args, $context ) {
+	public function process_trigger_token( $matching_token, $args, $trigger_args, $context ) {
 
-		$pieces = explode( ':', $match );
+		$pieces = explode( ':', $matching_token );
 
 		$replace_args = array(
 			'pieces'          => (array) $pieces,
@@ -333,26 +338,36 @@ class Automator_Input_Parser {
 			'loop'            => $trigger_args['loop'] ?? array(),
 		);
 
+		if ( in_array( 'TRIGGER_COMMON', $pieces, true ) ) {
+
+			list(, $id, $type) = $pieces;
+
+			$common_trigger_token = new Parser( absint( $id ), $type );
+			$common_trigger_token->set_trigger_context( $trigger_args );
+
+			return $common_trigger_token->parse();
+
+		}
+
 		$trigger_id = $context['trigger_id'] ?? null;
 
 		return $this->replace_recipe_variables( $replace_args, $trigger_args, $trigger_id );
-
 	}
 
 
 	/**
 	 * Parses defined tokens with default logic.
 	 *
-	 * Handles specific token replacements based on the `$match` parameter.
+	 * Handles specific token replacements based on the `$matching_token` parameter.
 	 * If no predefined match is found, it applies a filter for customization.
 	 *
-	 * @param string $match   The token to be matched and replaced.
+	 * @param string $matching_token   The token to be matched and replaced.
 	 * @param mixed  $args    Arguments for token parsing. Should include 'user_id' and 'field_text'.
 	 * @param mixed  $context Context data, expected to contain 'recipe_id' and 'run_number'.
 	 *
 	 * @return string Parsed token value or an empty string if no match is found.
 	 */
-	public function parse_defined_tokens_default( $match, $args, $context ) {
+	public function parse_defined_tokens_default( $matching_token, $args, $context ) {
 
 		// Get the user object based on the provided 'user_id' or default to the current user.
 		$current_user = isset( $args['user_id'] )
@@ -360,25 +375,24 @@ class Automator_Input_Parser {
 			: wp_get_current_user();
 
 		// Handles recipe total run.
-		if ( $match === 'recipe_total_run' && isset( $context['recipe_id'] ) ) {
+		if ( 'recipe_total_run' === $matching_token && isset( $context['recipe_id'] ) ) {
 			return Automator()->get->recipe_completed_times( $context['recipe_id'] );
 		}
 
 		// Handle recipe run.
-		if ( $match === 'recipe_run' && isset( $context['run_number'] ) ) {
+		if ( 'recipe_run' === $matching_token && isset( $context['run_number'] ) ) {
 			return $context['run_number'];
 		}
 
 		// Apply a filter to allow further parsing customization.
 		return apply_filters(
-			"automator_maybe_parse_{$match}",
+			"automator_maybe_parse_{$matching_token}",
 			'',
 			isset( $args['field_text'] ) ? $args['field_text'] : '',
-			$match,
+			$matching_token,
 			$current_user,
 			$args
 		);
-
 	}
 
 	/**
@@ -521,23 +535,22 @@ class Automator_Input_Parser {
 		$meta_value = isset( $trigger['meta'][ $piece ] ) ? $trigger['meta'][ $piece ] : '';
 
 		// Handle post and page tokens.
-		if ( $piece === 'WPPOST' || $piece === 'WPPAGE' ) {
+		if ( 'WPPOST' === $piece || 'WPPAGE' === $piece ) {
 			return self::identify_post_value_from_substr( $token_id, $post_id );
 		}
 
 		// Handle the 'NUMTIMES' token, returning 1 if not set.
-		if ( $piece === 'NUMTIMES' ) {
+		if ( 'NUMTIMES' === $piece ) {
 			return ! empty( $meta_value ) ? $meta_value : '1';
 		}
 
 		// Handle user-related tokens.
-		if ( $piece === 'WPUSER' ) {
+		if ( 'WPUSER' === $piece ) {
 			return self::get_user_email_by_id( $meta_value );
 		}
 
 		// Default handling for other tokens especially for the legacy internal integrations such as WPForms, GF, etc.
 		return self::handle_trigger_tokens_common( $piece, $token_id, $meta_value, $post_id, $is_relevant_token );
-
 	}
 
 	/**
@@ -553,6 +566,10 @@ class Automator_Input_Parser {
 
 	/**
 	 * Handles general cases for tokens.
+	 *
+	 * This is mostly used for older integration such as LearnDash, GravityForms, Etc.
+	 *
+	 * @since 6.2 - Added a handler for common tokens such as ID, Title, and Completion date.
 	 *
 	 * @param string $piece The type of token.
 	 * @param string $token_id The token identifier.
@@ -612,21 +629,20 @@ class Automator_Input_Parser {
 
 		// Use anonymous functions for lazy evaluation.
 		$map = array(
-			'ID'        => function() use ( $post_id ) {
+			'ID'        => function () use ( $post_id ) {
 				return $post_id; },
-			'URL'       => function() use ( $post_id ) {
+			'URL'       => function () use ( $post_id ) {
 				return get_permalink( $post_id ); },
-			'THUMB_URL' => function() use ( $post_id ) {
+			'THUMB_URL' => function () use ( $post_id ) {
 				return get_the_post_thumbnail_url( $post_id, 'full' ); },
-			'THUMB_ID'  => function() use ( $post_id ) {
+			'THUMB_ID'  => function () use ( $post_id ) {
 				return get_post_thumbnail_id( $post_id ); },
-			'EXCERPT'   => function() use ( $post_id ) {
+			'EXCERPT'   => function () use ( $post_id ) {
 				return Automator()->utilities->automator_get_the_excerpt( $post_id ); },
 		);
 
 		// Check if the key exists and call the corresponding function, otherwise return an empty string.
 		return isset( $map[ $str ] ) ? $map[ $str ]() : '';
-
 	}
 
 	/**
@@ -649,7 +665,6 @@ class Automator_Input_Parser {
 		);
 
 		return $pieces;
-
 	}
 
 	/**
@@ -753,7 +768,6 @@ class Automator_Input_Parser {
 			. '</a>',
 			$user_id
 		);
-
 	}
 
 	/**
@@ -809,7 +823,17 @@ class Automator_Input_Parser {
 
 		// Parse shortcodes if necessary and return the result.
 		return $this->maybe_parse_shortcodes_in_fields( $field_text, $recipe_id, $user_id, $args );
+	}
 
+	/**
+	 * Returns a list of tokens that should not be parsed.
+	 *
+	 * @return array
+	 */
+	public function get_list_of_tokens_that_should_not_be_parsed() {
+
+		// The the token as is. Example: {{your_token_here}}
+		return apply_filters( 'automator_token_parser_whitelisted_tokens', array() );
 	}
 
 	/**
@@ -875,7 +899,6 @@ class Automator_Input_Parser {
 		}
 
 		return $text;
-
 	}
 
 	/**
@@ -1074,7 +1097,6 @@ class Automator_Input_Parser {
 
 		// Return true if source trigger does not match the token's trigger ID `and` recipe logic is equals to `any`.
 		return ! $is_source_trigger_matches_token_trigger && $is_recipe_logic_any;
-
 	}
 
 	/**
@@ -1104,7 +1126,6 @@ class Automator_Input_Parser {
 		add_filter( $filter, array( $this, 'fetch_trigger_tokens' ), 20, 6 );
 
 		return $action;
-
 	}
 
 	/**
@@ -1155,5 +1176,4 @@ class Automator_Input_Parser {
 	private function decode_data( $data ) {
 		return is_array( $data ) ? $data : json_decode( $data, true );
 	}
-
 }

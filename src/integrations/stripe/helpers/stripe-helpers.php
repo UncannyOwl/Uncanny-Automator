@@ -16,6 +16,11 @@ class Stripe_Helpers {
 	public $webhook;
 	public $tokens;
 
+	/**
+	 * __construct
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 		$this->api     = new Stripe_Api( $this );
 		$this->webhook = new Stripe_Webhook( $this );
@@ -32,7 +37,7 @@ class Stripe_Helpers {
 		$client = automator_get_option( self::TOKEN_OPTION, array() );
 
 		if ( empty( $client['stripe_user_id'] ) || empty( $client['vault_signature'] ) ) {
-			throw new \Exception( 'Stripe is not connected' );
+			throw new \Exception( esc_html_x( 'Stripe is not connected', 'Stripe', 'uncanny-automator' ) );
 		}
 
 		return $client;
@@ -127,12 +132,12 @@ class Stripe_Helpers {
 	/**
 	 * unset_empty_recursively
 	 *
-	 * @param  array $array
+	 * @param  array $array_to_process
 	 * @return array
 	 */
-	public function unset_empty_recursively( $array ) {
+	public function unset_empty_recursively( $array_to_process ) {
 
-		foreach ( $array as $key => $value ) {
+		foreach ( $array_to_process as $key => $value ) {
 
 			if ( is_array( $value ) ) {
 
@@ -140,33 +145,33 @@ class Stripe_Helpers {
 
 				// If there are no elements left in the array after cleaning, unset it
 				if ( empty( $cleaned_array ) ) {
-					unset( $array[ $key ] );
+					unset( $array_to_process[ $key ] );
 					continue;
 				}
 
-				$array[ $key ] = $cleaned_array;
+				$array_to_process[ $key ] = $cleaned_array;
 			}
 
 			if ( '' === $value ) {
-				unset( $array[ $key ] );
+				unset( $array_to_process[ $key ] );
 			}
 		}
 
-		return $array;
+		return $array_to_process;
 	}
 
 	/**
 	 * Convert an array with dot notation keys to a multidimensional array
 	 *
-	 * @param array $array
+	 * @param array $array_to_process
 	 *
 	 * @return array
 	 */
-	public function dots_to_array( $array ) {
+	public function dots_to_array( $array_to_process ) {
 
 		$new_array = array();
 
-		foreach ( $array as $key => $value ) {
+		foreach ( $array_to_process as $key => $value ) {
 
 			$keys = explode( '.', $key );
 
@@ -225,5 +230,30 @@ class Stripe_Helpers {
 			sprintf( '%s %s', $date_format, $time_format ),
 			$timestamp
 		);
+	}
+
+	/**
+	 * explode_fields
+	 *
+	 * Explode comma separated values strings into arrays in specific fields
+	 *
+	 * @param  array $array_to_process_to_process
+	 * @param  array $fields_to_explode
+	 * @return array
+	 */
+	public function explode_fields( $array_to_process, $fields_to_explode ) {
+
+		foreach ( $array_to_process as $field => $value ) {
+
+			if ( ! in_array( $field, $fields_to_explode, true ) ) {
+				continue;
+			}
+
+			$value = str_replace( ' ', '', $value );
+
+			$array_to_process[ $field ] = explode( ',', $value );
+		}
+
+		return $array_to_process;
 	}
 }
