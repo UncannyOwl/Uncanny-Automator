@@ -17,7 +17,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2' # or your preferred version
+          php-version: '8.2'
 
       - name: Install Composer dependencies
         run: |
@@ -27,15 +27,31 @@ jobs:
       - name: Convert readme.txt to README.md
         run: vendor/bin/wp2md -s uncanny-automator -i readme.txt -o README.md
 
-      - name: Commit and push changes
+      - name: Create new branch and commit changes
+        id: commit
         run: |
+          TIMESTAMP=$(date +%s)
+          BRANCH="readme-sync-$TIMESTAMP"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
 
           if [[ `git status --porcelain` ]]; then
             git add README.md
             git commit -m "Auto-convert readme.txt to README.md"
-            git push
+            git push origin "$BRANCH"
+            echo "branch_name=$BRANCH" >> $GITHUB_OUTPUT
           else
             echo "No changes to commit."
+            echo "branch_name=" >> $GITHUB_OUTPUT
           fi
+
+      - name: Create Pull Request
+        if: steps.commit.outputs.branch_name != ''
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Sync README.md with readme.txt"
+          body: "Automated conversion of readme.txt to markdown after changes to main."
+          head: ${{ steps.commit.outputs.branch_name }}
+          base: main
