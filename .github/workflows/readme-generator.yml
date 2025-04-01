@@ -3,7 +3,7 @@ name: Convert readme.txt to README.md
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -52,6 +52,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Sync README.md with readme.txt"
-          body: "Automated conversion of readme.txt to markdown after changes to main."
+          body: "Automated conversion of readme.txt to markdown after changes to master."
           head: ${{ steps.commit.outputs.branch_name }}
-          base: main
+          base: master
