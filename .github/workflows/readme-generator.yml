@@ -3,7 +3,7 @@ name: Convert readme.txt to readme.md
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 jobs:
