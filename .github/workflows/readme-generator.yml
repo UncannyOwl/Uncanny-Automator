@@ -1,9 +1,9 @@
-name: Convert readme.txt to readme.md
+name: Convert readme.txt to README.md
 
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
@@ -14,16 +14,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: '20'
+          php-version: '8.2' # or your preferred version
 
-      - name: Install wp-readme-to-markdown
-        run: npm install -g wp-readme-to-markdown
+      - name: Install Composer dependencies
+        run: |
+          composer require wpreadme2markdown/wp2md --no-progress --no-scripts
+          composer install --ignore-platform-reqs
 
-      - name: Convert readme.txt to readme.md
-        run: wp-readme-to-markdown
+      - name: Convert readme.txt to README.md
+        run: vendor/bin/wp2md -s uncanny-automator -i readme.txt -o README.md
 
       - name: Commit and push changes
         run: |
@@ -31,8 +33,8 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           if [[ `git status --porcelain` ]]; then
-            git add readme.md
-            git commit -m "Auto-convert readme.txt to readme.md"
+            git add README.md
+            git commit -m "Auto-convert readme.txt to README.md"
             git push
           else
             echo "No changes to commit."
