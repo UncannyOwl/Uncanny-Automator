@@ -1,0 +1,39 @@
+name: Convert readme.txt to readme.md
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  convert-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install wp-readme-to-markdown
+        run: npm install -g wp-readme-to-markdown
+
+      - name: Convert readme.txt to readme.md
+        run: wp-readme-to-markdown
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          if [[ `git status --porcelain` ]]; then
+            git add readme.md
+            git commit -m "Auto-convert readme.txt to readme.md"
+            git push
+          else
+            echo "No changes to commit."
+          fi
