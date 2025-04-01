@@ -1,0 +1,50 @@
+{
+    "name": "wpreadme2markdown/wp2md",
+    "description": "CLI tool for converting WordPress Plugin readme.txt to Markdown",
+    "keywords": [
+        "wordpress",
+        "markdown",
+        "readme",
+        "converter"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Benjamin J. Balter"
+        },
+        {
+            "name": "Christian Archer",
+            "email": "sunchaser@sunchaser.info"
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "7.2.5"
+        },
+        "sort-packages": true
+    },
+    "require": {
+        "php": "^7.2.5 || ^8.0",
+        "composer-runtime-api": ">= 2.0.0",
+        "symfony/console": "^5 || ^6 || ^7",
+        "wpreadme2markdown/wpreadme2markdown": "^4.1.0"
+    },
+    "require-dev": {
+        "ext-json": "*",
+        "indeyets/pake": "~1.99",
+        "php5friends/polyfill-create_function": "^0.0.4",
+        "secondtruth/phar-compiler": "~1.1",
+        "squizlabs/php_codesniffer": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "WPReadme2Markdown\\Cli\\": "src/"
+        }
+    },
+    "scripts": {
+        "pake": "pake"
+    },
+    "bin": [
+        "bin/wp2md"
+    ]
+}

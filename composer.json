@@ -1,0 +1,5 @@
+{
+    "require": {
+        "wpreadme2markdown/wp2md": "^4.1"
+    }
+}
