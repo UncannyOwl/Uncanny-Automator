@@ -49,7 +49,7 @@ abstract class Universal_Token extends Token {
 	/**
 	 * validate_recipe_token_parser
 	 *
-	 * @param  mixed $return
+	 * @param  mixed $retval
 	 * @param  mixed $pieces
 	 * @param  mixed $recipe_id
 	 * @param  mixed $trigger_data
@@ -57,27 +57,27 @@ abstract class Universal_Token extends Token {
 	 * @param  mixed $replace_args
 	 * @return string
 	 */
-	public function validate_recipe_token_parser( $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+	public function validate_recipe_token_parser( $retval, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
 		if ( self::PREFIX !== $pieces[0] ) {
-			return $return;
+			return $retval;
 		}
 
 		if ( $this->get_integration() !== $pieces[1] ) {
-			return $return;
+			return $retval;
 		}
 
 		if ( $this->get_id() !== $pieces[2] ) {
-			return $return;
+			return $retval;
 		}
 
-		return $this->parse_integration_token( $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
+		return $this->parse_integration_token( $retval, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args );
 	}
 
 	/**
 	 * parse_integration_token
 	 *
-	 * @param  mixed $return
+	 * @param  mixed $retval
 	 * @param  mixed $pieces
 	 * @param  mixed $recipe_id
 	 * @param  mixed $trigger_data
@@ -85,11 +85,42 @@ abstract class Universal_Token extends Token {
 	 * @param  mixed $replace_args
 	 * @return string
 	 */
-	public function parse_integration_token( $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		return $return;
+	public function parse_integration_token( $retval, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+		return $retval;
 	}
-
+	/**
+	 * Get fields.
+	 *
+	 * @return mixed
+	 */
 	public function get_fields() {
 		return array();
+	}
+
+	/**
+	 * Resolve the user ID context.
+	 *
+	 * Returns the user ID from the loop data if it exists.
+	 * Otherwise, returns the user ID from the user_id argument.
+	 *
+	 * @param int|null $user_id      The user ID coming from the trigger or the user selector. Can be null.
+	 * @param array    $replace_args The replace arguments.
+	 *
+	 * @return int|null The resolved user ID.
+	 */
+	protected function resolve_user_id( $user_id, $replace_args ) {
+
+		// If the replace args is not an array, return the user ID.
+		if ( ! is_array( $replace_args ) ) {
+			return $user_id;
+		}
+
+		// If the replace args contains a loop and the loop contains a user_id, return the user_id.
+		if ( isset( $replace_args['loop']['user_id'] ) && intval( $replace_args['loop']['user_id'] ) > 0 ) {
+			return $replace_args['loop']['user_id'];
+		}
+
+		// Otherwise, return the user ID from the user_id argument.
+		return $user_id;
 	}
 }

@@ -15,7 +15,7 @@ class Migrate_Nested_Tokens extends Tokens_Migration {
 	 * @return void
 	 */
 	public function __construct() {
-		parent::__construct( '6.3_nested_tokens' );
+		parent::__construct( '6.4_nested_tokens' );
 		add_filter( 'automator_recipe_part_meta_value', array( $this, 'replace_strings_in_imports' ), 10, 4 );
 	}
 
@@ -27,12 +27,12 @@ class Migrate_Nested_Tokens extends Tokens_Migration {
 	public function strings_to_replace() {
 
 		return array(
-			'{{CALCULATION'        => '{{UT:ADVANCED:CALCULATION',
-			'{{POSTMETA'           => '{{UT:ADVANCED:POSTMETA',
-			'{{USERMETA'           => '{{UT:ADVANCED:USERMETA',
 			'««'                   => '{{',
 			'»»'                   => '}}',
 			'¦'                    => ':',
+			'{{CALCULATION'        => '{{UT:ADVANCED:CALCULATION',
+			'{{POSTMETA'           => '{{UT:ADVANCED:POSTMETA',
+			'{{USERMETA'           => '{{UT:ADVANCED:USERMETA',
 			'{{recipe_run}}'       => '{{UT:ADVANCED:RECIPE_RUN}}',
 			'{{recipe_total_run}}' => '{{UT:ADVANCED:RECIPE_RUN_TOTAL}}',
 		);
@@ -48,9 +48,27 @@ class Migrate_Nested_Tokens extends Tokens_Migration {
 
 		$updated_value = $this->replace_postmeta_inner_tokens( $initial_value );
 
-		$updated_value = strtr( $updated_value, $this->strings_to_replace() );
+		$updated_value = $this->recursive_strtr( $updated_value, $this->strings_to_replace() );
 
 		return $updated_value;
+	}
+
+	/**
+	 * recursiveStrtr
+	 *
+	 * This function is used to replace strings in a string recursively.
+	 *
+	 * @param  string $str
+	 * @param  array $replacements
+	 * @return string
+	 */
+	public function recursive_strtr( $str, $replacements ) {
+		do {
+			$before = $str;
+			$str    = strtr( $str, $replacements );
+		} while ( $str !== $before );
+
+		return $str;
 	}
 
 	/**

@@ -70,7 +70,6 @@ class Bluesky_Media {
 	 * @return array|false
 	 */
 	public function get_embed() {
-
 		if ( empty( $this->media ) || empty( $this->type ) ) {
 			return false;
 		}
@@ -162,6 +161,10 @@ class Bluesky_Media {
 	 * @return array|false
 	 */
 	private function get_oembed_data( $url ) {
+		if ( ! function_exists( 'wp_oembed_get' ) ) {
+			require_once ABSPATH . 'wp-includes/embed.php';
+		}
+
 		$oembed = wp_oembed_get( $url );
 		if ( ! $oembed ) {
 			return false;
@@ -177,10 +180,10 @@ class Bluesky_Media {
 		// Build description from available data
 		$description = sprintf(
 			// translators: 1: Video title 2: Author name 3: Provider name
-			esc_html_x( '"%1$s" by %2$s on %3$s', 'Bluesky', 'uncanny-automator' ),
-			$provider_data->title,
-			$provider_data->author_name,
-			$provider_data->provider_name
+			esc_html_x( '%1$s by %2$s on %3$s', 'Bluesky', 'uncanny-automator' ),
+			esc_attr( $provider_data->title ),
+			esc_attr( $provider_data->author_name ),
+			esc_attr( $provider_data->provider_name )
 		);
 
 		return array(
@@ -199,6 +202,11 @@ class Bluesky_Media {
 	 * @return array
 	 */
 	private function process_direct_media( $url, $file_type ) {
+
+		if ( ! function_exists( 'download_url' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
 		$tmp = download_url( $url );
 
 		if ( is_wp_error( $tmp ) ) {
@@ -207,8 +215,8 @@ class Bluesky_Media {
 
 		try {
 			$media = array(
-				'alt' => pathinfo( wp_parse_url( $url, PHP_URL_PATH ), PATHINFO_FILENAME ),
-				'ref' => array( '$link' => $url ),
+				'alt'   => pathinfo( wp_parse_url( $url, PHP_URL_PATH ), PATHINFO_FILENAME ),
+				'image' => $url,
 			);
 
 			// Get mime type
@@ -233,7 +241,7 @@ class Bluesky_Media {
 			}
 
 			return array(
-				'$type'  => 'app.bsky.embed.images',
+				'$type'  => self::EMBED_TYPE_IMAGES,
 				'images' => array( $media ),
 			);
 

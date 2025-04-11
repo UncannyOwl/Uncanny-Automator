@@ -21,24 +21,40 @@ class Usermeta_Token extends Universal_Token {
 		$this->type          = 'text';
 		$this->cacheable     = true;
 	}
-
+	/**
+	 * Get fields.
+	 *
+	 * @return mixed
+	 */
 	public function get_fields() {
 		return array(
 			array(
 				'input_type'         => 'text',
 				'option_code'        => 'KEY',
 				'required'           => true,
-				'label'              => esc_attr__( 'Meta key', 'uncanny-automator' ),
-				'description'        => esc_attr__( 'The meta key associated with the data you want to retrieve. Only one meta key can be entered per token.', 'uncanny-automator' ),
+				'label'              => esc_attr_x( 'Meta key', 'Token', 'uncanny-automator' ),
+				'description'        => esc_attr_x( 'The meta key associated with the data you want to retrieve. Only one meta key can be entered per token.', 'Token', 'uncanny-automator' ),
 				'supports_tokens'    => true,
 				'unsupported_tokens' => array( 'USERMETA:KEY', 'POSTMETA:POSTID:KEY', 'CALCULATION:FORMULA' ),
 			),
 		);
 	}
-
-	public function parse_integration_token( $return, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
+	/**
+	 * Parse integration token.
+	 *
+	 * @param mixed $retval The retval.
+	 * @param mixed $pieces The pieces.
+	 * @param mixed $recipe_id The ID.
+	 * @param mixed $trigger_data The data.
+	 * @param mixed $user_id The user ID.
+	 * @param mixed $replace_args The arguments.
+	 * @return mixed
+	 */
+	public function parse_integration_token( $retval, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 
 		$meta_key = $pieces[3];
+
+		$user_id = $this->resolve_user_id( $user_id, $replace_args );
 
 		$user_data = get_userdata( $user_id );
 

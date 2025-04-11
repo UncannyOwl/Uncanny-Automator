@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.7.2
 Requires PHP: 7.3
-Stable tag: 6.4.0
+Stable tag: 6.4.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -381,6 +381,14 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.4.0.1 [2025-04-11] =
+
+**Fixed:**
+
+* Bluesky - Create a post - Media embeds were going a little freestyle with formatting. We've taught them some manners—now they behave properly. #5613  
+* Core - Advanced tokens - That one sneaky use-case slipped through the cracks and made tokens blush (aka turn red). We've caught it and fixed it up. #5625  
+* User loops (Pro) - Advanced user meta tokens - Loops were getting a bit confused about who's who. Now they remember whose data they're supposed to be using. #5563
 
 = 6.4 [2025-04-01] =
 
