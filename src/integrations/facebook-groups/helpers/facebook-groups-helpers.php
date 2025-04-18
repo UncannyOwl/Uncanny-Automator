@@ -160,7 +160,7 @@ class Facebook_Groups_Helpers {
 				)
 			),
 			esc_url( $this->get_settings_page_url() ),
-			esc_html__( 'refresh your authorization.', 'uncanny-automator' )
+			esc_html_x( 'refresh your authorization.', 'Facebook Groups', 'uncanny-automator' )
 		);
 	}
 
@@ -173,9 +173,10 @@ class Facebook_Groups_Helpers {
 
 		return add_query_arg(
 			array(
-				'action'   => 'login_dialog',
-				'nonce'    => wp_create_nonce( self::OPTION_KEY ),
-				'user_url' => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=' . self::AJAX_PREFIX . '_token_capture' ),
+				'action'     => 'login_dialog',
+				'nonce'      => wp_create_nonce( self::OPTION_KEY ),
+				'user_url'   => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=' . self::AJAX_PREFIX . '_token_capture' ),
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . self::API_ENDPOINT
 		);
@@ -193,7 +194,7 @@ class Facebook_Groups_Helpers {
 			wp_send_json(
 				array(
 					'success' => false,
-					'message' => esc_html__( 'Nonce authentication error', 'uncanny-automator' ),
+					'message' => esc_html_x( 'Nonce authentication error', 'Facebook Groups', 'uncanny-automator' ),
 					'items'   => null,
 				)
 			);
@@ -250,7 +251,7 @@ class Facebook_Groups_Helpers {
 			wp_send_json(
 				array(
 					'success' => true,
-					'message' => esc_html__( 'Groups has been successfully fetched.', 'uncanny-automator' ),
+					'message' => esc_html_x( 'Groups has been successfully fetched.', 'Facebook Groups', 'uncanny-automator' ),
 					'items'   => $items,
 				)
 			);
@@ -275,7 +276,7 @@ class Facebook_Groups_Helpers {
 	 */
 	public function verify_install() {
 
-		if ( current_user_can( 'manage_option' ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( 'Unauthorized', 401 );
 		}
 
@@ -407,7 +408,7 @@ class Facebook_Groups_Helpers {
 
 		}
 
-		wp_die( esc_html__( 'Nonce Verification Failed', 'uncanny-automator' ) );
+		wp_die( esc_html_x( 'Nonce Verification Failed', 'Facebook Groups', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -618,13 +619,13 @@ class Facebook_Groups_Helpers {
 		return array(
 			array(
 				'show_in'     => $action_meta,
-				'text'        => esc_attr__( 'Help', 'uncanny-automator' ),
+				'text'        => esc_attr_x( 'Help', 'Facebook Groups', 'uncanny-automator' ),
 				'css_classes' => 'uap-btn uap-btn--transparent',
 				'on_click'    => 'function(){ window.open( "' . esc_url_raw( $support_link ) . '", "_blank" ); }',
 			),
 			array(
 				'show_in'     => $action_meta,
-				'text'        => esc_attr__( 'Verify app installation', 'uncanny-automator' ),
+				'text'        => esc_attr_x( 'Verify app installation', 'Facebook Groups', 'uncanny-automator' ),
 				'css_classes' => 'uap-btn uap-btn--primary',
 				'on_click'    => $this->click_handler( $action_meta ),
 			),
@@ -641,12 +642,12 @@ class Facebook_Groups_Helpers {
 	public function get_groups_field( $action_meta = '' ) {
 		return array(
 			'option_code'              => $action_meta,
-			'label'                    => esc_attr__( 'Facebook Group', 'uncanny-automator' ),
-			'description'              => esc_attr__( 'The group you select must have the "Uncanny Automator" app installed. Click on the Verify app installation button below to confirm.', 'uncanny-automator' ),
+			'label'                    => esc_attr_x( 'Facebook Group', 'Facebook Groups', 'uncanny-automator' ),
+			'description'              => esc_attr_x( 'The group you select must have the "Uncanny Automator" app installed. Click on the Verify app installation button below to confirm.', 'Facebook Groups', 'uncanny-automator' ),
 			'input_type'               => 'select',
 			'required'                 => true,
 			'options'                  => $this->get_saved_groups(),
-			'custom_value_description' => esc_html__( 'Group ID', 'uncanny-automator' ),
+			'custom_value_description' => esc_html_x( 'Group ID', 'Facebook Groups', 'uncanny-automator' ),
 		);
 	}
 
@@ -694,11 +695,11 @@ class Facebook_Groups_Helpers {
 						}
 
 						if ( isFound ) {
-							$noticesContainer.html( '<div class="item-options__notice item-options__notice--success">' + '<?php echo esc_html__( 'Successfully validated the group.', 'uncanny-automator' ); ?>' + '</div>' );
+							$noticesContainer.html( '<div class="item-options__notice item-options__notice--success">' + '<?php echo esc_html_x( 'Successfully validated the group.', 'Facebook Groups', 'uncanny-automator' ); ?>' + '</div>' );
 							return;
 						}
 
-						$noticesContainer.html( '<div class="item-options__notice item-options__notice--warning">'+ '<?php echo esc_html__( 'The Uncanny Automator Facebook Group app is not installed on the selected group.', 'uncanny-automator' ); ?>' + ' <a href="https://automatorplugin.com/knowledge-base/facebook-groups/" target="_blank">Learn more</a>.</div>' );
+						$noticesContainer.html( '<div class="item-options__notice item-options__notice--warning">'+ '<?php echo esc_html_x( 'The Uncanny Automator Facebook Group app is not installed on the selected group.', 'Facebook Groups', 'uncanny-automator' ); ?>' + ' <a href="https://automatorplugin.com/knowledge-base/facebook-groups/" target="_blank">Learn more</a>.</div>' );
 
 						return;
 

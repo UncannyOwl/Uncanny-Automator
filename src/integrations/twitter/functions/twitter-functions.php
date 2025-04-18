@@ -67,17 +67,17 @@ class Twitter_Functions {
 	 * @param string $label
 	 * @param bool   $tokens
 	 * @param string $type
-	 * @param string $default
+	 * @param string $default_value
 	 * @param bool
 	 * @param string $description
 	 * @param string $placeholder
 	 *
 	 * @return mixed
 	 */
-	public function textarea_field( $option_code = 'TEXT', $label = null, $tokens = true, $type = 'text', $default = null, $required = true, $description = '', $placeholder = null, $max_length = null ) {
+	public function textarea_field( $option_code = 'TEXT', $label = null, $tokens = true, $type = 'text', $default_value = null, $required = true, $description = '', $placeholder = null, $max_length = null ) {
 
 		if ( ! $label ) {
-			$label = esc_html__( 'Text', 'uncanny-automator' );
+			$label = esc_html_x( 'Text', 'Twitter', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -96,7 +96,7 @@ class Twitter_Functions {
 			'input_type'       => $type,
 			'supports_tokens'  => $tokens,
 			'required'         => $required,
-			'default_value'    => $default,
+			'default_value'    => $default_value,
 			'supports_tinymce' => false,
 			'max_length'       => $max_length,
 		);
@@ -207,7 +207,6 @@ class Twitter_Functions {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		die;
-
 	}
 
 	/**
@@ -368,14 +367,10 @@ class Twitter_Functions {
 
 		// Define the parameters of the URL
 		$parameters = array(
-			// Authentication nonce
-			'nonce'        => wp_create_nonce( 'automator_twitter_api_authentication' ),
-
-			// Action
+			'nonce'        => wp_create_nonce( 'automator_twitter_api_authentication' ), // Action
 			'action'       => 'authorization_request',
-
-			// Redirect URL
 			'redirect_url' => rawurlencode( $redirect_url ),
+			'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
 		);
 
 		// Return the URL
@@ -431,4 +426,3 @@ class Twitter_Functions {
 		}
 	}
 }
-

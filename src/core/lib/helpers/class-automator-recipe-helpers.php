@@ -7,7 +7,7 @@ namespace Uncanny_Automator;
  *
  * @package Uncanny_Automator
  */
-#[\AllowDynamicProperties]
+#[\AllowDynamicProperties] // phpcs:ignore Uncanny_Automator.PHP.PHP80Features.Attribute
 class Automator_Helpers_Recipe extends Automator_Helpers {
 
 	/**
@@ -397,7 +397,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 		global $pagenow;
 
 		if ( null === $pagenow && isset( $_SERVER['SCRIPT_FILENAME'] ) ) {
-			$pagenow = basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) ) );
+			$pagenow = basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) ) ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 		//make sure we are on the backend
 		if ( ! is_admin() ) {
@@ -461,7 +461,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public function is_rest() {
 		$prefix = rest_get_url_prefix();
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST || automator_filter_has_var( 'rest_route' ) && 0 === strpos( trim( automator_filter_input( 'rest_route' ), '\\/' ), $prefix, 0 ) ) {
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST || automator_filter_has_var( 'rest_route' ) && 0 === strpos( trim( automator_filter_input( 'rest_route' ), '\\/' ), $prefix, 0 ) ) { // phpcs:ignore Generic.CodeAnalysis.RequireExplicitBooleanOperatorPrecedence.MissingParentheses
 			return true;
 		}
 		// (#3)
@@ -545,7 +545,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 			$iv                = substr( $message, 0, 16 );
 			$encrypted_message = substr( $message, 16 );
 			$tokens            = openssl_decrypt( $encrypted_message, $method, $secret, 0, $iv );
-			$tokens            = maybe_unserialize( $tokens );
+			$tokens            = json_decode( $tokens, true );
 		}
 
 		return $tokens;
@@ -770,7 +770,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 					$meta_key   = sanitize_text_field( $mq['key'] );
 					$meta_value = sanitize_text_field( $mq['value'] );
 					$compare    = isset( $mq['compare'] ) ? $mq['compare'] : 'LIKE';
-					$join       .= " INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '{$meta_key}' AND pm.meta_value {$compare} '{$meta_value}'"; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+					$join      .= " INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '{$meta_key}' AND pm.meta_value {$compare} '{$meta_value}'"; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 				}
 
 				// Join tables
@@ -787,7 +787,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 					} elseif ( ! empty( $post_status ) && is_array( $post_status ) ) {
 						$comma_separated = implode( "','", $post_status );
 						$comma_separated = "'" . $comma_separated . "'";
-						$query           .= "AND p.post_status IN ({$comma_separated}) "; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+						$query          .= "AND p.post_status IN ({$comma_separated}) "; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 					} else {
 						$query .= " AND p.post_status = 'publish' ";
 					}
@@ -801,7 +801,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 				} elseif ( isset( $post_type ) && is_array( $post_type ) ) {
 					$comma_separated = implode( "','", $post_type );
 					$comma_separated = "'" . $comma_separated . "'";
-					$query           .= " AND p.post_type = '{$comma_separated}'"; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+					$query          .= " AND p.post_type = '{$comma_separated}'"; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 				} else {
 					$query .= " AND p.post_type = 'page'";
 				}
@@ -1082,16 +1082,16 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 	 *
 	 * @return bool
 	 */
-	public function maybe_load_trigger_options( $class = '' ) {
+	public function maybe_load_trigger_options( $class_name = '' ) {
 		if ( is_admin() && automator_filter_has_var( 'action' ) && 'edit' === automator_filter_input( 'action' ) && automator_filter_has_var( 'post' ) ) {
 			$post_id = absint( automator_filter_input( 'post' ) );
 			$post    = get_post( $post_id );
 			if ( $post && $post instanceof \WP_Post && 'uo-recipe' === $post->post_type ) {
-				return apply_filters( 'automator_do_load_options', true, $class );
+				return apply_filters( 'automator_do_load_options', true, $class_name );
 			}
 		}
 
-		return apply_filters( 'automator_do_load_options', false, $class );
+		return apply_filters( 'automator_do_load_options', false, $class_name );
 	}
 
 	/**
@@ -1142,7 +1142,6 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 	public function set_trigger_log_properties( $properties_args ) {
 
 		return $this->set_log_properties( $properties_args, 'trigger' );
-
 	}
 
 	/**
@@ -1187,5 +1186,4 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 
 		return $properties;
 	}
-
 }

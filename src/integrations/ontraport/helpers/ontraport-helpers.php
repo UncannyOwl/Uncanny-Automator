@@ -70,7 +70,7 @@ class Ontraport_Helpers {
 			$is_success = true;
 
 		} catch ( Exception $e ) {
-			$options['error'] = _x( 'Api Exception: ', 'Ontraport', 'uncanny-automator' ) . $e->getMessage();
+			$options['error'] = esc_html_x( 'API Exception: ', 'Ontraport', 'uncanny-automator' ) . $e->getMessage();
 		}
 
 		$options['success'] = $is_success;
@@ -108,7 +108,7 @@ class Ontraport_Helpers {
 			$is_success = true;
 
 		} catch ( Exception $e ) {
-			$options['error'] = _x( 'Api Exception: ', 'Ontraport', 'uncanny-automator' ) . $e->getMessage();
+			$options['error'] = esc_html_x( 'API Exception: ', 'Ontraport', 'uncanny-automator' ) . $e->getMessage();
 		}
 
 		$options['success'] = $is_success;
@@ -287,7 +287,7 @@ class Ontraport_Helpers {
 			$message = isset( $response['data']['message'] )
 				? $response['data']['message']
 				// translators: 1: Status code
-				: sprintf( _x( 'Ontraport API error: Received unexpected status code %1$s.', 'Ontraport', 'uncanny-automator' ), $status );
+				: sprintf( esc_html_x( 'Ontraport API error: Received unexpected status code %1$s.', 'Ontraport', 'uncanny-automator' ), $status );
 
 			throw new \Exception( esc_html( $message ), absint( $status ) );
 
@@ -300,9 +300,10 @@ class Ontraport_Helpers {
 	public static function get_authorization_url() {
 		return add_query_arg(
 			array(
-				'action'   => 'authorize',
-				'user_url' => rawurlencode( get_bloginfo( 'url' ) ),
-				'nonce'    => wp_create_nonce( self::NONCE ),
+				'action'     => 'authorize',
+				'user_url'   => rawurlencode( get_bloginfo( 'url' ) ),
+				'nonce'      => wp_create_nonce( self::NONCE ),
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . 'v2/ontraport'
 		);

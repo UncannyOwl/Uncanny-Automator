@@ -229,7 +229,7 @@ class Aweber_Helpers {
 		// Handle errors.
 		if ( false === $credentials ) {
 			// Redirect to settings page with error message.
-			wp_safe_redirect( $this->get_settings_page_url() . '&error_message=' . _x( 'Unable to decode credentials with the secret provided', 'AWeber', 'uncanny-automator' ) );
+			wp_safe_redirect( $this->get_settings_page_url() . '&error_message=' . esc_html_x( 'Unable to decode credentials with the secret provided', 'AWeber', 'uncanny-automator' ) );
 			die;
 		}
 
@@ -394,7 +394,7 @@ class Aweber_Helpers {
 		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] && 209 !== $response['statusCode'] ) {
 			$message = sprintf(
 				/* translators: %d: HTTP status code */
-				_x( 'API Exception (status code: %d). An error has occurred while performing the action. Please try again later.', 'AWeber', 'uncanny-automator' ),
+				esc_html_x( 'API Exception (status code: %d). An error has occurred while performing the action. Please try again later.', 'AWeber', 'uncanny-automator' ),
 				absint( $response['statusCode'] )
 			);
 			throw new \Exception( esc_html( $message ), absint( $response['statusCode'] ) );
@@ -407,9 +407,10 @@ class Aweber_Helpers {
 	public static function get_authorization_url() {
 		return add_query_arg(
 			array(
-				'action'   => 'authorize',
-				'user_url' => rawurlencode( get_bloginfo( 'url' ) ),
-				'nonce'    => wp_create_nonce( self::NONCE ),
+				'action'     => 'authorize',
+				'user_url'   => rawurlencode( get_bloginfo( 'url' ) ),
+				'nonce'      => wp_create_nonce( self::NONCE ),
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . 'v2/aweber'
 		);

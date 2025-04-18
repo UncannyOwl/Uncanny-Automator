@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
-Tested up to: 6.7.2
+Tested up to: 6.8
 Requires PHP: 7.3
-Stable tag: 6.4.0.1
+Stable tag: 6.4.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
