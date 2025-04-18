@@ -275,9 +275,10 @@ class Linkedin_Helpers {
 
 		return add_query_arg(
 			array(
-				'action'   => 'authorization_request',
-				'user_url' => rawurlencode( admin_url( 'admin-ajax.php?action=automator_linkedin_capture_tokens&nonce=' . $nonce ) ),
-				'nonce'    => $nonce,
+				'action'     => 'authorization_request',
+				'user_url'   => rawurlencode( admin_url( 'admin-ajax.php?action=automator_linkedin_capture_tokens&nonce=' . $nonce ) ),
+				'nonce'      => $nonce,
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . 'v2/linkedin'
 		);
@@ -519,16 +520,14 @@ class Linkedin_Helpers {
 
 			printf(
 				'<div class="notice notice-error"><p>%1$s <a href="%2$s">%3$s</a> %4$s</p></div>',
-				esc_html(
-					/* Translators: Admin notice */
-					__(
-						'Your LinkedIn access and refresh tokens have expired.',
-						'uncanny-automator'
-					)
+				esc_html_x(
+					'Your LinkedIn access and refresh tokens have expired.',
+					'Linkedin',
+					'uncanny-automator'
 				),
 				esc_url( $this->get_settings_url() ),
-				esc_html__( 'Click here', 'uncanny-automator' ),
-				esc_html__( 'to reauthorize Uncanny Automator and continue using LinkedIn actions in your recipes.', 'uncanny-automator' )
+				esc_html_x( 'Click here', 'Linkedin', 'uncanny-automator' ),
+				esc_html_x( 'to reauthorize Uncanny Automator and continue using LinkedIn actions in your recipes.', 'Linkedin', 'uncanny-automator' )
 			);
 
 			return;
@@ -550,8 +549,8 @@ class Linkedin_Helpers {
 				)
 			),
 			esc_url( $this->get_settings_url() ),
-			esc_html__( 'Click here to reauthorize', 'uncanny-automator' ),
-			esc_html__( 'to continue using your LinkedIn account in your recipes.', 'uncanny-automator' )
+			esc_html_x( 'Click here to reauthorize', 'Linkedin', 'uncanny-automator' ),
+			esc_html_x( 'to continue using your LinkedIn account in your recipes.', 'Linkedin', 'uncanny-automator' )
 		);
 	}
 }

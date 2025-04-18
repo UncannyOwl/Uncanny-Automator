@@ -85,8 +85,8 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			$this->add_alert(
 				array(
 					'type'    => 'success',
-					'heading' => _x( 'Connected', 'Discord', 'uncanny-automator' ),
-					'content' => _x( 'The integration has been connected successfully.', 'Discord', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'Connected', 'Discord', 'uncanny-automator' ),
+					'content' => esc_html_x( 'The integration has been connected successfully.', 'Discord', 'uncanny-automator' ),
 				)
 			);
 		}
@@ -98,8 +98,8 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			$this->add_alert(
 				array(
 					'type'    => 'success',
-					'heading' => _x( 'Server list synced', 'Discord', 'uncanny-automator' ),
-					'content' => _x( 'The list of available servers have been synced successfully.', 'Discord', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'Server list synced', 'Discord', 'uncanny-automator' ),
+					'content' => esc_html_x( 'The list of available servers have been synced successfully.', 'Discord', 'uncanny-automator' ),
 				)
 			);
 		}
@@ -111,10 +111,10 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			$this->add_alert(
 				array(
 					'type'    => 'success',
-					'heading' => _x( 'Server connected', 'Discord', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'Server connected', 'Discord', 'uncanny-automator' ),
 					'content' => sprintf(
 						// translators: %s: Server name.
-						_x( '%s has been connected successfully for use in your recipes.', 'Discord', 'uncanny-automator' ),
+						esc_html_x( '%s has been connected successfully for use in your recipes.', 'Discord', 'uncanny-automator' ),
 						$server['name']
 					),
 				)
@@ -128,10 +128,10 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			$this->add_alert(
 				array(
 					'type'    => 'success',
-					'heading' => _x( 'Server disconnected', 'Discord', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'Server disconnected', 'Discord', 'uncanny-automator' ),
 					'content' => sprintf(
 						// translators: %s: Server name.
-						_x( '%s has been disconnected successfully.', 'Discord', 'uncanny-automator' ),
+						esc_html_x( '%s has been disconnected successfully.', 'Discord', 'uncanny-automator' ),
 						$server['name']
 					),
 				)
@@ -144,12 +144,11 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			$this->add_alert(
 				array(
 					'type'    => 'error',
-					'heading' => _x( 'Something went wrong', 'Discord', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'Something went wrong', 'Discord', 'uncanny-automator' ),
 					'content' => $error,
 				)
 			);
 		}
-
 	}
 
 	/**
@@ -207,7 +206,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			wp_safe_redirect(
 				add_query_arg(
 					array(
-						'error' => esc_html__( 'Missing credentials', 'uncanny-automator' ),
+						'error' => esc_html_x( 'Missing credentials', 'Discord', 'uncanny-automator' ),
 					),
 					$this->get_settings_page_url()
 				)
@@ -253,6 +252,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			'action'       => 'authorization_request',
 			'nonce'        => wp_create_nonce( self::NONCE_KEY ),
 			'redirect_url' => rawurlencode( $this->get_settings_page_url() ),
+			'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
 		);
 
 		if ( ! is_null( $server_id ) ) {
@@ -312,7 +312,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		$link = $this->get_settings_page_url() . '&sync-servers=1';
 		?>
 		<uo-alert
-			heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Discord account at a time, although you may connect multiple servers.', 'Discord', 'uncanny-automator' ); ?>" 
+			heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Discord account at a time, although you may connect multiple servers.', 'Discord', 'uncanny-automator' ); ?>" <?php // phpcs:ignore Uncanny_Automator.Strings.SentenceCase.PotentialCaseIssue ?>
 			class="uap-spacing-bottom">
 		</uo-alert>
 
@@ -361,7 +361,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			class="uap-spacing-bottom">
 			<p><?php echo esc_html_x( "If you've added or removed servers since connecting, click the Resync Servers button below to refresh the list.", 'Discord', 'uncanny-automator' ); ?></p>
 			<uo-button href="<?php echo esc_url( $link ); ?>" type="button">
-			<?php echo esc_html( _x( 'Resync servers', 'Discord', 'uncanny-automator' ) ); ?>
+			<?php echo esc_html( esc_html_x( 'Resync servers', 'Discord', 'uncanny-automator' ) ); ?>
 			</uo-button>
 		</uo-alert>
 
@@ -392,47 +392,47 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		<ul>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Send a message to a channel', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Send a direct message to a Discord member', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Assign a role to a member', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Remove a role from a member', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Remove a member', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Update a member', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Add a member to a channel', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Create a channel', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 			<li>
 				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
 				<?php echo esc_html_x( 'Send an invitation to join a server to an email', 'Discord', 'uncanny-automator' ); ?>
 			</li>
 		</ul>
@@ -503,7 +503,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		?>
 		<uo-button color="danger" href="<?php echo esc_url( $link ); ?>">
 			<uo-icon id="sign-out"></uo-icon>
-		<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
+			<?php echo esc_html_x( 'Disconnect', 'Discord', 'uncanny-automator' ); ?>
 		</uo-button>
 
 		<?php
@@ -527,7 +527,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 
 		// Server not connected.
 		if ( empty( $server['connected'] ) ) {
-			$date  = _x( 'Not connected', 'Discord', 'uncanny-automator' );
+			$date  = esc_html_x( 'Not connected', 'Discord', 'uncanny-automator' );
 			$url   = $this->get_oauth_url( $server['id'] );
 			$label = esc_html_x( 'Connect server', 'Discord', 'uncanny-automator' );
 		}
@@ -544,5 +544,4 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		</tr>
 		<?php
 	}
-
 }

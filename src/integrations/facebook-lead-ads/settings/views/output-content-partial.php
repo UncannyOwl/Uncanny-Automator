@@ -138,7 +138,8 @@ automator_fbla_content_partial_render( $vars );
 <div id="automatorFblaConnectionResult"></div>
 
 <uo-button id="FBLAConnectionCheckBtn" color="secondary" size="small">
-	<uo-icon id="sync"></uo-icon> <?php esc_html_x( 'Test API connection', 'Facebook Lead Ads', 'uncanny-automator' ); ?>
+	<uo-icon id="repeat"></uo-icon> 
+	<?php echo esc_html_x( 'Test API connection', 'Facebook Lead Ads', 'uncanny-automator' ); ?>
 </uo-button>
 
 <script>
