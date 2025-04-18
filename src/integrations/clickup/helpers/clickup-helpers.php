@@ -59,6 +59,9 @@ class ClickUp_Helpers {
 	 */
 	protected $setting_tab = '';
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct( $load_hooks = true ) {
 
 		if ( $load_hooks && is_admin() ) {
@@ -173,9 +176,10 @@ class ClickUp_Helpers {
 
 		return add_query_arg(
 			array(
-				'action'   => 'authorization_request',
-				'user_url' => rawurlencode( admin_url( 'admin-ajax.php?action=automator_clickup_capture_tokens&nonce=' . $nonce ) ),
-				'nonce'    => $nonce,
+				'action'     => 'authorization_request',
+				'user_url'   => rawurlencode( admin_url( 'admin-ajax.php?action=automator_clickup_capture_tokens&nonce=' . $nonce ) ),
+				'nonce'      => $nonce,
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . self::API_ENDPOINT
 		);
@@ -263,7 +267,7 @@ class ClickUp_Helpers {
 			throw new \Exception(
 				sprintf(
 				/* translators: %1$s: Error type, %2$s: Error description */
-					esc_html__( 'Uncanny Automator API has responded with error %1$s: %2$s', 'uncanny-automator' ),
+					esc_html_x( 'Uncanny Automator API has responded with error %1$s: %2$s', 'Clickup', 'uncanny-automator' ),
 					esc_html( $response['error']['type'] ),
 					esc_html( $response['error']['description'] )
 				),
@@ -291,7 +295,7 @@ class ClickUp_Helpers {
 		throw new \Exception(
 			sprintf(
 			/* translators: %1$s: Status code, %2$s: Error code, %3$s: Error message */
-				esc_html__( 'ClickUp API has responded with a status code: %1$s and with an error %2$s: %3$s', 'uncanny-automator' ),
+				esc_html_x( 'ClickUp API has responded with a status code: %1$s and with an error %2$s: %3$s', 'Clickup', 'uncanny-automator' ),
 				absint( $response['statusCode'] ),
 				esc_html( $error_code ),
 				esc_html( $error_message )
@@ -614,7 +618,7 @@ class ClickUp_Helpers {
 
 		// Add default folderless list.
 		$options[] = array(
-			'text'  => esc_html__( 'Folderless lists', 'uncanny-automator' ),
+			'text'  => esc_html_x( 'Folderless lists', 'Clickup', 'uncanny-automator' ),
 			'value' => $space_id . '|SPACE_ID', // Set flag to Space ID instead of Folder ID.
 		);
 
@@ -682,7 +686,7 @@ class ClickUp_Helpers {
 			// Allows the dropdown to have 'Everyone' option.
 			$members[] = array(
 				'value' => '-1',
-				'text'  => esc_html__( 'Everyone', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Everyone', 'Clickup', 'uncanny-automator' ),
 			);
 		}
 
@@ -772,11 +776,11 @@ class ClickUp_Helpers {
 
 		$statuses = array(
 			array(
-				'text'  => esc_html__( 'Leave unchanged in ClickUp', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Leave unchanged in ClickUp', 'Clickup', 'uncanny-automator' ),
 				'value' => '__NO_UPDATE__',
 			),
 			array(
-				'text'  => esc_html__( 'Remove status', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Remove status', 'Clickup', 'uncanny-automator' ),
 				'value' => '__REMOVE__',
 			),
 		);
@@ -883,19 +887,19 @@ class ClickUp_Helpers {
 	 *
 	 * @return mixed The supplied default value.
 	 */
-	protected function get_payload_values( $key = '', $default = null ) {
+	protected function get_payload_values( $key = '', $default_value = null ) {
 
 		Automator()->utilities->ajax_auth_check( $_POST );  // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 		if ( ! isset( $_POST['values'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			return $default;
+			return $default_value;
 		}
 
 		if ( ! isset( $_POST['values'][ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			return $default;
+			return $default_value;
 		}
 
-		return ! empty( $_POST['values'][ $key ] ) ? sanitize_text_field( wp_unslash( $_POST['values'][ $key ] ) ) : $default; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return ! empty( $_POST['values'][ $key ] ) ? sanitize_text_field( wp_unslash( $_POST['values'][ $key ] ) ) : $default_value; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/**

@@ -210,7 +210,7 @@ class Threads_Helpers {
 		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] && 209 !== $response['statusCode'] ) {
 			$message = sprintf(
 				/* translators: %d: HTTP status code */
-				_x( 'API Exception (status code: %d). An error has occurred while performing the action. Please try again later.', 'Threads', 'uncanny-automator' ),
+				esc_html_x( 'API Exception (status code: %d). An error has occurred while performing the action. Please try again later.', 'Threads', 'uncanny-automator' ),
 				absint( $response['statusCode'] )
 			);
 			throw new \Exception( esc_html( $message ), absint( $response['statusCode'] ) );
@@ -223,9 +223,10 @@ class Threads_Helpers {
 	public static function get_authorization_url() {
 		return add_query_arg(
 			array(
-				'action'  => 'authorization',
-				'wp_site' => rawurlencode( get_bloginfo( 'url' ) ),
-				'state'   => wp_create_nonce( self::NONCE ),
+				'action'     => 'authorization',
+				'wp_site'    => rawurlencode( get_bloginfo( 'url' ) ),
+				'state'      => wp_create_nonce( self::NONCE ),
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . 'v2/threads'
 		);

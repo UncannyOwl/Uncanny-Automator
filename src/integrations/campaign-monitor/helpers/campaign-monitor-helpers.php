@@ -454,6 +454,7 @@ class Campaign_Monitor_Helpers {
 				'action'   => 'authorize',
 				'user_url' => rawurlencode( get_bloginfo( 'url' ) ),
 				'nonce'    => wp_create_nonce( self::NONCE ),
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . 'v2/campaignmonitor'
 		);

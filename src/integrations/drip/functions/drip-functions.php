@@ -73,7 +73,11 @@ class Drip_Functions {
 	public function get_client() {
 		return automator_get_option( self::TOKEN_OPTION, false );
 	}
-
+	/**
+	 * Integration status.
+	 *
+	 * @return mixed
+	 */
 	public function integration_status() {
 		return $this->get_client() ? 'success' : '';
 	}
@@ -93,6 +97,7 @@ class Drip_Functions {
 			'action'       => 'authorization_request',
 			// Redirect URL
 			'redirect_url' => rawurlencode( $this->get_settings_page_url() ),
+			'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
 		);
 
 		// Return the URL

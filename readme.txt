@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
-Tested up to: 6.7.2
+Tested up to: 6.8
 Requires PHP: 7.3
-Stable tag: 6.4.0.1
+Stable tag: 6.4.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -381,6 +381,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.4.0.2 [2025-04-18] =
+
+**Fixed:**
+
+* `automator_api_decode_message` vulnerability fix - We patched up a potential trouble spot faster than a squirrel crossing a busy street. All secure now! #5633 CVE-2025-3623
+* Facebook Lead Ads - Icons and text were doing their best disappearing act on the Test Connection button—so we called them back to the stage. #5641
 
 = 6.4.0.1 [2025-04-11] =
 

@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             6.4.0.1
+ * Version:             6.4.0.2
  * Requires at least:   5.6
  * Requires PHP:        7.3
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '6.4.0.1' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '6.4.0.2' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -40,7 +40,7 @@ if ( version_compare( PHP_VERSION, '7.3', '<' ) ) {
 	function automator_version_check_admin_notice() {
 		?>
 		<div class="notice notice-error"
-			 style="border-left: 4px solid #dc3232; font-weight: bold; background-color: #fff4e5; color: #000;">
+			style="border-left: 4px solid #dc3232; font-weight: bold; background-color: #fff4e5; color: #000;">
 			<p>
 			<?php
 				// translators: %s: The version number of Uncanny Automator.
@@ -60,9 +60,9 @@ if ( version_compare( PHP_VERSION, '7.3', '<' ) ) {
  *
  * @return void
  */
-function automator_autoloader( $class ) {
+function automator_autoloader( $class_name ) {
 
-	$class = strtolower( $class );
+	$class_name = strtolower( $class_name );
 
 	global $automator_class_map;
 
@@ -71,8 +71,8 @@ function automator_autoloader( $class ) {
 		$automator_class_map = array_change_key_case( $automator_class_map, CASE_LOWER );
 	}
 
-	if ( isset( $automator_class_map[ $class ] ) ) {
-		include_once $automator_class_map[ $class ];
+	if ( isset( $automator_class_map[ $class_name ] ) ) {
+		include_once $automator_class_map[ $class_name ];
 	}
 }
 

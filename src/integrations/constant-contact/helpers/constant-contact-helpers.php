@@ -67,9 +67,10 @@ class Constant_Contact_Helpers {
 
 		return add_query_arg(
 			array(
-				'action'  => 'authorization',
-				'nonce'   => $nonce,
-				'wp_site' => rawurlencode( admin_url( 'admin-ajax.php?action=automator_constant_contact_handle_credentials&nonce=' . $nonce ) ),
+				'action'     => 'authorization',
+				'nonce'      => $nonce,
+				'wp_site'    => rawurlencode( admin_url( 'admin-ajax.php?action=automator_constant_contact_handle_credentials&nonce=' . $nonce ) ),
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			trailingslashit( AUTOMATOR_API_URL ) . self::API_ENDPOINT
 		);

@@ -49,6 +49,9 @@ class Facebook_Helpers {
 	 */
 	const OPTION_KEY = '_uncannyowl_facebook_settings';
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
@@ -254,7 +257,7 @@ class Facebook_Helpers {
 
 		}
 
-		wp_die( esc_html__( 'Nonce Verification Failed', 'uncanny-automator' ) );
+		wp_die( esc_html_x( 'Nonce Verification Failed', 'Facebook', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -310,7 +313,7 @@ class Facebook_Helpers {
 			// Throw error if access token is empty.
 			if ( ! isset( $settings['user']['token'] ) ) {
 				// Invoke 403 status code.
-				throw new \Exception( esc_html__( 'Forbidden. User access token is required but empty.', 'uncanny-automator' ), 403 );
+				throw new \Exception( esc_html_x( 'Forbidden. User access token is required but empty.', 'Facebook', 'uncanny-automator' ), 403 );
 			}
 
 			// Request from API.
@@ -323,7 +326,7 @@ class Facebook_Helpers {
 
 			// Throw error if status code is invalid.
 			if ( 200 !== $request['statusCode'] ) {
-				throw new \Exception( esc_html__( 'Invalid status code.', 'uncanny-automator' ), $request['statusCode'] );
+				throw new \Exception( esc_html_x( 'Invalid status code.', 'Facebook', 'uncanny-automator' ), $request['statusCode'] );
 			}
 
 			foreach ( $request['data']['data'] as $page ) {
@@ -335,7 +338,7 @@ class Facebook_Helpers {
 				);
 			}
 
-			$message = esc_html__( 'Pages are fetched successfully', 'uncanny-automator' );
+			$message = esc_html_x( 'Pages are fetched successfully', 'Facebook', 'uncanny-automator' );
 
 			// Save the option.
 			automator_update_option( '_uncannyowl_facebook_pages_settings', $pages, true );
@@ -351,7 +354,7 @@ class Facebook_Helpers {
 		}
 
 		if ( empty( $pages ) ) {
-			$message = esc_html__( 'No Facebook Pages were found linked to this account. Please click the button below to re-authenticate and ensure the correct pages and permissions are selected.', 'uncanny-automator' );
+			$message = esc_html_x( 'No Facebook Pages were found linked to this account. Please click the button below to re-authenticate and ensure the correct pages and permissions are selected.', 'Facebook', 'uncanny-automator' );
 		}
 
 		$response = array(
@@ -422,9 +425,10 @@ class Facebook_Helpers {
 
 		return add_query_arg(
 			array(
-				'action'   => 'facebook_authorization_request',
-				'nonce'    => wp_create_nonce( self::OPTION_KEY ),
-				'user_url' => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=' . $this->wp_ajax_action ),
+				'action'     => 'facebook_authorization_request',
+				'nonce'      => wp_create_nonce( self::OPTION_KEY ),
+				'user_url'   => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=' . $this->wp_ajax_action ),
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			$this->fb_endpoint_uri
 		);
@@ -630,7 +634,11 @@ class Facebook_Helpers {
 
 		return Api_Server::api_call( $params );
 	}
-
+	/**
+	 * Check for errors.
+	 *
+	 * @param mixed $response The response.
+	 */
 	public function check_for_errors( $response ) {
 
 		if ( isset( $response['data']['error']['message'] ) ) {

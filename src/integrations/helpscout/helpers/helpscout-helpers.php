@@ -33,6 +33,11 @@ class Helpscout_Helpers {
 
 	protected $webhook_endpoint = null;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param bool $load_hooks Whether to load hooks.
+	 */
 	public function __construct( $load_hooks = true ) {
 
 		if ( $load_hooks ) {
@@ -78,7 +83,9 @@ class Helpscout_Helpers {
 
 		new Helpscout_Settings( $this );
 	}
-
+	/**
+	 * Fetch tags.
+	 */
 	public function fetch_tags() {
 
 		try {
@@ -184,7 +191,7 @@ class Helpscout_Helpers {
 
 		$data = array(
 			array(
-				'text'  => esc_attr__( 'Customer', 'uncanny-automator' ),
+				'text'  => esc_attr_x( 'Customer', 'Helpscout', 'uncanny-automator' ),
 				'value' => $selected_mailbox . '|_CUSTOMER_',
 			),
 		);
@@ -197,7 +204,7 @@ class Helpscout_Helpers {
 
 		if ( $from_created_by_field ) {
 			$data[0] = array(
-				'text'  => esc_attr__( 'Anyone', 'uncanny-automator' ),
+				'text'  => esc_attr_x( 'Anyone', 'Helpscout', 'uncanny-automator' ),
 				'value' => '_ANYONE_',
 			);
 		}
@@ -243,14 +250,16 @@ class Helpscout_Helpers {
 
 		wp_send_json( $data );
 	}
-
+	/**
+	 * Fetch conversations.
+	 */
 	public function fetch_conversations() {
 
 		$selected_mailbox = intval( filter_input( INPUT_POST, 'value' ) );
 
 		$data = array(
 			array(
-				'text'  => esc_html__( 'Any conversation', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Any conversation', 'Helpscout', 'uncanny-automator' ),
 				'value' => -1,
 			),
 		);
@@ -369,9 +378,10 @@ class Helpscout_Helpers {
 
 		return add_query_arg(
 			array(
-				'action'   => 'authorization_request',
-				'user_url' => rawurlencode( admin_url( 'admin-ajax.php?action=automator_helpscout_capture_tokens&nonce=' . $nonce ) ),
-				'nonce'    => $nonce,
+				'action'     => 'authorization_request',
+				'user_url'   => rawurlencode( admin_url( 'admin-ajax.php?action=automator_helpscout_capture_tokens&nonce=' . $nonce ) ),
+				'nonce'      => $nonce,
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . self::API_ENDPOINT
 		);
@@ -472,7 +482,11 @@ class Helpscout_Helpers {
 			)
 		);
 	}
-
+	/**
+	 * Get connected user.
+	 *
+	 * @return mixed
+	 */
 	public function get_connected_user() {
 
 		return $this->api_request(
@@ -482,7 +496,11 @@ class Helpscout_Helpers {
 			null
 		);
 	}
-
+	/**
+	 * Verify access.
+	 *
+	 * @param mixed $nonce The nonce.
+	 */
 	public function verify_access( $nonce = '' ) {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -505,14 +523,23 @@ class Helpscout_Helpers {
 			);
 		}
 	}
-
+	/**
+	 * Redirect.
+	 *
+	 * @param mixed $redirect_url The URL.
+	 * @param mixed $args The arguments.
+	 */
 	public function redirect( $redirect_url = '', $args = array() ) {
 
 		wp_safe_redirect( add_query_arg( $args, $redirect_url ) );
 
 		exit;
 	}
-
+	/**
+	 * Get settings url.
+	 *
+	 * @return mixed
+	 */
 	public function get_settings_url() {
 
 		return add_query_arg(
@@ -539,12 +566,20 @@ class Helpscout_Helpers {
 			admin_url( 'admin-ajax.php' )
 		);
 	}
-
+	/**
+	 * Get client.
+	 *
+	 * @return mixed
+	 */
 	public function get_client() {
 
 		return automator_get_option( self::CLIENT, false );
 	}
-
+	/**
+	 * Get client user.
+	 *
+	 * @return mixed
+	 */
 	public function get_client_user() {
 
 		return isset( $this->get_client()['user'] ) ? $this->get_client()['user'] : '';
@@ -589,7 +624,11 @@ class Helpscout_Helpers {
 
 		return $client_instance['access_token'];
 	}
-
+	/**
+	 * Refresh token.
+	 *
+	 * @param mixed $client The client.
+	 */
 	protected function refresh_token( $client ) {
 
 		try {
@@ -625,6 +664,11 @@ class Helpscout_Helpers {
 
 		}
 	}
+	/**
+	 * Fetch mailboxes.
+	 *
+	 * @return mixed
+	 */
 	public function fetch_mailboxes() {
 
 		$saved_mailboxes = get_transient( self::TRANSIENT_MAILBOXES );
@@ -635,14 +679,18 @@ class Helpscout_Helpers {
 
 		return $saved_mailboxes;
 	}
-
+	/**
+	 * Request mailboxes.
+	 *
+	 * @return mixed
+	 */
 	public function request_mailboxes() {
 
 		$options = array();
 
 		try {
 
-			$options[-1] = esc_html__( 'Any mailbox', 'uncanny-automator' );
+			$options[-1] = esc_html_x( 'Any mailbox', 'Helpscout', 'uncanny-automator' );
 
 			$response = $this->api_request(
 				array(
@@ -682,7 +730,7 @@ class Helpscout_Helpers {
 		$webhook_enabled_option = automator_get_option( 'uap_helpscout_enable_webhook', false );
 
 		// The get_option can return string or boolean sometimes.
-		if ( 'on' === $webhook_enabled_option || 1 == $webhook_enabled_option ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+		if ( 'on' === $webhook_enabled_option || 1 == $webhook_enabled_option ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 			return true;
 		}
 
@@ -702,7 +750,11 @@ class Helpscout_Helpers {
 
 		return $new_key;
 	}
-
+	/**
+	 * Get webhook url.
+	 *
+	 * @return mixed
+	 */
 	public function get_webhook_url() {
 
 		return get_rest_url( null, '/uap/v2/helpscout' );
@@ -807,7 +859,9 @@ class Helpscout_Helpers {
 				)
 			);
 	}
-
+	/**
+	 * Helpscout regenerate secret key.
+	 */
 	public function helpscout_regenerate_secret_key() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -826,7 +880,11 @@ class Helpscout_Helpers {
 
 		exit;
 	}
-
+	/**
+	 * Get regenerate url.
+	 *
+	 * @return mixed
+	 */
 	public function get_regenerate_url() {
 		return add_query_arg(
 			array(

@@ -89,8 +89,8 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			$this->add_alert(
 				array(
 					'type'    => 'success',
-					'heading' => _x( 'Connected', 'Stripe', 'uncanny-automator' ),
-					'content' => _x( 'The integration has been connected successfully.', 'Stripe', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'Connected', 'Stripe', 'uncanny-automator' ),
+					'content' => esc_html_x( 'The integration has been connected successfully.', 'Stripe', 'uncanny-automator' ),
 				)
 			);
 		}
@@ -101,7 +101,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			$this->add_alert(
 				array(
 					'type'    => 'error',
-					'heading' => _x( 'Something went wrong', 'Stripe', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'Something went wrong', 'Stripe', 'uncanny-automator' ),
 					'content' => $error,
 				)
 			);
@@ -111,12 +111,11 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			$this->add_alert(
 				array(
 					'type'    => 'error',
-					'heading' => _x( 'Connected in test mode', 'Stripe', 'uncanny-automator' ),
-					'content' => _x( 'The integration is connected in test mode. Recipes will not affect your live account.', 'Stripe', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'Connected in test mode', 'Stripe', 'uncanny-automator' ),
+					'content' => esc_html_x( 'The integration is connected in test mode. Recipes will not affect your live account.', 'Stripe', 'uncanny-automator' ),
 				)
 			);
 		}
-
 	}
 
 
@@ -129,7 +128,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 		$this->add_alert(
 			array(
 				'type'    => 'error',
-				'heading' => _x( 'Something went wrong', 'Stripe', 'uncanny-automator' ),
+				'heading' => esc_html_x( 'Something went wrong', 'Stripe', 'uncanny-automator' ),
 				'content' => $error_message,
 			)
 		);
@@ -143,7 +142,6 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 	public function get_status() {
 
 		return $this->helpers->integration_status();
-
 	}
 
 	/**
@@ -200,52 +198,52 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			<ul>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Action:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'Create a customer', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Action:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'Delete a customer', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Action:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'Create a payment link for a product', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'A subscription is cancelled', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'A subscription is paid', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'A subscription payment fails', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'A subscription is created', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'A payment for a product is refunded', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'A customer is created', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong>
+					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
 					<?php echo esc_html_x( 'One-time payment for a product is completed', 'Stripe', 'uncanny-automator' ); ?>
 				</li>
 			</ul>
@@ -257,7 +255,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			<?php echo esc_attr_x( 'To enable Stripe triggers please configure webhooks in your Stripe account:', 'Stripe', 'uncanny-automator' ); ?>
 
 			<ol class="uap-spacing-top uap-spacing-top--small uap-spacing-bottom uap-spacing-bottom--none">
-				<li><?php echo esc_html_x( 'Go to your', 'Stripe', 'uncanny-automator' ); ?> <a target="_blank" href="https://dashboard.stripe.com/webhooks"><?php esc_html_e( 'Stripe Dashboard', 'uncanny-automator' ); ?></a></li>
+				<li><?php echo esc_html_x( 'Go to your', 'Stripe', 'uncanny-automator' ); ?> <a target="_blank" href="https://dashboard.stripe.com/webhooks"><?php echo esc_html_x( 'Stripe Dashboard', 'Stripe', 'uncanny-automator' ); ?></a></li>
 				<li><?php echo esc_html_x( 'Click the "Add endpoint" button', 'Stripe', 'uncanny-automator' ); ?></li>
 				<li><?php echo esc_html_x( "You'll be asked to enter a webhook URL. Please use this value:", 'Stripe', 'uncanny-automator' ); ?>
 				<uo-text-field
@@ -296,6 +294,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 				'nonce'        => $nonce,
 				'redirect_url' => rawurlencode( $this->get_settings_page_url() ),
 				'mode'         => $mode,
+				'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . $this->helpers::API_ENDPOINT
 		);
@@ -315,11 +314,11 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 		?>
 		<uo-button color="danger" href="<?php echo esc_url( $link ); ?>">
 			<uo-icon id="right-from-bracket"></uo-icon>
-		<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
+			<?php echo esc_html_x( 'Disconnect', 'Stripe', 'uncanny-automator' ); ?>
 		</uo-button>
 
 		<uo-button type="submit">
-			<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
+			<?php echo esc_html_x( 'Save settings', 'Stripe', 'uncanny-automator' ); ?>
 		</uo-button>
 
 		<?php
@@ -338,7 +337,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 
 				$link = $this->get_oauth_url( 'live' );
 
-				$button_label = esc_html__( 'Connect Stripe', 'uncanny-automator' );
+				$button_label = esc_html_x( 'Connect Stripe', 'Stripe', 'uncanny-automator' );
 
 			?>
 
@@ -350,7 +349,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 
 				$link = $this->get_oauth_url( 'test' );
 
-				$button_label = esc_html__( 'Connect Stripe in test mode', 'uncanny-automator' );
+				$button_label = esc_html_x( 'Connect Stripe in test mode', 'Stripe', 'uncanny-automator' );
 
 				?>
 
@@ -358,7 +357,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 					<?php $this->redirect_button( $button_label, $link, 'danger' ); ?>
 				</div>
 
-				<uo-switch id="uap_stripe_mode" status-label="<?php esc_attr_e( 'Enable test mode', 'uncanny-automator' ); ?>"></uo-switch>
+				<uo-switch id="uap_stripe_mode" status-label="<?php echo esc_attr_x( 'Enable test mode', 'Stripe', 'uncanny-automator' ); ?>"></uo-switch>
 
 			</div>
 
@@ -371,7 +370,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			$mode_prefix  = '';
 
 			if ( 'test' === $this->mode ) {
-				$mode_prefix = esc_html__( '(Test mode)', 'uncanny-automator' ) . ' ';
+				$mode_prefix = esc_html_x( '(Test mode)', 'Stripe', 'uncanny-automator' ) . ' ';
 			}
 
 			if ( empty( $user_details ) ) {
@@ -395,7 +394,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			<?php
 			printf(
 			/* translators: 1. Email address */
-				esc_html__( 'Account ID: %1$s', 'uncanny-automator' ),
+				esc_html_x( 'Account ID: %1$s', 'Stripe', 'uncanny-automator' ),
 				esc_html( $user_details['id'] )
 			);
 
@@ -455,7 +454,7 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			wp_safe_redirect(
 				add_query_arg(
 					array(
-						'error' => esc_html__( 'Missing credentials', 'uncanny-automator' ),
+						'error' => esc_html_x( 'Missing credentials', 'Stripe', 'uncanny-automator' ),
 					),
 					$this->get_settings_page_url()
 				)

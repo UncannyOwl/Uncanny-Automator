@@ -77,9 +77,10 @@ class Notion_Helpers {
 
 		return add_query_arg(
 			array(
-				'action'  => 'authorization',
-				'wp_site' => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=notion_authorization&nonce=' . $nonce ),
-				'nonce'   => $nonce,
+				'action'     => 'authorization',
+				'wp_site'    => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=notion_authorization&nonce=' . $nonce ),
+				'nonce'      => $nonce,
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			$this->auth_url
 		);
@@ -325,7 +326,7 @@ class Notion_Helpers {
 			wp_send_json(
 				array(
 					'success' => false,
-					'error'   => _x( 'Error: The database ID field is mandatory and cannot be left blank.', 'notion', 'uncanny-automator' ),
+					'error'   => esc_html_x( 'Error: The database ID field is mandatory and cannot be left blank.', 'notion', 'uncanny-automator' ),
 				)
 			);
 		}
@@ -405,7 +406,7 @@ class Notion_Helpers {
 			wp_send_json(
 				array(
 					'success' => false,
-					'error'   => _x( 'Error: The database field is mandatory and cannot be left blank.', 'notion', 'uncanny-automator' ),
+					'error'   => esc_html_x( 'Error: The database field is mandatory and cannot be left blank.', 'notion', 'uncanny-automator' ),
 				)
 			);
 		}
@@ -449,7 +450,9 @@ class Notion_Helpers {
 			)
 		);
 	}
-
+	/**
+	 * Automator notion list users.
+	 */
 	public function automator_notion_list_users() {
 
 		$persons_cached = get_transient( self::PERSONS_TRANSIENT_KEY );
@@ -549,7 +552,7 @@ class Notion_Helpers {
 			throw new Exception(
 				sprintf(
 				/* translators: %s: JSON error message */
-					esc_html__( 'Invalid JSON detected: %s', 'uncanny-automator' ),
+					esc_html_x( 'Invalid JSON detected: %s', 'Notion', 'uncanny-automator' ),
 					esc_html( json_last_error_msg() )
 				),
 				400

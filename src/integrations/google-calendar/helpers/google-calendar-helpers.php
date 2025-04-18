@@ -140,7 +140,7 @@ class Google_Calendar_Helpers {
 			$items = array(
 				array(
 					/* translators: Error message */
-					'text'  => sprintf( esc_html__( '%1$s: %2$s Please try again later.', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
+					'text'  => sprintf( esc_html_x( '%1$s: %2$s Please try again later.', 'Google Calendar', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
 					'value' => '-1',
 				),
 			);
@@ -263,7 +263,7 @@ class Google_Calendar_Helpers {
 			$items = array(
 				array(
 					/* translators: Error message */
-					'text'  => sprintf( esc_html__( '%1$s: %2$s Please try again later.', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
+					'text'  => sprintf( esc_html_x( '%1$s: %2$s Please try again later.', 'Google Calendar', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
 					'value' => '',
 				),
 			);
@@ -397,7 +397,7 @@ class Google_Calendar_Helpers {
 
 			if ( $this->has_missing_scopes( $tokens ) ) {
 
-				$this->redirect_with_error( esc_html__( 'missing_scope', 'uncanny-automator' ) );
+				$this->redirect_with_error( esc_html_x( 'missing_scope', 'Google Calendar', 'uncanny-automator' ) );
 
 			}
 
@@ -507,7 +507,7 @@ class Google_Calendar_Helpers {
 				'action'       => 'authorization_request',
 				'redirect_url' => rawurlencode( $redirect_uri ),
 				'nonce'        => $nonce,
-				'plugin_ver'   => InitializePlugin::PLUGIN_VERSION,
+				'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . 'v2/google-calendar'
 		);
@@ -633,7 +633,7 @@ class Google_Calendar_Helpers {
 
 			$items = array(
 				/* translators: Error message */
-				'' => sprintf( esc_html__( '%1$s: %2$s Please try again later.', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
+				'' => sprintf( esc_html_x( '%1$s: %2$s Please try again later.', 'Google Calendar', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
 			);
 
 		}
@@ -774,7 +774,7 @@ class Google_Calendar_Helpers {
 			throw new \Exception(
 				sprintf(
 				/* translators: %s: API endpoint */
-					esc_html__( '%s failed', 'uncanny-automator' ),
+					esc_html_x( '%s failed', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $params['endpoint'] )
 				)
 			);

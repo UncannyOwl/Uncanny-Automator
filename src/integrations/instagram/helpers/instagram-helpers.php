@@ -48,6 +48,9 @@ class Instagram_Helpers {
 	 */
 	public $wp_ajax_action = 'automator_integration_instagram_capture_token';
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 
 		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
@@ -74,7 +77,6 @@ class Instagram_Helpers {
 		require_once __DIR__ . '/../settings/settings-instagram.php';
 
 		new Instagram_Settings( $this );
-
 	}
 
 	/**
@@ -111,7 +113,7 @@ class Instagram_Helpers {
 				wp_send_json(
 					array(
 						'status'  => 200,
-						'message' => esc_html__( 'Successful', 'uncanny-automator' ),
+						'message' => esc_html_x( 'Successful', 'Instagram', 'uncanny-automator' ),
 						'pages'   => $existing_page_settings,
 					)
 				);
@@ -124,7 +126,6 @@ class Instagram_Helpers {
 
 			}
 		}
-
 	}
 
 	/**
@@ -207,7 +208,6 @@ class Instagram_Helpers {
 		}
 
 		die;
-
 	}
 
 	/**
@@ -227,14 +227,17 @@ class Instagram_Helpers {
 		if ( empty( $ig_response['instagram_business_account'] ) ) {
 			$connection = array(
 				'is_connected' => false,
-				'message'      => esc_html__( 'There was an error connecting to your Instagram account.  Please ensure you check the box next to the desired Instagram account during the authentication process.', 'uncanny-automator' ),
+				'message'      => esc_html_x( 'There was an error connecting to your Instagram account.  Please ensure you check the box next to the desired Instagram account during the authentication process.', 'Instagram', 'uncanny-automator' ),
 			);
 		}
 
 		return $connection;
-
 	}
-
+	/**
+	 * Get ig accounts.
+	 *
+	 * @return mixed
+	 */
 	public function get_ig_accounts() {
 
 		$ig_accounts = array();
@@ -259,9 +262,13 @@ class Instagram_Helpers {
 		}
 
 		return $ig_accounts;
-
 	}
-
+	/**
+	 * Get user page connected ig.
+	 *
+	 * @param mixed $page_id The ID.
+	 * @return mixed
+	 */
 	public function get_user_page_connected_ig( $page_id = 0 ) {
 
 		$options_pages = automator_get_option( self::FB_OPTIONS_KEY );
@@ -279,9 +286,12 @@ class Instagram_Helpers {
 		}
 
 		return '';
-
 	}
-
+	/**
+	 * Fetch pages from api.
+	 *
+	 * @return mixed
+	 */
 	public function fetch_pages_from_api() {
 
 		$settings = automator_get_option( '_uncannyowl_facebook_settings' );
@@ -299,14 +309,14 @@ class Instagram_Helpers {
 
 			if ( 200 !== $request['statusCode'] ) {
 				throw new \Exception(
-					esc_html__( 'Error fetching pages.', 'uncanny-automator' ),
+					esc_html_x( 'Error fetching pages.', 'Instagram', 'uncanny-automator' ),
 					absint( $request['statusCode'] ) // Pass the status code.
 				);
 			}
 
 			if ( ! isset( $request['data']['data'] ) || empty( $request['data']['data'] ) ) {
 				throw new \Exception(
-					esc_html__( 'No data found.', 'uncanny-automator' ),
+					esc_html_x( 'No data found.', 'Instagram', 'uncanny-automator' ),
 					404 // Invoke 404 status code.
 				);
 			}
@@ -322,7 +332,7 @@ class Instagram_Helpers {
 
 			}
 
-			$message = esc_html__( 'Pages are fetched successfully', 'uncanny-automator' );
+			$message = esc_html_x( 'Pages are fetched successfully', 'Instagram', 'uncanny-automator' );
 
 			// Save the pages.
 			automator_update_option( '_uncannyowl_facebook_pages_settings', $pages );
@@ -342,9 +352,12 @@ class Instagram_Helpers {
 		);
 
 		return $response;
-
 	}
-
+	/**
+	 * Is user connected.
+	 *
+	 * @return mixed
+	 */
 	public function is_user_connected() {
 
 		$settings = automator_get_option( self::FB_OPTIONS_KEY );
@@ -383,9 +396,10 @@ class Instagram_Helpers {
 	public function get_facebook_pages_oauth_dialog_uri() {
 		return add_query_arg(
 			array(
-				'action'   => 'facebook_authorization_request',
-				'nonce'    => wp_create_nonce( '_uncannyowl_facebook_settings' ),
-				'user_url' => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=' . $this->wp_ajax_action ),
+				'action'     => 'facebook_authorization_request',
+				'nonce'      => wp_create_nonce( '_uncannyowl_facebook_settings' ),
+				'user_url'   => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=' . $this->wp_ajax_action ),
+				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . 'v2/facebook'
 		);
@@ -410,7 +424,5 @@ class Instagram_Helpers {
 		$response = Api_Server::api_call( $params );
 
 		return $response;
-
 	}
-
 }

@@ -27,7 +27,6 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 		$this->set_icon( 'GOOGLESHEET' );
 
 		$this->set_name( 'Google Sheets' );
-
 	}
 
 	/**
@@ -62,7 +61,6 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 	public function get_helper() {
 
 		return $this->helpers;
-
 	}
 
 	/**
@@ -93,7 +91,7 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 				'scope'        => $this->get_helper()->client_scope,
 				'redirect_url' => rawurlencode( $redirect_uri ),
 				'nonce'        => $nonce,
-				'plugin_ver'   => InitializePlugin::PLUGIN_VERSION,
+				'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
 			),
 			$this->get_helper()->automator_api
 		);
@@ -115,7 +113,6 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
@@ -151,7 +148,5 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 		}
 
 		include_once 'view-google-sheet.php';
-
 	}
-
 }

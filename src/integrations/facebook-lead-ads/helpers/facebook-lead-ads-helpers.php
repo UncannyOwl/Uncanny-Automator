@@ -328,6 +328,7 @@ class Facebook_Lead_Ads_Helpers {
 			'nonce'        => wp_create_nonce( 'automator_facebook_lead_ads_connection_nonce' ),
 			'user_url'     => get_site_url(),
 			'user_api_url' => Rest_Api::get_listener_endpoint_url(),
+			'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
 		);
 
 		$connection = self::create_connection_manager();
