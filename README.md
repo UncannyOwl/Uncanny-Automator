@@ -407,6 +407,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
+### 6.4.0.2 [2025-04-18]
+
+**Fixed:**
+
+* `automator_api_decode_message` vulnerability fix - We patched up a potential trouble spot faster than a squirrel crossing a busy street. All secure now! #5633 CVE-2025-3623
+* Facebook Lead Ads - Icons and text were doing their best disappearing act on the Test Connection button—so we called them back to the stage. #5641
+
 ### 6.4.0.1 [2025-04-11]
 
 **Fixed:**
