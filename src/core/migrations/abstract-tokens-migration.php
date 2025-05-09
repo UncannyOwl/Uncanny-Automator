@@ -136,4 +136,18 @@ abstract class Tokens_Migration extends Migration {
 
 		return $updated_value;
 	}
+
+	/**
+	 * replace_strings_in_imports
+	 *
+	 * @return mixed
+	 */
+	public function replace_strings_in_imports( $value, $post_id, $new_post_id, $key ) {
+
+		if ( is_string( $value ) ) {
+			$value = $this->replace_strings( $value );
+		}
+
+		return $value;
+	}
 }

@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 6.5.0\n"
+"Project-Id-Version: Uncanny Automator 6.5.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-08T21:22:40+00:00\n"
+"POT-Creation-Date: 2025-05-09T18:08:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: uncanny-automator\n"
@@ -12437,63 +12437,63 @@ msgctxt "Campaign Monitor"
 msgid "You do not have the required permissions to perform this action."
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:119
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:117
 msgctxt "Campaign Monitor"
 msgid "Unable to decode credentials with the secret provided. Please refresh and retry."
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:123
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:121
 msgctxt "Campaign Monitor"
 msgid "Authentication failed. Please refresh and retry."
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:440
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:438
 msgctxt "Campaign Monitor"
 msgid "Please navigate to the settings page to establish a connection with your Campaign Monitor account."
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:454
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:452
 msgctxt "Campaign Monitor"
 msgid "Campaign Monitor API Error"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:491
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:489
 msgctxt "Campaign Monitor"
 msgid "Client"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:526
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:524
 msgctxt "Campaign Monitor"
 msgid "List"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:555
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:553
 msgctxt "Campaign Monitor"
 msgid "Field"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:562
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:560
 msgctxt "Campaign Monitor"
 msgid "Value"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:675
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:673
 msgctxt "Campaign Monitor"
 msgid "No custom fields found"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:845
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:843
 msgctxt "Campaign Monitor"
 msgid "Missing email"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:851
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:849
 msgctxt "Campaign Monitor"
 msgid "Invalid email"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:867
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:873
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:865
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-helpers.php:871
 msgctxt "Campaign Monitor"
 msgid "List is required"
 msgstr ""
@@ -14322,7 +14322,7 @@ msgid "Missing permissions: It looks like your bot doesn't have the required per
 msgstr ""
 
 #: src/integrations/discord/helpers/discord-helpers.php:245
-#: src/integrations/discord/settings/discord-settings.php:359
+#: src/integrations/discord/settings/discord-settings.php:358
 msgctxt "Discord"
 msgid "Server"
 msgstr ""
@@ -14479,170 +14479,170 @@ msgctxt "Discord"
 msgid "Something went wrong"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:213
+#: src/integrations/discord/settings/discord-settings.php:212
 msgctxt "Discord"
 msgid "Missing credentials"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:330
+#: src/integrations/discord/settings/discord-settings.php:329
 msgctxt "Discord"
 msgid "Uncanny Automator only supports connecting to one Discord account at a time, although you may connect multiple servers."
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:335
+#: src/integrations/discord/settings/discord-settings.php:334
 msgctxt "Discord"
 msgid "Servers"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:339
+#: src/integrations/discord/settings/discord-settings.php:338
 msgctxt "Discord"
 msgid "The following servers are available to connect for use in your recipes :"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:346
+#: src/integrations/discord/settings/discord-settings.php:345
 msgctxt "Discord"
 msgid "No servers found."
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:360
+#: src/integrations/discord/settings/discord-settings.php:359
 msgctxt "Discord"
 msgid "Status"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:361
+#: src/integrations/discord/settings/discord-settings.php:360
 msgctxt "Discord"
 msgid "Action"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:375
+#: src/integrations/discord/settings/discord-settings.php:374
 msgctxt "Discord"
 msgid "Need to update your server list?"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:377
+#: src/integrations/discord/settings/discord-settings.php:376
 msgctxt "Discord"
 msgid "If you've added or removed servers since connecting, click the Resync Servers button below to refresh the list."
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:379
+#: src/integrations/discord/settings/discord-settings.php:378
 msgctxt "Discord"
 msgid "Resync servers"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:384
+#: src/integrations/discord/settings/discord-settings.php:383
 msgctxt "Discord"
 msgid "User Discord Verification"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:386
+#: src/integrations/discord/settings/discord-settings.php:385
 msgctxt "Discord"
 msgid "To fully automate your WordPress users for use within Discord actions requiring selecting a Member, have your users verify their account using this shortcode:"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:387
+#: src/integrations/discord/settings/discord-settings.php:386
 msgctxt "Discord"
 msgid "This will capture their Discord Member ID and save it to user meta key:"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:390
+#: src/integrations/discord/settings/discord-settings.php:389
 msgctxt "Discord"
 msgid "Learn more"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:406
+#: src/integrations/discord/settings/discord-settings.php:405
 msgctxt "Discord"
 msgid "Connect Uncanny Automator to Discord"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:410
+#: src/integrations/discord/settings/discord-settings.php:409
 msgctxt "Discord"
 msgid "Connect Uncanny Automator to Discord to streamline automations to message and manage Servers and Members"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:415
+#: src/integrations/discord/settings/discord-settings.php:414
 msgctxt "Discord"
 msgid "Activating this integration will enable the following for use in your recipes:"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:422
-#: src/integrations/discord/settings/discord-settings.php:427
-#: src/integrations/discord/settings/discord-settings.php:432
-#: src/integrations/discord/settings/discord-settings.php:437
-#: src/integrations/discord/settings/discord-settings.php:442
-#: src/integrations/discord/settings/discord-settings.php:447
-#: src/integrations/discord/settings/discord-settings.php:452
-#: src/integrations/discord/settings/discord-settings.php:457
-#: src/integrations/discord/settings/discord-settings.php:462
+#: src/integrations/discord/settings/discord-settings.php:421
+#: src/integrations/discord/settings/discord-settings.php:426
+#: src/integrations/discord/settings/discord-settings.php:431
+#: src/integrations/discord/settings/discord-settings.php:436
+#: src/integrations/discord/settings/discord-settings.php:441
+#: src/integrations/discord/settings/discord-settings.php:446
+#: src/integrations/discord/settings/discord-settings.php:451
+#: src/integrations/discord/settings/discord-settings.php:456
+#: src/integrations/discord/settings/discord-settings.php:461
 msgctxt "Discord"
 msgid "Action:"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:423
+#: src/integrations/discord/settings/discord-settings.php:422
 msgctxt "Discord"
 msgid "Send a message to a channel"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:428
+#: src/integrations/discord/settings/discord-settings.php:427
 msgctxt "Discord"
 msgid "Send a direct message to a Discord member"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:433
+#: src/integrations/discord/settings/discord-settings.php:432
 msgctxt "Discord"
 msgid "Assign a role to a member"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:438
+#: src/integrations/discord/settings/discord-settings.php:437
 msgctxt "Discord"
 msgid "Remove a role from a member"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:443
+#: src/integrations/discord/settings/discord-settings.php:442
 msgctxt "Discord"
 msgid "Remove a member"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:448
+#: src/integrations/discord/settings/discord-settings.php:447
 msgctxt "Discord"
 msgid "Update a member"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:453
+#: src/integrations/discord/settings/discord-settings.php:452
 msgctxt "Discord"
 msgid "Add a member to a channel"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:458
+#: src/integrations/discord/settings/discord-settings.php:457
 msgctxt "Discord"
 msgid "Create a channel"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:463
+#: src/integrations/discord/settings/discord-settings.php:462
 msgctxt "Discord"
 msgid "Send an invitation to join a server to an email"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:480
+#: src/integrations/discord/settings/discord-settings.php:479
 msgctxt "Discord"
 msgid "Connect Discord account"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:533
+#: src/integrations/discord/settings/discord-settings.php:532
 msgctxt "Discord"
 msgid "Disconnect"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:552
+#: src/integrations/discord/settings/discord-settings.php:551
 msgctxt "Discord"
 msgid "Disconnect server"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:557
+#: src/integrations/discord/settings/discord-settings.php:556
 msgctxt "Discord"
 msgid "Not connected"
 msgstr ""
 
-#: src/integrations/discord/settings/discord-settings.php:559
+#: src/integrations/discord/settings/discord-settings.php:558
 msgctxt "Discord"
 msgid "Connect server"
 msgstr ""
@@ -14658,7 +14658,7 @@ msgid "Your Discord account is verified."
 msgstr ""
 
 #: src/integrations/discord/shortcodes/discord-user-mapping-shortcode.php:103
-#: src/integrations/discord/shortcodes/discord-user-mapping-shortcode.php:251
+#: src/integrations/discord/shortcodes/discord-user-mapping-shortcode.php:250
 msgctxt "Discord"
 msgid "Unable to verify Discord account. Please try again."
 msgstr ""
@@ -19024,65 +19024,65 @@ msgctxt "Hubspot"
 msgid "HubSpot is not connected"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:210
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:208
 msgctxt "Hubspot"
 msgid "HubSpot token refresh timeout, please try to reconnect HubSpot from settings"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:224
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:222
 msgctxt "Hubspot"
 msgid "HubSpot token refresh failed, please reconnect HubSpot from settings"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:230
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:228
 msgctxt "Hubspot"
 msgid "Could not refresh HubSpot token."
 msgstr ""
 
 #. translators: %s: API status code
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:324
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:322
 msgctxt "HubSpot"
 msgid "API returned an error: %s"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:340
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:338
 msgctxt "Hubspot"
 msgid "API returned an error:"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:434
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:432
 msgctxt "Hubspot"
 msgid "Select a field"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:480
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:478
 msgctxt "Hubspot"
 msgid "Select a list"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:514
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:552
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:512
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:550
 msgctxt "Hubspot"
 msgid "Email is missing"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:518
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:556
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:516
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:554
 msgctxt "Hubspot"
 msgid "List is missing"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:531
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:529
 msgctxt "Hubspot"
 msgid "Contact with such email address was already in the list"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:536
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:534
 msgctxt "Hubspot"
 msgid "Contact with such email address was not found"
 msgstr ""
 
-#: src/integrations/hubspot/helpers/hubspot-helpers.php:569
+#: src/integrations/hubspot/helpers/hubspot-helpers.php:567
 msgctxt "Hubspot"
 msgid "Contact with such email address was not found in the list"
 msgstr ""
@@ -19668,7 +19668,7 @@ msgid "Call"
 msgstr ""
 
 #: src/integrations/keap/actions/keap-add-note-contact.php:223
-#: src/integrations/keap/helpers/keap-helpers.php:1341
+#: src/integrations/keap/helpers/keap-helpers.php:1339
 msgctxt "Keap"
 msgid "Email"
 msgstr ""
@@ -19795,26 +19795,26 @@ msgid "Contact info"
 msgstr ""
 
 #: src/integrations/keap/actions/keap-add-update-contact.php:86
-#: src/integrations/keap/helpers/keap-helpers.php:971
+#: src/integrations/keap/helpers/keap-helpers.php:969
 msgctxt "Keap"
 msgid "Add a field"
 msgstr ""
 
 #: src/integrations/keap/actions/keap-add-update-contact.php:87
-#: src/integrations/keap/helpers/keap-helpers.php:972
+#: src/integrations/keap/helpers/keap-helpers.php:970
 msgctxt "Keap"
 msgid "Remove field"
 msgstr ""
 
 #: src/integrations/keap/actions/keap-add-update-contact.php:92
 #: src/integrations/keap/actions/keap-add-update-contact.php:120
-#: src/integrations/keap/helpers/keap-helpers.php:1012
+#: src/integrations/keap/helpers/keap-helpers.php:1010
 msgctxt "Keap"
 msgid "Field"
 msgstr ""
 
 #: src/integrations/keap/actions/keap-add-update-contact.php:101
-#: src/integrations/keap/helpers/keap-helpers.php:1021
+#: src/integrations/keap/helpers/keap-helpers.php:1019
 msgctxt "Keap"
 msgid "Value"
 msgstr ""
@@ -20100,259 +20100,259 @@ msgstr ""
 msgid "Contact did not have tag(s) %s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:114
+#: src/integrations/keap/helpers/keap-helpers.php:112
 msgctxt "Keap"
 msgid "Unable to decode credentials with the secret provided. Please refresh and retry."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:118
+#: src/integrations/keap/helpers/keap-helpers.php:116
 msgctxt "Keap"
 msgid "Authentication failed. Please refresh and retry."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:333
+#: src/integrations/keap/helpers/keap-helpers.php:331
 msgctxt "Keap"
 msgid "Select a company"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:358
+#: src/integrations/keap/helpers/keap-helpers.php:356
 msgctxt "Keap"
 msgid "Company required."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:366
+#: src/integrations/keap/helpers/keap-helpers.php:364
 msgctxt "Keap"
 msgid "No companies found."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:402
+#: src/integrations/keap/helpers/keap-helpers.php:400
 msgctxt "Keap"
 msgid "Invalid company."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:478
+#: src/integrations/keap/helpers/keap-helpers.php:476
 msgctxt "Keap"
 msgid "Select an owner"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:510
+#: src/integrations/keap/helpers/keap-helpers.php:508
 msgctxt "Keap"
 msgid "Account user is required."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:518
+#: src/integrations/keap/helpers/keap-helpers.php:516
 msgctxt "Keap"
 msgid "No account users found."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:546
+#: src/integrations/keap/helpers/keap-helpers.php:544
 msgctxt "Keap"
 msgid "Invalid account user."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:580
+#: src/integrations/keap/helpers/keap-helpers.php:578
 msgctxt "Keap"
 msgid "You do not have permission to manage Keap settings."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:699
+#: src/integrations/keap/helpers/keap-helpers.php:697
 msgctxt "Keap"
 msgid "Please navigate to the settings page to establish a connection with your Keap account."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:714
+#: src/integrations/keap/helpers/keap-helpers.php:712
 msgctxt "Keap"
 msgid "Keap API Error : "
 msgstr ""
 
 #. Translators: %s Status code.
-#: src/integrations/keap/helpers/keap-helpers.php:720
+#: src/integrations/keap/helpers/keap-helpers.php:718
 msgctxt "Keap"
 msgid "request failed with status code: %s"
 msgstr ""
 
 #. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:817
+#: src/integrations/keap/helpers/keap-helpers.php:815
 msgctxt "Keap"
 msgid "Add/Update %s address"
 msgstr ""
 
 #. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:832
+#: src/integrations/keap/helpers/keap-helpers.php:830
 msgctxt "Keap"
 msgid "%s address line 1"
 msgstr ""
 
 #. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:843
+#: src/integrations/keap/helpers/keap-helpers.php:841
 msgctxt "Keap"
 msgid "%s address line 2"
 msgstr ""
 
 #. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:854
+#: src/integrations/keap/helpers/keap-helpers.php:852
 msgctxt "Keap"
 msgid "%s address city/locality"
 msgstr ""
 
 #. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:865
+#: src/integrations/keap/helpers/keap-helpers.php:863
 msgctxt "Keap"
 msgid "%s address region code"
 msgstr ""
 
 #. translators: %1$s opening anchor tag, %2$s: closing anchor tag
-#: src/integrations/keap/helpers/keap-helpers.php:870
+#: src/integrations/keap/helpers/keap-helpers.php:868
 msgctxt "Keap"
 msgid "An %1$sISO 3166-2%2$s province/region code, such as \"US-CA\" for California."
 msgstr ""
 
 #. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:882
+#: src/integrations/keap/helpers/keap-helpers.php:880
 msgctxt "Keap"
 msgid "%s address zip/postal code"
 msgstr ""
 
 #. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:893
+#: src/integrations/keap/helpers/keap-helpers.php:891
 msgctxt "Keap"
 msgid "%s address country code"
 msgstr ""
 
 #. translators: %1$s opening anchor tag, %2$s: closing anchor tag
-#: src/integrations/keap/helpers/keap-helpers.php:898
+#: src/integrations/keap/helpers/keap-helpers.php:896
 msgctxt "Keap"
 msgid "An %1$sISO 3166-2%2$s Country Code, such as \"USA\" for the United States of America."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:969
+#: src/integrations/keap/helpers/keap-helpers.php:967
 msgctxt "Keap"
 msgid "Custom fields"
 msgstr ""
 
 #. translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag
-#: src/integrations/keap/helpers/keap-helpers.php:975
+#: src/integrations/keap/helpers/keap-helpers.php:973
 msgctxt "Keap"
 msgid "Custom field values must align with how they are defined in your Keap account. To delete a value from a field, set its value to %1$s, including the square brackets. Multiple values for checkboxes may be separated with commas. For more details, be sure to check out Keap's tutorial on %2$scustom fields management.%3$s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1045
+#: src/integrations/keap/helpers/keap-helpers.php:1043
 msgctxt "Keap"
 msgid "No custom fields found"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1204
+#: src/integrations/keap/helpers/keap-helpers.php:1202
 msgctxt "Keap"
 msgid "Unable to validate Custom Field(s)."
 msgstr ""
 
 #. translators: %s: custom field key
-#: src/integrations/keap/helpers/keap-helpers.php:1220
+#: src/integrations/keap/helpers/keap-helpers.php:1218
 msgctxt "Keap"
 msgid "Invalid custom field id: %s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1252
+#: src/integrations/keap/helpers/keap-helpers.php:1250
 msgctxt "Keap"
 msgid "Invalid Custom Field(s) :"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1318
+#: src/integrations/keap/helpers/keap-helpers.php:1316
 msgctxt "Keap"
 msgid "Update existing %s"
 msgstr ""
 
 #. translators: %1$s: [delete]
-#: src/integrations/keap/helpers/keap-helpers.php:1323
+#: src/integrations/keap/helpers/keap-helpers.php:1321
 msgctxt "Keap"
 msgid "To exclude fields from being updated, leave them empty. To delete a value from a field, set its value to %1$s, including the square brackets."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1358
+#: src/integrations/keap/helpers/keap-helpers.php:1356
 msgctxt "Keap"
 msgid "Missing email"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1364
-#: src/integrations/keap/helpers/keap-helpers.php:1622
+#: src/integrations/keap/helpers/keap-helpers.php:1362
+#: src/integrations/keap/helpers/keap-helpers.php:1620
 msgctxt "Keap"
 msgid "Invalid email"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1381
+#: src/integrations/keap/helpers/keap-helpers.php:1379
 msgctxt "Keap"
 msgid "Tag(s)"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1454
+#: src/integrations/keap/helpers/keap-helpers.php:1452
 msgctxt "Keap"
 msgid "Missing tag(s)"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1460
+#: src/integrations/keap/helpers/keap-helpers.php:1458
 msgctxt "Keap"
 msgid "Invalid tag id(s)"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1529
+#: src/integrations/keap/helpers/keap-helpers.php:1527
 msgctxt "Keap"
 msgid "Invalid date"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1534
+#: src/integrations/keap/helpers/keap-helpers.php:1532
 msgctxt "Keap"
 msgid "Invalid format"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1609
+#: src/integrations/keap/helpers/keap-helpers.php:1607
 msgctxt "Keap"
 msgid "Invalid number"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1618
+#: src/integrations/keap/helpers/keap-helpers.php:1616
 msgctxt "Keap"
 msgid "Invalid URL"
 msgstr ""
 
 #. translators: %s: custom field type
-#: src/integrations/keap/helpers/keap-helpers.php:1627
+#: src/integrations/keap/helpers/keap-helpers.php:1625
 msgctxt "Keap"
 msgid "Invalid custom field type: %s"
 msgstr ""
 
 #. translators: %s: custom field label.
-#: src/integrations/keap/helpers/keap-helpers.php:1636
+#: src/integrations/keap/helpers/keap-helpers.php:1634
 msgctxt "Keap"
 msgid "for field: %s"
 msgstr ""
 
 #. translators: %1$s: custom field value, %2$s: custom field label.
-#: src/integrations/keap/helpers/keap-helpers.php:1722
+#: src/integrations/keap/helpers/keap-helpers.php:1720
 msgctxt "Keap"
 msgid "Invalid custom field value: %1$s for field: %2$s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1786
+#: src/integrations/keap/helpers/keap-helpers.php:1784
 msgctxt "Keap"
 msgid "Contact ID"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1790
+#: src/integrations/keap/helpers/keap-helpers.php:1788
 msgctxt "Keap"
 msgid "Contact first name"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1794
+#: src/integrations/keap/helpers/keap-helpers.php:1792
 msgctxt "Keap"
 msgid "Contact last name"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1798
+#: src/integrations/keap/helpers/keap-helpers.php:1796
 msgctxt "Keap"
 msgid "Contact tag IDs"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1812
+#: src/integrations/keap/helpers/keap-helpers.php:1810
 msgctxt "Keap"
 msgid "Tag name(s)"
 msgstr ""
@@ -21842,13 +21842,13 @@ msgctxt "Mailchimp"
 msgid "Mailchimp account not found."
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:1335
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:1334
 msgctxt "Mailchimp"
 msgid "Email"
 msgstr ""
 
 #. translators: %1$s: Sub-field key, %2$s: Parent field key
-#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:1364
+#: src/integrations/mailchimp/helpers/mailchimp-helpers.php:1363
 msgctxt "Mailchimp"
 msgid "The field '%1$s' in '%2$s' is required but is empty."
 msgstr ""
@@ -26096,7 +26096,7 @@ msgctxt "Stripe"
 msgid "Account ID: %1$s"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:465
+#: src/integrations/stripe/settings/stripe-settings.php:463
 msgctxt "Stripe"
 msgid "Missing credentials"
 msgstr ""

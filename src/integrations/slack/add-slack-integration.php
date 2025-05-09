@@ -88,6 +88,8 @@ class Add_Slack_Integration {
 
 		$slack_client = automator_get_option( '_uncannyowl_slack_settings', array() );
 
+		$slack_client = json_decode( wp_json_encode( $slack_client ) );
+
 		if ( isset( $slack_client->access_token ) && ! empty( $slack_client->access_token ) ) {
 			$this->connected = true;
 		}
