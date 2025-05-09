@@ -92,40 +92,14 @@ class Bitly_Helpers {
 	}
 
 	/**
-	 * Authentication handler.
-	 *
-	 * @return never
-	 */
-	public function authenticate() {
-
-		$data  = automator_filter_input( 'automator_api_message' );
-		$nonce = automator_filter_input( 'nonce' );
-
-		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( $data, $nonce );
-
-		// Handle errors.
-		if ( false === $credentials ) {
-			// Redirect to settings page with error message.
-			wp_safe_redirect( $this->get_settings_page_url() . '&error_message=' . _x( 'Unable to decode credentials with the secret provided', 'Bitly', 'uncanny-automator' ) );
-			die;
-		}
-
-		automator_add_option( 'automator_bitly_credentials', $credentials, false );
-
-		// Then redirect to settings page. Flag as connected with success=yes.
-		wp_safe_redirect( $this->get_settings_page_url() . '&success=yes' );
-		die;
-	}
-
-	/**
 	 * Get class const.
 	 *
-	 * @param string $const
+	 * @param string $const_name
 	 *
 	 * @return string
 	 */
-	public function get_const( $const ) {
-		return constant( 'self::' . $const );
+	public function get_const( $const_name ) {
+		return constant( 'self::' . $const_name );
 	}
 
 	/**
@@ -154,6 +128,11 @@ class Bitly_Helpers {
 	 * @return void
 	 */
 	public function disconnect() {
+
+		// Check user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Error 403: Insufficient permissions.' );
+		}
 
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
 
@@ -210,8 +189,8 @@ class Bitly_Helpers {
 	 */
 	public function check_for_errors( $response ) {
 
-		if ( $response['statusCode'] !== 201 || $response['statusCode'] !== 200 ) {
-			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : _x( 'Bitly API Error', 'Bitly', 'uncanny-automator' );
+		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] ) {
+			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : esc_html_x( 'Bitly API Error', 'Bitly', 'uncanny-automator' );
 			throw new \Exception( esc_html( $message ), absint( $response['statusCode'] ) );
 		}
 	}
@@ -270,7 +249,7 @@ class Bitly_Helpers {
 
 		} catch ( \Exception $e ) {
 			$error            = $e->getMessage();
-			$account['error'] = ! empty( $error ) ? $error : _x( 'Bitly API Error', 'Bitly', 'uncanny-automator' );
+			$account['error'] = ! empty( $error ) ? $error : esc_html_x( 'Bitly API Error', 'Bitly', 'uncanny-automator' );
 
 			automator_update_option( self::ACCOUNT_DETAILS, $account );
 

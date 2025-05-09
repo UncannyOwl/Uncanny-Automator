@@ -15,12 +15,15 @@ class Trello_Helpers {
 	 */
 	public $functions;
 
+	/**
+	 * Trello_Helpers constructor.
+	 */
 	public function __construct() {
 
 		$this->functions = new Trello_Functions();
 
-		add_action( 'init', array( $this->functions, 'disconnect' ) );
-		add_action( 'init', array( $this->functions, 'capture_oauth_token' ) );
+		add_action( 'init', array( $this->functions, 'disconnect' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
+		add_action( 'init', array( $this->functions, 'capture_oauth_token' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 
 		add_action( 'admin_enqueue_scripts', array( $this->functions, 'load_scripts' ) );
 
@@ -31,6 +34,11 @@ class Trello_Helpers {
 		new Trello_Settings( $this );
 	}
 
+	/**
+	 * Register AJAX endpoints.
+	 *
+	 * @return void
+	 */
 	public function register_ajax_endpoints() {
 		add_action( 'wp_ajax_automator_trello_get_board_lists', array( $this->functions, 'ajax_get_board_lists_options' ) );
 		add_action( 'wp_ajax_automator_trello_get_board_members', array( $this->functions, 'ajax_get_board_members_options' ) );
@@ -39,5 +47,4 @@ class Trello_Helpers {
 		add_action( 'wp_ajax_automator_trello_get_list_cards', array( $this->functions, 'ajax_get_list_cards_options' ) );
 		add_action( 'wp_ajax_automator_trello_get_card_checklists', array( $this->functions, 'ajax_get_card_checklists' ) );
 	}
-
 }

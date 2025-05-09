@@ -87,6 +87,10 @@ class Threads_Helpers {
 		$nonce        = automator_filter_input( 'state' );
 		$expires_in   = automator_filter_input( 'expires_in' );
 
+		if ( ! wp_verify_nonce( $nonce, self::NONCE ) || ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'You are not allowed to do this.' );
+		}
+
 		if ( empty( $access_token ) || empty( $user_id ) ) {
 			wp_safe_redirect( $this->get_settings_page_url() . '&error=empty_required_credentials' );
 		}

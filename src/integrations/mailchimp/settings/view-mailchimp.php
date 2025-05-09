@@ -160,7 +160,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php if ( ! $this->is_connected ) { ?>
 
-					<uo-button href="<?php echo esc_url( $connect_uri ); ?>">
+					<uo-button href="<?php echo esc_url( $connect_uri ); ?>" target="_self" unsafe-force-target>
 						<?php esc_html_e( 'Connect Mailchimp account', 'uncanny-automator' ); ?>
 					</uo-button>
 

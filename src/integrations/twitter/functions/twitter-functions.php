@@ -192,6 +192,10 @@ class Twitter_Functions {
 	 */
 	public function disconnect() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		if ( ! $this->is_current_settings_tab() ) {
 			return;
 		}
@@ -322,6 +326,10 @@ class Twitter_Functions {
 		$automator_api_response = automator_filter_input( 'automator_api_message' );
 
 		if ( empty( $automator_api_response ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 

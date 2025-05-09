@@ -52,19 +52,19 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'SERVER_ID'    => array(
-					'name' => _x( 'Server ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SERVER_NAME'  => array(
-					'name' => _x( 'Server name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CHANNEL_NAME' => array(
-					'name' => _x( 'Channel name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Channel name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'INVITE_URL'   => array(
-					'name' => _x( 'Invite URL', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Invite URL', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -95,39 +95,40 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 			$this->helpers->get_server_channel_select_config( 'CHANNEL', $this->server_key ),
 			array(
 				'option_code' => $this->get_action_meta(),
-				'label'       => _x( 'Email', 'Discord', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Email', 'Discord', 'uncanny-automator' ),
 				'input_type'  => 'email',
 				'required'    => true,
-				'description' => _x( 'Enter an email recipient to send the invite link to.', 'Discord', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter an email recipient to send the invite link to.', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code'   => 'SUBJECT',
-				'label'         => _x( 'Subject', 'Discord', 'uncanny-automator' ),
+				'label'         => esc_html_x( 'Subject', 'Discord', 'uncanny-automator' ),
 				'input_type'    => 'text',
 				'required'      => true,
-				'default_value' => _x( 'Join our Discord server!', 'Discord', 'uncanny-automator' ),
+				'default_value' => esc_html_x( 'Join our Discord server!', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code'   => 'EMAILFROM',
-				'label'         => _x( 'From', 'Discord', 'uncanny-automator' ),
+				'label'         => esc_html_x( 'From', 'Discord', 'uncanny-automator' ),
 				'input_type'    => 'email',
 				'required'      => true,
 				'default_value' => '{{admin_email}}',
 			),
 			array(
 				'option_code'   => 'REPLYTO',
-				'label'         => _x( 'Reply to', 'Discord', 'uncanny-automator' ),
+				'label'         => esc_html_x( 'Reply to', 'Discord', 'uncanny-automator' ),
 				'input_type'    => 'email',
 				'required'      => true,
 				'default_value' => '{{admin_email}}',
 			),
 			array(
 				'option_code'               => 'EMAILBODY',
-				'label'                     => _x( 'Email body', 'Discord', 'uncanny-automator' ),
+				'label'                     => esc_html_x( 'Email body', 'Discord', 'uncanny-automator' ),
 				'input_type'                => 'textarea',
 				'supports_fullpage_editing' => true,
 				'supports_tinymce'          => true,
 				'required'                  => true,
+				// phpcs:disable
 				'default_value'             => wp_kses(
 					_x(
 						"Hi, <br />You've been invited to join our Discord server! <br /><br />Click the link below to join and get started:<br />{{invite_url}}<br /><br />Thanks, <br />The {{site_name}} team",
@@ -140,34 +141,35 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 				),
 				'description'               => sprintf(
 					// translators: %s Available token codes
-					__( 'Use following tokens in email:<br />%s', 'uncanny-automator' ), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+					_x( 'Use following tokens in email:<br />%s', 'Discord', 'uncanny-automator' ),
 					join( '<br />', $available_codes )
 				),
+				// phpcs:enable
 			),
 			array(
 				'option_code'   => 'EXPIRATION',
-				'label'         => _x( 'Expiration', 'Discord', 'uncanny-automator' ),
+				'label'         => esc_html_x( 'Expiration', 'Discord', 'uncanny-automator' ),
 				'input_type'    => 'int',
 				'default_value' => '0',
 				'min_number'    => 0,
 				'max_number'    => 604800,
-				'description'   => _x( 'The time in seconds before the invite link expires. Set to 0 for no expiration, 86400 (24 hours) or a maximum of 604800 (7 days)', 'Discord', 'uncanny-automator' ),
+				'description'   => esc_html_x( 'The time in seconds before the invite link expires. Set to 0 for no expiration, 86400 (24 hours) or a maximum of 604800 (7 days)', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code'   => 'USE_COUNT',
-				'label'         => _x( 'Use count', 'Discord', 'uncanny-automator' ),
+				'label'         => esc_html_x( 'Use count', 'Discord', 'uncanny-automator' ),
 				'input_type'    => 'int',
 				'default_value' => '0',
 				'min_number'    => 0,
 				'max_number'    => 100,
-				'description'   => _x( 'The maximum number of uses up to 100 or 0 for unlimited.', 'Discord', 'uncanny-automator' ),
+				'description'   => esc_html_x( 'The maximum number of uses up to 100 or 0 for unlimited.', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code' => 'UNIQUE_URL',
-				'label'       => _x( 'Unique URL', 'Discord', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Unique URL', 'Discord', 'uncanny-automator' ),
 				'input_type'  => 'checkbox',
 				'is_toggle'   => true,
-				'description' => _x( 'When enabled, a new URL will be generated (useful for creating many unique one time use invites)', 'Discord', 'uncanny-automator' ),
+				'description' => esc_html_x( 'When enabled, a new URL will be generated (useful for creating many unique one time use invites)', 'Discord', 'uncanny-automator' ),
 			),
 		);
 	}
@@ -190,21 +192,28 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		$server_id = $this->helpers->get_server_id_from_parsed( $parsed, $this->server_key );
 
 		// Required email fields.
-		$email_to   = $this->get_valid_email( $parsed, $this->get_action_meta(), _x( 'Email', 'Discord', 'uncanny-automator' ) );
-		$email_from = $this->get_valid_email( $parsed, 'EMAILFROM', _x( 'From', 'Discord', 'uncanny-automator' ) );
-		$reply_to   = $this->get_valid_email( $parsed, 'REPLYTO', _x( 'Reply to', 'Discord', 'uncanny-automator' ) );
-		$subject    = $this->helpers->get_text_value_from_parsed( $parsed, 'SUBJECT', _x( 'Email subject is required', 'Discord', 'uncanny-automator' ) );
+		$email_to   = $this->get_valid_email( $parsed, $this->get_action_meta(), esc_html_x( 'Email', 'Discord', 'uncanny-automator' ) );
+		$email_from = $this->get_valid_email( $parsed, 'EMAILFROM', esc_html_x( 'From', 'Discord', 'uncanny-automator' ) );
+		$reply_to   = $this->get_valid_email( $parsed, 'REPLYTO', esc_html_x( 'Reply to', 'Discord', 'uncanny-automator' ) );
+		$subject    = $this->helpers->get_text_value_from_parsed( $parsed, 'SUBJECT', esc_html_x( 'Email subject is required', 'Discord', 'uncanny-automator' ) );
 		$email_body = isset( $action_data['meta']['EMAILBODY'] ) ? $action_data['meta']['EMAILBODY'] : '';
 		if ( empty( $email_body ) ) {
 			throw new Exception( esc_html_x( 'Email body is required', 'Discord', 'uncanny-automator' ) );
 		}
 
+		// Required channel ID - throws error if not set and valid.
+		$channel_id = $this->helpers->get_channel_id_from_parsed( $parsed, 'CHANNEL', $server_id );
+
 		// Make request for invite URL.
-		$invite_url = $this->get_invite_url( $parsed, $server_id );
+		$invite_url = $this->get_invite_url( $parsed, $server_id, $channel_id );
 
 		// Prepare token variables.
 		$server_name  = $parsed[ $this->server_key . '_readable' ];
-		$channel_name = $parsed['CHANNEL_readable'];
+		$channel_name = $this->helpers->get_channel_name_token_value(
+			$parsed['CHANNEL_readable'],
+			$channel_id,
+			$server_id
+		);
 
 		// Hydrate tokens.
 		$this->hydrate_tokens(
@@ -254,7 +263,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 	private function get_valid_email( $parsed, $key, $field_name ) {
 		$error = sprintf(
 			// translators: %s Field name ( Email, Reply to, From, etc. )
-			_x( '%s field is required.', 'Discord', 'uncanny-automator' ),
+			esc_html_x( '%s field is required.', 'Discord', 'uncanny-automator' ),
 			$field_name
 		);
 		$email = $this->helpers->get_text_value_from_parsed( $parsed, $key, $error );
@@ -262,7 +271,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
 			$error = sprintf(
 				// translators: %s Field name ( Email, Reply to, From, etc. )
-				_x( '%s field is not a valid email.', 'Discord', 'uncanny-automator' ),
+				esc_html_x( '%s field is not a valid email.', 'Discord', 'uncanny-automator' ),
 				$field_name
 			);
 			throw new Exception( esc_html( $error ) );
@@ -275,14 +284,13 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 	 * Get invite URL.
 	 *
 	 * @param array $parsed
+	 * @param string $server_id
+	 * @param string $channel_id
 	 *
 	 * @return string
 	 * @throws Exception
 	 */
-	private function get_invite_url( $parsed, $server_id ) {
-
-		// Required fields - throws error if not set and valid.
-		$channel_id = $this->helpers->get_channel_id_from_parsed( $parsed, 'CHANNEL', $server_id );
+	private function get_invite_url( $parsed, $server_id, $channel_id ) {
 
 		// Validate the expiration.
 		$expiration = absint( $this->get_parsed_meta_value( 'EXPIRATION', 0 ) );
@@ -307,7 +315,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 
 		// Send the message.
 		$response = $this->helpers->api()->api_request( $body, $action_data, $server_id );
-		$error    = _x( 'Error generating invite URL.', 'Discord', 'uncanny-automator' );
+		$error    = esc_html_x( 'Error generating invite URL.', 'Discord', 'uncanny-automator' );
 
 		// Check for errors.
 		$status_code = isset( $response['statusCode'] ) ? absint( $response['statusCode'] ) : 0;

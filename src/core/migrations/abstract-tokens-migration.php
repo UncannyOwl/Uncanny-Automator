@@ -31,19 +31,21 @@ abstract class Tokens_Migration extends Migration {
 	 */
 	public function migrate() {
 
-		$actions = $this->get_all_posts( 'uo-action' );
-
-		foreach ( $actions as $action ) {
-			$this->migrate_tokens_in_post( $action );
-		}
-
-		$recipes = $this->get_all_posts( 'uo-recipe' );
-
-		foreach ( $recipes as $recipe ) {
-			$this->migrate_tokens_in_post( $recipe );
-		}
-
+		$this->loop_through_post_type( 'uo-action' );
+		$this->loop_through_post_type( 'uo-recipe' );
+		$this->loop_through_post_type( 'uo-loop' );
+		$this->loop_through_post_type( 'uo-loop-filter' );
+		
 		$this->complete();
+	}
+
+	public function loop_through_post_type( $post_type ) {
+
+		$posts = $this->get_all_posts( $post_type );
+
+		foreach ( $posts as $post ) {
+			$this->migrate_tokens_in_post( $post );
+		}
 	}
 
 	/**

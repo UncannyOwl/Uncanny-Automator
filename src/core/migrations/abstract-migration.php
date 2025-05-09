@@ -26,9 +26,7 @@ abstract class Migration {
 
 		$this->name = $name;
 
-		add_action( 'activate_' . self::AUTOMATOR_PATH, array( $this, 'maybe_run_migration' ) );
-		add_action( 'activate_' . self::AUTOMATOR_PRO_PATH, array( $this, 'maybe_run_migration' ) );
-
+		add_action( 'shutdown', array( $this, 'maybe_run_migration' ) );
 	}
 
 	/**

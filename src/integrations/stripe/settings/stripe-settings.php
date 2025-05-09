@@ -72,8 +72,8 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 		$this->set_js( '/stripe/settings/assets/script.js' );
 
 		// Handle the disconnect button action
-		add_action( 'init', array( $this, 'disconnect' ) );
-		add_action( 'init', array( $this, 'capture_oauth_tokens' ) );
+		add_action( 'init', array( $this, 'disconnect' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
+		add_action( 'init', array( $this, 'capture_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 	}
 
 	/**
@@ -411,6 +411,10 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 	 */
 	public function disconnect() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		// Make sure this settings page is the one that is active
 		if ( ! $this->is_current_page_settings() ) {
 			return;
@@ -446,9 +450,11 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			return;
 		}
 
-		$nonce = wp_create_nonce( self::NONCE_KEY );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
-		$token = (array) \Uncanny_Automator\Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, $nonce );
+		$token = (array) \Uncanny_Automator\Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, wp_create_nonce( self::NONCE_KEY ) );
 
 		if ( empty( $token['stripe_user_id'] ) || empty( $token['vault_signature'] ) ) {
 			wp_safe_redirect(

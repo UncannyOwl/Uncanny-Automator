@@ -37,6 +37,13 @@ class Notion_Helpers {
 	const PERSONS_TRANSIENT_KEY = 'automator_notion_person_options_transient';
 
 	/**
+	 * The nonce key for the Notion integration.
+	 *
+	 * @var string
+	 */
+	const NONCE = 'notion_authorization';
+
+	/**
 	 * The field separator.
 	 *
 	 * @var string
@@ -73,12 +80,12 @@ class Notion_Helpers {
 	 */
 	public function get_auth_url() {
 
-		$nonce = wp_create_nonce( 'notion_authorization' );
+		$nonce = wp_create_nonce( self::NONCE );
 
 		return add_query_arg(
 			array(
 				'action'     => 'authorization',
-				'wp_site'    => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=notion_authorization&nonce=' . $nonce ),
+				'wp_site'    => rawurlencode( admin_url( 'admin-ajax.php' ) . '?action=' . self::NONCE . '&nonce=' . $nonce ),
 				'nonce'      => $nonce,
 				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
@@ -93,13 +100,13 @@ class Notion_Helpers {
 	 */
 	public function authorize_handler() {
 
-		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'notion_authorization' ) ) {
-			wp_die( 'Invalid nonce', 403 );
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE ) || ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'You are not allowed to do this.' );
 		}
 
 		$message = Automator_Helpers_Recipe::automator_api_decode_message(
 			automator_filter_input( 'automator_api_message' ),
-			automator_filter_input( 'nonce' )
+			wp_create_nonce( self::NONCE )
 		);
 
 		// Redirect with error if there are errors.
@@ -186,7 +193,7 @@ class Notion_Helpers {
 		return add_query_arg(
 			array(
 				'action' => 'notion_disconnect',
-				'nonce'  => wp_create_nonce( 'notion_disconnect_nonce' ),
+				'nonce'  => wp_create_nonce( self::NONCE ),
 			),
 			admin_url( 'admin-ajax.php' )
 		);
@@ -198,6 +205,10 @@ class Notion_Helpers {
 	 * @return never
 	 */
 	public function disconnect_handler() {
+
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE ) ) {
+			wp_die( 'You are not allowed to do this.' );
+		}
 
 		automator_delete_option( self::OPTION_KEY );
 

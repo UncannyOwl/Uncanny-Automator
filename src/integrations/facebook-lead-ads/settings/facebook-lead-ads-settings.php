@@ -171,6 +171,14 @@ class Facebook_Lead_Ads_Settings extends \Uncanny_Automator\Settings\Premium_Int
 		$this->load_js( '/facebook-lead-ads/settings/assets/test-connection.js' );
 		$this->load_js( '/facebook-lead-ads/settings/assets/pages.js', '_fbla-pages' );
 
+		wp_localize_script(
+			'uap-premium-integration-facebook_lead_ads_fbla-pages',
+			'fbLeadAdsConfig',
+			array(
+				'nonce' => wp_create_nonce( 'fbLeadsNonce' ),
+			)
+		);
+
 		$args = array(
 			'has_connection' => $this->connections->has_connection(),
 			'credentials'    => $this->credentials->get_credentials(),

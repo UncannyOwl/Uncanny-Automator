@@ -26,7 +26,6 @@ class Discord_Integration extends \Uncanny_Automator\Integration {
 
 		// Register wp-ajax callbacks and filters.
 		$this->register_hooks();
-
 	}
 
 	/**
@@ -55,6 +54,9 @@ class Discord_Integration extends \Uncanny_Automator\Integration {
 		new DISCORD_UPDATE_MEMBER( $this->helpers );
 		// Create a channel
 		new DISCORD_CREATE_CHANNEL( $this->helpers );
+
+		// Add shortcode for individual WP User OAuth Discord -> WP User mapping.
+		new Discord_User_Mapping_Shortcode( $this->helpers );
 	}
 
 	/**
@@ -74,5 +76,4 @@ class Discord_Integration extends \Uncanny_Automator\Integration {
 		// Get allowed server channel types handler.
 		add_action( 'wp_ajax_automator_discord_get_allowed_channel_types', array( $this->helpers, 'get_allowed_channel_types_ajax' ) );
 	}
-
 }

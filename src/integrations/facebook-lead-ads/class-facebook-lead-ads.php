@@ -42,22 +42,22 @@ class Facebook_Lead_Ads_Integration extends \Uncanny_Automator\Integration {
 	 */
 	protected function register_hooks() {
 
-		// Captures token from OAuth flow.
+		// Captures token from OAuth flow. Ok.
 		add_action( 'wp_ajax_automator_integration_facebook_lead_ads_capture_token', array( Facebook_Lead_Ads_Helpers::class, 'capture_token_handler' ) );
 
-		// Disconnect handler.
+		// Disconnect handler. Ok.
 		add_action( 'wp_ajax_automator_integration_facebook_lead_ads_disconnect', array( Facebook_Lead_Ads_Helpers::class, 'disconnect_handler' ) );
 
-		// Forms selection handler.
+		// Forms selection handler. Ok.
 		add_action( 'wp_ajax_automator_facebook_lead_ads_forms_handler', array( Facebook_Lead_Ads_Helpers::class, 'forms_handler' ) );
 
-		// General connection check (external, unauthenticated).
+		// General connection check (external, unauthenticated). Ok.
 		add_action( 'wp_ajax_nopriv_facebook_lead_ads_check_connection', array( Facebook_Lead_Ads_Helpers::class, 'check_connection_handler' ) );
 
-		// General connection check (internal, authenticated).
+		// General connection check (internal, authenticated). Ok.
 		add_action( 'wp_ajax_facebook_lead_ads_check_connection', array( Facebook_Lead_Ads_Helpers::class, 'check_connection_handler' ) );
 
-		// Verifies page connection.
+		// Verifies page connection. Ok.
 		add_action( 'wp_ajax_facebook_lead_verify_page_connection', array( Facebook_Lead_Ads_Helpers::class, 'check_page_connection_handler' ) );
 
 		// Analyzes tokens.

@@ -103,7 +103,7 @@ namespace Uncanny_Automator;
 
 				<?php if ( ! $is_user_connected ) { ?>
 
-					<uo-button href="<?php echo esc_url( $facebook_pages_oauth_dialog_uri ); ?>">
+					<uo-button href="<?php echo esc_url( $facebook_pages_oauth_dialog_uri ); ?>" target="_self" unsafe-force-target>
 
 						<?php esc_html_e( 'Connect Facebook account', 'uncanny-automator' ); ?>
 

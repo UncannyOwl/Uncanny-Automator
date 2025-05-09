@@ -301,6 +301,8 @@ $default_icon_preview = plugins_url( 'assets/slack-avatar-2x.png', __FILE__ );
 
 				<uo-button
 					href="<?php echo esc_url( $connect_slack_url ); ?>"
+					target="_self"
+					unsafe-force-target
 				>
 					<?php esc_html_e( 'Connect Slack workspace', 'uncanny-automator' ); ?>
 				</uo-button>

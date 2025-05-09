@@ -75,7 +75,7 @@ class Mailchimp_Helpers {
 	 */
 	public function __construct() {
 
-		add_action( 'init', array( $this, 'validate_oauth_tokens' ), 100, 3 );
+		add_action( 'init', array( $this, 'validate_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY, 3 );
 
 		add_action( 'wp_ajax_select_mcgroupslist_from_mclist', array( $this, 'select_mcgroupslist_from_mclist' ) );
 
@@ -758,7 +758,12 @@ class Mailchimp_Helpers {
 			throw new \Exception( esc_html_x( 'Mailchimp account not found.', 'Mailchimp', 'uncanny-automator' ) );
 		}
 
-		return (object) $client;
+		// We need to recursively convert the client into an object
+		// to address the api_decode_message change.
+		$client = wp_json_encode( $client );
+		$client = json_decode( $client );
+
+		return $client;
 	}
 
 	/**
@@ -772,10 +777,13 @@ class Mailchimp_Helpers {
 
 		if ( ! empty( $api_message ) && 'mailchimp_api' === $integration ) {
 
+			if ( ! current_user_can( 'manage_options' ) ) {
+				return;
+			}
+
 			try {
 
-				$secret = get_transient( 'automator_api_mailchimp_authorize_nonce' );
-				$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $api_message, $secret );
+				$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $api_message, wp_create_nonce( 'automator_api_mailchimp_authorize_nonce' ) );
 
 				if ( ! empty( $tokens['access_token'] ) ) {
 

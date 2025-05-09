@@ -6,7 +6,7 @@ if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
 	/**
 	 * Specify Automator version
 	 */
-	define( 'AUTOMATOR_DATABASE_VERSION', '6.0' );
+	define( 'AUTOMATOR_DATABASE_VERSION', '6.2' );
 }
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VIEWS_VERSION' ) ) {
@@ -49,6 +49,13 @@ if ( ! defined( 'AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY' ) ) {
 	 * Automator trigger load priority
 	 */
 	define( 'AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY', 20 );
+}
+
+if ( ! defined( 'AUTOMATOR_APP_INTEGRATIONS_PRIORITY' ) ) {
+	/**
+	 * Automator App integrations load priority
+	 */
+	define( 'AUTOMATOR_APP_INTEGRATIONS_PRIORITY', PHP_INT_MAX - 10 );
 }
 
 if ( ! defined( 'AUTOMATOR_CONFIGURATION_COMPLETE_PRIORITY' ) ) {

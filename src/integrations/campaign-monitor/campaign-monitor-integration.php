@@ -25,7 +25,6 @@ class Campaign_Monitor_Integration extends \Uncanny_Automator\Integration {
 		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'campaignmonitor' ) );
 		// Register wp-ajax callbacks and filters.
 		$this->register_hooks();
-
 	}
 
 	/**
@@ -38,7 +37,6 @@ class Campaign_Monitor_Integration extends \Uncanny_Automator\Integration {
 		new Campaign_Monitor_Settings( $this->helpers );
 		new CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER( $this->helpers );
 		new CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER( $this->helpers );
-
 	}
 
 	/**
@@ -48,7 +46,7 @@ class Campaign_Monitor_Integration extends \Uncanny_Automator\Integration {
 	 */
 	public function register_hooks() {
 		// Authorization handler.
-		add_action( 'wp_ajax_automator_handle_authorization', array( $this->helpers, 'authenticate' ) );
+		add_action( 'wp_ajax_automator_handle_campaign_monitor_authorization', array( $this->helpers, 'authenticate' ) );
 		// Disconnect handler.
 		add_action( 'wp_ajax_automator_campaign_monitor_disconnect_account', array( $this->helpers, 'disconnect' ) );
 		// Agency Account Get Clients handler.
@@ -60,5 +58,4 @@ class Campaign_Monitor_Integration extends \Uncanny_Automator\Integration {
 		// Filter action field values before save.
 		add_filter( 'automator_field_values_before_save', array( $this->helpers, 'maybe_save_action_client_meta' ), 20, 2 );
 	}
-
 }

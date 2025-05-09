@@ -206,6 +206,7 @@ class Recipe_Post_Utilities {
 				'uap-tinymce-plugin-fullpage',
 				'wp-api-fetch',
 				'wp-i18n',
+				'wp-dom-ready'
 			),
 			Utilities::automator_get_version(),
 			true
@@ -556,6 +557,9 @@ class Recipe_Post_Utilities {
 				// UncannyAutomator._site.time_format
 				'time_format'         => get_option( 'time_format' ),
 
+				// UncannyAutomator._site.timezone
+				'timezone'            => Automator()->get_timezone_string(),
+
 				// UncannyAutomator._site.automator
 				'automator'           => array(
 					// UncannyAutomator._site.automator.version
@@ -573,7 +577,7 @@ class Recipe_Post_Utilities {
 					// UncannyAutomator._site.automator.has_valid_pro_license
 					'has_valid_pro_license' => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === automator_get_option( 'uap_automator_pro_license_status' ) ),
 
-					// UncannyAutomator._site.automator.marketing_referer
+					// UncannyAutomator._site.automator.links.marketing_referer
 					'marketing_referer'     => automator_get_option( 'uncannyautomator_source', '' ),
 
 					// UncannyAutomator._site.automator.links
@@ -606,6 +610,10 @@ class Recipe_Post_Utilities {
 							'token_loops' => 'https://automatorplugin.com/knowledge-base/token-loops/',
 						),
 
+						// UncannyAutomator._site.automator.links.plugin_required_missing
+						'plugin_required_missing' => 'https://automatorplugin.com/knowledge-base/the-action-trigger-requires-a-plugin-that-is-not-installed-or-active-message/',
+
+						// UncannyAutomator._site.automator.links.all_recipes
 						'all_recipes'        => admin_url( 'edit.php?post_type=uo-recipe' ),
 
 						// UncannyAutomator._site.automator.links.tools
@@ -632,6 +640,9 @@ class Recipe_Post_Utilities {
 
 					// UncannyAutomator._site.links.wp_permalinks
 					'wp_permalinks' => esc_url( admin_url( 'options-permalink.php' ) ),
+
+					// UncannyAutomator._site.links.wp_timezone
+					'wp_timezone' => admin_url( 'options-general.php#timezone_string' ),
 				),
 
 				// UncannyAutomator._site.permalink_structure
@@ -642,10 +653,7 @@ class Recipe_Post_Utilities {
 			'_integrations'  => $integrations,
 
 			// UncannyAutomator._core
-			'_core'          => array(
-				// UncannyAutomator._core.i18n
-				'i18n' => Automator()->i18n->get_all(),
-			),
+			'_core'          => array(),
 
 			// TODO Move `triggers`, `actions` and `closures` inside `UncannyAutomator._core.integrations`
 			// UncannyAutomator.triggers

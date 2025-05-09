@@ -137,9 +137,13 @@ automator_fbla_content_partial_render( $vars );
 
 <div id="automatorFblaConnectionResult"></div>
 
-<uo-button id="FBLAConnectionCheckBtn" color="secondary" size="small">
-	<uo-icon id="repeat"></uo-icon> 
-	<?php echo esc_html_x( 'Test API connection', 'Facebook Lead Ads', 'uncanny-automator' ); ?>
+<uo-button 
+	id="FBLAConnectionCheckBtn" 
+	color="secondary" 
+	size="small" 
+	uap-tooltip="<?php echo esc_html_x( 'Sends a test payload from our server to your site to confirm it can receive webhooks for Facebook Lead Ads.', 'Facebook Lead Ads', 'uncanny-automator' ); ?>">
+	<uo-icon id="rotate"></uo-icon> 
+	<?php echo esc_html_x( 'Check webhook delivery', 'Facebook Lead Ads', 'uncanny-automator' ); ?>
 </uo-button>
 
 <script>

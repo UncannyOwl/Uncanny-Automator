@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
-Tested up to: 6.8
+Tested up to: 6.8.1
 Requires PHP: 7.3
-Stable tag: 6.4.0.2
+Stable tag: 6.5.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -382,77 +382,59 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.4.0.2 [2025-04-18] =
+= 6.5.0 [2025-05-08] =
 
-**Fixed:**
 
-* `automator_api_decode_message` vulnerability fix - We patched up a potential trouble spot faster than a squirrel crossing a busy street. All secure now! #5633 CVE-2025-3623
-* Facebook Lead Ads - Icons and text were doing their best disappearing act on the Test Connection button—so we called them back to the stage. #5641
+**New Features:**
 
-= 6.4.0.1 [2025-04-11] =
-
-**Fixed:**
-
-* Bluesky - Create a post - Media embeds were going a little freestyle with formatting. We've taught them some manners—now they behave properly. #5613  
-* Core - Advanced tokens - That one sneaky use-case slipped through the cracks and made tokens blush (aka turn red). We've caught it and fixed it up. #5625  
-* User loops (Pro) - Advanced user meta tokens - Loops were getting a bit confused about who's who. Now they remember whose data they're supposed to be using. #5563
-
-= 6.4 [2025-04-01] =
-
-**New App Integration:**
-
-* [Bluesky](https://automatorplugin.com/integration/bluesky/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5427
-* [Facebook Lead Ads](https://automatorplugin.com/integration/facebook-lead-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #2613
-
-**New Triggers:**
-
-* Facebook Lead Ads - A new lead is created #4834
-* Thrive Apprentice - A user completes a course #5380
-* Thrive Apprentice - A user completes all free lessons in a premium course #5381
-* Thrive Apprentice - A user downloads the certificate from a course #5377
-* Thrive Apprentice - A user fails an assessment in a course #5374
-* Thrive Apprentice - A user passes an assessment in a course #5375
-* Thrive Apprentice - A user submits an assessment in a course #5376
-* Thrive Apprentice - A user's certificate was verified #5378
-* Thrive Apprentice - Content is unlocked for a user #5379
-* WP Simple Pay - A payment for a form is fully refunded #4889
-* WordPress Core - A reset password link was sent to a user #5373
+* Addons menu - Now you can install and activate Automator addons without spelunking through menus. One click, much wow. #5260
+* Recipe UI - Throttle Recipes - Give your recipes a breather! Control how often they run so they don't sprint endlessly. #4895
 
 **New Actions:**
 
-* Bluesky - Make a post on Bluesky #5428
-* Thrive Apprentice - Grade an assessment in a course for the user #5383
-* Thrive Apprentice - Issue a course certificate for the user #5384
-* Thrive Apprentice - Unlock a lesson/module in a course for the user #5533
-* Thrive Ultimatum - Start a campaign for the user #5382
-* WordPress - Create a new role #5483
+* WordPress - Duplicate a post #5498
+* WordPress - Duplicate a page #5498
 
-**New Tokens:**
+**Added**
 
-* Trigger details tokens added to all triggers #3012
-    * Trigger ID
-    * Trigger title
-    * Trigger completion date
+* Discord - Shortcode `[automator_discord_user_mapping]` to capture/authorize individual user Discord member IDs - Now you can summon a user's Discord ID like a wizard casting a spell. #5690
+* Discord - Token selector added to action dropdowns - Choosing the right token just got easier than picking toppings on a pizza. #5687
+* Recipe UI - Added export button to Publish Metabox - Export your recipe like a boss—now just a click away. #5419
 
-**Fixed:**
+**Updated**
 
-* AffiliateWP - Tokens not showing up in some triggers – Turns out the tokens were playing hide and seek. We've coaxed them back into visibility. #5500
-* Brevo - Create or update a contact - Action failing when no attributes are provided – The action got confused when handed a blank slate. Now it rolls with the punches, even when attributes ghost it. #5494
-* Core - Action tokens - Inconsistent results when actions fail in multiple recipe runs – Failed actions were spreading chaos like it was contagious. We've quarantined the inconsistency. #5342
-* Core - Background Actions - We've randomized the Auth() token so it's not just more secure—it's mysterious. #5557
-* Core - automator_get_all_options throwing RedisException in a specific situation – Redis had a meltdown over some edge cases. We calmed it down with some sensible exception handling. #5459
-* HelpScout - A conversation's tags are updated - Conversation URL token not working – This token was lost in the conversation. We gave it directions—it now knows exactly where to go. #5487
-* Recipe UI - Stripe connect modal not working – Stripe modal had stage fright and wouldn't show up. We've boosted its confidence. #5531
-* Stripe - Create payment links - payment_method_types issue – This one was picky about payment methods. We've taught it to be more accepting. #5462
-* Stripe - Customer tokens not rendering properly – These tokens were having an identity crisis. Now they're back to proudly displaying who they are. #5577
-* Thrive Apprentice - A user completes a module in a course - Updated for compatibility – A little compatibility spring cleaning—this trigger now plays nice with the rest of the gang. #5529
-* Thrive Apprentice - A user completes a lesson in a course - Lesson dropdown not populating – That dropdown was feeling shy. We gave it a pep talk—now it shows up with all the lessons. #5392
+* All integrations page - Now correctly shows whether something is Addon, Elite, Plus, or just plain awesome. #5226
+* Automator UI - Made more RTL-friendly so everything flows beautifully from right to left. #5519
+* OpenAI - Twitter-friendly excerpts now have an option to exclude hashtags—because sometimes you just want to keep it classy. #5566
+* Plans - The button now politely suggests “Activate license” if Pro is installed but feeling unlicensed. #5554
+* Recipe Logs - Action IDs now make a guest appearance in the logs, just like they do in the Recipe UI. #5060
+* Recipe UI - Made the Draft/Live switch a little louder so it doesn't keep whispering in the corner. #4315
+* Recipe UI - Publish box got a glow-up—fresh look, same great taste. #4731
 
-**Under the hood:**
+**Fixed**
 
-* Delete a log file is not working when there are special characters in the log filename – Special characters were too extra for our delete function. We've taught it to handle drama with grace. #5492
-* Resolve ambiguity with class names – We cleaned up a case of mistaken identity among class names. No more doppelgängers. #5560
-* Token parsing - WordPress filter `automator_token_parser_whitelisted_tokens` added to not parse third-party tokens matching token criteria – We've taught our parser to respect boundaries. It can now ignore tokens that don't belong to us. #5469
+* AWeber & Campaign Monitor - Authorization error checks affecting other app integrations. #5674
+* Bluesky - Posts now respect line breaks like a well-mannered poet. #5629
+* Facebook Lead Ads - The sync icon has been coaxed back into visibility—no more hide-and-seek. #5637
+* Facebook Lead Ads - Connection and disconnection are now playing nicely—no more awkward breakups or clingy connections. #5637
+* Formatter - Fixed the clone wars in action token outputs—no more unintended doppelgängers. #5671
+* Recipe UI - Loop tokens - Tokens added in older recipes were not migrating to the newer framework, we've fixed that. #5664
+* Recipe UI - Auto Login Link token - Didn't migrate properly on some sites - Now showing up on time like a responsible adult. #5664
+* Recipe UI - App actions - Fixed the "connect your site" URL so it doesn't lead you astray when your site isn't connected. #5628
+* Recipe UI - Clicking a trigger/action multiple times no longer adds it to the recipe multiple times - We've added some manners. #5551
+* Recipe UI - `esc_html` and `esc_attr` break double quotes formatting on JS strings - Quotation marks are now safe and sound. #5502
+* Recipe UI - Various bug fixes - We squashed a bunch of tiny bugs with big attitudes. #5550
+* `automator_get_all_options` - Now shows proper respect to the autoload column. #5518
+
+**Security Fixes**
+
+* App integrations - Tightened the gates with stronger nonce and capability checks for `wp_ajax` endpoints. #5657
+* `automator_api_decode_message` - Made additional modifications to further harden this method. #5631
+
+**Under the hood**
+
+* Recipe templates - API permissions check got an upgrade—more secure, less guesswork. #5650
+* Update various text strings. #5553
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

@@ -70,8 +70,7 @@ class Bluesky_Post_Record {
 	 * @param array $media - The media of the post.
 	 */
 	public function __construct( $text, $media = array() ) {
-		// sanitize_textarea_field
-		$this->text  = sanitize_text_field( $text );
+		$this->text  = sanitize_textarea_field( $text );
 		$this->media = $media;
 	}
 

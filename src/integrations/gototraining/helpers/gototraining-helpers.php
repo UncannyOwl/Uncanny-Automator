@@ -54,8 +54,8 @@ class Gototraining_Helpers {
 
 		add_action( 'update_option_uap_automator_gtt_api_consumer_secret', array( $this, 'gtt_oauth_update' ), 100, 3 );
 		add_action( 'add_option_uap_automator_gtt_api_consumer_secret', array( $this, 'gtt_oauth_new' ), 100, 2 );
-		add_action( 'init', array( $this, 'validate_oauth_tokens' ), 100, 3 );
-		add_action( 'init', array( $this, 'gtt_oauth_save' ), 200 );
+		add_action( 'init', array( $this, 'validate_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY, 3 );
+		add_action( 'init', array( $this, 'gtt_oauth_save' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY + 10 );
 
 		// Disconnect action.
 		add_action( 'wp_ajax_gtt_disconnect', array( $this, 'disconnect' ) );

@@ -225,6 +225,10 @@ class Trello_Functions {
 	 */
 	public function disconnect() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		if ( ! $this->is_current_settings_tab() ) {
 			return;
 		}

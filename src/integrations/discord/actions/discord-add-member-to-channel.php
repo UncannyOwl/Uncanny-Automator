@@ -52,19 +52,19 @@ class DISCORD_ADD_MEMBER_TO_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'SERVER_ID'    => array(
-					'name' => _x( 'Server ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SERVER_NAME'  => array(
-					'name' => _x( 'Server name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CHANNEL_NAME' => array(
-					'name' => _x( 'Channel name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Channel name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'USERNAME'     => array(
-					'name' => _x( 'Username', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Username', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -125,8 +125,16 @@ class DISCORD_ADD_MEMBER_TO_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 			array(
 				'SERVER_ID'    => $server_id,
 				'SERVER_NAME'  => $parsed[ $this->server_key . '_readable' ],
-				'CHANNEL_NAME' => $parsed['CHANNEL_readable'],
-				'USERNAME'     => $parsed[ $this->get_action_meta() . '_readable' ],
+				'CHANNEL_NAME' => $this->helpers->get_channel_name_token_value(
+					$parsed['CHANNEL_readable'],
+					$channel_id,
+					$server_id
+				),
+				'USERNAME'     => $this->helpers->get_member_username_token_value(
+					$parsed[ $this->get_action_meta() . '_readable' ],
+					$member_id,
+					$server_id
+				),
 			)
 		);
 

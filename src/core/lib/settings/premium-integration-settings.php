@@ -11,6 +11,8 @@
 
 namespace Uncanny_Automator\Settings;
 
+use Uncanny_Automator\Automator_Options;
+
 use Exception;
 
 /**
@@ -198,7 +200,7 @@ abstract class Premium_Integration_Settings {
 	 */
 	public function maybe_automator_setting( $option ) {
 		if ( preg_match( '/^(automator_|uncanny_automator_|uap_|ua_|_uoa_|_uncanny_|UO_|_uncannyowl_|uoa_)/', $option ) ) {
-			return array_key_exists( $option, automator_get_all_options() );
+			return true;
 		}
 
 		return false;
@@ -872,7 +874,12 @@ abstract class Premium_Integration_Settings {
 	 */
 	public function redirect_button( $label, $url, $color = 'primary' ) {
 		?>
-		<uo-button href="<?php echo esc_attr( $url ); ?>" color="<?php echo esc_attr( $color ); ?>">
+		<uo-button 
+			href="<?php echo esc_attr( $url ); ?>" 
+			color="<?php echo esc_attr( $color ); ?>"
+			target="_self"
+			unsafe-force-target
+		>
 			<?php echo esc_attr( $label ); ?>
 		</uo-button>
 

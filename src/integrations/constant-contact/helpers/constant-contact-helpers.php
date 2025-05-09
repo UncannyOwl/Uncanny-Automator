@@ -126,7 +126,11 @@ class Constant_Contact_Helpers {
 		$message = automator_filter_input( 'automator_api_message' );
 		$secret  = automator_filter_input( 'nonce' );
 
-		$decoded = Automator_Helpers_Recipe::automator_api_decode_message( $message, $secret );
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( $secret, self::NONCE ) ) {
+			wp_die( 'You are not allowed to do this.' );
+		}
+
+		$decoded = Automator_Helpers_Recipe::automator_api_decode_message( $message, wp_create_nonce( self::NONCE ) );
 
 		$this->handle_invalid_access( $secret );
 

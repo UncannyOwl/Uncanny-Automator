@@ -202,7 +202,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<?php if ( ! $vars['is_connected'] ) { ?>
 
-				<uo-button href="<?php echo esc_url( $vars['connect_url'] ); ?>">
+				<uo-button href="<?php echo esc_url( $vars['connect_url'] ); ?>" target="_self" unsafe-force-target>
 
 					<?php esc_html_e( 'Connect Help Scout account', 'uncanny-automator' ); ?>
 

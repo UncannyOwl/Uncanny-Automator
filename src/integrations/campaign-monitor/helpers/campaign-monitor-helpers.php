@@ -97,17 +97,28 @@ class Campaign_Monitor_Helpers {
 	 */
 	public function authenticate() {
 
-		$data        = automator_filter_input( 'automator_api_message' );
-		$nonce       = automator_filter_input( 'nonce' );
-		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( $data, $nonce );
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE ) ) {
+			wp_die( 'Invalid nonce.' );
+		}
+
+		// Validate user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_with_error( esc_html_x( 'You do not have the required permissions to perform this action.', 'Campaign Monitor', 'uncanny-automator' ) );
+		}
+
+		// Validate request.
+		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( 
+			automator_filter_input( 'automator_api_message' ), 
+			wp_create_nonce( self::NONCE )
+		);
 
 		// Handle errors.
 		if ( false === $credentials ) {
-			$this->redirect_with_error( _x( 'Unable to decode credentials with the secret provided. Please refresh and retry.', 'Campaign Monitor', 'uncanny-automator' ) );
+			$this->redirect_with_error( esc_html_x( 'Unable to decode credentials with the secret provided. Please refresh and retry.', 'Campaign Monitor', 'uncanny-automator' ) );
 		}
 
 		if ( empty( $credentials['data'] ) ) {
-			$this->redirect_with_error( _x( 'Authentication failed. Please refresh and retry.', 'Campaign Monitor', 'uncanny-automator' ) );
+			$this->redirect_with_error( esc_html_x( 'Authentication failed. Please refresh and retry.', 'Campaign Monitor', 'uncanny-automator' ) );
 		}
 
 		$this->save_credentials( $credentials['data'] );
@@ -115,7 +126,7 @@ class Campaign_Monitor_Helpers {
 		// Get / set account details.
 		$account = $this->get_account_details();
 		if ( is_wp_error( $account ) ) {
-			$this->redirect_with_error( $account->get_error_message() );
+			$this->redirect_with_error( esc_html( $account->get_error_message() ) );
 		}
 
 		// Redirect to settings page. Flag as connected with success=yes.
@@ -276,6 +287,11 @@ class Campaign_Monitor_Helpers {
 	 * @return void
 	 */
 	public function disconnect() {
+
+		// Validate user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Error 403: Insufficient permissions.' );
+		}
 
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
 
@@ -451,9 +467,9 @@ class Campaign_Monitor_Helpers {
 	public static function get_authorization_url() {
 		return add_query_arg(
 			array(
-				'action'   => 'authorize',
-				'user_url' => rawurlencode( get_bloginfo( 'url' ) ),
-				'nonce'    => wp_create_nonce( self::NONCE ),
+				'action'     => 'authorize',
+				'user_url'   => rawurlencode( get_bloginfo( 'url' ) ),
+				'nonce'      => wp_create_nonce( self::NONCE ),
 				'plugin_ver' => AUTOMATOR_PLUGIN_VERSION,
 			),
 			AUTOMATOR_API_URL . 'v2/campaignmonitor'

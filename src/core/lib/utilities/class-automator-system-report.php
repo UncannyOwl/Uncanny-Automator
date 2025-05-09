@@ -78,14 +78,19 @@ class Automator_System_Report {
 		switch ( strtoupper( $l ) ) {
 			case 'P':
 				$ret *= 1024;
+				// Fall-through intentional.
 			case 'T':
 				$ret *= 1024;
+				// Fall-through intentional.
 			case 'G':
 				$ret *= 1024;
+				// Fall-through intentional.
 			case 'M':
 				$ret *= 1024;
+				// Fall-through intentional.
 			case 'K':
 				$ret *= 1024;
+				// Fall-through intentional.
 		}
 
 		return $ret;
@@ -330,23 +335,24 @@ class Automator_System_Report {
 			$core_tables = (object) apply_filters(
 				'automator_database_tables',
 				(object) array(
-					'recipe_logs'       => 'uap_recipe_logs_view',
-					'trigger_logs'      => 'uap_trigger_logs_view',
-					'action_logs'       => 'uap_action_logs_view',
-					'api_logs'          => 'uap_api_logs_view',
-					'recipe'            => 'uap_recipe_log',
-					'recipe_meta'       => 'uap_recipe_log_meta',
-					'trigger'           => 'uap_trigger_log',
-					'trigger_meta'      => 'uap_trigger_log_meta',
-					'action'            => 'uap_action_log',
-					'action_meta'       => 'uap_action_log_meta',
-					'closure'           => 'uap_closure_log',
-					'closure_meta'      => 'uap_closure_log_meta',
-					'api'               => 'uap_api_log',
-					'api_response_logs' => 'uap_api_log_response',
-					'tokens_logs'       => 'uap_tokens_log',
-					'recipe_count'      => 'uap_recipe_count',
-					'automator_options' => 'uap_options',
+					'recipe_logs'        => 'uap_recipe_logs_view',
+					'trigger_logs'       => 'uap_trigger_logs_view',
+					'action_logs'        => 'uap_action_logs_view',
+					'api_logs'           => 'uap_api_logs_view',
+					'recipe'             => 'uap_recipe_log',
+					'recipe_meta'        => 'uap_recipe_log_meta',
+					'trigger'            => 'uap_trigger_log',
+					'trigger_meta'       => 'uap_trigger_log_meta',
+					'action'             => 'uap_action_log',
+					'action_meta'        => 'uap_action_log_meta',
+					'closure'            => 'uap_closure_log',
+					'closure_meta'       => 'uap_closure_log_meta',
+					'api'                => 'uap_api_log',
+					'api_response_logs'  => 'uap_api_log_response',
+					'tokens_logs'        => 'uap_tokens_log',
+					'recipe_count'       => 'uap_recipe_count',
+					'automator_options'  => 'uap_options',
+					'automator_throttle' => 'uap_recipe_throttle_log',
 				)
 			);
 
@@ -412,7 +418,6 @@ class Automator_System_Report {
 			'database_tables'                           => $tables,
 			'database_size'                             => $database_size,
 		);
-
 	}
 
 	/**
@@ -456,11 +461,12 @@ class Automator_System_Report {
 
 		$tables = $wpdb->get_results(
 			$wpdb->prepare(
+				// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
 				"SELECT TABLE_NAME AS `table_name`, ROUND((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024, 2) AS `size_mb`
 					FROM information_schema.TABLES
-				WHERE TABLE_SCHEMA = %s
-				AND TABLE_NAME like %s AND TABLE_NAME NOT LIKE %s
-				ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC;
+					WHERE TABLE_SCHEMA = %s
+					AND TABLE_NAME like %s AND TABLE_NAME NOT LIKE %s
+					ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC;
 				",
 				DB_NAME,
 				'%%uap%%',
@@ -474,7 +480,6 @@ class Automator_System_Report {
 		}
 
 		return round( $sum, 2 );
-
 	}
 
 	/**

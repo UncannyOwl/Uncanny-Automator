@@ -36,7 +36,6 @@ class Aweber_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 	public function get_status() {
 
 		return $this->helpers->integration_status();
-
 	}
 
 	/**
@@ -50,17 +49,39 @@ class Aweber_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 		$this->set_icon( 'AWEBER' );
 		$this->set_name( 'AWeber' );
 
+		// Check for errors.
+		add_action( 'init', array( $this, 'capture_errors' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
+	}
+
+	/**
+	 * Capture errors.
+	 *
+	 * @return void
+	 */
+	public function capture_errors() {
+
+		// Ensure this is the settings page.
+		if ( ! $this->is_current_page_settings() ) {
+			return;
+		}
+
 		if ( automator_filter_has_var( 'error_message' ) ) {
 			$this->display_errors( automator_filter_input( 'error_message' ) );
 		}
-
 	}
 
+	/**
+	 * Display errors.
+	 *
+	 * @param string $error_message The error message.
+	 *
+	 * @return void
+	 */
 	public function display_errors( $error_message ) {
 		$this->add_alert(
 			array(
 				'type'    => 'error',
-				'heading' => _x( 'An error exception has occured', 'AWeber', 'uncanny-automator' ),
+				'heading' => esc_html_x( 'An error exception has occured', 'AWeber', 'uncanny-automator' ),
 				'content' => $error_message,
 			)
 		);
@@ -119,17 +140,17 @@ class Aweber_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			<ul>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
+						<?php echo esc_html_x( 'Action:', 'AWeber', 'uncanny-automator' ); ?></strong>
 						<?php echo esc_html_x( 'Add a subscriber to a list', 'AWeber', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
+						<?php echo esc_html_x( 'Action:', 'AWeber', 'uncanny-automator' ); ?></strong>
 						<?php echo esc_html_x( 'Add a tag to a subscriber', 'AWeber', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
+						<?php echo esc_html_x( 'Action:', 'AWeber', 'uncanny-automator' ); ?></strong>
 						<?php echo esc_html_x( 'Update a subscriber', 'AWeber', 'uncanny-automator' ); ?>
 				</li>
 			</ul>
@@ -142,7 +163,6 @@ class Aweber_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 
 			<?php
 		}
-
 	}
 
 	/**
@@ -155,7 +175,12 @@ class Aweber_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 		// Show the connect message if not connected.
 		if ( ! $this->is_account_connected ) {
 			?>
-			<uo-button href="<?php echo esc_url( Aweber_Helpers::get_authorization_url() ); ?>" type="button">
+			<uo-button 
+				href="<?php echo esc_url( Aweber_Helpers::get_authorization_url() ); ?>" 
+				type="button"
+				target="_self"
+				unsafe-force-target
+			>
 				<?php echo esc_html_x( 'Connect AWeber account', 'AWeber', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php
@@ -197,11 +222,10 @@ class Aweber_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 			?>
 			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
 				<uo-icon id="right-from-bracket"></uo-icon>
-				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
+				<?php echo esc_html_x( 'Disconnect', 'AWeber', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php
 
 		}
 	}
-
 }

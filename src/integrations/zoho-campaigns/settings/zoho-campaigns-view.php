@@ -68,7 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="uap-settings-panel-bottom" <?php echo ! $vars['is_connected'] ? 'has-arrow' : ''; ?>>
 
 			<?php if ( false === $vars['is_connected'] ) { ?>
-				<uo-button href="<?php echo esc_url( $vars['connect_url'] ); ?>">
+				<uo-button href="<?php echo esc_url( $vars['connect_url'] ); ?>" target="_self" unsafe-force-target>
 					<?php esc_html_e( 'Connect Zoho Campaigns account', 'uncanny-automator' ); ?>
 				</uo-button>
 			<?php } ?>

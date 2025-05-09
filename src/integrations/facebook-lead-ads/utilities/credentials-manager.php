@@ -126,7 +126,7 @@ class Credentials_Manager {
 		$pages = (array) $credentials['pages_access_tokens'] ?? array();
 
 		foreach ( $pages as $page ) {
-			if ( isset( $page['id'] ) && absint( $page['id'] ) === $page_id ) {
+			if ( isset( $page['id'] ) && absint( $page['id'] ) === absint( $page_id ) ) {
 				return $page['access_token'];
 			}
 		}

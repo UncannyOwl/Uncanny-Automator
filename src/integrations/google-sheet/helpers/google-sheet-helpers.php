@@ -57,6 +57,13 @@ class Google_Sheet_Helpers {
 	const API_ENDPOINT = 'v2/google';
 
 	/**
+	 * The nonce for the Google Sheet integration.
+	 *
+	 * @var string
+	 */
+	const NONCE = 'automator_api_google_authorize';
+
+	/**
 	 * Google Sheet Options.
 	 *
 	 * @var Google_Sheet_Helpers
@@ -125,8 +132,6 @@ class Google_Sheet_Helpers {
 		// Selectively load options.
 		if ( method_exists( '\Uncanny_Automator\Automator_Helpers_Recipe', 'maybe_load_trigger_options' ) ) {
 			$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-		} else {
-
 		}
 
 		$this->setting_tab = 'premium-integrations';
@@ -144,7 +149,7 @@ class Google_Sheet_Helpers {
 		);
 
 		// Would probably be a good idea if we move 'validate_oauth_tokens' away from the 'init' hook to its own endpoint.
-		add_action( 'init', array( $this, 'validate_oauth_tokens' ), 100, 3 );
+		add_action( 'init', array( $this, 'validate_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY, 3 );
 
 		// Classic methods.
 		add_action( 'wp_ajax_select_gsspreadsheet_from_gsdrive', array( $this, 'select_gsspreadsheet_from_gsdrive' ) );
@@ -351,7 +356,7 @@ class Google_Sheet_Helpers {
 			if ( ! isset( $document['id'] ) ) {
 				continue;
 			}
-			if ( ! in_array( $document['id'], $unique_ids ) ) {
+			if ( ! in_array( $document['id'], $unique_ids ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				$unique_ids[]       = $document['id'];
 				$unique_documents[] = $document;
 			}
@@ -401,7 +406,7 @@ class Google_Sheet_Helpers {
 
 		$options = array(
 			array(
-				'text'  => _x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' ),
 				'value' => '',
 			),
 		);
@@ -549,14 +554,14 @@ class Google_Sheet_Helpers {
 	public function get_google_drives( $label = null, $option_code = 'GSDRIVE', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = esc_html__( 'Drive', 'uncanny-automator' );
+			$label = esc_html_x( 'Drive', 'Google Sheet', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => esc_html__( 'Any drive', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html_x( 'Any drive', 'Google Sheet', 'uncanny-automator' ),
 			)
 		);
 
@@ -604,14 +609,14 @@ class Google_Sheet_Helpers {
 	public function get_google_spreadsheets( $label = null, $option_code = 'GSSPREADSHEET', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = esc_html__( 'Drive', 'uncanny-automator' );
+			$label = esc_html_x( 'Drive', 'Google Sheet', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => esc_html__( 'Any spreadsheet', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html_x( 'Any spreadsheet', 'Google Sheet', 'uncanny-automator' ),
 			)
 		);
 
@@ -694,14 +699,14 @@ class Google_Sheet_Helpers {
 	public function get_google_worksheets( $label = null, $option_code = 'GSWORKSHEET', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = esc_html__( 'Worksheet', 'uncanny-automator' );
+			$label = esc_html_x( 'Worksheet', 'Google Sheet', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => esc_html__( 'Any worksheet', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html_x( 'Any worksheet', 'Google Sheet', 'uncanny-automator' ),
 			)
 		);
 
@@ -833,7 +838,11 @@ class Google_Sheet_Helpers {
 
 		$secret = automator_filter_input( 'nonce' );
 
-		$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $api_message, $secret );
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( $secret, self::NONCE ) ) {
+			wp_die( 'You are not allowed to do this.' );
+		}
+
+		$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $api_message, wp_create_nonce( self::NONCE ) );
 
 		if ( ! empty( $tokens['access_token'] ) ) {
 
@@ -928,7 +937,7 @@ class Google_Sheet_Helpers {
 
 			$options[] = array(
 				'value' => '-1',
-				'text'  => esc_html__( 'My google drive', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'My Google drive', 'Google Sheet', 'uncanny-automator' ),
 			);
 
 			if ( ! empty( $response['data'] ) && is_array( $response['data'] ) ) {
@@ -976,7 +985,7 @@ class Google_Sheet_Helpers {
 
 			$options[] = array(
 				'value' => '-1',
-				'text'  => esc_html__( 'Select a Speadsheet', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Select a Speadsheet', 'Google Sheet', 'uncanny-automator' ),
 			);
 
 			if ( ! empty( $response['data'] ) && is_array( $response['data'] ) ) {
@@ -1205,11 +1214,11 @@ class Google_Sheet_Helpers {
 	 */
 	public function disconnect_user() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), 'uo-google-user-disconnect' ) ) {
-
-			$this->disconnect_and_revoke_credentials();
-
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'uo-google-user-disconnect' ) ) {
+			wp_die( 'You are not allowed to do this.' );
 		}
+
+		$this->disconnect_and_revoke_credentials();
 
 		wp_safe_redirect(
 			add_query_arg(
@@ -1306,14 +1315,14 @@ class Google_Sheet_Helpers {
 	public function get_google_sheet_columns( $label = null, $option_code = 'GSWORKSHEETCOLUMN', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = esc_html__( 'Columns', 'uncanny-automator' );
+			$label = esc_html_x( 'Columns', 'Google Sheet', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => esc_html__( 'Any column', 'uncanny-automator' ),
+				'uo_any_label'   => esc_html_x( 'Any column', 'Google Sheet', 'uncanny-automator' ),
 			)
 		);
 
@@ -1602,7 +1611,7 @@ class Google_Sheet_Helpers {
 			throw new \Exception(
 				sprintf(
 				/* translators: %s: API endpoint */
-					esc_html__( '%s failed', 'uncanny-automator' ),
+					esc_html_x( '%s failed', 'Google Sheet', 'uncanny-automator' ),
 					esc_html( $params['endpoint'] )
 				)
 			);
@@ -1633,8 +1642,8 @@ class Google_Sheet_Helpers {
 
 		try {
 			$params['body']['access_token'] = $this->get_google_client();
-		} catch ( \Exception $e ) {
-			//If Google is not connected, proceed with the recorded credentials
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// If Google is not connected, proceed with the recorded credentials
 		}
 
 		return $params;

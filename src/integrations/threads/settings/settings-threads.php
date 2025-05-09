@@ -143,7 +143,7 @@ class Threads_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		// Show the connect message if not connected.
 		if ( ! $this->is_account_connected ) {
 			?>
-			<uo-button href="<?php echo esc_url( Threads_Helpers::get_authorization_url() ); ?>" type="button">
+			<uo-button href="<?php echo esc_url( Threads_Helpers::get_authorization_url() ); ?>" type="button" target="_self" unsafe-force-target>
 				<?php echo esc_html_x( 'Connect Threads account', 'Threads', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php

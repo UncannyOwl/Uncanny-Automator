@@ -110,6 +110,10 @@ class Page_Connection_Verifier {
 		// Get the access token.
 		$access_token = $this->credentials_manager->get_page_access_token( $page_id );
 
+		if ( empty( $access_token ) ) {
+			return new WP_Error( 'connection_error', esc_html_x( 'No access token found for the provided page ID.', 'Facebook Lead Ads', 'uncanny-automator' ) );
+		}
+
 		// Prepare the request body.
 		$body = $this->prepare_request_body( $page_id, $access_token );
 

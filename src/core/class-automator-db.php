@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:disable WordPress.DB
 namespace Uncanny_Automator;
 
 /**
@@ -125,6 +125,8 @@ class Automator_DB {
 		$tbl_recipe_counts = $wpdb->prefix . 'uap_recipe_count';
 		// Automator options
 		$tbl_automator_options = $wpdb->prefix . 'uap_options';
+		// Automator throttle.
+		$tbl_automator_throttle = $wpdb->prefix . 'uap_recipe_throttle_log';
 
 		return "CREATE TABLE {$tbl_recipe_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
@@ -287,7 +289,19 @@ CREATE TABLE {$tbl_automator_options} (
 PRIMARY KEY (`option_id`),
 UNIQUE KEY `option_name` (`option_name`),
 KEY `autoload` (`autoload`)
-) ENGINE=InnoDB {$charset_collate};";
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_automator_throttle} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+`user_id` bigint unsigned NOT NULL,
+`recipe_id` bigint unsigned NOT NULL,
+`meta_key` varchar(255) NOT NULL,
+`last_run` int unsigned NOT NULL,
+PRIMARY KEY (`ID`),
+UNIQUE KEY `user_recipe_key` (`user_id`,`recipe_id`,`meta_key`),
+KEY `cleanup` (`last_run`)
+) ENGINE=InnoDB {$charset_collate};
+";
 	}
 
 	/**
@@ -706,7 +720,6 @@ FROM {$wpdb->prefix}uap_recipe_log r
 			'uap_action_logs_view'  => $wpdb->prefix . 'uap_action_logs_view',
 			'uap_api_logs_view'     => $wpdb->prefix . 'uap_api_logs_view',
 		);
-
 	}
 
 	/**
@@ -758,7 +771,6 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		}
 
 		return $dropped;
-
 	}
 
 	/**
@@ -783,7 +795,6 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		do_action( 'automator_tables_purged' );
 
 		return true;
-
 	}
 
 	/**

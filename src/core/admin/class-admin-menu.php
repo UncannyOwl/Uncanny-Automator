@@ -3,6 +3,7 @@
 namespace Uncanny_Automator;
 
 use WP_Error;
+use Uncanny_Automator\Services\Addons\Data\License_Summary;
 
 /**
  * Class Admin_Menu
@@ -148,7 +149,6 @@ class Admin_Menu {
 		add_filter( 'admin_body_class', array( $this, 'add_legacy_activity_logs_css_class' ), 1, 1 );
 
 		$this->register_dashboard_recent_articles_endpoint();
-
 	}
 
 	/**
@@ -297,7 +297,7 @@ class Admin_Menu {
 	 */
 	public function register_options_menu_page() {
 
-		if ( ! current_user_can( apply_filters( 'automator_admin_menu_capability', 'manage_options' ) ) ) {
+		if ( ! current_user_can( apply_filters( 'automator_admin_menu_capability', 'manage_options' ) ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 			remove_menu_page( 'edit.php?post_type=uo-recipe' );
 		}
 
@@ -345,7 +345,6 @@ class Admin_Menu {
 			'uncanny-automator-recipe-activity-details',
 			$function
 		);
-
 	}
 
 	/**
@@ -380,9 +379,8 @@ class Admin_Menu {
 				'options_menu_settings_page_output',
 			);
 
-			add_submenu_page( 'edit.php?post_type=uo-recipe', $page_title, $menu_title, $capability, $menu_slug, $function );
+			add_submenu_page( 'edit.php?post_type=uo-recipe', $page_title, $menu_title, $capability, $menu_slug, $function ); // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 		}
-
 	}
 
 
@@ -396,7 +394,6 @@ class Admin_Menu {
 		include_once $logs_class;
 
 		include_once Utilities::automator_get_include( 'recipe-logs-view.php' );
-
 	}
 
 	/**
@@ -448,7 +445,7 @@ class Admin_Menu {
 		$is_pro_active   = false;
 
 		if ( isset( $is_connected['item_name'] ) ) {
-			if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) && $is_connected['item_name'] === AUTOMATOR_PRO_ITEM_NAME ) {
+			if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) && AUTOMATOR_PRO_ITEM_NAME === $is_connected['item_name'] ) {
 				$is_pro_active = true;
 			}
 		}
@@ -679,7 +676,6 @@ class Admin_Menu {
 
 		$this->settings_tabs();
 		include Utilities::automator_get_include( 'automator-settings.php' );
-
 	}
 
 	/**
@@ -697,7 +693,7 @@ class Admin_Menu {
 			foreach ( $tabs as $tab => $tab_settings ) {
 				$class = ( (string) $tab === (string) $current ) ? 'nav-tab-active' : '';
 				$url   = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-settings';
-				$html  .= '<a class="nav-tab ' . $class . '" href="' . $url . '&tab=' . $tab . '">' . $tab_settings->name . '</a>'; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
+				$html .= '<a class="nav-tab ' . $class . '" href="' . $url . '&tab=' . $tab . '">' . $tab_settings->name . '</a>'; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 			}
 			$html .= '</h2>';
 			echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -746,7 +742,6 @@ class Admin_Menu {
 			wp_die( 'Error: Invalid nonce.' );
 
 		}
-
 	}
 
 	/**
@@ -784,7 +779,7 @@ class Admin_Menu {
 		$license_data = (object) $license_data;
 
 		// this license is still valid
-		if ( $license_data->license === 'valid' ) {
+		if ( 'valid' === $license_data->license ) {
 			automator_update_option( 'uap_automator_pro_license_status', $license_data->license );
 			if ( 'lifetime' !== $license_data->expires ) {
 				automator_update_option( 'uap_automator_pro_license_expiry', $license_data->expires );
@@ -839,6 +834,7 @@ class Admin_Menu {
 				'uncanny-automator-admin-logs',
 				'uncanny-automator-admin-tools',
 				'uncanny-automator-pro-upgrade',
+				'uncanny-automator-addons',
 				'uncanny-automator-setup-wizard',
 				'edit.php',
 			)
@@ -846,7 +842,7 @@ class Admin_Menu {
 
 		// Enqueue admin scripts
 		//add_action(
-		//	'admin_enqueue_scripts',
+		//  'admin_enqueue_scripts',
 		//function ( $hook ) {
 
 		$hooks_assets_loaded = array(
@@ -884,7 +880,7 @@ class Admin_Menu {
 		// Load Automator font
 		wp_enqueue_style(
 			'uap-admin-font',
-			'https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap',
+			'https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap',
 			array(),
 			Utilities::automator_get_version()
 		);
@@ -901,7 +897,11 @@ class Admin_Menu {
 		wp_register_script(
 			'uap-admin',
 			Utilities::automator_get_asset( 'backend/dist/main.bundle.min.js' ),
-			array(),
+			array(
+				'wp-api-fetch',
+				'wp-i18n',
+				'wp-dom-ready'
+			),
 			Utilities::automator_get_version(),
 			true
 		);
@@ -946,8 +946,6 @@ class Admin_Menu {
 	 * @return array        The inline data
 	 */
 	public function get_js_backend_inline_data( $hook ) {
-		$plan_information = Api_Server::is_automator_connected();
-
 		// Set default data
 		$automator_backend_js = array(
 			'ajax'       => array(
@@ -959,353 +957,37 @@ class Admin_Menu {
 				'base'  => esc_url_raw( rest_url() ), // Actual URL of the /wp-json/
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
 			),
-			'i18n'       => array(
-				'error'           => array(
-					'request' => array(
-						'badRequest'   => array(
-							'title' => esc_html__( 'Bad request', 'uncanny-automator' ),
-						),
-
-						'accessDenied' => array(
-							'title' => esc_html__( 'Access denied', 'uncanny-automator' ),
-						),
-
-						'notFound'     => array(
-							'title' => esc_html__( 'Not found', 'uncanny-automator' ),
-						),
-
-						'timeout'      => array(
-							'title' => esc_html__( 'Request timeout', 'uncanny-automator' ),
-						),
-
-						'serverError'  => array(
-							'title' => esc_html__( 'Internal error', 'uncanny-automator' ),
-						),
-
-						'parserError'  => array(
-							'title' => esc_html__( 'Parser error', 'uncanny-automator' ),
-						),
-
-						'generic'      => array(
-							'title' => esc_html__( 'Unknown error', 'uncanny-automator' ),
-						),
-					),
-				),
-				'proLabel'        => array(
-					'pro' => esc_html__( 'Pro', 'uncanny-automator' ),
-				),
-				'notSaved'        => esc_html__( 'Changes you made may not be saved.', 'uncanny-automator' ),
-
-				'utilities'       => array(
-					'confirm'      => array(
-						'heading'            => esc_html__( 'Are you sure?', 'uncanny-automator' ),
-						// UncannyAutomatorBackend.i18n.utilities.confirm.heading
-						'confirmButtonLabel' => esc_html__( 'Confirm', 'uncanny-automator' ),
-						// UncannyAutomatorBackend.i18n.utilities.confirm.confirmButtonLabel
-						'cancelButtonLabel'  => esc_html__( 'Cancel', 'uncanny-automator' ),
-						// UncannyAutomatorBackend.i18n.utilities.confirm.cancelButtonLabel
-					),
-					// UncannyAutomatorBackend.i18n.utilities.relativeTime
-					'relativeTime' => array(
-						/* translators: 1. A relative time in the future, like "in 5 seconds" or "in 1 year" */
-						'future' => esc_html__( 'in %s', 'uncanny-automator' ),
-						/* translators: 1. A relative time in the past, like "5 seconds ago" or "1 year ago" */
-						'past'   => esc_html__( '%s ago', 'uncanny-automator' ),
-						's'      => esc_html__( 'a second', 'uncanny-automator' ),
-						/* translators: 1. Number of seconds */
-						'ss'     => esc_html__( '%d seconds', 'uncanny-automator' ),
-						'm'      => esc_html__( 'a minute', 'uncanny-automator' ),
-						/* translators: 1. Number of minutes */
-						'mm'     => esc_html__( '%d minutes', 'uncanny-automator' ),
-						'h'      => esc_html__( 'an hour', 'uncanny-automator' ),
-						/* translators: 1. Number of hours */
-						'hh'     => esc_html__( '%d hours', 'uncanny-automator' ),
-						'd'      => esc_html__( 'a day', 'uncanny-automator' ),
-						/* translators: 1. Number of days */
-						'dd'     => esc_html__( '%d days', 'uncanny-automator' ),
-						'M'      => esc_html__( 'a month', 'uncanny-automator' ),
-						/* translators: 1. Number of months */
-						'MM'     => esc_html__( '%d months', 'uncanny-automator' ),
-						'y'      => esc_html__( 'a year', 'uncanny-automator' ),
-						/* translators: 1. Number of years */
-						'yy'     => esc_html__( '%d years', 'uncanny-automator' ),
-						'now'    => esc_html__( 'now', 'uncanny-automator' ),
-					),
-				),
-
-				'copyToClipboard' => esc_html__( 'Copy to clipboard', 'uncanny-automator' ),
-				// UncannyAutomatorBackend.i18n.copyToClipboard
-
-				'setupWizard'     => array(
-					'skipThis'            => esc_html__( 'Skip this', 'uncanny-automator' ),
-					'areYouSure'          => esc_html__( 'Are you sure?', 'uncanny-automator' ),
-					'freeAccountFeatures' => esc_html__( 'Your free account gives you access to Slack, Google Sheets, Facebook, exclusive discounts, updates and much more.', 'uncanny-automator' ),
-					'proAccountFeatures'  => esc_html__( 'Your pro license gives you access to unlimited app credits, pro updates, premium support and much more.', 'uncanny-automator' ),
-					'skipForNow'          => esc_html__( 'Skip for now', 'uncanny-automator' ),
-					'signUpNow'           => esc_html__( 'Sign up now!', 'uncanny-automator' ),
-				),
-				// UncannyAutomatorBackend.i18n.setupWizard
-			),
 			'debugging'  => array(
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,
 			),
 			'components' => array(
-				'userCard' => array(
-					'i18n' => array(
-						'userNotFound' => esc_html__( 'User not found', 'uncanny-automator' ),
-						/* translators: 1. The user ID */
-						'userID'       => esc_html__( 'User ID #%1$s', 'uncanny-automator' ),
-						'unknownError' => esc_html__( 'Error: The user data could not be retrieved because of an unknown problem', 'uncanny-automator' ),
-						'idRequired'   => esc_html__( "Error: User ID can't be empty", 'uncanny-automator' ),
-					),
-				),
-				'field'    => array(
-					'file' => array(
-						'i18n' => array(
-							'selectFile'       => esc_html__( 'Select file', 'uncanny-automator' ),
-							'selectFiles'      => esc_html__( 'Select files', 'uncanny-automator' ),
-							'changeFile'       => esc_html__( 'Change file', 'uncanny-automator' ),
-							'changeFiles'      => esc_html__( 'Change files', 'uncanny-automator' ),
-							/* translators: 1. The number of rows */
-							'csvRows'          => esc_html__( '%1$s rows', 'uncanny-automator' ),
-							/* translators: 1. The list of headers */
-							'csvHeaders'       => esc_html__( 'Headers: %1$s', 'uncanny-automator' ),
-							/* translators: 1. The number of items */
-							'jsonItems'        => esc_html__( '%1$s items', 'uncanny-automator' ),
-							/* translators: 1. The list of keys */
-							'jsonKeys'         => esc_html__( 'Keys: %1$s', 'uncanny-automator' ),
-							/* translators: 1. Child elements */
-							'xmlChildElements' => esc_html__( '%1$s elements', 'uncanny-automator' ),
-							/* translators: 1. The name of the root element */
-							'xmlRootElement'   => esc_html__( 'Root element: %1$s', 'uncanny-automator' ),
-						),
-					),
-				),
 				'icon'     => array(
 					'integrations' => $this->get_integrations_for_components(),
 				),
 			),
-			'logs'       => array(
-				'components' => array(
-					'log'                => array(
-						'i18n' => array(
-							'somethingWentWrong'   => esc_html__( 'Something went wrong', 'uncanny-automator' ),
-							'unknownError'         => esc_html__( 'Unknown error', 'uncanny-automator' ),
-							'tryAgain'             => _x( 'Try again', 'Button label', 'uncanny-automator' ),
-							/* translators: 1. Name of the attribute */
-							'attributeMissing'     => esc_html__( 'Error: The required attribute "%1$s" is missing', 'uncanny-automator' ),
-							'triggeredBy'          => esc_html__( 'User', 'uncanny-automator' ),
-							'userRunNumber'        => esc_html__( 'User run number', 'uncanny-automator' ),
-							'recipeStatus'         => esc_html__( 'Status', 'uncanny-automator' ),
-							'recipeStartDate'      => esc_html__( 'Start date', 'uncanny-automator' ),
-							'recipeEndDate'        => esc_html__( 'End date', 'uncanny-automator' ),
-							'triggersSectionTitle' => esc_html__( 'Triggers', 'uncanny-automator' ),
-							'actionsSectionTitle'  => esc_html__( 'Actions', 'uncanny-automator' ),
-							'refreshingLog'        => esc_html__( 'Reloading this log', 'uncanny-automator' ),
-							/* translators: 1. The user ID */
-							'userIDNumber'         => esc_html__( 'User ID #%1$s', 'uncanny-automator' ),
-							'anyTrigger'           => _x( 'Any', 'Trigger', 'uncanny-automator' ),
-							'allTriggers'          => _x( 'All', 'Trigger', 'uncanny-automator' ),
-							'actions'              => array(
-								'closeLogDetails'    => esc_html__( 'Close log details', 'uncanny-automator' ),
-								'reload'             => esc_html__( 'Reload this log entry', 'uncanny-automator' ),
-								'editRecipe'         => esc_html__( 'Edit recipe', 'uncanny-automator' ),
-								'deleteLogEntry'     => esc_html__( 'Delete this log entry', 'uncanny-automator' ),
-								'downloadLogEntry'   => esc_html__( 'Download this log entry', 'uncanny-automator' ),
-
-								'irreversibleAction' => esc_html__( 'This action is irreversible', 'uncanny-automator' ),
-								'sureDeleteRun'      => esc_html__( 'Are you sure you want to delete this entry?', 'uncanny-automator' ),
-								'confirm'            => esc_html__( 'Confirm', 'uncanny-automator' ),
-
-								/* translators: 1. The recipe name */
-								'downloadFilename'   => esc_html__( 'Log %1$s', 'uncanny-automator' ),
-
-								'downloading'        => esc_html__( 'Downloading', 'uncanny-automator' ),
-							),
-						),
-					),
-					'logDialogButton'    => array(
-						'i18n' => array(
-							'details'     => esc_html__( 'Details', 'uncanny-automator' ),
-							'viewDetails' => esc_html__( 'View details', 'uncanny-automator' ),
-						),
-					),
-					'logItemItem'        => array(
-						'i18n' => array(
-							/* translators: 1 and 2 are dates */
-							'dateRange'     => esc_html__( '%1$s to %2$s', 'uncanny-automator' ),
-							/* translators: 1. Is a number */
-							'runs'          => esc_html__( '%1$s runs', 'uncanny-automator' ),
-
-							'openInSidebar' => esc_html__( 'Open in sidebar', 'uncanny-automator' ),
-							'closeSidebar'  => esc_html__( 'Close sidebar', 'uncanny-automator' ),
-						),
-					),
-					'logItemTrigger'     => array(
-						'i18n' => array(
-							'sidebarTitle' => esc_html__( 'Trigger', 'uncanny-automator' ),
-							'summary'      => array(
-								'date'      => esc_html__( 'Date', 'uncanny-automator' ),
-								'startDate' => esc_html__( 'Start date', 'uncanny-automator' ),
-								'endDate'   => esc_html__( 'End date', 'uncanny-automator' ),
-								'status'    => esc_html__( 'Status', 'uncanny-automator' ),
-								'runs'      => esc_html__( 'Runs', 'uncanny-automator' ),
-							),
-							/* translators: 1. Number */
-							'timesNumber'  => esc_html__( '%1$s times', 'uncanny-automator' ),
-							/* translators: 1. Number */
-							'runNumber'    => esc_html__( 'Run %1$s', 'uncanny-automator' ),
-							'missingItem'  => esc_html__( 'Note: The information about this trigger is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
-						),
-					),
-					'logItemAction'      => array(
-						'i18n' => array(
-							'sidebarTitle'           => esc_html__( 'Action', 'uncanny-automator' ),
-							'summary'                => array(
-								'date'      => esc_html__( 'Date', 'uncanny-automator' ),
-								'startDate' => esc_html__( 'Start date', 'uncanny-automator' ),
-								'endDate'   => esc_html__( 'End date', 'uncanny-automator' ),
-								'status'    => esc_html__( 'Status', 'uncanny-automator' ),
-								'runs'      => esc_html__( 'Runs', 'uncanny-automator' ),
-								'message'   => esc_html__( 'Notes', 'uncanny-automator' ),
-								'events'    => esc_html__( 'Events', 'uncanny-automator' ),
-							),
-							/* translators: 1. Is a number */
-							'tries'                  => esc_html__( '%1$s tries', 'uncanny-automator' ),
-							/* translators: 1. Number */
-							'tryNumber'              => esc_html__( 'Try %1$s', 'uncanny-automator' ),
-							'resend'                 => esc_html__( 'Resend', 'uncanny-automator' ),
-							'cancel'                 => esc_html__( 'Cancel', 'uncanny-automator' ),
-							'runNow'                 => esc_html__( 'Run now', 'uncanny-automator' ),
-							'unknownError'           => esc_html__( 'Unknown error', 'uncanny-automator' ),
-							'cancelConfirm'          => esc_html__( 'Are you sure you want to cancel this action?', 'uncanny-automator' ),
-							'cantResendInImportMode' => esc_html__( 'Resending is not possible in import mode', 'uncanny-automator' ),
-							'cantCancelInImportMode' => esc_html__( 'Cancelling is not possible in import mode', 'uncanny-automator' ),
-							'missingItem'            => esc_html__( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
-						),
-					),
-					'logItemLoop'        => array(
-						'i18n' => array(
-							'actionInsideTitle' => esc_html__( 'Action inside loop', 'uncanny-automator' ),
-							'missingItem'       => esc_html__( 'Note: The information about this action is unavailable because it was removed from the recipe.', 'uncanny-automator' ),
-							'summary'           => array(
-								'status'    => esc_html__( 'Status', 'uncanny-automator' ),
-								'date'      => esc_html__( 'Date', 'uncanny-automator' ),
-								'startDate' => esc_html__( 'Start date', 'uncanny-automator' ),
-								'endDate'   => esc_html__( 'End date', 'uncanny-automator' ),
-								'message'   => esc_html__( 'Notes', 'uncanny-automator' ),
-							),
-						),
-					),
-					'logItemFilterBlock' => array(
-						'i18n' => array(
-							'runIf'         => _x( 'Run if', 'Conditions logic', 'uncanny-automator' ),
-							/* translators: Any [condition] */
-							'any'           => _x( 'Any', 'Conditions logic', 'uncanny-automator' ),
-							/* translators: All [conditions] */
-							'all'           => _x( 'All', 'Conditions logic', 'uncanny-automator' ),
-							'anyFull'       => _x( 'of the following conditions is met', 'Conditions logic', 'uncanny-automator' ),
-							'allFull'       => _x( 'of the following conditions are met', 'Conditions logic', 'uncanny-automator' ),
-							'openInSidebar' => esc_html__( 'Open in sidebar', 'uncanny-automator' ),
-							'closeSidebar'  => esc_html__( 'Close sidebar', 'uncanny-automator' ),
-							'sidebarTitle'  => esc_html__( 'Condition', 'uncanny-automator' ),
-							'properties'    => esc_html__( 'Properties', 'uncanny-automator' ),
-							'summary'       => array(
-								'status' => esc_html__( 'Status', 'uncanny-automator' ),
-								'notes'  => esc_html__( 'Notes', 'uncanny-automator' ),
-							),
-						),
-					),
-					'logSidebar'         => array(
-						'i18n' => array(
-							'details'      => esc_html__( 'Details', 'uncanny-automator' ),
-							'closeSidebar' => esc_html__( 'Close sidebar', 'uncanny-automator' ),
-							'closeDialog'  => esc_html__( 'Close log details', 'uncanny-automator' ),
-						),
-					),
-					'logStatus'          => array(
-						'i18n' => array(
-							/* translators: 1. The status ID */
-							'invalidStatus'               => esc_html__( 'Error: "%1$s" is not a valid status ID.', 'uncanny-automator' ),
-							'completedStatus'             => esc_html__( 'Completed', 'uncanny-automator' ),
-							'completedDoNothingStatus'    => esc_html__( 'Completed, do nothing', 'uncanny-automator' ),
-							'completedDidNothingStatus'   => esc_html__( 'Completed, did nothing', 'uncanny-automator' ),
-							'cancelledStatus'             => esc_html__( 'Cancelled', 'uncanny-automator' ),
-							'pausedStatus'                => esc_html__( 'Paused', 'uncanny-automator' ),
-							'completedWithNoticeStatus'   => esc_html__( 'Completed with notice', 'uncanny-automator' ),
-							'notCompletedStatus'          => esc_html__( 'Not completed', 'uncanny-automator' ),
-							'skipped'                     => esc_html__( 'Skipped', 'uncanny-automator' ),
-							'queuedStatus'                => esc_html__( 'Queued', 'uncanny-automator' ),
-							'completedWithErrorsStatus'   => esc_html__( 'Completed with errors', 'uncanny-automator' ),
-							'inProgressStatus'            => esc_html__( 'In progress', 'uncanny-automator' ),
-							'inProgressWithErrorsStatus'  => esc_html__( 'In progress with errors', 'uncanny-automator' ),
-							'scheduledStatus'             => esc_html__( 'Scheduled', 'uncanny-automator' ),
-							'delayedStatus'               => esc_html__( 'Delayed', 'uncanny-automator' ),
-							'failedStatus'                => esc_html__( 'Failed', 'uncanny-automator' ),
-							'completedAwaitingStatus'     => esc_html__( 'Completed awaiting', 'uncanny-automator' ),
-							'conditionMetStatus'          => esc_html__( 'Met', 'uncanny-automator' ),
-							'conditionNotMetStatus'       => esc_html__( 'Not met', 'uncanny-automator' ),
-							'conditionNotEvaluatedStatus' => esc_html__( 'Not evaluated', 'uncanny-automator' ),
-						),
-					),
-					'logSidebarProperty' => array(
-						'i18n' => array(
-							'viewPreview'  => esc_html__( 'View preview', 'uncanny-automator' ),
-							/* translators: 1. Label of field */
-							'previewLabel' => esc_html__( '"%1$s" preview', 'uncanny-automator' ),
-							'empty'        => esc_html__( '(empty)', 'uncanny-automator' ),
-							'plainText'    => esc_html__( 'Plain text', 'uncanny-automator' ),
-							/* translators: 1. Number of lines */
-							'expandLines'  => esc_html__( 'Expand %1$s lines', 'uncanny-automator' ),
-							'collapse'     => esc_html__( 'Collapse', 'uncanny-automator' ),
-							'viewFile'     => esc_html__( 'View file', 'uncanny-automator' ),
-						),
-					),
-					// UncannyAutomatorBackend.logs.components.logLoop.i18n
-					'logLoop'            => array(
-						'i18n' => array(
-							/* translators: Noun */
-							'loop'                      => _x( 'Loop', 'Block name, noun', 'uncanny-automator' ),
-							'users'                     => esc_html__( 'Users', 'uncanny-automator' ),
-							'posts'                     => esc_html__( 'Posts', 'uncanny-automator' ),
-							/* translators: 1. Number of items processed. 2. Total number of items */
-							'progressStatus'            => esc_html__( '%1$s/%2$s processed', 'uncanny-automator' ),
-							/* translators: 1. Number of items processed */
-							'progressStatusCompleted'   => esc_html__( '%1$s processed', 'uncanny-automator' ),
-							'inProgress'                => esc_html__( 'In progress', 'uncanny-automator' ),
-							'matchTheFollowingCriteria' => esc_html__( 'that match the following criteria', 'uncanny-automator' ),
-							'timeElapsed'               => esc_html__( 'Elapsed:', 'uncanny-automator' ),
-							'nextBatch'                 => esc_html__( 'Next batch:', 'uncanny-automator' ),
-							'started'                   => esc_html__( 'Started:', 'uncanny-automator' ),
-							/* translators: 1 and 2 are dates */
-							'dateRange'                 => esc_html__( '%1$s to %2$s', 'uncanny-automator' ),
-							'openInSidebar'             => esc_html__( 'Open in sidebar', 'uncanny-automator' ),
-							'closeSidebar'              => esc_html__( 'Close sidebar', 'uncanny-automator' ),
-							'sidebarTitle'              => esc_html__( 'Loop filter', 'uncanny-automator' ),
-							'properties'                => esc_html__( 'Properties', 'uncanny-automator' ),
-							'cancel'                    => array(
-								'buttonLabel'            => esc_html__( 'Cancel', 'uncanny-automator' ),
-								'cancelConfirm'          => esc_html__( "You won't be able to resume this loop later.", 'uncanny-automator' ),
-								'cantCancelInImportMode' => esc_html__( 'Cancelling a loop is not possible in import mode', 'uncanny-automator' ),
-							),
-						),
-					),
-				),
-			),
-
 			'_site'      => array(
 				'automator' => array(
-					'plan_details'       => PricingPlanResolver::getPlanDetails(),
-					'marketing_referer'  => automator_get_option( 'uncannyautomator_source', '' ),
-					'url_upgrade_to_pro' => add_query_arg(
-						// UTM
-						array(
-							'utm_source'  => 'uncanny_automator',
-							'utm_medium'  => 'upgrade_to_pro',
-							'utm_content' => 'upgrade_to_pro_button',
+					'license_details'    => ( new License_Summary() )->get_license_summary(),
+					'is_pro_active'      => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ),
+					'links' => array(
+						'marketing_referer'  => automator_get_option( 'uncannyautomator_source', '' ),
+						'external' => array(
+							'url_upgrade_to_pro' => add_query_arg(
+								// UTM
+								array(
+									'utm_source'  => 'uncanny_automator',
+									'utm_medium'  => 'upgrade_to_pro',
+									'utm_content' => 'upgrade_to_pro_button',
+								),
+								'https://automatorplugin.com/pricing/'
+							),
 						),
-						'https://automatorplugin.com/pricing/'
-					),
+						'internal' => array(
+							'all_recipes'        => admin_url( 'edit.php?post_type=uo-recipe' ),
+							'tools'              => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-tools' ),
+							'manage_license'     => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
+						)
+					)
 				),
 			),
 		);
@@ -1349,24 +1031,6 @@ class Admin_Menu {
 
 					// Check if the site is connected
 					$data['hasSiteConnected'] = $this->automator_connect ? true : false;
-
-					// Add strings
-					$data['i18n']['credits'] = array(
-						'recipesUsingCredits' => array(
-							'noRecipes' => esc_html__( 'No recipes using app credits on this site', 'uncanny-automator' ),
-							'table'     => array(
-								'recipe'             => esc_html__( 'Recipe', 'uncanny-automator' ),
-								'completionsAllowed' => esc_html__( 'Completions allowed', 'uncanny-automator' ),
-								'completedRuns'      => esc_html__( 'Completed runs', 'uncanny-automator' ),
-								/* translators: 1. Number */
-								'perUser'            => esc_html__( 'Per user: %1$s', 'uncanny-automator' ),
-								/* translators: 1. Number */
-								'total'              => esc_html__( 'Total: %1$s', 'uncanny-automator' ),
-								/* translators: Unlimited times */
-								'unlimited'          => _x( 'Unlimited', 'Times', 'uncanny-automator' ),
-							),
-						),
-					);
 				}
 
 				return $data;
@@ -1597,8 +1261,10 @@ class Admin_Menu {
 				'permalink'          => $permalink,
 				'external_permalink' => $integration['integration_link'],
 				'is_pro'             => $integration['is_pro_integration'],
+				'is_plus'            => $integration['is_plus_integration'],
 				'is_elite'           => isset( $integration['is_elite_integration'] ) ? $integration['is_elite_integration'] : false,
 				'is_built_in'        => $integration['is_app_integration'],
+				'is_addon'           => $integration['is_automator_addon'],
 				'is_installed'       => $this->is_installed( $integration_id ),
 				'short_description'  => $integration['short_description'],
 				'icon_url'           => $integration['integration_icon'],
@@ -1675,7 +1341,6 @@ class Admin_Menu {
 		$existing_integrations = array_keys( Automator()->get_integrations() );
 
 		return in_array( $integration_id, $existing_integrations, true );
-
 	}
 
 	/**
@@ -1799,7 +1464,7 @@ class Admin_Menu {
 
 			$query_params = array(
 				'sl_activation' => 'false',
-				'error_message' => urlencode( $error ),
+				'error_message' => urlencode( $error ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode
 			);
 
 			if ( $should_redirect ) {

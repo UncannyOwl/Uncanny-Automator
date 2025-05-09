@@ -85,6 +85,8 @@
 				<uo-button
 					class="uap-settings-button-google"
 					href="<?php echo esc_url_raw( $vars['auth_url'] ); ?>"
+					target="_self" 
+					unsafe-force-target
 				>
 					<uo-icon id="google"></uo-icon>
 					<?php echo esc_html_x( 'Sign in with Google', 'Google Contacts', 'uncanny-automator' ); ?>

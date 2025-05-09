@@ -83,7 +83,7 @@ class Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings 
 		if ( ! $this->is_user_connected ) {
 			?>
 
-			<uo-button class="uap-settings-button-notion" href="<?php echo esc_url( $this->auth_url ); ?>">
+			<uo-button class="uap-settings-button-notion" href="<?php echo esc_url( $this->auth_url ); ?>" target="_self" unsafe-force-target>
 				<?php echo esc_html_x( 'Connect Notion account', 'Notion', 'uncanny-automator' ); ?>
 			</uo-button>
 

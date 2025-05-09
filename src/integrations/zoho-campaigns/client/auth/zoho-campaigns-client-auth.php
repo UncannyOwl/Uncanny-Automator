@@ -36,8 +36,7 @@ class Zoho_Campaigns_Client_Auth {
 	public function auth_from_http_query() {
 
 		$message     = automator_filter_input( 'automator_api_message' );
-		$nonce       = automator_filter_input( 'nonce' );
-		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( $message, $nonce );
+		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( $message, wp_create_nonce( self::NONCE_KEY ) );
 
 		if ( false === $credentials ) {
 			throw new Exception( 'Cannot parse returned message from the API.', 400 );

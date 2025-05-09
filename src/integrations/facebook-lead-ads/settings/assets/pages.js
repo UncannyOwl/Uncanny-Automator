@@ -11,7 +11,7 @@ const makeApiRequest = async (pageId, bypassCache = false, callback = null) => {
 
     try {
         const force = bypassCache ? 'true' : 'false';
-        const apiUrl = `${automator_fbla_config.apiUrl}&page_id=${pageId}&force=${force}`;
+        const apiUrl = `${automator_fbla_config.apiUrl}&page_id=${pageId}&force=${force}&nonce=${fbLeadAdsConfig.nonce}`;
 
         const response = await fetch(apiUrl, {
             method: "GET",

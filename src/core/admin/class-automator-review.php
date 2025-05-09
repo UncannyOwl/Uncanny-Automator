@@ -502,7 +502,11 @@ class Automator_Review {
 		wp_register_script(
 			'uap-admin',
 			Utilities::automator_get_asset( 'backend/dist/main.bundle.min.js' ),
-			array(),
+			array(
+				'wp-api-fetch',
+				'wp-i18n',
+				'wp-dom-ready'
+			),
 			Utilities::automator_get_version(),
 			true
 		);
@@ -657,6 +661,7 @@ class Automator_Review {
 			'uo-recipe_page_uncanny-automator-dashboard',
 			'uo-recipe_page_uncanny-automator-integrations',
 			'uo-recipe_page_uncanny-automator-template-library',
+			'uo-recipe_page_uncanny-automator-addons',
 			'uo-recipe_page_uncanny-automator-config',
 			'uo-recipe_page_uncanny-automator-admin-logs',
 			'uo-recipe_page_uncanny-automator-admin-tools',

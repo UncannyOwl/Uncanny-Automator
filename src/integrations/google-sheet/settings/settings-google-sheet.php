@@ -71,7 +71,7 @@ class Google_Sheet_Settings extends Settings\Premium_Integration_Settings {
 	public function get_auth_url() {
 
 		// Create nonce.
-		$nonce = wp_create_nonce( 'automator_api_google_authorize' );
+		$nonce = wp_create_nonce( Google_Sheet_Helpers::NONCE );
 
 		// Construct the redirect uri.
 		$redirect_uri = add_query_arg(

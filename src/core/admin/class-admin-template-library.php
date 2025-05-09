@@ -50,17 +50,12 @@ class Admin_Template_Library {
 	 */
 	public function submenu_page() {
 
-		$uo_new_tag = '<uo-new-tag></uo-new-tag>';
-		if( automator_filter_has_var( 'page' ) && 'uncanny-automator-template-library' === automator_filter_input( 'page' ) ) {
-			$uo_new_tag = '';
-		}
-
 		// Add submenu
 		$this->admin_hook = add_submenu_page(
 			'edit.php?post_type=uo-recipe',
 			/* translators: 1. Trademarked term */
 			sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' ),
-			esc_attr__( 'Recipe templates', 'uncanny-automator' ) . $uo_new_tag,
+			esc_attr__( 'Recipe templates', 'uncanny-automator' ),
 			'manage_options',
 			'uncanny-automator-template-library',
 			array( $this, 'submenu_page_output' ),

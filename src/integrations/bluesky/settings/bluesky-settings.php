@@ -37,7 +37,7 @@ class Bluesky_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 	 *
 	 * @var string
 	 */
-	const NONCE_KEY = 'automator_bluesky';
+	const NONCE_KEY = 'automator_bluesky_credentials';
 
 	/**
 	 * Integration status.
@@ -65,7 +65,7 @@ class Bluesky_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		$this->is_connected = $this->helpers->is_connected();
 
 		// Handle form submission.
-		add_action( 'init', array( $this, 'handle_form_submission' ) );
+		add_action( 'init', array( $this, 'handle_form_submission' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 	}
 
 	/**
@@ -81,6 +81,11 @@ class Bluesky_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 
 		// Verify the nonce.
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), self::NONCE_KEY ) ) {
+			return;
+		}
+
+		// Verify user capabilities
+		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
@@ -266,7 +271,7 @@ class Bluesky_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 				<uo-icon id="bolt"></uo-icon> 
 				<strong>
 				<?php // phpcs:ignore Uncanny_Automator.Strings.TranslationFunction.NoContext
-				esc_html_e( 'Action:', 'uncanny-automator' );
+				echo esc_html_x( 'Action:', 'Bluesky', 'uncanny-automator' );
 				?>
 				</strong>
 			<?php echo esc_html_x( 'Create a post on Bluesky', 'Bluesky', 'uncanny-automator' ); ?>
@@ -408,7 +413,7 @@ class Bluesky_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			<uo-icon id="sign-out"></uo-icon>
 			<?php
 			// phpcs:ignore Uncanny_Automator.Strings.TranslationFunction.NoContext
-			esc_html_e( 'Disconnect', 'uncanny-automator' );
+			echo esc_html_x( 'Disconnect', 'Bluesky', 'uncanny-automator' );
 			?>
 		</uo-button>
 

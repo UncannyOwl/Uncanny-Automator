@@ -51,15 +51,15 @@ class DISCORD_REMOVE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'SERVER_ID'   => array(
-					'name' => _x( 'Server ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SERVER_NAME' => array(
-					'name' => _x( 'Server name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'USERNAME'    => array(
-					'name' => _x( 'Username', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Username', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -112,17 +112,21 @@ class DISCORD_REMOVE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 			throw new Exception( esc_html_x( 'Error removing member.', 'Discord', 'uncanny-automator' ) );
 		}
 
-		// Remove the member from the cached list.
-		$this->remove_member_from_cache( $server_id, $member_id );
-
 		// Hydrate tokens.
 		$this->hydrate_tokens(
 			array(
 				'SERVER_ID'   => $server_id,
 				'SERVER_NAME' => $parsed[ $this->server_key . '_readable' ],
-				'USERNAME'    => $parsed[ $this->get_action_meta() . '_readable' ],
+				'USERNAME'    => $this->helpers->get_member_username_token_value(
+					$parsed[ $this->get_action_meta() . '_readable' ],
+					$member_id,
+					$server_id
+				),
 			)
 		);
+
+		// Remove the member from the cached list.
+		$this->remove_member_from_cache( $server_id, $member_id );
 
 		return true;
 	}

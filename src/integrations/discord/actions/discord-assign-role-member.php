@@ -52,19 +52,19 @@ class DISCORD_ASSIGN_ROLE_TO_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'SERVER_ID'   => array(
-					'name' => _x( 'Server ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SERVER_NAME' => array(
-					'name' => _x( 'Server name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'ROLE_NAME'   => array(
-					'name' => _x( 'Role name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Role name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'USERNAME'    => array(
-					'name' => _x( 'Username', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Username', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -125,8 +125,16 @@ class DISCORD_ASSIGN_ROLE_TO_MEMBER extends \Uncanny_Automator\Recipe\Action {
 			array(
 				'SERVER_ID'   => $server_id,
 				'SERVER_NAME' => $parsed[ $this->server_key . '_readable' ],
-				'ROLE_NAME'   => $parsed[ $this->get_action_meta() . '_readable' ],
-				'USERNAME'    => $parsed['MEMBER_readable'],
+				'ROLE_NAME'   => $this->helpers->get_role_name_token_value(
+					$parsed[ $this->get_action_meta() . '_readable' ],
+					$role_id,
+					$server_id
+				),
+				'USERNAME'    => $this->helpers->get_member_username_token_value(
+					$parsed['MEMBER_readable'],
+					$member_id,
+					$server_id
+				),
 			)
 		);
 

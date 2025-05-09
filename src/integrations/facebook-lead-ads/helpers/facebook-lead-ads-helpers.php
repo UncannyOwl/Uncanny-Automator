@@ -27,6 +27,13 @@ class Facebook_Lead_Ads_Helpers {
 	const API_ENDPOINT = 'v2/facebook-lead-ads';
 
 	/**
+	 * The nonce for the connection process.
+	 *
+	 * @var string
+	 */
+	const CONNECTION_NONCE = 'automator_facebook_lead_ads_connection_nonce';
+
+	/**
 	 * Handles Facebook Lead Ads forms.
 	 *
 	 * Verifies the nonce, retrieves forms from Facebook, and sends a JSON response
@@ -85,14 +92,20 @@ class Facebook_Lead_Ads_Helpers {
 	 */
 	public static function capture_token_handler() {
 
+		$nonce = automator_filter_input( 'nonce' );
+		$data  = automator_filter_input( 'automator_api_message' );
+
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( $nonce, self::CONNECTION_NONCE ) ) {
+			wp_die( 'You are not authorized to access this page.' );
+		}
+
 		$credentials_manager = new Credentials_Manager();
 		$connections_manager = self::create_connection_manager();
 
 		try {
-			$data = self::decode_token_data();
 
+			$data = self::decode_token_data( $data );
 			$args = self::build_connection_args( $data );
-
 			$connections_manager->connect( $args );
 
 			$page_access_tokens = self::fetch_page_access_tokens();
@@ -115,13 +128,13 @@ class Facebook_Lead_Ads_Helpers {
 	/**
 	 * Decodes the token data from the API message.
 	 *
+	 * @param string $data The data to decode.
+	 * @param string $nonce The nonce to verify.
+	 *
 	 * @return array Decoded token data.
 	 */
-	private static function decode_token_data() {
-		return Automator_Helpers_Recipe::automator_api_decode_message(
-			automator_filter_input( 'automator_api_message' ),
-			automator_filter_input( 'nonce' )
-		);
+	private static function decode_token_data( $data ) {
+		return Automator_Helpers_Recipe::automator_api_decode_message( $data, wp_create_nonce( self::CONNECTION_NONCE ) );
 	}
 
 	/**
@@ -131,6 +144,7 @@ class Facebook_Lead_Ads_Helpers {
 	 * @return array Connection arguments.
 	 */
 	private static function build_connection_args( array $data ) {
+
 		return array(
 			'user_access_token' => $data['user_token'] ?? '',
 			'vault_signatures'  => $data['vault_signatures'] ?? '',
@@ -144,8 +158,7 @@ class Facebook_Lead_Ads_Helpers {
 	 * @return array|WP_Error Page access tokens or WP_Error on failure.
 	 */
 	private static function fetch_page_access_tokens() {
-		$client = new Client();
-		return $client->get_page_access_tokens();
+		return( new Client() )->get_page_access_tokens();
 	}
 
 	/**
@@ -169,6 +182,16 @@ class Facebook_Lead_Ads_Helpers {
 	 * @return void
 	 */
 	private static function finalize_connection( $credentials_manager ) {
+
+		if ( ! is_a( $credentials_manager, Credentials_Manager::class ) ) {
+			$error_message = 'missing_credentials_manager_class';
+			self::settings_redirect(
+				array(
+					'error_message' => $error_message,
+				)
+			);
+		}
+
 		if ( $credentials_manager->has_user_credentials() && $credentials_manager->has_pages_credentials() ) {
 			self::settings_redirect();
 		}
@@ -187,6 +210,7 @@ class Facebook_Lead_Ads_Helpers {
 	 * @return void
 	 */
 	private static function handle_connection_exception( Exception $e ) {
+
 		self::settings_redirect(
 			array(
 				'error_message' => $e->getMessage(),
@@ -202,6 +226,8 @@ class Facebook_Lead_Ads_Helpers {
 	 * @return void
 	 */
 	public static function check_connection_handler() {
+
+		Automator()->utilities->verify_nonce();
 
 		$data = (array) json_decode( file_get_contents( 'php://input', true ) );
 		$url  = $data['site_url'] ?? '';
@@ -237,6 +263,10 @@ class Facebook_Lead_Ads_Helpers {
 	 * @return void
 	 */
 	public static function disconnect_handler() {
+
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_facebook_lead_ads_disconnect_nonce' ) ) {
+			wp_die( 'You are not authorized to access this page.' );
+		}
 
 		$connections_manager = self::create_connection_manager();
 		$connections_manager->disconnect();
@@ -371,6 +401,10 @@ class Facebook_Lead_Ads_Helpers {
 	 */
 	public static function check_page_connection_handler() {
 
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'fbLeadsNonce' ) ) {
+			wp_die( 'You are not authorized to access this page.' );
+		}
+
 		$connection = self::create_connection_manager();
 
 		$status_code = 200;
@@ -378,6 +412,7 @@ class Facebook_Lead_Ads_Helpers {
 
 		$force      = automator_filter_input( 'force' );
 		$bool_force = false;
+
 		if ( 'true' === $force ) {
 			$bool_force = true;
 		}

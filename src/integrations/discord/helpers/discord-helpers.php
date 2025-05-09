@@ -43,6 +43,20 @@ class Discord_Helpers {
 	const ACTION_SERVER_META_KEY = 'DISCORD_SERVER';
 
 	/**
+	 * Discord user mapping meta key.
+	 *
+	 * @var string
+	 */
+	const DISCORD_USER_MAPPING_META_KEY = 'automator_discord_member_id';
+
+	/**
+	 * Discord username meta key.
+	 *
+	 * @var string
+	 */
+	const DISCORD_USERNAME_META_KEY = 'automator_discord_member_username';
+
+	/**
 	 * Get api instance.
 	 * 
 	 * @return Discord_Api
@@ -248,6 +262,7 @@ class Discord_Helpers {
 	 * @return array
 	 */
 	public function get_servers_ajax() {
+		Automator()->utilities->verify_nonce();
 		$servers  = $this->api()->get_servers( $this->is_ajax_refresh() );
 		$options = $this->format_select_results( $servers );
 
@@ -290,15 +305,16 @@ class Discord_Helpers {
 	 */
 	public function get_server_channel_select_config( $option_code, $server_key, $args = array() ) {
 		$config = array(
-			'option_code'            => $option_code,
-			'label'                  => _x( 'Channel', 'Discord', 'uncanny-automator' ),
-			'input_type'             => 'select',
-			'options'                => array(),
-			'required'               => true,
-			'supports_custom_value'  => false,
-			'show_label_in_sentence' => true,
-			'relevant_tokens'        => array(),
-			'ajax'                   => array(
+			'option_code'              => $option_code,
+			'label'                    => _x( 'Channel', 'Discord', 'uncanny-automator' ),
+			'input_type'               => 'select',
+			'options'                  => array(),
+			'required'                 => true,
+			'supports_custom_value'    => true,
+			'custom_value_description' => _x( 'Enter a channel ID ( eg: 1317134385290947584 )', 'Discord', 'uncanny-automator' ),
+			'show_label_in_sentence'   => true,
+			'relevant_tokens'          => array(),
+			'ajax'                     => array(
 				'endpoint'      => 'automator_discord_get_server_channels',
 				'event'         => 'parent_fields_change',
 				'listen_fields' => array( $server_key ),
@@ -346,14 +362,45 @@ class Discord_Helpers {
 		$channel_id     =  $this->get_text_value_from_parsed( $parsed, $meta_key, $required_error );
 
 		// Check if the channel is in the server.
-		$channels = $this->api()->get_server_channels( $server_id );
-		$channel  = wp_list_filter( $channels, array( 'value' => $channel_id ) );
-
-		if ( empty( $channel ) ) {
+		if ( ! $this->get_server_channel_by_id( $server_id, $channel_id ) ) {
 			throw new Exception( esc_html_x( 'Channel not found in the selected server', 'Discord', 'uncanny-automator' ) );
 		}
 
 		return $channel_id;
+	}
+
+	/**
+	 * Get channel name token value.
+	 *
+	 * @param string $channel_name
+	 * @param string $channel_id
+	 * @param string $server_id
+	 *
+	 * @return string
+	 */
+	public function get_channel_name_token_value( $channel_name, $channel_id, $server_id ) {
+		// If custom value was not used, return the parsed channel name.
+		if ( ! $this->is_token_custom_value_text( $channel_name ) ) {
+			return $channel_name;
+		}
+		// Get channel from server.
+		$channel = $this->get_server_channel_by_id( $server_id, $channel_id );
+		// Return channel name or '-' if not found.
+		return $channel ? $channel['text'] : '-';
+	}
+
+	/**
+	 * Get server channel by ID.
+	 *
+	 * @param string $server_id
+	 * @param string $channel_id
+	 *
+	 * @return array|false
+	 */
+	private function get_server_channel_by_id( $server_id, $channel_id ) {
+		$channels = $this->api()->get_server_channels( $server_id );
+		$channel  = array_values( wp_list_filter( $channels, array( 'value' => $channel_id ) ) );
+		return ! empty( $channel ) ? $channel[0] : false;
 	}
 
 	/**
@@ -366,15 +413,16 @@ class Discord_Helpers {
 	 */
 	public function get_server_members_select_config( $option_code, $server_key ) {
 		return array(
-			'option_code'            => $option_code,
-			'label'                  => _x( 'Member', 'Discord', 'uncanny-automator' ),
-			'input_type'             => 'select',
-			'options'                => array(),
-			'required'               => true,
-			'supports_custom_value'  => false,
-			'show_label_in_sentence' => true,
-			'relevant_tokens'        => array(),
-			'ajax'                   => array(
+			'option_code'              => $option_code,
+			'label'                    => _x( 'Member', 'Discord', 'uncanny-automator' ),
+			'input_type'               => 'select',
+			'options'                  => array(),
+			'required'                 => true,
+			'supports_custom_value'    => true,
+			'custom_value_description' => _x( 'Enter a member ID ( snowflake eg: 1423695857943239309 )', 'Discord', 'uncanny-automator' ),
+			'show_label_in_sentence'   => true,
+			'relevant_tokens'          => array(),
+			'ajax'                     => array(
 				'endpoint'      => 'automator_discord_get_server_members',
 				'event'         => 'parent_fields_change',
 				'listen_fields' => array( $server_key ),
@@ -413,6 +461,29 @@ class Discord_Helpers {
 	}
 
 	/**
+	 * Get member username token value.
+	 *
+	 * @param string $username
+	 * @param int $member_id
+	 * @param int $server_id
+	 *
+	 * @return string
+	 */
+	public function get_member_username_token_value( $username, $member_id, $server_id ) {
+
+		// If custom value was not used, return the parsed member name.
+		if ( ! $this->is_token_custom_value_text( $username ) ) {
+			return $username;
+		}
+
+		// Check against the existing server list of members.
+		$members = $this->api()->get_server_members( $server_id, false );
+		$member  = array_values( wp_list_filter( $members, array( 'value' => $member_id ) ) );
+
+		return $member[0]['text'] ?? '-';
+	}
+
+	/**
 	 * Get server roles select config.
 	 * 
 	 * @param string $option_code
@@ -423,15 +494,16 @@ class Discord_Helpers {
 	 */
 	public function get_server_roles_select_config( $option_code, $server_key, $args = array() ) {
 		$config = array(
-			'option_code'            => $option_code,
-			'label'                  => _x( 'Role', 'Discord', 'uncanny-automator' ),
-			'input_type'             => 'select',
-			'options'                => array(),
-			'required'               => true,
-			'supports_custom_value'  => false,
-			'show_label_in_sentence' => true,
-			'relevant_tokens'        => array(),
-			'ajax'                   => array(
+			'option_code'              => $option_code,
+			'label'                    => _x( 'Role', 'Discord', 'uncanny-automator' ),
+			'input_type'               => 'select',
+			'options'                  => array(),
+			'required'                 => true,
+			'supports_custom_value'    => true,
+			'custom_value_description' => _x( 'Enter a role ID ( eg: 1317134385290947584 )', 'Discord', 'uncanny-automator' ),
+			'show_label_in_sentence'   => true,
+			'relevant_tokens'          => array(),
+			'ajax'                     => array(
 				'endpoint'      => 'automator_discord_get_server_roles',
 				'event'         => 'parent_fields_change',
 				'listen_fields' => array( $server_key ),
@@ -468,6 +540,28 @@ class Discord_Helpers {
 	public function get_role_id_from_parsed( $parsed, $meta_key ) {
 		$required_error = esc_html_x( 'Role is required', 'Discord', 'uncanny-automator' );
 		return $this->get_text_value_from_parsed( $parsed, $meta_key, $required_error );
+	}
+
+	/**	
+	 * Get role name token value.
+	 *
+	 * @param string $role_name
+	 * @param int $role_id
+	 * @param int $server_id
+	 *
+	 * @return string
+	 */
+	public function get_role_name_token_value( $role_name, $role_id, $server_id ) {
+		// If custom value was not used, return the parsed role name.
+		if ( ! $this->is_token_custom_value_text( $role_name ) ) {
+			return $role_name;
+		}
+
+		// Check against the existing server list of roles.
+		$roles = $this->api()->get_server_roles( $server_id, false );
+		$role  = array_values( wp_list_filter( $roles, array( 'value' => $role_id ) ) );
+
+		return $role[0]['text'] ?? '-';
 	}
 
 	/**
@@ -644,6 +738,41 @@ class Discord_Helpers {
 			},
 			$results
 		) );
+	}
+
+	/**
+	 * Check if the value is a custom value text.
+	 *
+	 * @param string $string_to_check
+	 *
+	 * @return bool
+	 */
+	private function is_token_custom_value_text( $string_to_check ) {
+		return $string_to_check === esc_attr__( 'Use a token/custom value', 'uncanny-automator' );
+	}
+
+	/**
+	 * Get the mapped Discord member ID for a user.
+	 *
+	 * @param int $user_id
+	 *
+	 * @return string|false
+	 */
+	public function get_mapped_wp_user_discord_id( $user_id ) {
+		$member_id = get_user_meta( $user_id, self::DISCORD_USER_MAPPING_META_KEY, true );
+		return ! empty( $member_id ) ? $member_id : false;
+	}
+
+	/**
+	 * Get the mapped Discord username for a user.
+	 *
+	 * @param int $user_id
+	 * 
+	 * @return string|false
+	 */
+	public function get_mapped_wp_user_discord_username( $user_id ) {
+		$username = get_user_meta( $user_id, self::DISCORD_USERNAME_META_KEY, true );
+		return ! empty( $username ) ? $username : false;
 	}
 
 	/**

@@ -26,9 +26,6 @@ class Instagram_Settings extends Settings\Premium_Integration_Settings {
 
 		$this->set_name( 'Instagram' );
 
-		// Add localization strings
-		$this->add_localization_strings();
-
 	}
 
 	public function get_status() {
@@ -83,33 +80,6 @@ class Instagram_Settings extends Settings\Premium_Integration_Settings {
 		}
 
 		include_once 'view-instagram.php';
-
-	}
-
-	/**
-	 * Adds translatable strings for the JS.
-	 *
-	 * @return void
-	 */
-	private function add_localization_strings() {
-
-		// Update the main JS object.
-		add_filter(
-			'automator_assets_backend_js_data',
-			function( $data ) {
-				// Add strings
-				$data['i18n']['settingsInstagram'] = array(
-					'linkedFacebookPage'      => esc_html__( 'Account linked to Facebook Page:', 'uncanny-automator' ),
-					'connectInstagramAccount' => esc_html__( 'Connect Instagram account', 'uncanny-automator' ),
-					'noInstagram'             => esc_html__( 'No Instagram Business or Professional account connected to this Facebook page.', 'uncanny-automator' ),
-					/* translators: 1. Number of followers */
-					'followers'               => esc_html_x( '%1$s followers', 'Instagram', 'uncanny-automator' ),
-					'refresh'                 => esc_html__( 'Refresh', 'uncanny-automator' ),
-				);
-
-				return $data;
-			}
-		);
 
 	}
 

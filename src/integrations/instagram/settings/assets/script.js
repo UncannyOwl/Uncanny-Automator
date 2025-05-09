@@ -84,7 +84,7 @@ class AutomatorInstagramSettings {
                         </div>
                         <div class="uap-instagram-account-actions">
                             <uo-tooltip>
-                                ${ UncannyAutomatorBackend.i18n.settingsInstagram.refresh }
+                                ${ _uo.utility.escHTML( wp.i18n.__( 'Refresh', 'uncanny-automator' ) ) }
 
                                 <uo-button
                                     color="secondary"
@@ -100,7 +100,7 @@ class AutomatorInstagramSettings {
                         </div>
                     </div>
                     <div class="uap-linked-account">
-                        ${ UncannyAutomatorBackend.i18n.settingsInstagram.linkedFacebookPage }
+                        ${ _uo.utility.escHTML( wp.i18n.__( 'Account linked to Facebook Page:', 'uncanny-automator' ) ) }
 
                         <a 
                             href="https://facebook.com/${ page.value }"
@@ -287,7 +287,7 @@ class AutomatorInstagramSettings {
                     // Add message
                     $instagramWrapper.innerHTML = `
                         <span class="uap-instagram-account-no-account">
-                            ${ UncannyAutomatorBackend.i18n.settingsInstagram.noInstagram }
+                            ${ _uo.utility.escHTML( wp.i18n.__( 'No Instagram Business or Professional account connected to this Facebook page.', 'uncanny-automator' ) ) }
                         </span>
                     `;
                 }

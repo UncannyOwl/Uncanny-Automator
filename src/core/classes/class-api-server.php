@@ -197,6 +197,48 @@ class Api_Server {
 	}
 
 	/**
+	 * Method get_license_plan
+	 *
+	 * @return string
+	 */
+	public static function get_license_plan() {
+		// Get the license.
+		$license = self::get_license();
+		// Check if we have the license_plan property.
+		if ( self::has_license_plan_property( $license ) ) {
+			return $license['license_plan'];
+		}
+		
+		// If license exists but missing license_plan, try to refresh.
+		if ( $license && ! self::has_license_plan_property( $license ) ) {
+			$license = self::is_automator_connected( true );
+		}
+		
+		// If license_plan exists, return it
+		if ( self::has_license_plan_property( $license ) ) {
+			return $license['license_plan'];
+		}
+		
+		// Fallback to basic/lite based on license type
+		$license_type = self::get_license_type();
+		if ( ! $license_type ) {
+			return '';
+		}
+		return $license_type === 'pro' ? 'basic' : 'lite';
+	}
+
+	/**
+	 * Check if license has the license plan property.
+	 * - Temporary fallback to work around license caching.
+	 *
+	 * @param mixed $license
+	 * @return bool
+	 */
+	private static function has_license_plan_property( $license ) {
+		return is_array( $license ) && isset( $license['license_plan'] );
+	}
+
+	/**
 	 * Method get_site_name
 	 * For sites like https://your-site:8888/
 	 *
@@ -463,6 +505,8 @@ class Api_Server {
 
 			// Removes any failed license checks.
 			delete_transient( self::TRANSIENT_LICENSE_CHECK_FAILED );
+
+			// do action?
 
 			return $license;
 

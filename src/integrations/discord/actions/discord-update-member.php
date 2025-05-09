@@ -51,19 +51,19 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'SERVER_ID'   => array(
-					'name' => _x( 'Server ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SERVER_NAME' => array(
-					'name' => _x( 'Server name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'USERNAME'    => array(
-					'name' => _x( 'Username', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Username', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'ROLE_NAMES'  => array(
-					'name' => _x( 'Role name(s)', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Role name(s)', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -82,17 +82,17 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 			$this->helpers->get_server_members_select_config( $this->get_action_meta(), $this->server_key ),
 			array(
 				'option_code' => 'NICKNAME',
-				'label'       => _x( 'Nickname', 'Discord', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Nickname', 'Discord', 'uncanny-automator' ),
 				'input_type'  => 'text',
 				'required'    => false,
 			),
 			array(
 				'option_code' => 'DISABLE_COMMUNICATIONS',
-				'label'       => _x( 'Disable communications until (in days)', 'Discord', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Disable communications until (in days)', 'Discord', 'uncanny-automator' ),
 				'input_type'  => 'text',
 				'max_number'  => 28,
 				'required'    => false,
-				'description' => _x( "Amount of days when the user's timeout will expire and the user will be able to communicate in the server again ( up to 28 days in the future ). To remove an existing timeout, set to [DELETE] including square brackets.", 'Discord', 'uncanny-automator' ),
+				'description' => esc_html_x( "Amount of days when the user's timeout will expire and the user will be able to communicate in the server again ( up to 28 days in the future ). To remove an existing timeout, set to [DELETE] including square brackets.", 'Discord', 'uncanny-automator' ),
 			),
 			$this->helpers->get_server_roles_select_config(
 				'ROLES',
@@ -150,9 +150,24 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		// Roles.
 		$role_names = '';
 		$roles      = sanitize_text_field( $this->get_parsed_meta_value( 'ROLES', array() ) );
+
 		if ( ! empty( $roles ) ) {
-			$update['roles'] = json_decode( $roles, true );
-			$role_names      = $this->get_parsed_meta_value( 'ROLES_readable', array() );
+
+			$role_names = $this->get_parsed_meta_value( 'ROLES_readable', array() );
+
+			// User manually selected options.
+			if ( is_array( $roles ) ) {
+				$update['roles'] = $roles;
+			} else {
+				// User used a custom value.
+				$update['roles'] = array( $roles );
+				// Get role name using helper method
+				$role_names = $this->helpers->get_role_name_token_value(
+					$role_names, // Custom value text
+					$roles, // role ID
+					$server_id
+				);
+			}
 		}
 
 		if ( empty( $update ) ) {
@@ -180,7 +195,11 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 			array(
 				'SERVER_ID'   => $server_id,
 				'SERVER_NAME' => $parsed[ $this->server_key . '_readable' ],
-				'USERNAME'    => $parsed[ $this->get_action_meta() . '_readable' ],
+				'USERNAME'    => $this->helpers->get_member_username_token_value(
+					$parsed[ $this->get_action_meta() . '_readable' ],
+					$member_id,
+					$server_id
+				),
 				'ROLE_NAMES'  => $role_names,
 			)
 		);

@@ -224,7 +224,11 @@ class Aweber_Helpers {
 		$data  = automator_filter_input( 'automator_api_message' );
 		$nonce = automator_filter_input( 'nonce' );
 
-		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( $data, $nonce );
+		if ( ! wp_verify_nonce( $nonce, self::NONCE ) || ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'You are not allowed to do this.' );
+		}
+
+		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( $data, wp_create_nonce( self::NONCE ) );
 
 		// Handle errors.
 		if ( false === $credentials ) {
@@ -266,10 +270,11 @@ class Aweber_Helpers {
 	 */
 	public function disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
-
-			$this->remove_credentials();
+		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE ) ) {
+			wp_die( 'You are not allowed to do this.' );
 		}
+
+		$this->remove_credentials();
 
 		wp_safe_redirect( $this->get_settings_page_url() );
 

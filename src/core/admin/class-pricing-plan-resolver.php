@@ -3,7 +3,7 @@
 namespace Uncanny_Automator;
 
 /**
- * Class PricingPlanResolver
+ * Class Pricing_Plan_Resolver
  *
  * Resolves the pricing plan tier based on the Pro plugin installation status and license details.
  *
@@ -12,7 +12,16 @@ namespace Uncanny_Automator;
  * - If the Pro plugin is installed but there is no valid license connection, the plan is "basic".
  * - If the Pro plugin is installed and a valid license is connected, the plan tier is determined from the license's price ID.
  */
-class PricingPlanResolver {
+class Pricing_Plan_Resolver {
+
+	/**
+	 * Constructor.
+	 *
+	 * @return void
+	 */
+	public function __construct() {
+	}
+
 	/**
 	 * Mapping of price IDs to plan tiers.
 	 *
@@ -30,10 +39,10 @@ class PricingPlanResolver {
 	 *
 	 * @return array{plan: string, is_pro_installed: bool}
 	 */
-	public static function getPlanDetails(): array {
+	public static function get_plan_details(): array {
 		return array(
-			'plan'             => self::resolvePlanTier(),
-			'is_pro_installed' => self::isProInstalled(),
+			'plan'             => self::resolve_plan_tier(),
+			'is_pro_installed' => self::is_pro_installed(),
 		);
 	}
 
@@ -47,29 +56,32 @@ class PricingPlanResolver {
 	 *
 	 * @return string
 	 */
-	public static function resolvePlanTier(): string {
-		if ( ! self::isProInstalled() ) {
+	public static function resolve_plan_tier(): string {
+		if ( ! self::is_pro_installed() ) {
 			return 'lite';
 		}
 
 		// Get the license information
-		$licenseInfo = Api_Server::is_automator_connected();
+		$license_info = Api_Server::is_automator_connected();
+		// TODO : Review this logic :
+		// We chould be checking the license type here too.
+		// 'pro' === Api_Server::get_license_type();
 
 		if (
 			// If the license info is not an array
-			! is_array( $licenseInfo ) ||
+			! is_array( $license_info ) ||
 			// If the license key is empty
-			empty( $licenseInfo['license_key'] ) ||
+			empty( $license_info['license_key'] ) ||
 			// If the license is not valid
-			( ( $licenseInfo['license'] ?? '' ) !== 'valid' )
+			( ( $license_info['license'] ?? '' ) !== 'valid' )
 		) {
 			return 'basic';
 		}
 
-		$priceId = (int) ( $licenseInfo['price_id'] ?? 0 );
+		$price_id = (int) ( $license_info['price_id'] ?? 0 );
 
 		// Return the tier mapped from the price ID
-		return self::PRICE_TIER_MAP[ $priceId ] ?? 'basic';
+		return self::PRICE_TIER_MAP[ $price_id ] ?? 'basic';
 	}
 
 	/**
@@ -80,7 +92,7 @@ class PricingPlanResolver {
 	 *
 	 * @return bool
 	 */
-	public static function isProInstalled(): bool {
+	public static function is_pro_installed(): bool {
 		return defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' );
 	}
 
@@ -89,7 +101,7 @@ class PricingPlanResolver {
 	 *
 	 * @return array<int, string>
 	 */
-	public static function getPriceTierMap(): array {
+	public static function get_price_tier_map(): array {
 		return self::PRICE_TIER_MAP;
 	}
 }

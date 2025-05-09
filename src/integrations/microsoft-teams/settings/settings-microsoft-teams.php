@@ -93,7 +93,7 @@ class Microsoft_Teams_Settings extends \Uncanny_Automator\Settings\Premium_Integ
 		if ( ! $this->is_user_connected ) {
 			?>
 
-				<uo-button class="uap-settings-button-microsoft" href="<?php echo esc_url( $this->auth_url ); ?>">
+				<uo-button class="uap-settings-button-microsoft" href="<?php echo esc_url( $this->auth_url ); ?>" target="_self" unsafe-force-target>
 					<uo-icon id="microsoft"></uo-icon><?php esc_html_e( 'Sign in with Microsoft', 'uncanny-automator' ); ?>
 				</uo-button>
 

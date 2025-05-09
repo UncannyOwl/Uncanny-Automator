@@ -93,6 +93,10 @@ class Stripe_Helpers {
 
 		$existing_token = automator_get_option( self::TOKEN_OPTION, array() );
 
+		if ( ! is_array( $existing_token ) ) {
+			$existing_token = array();
+		}
+
 		$updated_token = array_merge( $existing_token, $new_token );
 
 		automator_update_option( self::TOKEN_OPTION, $updated_token );

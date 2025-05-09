@@ -44,7 +44,6 @@ class Campaign_Monitor_Settings extends \Uncanny_Automator\Settings\Premium_Inte
 	public function get_status() {
 
 		return $this->helpers->integration_status();
-
 	}
 
 	/**
@@ -57,6 +56,21 @@ class Campaign_Monitor_Settings extends \Uncanny_Automator\Settings\Premium_Inte
 		$this->set_id( 'campaignmonitor' );
 		$this->set_icon( 'CAMPAIGN_MONITOR' );
 		$this->set_name( 'Campaign Monitor' );
+
+		// Check for errors.
+		add_action( 'init', array( $this, 'capture_errors' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
+	}
+
+	/**
+	 * Capture errors.
+	 *
+	 * @return void
+	 */
+	public function capture_errors() {
+		// Ensure this is the settings page.
+		if ( ! $this->is_current_page_settings() ) {
+			return;
+		}
 
 		if ( automator_filter_has_var( 'error_message' ) ) {
 			$this->display_errors( urldecode( automator_filter_input( 'error_message' ) ) );
@@ -74,7 +88,7 @@ class Campaign_Monitor_Settings extends \Uncanny_Automator\Settings\Premium_Inte
 		$this->add_alert(
 			array(
 				'type'    => 'error',
-				'heading' => _x( 'An error has occured', 'Campaign Monitor', 'uncanny-automator' ),
+				'heading' => esc_html_x( 'An error has occured', 'Campaign Monitor', 'uncanny-automator' ),
 				'content' => $error_message,
 			)
 		);
@@ -143,23 +157,22 @@ class Campaign_Monitor_Settings extends \Uncanny_Automator\Settings\Premium_Inte
 			<ul>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+						<?php echo esc_html_x( 'Action:', 'Campaign Monitor', 'uncanny-automator' ); ?></strong> 
 						<?php echo esc_html_x( 'Add or update a subscriber to a list', 'Campaign Monitor', 'uncanny-automator' ); ?>
 				</li>
 				<li>
 					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> 
+						<?php echo esc_html_x( 'Action:', 'Campaign Monitor', 'uncanny-automator' ); ?></strong> 
 						<?php echo esc_html_x( 'Remove a subscriber from a list', 'Campaign Monitor', 'uncanny-automator' ); ?>
 				</li>
 			</ul>
 
 		<?php } else { ?>
 
-			<uo-alert heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Campaign Monitor account at a time although Agency accounts with multiple clients may select their specific client within actions.', 'Campaign Monitor', 'uncanny-automator' ); ?>" class="uap-spacing-bottom"></uo-alert>
+			<uo-alert heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Campaign Monitor account at a time although Agency accounts with multiple clients may select their specific client within actions.', 'Campaign Monitor', 'uncanny-automator' ); ?>" class="uap-spacing-bottom"></uo-alert> <?php // phpcs:ignore Uncanny_Automator.Strings.SentenceCase.PotentialCaseIssue ?>
 
 			<?php
 		}
-
 	}
 
 	/**
@@ -172,7 +185,12 @@ class Campaign_Monitor_Settings extends \Uncanny_Automator\Settings\Premium_Inte
 		// Show the connect message if not connected.
 		if ( ! $this->is_account_connected ) {
 			?>
-			<uo-button href="<?php echo esc_url( Campaign_Monitor_Helpers::get_authorization_url() ); ?>" type="button">
+			<uo-button 
+				href="<?php echo esc_url( Campaign_Monitor_Helpers::get_authorization_url() ); ?>" 
+				type="button"
+				target="_self"
+				unsafe-force-target
+			>
 				<?php echo esc_html_x( 'Connect Campaign Monitor account', 'Campaign Monitor', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php
@@ -246,11 +264,10 @@ class Campaign_Monitor_Settings extends \Uncanny_Automator\Settings\Premium_Inte
 			?>
 			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
 				<uo-icon id="right-from-bracket"></uo-icon>
-				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
+				<?php echo esc_html_x( 'Disconnect', 'Campaign Monitor', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php
 
 		}
 	}
-
 }

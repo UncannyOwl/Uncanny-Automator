@@ -34,8 +34,8 @@ class Telegram_Webhook {
 	 * @return void
 	 */
 	public function register_hooks() {
-		add_action( 'init', array( $this, 'check_telegram_webhook' ) );
-		add_action( 'rest_api_init', array( $this, 'init_wp_webhook' ) );
+		add_action( 'init', array( $this, 'check_telegram_webhook' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
+		add_action( 'rest_api_init', array( $this, 'init_wp_webhook' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 	}
 
 	/**

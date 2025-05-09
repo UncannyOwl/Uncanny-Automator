@@ -48,12 +48,14 @@ class Hubspot_Helpers {
 
 		$this->automator_api = AUTOMATOR_API_URL . 'v2/hubspot';
 
-		add_action( 'init', array( $this, 'capture_oauth_tokens' ), 100, 3 );
-		add_action( 'init', array( $this, 'disconnect' ), 100, 3 );
+		add_action( 'init', array( $this, 'capture_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY, 3 );
+		add_action( 'init', array( $this, 'disconnect' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY, 3 );
 
 		$this->load_settings();
 	}
-
+	/**
+	 * Load settings.
+	 */
 	public function load_settings() {
 		$this->setting_tab = 'hubspot-api';
 		$this->tab_url     = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->setting_tab;
@@ -77,7 +79,7 @@ class Hubspot_Helpers {
 		$tokens = automator_get_option( '_automator_hubspot_settings', array() );
 
 		if ( empty( $tokens['access_token'] ) || empty( $tokens['refresh_token'] ) ) {
-			throw new \Exception( esc_html__( 'HubSpot is not connected', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'HubSpot is not connected', 'Hubspot', 'uncanny-automator' ) );
 		}
 
 		$tokens = $this->maybe_refresh_token( $tokens );
@@ -119,9 +121,11 @@ class Hubspot_Helpers {
 			return;
 		}
 
-		$nonce = wp_create_nonce( 'automator_hubspot_api_authentication' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
-		$tokens = (array) Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, $nonce );
+		$tokens = (array) Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, wp_create_nonce( 'automator_hubspot_api_authentication' ) );
 
 		$redirect_url = $this->tab_url;
 
@@ -201,7 +205,7 @@ class Hubspot_Helpers {
 
 		// Rate limit token refresh calls if they fail
 		if ( time() - $last_call < 60 ) {
-			throw new \Exception( esc_html__( 'HubSpot token refresh timeout, please try to reconnect HubSpot from settings', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'HubSpot token refresh timeout, please try to reconnect HubSpot from settings', 'Hubspot', 'uncanny-automator' ) );
 		}
 
 		$response = Api_Server::api_call( $params );
@@ -215,13 +219,13 @@ class Hubspot_Helpers {
 				automator_delete_option( '_automator_hubspot_settings' );
 				automator_delete_option( '_automator_hubspot_refresh_token_attempts' );
 				automator_delete_option( '_automator_hubspot_last_refresh_token_call' );
-				throw new \Exception( esc_html__( 'HubSpot token refresh failed, please reconnect HubSpot from settings', 'uncanny-automator' ) );
+				throw new \Exception( esc_html_x( 'HubSpot token refresh failed, please reconnect HubSpot from settings', 'Hubspot', 'uncanny-automator' ) );
 			}
 
 			automator_update_option( '_automator_hubspot_refresh_token_failed_attempts', $failed_attempt );
 			automator_update_option( '_automator_hubspot_last_refresh_token_call', time() );
 
-			$error_msg = esc_html__( 'Could not refresh HubSpot token.', 'uncanny-automator' );
+			$error_msg = esc_html_x( 'Could not refresh HubSpot token.', 'Hubspot', 'uncanny-automator' );
 
 			if ( ! empty( $response['data']['message'] ) ) {
 				$error_msg = $response['data']['message'];
@@ -312,7 +316,14 @@ class Hubspot_Helpers {
 		}
 
 		if ( 200 !== intval( $response['statusCode'] ) ) {
-			throw new \Exception( esc_html( __( 'API returned an error: ', 'uncanny-automator' ) . $response['statusCode'] ), absint( $response['statusCode'] ) );
+			throw new \Exception(
+				sprintf(
+					/* translators: %s: API status code */
+					esc_html_x( 'API returned an error: %s', 'HubSpot', 'uncanny-automator' ),
+					absint( $response['statusCode'] )
+				),
+				absint( $response['statusCode'] )
+			);
 		}
 	}
 
@@ -324,7 +335,7 @@ class Hubspot_Helpers {
 	 */
 	public function extract_error_message( $response ) {
 
-		$message = esc_html__( 'API returned an error:', 'uncanny-automator' ) . $response['statusCode'];
+		$message = esc_html_x( 'API returned an error:', 'Hubspot', 'uncanny-automator' ) . $response['statusCode'];
 
 		if ( ! empty( $response['data']['message'] ) ) {
 			$message = $response['data']['message'] . '<br>';
@@ -418,7 +429,7 @@ class Hubspot_Helpers {
 
 			$fields[] = array(
 				'value' => '',
-				'text'  => esc_html__( 'Select a field', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Select a field', 'Hubspot', 'uncanny-automator' ),
 			);
 
 			foreach ( $response['data'] as $field ) {
@@ -464,7 +475,7 @@ class Hubspot_Helpers {
 
 			$options[] = array(
 				'value' => '',
-				'text'  => esc_html__( 'Select a list', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Select a list', 'Hubspot', 'uncanny-automator' ),
 			);
 
 			foreach ( $response['data']['lists'] as $list ) {
@@ -491,35 +502,36 @@ class Hubspot_Helpers {
 	/**
 	 * add_contact_to_list
 	 *
+	 * @param  mixed $list_id
 	 * @param  mixed $email
 	 * @return void
 	 */
-	public function add_contact_to_list( $list, $email, $action_data ) {
+	public function add_contact_to_list( $list_id, $email, $action_data ) {
 
 		if ( empty( $email ) ) {
-			throw new \Exception( esc_html__( 'Email is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Email is missing', 'Hubspot', 'uncanny-automator' ) );
 		}
 
-		if ( empty( $list ) ) {
-			throw new \Exception( esc_html__( 'List is missing', 'uncanny-automator' ) );
+		if ( empty( $list_id ) ) {
+			throw new \Exception( esc_html_x( 'List is missing', 'Hubspot', 'uncanny-automator' ) );
 		}
 
 		$params = array(
 			'action' => 'add_contact_to_list',
 			'email'  => $email,
-			'list'   => $list,
+			'list'   => $list_id,
 		);
 
 		$response = $this->api_request( $params, $action_data );
 
 		// If the email was already in the list
 		if ( ! empty( $response['data']['discarded'] ) ) {
-			throw new \Exception( esc_html__( 'Contact with such email address was already in the list', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Contact with such email address was already in the list', 'Hubspot', 'uncanny-automator' ) );
 		}
 
 		// If the email was not found in contacts
 		if ( ! empty( $response['data']['invalidEmails'] ) ) {
-			throw new \Exception( esc_html__( 'Contact with such email address was not found', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Contact with such email address was not found', 'Hubspot', 'uncanny-automator' ) );
 		}
 
 		return $response;
@@ -528,40 +540,48 @@ class Hubspot_Helpers {
 	/**
 	 * remove_contact_from_list
 	 *
-	 * @param  mixed $list
+	 * @param  mixed $list_id
 	 * @param  mixed $email
 	 * @return void
 	 */
-	public function remove_contact_from_list( $list, $email, $action_data ) {
+	public function remove_contact_from_list( $list_id, $email, $action_data ) {
 
 		if ( empty( $email ) ) {
-			throw new \Exception( esc_html__( 'Email is missing', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Email is missing', 'Hubspot', 'uncanny-automator' ) );
 		}
 
-		if ( empty( $list ) ) {
-			throw new \Exception( esc_html__( 'List is missing', 'uncanny-automator' ) );
+		if ( empty( $list_id ) ) {
+			throw new \Exception( esc_html_x( 'List is missing', 'Hubspot', 'uncanny-automator' ) );
 		}
 
 		$params = array(
 			'action' => 'remove_contact_from_list',
 			'email'  => $email,
-			'list'   => $list,
+			'list'   => $list_id,
 		);
 
 		$response = $this->api_request( $params, $action_data );
 
 		// If the email was not found in contacts
 		if ( ! empty( $response['data']['discarded'] ) ) {
-			throw new \Exception( esc_html__( 'Contact with such email address was not found in the list', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Contact with such email address was not found in the list', 'Hubspot', 'uncanny-automator' ) );
 		}
 
 		return $response;
 	}
-
+	/**
+	 * Disconnect url.
+	 *
+	 * @return mixed
+	 */
 	public function disconnect_url() {
 		return $this->tab_url . '&disconnect=1';
 	}
-
+	/**
+	 * Connect url.
+	 *
+	 * @return mixed
+	 */
 	public function connect_url() {
 
 		$nonce      = wp_create_nonce( 'automator_hubspot_api_authentication' );

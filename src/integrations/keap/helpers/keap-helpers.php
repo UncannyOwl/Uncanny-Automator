@@ -98,9 +98,14 @@ class Keap_Helpers {
 	 */
 	public function authenticate() {
 
-		$data        = automator_filter_input( 'automator_api_message' );
-		$nonce       = automator_filter_input( 'nonce' );
-		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( $data, $nonce );
+		// Nonce check.
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE ) ) {
+			wp_die( 'Invalid nonce.' );
+		}
+
+		$this->validate_user_capabilities();
+
+		$credentials = Automator_Helpers_Recipe::automator_api_decode_message( automator_filter_input( 'automator_api_message' ), wp_create_nonce( self::NONCE ) );
 
 		// Handle errors.
 		if ( false === $credentials ) {
@@ -546,6 +551,8 @@ class Keap_Helpers {
 	 */
 	public function disconnect() {
 
+		$this->validate_user_capabilities();
+
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
 
 			$this->remove_credentials();
@@ -554,6 +561,21 @@ class Keap_Helpers {
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;
+
+	}
+
+	/**
+	 * Validate user capabilities.
+	 *
+	 * @return void
+	 */
+	private function validate_user_capabilities() {
+
+		if ( current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$this->redirect_with_error( esc_html_x( 'You do not have permission to manage Keap settings.', 'Keap', 'uncanny-automator' ) );
 
 	}
 

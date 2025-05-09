@@ -103,7 +103,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<div class="uap-settings-panel-bottom-left">
 
-						<uo-button class="uap-settings-button-google" href="<?php echo esc_url( $authentication_url ); ?>">
+						<uo-button 
+							class="uap-settings-button-google" 
+							href="<?php echo esc_url( $authentication_url ); ?>" 
+							target="_self" 
+							unsafe-force-target
+						>
 							<uo-icon id="google"></uo-icon><?php esc_html_e( 'Sign in with Google', 'uncanny-automator' ); ?>
 						</uo-button>
 

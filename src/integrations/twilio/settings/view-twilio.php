@@ -77,7 +77,7 @@
 							echo sprintf(
 								/* translators: 1. Link to Automator knowledge base  */
 								esc_html__( "Connecting to Twilio requires getting 2 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
-								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twilio/', 'settings', 'twilio-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+								'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twilio/', 'settings', 'twilio-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . '</a>'
 							);
 
 						?>
@@ -114,7 +114,7 @@
 				$phone_number_helper = sprintf(
 					/* translators: 1. URL */
 					esc_html__( 'See your list of active phone numbers on the %1$s page.', 'uncanny-automator' ),
-					'<a href="https://www.twilio.com/console/phone-numbers/incoming" target="_blank">' . esc_html__( 'Active numbers', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+					'<a href="https://www.twilio.com/console/phone-numbers/incoming" target="_blank">' . esc_html__( 'Active numbers', 'uncanny-automator' ) . '</a>'
 				);
 
 				?>

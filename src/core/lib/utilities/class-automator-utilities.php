@@ -2,6 +2,14 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field;
+use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Manager;
+use Uncanny_Automator\Services\Recipe\Builder\Settings\Repository\Settings_Repository;
+use Uncanny_Automator\Services\Recipe\Process\Universal_Run_Number_Threshold;
+use Uncanny_Automator\Services\Recipe\Process\User_Run_Limiter;
+use Uncanny_Automator\Services\Recipe\Process\User_Run_Number_Threshold;
+use Uncanny_Automator\Services\Recipe\Structure\Miscellaneous;
+
 /**
  * Class Automator_Utilities
  *
@@ -140,34 +148,21 @@ class Automator_Utilities {
 	}
 
 	/**
-	 * @param null $recipe_id
-	 * @param $completed_times
+	 * Determines whether the recipe's "Times per user" is already met or not.
+	 *
+	 * @param int $recipe_id Optional. Default to null.
+	 * @param int $completed_times Optional. Defauls to 0.
 	 *
 	 * @return bool
 	 */
 	public function recipe_number_times_completed( $recipe_id = null, $completed_times = 0 ) {
-		if ( is_null( $recipe_id ) ) {
-			return false;
-		}
 
-		$post_meta = get_post_meta( $recipe_id, 'recipe_completions_allowed', true );
-		if ( empty( $post_meta ) ) {
-			$completions_allowed = 1;
-			// Make sure that the recipe has recipe_completions_allowed saved. @version 2.9
-			update_post_meta( $recipe_id, 'recipe_completions_allowed', 1 );
-		} else {
-			$completions_allowed = $post_meta;
-		}
+		$user_threshold = new User_Run_Number_Threshold( new Field_Manager( new Settings_Repository() ) );
 
-		$return = false;
+		$user_threshold->set_recipe_id( intval( $recipe_id ) );
+		$user_threshold->set_completed_times( intval( $completed_times ) );
 
-		if ( intval( '-1' ) === intval( $completions_allowed ) ) {
-			$return = false;
-		} elseif ( (int) $completed_times >= (int) $completions_allowed ) {
-			$return = true;
-		}
-
-		return $return;
+		return $user_threshold->has_run_times_reached_limit();
 	}
 
 	/**
@@ -177,28 +172,15 @@ class Automator_Utilities {
 	 * @return bool
 	 */
 	public function recipe_max_times_completed( $recipe_id = null, $completed_times = 0 ) {
-		if ( is_null( $recipe_id ) ) {
-			return false;
-		}
 
-		$post_meta = get_post_meta( $recipe_id, 'recipe_max_completions_allowed', true );
-		if ( empty( $post_meta ) ) {
-			$completions_allowed = '-1';
-			// Make sure that the recipe has recipe_completions_allowed saved. @version 3.0
-			update_post_meta( $recipe_id, 'recipe_max_completions_allowed', $completions_allowed );
-		} else {
-			$completions_allowed = $post_meta;
-		}
+		$user_threshold = new Universal_Run_Number_Threshold(
+			new Field_Manager( new Settings_Repository() )
+		);
 
-		$return = false;
+		$user_threshold->set_recipe_id( intval( $recipe_id ) );
+		$user_threshold->set_completed_times( intval( $completed_times ) );
 
-		if ( intval( '-1' ) === intval( $completions_allowed ) ) {
-			$return = false;
-		} elseif ( (int) $completed_times >= (int) $completions_allowed ) {
-			$return = true;
-		}
-
-		return $return;
+		return $user_threshold->has_run_times_reached_limit();
 	}
 
 	/**
@@ -299,14 +281,13 @@ class Automator_Utilities {
 
 		// check if the nonce is verifiable.
 		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'wp_rest' )
-			 && ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) ) {
+			&& ! wp_verify_nonce( sanitize_text_field( wp_unslash( $post['nonce'] ) ), 'wp_rest' ) ) {
 
 			$return['status'] = 'auth-failed';
 			$return['error']  = esc_html__( 'nonce validation failed.', 'uncanny-automator' );
 
 			wp_send_json( $return );
 		}
-
 	}
 
 	/**
@@ -643,7 +624,6 @@ class Automator_Utilities {
 		}
 
 		return $has_free_license || $has_pro_license;
-
 	}
 
 	/**
@@ -681,12 +661,12 @@ class Automator_Utilities {
 
 
 	/**
-	 * @param $string
+	 * @param $input
 	 *
 	 * @return bool
 	 */
-	public function is_json_string( $string ) {
-		return is_string( $string ) && is_array( json_decode( $string, true ) ) && ( JSON_ERROR_NONE === json_last_error() ) ? true : false;
+	public function is_json_string( $input ) {
+		return is_string( $input ) && is_array( json_decode( $input, true ) ) && ( JSON_ERROR_NONE === json_last_error() ) ? true : false;
 	}
 
 	/**
@@ -876,7 +856,6 @@ class Automator_Utilities {
 		);
 
 		return (array) $results;
-
 	}
 
 	/**
@@ -911,7 +890,6 @@ class Automator_Utilities {
 		);
 
 		return (array) $results;
-
 	}
 
 

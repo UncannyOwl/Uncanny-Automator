@@ -7,24 +7,39 @@ namespace Uncanny_Automator;
 class Linkedin_Helpers {
 
 	/**
+	 * The API endpoint for the LinkedIn integration.
 	 *
+	 * @var string
 	 */
 	const API_ENDPOINT = 'v2/linkedin';
 
 	/**
+	 * The option key for the LinkedIn client.
 	 *
+	 * @var string
 	 */
 	const LINKEDIN_CLIENT = 'automator_linkedin_client';
 
 	/**
+	 * The option key for the LinkedIn connected user.
 	 *
+	 * @var string
 	 */
 	const LINKEDIN_CONNECTED_USER = 'automator_linkedin_connected_user';
 
 	/**
+	 * The number of days to show the refresh token expiration notice.
 	 *
+	 * @var int
 	 */
 	const N_DAYS_REFRESH_TOKEN_EXPIRE_NOTICE = 30;
+
+	/**
+	 * The nonce key for the LinkedIn integration.
+	 *
+	 * @var string
+	 */
+	const NONCE = 'automator_linkedin_auth_nonce';
 
 	/**
 	 * @param $hooks_loaded
@@ -75,7 +90,7 @@ class Linkedin_Helpers {
 
 		$tokens = Automator_Helpers_Recipe::automator_api_decode_message(
 			automator_filter_input( 'automator_api_message' ),
-			$nonce
+			wp_create_nonce( self::NONCE )
 		);
 
 		if ( empty( $tokens ) ) {
@@ -271,7 +286,7 @@ class Linkedin_Helpers {
 	 */
 	public function get_authentication_url() {
 
-		$nonce = wp_create_nonce( 'automator_linkedin_auth_nonce' );
+		$nonce = wp_create_nonce( self::NONCE );
 
 		return add_query_arg(
 			array(
@@ -301,7 +316,7 @@ class Linkedin_Helpers {
 			);
 		}
 
-		if ( ! wp_verify_nonce( $nonce, 'automator_linkedin_auth_nonce' ) ) {
+		if ( ! wp_verify_nonce( $nonce, self::NONCE ) ) {
 			$this->redirect(
 				$this->get_settings_url(),
 				array(
@@ -342,7 +357,7 @@ class Linkedin_Helpers {
 		return add_query_arg(
 			array(
 				'action' => 'automator_linkedin_disconnect',
-				'nonce'  => wp_create_nonce( 'automator_linkedin_auth_nonce' ),
+				'nonce'  => wp_create_nonce( self::NONCE ),
 			),
 			admin_url( 'admin-ajax.php' )
 		);

@@ -27,6 +27,9 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Trigger_Logs_Resource
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 use Uncanny_Automator\Rest\Endpoint\User_Endpoint;
 use Uncanny_Automator\Services\Email;
+use Uncanny_Automator\Services\Addons\Data\License_Summary;
+use Uncanny_Automator\Services\Addons\Lists\Plan_List;
+use Uncanny_Automator\Services\Addons\Plugins\Manager as Addons_Plugin_Manager;
 use WP_HTTP_Response;
 use WP_REST_Response;
 
@@ -60,7 +63,7 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 		array(
 			'methods'             => 'POST',
 			'permission_callback' => $authentication,
-			'callback'            => function( WP_REST_Request $request ) {
+			'callback'            => function ( WP_REST_Request $request ) {
 
 				try {
 
@@ -102,7 +105,7 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 			// The permission callback.
 			'methods'             => 'GET',
 			'permission_callback' => $authentication,
-			'callback'            => function( WP_REST_Request $request ) {
+			'callback'            => function ( WP_REST_Request $request ) {
 				// And instantiate when needed.
 				return apply_filters(
 					'automator_rest_routes_user_response',
@@ -124,11 +127,11 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 			// The permission callback.
 			'methods'             => 'GET',
 			'permission_callback' => $authentication,
-			'callback'            => function( WP_REST_Request $request ) {
+			'callback'            => function ( WP_REST_Request $request ) {
 
 				// Disable errors so JS won't break.
 				if ( ! apply_filters( 'automator_rest_routes_log_display_notices_warnings', false ) ) {
-					ini_set( 'display_errors', '0' ); // phpcs:ignore WordPress.PHP.IniSet.display_errors_Blacklisted
+					ini_set( 'display_errors', '0' ); // phpcs:ignore WordPress.PHP.IniSet
 				}
 
 				global $wpdb;
@@ -185,9 +188,88 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 				}
 
 				return $response;
-
 			},
 		)
 	);
 
-};
+	/**
+	 * Registers the license summary endpoint.
+	 *
+	 * #[Uncanny_Automator_Route('/wp-json/automator/v1/license/summary')]
+	 */
+	register_rest_route(
+		'automator/v1',
+		'/license/summary/',
+		array(
+			// The permission callback.
+			'methods'             => 'GET',
+			'permission_callback' => $authentication,
+			'callback'            => function ( WP_REST_Request $request ) {
+				$summary = ( new License_Summary() )->get_license_summary();
+				return new WP_HTTP_Response(
+					array(
+						'success' => true,
+						'data'    => $summary,
+					),
+					200
+				);
+			},
+		)
+	);
+
+	/**
+	 * Registers the Addons list endpoint.
+	 *
+	 * #[Uncanny_Automator_Route('/wp-json/automator/v1/addons/get-list/:list_id')]
+	 */
+	register_rest_route(
+		'automator/v1',
+		'/addons/get-list/(?P<list_code>\w+)',
+		array(
+			// The permission callback.
+			'methods'             => 'GET',
+			'permission_callback' => $authentication,
+			'callback'            => function ( WP_REST_Request $request ) {
+				// Get the list code from the request.
+				$list_code = $request->get_param( 'list_code' ); // plus || elite
+				$addons    = ( new Plan_List() )->get_list( $list_code );
+				if ( is_wp_error( $addons ) ) {
+					return new WP_HTTP_Response(
+						array(
+							'success' => false,
+							'error'   => $addons->get_error_message(),
+						),
+						400
+					);
+				}
+
+				return new WP_HTTP_Response(
+					array(
+						'success' => true,
+						'data'    => $addons,
+					),
+					200
+				);
+			},
+		)
+	);
+
+	/**
+	 * Registers the Addons Plugin Manager endpoint.
+	 *
+	 * #[Uncanny_Automator_Route('/wp-json/automator/v1/addons/plugin-manager/(?P<action>\w+)/(?P<addon_id>\d+)')]
+	 */
+	register_rest_route(
+		'automator/v1',
+		'/addons/plugin-manager/(?P<action>\w+)/(?P<addon_id>\d+)',
+		array(
+			'methods'             => 'POST',
+			'permission_callback' => $authentication,
+			'callback'            => function ( WP_REST_Request $request ) {
+				$manager  = new Addons_Plugin_Manager();
+				$response = $manager->handle_rest_request( $request );
+				return $response;
+			},
+		)
+	);
+}

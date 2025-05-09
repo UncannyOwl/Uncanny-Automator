@@ -131,7 +131,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<?php if ( ! $is_user_connected ) { ?>
 
-				<uo-button href="<?php echo esc_url( $login_dialog_uri ); ?>">
+				<uo-button href="<?php echo esc_url( $login_dialog_uri ); ?>" target="_self" unsafe-force-target>
 
 					<?php esc_html_e( 'Connect Facebook account', 'uncanny-automator' ); ?>
 
@@ -143,7 +143,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php if ( ! $is_credentials_valid && 'new' !== $connection ) { ?>
 
-					<uo-button color="primary" href="<?php echo esc_url( $login_dialog_uri ); ?>">
+					<uo-button color="primary" href="<?php echo esc_url( $login_dialog_uri ); ?>" target="_self" unsafe-force-target>
 
 						<uo-icon id="arrow-right-arrow-left"></uo-icon>
 
