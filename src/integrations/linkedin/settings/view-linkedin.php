@@ -95,7 +95,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<div class="uap-settings-panel-bottom-left">
 
-						<uo-button href="<?php echo esc_url( $this->helpers->get_authentication_url() ); ?>">
+						<uo-button href="<?php echo esc_url( $this->helpers->get_authentication_url() ); ?>" target="_self" unsafe-force-target>
 
 							<?php esc_html_e( 'Connect LinkedIn account', 'uncanny-automator' ); ?>
 

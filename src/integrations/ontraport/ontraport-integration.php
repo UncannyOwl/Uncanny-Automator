@@ -57,8 +57,6 @@ class Ontraport_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function register_hooks() {
-		// Authorization handler.
-		add_action( 'wp_ajax_automator_handle_authorization', array( $this->helpers, 'authenticate' ) );
 		// Disconnect handler.
 		add_action( 'wp_ajax_automator_ontraport_disconnect_account', array( $this->helpers, 'disconnect' ) );
 		// List tags handler.

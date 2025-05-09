@@ -103,7 +103,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<?php if ( ! $is_user_connected ) { ?>
 
-				<uo-button href="<?php echo esc_url( $login_dialog_uri ); ?>">
+				<uo-button href="<?php echo esc_url( $login_dialog_uri ); ?>" target="_self" unsafe-force-target>
 
 					<?php esc_html_e( 'Connect Facebook account', 'uncanny-automator' ); ?>
 

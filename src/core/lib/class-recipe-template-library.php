@@ -332,7 +332,8 @@ class Recipe_Template_Library {
 			return false;
 		}
 
-		return true;
+		// Check if user has manage options capability.
+		return current_user_can( 'manage_options' );
 	}
 
 	/**

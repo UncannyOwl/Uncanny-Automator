@@ -137,6 +137,8 @@
 
 					<uo-button
 						href="<?php echo esc_url( $connect_url ); ?>"
+						target="_self"
+						unsafe-force-target
 					>
 						<?php esc_html_e( 'Connect HubSpot account', 'uncanny-automator' ); ?>
 					</uo-button>

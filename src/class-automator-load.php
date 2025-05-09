@@ -275,7 +275,7 @@ class Automator_Load {
 		}
 
 		// If activated via AJAX or REST
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX || defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		if ( ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
 			return;
 		}
 
@@ -632,6 +632,7 @@ class Automator_Load {
 		$classes['Admin_Tools']                    = UA_ABSPATH . 'src/core/admin/admin-tools/admin-tools.php';
 		$classes['Admin_Settings']                 = UA_ABSPATH . 'src/core/admin/admin-settings/admin-settings.php';
 		$classes['Pro_Upsell']                     = UA_ABSPATH . 'src/core/admin/pro-upgrade/class-pro-upsell.php';
+		$classes['Addons']                         = UA_ABSPATH . 'src/core/admin/addons/class-addons.php';
 		$classes['Automator_Review']               = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
 		$classes['Automator_Notifications']        = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
 		$classes['Automator_Tooltip_Notification'] = UA_ABSPATH . 'src/core/admin/tooltip-notification/class-tooltip-notification.php';
@@ -757,7 +758,7 @@ class Automator_Load {
 		$classes['Copy_Recipe_Parts']                   = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
 		$classes['Export_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-export-recipe.php';
 		$classes['Import_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-import-recipe.php';
-		$classes['PricingPlanResolver']                 = UA_ABSPATH . 'src/core/admin/class-pricing-plan-resolver.php';
+		$classes['Pricing_Plan_Resolver']               = UA_ABSPATH . 'src/core/admin/class-pricing-plan-resolver.php';
 
 		require_once UA_ABSPATH . 'src/core/classes/class-api-server.php';
 
@@ -862,6 +863,7 @@ class Automator_Load {
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-schedules.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-triggers.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens-pro.php';
 	}
 
 	/**

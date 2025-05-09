@@ -533,21 +533,39 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 	 * Decode data coming from Automator API.
 	 *
 	 * @param string $message Original message string to decode.
-	 * @param string $secret Secret Key used for encryption
+	 * @param string $secret Secret Key used for decryption (often generated from wp_create_nonce).
 	 *
-	 * @return string|array
+	 * @return string|array|false
 	 */
 	public static function automator_api_decode_message( $message, $secret ) {
-		$tokens = false;
-		if ( ! empty( $message ) && ! empty( $secret ) ) {
-			$message           = base64_decode( $message ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
-			$method            = 'AES128';
-			$iv                = substr( $message, 0, 16 );
-			$encrypted_message = substr( $message, 16 );
-			$tokens            = openssl_decrypt( $encrypted_message, $method, $secret, 0, $iv );
-			$tokens            = json_decode( $tokens, true );
+		// Bail early if message or secret is empty
+		if ( empty( $message ) || empty( $secret ) ) {
+			return false;
 		}
-
+		
+		// Decode the base64-encoded message
+		$message = base64_decode( $message ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+		
+		// Specify the encryption algorithm (AES-128)
+		$method = 'AES128';
+		
+		// Extract the Initialization Vector (IV) from the first 16 bytes of the message
+		$iv = substr( $message, 0, 16 );
+		
+		// Extract the actual encrypted content (everything after the IV)
+		$encrypted_message = substr( $message, 16 );
+		
+		// Decrypt the message using the provided secret as the key
+		$tokens = openssl_decrypt( $encrypted_message, $method, $secret, 0, $iv );
+		
+		// Convert the JSON string result to an associative array
+		$tokens = json_decode( $tokens, true );
+		
+		// If JSON decoding failed, return false
+		if ( null === $tokens || JSON_ERROR_NONE !== json_last_error() ) {
+			return false;
+		}
+		
 		return $tokens;
 	}
 

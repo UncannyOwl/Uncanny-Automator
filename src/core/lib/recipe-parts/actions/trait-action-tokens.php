@@ -102,7 +102,10 @@ trait Action_Tokens {
 	 */
 	private function process_token_storage( $hook_args, $hook_name ) {
 
-		$hook_identifier = md5( $hook_name . wp_json_encode( $this->dev_input ) );
+		$action_log_id = $hook_args['action_data']['action_log_id'] ?? ''; // "Loops" actions don't have an action log id, however it shouldn't be an issue.
+
+		// Make the hook identifier unique by action log id.
+		$hook_identifier = md5( $hook_name . wp_json_encode( $this->dev_input ) . '_' . $action_log_id );
 
 		// Check if this specific hook has already been executed.
 		if ( isset( $this->executed_hooks[ $hook_identifier ] ) ) {

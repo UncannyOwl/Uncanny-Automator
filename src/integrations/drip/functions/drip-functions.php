@@ -160,15 +160,17 @@ class Drip_Functions {
 			return;
 		}
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		$automator_message = automator_filter_input( 'automator_api_message' );
 
 		if ( empty( $automator_message ) ) {
 			return;
 		}
 
-		$nonce = wp_create_nonce( self::NONCE );
-
-		$token = (array) Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, $nonce );
+		$token = (array) Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, wp_create_nonce( self::NONCE ) );
 
 		$connect = $this->store_token( $token );
 

@@ -26,13 +26,6 @@ class Brevo_Helpers {
 	public $settings_tab = 'brevo';
 
 	/**
-	 * The invalid key message.
-	 *
-	 * @var string
-	 */
-	public $invalid_key_message = '';
-
-	/**
 	 * The account details.
 	 *
 	 * @var array
@@ -43,14 +36,6 @@ class Brevo_Helpers {
 		'status'  => '',
 		'error'   => '',
 	);
-
-	/**
-	 * Brevo_Helpers constructor.
-	 */
-	public function __construct() {
-
-		$this->invalid_key_message = esc_html_x( 'Invalid API Key : ', 'Brevo', 'uncanny-automator' );
-	}
 
 	/**
 	 * The wp_options table key for selecting the integration options.
@@ -181,6 +166,11 @@ class Brevo_Helpers {
 	 */
 	public function disconnect() {
 
+		// Check user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Error 403: Insufficient permissions.' );
+		}
+
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
 
 			$this->remove_credentials();
@@ -254,8 +244,8 @@ class Brevo_Helpers {
 		}
 
 		// Check for Legacy invalid key.
-		if ( 0 === strpos( $api_key, $this->invalid_key_message ) ) {
-			$account['error'] = $this->invalid_key_message;
+		if ( 0 === strpos( $api_key, $this->get_invalid_key_message() ) ) {
+			$account['error'] = $this->get_invalid_key_message();
 			automator_update_option( self::ACCOUNT_KEY, $account );
 			return $account;
 		}
@@ -282,7 +272,10 @@ class Brevo_Helpers {
 		if ( ! empty( $response['data']['code'] ) ) {
 			if ( 'unauthorized' === $response['data']['code'] ) {
 				$account['status'] = '';
-				$account['error']  = $this->invalid_key_message;
+				// Check if error is in regards to IP address.
+				$account['error'] = false !== strpos( $response['data']['error'], 'unrecognised' )
+					? $response['data']['error']
+					: $this->get_invalid_key_message() . $api_key;
 			}
 		}
 
@@ -701,7 +694,7 @@ class Brevo_Helpers {
 
 		if ( isset( $response['data']['code'] ) && ! empty( $response['data']['code'] ) ) {
 			if ( 'unauthorized' === $response['data']['code'] ) {
-				throw new \Exception( esc_html( $this->invalid_key_message ), 400 );
+				throw new \Exception( esc_html( $this->get_invalid_key_message() ), 400 );
 			}
 		}
 	}
@@ -748,5 +741,14 @@ class Brevo_Helpers {
 		}
 
 		return $list_id;
+	}
+
+	/**
+	 * Get the invalid key message.
+	 *
+	 * @return string
+	 */
+	public function get_invalid_key_message() {
+		return esc_html_x( 'Invalid API Key : ', 'Brevo', 'uncanny-automator' );
 	}
 }

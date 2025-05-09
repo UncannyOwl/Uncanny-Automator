@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
+class ComposerStaticInitaa80a46dcd5e844a40fb57e1487ef832
 {
     public static $prefixesPsr0 = array (
         'C' => 
@@ -213,6 +213,7 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\Add_Zoho_Campaigns_Integration' => __DIR__ . '/../..' . '/src/integrations/zoho-campaigns/add-zoho-campaigns-integration.php',
         'Uncanny_Automator\\Add_Zoom_Integration' => __DIR__ . '/../..' . '/src/integrations/zoom/add-zoom-integration.php',
         'Uncanny_Automator\\Add_Zoom_Webinar_Integration' => __DIR__ . '/../..' . '/src/integrations/zoom-webinar/add-zoom-webinar-integration.php',
+        'Uncanny_Automator\\Addons' => __DIR__ . '/../..' . '/src/core/admin/addons/class-addons.php',
         'Uncanny_Automator\\Admin_Logs' => __DIR__ . '/../..' . '/src/core/admin/admin-logs/admin-logs.php',
         'Uncanny_Automator\\Admin_Logs\\Asset_Manager' => __DIR__ . '/../..' . '/src/core/admin/admin-logs/src/asset-manager.php',
         'Uncanny_Automator\\Admin_Logs_API' => __DIR__ . '/../..' . '/src/core/admin/admin-logs/tabs/api.php',
@@ -274,6 +275,7 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\Automator_Integrations_Status' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-integrations-status.php',
         'Uncanny_Automator\\Automator_Load' => __DIR__ . '/../..' . '/src/class-automator-load.php',
         'Uncanny_Automator\\Automator_Notifications' => __DIR__ . '/../..' . '/src/core/admin/notifications/notifications.php',
+        'Uncanny_Automator\\Automator_Options' => __DIR__ . '/../..' . '/src/core/classes/class-automator-options.php',
         'Uncanny_Automator\\Automator_Recipe_Process' => __DIR__ . '/../..' . '/src/core/lib/process/class-automator-recipe-process.php',
         'Uncanny_Automator\\Automator_Recipe_Process_Complete' => __DIR__ . '/../..' . '/src/core/lib/process/class-automator-recipe-process-complete.php',
         'Uncanny_Automator\\Automator_Recipe_Process_User' => __DIR__ . '/../..' . '/src/core/lib/process/class-automator-recipe-process-user.php',
@@ -585,6 +587,7 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\Integrations\\Discord\\Discord_Helpers' => __DIR__ . '/../..' . '/src/integrations/discord/helpers/discord-helpers.php',
         'Uncanny_Automator\\Integrations\\Discord\\Discord_Integration' => __DIR__ . '/../..' . '/src/integrations/discord/discord-integration.php',
         'Uncanny_Automator\\Integrations\\Discord\\Discord_Settings' => __DIR__ . '/../..' . '/src/integrations/discord/settings/discord-settings.php',
+        'Uncanny_Automator\\Integrations\\Discord\\Discord_User_Mapping_Shortcode' => __DIR__ . '/../..' . '/src/integrations/discord/shortcodes/discord-user-mapping-shortcode.php',
         'Uncanny_Automator\\Integrations\\Duplicator\\BACKUP_COMPLETES_WITH_STATUS' => __DIR__ . '/../..' . '/src/integrations/duplicator/triggers/backup-completes-with-status.php',
         'Uncanny_Automator\\Integrations\\Duplicator\\Duplicator_Integration' => __DIR__ . '/../..' . '/src/integrations/duplicator/duplicator-integration.php',
         'Uncanny_Automator\\Integrations\\Duplicator\\INITIATE_A_BACKUP' => __DIR__ . '/../..' . '/src/integrations/duplicator/actions/initiate-a-backup.php',
@@ -905,6 +908,7 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\Memberpress_Courses_Helpers' => __DIR__ . '/../..' . '/src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php',
         'Uncanny_Automator\\Memberpress_Helpers' => __DIR__ . '/../..' . '/src/integrations/memberpress/helpers/memberpress-helpers.php',
         'Uncanny_Automator\\Migrations\\Migrate_Nested_Tokens' => __DIR__ . '/../..' . '/src/core/migrations/class-migrate-nested-tokens.php',
+        'Uncanny_Automator\\Migrations\\Migrate_Nested_Tokens_Pro' => __DIR__ . '/../..' . '/src/core/migrations/class-migrate-nested-tokens-pro.php',
         'Uncanny_Automator\\Migrations\\Migrate_Schedules' => __DIR__ . '/../..' . '/src/core/migrations/class-migrate-schedules.php',
         'Uncanny_Automator\\Migrations\\Migrate_Triggers' => __DIR__ . '/../..' . '/src/core/migrations/class-migrate-triggers.php',
         'Uncanny_Automator\\Migrations\\Migration' => __DIR__ . '/../..' . '/src/core/migrations/abstract-migration.php',
@@ -950,7 +954,7 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\Populate_From_Query' => __DIR__ . '/../..' . '/src/core/classes/class-populate-from-query.php',
         'Uncanny_Automator\\Presto_Helpers' => __DIR__ . '/../..' . '/src/integrations/presto/helpers/presto-helpers.php',
         'Uncanny_Automator\\Presto_Tokens' => __DIR__ . '/../..' . '/src/integrations/presto/tokens/presto-tokens.php',
-        'Uncanny_Automator\\PricingPlanResolver' => __DIR__ . '/../..' . '/src/core/admin/class-pricing-plan-resolver.php',
+        'Uncanny_Automator\\Pricing_Plan_Resolver' => __DIR__ . '/../..' . '/src/core/admin/class-pricing-plan-resolver.php',
         'Uncanny_Automator\\Pro_Upsell' => __DIR__ . '/../..' . '/src/core/admin/pro-upgrade/class-pro-upsell.php',
         'Uncanny_Automator\\Prune_Logs' => __DIR__ . '/../..' . '/src/core/admin/class-prune-logs.php',
         'Uncanny_Automator\\RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL' => __DIR__ . '/../..' . '/src/integrations/restrict-content/actions/restrict-content-add-membership-level.php',
@@ -1019,6 +1023,16 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\SURECART_ORDER_SHIPPED' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-order-shipped.php',
         'Uncanny_Automator\\SURECART_PURCHASE_PRODUCT' => __DIR__ . '/../..' . '/src/integrations/surecart/triggers/surecart-purchase-product.php',
         'Uncanny_Automator\\Seedprod_Helpers' => __DIR__ . '/../..' . '/src/integrations/seedprod/helpers/seedprod-helpers.php',
+        'Uncanny_Automator\\Services\\Addons\\Data\\Calls_To_Action' => __DIR__ . '/../..' . '/src/core/services/addons/data/class-calls-to-action.php',
+        'Uncanny_Automator\\Services\\Addons\\Data\\External_Feed' => __DIR__ . '/../..' . '/src/core/services/addons/data/class-external-feed.php',
+        'Uncanny_Automator\\Services\\Addons\\Data\\License_Summary' => __DIR__ . '/../..' . '/src/core/services/addons/data/class-license-summary.php',
+        'Uncanny_Automator\\Services\\Addons\\Data\\Plan_Resolver' => __DIR__ . '/../..' . '/src/core/services/addons/data/class-plan-resolver.php',
+        'Uncanny_Automator\\Services\\Addons\\Lists\\Add_On_Card' => __DIR__ . '/../..' . '/src/core/services/addons/lists/addon-card.php',
+        'Uncanny_Automator\\Services\\Addons\\Lists\\Page_Notice' => __DIR__ . '/../..' . '/src/core/services/addons/lists/page-notice.php',
+        'Uncanny_Automator\\Services\\Addons\\Lists\\Plan_List' => __DIR__ . '/../..' . '/src/core/services/addons/lists/plan-list.php',
+        'Uncanny_Automator\\Services\\Addons\\Plugins\\EDD_Zip_URL' => __DIR__ . '/../..' . '/src/core/services/addons/plugins/class-edd-zip-url.php',
+        'Uncanny_Automator\\Services\\Addons\\Plugins\\EDD_Zip_URL_Exception' => __DIR__ . '/../..' . '/src/core/services/addons/plugins/class-edd-zip-url-exception.php',
+        'Uncanny_Automator\\Services\\Addons\\Plugins\\Manager' => __DIR__ . '/../..' . '/src/core/services/addons/plugins/class-manager.php',
         'Uncanny_Automator\\Services\\CLI\\Logs\\Prune_Command' => __DIR__ . '/../..' . '/src/core/services/cli/logs/prune-command.php',
         'Uncanny_Automator\\Services\\Dashboard\\Recent_Articles' => __DIR__ . '/../..' . '/src/core/services/dashboard/recent-articles.php',
         'Uncanny_Automator\\Services\\Dashboard\\Recipe_Using_Credits_Utils' => __DIR__ . '/../..' . '/src/core/services/dashboard/recipe-using-credits-utils.php',
@@ -1047,6 +1061,10 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\Services\\Loopable\\Trigger_Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/trigger-loopable-token.php',
         'Uncanny_Automator\\Services\\Loopable\\Universal_Loopable_Token' => __DIR__ . '/../..' . '/src/core/services/loopable/universal-loopable-token.php',
         'Uncanny_Automator\\Services\\Multiple_Triggers_Restore_Failed_Logs' => __DIR__ . '/../..' . '/src/core/services/logger-multiple-triggers-restore-failed-logs.php',
+        'Uncanny_Automator\\Services\\Plugin\\Info' => __DIR__ . '/../..' . '/src/core/services/plugin/class-info.php',
+        'Uncanny_Automator\\Services\\Plugin\\Manager' => __DIR__ . '/../..' . '/src/core/services/plugin/class-manager.php',
+        'Uncanny_Automator\\Services\\Plugin\\Manager_Translations' => __DIR__ . '/../..' . '/src/core/services/plugin/trait-manager-translations.php',
+        'Uncanny_Automator\\Services\\Plugin\\Manager_Verification' => __DIR__ . '/../..' . '/src/core/services/plugin/trait-manager-verification.php',
         'Uncanny_Automator\\Services\\Properties' => __DIR__ . '/../..' . '/src/core/services/properties.php',
         'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Entity' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/entity.php',
         'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Factory' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/factory.php',
@@ -1054,8 +1072,23 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Parser' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/parser.php',
         'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Registry' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/registry.php',
         'Uncanny_Automator\\Services\\Recipe\\Action\\Token\\Store' => __DIR__ . '/../..' . '/src/core/services/recipe/action/token/store.php',
+        'Uncanny_Automator\\Services\\Recipe\\Builder\\Settings\\Fields\\Field' => __DIR__ . '/../..' . '/src/core/services/recipe/builder/settings/fields/field.php',
+        'Uncanny_Automator\\Services\\Recipe\\Builder\\Settings\\Fields\\Field_Collection' => __DIR__ . '/../..' . '/src/core/services/recipe/builder/settings/fields/field-collection.php',
+        'Uncanny_Automator\\Services\\Recipe\\Builder\\Settings\\Fields\\Field_Collection_Manager' => __DIR__ . '/../..' . '/src/core/services/recipe/builder/settings/use-cases/field-collection-manager.php',
+        'Uncanny_Automator\\Services\\Recipe\\Builder\\Settings\\Fields\\Field_Manager' => __DIR__ . '/../..' . '/src/core/services/recipe/builder/settings/use-cases/field-manager.php',
+        'Uncanny_Automator\\Services\\Recipe\\Builder\\Settings\\Repository\\Settings_Repository' => __DIR__ . '/../..' . '/src/core/services/recipe/builder/settings/repository/settings-repository.php',
+        'Uncanny_Automator\\Services\\Recipe\\Builder\\Settings\\Repository\\Throttle_Repository' => __DIR__ . '/../..' . '/src/core/services/recipe/builder/settings/repository/throttle-repository.php',
+        'Uncanny_Automator\\Services\\Recipe\\Builder\\Settings\\Repository\\Throttle_Repository_Interface' => __DIR__ . '/../..' . '/src/core/services/recipe/builder/settings/repository/throttle-repository-interface.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_JSON_Serializer' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-json-serializer.php',
         'Uncanny_Automator\\Services\\Recipe\\Common\\Trait_Setter_Getter' => __DIR__ . '/../..' . '/src/core/services/recipe/common/trait-setter-getter.php',
+        'Uncanny_Automator\\Services\\Recipe\\Process\\Throttle\\Recipe_Throttle_Settings_Meta_DTO' => __DIR__ . '/../..' . '/src/core/services/recipe/process/throttle/recipe-throttle-settings-meta-dto.php',
+        'Uncanny_Automator\\Services\\Recipe\\Process\\Throttle\\Recipe_Throttle_Strategy' => __DIR__ . '/../..' . '/src/core/services/recipe/process/throttle/recipe-throttle-strategy.php',
+        'Uncanny_Automator\\Services\\Recipe\\Process\\Throttle\\Throttle_Strategy_Interface' => __DIR__ . '/../..' . '/src/core/services/recipe/process/throttle/throttle-strategy-interface.php',
+        'Uncanny_Automator\\Services\\Recipe\\Process\\Throttle\\Time_Unit_Converter_Trait' => __DIR__ . '/../..' . '/src/core/services/recipe/process/throttle/time-unit-converter-trait.php',
+        'Uncanny_Automator\\Services\\Recipe\\Process\\Throttle\\User_Throttle_Strategy' => __DIR__ . '/../..' . '/src/core/services/recipe/process/throttle/user-throttle-strategy.php',
+        'Uncanny_Automator\\Services\\Recipe\\Process\\Throttler' => __DIR__ . '/../..' . '/src/core/services/recipe/process/throttler.php',
+        'Uncanny_Automator\\Services\\Recipe\\Process\\Universal_Run_Number_Threshold' => __DIR__ . '/../..' . '/src/core/services/recipe/process/universal-run-number-threshold.php',
+        'Uncanny_Automator\\Services\\Recipe\\Process\\User_Run_Number_Threshold' => __DIR__ . '/../..' . '/src/core/services/recipe/process/user-run-number-threshold.php',
         'Uncanny_Automator\\Services\\Recipe\\Structure' => __DIR__ . '/../..' . '/src/core/services/recipe/structure.php',
         'Uncanny_Automator\\Services\\Recipe\\Structure\\Actions\\Actions' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/actions.php',
         'Uncanny_Automator\\Services\\Recipe\\Structure\\Actions\\Item\\Action' => __DIR__ . '/../..' . '/src/core/services/recipe/structure/actions/item/action.php',
@@ -1270,6 +1303,8 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
         'Uncanny_Automator\\WP_CHANGE_POST_TYPE' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-change-post-type.php',
         'Uncanny_Automator\\WP_CREATEPOST' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-createpost.php',
         'Uncanny_Automator\\WP_CREATE_ROLE' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-create-role.php',
+        'Uncanny_Automator\\WP_DUPLICATE_PAGE' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-duplicate-page.php',
+        'Uncanny_Automator\\WP_DUPLICATE_POST' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-duplicate-post.php',
         'Uncanny_Automator\\WP_ERASE_PERSONAL_USER_DATA' => __DIR__ . '/../..' . '/src/integrations/wp/actions/wp-erase-personal-user-data.php',
         'Uncanny_Automator\\WP_LOGIN' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-login.php',
         'Uncanny_Automator\\WP_LOGOUT' => __DIR__ . '/../..' . '/src/integrations/wp/triggers/wp-logout.php',
@@ -1363,8 +1398,8 @@ class ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitf5d8e9f799300ecf6f1824be82ac3615::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInitaa80a46dcd5e844a40fb57e1487ef832::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInitaa80a46dcd5e844a40fb57e1487ef832::$classMap;
 
         }, null, ClassLoader::class);
     }

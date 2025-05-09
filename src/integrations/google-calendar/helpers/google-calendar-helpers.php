@@ -32,6 +32,13 @@ class Google_Calendar_Helpers {
 	const OPTION_KEY = 'automator_google_calendar_credentials';
 
 	/**
+	 * The nonce key for the Google Calendar integration.
+	 *
+	 * @var string
+	 */
+	const NONCE = 'automator_api_google_calendar_authorize';
+
+	/**
 	 * The public API edge.
 	 *
 	 * @var string
@@ -300,7 +307,7 @@ class Google_Calendar_Helpers {
 		// Persist connection if okay.
 		$is_connected = $this->auth_persist_connection(
 			automator_filter_input( 'automator_api_message' ),
-			automator_filter_input( 'nonce' )
+			wp_create_nonce( self::NONCE )
 		);
 
 		if ( $is_connected ) {
@@ -325,8 +332,8 @@ class Google_Calendar_Helpers {
 	protected function auth_redirect_when_error( $nonce = '', $invoked_errors = '' ) {
 
 		// Check nonce.
-		if ( ! wp_verify_nonce( $nonce, 'automator_api_google_calendar_authorize' ) ) {
-			$this->redirect_with_error( 'invalid_nonce' );
+		if ( ! wp_verify_nonce( $nonce, self::NONCE ) || ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_with_error( 'You are not allowed to do this.' );
 		}
 
 		// Redirect if there are any errors.
@@ -490,7 +497,7 @@ class Google_Calendar_Helpers {
 	public function get_authentication_url() {
 
 		// Create nonce.
-		$nonce = wp_create_nonce( 'automator_api_google_calendar_authorize' );
+		$nonce = wp_create_nonce( self::NONCE );
 
 		// Construct the redirect uri.
 		$redirect_uri = add_query_arg(

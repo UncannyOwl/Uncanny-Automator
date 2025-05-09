@@ -148,7 +148,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<uo-button target="_blank" color="secondary" size="small" href="<?php echo esc_url( $vars['setup_url'] ); ?>">
 
 							<?php esc_html_e( 'Setup instructions', 'uncanny-automator' ); ?>
-							<uo-icon id="external-link"></uo-icon>
 
 						</uo-button>
 

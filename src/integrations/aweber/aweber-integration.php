@@ -49,7 +49,7 @@ class Aweber_Integration extends \Uncanny_Automator\Integration {
 	public function register_hooks() {
 
 		// Authorization handler.
-		add_action( 'wp_ajax_automator_handle_authorization', array( $this->helpers, 'authenticate' ) );
+		add_action( 'wp_ajax_automator_aweber_handle_authorization', array( $this->helpers, 'authenticate' ) );
 		// Disconnect handler.
 		add_action( 'wp_ajax_automator_aweber_disconnect_account', array( $this->helpers, 'disconnect' ) );
 		// List of accounts.

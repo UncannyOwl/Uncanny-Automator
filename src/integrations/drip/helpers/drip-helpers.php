@@ -14,7 +14,7 @@ class Drip_Helpers {
 
 		$this->functions = new Drip_Functions();
 
-		add_action( 'init', array( $this->functions, 'capture_oauth_tokens' ) );
+		add_action( 'init', array( $this->functions, 'capture_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 		add_action( 'wp_ajax_automator_drip_disconnect', array( $this->functions, 'disconnect' ) );
 
 		require_once __DIR__ . '/../settings/settings-drip.php';

@@ -398,7 +398,7 @@ class Helpscout_Helpers {
 
 		$tokens = (array) Automator_Helpers_Recipe::automator_api_decode_message(
 			automator_filter_input( 'automator_api_message' ),
-			$nonce
+			wp_create_nonce( self::NONCE_KEY )
 		);
 
 		if ( empty( $tokens ) ) {

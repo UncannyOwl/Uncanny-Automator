@@ -218,7 +218,7 @@ $user_just_connected_site = automator_filter_input( 'connect' ) === '1';
 				</div>
 
 				<div class="uap-settings-panel-content-connection-quick-connect">
-					<uo-button href="<?php echo esc_url( $connect_twitter_url ); ?>" >
+					<uo-button href="<?php echo esc_url( $connect_twitter_url ); ?>" target="_self" unsafe-force-target>
 						<?php esc_html_e( 'Connect X/Twitter account', 'uncanny-automator' ); ?>
 					</uo-button>
 				</div>

@@ -36,9 +36,9 @@ class Automator_Send_Webhook_Fields {
 
 		if ( null === self::$instance ) {
 			self::$instance = new self();
-			if ( empty( self::$instance->data_format_types ) ) {
-				self::$instance->register_data_format_types();
-			}
+			// if ( empty( self::$instance->data_format_types ) ) {
+			// 	self::$instance->register_data_format_types();
+			// }
 		}
 
 		return self::$instance;
@@ -56,7 +56,14 @@ class Automator_Send_Webhook_Fields {
 	 * @return void
 	 */
 	public function register_data_format_types() {
-		$this->data_format_types = apply_filters(
+		$this->set_webhook_data_types( 'text', esc_html__( 'Text', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'float', esc_html__( 'Number', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'bool', esc_html__( 'Boolean', 'uncanny-automator' ) );
+		$this->set_webhook_data_types( 'null', esc_html__( 'NULL', 'uncanny-automator' ) );
+	}
+
+	public function get_data_format_types() {
+		return apply_filters(
 			'automator_outgoing_webhook_content_types',
 			array(
 				'x-www-form-urlencoded' => 'x-www-form-urlencoded',
@@ -69,10 +76,6 @@ class Automator_Send_Webhook_Fields {
 				'raw'                   => 'Raw',
 			)
 		);
-		$this->set_webhook_data_types( 'text', esc_html__( 'Text', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'float', esc_html__( 'Number', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'bool', esc_html__( 'Boolean', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'null', esc_html__( 'NULL', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -125,11 +128,11 @@ class Automator_Send_Webhook_Fields {
 
 		// Data format field
 		if ( $data_format_required ) {
-			$options  = $this->data_format_types;
+			$options  = $this->get_data_format_types();
 			$new_list = array();
 			if ( ! empty( $allowed ) ) {
 				foreach ( $allowed as $allow ) {
-					$value              = isset( $this->data_format_types[ $allow ] ) ? $this->data_format_types[ $allow ] : strtoupper( $allow );
+					$value              = isset( $options[ $allow ] ) ? $options[ $allow ] : strtoupper( $allow );
 					$new_list[ $allow ] = $value;
 				}
 				$options = $new_list;

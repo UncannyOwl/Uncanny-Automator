@@ -110,7 +110,7 @@ class Constant_Contact_Settings extends \Uncanny_Automator\Settings\Premium_Inte
 		// If the user is not connected, show a field for the API key.
 		if ( ! $this->is_account_connected ) {
 			?>
-			<uo-button type="button" href="<?php echo esc_url( Constant_Contact_Helpers::get_authorization_url() ); ?>">
+			<uo-button type="button" href="<?php echo esc_url( Constant_Contact_Helpers::get_authorization_url() ); ?>" target="_self" unsafe-force-target>
 				<?php echo esc_html_x( 'Connect Constant Contact account', 'Constant Contact', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php

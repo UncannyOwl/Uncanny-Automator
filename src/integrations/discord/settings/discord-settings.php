@@ -63,9 +63,9 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		$this->check_for_errors();
 
 		// Handle the disconnect button action.
-		add_action( 'init', array( $this, 'disconnect' ) );
+		add_action( 'init', array( $this, 'disconnect' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 		// Capture the OAuth tokens.
-		add_action( 'init', array( $this, 'capture_oauth_tokens' ) );
+		add_action( 'init', array( $this, 'capture_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 	}
 
 	/**
@@ -167,12 +167,14 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		$disconnect_user   = automator_filter_input( 'disconnect' );
 
 		if ( '1' === $disconnect_user ) {
+			$this->validate_user_capabilities();
 			$this->helpers->remove_credentials();
 			wp_safe_redirect( $this->get_settings_page_url() );
 			exit;
 		}
 
 		if ( absint( $disconnect_server ) > 0 ) {
+			$this->validate_user_capabilities();
 			$this->helpers->disconnect( $disconnect_server );
 			$this->helpers->update_server_connected_status( $disconnect_server, 0 );
 			wp_safe_redirect( $this->get_settings_page_url() . '&server-disconnect=' . $disconnect_server );
@@ -197,9 +199,10 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			return;
 		}
 
-		$nonce = wp_create_nonce( self::NONCE_KEY );
+		// Validate user capabilities.
+		$this->validate_user_capabilities();
 
-		$credentials = (array) \Uncanny_Automator\Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, $nonce );
+		$credentials = (array) \Uncanny_Automator\Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, wp_create_nonce( self::NONCE_KEY ) );
 
 		// Validate token vault details.
 		if ( empty( $credentials['discord_id'] ) || empty( $credentials['vault_signature'] ) ) {
@@ -237,6 +240,17 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		);
 
 		die;
+	}
+
+	/**
+	 * Validate user capabilities.
+	 *
+	 * @return void
+	 */
+	public function validate_user_capabilities() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Error 403: Insufficient permissions.' );
+		}
 	}
 
 	/**
@@ -365,6 +379,18 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			</uo-button>
 		</uo-alert>
 
+		<uo-alert 
+			heading="<?php echo esc_attr_x( 'User Discord Verification', 'Discord', 'uncanny-automator' ); ?>" 
+			class="uap-spacing-bottom">
+			<p><?php echo esc_html_x( 'To fully automate your WordPress users for use within Discord actions requiring selecting a Member, have your users verify their account using this shortcode:', 'Discord', 'uncanny-automator' ); ?><code>[automator_discord_user_mapping]</code></p>
+			<p><?php echo esc_html_x( 'This will capture their Discord Member ID and save it to user meta key:', 'Discord', 'uncanny-automator' ); ?><code>automator_discord_member_id</code></p>
+			<p>
+				<uo-button href="https://automatorplugin.com/knowledge-base/discord/#4-user-discord-verification" target="_blank">
+					<?php echo esc_html_x( 'Learn more', 'Discord', 'uncanny-automator' ); ?>
+				</uo-button>
+			</p>
+		</uo-alert>
+
 		<?php
 	}
 
@@ -449,7 +475,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		// Add the connect button if not connected
 		if ( ! $this->is_connected ) {
 			?>
-			<uo-button href="<?php echo esc_url( $this->get_oauth_url() ); ?>" type="button">
+			<uo-button href="<?php echo esc_url( $this->get_oauth_url() ); ?>" type="button" target="_self" unsafe-force-target>
 				<?php echo esc_html_x( 'Connect Discord account', 'Discord', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php

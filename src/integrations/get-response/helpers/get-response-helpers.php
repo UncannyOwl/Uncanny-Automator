@@ -152,6 +152,12 @@ class Get_Response_Helpers {
 	 */
 	public function disconnect() {
 
+		// Check user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => esc_html_x( 'Invalid permissions', 'GetResponse', 'uncanny-automator' ) ) );
+		}
+
+		// Verify nonce.
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
 
 			$this->remove_credentials();
@@ -198,7 +204,7 @@ class Get_Response_Helpers {
 			$response = $this->api_request( 'get_account', null, null, false );
 		} catch ( \Exception $e ) {
 			$error            = $e->getMessage();
-			$account['error'] = ! empty( $error ) ? $error : _x( 'GetResponse API error', 'GetResponse', 'uncanny-automator' );
+			$account['error'] = ! empty( $error ) ? $error : esc_html_x( 'GetResponse API error', 'GetResponse', 'uncanny-automator' );
 			automator_update_option( self::ACCOUNT_KEY, $account );
 
 			return $account;
@@ -211,7 +217,7 @@ class Get_Response_Helpers {
 			$account['status'] = 'success';
 		} else {
 			$account['status'] = '';
-			$account['error']  = _x( 'GetResponse API error', 'GetResponse', 'uncanny-automator' );
+			$account['error']  = esc_html_x( 'GetResponse API error', 'GetResponse', 'uncanny-automator' );
 		}
 
 		// Check for invalid key.
@@ -220,7 +226,7 @@ class Get_Response_Helpers {
 			$account['status'] = '';
 			$account['error']  = ! empty( $response['data']['message'] )
 				? $response['data']['message']
-				: _x( 'Invalid API key', 'GetResponse', 'uncanny-automator' );
+				: esc_html_x( 'Invalid API key', 'GetResponse', 'uncanny-automator' );
 		}
 
 		automator_update_option( self::ACCOUNT_KEY, $account );
@@ -379,13 +385,19 @@ class Get_Response_Helpers {
 	 */
 	public function ajax_sync_transient_data() {
 
+		// Check user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => esc_html_x( 'Invalid permissions', 'GetResponse', 'uncanny-automator' ) ) );
+		}
+
+		// Verify nonce.
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
-			wp_send_json_error( array( 'message' => _x( 'Invalid request', 'GetResponse', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'Invalid request', 'GetResponse', 'uncanny-automator' ) ) );
 		}
 
 		$key = automator_filter_input( 'key', INPUT_POST );
 		if ( ! $key || ! in_array( $key, array( 'contact/lists', 'contact/fields' ), true ) ) {
-			wp_send_json_error( array( 'message' => _x( 'Invalid key', 'GetResponse', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'Invalid key', 'GetResponse', 'uncanny-automator' ) ) );
 		}
 
 		// Delete existing transient.
@@ -402,7 +414,7 @@ class Get_Response_Helpers {
 		}
 
 		if ( empty( $options ) ) {
-			wp_send_json_error( array( 'message' => _x( 'No data returned from the API', 'GetResponse', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'No data returned from the API', 'GetResponse', 'uncanny-automator' ) ) );
 		}
 
 		// Ensure everything is set with a slight delay.
@@ -556,11 +568,11 @@ class Get_Response_Helpers {
 		/**
 		 * Get class const.
 		 *
-		 * @param  string $const
+		 * @param  string $const_name
 		 *
 		 * @return string
 		 */
-	public function get_const( $const ) {
-		return constant( 'self::' . $const );
+	public function get_const( $const_name ) {
+		return constant( 'self::' . $const_name );
 	}
 }

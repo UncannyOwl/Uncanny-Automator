@@ -51,19 +51,19 @@ class DISCORD_SEND_MESSAGE_TO_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'SERVER_ID'    => array(
-					'name' => _x( 'Server ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SERVER_NAME'  => array(
-					'name' => _x( 'Server name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CHANNEL_NAME' => array(
-					'name' => _x( 'Channel name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Channel name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CHANNEL_ID'   => array(
-					'name' => _x( 'Channel ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Channel ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -82,17 +82,17 @@ class DISCORD_SEND_MESSAGE_TO_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 			$this->helpers->get_server_channel_select_config( $this->get_action_meta(), $this->server_key ),
 			array(
 				'option_code' => 'MESSAGE',
-				'label'       => _x( 'Message', 'Discord', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Message', 'Discord', 'uncanny-automator' ),
 				'input_type'  => 'textarea',
 				'required'    => true,
-				'description' => _x( 'Enter the message you want to send.', 'Discord', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter the message you want to send.', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code'     => 'TTS',
-				'label'           => _x( 'TTS', 'Discord', 'uncanny-automator' ),
+				'label'           => esc_html_x( 'TTS', 'Discord', 'uncanny-automator' ),
 				'input_type'      => 'checkbox',
 				'is_toggle'       => true,
-				'description'     => _x( 'Enable text to speech.', 'Discord', 'uncanny-automator' ),
+				'description'     => esc_html_x( 'Enable text to speech.', 'Discord', 'uncanny-automator' ),
 				'relevant_tokens' => array(),
 			),
 		);
@@ -138,11 +138,14 @@ class DISCORD_SEND_MESSAGE_TO_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 				'SERVER_ID'    => $server_id,
 				'SERVER_NAME'  => $parsed[ $this->server_key . '_readable' ],
 				'CHANNEL_ID'   => $channel_id,
-				'CHANNEL_NAME' => $parsed[ $this->get_action_meta() . '_readable' ],
+				'CHANNEL_NAME' => $this->helpers->get_channel_name_token_value(
+					$parsed[ $this->get_action_meta() . '_readable' ],
+					$channel_id,
+					$server_id
+				),
 			)
 		);
 
 		return true;
 	}
-
 }

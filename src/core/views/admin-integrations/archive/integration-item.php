@@ -12,7 +12,7 @@ namespace Uncanny_Automator;
 <?php
 
 // Check if the integration has tags
-$has_tags = $integration->is_pro || $integration->is_built_in || $integration->is_installed;
+$has_tags = $integration->is_pro || $integration->is_built_in || $integration->is_installed || $integration->is_addon || $integration->is_plus;
 
 // Check if the integration has description
 $has_description = ! empty( $integration->short_description );
@@ -57,6 +57,14 @@ if ( isset( $integration->external_permalink ) && ! empty( $integration->externa
 
 				<?php } ?>
 
+				<?php if ( isset( $integration->is_plus ) && $integration->is_plus ) { ?>
+
+					<div class="uap-integrations-collections-integration__tag uap-integrations-collections-integration__tag-pro">
+						Plus
+					</div>
+
+				<?php } ?>
+
 				<?php if ( isset( $integration->is_elite ) && $integration->is_elite ) { ?>
 
 				<div class="uap-integrations-collections-integration__tag uap-integrations-collections-integration__tag-pro">
@@ -65,10 +73,18 @@ if ( isset( $integration->external_permalink ) && ! empty( $integration->externa
 
 				<?php } ?>
 
-				<?php if ( $integration->is_built_in ) { ?>
+				<?php if ( $integration->is_built_in && ! $integration->is_addon ) { ?>
 
 					<div class="uap-integrations-collections-integration__tag uap-integrations-collections-integration__tag-built-in">
 						<?php esc_html_e( 'Built-in', 'uncanny-automator' ); ?>
+					</div>
+
+				<?php } ?>
+
+				<?php if ( $integration->is_addon ) { ?>
+
+					<div class="uap-integrations-collections-integration__tag uap-integrations-collections-integration__tag-addon">
+						<?php esc_html_e( 'Addon', 'uncanny-automator' ); ?>
 					</div>
 
 				<?php } ?>

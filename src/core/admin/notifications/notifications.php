@@ -87,7 +87,11 @@ class Automator_Notifications {
 						wp_register_script(
 							'uap-admin',
 							Utilities::automator_get_asset( 'backend/dist/main.bundle.min.js' ),
-							array(),
+							array(
+								'wp-api-fetch',
+								'wp-i18n',
+								'wp-dom-ready'
+							),
 							Utilities::automator_get_version(),
 							true
 						);

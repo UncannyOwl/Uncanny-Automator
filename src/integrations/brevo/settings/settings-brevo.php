@@ -63,7 +63,6 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 		$this->set_icon( 'BREVO' );
 		$this->set_name( 'Brevo' );
 		$this->register_option( $this->helpers->get_const( 'OPTION_KEY' ) );
-
 	}
 
 	/**
@@ -114,7 +113,7 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 			if ( ! empty( $this->account['error'] ) ) {
 				?>
 				<uo-alert type="error" heading="<?php echo esc_attr_x( 'Unable to connect to Brevo', 'Brevo', 'uncanny-automator' ); ?>">
-					<?php echo esc_html_x( 'The API key you entered is invalid. Please re-enter your API key again.', 'Brevo', 'uncanny-automator' ); ?>
+					<?php echo esc_html( $this->account['error'] ); ?>
 				</uo-alert>
 				<br/>
 				<?php
@@ -135,33 +134,93 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 
 			<ul>
 				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Create or update a contact', 'Brevo', 'uncanny-automator' ); ?>
+					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Brevo', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Create or update a contact', 'Brevo', 'uncanny-automator' ); ?>
 				</li>
 				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Delete a contact', 'Brevo', 'uncanny-automator' ); ?>
+					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Brevo', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Delete a contact', 'Brevo', 'uncanny-automator' ); ?>
 				</li>
 				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add a contact to a list', 'Brevo', 'uncanny-automator' ); ?>
+					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Brevo', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add a contact to a list', 'Brevo', 'uncanny-automator' ); ?>
 				</li>
 				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Remove a contact from a list', 'Brevo', 'uncanny-automator' ); ?>
+					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Brevo', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Remove a contact from a list', 'Brevo', 'uncanny-automator' ); ?>
 				</li>
 			</ul>
 
 			<uo-alert heading="<?php echo esc_attr_x( 'Setup instructions', 'Brevo', 'uncanny-automator' ); ?>">
 
-				<?php echo wp_kses( _x( 'To obtain your Brevo API Key, follow these steps in your <a href="https://app.brevo.com/" target="_blank">Brevo</a> account:', 'Brevo', 'uncanny-automator' ), $kses_link ); ?>
+				<?php
+				printf(
+					/* translators: %s: HTML link to Brevo account */
+					esc_html_x(
+						'To obtain your Brevo API Key, follow these steps in your %s account:',
+						'Brevo',
+						'uncanny-automator'
+					),
+					sprintf(
+						'<a href="https://app.brevo.com/" target="_blank">%s</a>',
+						esc_html_x( 'Brevo', 'Brevo', 'uncanny-automator' )
+					)
+				);
+				?>
 
 				<ol class="uap-spacing-top uap-spacing-top--small uap-spacing-bottom uap-spacing-bottom--none">
 					<li><?php echo esc_html_x( 'Click your Profile button in the upper right side of the screen to see your profile options.', 'Brevo', 'uncanny-automator' ); ?></li>
-					<li><?php echo wp_kses( _x( 'Select <strong>SMTP & API</strong>.', 'Brevo', 'uncanny-automator' ), $kses_text ); ?></li>
-					<li><?php echo wp_kses( _x( 'On the <i>SMTP & API</i> page, click <strong>API Keys</strong>.', 'Brevo', 'uncanny-automator' ), $kses_text ); ?></li>
-					<li><?php echo wp_kses( _x( 'In the upper right, click <strong>Generate a new API key</strong>.', 'Brevo', 'uncanny-automator' ), $kses_text ); ?></li>
-					<li><?php echo wp_kses( _x( 'A pop-up window will ask you to <i>Name your API key</i>. Enter a name such as "your-website-automator" and click <strong>Generate</strong>.', 'Brevo', 'uncanny-automator' ), $kses_text ); ?></li>
 					<li>
-						<?php echo wp_kses( _x( 'You will now have an API key to enter in the field below. Once entered, click the <strong>Connect Brevo account</strong> button to enable your integration with Automator.', 'Brevo', 'uncanny-automator' ), $kses_text ); ?>
+					<?php
+						printf(
+							/* translators: %s: SMTP & API text */
+							esc_html_x( 'Select %s.', 'Brevo', 'uncanny-automator' ),
+							'<strong>' . esc_html_x( 'SMTP & API', 'Brevo', 'uncanny-automator' ) . '</strong>'
+						);
+					?>
+					</li>
+					<li>
+					<?php
+						printf(
+							/* translators: %1$s: SMTP & API text, %2$s: API Keys text */
+							esc_html_x( 'On the %1$s page, click %2$s.', 'Brevo', 'uncanny-automator' ),
+							'<i>' . esc_html_x( 'SMTP & API', 'Brevo', 'uncanny-automator' ) . '</i>',
+							'<strong>' . esc_html_x( 'API Keys', 'Brevo', 'uncanny-automator' ) . '</strong>'
+						);
+					?>
+					</li>
+					<li>
+					<?php
+						printf(
+							/* translators: %s: Generate a new API key text */
+							esc_html_x( 'In the upper right, click %s.', 'Brevo', 'uncanny-automator' ),
+							'<strong>' . esc_html_x( 'Generate a new API key', 'Brevo', 'uncanny-automator' ) . '</strong>'
+						);
+					?>
+					</li>
+					<li>
+					<?php
+						printf(
+							/* translators: %1$s: Name your API key text, %2$s: Generate text */
+							esc_html_x( 'A pop-up window will ask you to %1$s. Enter a name such as "your-website-Automator" and click %2$s.', 'Brevo', 'uncanny-automator' ),
+							'<i>' . esc_html_x( 'Name your API key', 'Brevo', 'uncanny-automator' ) . '</i>',
+							'<strong>' . esc_html_x( 'Generate', 'Brevo', 'uncanny-automator' ) . '</strong>'
+						);
+					?>
+					</li>
+					<li>
+						<?php
+						printf(
+							/* translators: %s: Connect Brevo account text */
+							esc_html_x( 'You will now have an API key to enter in the field below. Once entered, click the %s button to enable your integration with Automator.', 'Brevo', 'uncanny-automator' ),
+							'<strong>' . esc_html_x( 'Connect Brevo account', 'Brevo', 'uncanny-automator' ) . '</strong>'
+						);
+						?>
 						<br>
-						<?php echo wp_kses( _x( '<strong>Note :</strong><i> Save this key somewhere safe as it will not be accessible again and you will have to generate a new one.</i>', 'Brevo', 'uncanny-automator' ), $kses_text ); ?>
+						<?php
+						printf(
+							/* translators: %1$s: Note text, %2$s: Save this key text */
+							esc_html_x( '%1$s: %2$s', 'Brevo', 'uncanny-automator' ),
+							'<strong>' . esc_html_x( 'Note', 'Brevo', 'uncanny-automator' ) . '</strong>',
+							'<i>' . esc_html_x( 'Save this key somewhere safe as it will not be accessible again and you will have to generate a new one.', 'Brevo', 'uncanny-automator' ) . '</i>'
+						);
+						?>
 					</li>
 				</ol>
 
@@ -170,7 +229,7 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 			<?php // Show API Key field. ?>
 			<uo-text-field
 				id="automator_brevo_api_key"
-				value="<?php echo esc_attr( str_replace( $this->helpers->invalid_key_message, '', $this->api_key ) ); ?>"
+				value="<?php echo esc_attr( $this->api_key ); ?>"
 				label="<?php echo esc_attr_x( 'API key', 'Brevo', 'uncanny-automator' ); ?>"
 				required
 				class="uap-spacing-top"
@@ -201,7 +260,6 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 
 			<?php
 		}
-
 	}
 
 	/**
@@ -262,7 +320,7 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 			?>
 			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
 				<uo-icon id="right-from-bracket"></uo-icon>
-				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
+				<?php echo esc_html_x( 'Disconnect', 'Brevo', 'uncanny-automator' ); ?>
 			</uo-button>
 			<?php
 
@@ -330,5 +388,4 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 		</div>
 		<?php
 	}
-
 }

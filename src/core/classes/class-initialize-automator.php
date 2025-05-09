@@ -33,6 +33,8 @@ class Initialize_Automator extends Set_Up_Automator {
 			array( $this, 'automator_configure' ),
 			AUTOMATOR_CONFIGURATION_PRIORITY
 		);
+
+		add_action( 'init', array( $this, 'load_delayed_integrations' ), 8 );
 	}
 
 	/**
@@ -51,8 +53,6 @@ class Initialize_Automator extends Set_Up_Automator {
 		// Loads all internal triggers, actions, and closures then provides hooks for external ones
 		// All extensions are loaded.
 		do_action( 'automator_configuration_complete', $this );
-
-		$this->automator_configuration_complete_func();
 	}
 
 	/**
@@ -105,8 +105,6 @@ class Initialize_Automator extends Set_Up_Automator {
 			self::$auto_loaded_directories = $this->get_integrations_autoload_directories();
 			Automator()->cache->set( 'automator_integration_directories_loaded', self::$auto_loaded_directories, 'automator', Automator()->cache->long_expires );
 		}
-
-		$this->load_framework_integrations();
 	}
 
 	/**
@@ -175,5 +173,17 @@ class Initialize_Automator extends Set_Up_Automator {
 		foreach ( $automator_file_map as $file ) {
 			include_once $file;
 		}
+	}
+
+	/**
+	 * @return void
+	 * @throws \Uncanny_Automator\Automator_Exception
+	 */
+	public function load_delayed_integrations() {
+		// Loads all internal triggers, actions, and closures then provides hooks for external ones
+		$this->automator_configuration_complete_func();
+
+		// Loads all integrations that are using `load.php` file
+		$this->load_framework_integrations();
 	}
 }

@@ -71,7 +71,7 @@ class Google_Contacts_Helpers {
 		// Persist connection if okay.
 		$is_connected = $this->auth_persist_connection(
 			automator_filter_input( 'automator_api_message' ),
-			automator_filter_input( 'nonce' ),
+			wp_create_nonce( self::AUTH_NONCE_KEY )
 		);
 
 		if ( $is_connected ) {
@@ -96,8 +96,8 @@ class Google_Contacts_Helpers {
 	protected function auth_redirect_when_error( $nonce = '', $invoked_errors = '' ) {
 
 		// Check nonce.
-		if ( ! wp_verify_nonce( $nonce, self::AUTH_NONCE_KEY ) ) {
-			$this->redirect_with_error( 'invalid_nonce' );
+		if ( ! wp_verify_nonce( $nonce, self::AUTH_NONCE_KEY ) || ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_with_error( 'You are not allowed to do this.' );
 		}
 
 		// Redirect if there are any errors.
@@ -169,7 +169,7 @@ class Google_Contacts_Helpers {
 
 			// Missing scopes.
 			if ( $this->has_missing_scopes( $tokens ) ) {
-				$this->redirect_with_error( esc_html__( 'missing_scope', 'uncanny-automator' ) );
+				$this->redirect_with_error( esc_html_x( 'missing_scope', 'Google Contacts', 'uncanny-automator' ) );
 			}
 
 			self::clear_connection();

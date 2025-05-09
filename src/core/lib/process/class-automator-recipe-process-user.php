@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Services\Recipe\Process\Throttler;
+
 /**
  * Class Automator_Recipe_Process_User
  * @package Uncanny_Automator
@@ -11,7 +13,6 @@ class Automator_Recipe_Process_User {
 	 * Automator_Recipe_Process_User constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -81,6 +82,11 @@ class Automator_Recipe_Process_User {
 			 * @author  Saad
 			 */
 			if ( $this->is_recipe_completed( $recipe_id, $user_id ) ) {
+				continue;
+			}
+
+			// Skip if the recipe is being throttled.
+			if ( $this->is_recipe_throttled( absint( $recipe_id ), absint( $user_id ) ) ) {
 				continue;
 			}
 
@@ -195,6 +201,32 @@ class Automator_Recipe_Process_User {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param int $recipe_id
+	 *
+	 * @return bool
+	 */
+	public function is_recipe_throttled( int $recipe_id, int $user_id ) {
+
+		$data = (array) get_post_meta( $recipe_id, 'field_recipe_throttle', true );
+
+		try {
+			$throttler = new Throttler( $recipe_id, $data );
+			// If the recipe can execute, return false because the recipe is not throttled.
+			if ( $throttler->can_execute( $user_id ) ) {
+				return false;
+			}
+		} catch ( \Exception $e ) {
+			// Log the error.
+			automator_log( 'Error creating throttler: ' . $e->getMessage(), 'error' );
+			// Return false because the recipe can't be throttled due to an error.
+			return false;
+		}
+
+		// Otherwise, return true.
+		return true;
 	}
 
 	/**
@@ -467,7 +499,6 @@ class Automator_Recipe_Process_User {
 		}
 
 		return $this->maybe_get_trigger_id( $user_id, $trigger_id, $recipe_id, $recipe_log_id );
-
 	}
 
 	/**
@@ -674,8 +705,8 @@ class Automator_Recipe_Process_User {
 			$user_num_times     = 1;
 		} else {
 
-			$user_num_times ++;
-			$run_number         = $run_number + 1; // phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
+			++$user_num_times;
+			$run_number         = $run_number + 1; //phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 			$args['run_number'] = $run_number;
 			$args['meta_value'] = 1;
 		}
@@ -759,7 +790,6 @@ class Automator_Recipe_Process_User {
 			'error'      => 'Number of times condition met.',
 			'run_number' => $args['run_number'],
 		);
-
 	}
 
 	/**
@@ -855,7 +885,6 @@ class Automator_Recipe_Process_User {
 			'result' => false,
 			'error'  => esc_html__( 'No action happened.', 'uncanny-automator' ),
 		);
-
 	}
 
 	/**

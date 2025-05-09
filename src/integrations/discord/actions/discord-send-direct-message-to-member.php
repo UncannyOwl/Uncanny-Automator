@@ -51,15 +51,15 @@ class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\Ac
 		$this->set_action_tokens(
 			array(
 				'SERVER_ID'   => array(
-					'name' => _x( 'Server ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SERVER_NAME' => array(
-					'name' => _x( 'Server name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'USERNAME'    => array(
-					'name' => _x( 'Username', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Username', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -78,10 +78,10 @@ class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\Ac
 			$this->helpers->get_server_members_select_config( $this->get_action_meta(), $this->server_key ),
 			array(
 				'option_code' => 'MESSAGE',
-				'label'       => _x( 'Message', 'Discord', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Message', 'Discord', 'uncanny-automator' ),
 				'input_type'  => 'textarea',
 				'required'    => true,
-				'description' => _x( 'Enter the message you want to send.', 'Discord', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter the message you want to send.', 'Discord', 'uncanny-automator' ),
 			),
 		);
 	}
@@ -122,11 +122,14 @@ class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\Ac
 			array(
 				'SERVER_ID'   => $server_id,
 				'SERVER_NAME' => $parsed[ $this->server_key . '_readable' ],
-				'USERNAME'    => $parsed[ $this->get_action_meta() . '_readable' ],
+				'USERNAME'    => $this->helpers->get_member_username_token_value(
+					$parsed[ $this->get_action_meta() . '_readable' ],
+					$member_id,
+					$server_id
+				),
 			)
 		);
 
 		return true;
 	}
-
 }

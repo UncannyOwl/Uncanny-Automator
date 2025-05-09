@@ -90,7 +90,7 @@ $this->disconnect_url = $this->functions->get_disconnect_url();
 								'To connect Automator to X/Twitter you will need to create a X/Twitter app first. %1$s.',
 								'uncanny-automator'
 							),
-							'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twitter/', 'settings', 'twitter-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Learn More', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+							'<a href="' . esc_url( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/twitter/', 'settings', 'twitter-kb_article' ) ) . '" target="_blank">' . esc_html__( 'Learn More', 'uncanny-automator' ) . '</a>'
 						);
 						?>
 					</div>

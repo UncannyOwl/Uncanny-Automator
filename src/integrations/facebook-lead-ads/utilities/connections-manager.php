@@ -117,6 +117,7 @@ class Connections_Manager {
 	 * @return WP_Error|string WP_Error on failure, or 'Ready' string on success.
 	 */
 	public function verify_page_connection( $page_id, $force = 'false' ) {
+
 		if ( empty( $page_id ) ) {
 			return new WP_Error( 'invalid_page_id', esc_html_x( 'The provided page ID is invalid.', 'Facebook Lead Ads', 'uncanny-automator' ) );
 		}

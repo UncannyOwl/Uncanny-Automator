@@ -206,15 +206,15 @@ class Sendy_Helpers {
 		} elseif ( empty( $settings['api_key'] ) || empty( $settings['url'] ) ) {
 			// Both are empty.
 			if ( empty( $settings['api_key'] ) && empty( $settings['url'] ) ) {
-				$settings['error'] = _x( 'Please enter a valid Sendy installation URL and API key.', 'Sendy', 'uncanny-automator' );
+				$settings['error'] = esc_html_x( 'Please enter a valid Sendy installation URL and API key.', 'Sendy', 'uncanny-automator' );
 			} else {
 				// Missing API Key.
 				if ( empty( $settings['api_key'] ) ) {
-					$settings['error'] = _x( 'Please enter a valid Sendy API key.', 'Sendy', 'uncanny-automator' );
+					$settings['error'] = esc_html_x( 'Please enter a valid Sendy API key.', 'Sendy', 'uncanny-automator' );
 				}
 				// Missing / Invalid URL.
 				if ( empty( $settings['url'] ) ) {
-					$settings['error'] = _x( 'Please enter a valid Sendy installation URL.', 'Sendy', 'uncanny-automator' );
+					$settings['error'] = esc_html_x( 'Please enter a valid Sendy installation URL.', 'Sendy', 'uncanny-automator' );
 				}
 			}
 			// Update Settings with error.
@@ -248,6 +248,10 @@ class Sendy_Helpers {
 	 * @return void
 	 */
 	public function disconnect() {
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html_x( 'You do not have permission to manage Sendy settings.', 'Sendy', 'uncanny-automator' ) );
+		}
 
 		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
 
@@ -339,14 +343,14 @@ class Sendy_Helpers {
 	 * Add contact to list.
 	 *
 	 * @param string $email
-	 * @param string $list
+	 * @param string $list_id
 	 * @param array  $fields
 	 * @param array  $action_data
 	 *
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function add_contact_to_list( $email, $list, $fields, $action_data ) {
+	public function add_contact_to_list( $email, $list_id, $fields, $action_data ) {
 
 		if ( ! isset( $fields['referrer'] ) ) {
 			$fields['referrer'] = get_site_url();
@@ -354,7 +358,7 @@ class Sendy_Helpers {
 
 		$body = array(
 			'email'  => $email,
-			'list'   => $list,
+			'list'   => $list_id,
 			'fields' => $fields,
 		);
 
@@ -367,17 +371,17 @@ class Sendy_Helpers {
 	 * Unsubscribe contact from list.
 	 *
 	 * @param string $email
-	 * @param string $list
+	 * @param string $list_id
 	 * @param array  $action_data
 	 *
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function unsubscribe_contact_from_list( $email, $list, $action_data ) {
+	public function unsubscribe_contact_from_list( $email, $list_id, $action_data ) {
 
 		$body = array(
 			'email' => $email,
-			'list'  => $list,
+			'list'  => $list_id,
 		);
 
 		$response = $this->api_request( 'unsubscribe_contact_from_list', $body, $action_data );
@@ -389,17 +393,17 @@ class Sendy_Helpers {
 	 * Delete contact from list.
 	 *
 	 * @param string $email
-	 * @param string $list
+	 * @param string $list_id
 	 * @param array  $action_data
 	 *
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function delete_contact_from_list( $email, $list, $action_data ) {
+	public function delete_contact_from_list( $email, $list_id, $action_data ) {
 
 		$body = array(
 			'email' => $email,
-			'list'  => $list,
+			'list'  => $list_id,
 		);
 
 		$response = $this->api_request( 'delete_contact_from_list', $body, $action_data );
@@ -437,7 +441,7 @@ class Sendy_Helpers {
 			if ( empty( $items ) ) {
 				$message = isset( $response['data']['error'] ) ? $response['data']['error'] : sprintf(
 					/* translators: %s - type of items */
-					_x( 'No %s were found', 'Sendy API', 'uncanny-automator' ),
+					esc_html_x( 'No %s were found', 'Sendy API', 'uncanny-automator' ),
 					$type
 				);
 				throw new \Exception( esc_html( $message ) );
@@ -479,13 +483,18 @@ class Sendy_Helpers {
 	 */
 	public function ajax_sync_transient_data() {
 
+		// Validate user capabilities.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => esc_html_x( 'You do not have permission to manage Sendy settings.', 'Sendy', 'uncanny-automator' ) ) );
+		}
+
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'uncanny_automator' ) ) {
-			wp_send_json_error( array( 'message' => _x( 'Invalid request', 'Sendy', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'Invalid request', 'Sendy', 'uncanny-automator' ) ) );
 		}
 
 		$key = automator_filter_input( 'key', INPUT_POST );
 		if ( ! $key || ! in_array( $key, array( 'lists' ), true ) ) {
-			wp_send_json_error( array( 'message' => _x( 'Invalid key', 'Sendy', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'Invalid key', 'Sendy', 'uncanny-automator' ) ) );
 		}
 
 		// Delete existing transient.
@@ -499,7 +508,7 @@ class Sendy_Helpers {
 		}
 
 		if ( empty( $options ) ) {
-			wp_send_json_error( array( 'message' => _x( 'No data returned from the API', 'Sendy', 'uncanny-automator' ) ) );
+			wp_send_json_error( array( 'message' => esc_html_x( 'No data returned from the API', 'Sendy', 'uncanny-automator' ) ) );
 		}
 
 		// Ensure everything is set with a slight delay.
@@ -528,7 +537,7 @@ class Sendy_Helpers {
 		}
 
 		if ( $response['statusCode'] >= 400 ) {
-			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : _x( 'Sendy API Error', 'Sendy', 'uncanny-automator' );
+			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : esc_html_x( 'Sendy API Error', 'Sendy', 'uncanny-automator' );
 			throw new \Exception( esc_html( $message ), 400 );
 		}
 	}
@@ -552,11 +561,11 @@ class Sendy_Helpers {
 			$connection_error = true;
 		}
 
-		if ( $error === 'No brands found in Sendy account.' ) {
+		if ( 'No brands found in Sendy account.' === $error ) {
 			$connection_error = true;
 		}
 
-		if ( $error === 'No lists found in Sendy account.' ) {
+		if ( 'No lists found in Sendy account.' === $error ) {
 			$connection_error = true;
 		}
 
@@ -615,11 +624,11 @@ class Sendy_Helpers {
 	/**
 	 * Get class const.
 	 *
-	 * @param string $const
+	 * @param string $const_name
 	 *
 	 * @return string
 	 */
-	public function get_const( $const ) {
-		return constant( 'self::' . $const );
+	public function get_const( $const_name ) {
+		return constant( 'self::' . $const_name );
 	}
 }

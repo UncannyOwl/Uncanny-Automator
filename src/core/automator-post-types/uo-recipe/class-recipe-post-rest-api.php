@@ -3,6 +3,11 @@
 namespace Uncanny_Automator;
 
 use Exception;
+use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field;
+use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Collection;
+use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Collection_Manager;
+use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Manager;
+use Uncanny_Automator\Services\Recipe\Builder\Settings\Repository\Settings_Repository;
 use Uncanny_Automator\Webhooks\Response_Validator;
 use WP_Error;
 use WP_Post;
@@ -261,6 +266,16 @@ class Recipe_Post_Rest_Api {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'triggers_change_logic' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/recipe_update_setting/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'recipe_update_setting' ),
 				'permission_callback' => array( $this, 'save_settings_permissions' ),
 			)
 		);
@@ -1820,7 +1835,6 @@ class Recipe_Post_Rest_Api {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -1894,7 +1908,6 @@ class Recipe_Post_Rest_Api {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -1929,7 +1942,6 @@ class Recipe_Post_Rest_Api {
 			),
 			ARRAY_A
 		);
-
 	}
 
 	/**
@@ -1958,5 +1970,128 @@ class Recipe_Post_Rest_Api {
 		$return['_recipe'] = Automator()->get_recipe_object( absint( $request->get_param( 'recipe_id' ) ) );
 
 		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * Updates a specific setting for a given recipe.
+	 *
+	 * This function processes a REST API request to update a recipe setting.
+	 * It verifies and sanitizes incoming data, updates the setting in the database,
+	 * clears relevant cache, and triggers an action upon success.
+	 *
+	 * @param WP_REST_Request $request The REST API request containing recipe update data.
+	 *
+	 * @return WP_REST_Response Returns a response object with the result of the operation.
+	 */
+	public function recipe_update_setting( WP_REST_Request $request ) {
+
+		$recipe_id        = absint( $request->get_param( 'recipe_id' ) );
+		$setting_id       = (string) $request->get_param( 'setting_id' );
+		$field_parameters = (array) json_decode( $request->get_param( 'fields' ), true );
+
+		try {
+
+			if ( count( $field_parameters ) > 1 ) {
+				return $this->update_multiple_fields( $recipe_id, $setting_id, $field_parameters );
+			}
+
+			return $this->update_singular_field( $recipe_id, $setting_id, $field_parameters );
+
+		} catch ( Exception $e ) {
+
+			$data = array(
+				'message' => $e->getMessage(),
+				'success' => false,
+				'action'  => 'show_error',
+			);
+
+			return new WP_REST_Response( $data, 500 );
+
+		}
+	}
+
+	/**
+	 * @param int $recipe_id
+	 * @param string $setting_id
+	 * @param array $field_parameters
+	 * @return array{success: true, action: string, recipes_object: array, _recipe: mixed}
+	 */
+	public function update_multiple_fields( $recipe_id, $setting_id, $field_parameters ) {
+
+		$field_collection = new Field_Collection();
+
+		foreach ( (array) $field_parameters as $id => $field_parameter ) {
+
+			$field = $this->make_field( $id, array( $id => $field_parameter ) );
+
+			$field_collection->add( $field, $id );
+
+		}
+
+		$repo = new Settings_Repository();
+		$repo->set_recipe_id( $recipe_id );
+		$repo->set_setting_id( $setting_id );
+
+		$field_collection_manager = new Field_Collection_Manager( $repo );
+		$field_collection_manager->save_field_collection( $field_collection );
+
+		return $this->respond_with_success( $recipe_id, $setting_id );
+	}
+
+	/**
+	 * @param int    $recipe_id
+	 * @param string $setting_id
+	 * @param array  $field_parameters
+	 *
+	 * @return array{success: true, action: string, recipes_object: array, _recipe: mixed}
+	 *
+	 * @throws Exception
+	 */
+	public function update_singular_field( $recipe_id, $setting_id, $field_parameters ) {
+
+		$field = $this->make_field( $setting_id, $field_parameters );
+
+		$field_manager = Field_Manager::create_instance( $recipe_id );
+
+		$field_manager->save_field( $field );
+
+		return $this->respond_with_success( $recipe_id, $setting_id );
+	}
+
+	/**
+	 * @param string $setting_id
+	 * @param array  $field_parameters
+	 * @return Field
+	 */
+	public function make_field( $id, $field_parameters ) {
+
+		$field_id = array_keys( $field_parameters );
+		$field_id = $field_id[0] ?? null;
+
+		$field_value  = $field_parameters[ $field_id ]['value'] ?? '';
+		$field_backup = $field_parameters[ $field_id ]['backup'] ?? '';
+
+		$field = new Field();
+		$field->set_field_id( $id );
+		$field->set_value( $field_value );
+		$field->set_backup( (array) $field_backup );
+
+		return $field;
+	}
+
+	/**
+	 * @param int $recipe_id
+	 * @param string $setting_id
+	 *
+	 * @return array{success: true, action: string, recipes_object: array, _recipe: mixed}
+	 */
+	public function respond_with_success( $recipe_id, $setting_id ) {
+
+		return array(
+			'success'        => true,
+			'action'         => sprintf( 'updated_%s', $setting_id ),
+			'recipes_object' => Automator()->get_recipes_data( true, $recipe_id ),
+			'_recipe'        => Automator()->get_recipe_object( $recipe_id ),
+		);
 	}
 }

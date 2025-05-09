@@ -18,8 +18,8 @@ class Twitter_Helpers {
 
 		$functions = new Twitter_Functions();
 
-		add_action( 'init', array( $functions, 'disconnect' ) );
-		add_action( 'init', array( $functions, 'capture_legacy_oauth_tokens' ) );
+		add_action( 'init', array( $functions, 'disconnect' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
+		add_action( 'init', array( $functions, 'capture_legacy_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 
 		include_once __DIR__ . '/../settings/settings-twitter.php';
 

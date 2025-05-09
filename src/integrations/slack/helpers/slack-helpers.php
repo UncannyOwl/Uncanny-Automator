@@ -71,8 +71,8 @@ class Slack_Helpers {
 			)
 		);
 
-		add_action( 'init', array( $this, 'capture_oauth_tokens' ) );
-		add_action( 'init', array( $this, 'disconnect' ) );
+		add_action( 'init', array( $this, 'capture_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
+		add_action( 'init', array( $this, 'disconnect' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 
 		$this->load_settings();
 	}
@@ -115,6 +115,10 @@ class Slack_Helpers {
 	public function get_slack_client() {
 
 		$tokens = automator_get_option( '_uncannyowl_slack_settings', array() );
+
+		// A patch to address the change in api_decode_message
+		// We need to recursively convert the array into an object here
+		$tokens = json_decode( wp_json_encode( $tokens ) );
 
 		if ( empty( $tokens ) ) {
 			throw new \Exception( 'Slack is not connected' );
@@ -160,13 +164,13 @@ class Slack_Helpers {
 	public function get_slack_channels( $label = null, $option_code = 'SLACKCHANNEL', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = esc_html__( 'Slack channel', 'uncanny-automator' );
+			$label = esc_html_x( 'Slack channel', 'Slack', 'uncanny-automator' );
 		}
 
 		$is_ajax                  = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
 		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
-		$description              = key_exists( 'description', $args ) ? $args['description'] : esc_html__( 'Make sure that the bot is added to the selected channel!', 'uncanny-automator' );
+		$description              = key_exists( 'description', $args ) ? $args['description'] : esc_html_x( 'Make sure that the bot is added to the selected channel!', 'Slack', 'uncanny-automator' );
 		$custom_value_description = key_exists( 'custom_value_description', $args ) ? $args['custom_value_description'] : null;
 		$supports_custom_value    = key_exists( 'supports_custom_value', $args ) ? $args['supports_custom_value'] : false;
 		$supports_tokens          = key_exists( 'supports_tokens', $args ) ? $args['supports_tokens'] : null;
@@ -204,7 +208,7 @@ class Slack_Helpers {
 	public function get_slack_users( $label = null, $option_code = 'SLACKUSERS', $args = array() ) {
 
 		if ( ! $label ) {
-			$label = esc_html__( 'Slack user', 'uncanny-automator' );
+			$label = esc_html_x( 'Slack user', 'Slack', 'uncanny-automator' );
 		}
 
 		$is_ajax                  = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
@@ -285,17 +289,17 @@ class Slack_Helpers {
 	 * @param string $label
 	 * @param bool $tokens
 	 * @param string $type
-	 * @param string $default
-	 * @param bool
+	 * @param string $default_value
+	 * @param bool $required
 	 * @param string $description
 	 * @param string $placeholder
 	 *
 	 * @return mixed
 	 */
-	public function textarea_field( $option_code = 'TEXT', $label = null, $tokens = true, $type = 'text', $default = null, $required = true, $description = '', $placeholder = null ) {
+	public function textarea_field( $option_code = 'TEXT', $label = null, $tokens = true, $type = 'text', $default_value = null, $required = true, $description = '', $placeholder = null ) {
 
 		if ( ! $label ) {
-			$label = esc_html__( 'Text', 'uncanny-automator' );
+			$label = esc_html_x( 'Text', 'Slack', 'uncanny-automator' );
 		}
 
 		if ( ! $description ) {
@@ -314,7 +318,7 @@ class Slack_Helpers {
 			'input_type'        => $type,
 			'supports_tokens'   => $tokens,
 			'required'          => $required,
-			'default_value'     => $default,
+			'default_value'     => $default_value,
 			'supports_tinymce'  => false,
 			'supports_markdown' => true,
 		);
@@ -340,7 +344,7 @@ class Slack_Helpers {
 
 			$options[] = array(
 				'value' => '-1',
-				'text'  => esc_html__( 'Select a channel', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Select a channel', 'Slack', 'uncanny-automator' ),
 			);
 
 			foreach ( $response['data']['channels'] as $channel ) {
@@ -359,7 +363,7 @@ class Slack_Helpers {
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
-				'text'  => esc_html__( 'Something went wrong when fetching channels. Please try again later.', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Something went wrong when fetching channels. Please try again later.', 'Slack', 'uncanny-automator' ),
 			);
 		}
 
@@ -383,7 +387,7 @@ class Slack_Helpers {
 
 			$options[] = array(
 				'value' => '',
-				'text'  => esc_html__( 'Select a user', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Select a user', 'Slack', 'uncanny-automator' ),
 			);
 
 			foreach ( $response['data']['members'] as $member ) {
@@ -395,7 +399,7 @@ class Slack_Helpers {
 		} catch ( \Exception $e ) {
 			$options[] = array(
 				'value' => '',
-				'text'  => esc_html__( 'Something went wrong when fetching users. Please try again later.', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Something went wrong when fetching users. Please try again later.', 'Slack', 'uncanny-automator' ),
 			);
 		}
 
@@ -490,6 +494,10 @@ class Slack_Helpers {
 			return;
 		}
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		// Parse the tokens
 		$tokens = Automator_Helpers_Recipe::automator_api_decode_message(
 			$automator_api_response,
@@ -523,6 +531,10 @@ class Slack_Helpers {
 	 * @return void
 	 */
 	public function disconnect() {
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
 
 		if ( ! $this->is_current_settings_tab() ) {
 			return;
@@ -599,10 +611,10 @@ class Slack_Helpers {
 			return;
 		}
 
-		$error = esc_html__( 'Unknown Slack API error occurred.', 'uncanny-automator' );
+		$error = esc_html_x( 'Unknown Slack API error occurred.', 'Slack', 'uncanny-automator' );
 
 		if ( ! empty( $data['error'] ) ) {
-			$error = esc_html__( 'Slack API returned an error:', 'uncanny-automator' ) . $data['error'];
+			$error = esc_html_x( 'Slack API returned an error:', 'Slack', 'uncanny-automator' ) . $data['error'];
 		}
 
 		throw new \Exception( esc_html( $error ), absint( $response['statusCode'] ) );
@@ -619,7 +631,7 @@ class Slack_Helpers {
 				'option_code' => 'BOT_NAME',
 				'input_type'  => 'text',
 				'required'    => false,
-				'label'       => esc_html__( 'Bot name', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Bot name', 'Slack', 'uncanny-automator' ),
 				'default'     => automator_get_option( 'uap_automator_slack_api_bot_name', '' ),
 			)
 		);
@@ -636,9 +648,9 @@ class Slack_Helpers {
 				'option_code' => 'BOT_ICON',
 				'input_type'  => 'url',
 				'required'    => false,
-				'label'       => esc_html__( 'Bot icon', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Bot icon', 'Slack', 'uncanny-automator' ),
 				'default'     => automator_get_option( 'uap_automator_alck_api_bot_icon', '' ),
-				'description' => _x( 'Enter the URL of the image you wish to share. The image must be publicly accessible and at minimum 512x512 pixels and at maximum 1024x1024 pixels.', 'Slack', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter the URL of the image you wish to share. The image must be publicly accessible and at minimum 512x512 pixels and at maximum 1024x1024 pixels.', 'Slack', 'uncanny-automator' ),
 			)
 		);
 	}

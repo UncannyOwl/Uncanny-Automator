@@ -89,7 +89,7 @@ $client = $this->functions->get_client();
 
 					<div class="uap-settings-panel-bottom-left">
 
-						<uo-button class="uap-settings-button-drip" href="<?php echo esc_url( $auth_url ); ?>">
+						<uo-button class="uap-settings-button-drip" href="<?php echo esc_url( $auth_url ); ?>" target="_self" unsafe-force-target>
 							<?php esc_html_e( 'Connect Drip account', 'uncanny-automator' ); ?>
 						</uo-button>
 
