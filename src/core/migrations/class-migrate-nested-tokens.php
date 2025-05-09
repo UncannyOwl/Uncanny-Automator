@@ -96,20 +96,6 @@ class Migrate_Nested_Tokens extends Tokens_Migration {
 
 		return $output;
 	}
-
-	/**
-	 * replace_strings_in_imports
-	 *
-	 * @return mixed
-	 */
-	public function replace_strings_in_imports( $value, $post_id, $new_post_id, $key ) {
-
-		if ( is_string( $value ) ) {
-			$value = $this->replace_strings( $value );
-		}
-
-		return $value;
-	}
 }
 
 new Migrate_Nested_Tokens( '6.5_nested_tokens' );
