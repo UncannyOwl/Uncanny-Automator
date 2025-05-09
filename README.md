@@ -5,7 +5,7 @@
 **Requires at least:** 5.6 \
 **Tested up to:** 6.8.1 \
 **Requires PHP:** 7.3 \
-**Stable tag:** 6.5.0 \
+**Stable tag:** 6.5.0.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -407,7 +407,14 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
-### 6.5.0 [2025-05-08]
+### 6.5.0.1 [2025-05-09]
+
+**Fixed:**
+
+* Recipe UI - Slack forgot it was connected and kept denying it. We've straightened things out. #5741
+* Import recipes - A sneaky little bug that prevented recipes from being imported thought it could slip past unnoticed in version 6.5. Nice try, bug. Not today! #5742
+
+### 6.5.0 [2025-05-09]
 
 **New Features:**
 
@@ -419,13 +426,13 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * WordPress - Duplicate a post #5498
 * WordPress - Duplicate a page #5498
 
-**Added**
+**Added:**
 
 * Discord - Shortcode `[automator_discord_user_mapping]` to capture/authorize individual user Discord member IDs - Now you can summon a user's Discord ID like a wizard casting a spell. #5690
 * Discord - Token selector added to action dropdowns - Choosing the right token just got easier than picking toppings on a pizza. #5687
 * Recipe UI - Added export button to Publish Metabox - Export your recipe like a boss—now just a click away. #5419
 
-**Updated**
+**Updated:**
 
 * All integrations page - Now correctly shows whether something is Addon, Elite, Plus, or just plain awesome. #5226
 * Automator UI - Made more RTL-friendly so everything flows beautifully from right to left. #5519
@@ -435,7 +442,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe UI - Made the Draft/Live switch a little louder so it doesn't keep whispering in the corner. #4315
 * Recipe UI - Publish box got a glow-up—fresh look, same great taste. #4731
 
-**Fixed**
+**Fixed:**
 
 * AWeber & Campaign Monitor - Authorization error checks affecting other app integrations. #5674
 * Bluesky - Posts now respect line breaks like a well-mannered poet. #5629
@@ -450,12 +457,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Recipe UI - Various bug fixes - We squashed a bunch of tiny bugs with big attitudes. #5550
 * `automator_get_all_options` - Now shows proper respect to the autoload column. #5518
 
-**Security Fixes**
+**Security Fixes:**
 
 * App integrations - Tightened the gates with stronger nonce and capability checks for `wp_ajax` endpoints. #5657
 * `automator_api_decode_message` - Made additional modifications to further harden this method. #5631
 
-**Under the hood**
+**Under the hood:**
 
 * Recipe templates - API permissions check got an upgrade—more secure, less guesswork. #5650
 * Update various text strings. #5553
