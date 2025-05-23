@@ -36,9 +36,6 @@ class Automator_Send_Webhook_Fields {
 
 		if ( null === self::$instance ) {
 			self::$instance = new self();
-			// if ( empty( self::$instance->data_format_types ) ) {
-			// 	self::$instance->register_data_format_types();
-			// }
 		}
 
 		return self::$instance;
@@ -48,20 +45,13 @@ class Automator_Send_Webhook_Fields {
 	 * Constructor
 	 */
 	public function __construct() {
-
-		add_action( 'init', array( $this, 'register_data_format_types' ) );
 	}
 
 	/**
-	 * @return void
+	 * Get data format types.
+	 *
+	 * @return mixed
 	 */
-	public function register_data_format_types() {
-		$this->set_webhook_data_types( 'text', esc_html__( 'Text', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'float', esc_html__( 'Number', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'bool', esc_html__( 'Boolean', 'uncanny-automator' ) );
-		$this->set_webhook_data_types( 'null', esc_html__( 'NULL', 'uncanny-automator' ) );
-	}
-
 	public function get_data_format_types() {
 		return apply_filters(
 			'automator_outgoing_webhook_content_types',
@@ -289,25 +279,29 @@ class Automator_Send_Webhook_Fields {
 	}
 
 	/**
-	 * @param $data_type
-	 * @param $label
-	 *
-	 * @return void
-	 */
-	public function set_webhook_data_types( $data_type, $label ) {
-		if ( ! array_key_exists( $data_type, $this->data_types_key_store ) ) {
-			$this->data_types[] = array(
-				'value' => $data_type,
-				'text'  => $label,
-			);
-		}
-		$this->data_types_key_store[ $data_type ] = $label;
-	}
-
-	/**
 	 * @return mixed|null
 	 */
 	public function get_webhook_data_types() {
-		return apply_filters( 'automator_outgoing_webhook_data_types', $this->data_types );
+		return apply_filters(
+			'automator_outgoing_webhook_data_types',
+			array(
+				array(
+					'value' => 'text',
+					'text' => esc_html__( 'Text', 'uncanny-automator' ),
+				),
+				array(
+					'value' => 'float',
+					'text' => esc_html__( 'Number', 'uncanny-automator' ),
+				),
+				array(
+					'value' => 'bool',
+					'text' => esc_html__( 'Boolean', 'uncanny-automator' ),
+				),
+				array(
+					'value' => 'null',
+					'text' => esc_html__( 'NULL', 'uncanny-automator' ),
+				),
+			)
+		);
 	}
 }
