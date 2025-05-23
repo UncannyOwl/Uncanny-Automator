@@ -46,7 +46,7 @@ class Actionify_Triggers {
 		$run_automator_actions = apply_filters( 'automator_run_automator_actions', $run_automator_actions );
 
 		if ( $run_automator_actions ) {
-			add_action( 'init', array( $this, 'actionify_triggers' ), AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY );
+			add_action( 'plugins_loaded', array( $this, 'actionify_triggers' ), AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY );
 		}
 
 	}

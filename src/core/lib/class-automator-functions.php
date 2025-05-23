@@ -316,7 +316,7 @@ class Automator_Functions {
 		require_once __DIR__ . '/webhooks/class-automator-send-webhook.php';
 		$this->send_webhook = Automator_Send_Webhook::get_instance();
 
-		add_filter( 'init', array( $this, 'filter_recipe_parts' ), AUTOMATOR_LOAD_INTEGRATIONS_PRIORITY );
+		add_filter( 'plugins_loaded', array( $this, 'filter_recipe_parts' ), AUTOMATOR_LOAD_INTEGRATIONS_PRIORITY );
 	}
 
 	/**

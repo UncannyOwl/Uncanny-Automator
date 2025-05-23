@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.1
 Requires PHP: 7.3
-Stable tag: 6.5.0.1
+Stable tag: 6.5.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -381,6 +381,18 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.5.0.2 [2025-05-23] =
+
+**Fixed:**
+
+* Trigger firing behavior – Trigger firing behavior – WordPress 6.7 required that plugins make adjustments to loading priority. In version 6.5 we adjusted Automator to comply with the new guidelines. However, because of the nature of how Automator works, some triggers for plugins that do not yet comply with the new guidelines failed to fire. We've reverted the change for now. #5781
+* Outgoing Webhooks - The Type dropdown had stage fright in the latest release—it's now back on duty and ready to drop down like it should. #5780
+
+**Known Issue:**
+
+* Notice: Function `_load_textdomain_just_in_time` was called incorrectly will now be displayed when debug is enabled, until all plugins that we integrate with have been updated to the new guidelines.
+
 
 = 6.5.0.1 [2025-05-09] =
 

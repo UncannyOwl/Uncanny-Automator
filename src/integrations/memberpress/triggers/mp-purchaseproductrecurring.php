@@ -103,6 +103,7 @@ class MP_PURCHASEPRODUCTRECURRING {
 		if ( apply_filters( 'automator_mepr_check_first_real_payment', false, $event ) ) {
 			$subscription          = $transaction->subscription();
 			$is_first_real_payment = Automator()->helpers->recipe->memberpress->check_if_is_renewal_or_first_payment( $subscription );
+			$pm = $transaction->payment_method();
 			if ( $is_first_real_payment === false && \MeprTransaction::$free_gateway_str !== $pm->id ) {
 				return;
 			}
