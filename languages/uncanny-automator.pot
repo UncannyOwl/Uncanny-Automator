@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-06-05T19:24:36+00:00\n"
+"POT-Creation-Date: 2025-06-05T20:07:14+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: uncanny-automator\n"
@@ -75,7 +75,7 @@ msgstr ""
 
 #. translators: The number of times a recipe was completed
 #: src/assets/build/main.js:1
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1022
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1020
 msgid "Completed runs"
 msgstr ""
 
@@ -1949,7 +1949,7 @@ msgstr ""
 #: src/assets/build/main.js:1
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:55
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:60
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1019
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1017
 msgid "Triggers"
 msgstr ""
 
@@ -1957,7 +1957,7 @@ msgstr ""
 #: src/assets/build/main.js:1
 #: src/core/admin/api-log/class-api-log.php:82
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:114
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1020
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1018
 #: src/core/includes/recipe-logs-view.php:51
 #: src/core/includes/recipe-logs-view.php:194
 #: src/core/views/admin-logs/component/logs.php:189
@@ -2567,7 +2567,7 @@ msgstr ""
 
 #. translators: Log column.
 #: src/assets/build/main.js:1
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1023
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1021
 #: src/core/includes/recipe-logs-view.php:88
 #: src/core/includes/recipe-logs-view.php:141
 #: src/core/views/admin-logs/component/logs.php:79
@@ -2919,7 +2919,7 @@ msgstr ""
 
 #. translators: Log column.
 #: src/core/admin/api-log/class-api-log.php:73
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1024
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1022
 #: src/core/includes/recipe-logs-view.php:137
 #: src/core/views/admin-logs/component/logs.php:128
 #: src/integrations/slicewp/helpers/slicewp-helpers.php:88
@@ -4086,7 +4086,7 @@ msgid "Not found in trash"
 msgstr ""
 
 #. translators: Log column.
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:950
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:948
 #: src/core/includes/recipe-logs-view.php:49
 #: src/core/includes/recipe-logs-view.php:96
 #: src/core/includes/recipe-logs-view.php:147
@@ -4102,11 +4102,11 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:954
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:952
 msgid "Live"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:954
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:952
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:77
 msgid "Draft"
 msgstr ""
