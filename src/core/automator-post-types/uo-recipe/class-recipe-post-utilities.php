@@ -137,8 +137,6 @@ class Recipe_Post_Utilities {
 				$dependencies[] = 'uap-codemirror-mode-javascript';
 				$dependencies[] = 'uap-codemirror-mode-htmlmixed';
 				$dependencies[] = 'uap-tinymce-plugin-fullpage';
-				$dependencies[] = 'wp-api-fetch';
-				$dependencies[] = 'wp-i18n';
 
 				return $dependencies;
 			}
