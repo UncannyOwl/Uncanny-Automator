@@ -40,7 +40,9 @@ class Open_AI_Helpers {
 			$this->load_settings();
 		}
 	}
-
+	/**
+	 * Load settings.
+	 */
 	public function load_settings() {
 		// Load the settings page.
 		new Open_AI_Settings( $this );
@@ -142,7 +144,7 @@ class Open_AI_Helpers {
 			throw new \Exception(
 				sprintf(
 				/* translators: %s: HTTP status code */
-					esc_html__( 'Request to OpenAI returned with status: %s', 'uncanny-automator' ),
+					esc_html_x( 'Request to OpenAI returned with status: %s', 'Open Ai', 'uncanny-automator' ),
 					absint( $response['statusCode'] )
 				),
 				absint( $response['statusCode'] )
@@ -425,5 +427,60 @@ class Open_AI_Helpers {
 		}
 
 		update_post_meta( $recipe_id, 'uap_openai_model_updated', 'yes' );
+	}
+
+	/**
+	 * Fetch image generation models.
+	 *
+	 * @return void
+	 */
+	public function handle_fetch_image_generation_models() {
+
+		Automator()->utilities->verify_nonce();
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json(
+				array(
+					'success' => false,
+					'error'   => esc_html_x( 'Insufficient privilege', 'OpenAI', 'uncanny-automator' ),
+				)
+			);
+		}
+
+		$body = array(
+			'action' => 'get_image_generation_models',
+		);
+
+		try {
+			$response = $this->api_request( $body );
+			if ( is_wp_error( $response ) ) {
+				throw new \Exception( esc_html( $response->get_error_message() ) );
+			}
+		} catch ( \Exception $e ) {
+			wp_send_json(
+				array(
+					'success' => false,
+					'error'   => $e->getMessage(),
+				)
+			);
+		}
+
+		$options = array();
+
+		if ( isset( $response['data'] ) && is_array( $response['data'] ) ) {
+			foreach ( $response['data'] as $model ) {
+				$options[] = array(
+					'value' => $model,
+					'text'  => $model,
+				);
+			}
+		}
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $options,
+			)
+		);
 	}
 }

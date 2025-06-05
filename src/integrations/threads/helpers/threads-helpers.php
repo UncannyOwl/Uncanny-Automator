@@ -140,11 +140,20 @@ class Threads_Helpers {
 	 */
 	public function disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
-
-			$this->remove_credentials();
+		// Nonce verification.
+		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
+			wp_die( esc_html_x( 'Nonce Verification Failed', 'Threads', 'uncanny-automator' ) );
 		}
 
+		// Current user check.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html_x( 'Unauthorized', 'Threads', 'uncanny-automator' ) );
+		}
+
+		// Remove credentials.
+		$this->remove_credentials();
+
+		// Redirect to settings page.
 		wp_safe_redirect( $this->get_settings_page_url() );
 
 		exit;

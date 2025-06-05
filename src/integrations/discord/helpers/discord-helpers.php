@@ -643,14 +643,11 @@ class Discord_Helpers {
 			throw new Exception( esc_html( $required_error ) );
 		}
 
-		// Sanitize the message
-		$message = sanitize_text_field( $parsed[ $meta_key ] );
+		// Sanitize the message while preserving line breaks
+		$message = sanitize_textarea_field( $parsed[ $meta_key ] );
 
-		// Escape HTML entities
-		$message = esc_html( $message );
-
-		// Remove invalid Unicode characters
-		$message = preg_replace( '/[^\x{0000}-\x{10FFFF}]/u', '', $message );
+		// Remove invalid Unicode characters while preserving line breaks
+		$message = preg_replace( '/[^\x{0000}-\x{10FFFF}\n]/u', '', $message );
 
 		if ( empty( $message ) ) {
 			throw new Exception( esc_html( $required_error ) );

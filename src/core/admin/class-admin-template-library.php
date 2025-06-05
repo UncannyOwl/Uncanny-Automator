@@ -122,21 +122,6 @@ class Admin_Template_Library {
 		);
 		Recipe_Post_Utilities::dequeue_conflictive_assets();
 
-		// Enqueue Select2 scripts for filter menus.
-		wp_enqueue_style(
-			'select2',
-			Utilities::automator_get_vendor_asset( 'select2/css/select2.min.css' ),
-			array(),
-			'4.0.13'
-		);
-
-		wp_enqueue_script(
-			'select2',
-			Utilities::automator_get_vendor_asset( 'select2/js/select2.min.js' ),
-			array(),
-			'4.0.13'
-		);
-
 		// Populate the template data.
 		add_filter(
 			'automator_assets_backend_js_data',

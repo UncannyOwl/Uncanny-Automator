@@ -81,22 +81,6 @@ class Automator_Notifications {
 				function() {
 					$screen = get_current_screen();
 					if ( 'edit-uo-recipe' === $screen->id ) {
-						// Enqueue the style incase it wasnt called.
-						wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/main.bundle.min.css' ), array(), Utilities::automator_get_version() );
-						// Register main JS in case it wasnt registered.
-						wp_register_script(
-							'uap-admin',
-							Utilities::automator_get_asset( 'backend/dist/main.bundle.min.js' ),
-							array(
-								'wp-api-fetch',
-								'wp-i18n',
-								'wp-dom-ready'
-							),
-							Utilities::automator_get_version(),
-							true
-						);
-						// Enqueue uap-admin.
-						wp_enqueue_script( 'uap-admin' );
 						add_action( 'automator_show_internal_admin_notice', array( $this, 'show_notifications' ) );
 					}
 				},

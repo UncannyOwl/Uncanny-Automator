@@ -13,41 +13,43 @@ class AutomatorFacebookGroupSettings {
         // Set the loading status of the button
         this.$preloaderButton.setAttribute('loading', '');
 
-        // Fetch data
-        _uo.utility.fetchData({
-            url: UncannyAutomatorBackend.ajax.url,
-            data: {
-                action: 'ua_facebook_group_list_groups',
-                nonce: UncannyAutomatorBackend.ajax.nonce
+        fetch( UncannyAutomatorBackend.ajax.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
             },
-            onSuccess: (response) => {
-                // Remove the loading animation.
-                this.$preloaderButton.remove();
+            body: new URLSearchParams({
+                action: 'ua_facebook_group_list_groups',
+                nonce: UncannyAutomatorBackend.ajax.nonce,
+            } )
+        })
+            .then( ( response ) => response.json() )
+			.then( ( response ) => {
                 // Check if there are pages
-                if (!_uo.utility.isEmpty(response.items)) {
+                if ( Array.isArray( response.items ) && response.items.length > 0 ) {
                     // Set pages
                     this.createList(response.items);
                 } else {
                     // Check if there is an error defined
                     if (
                         false === response.success
-                        && !_uo.utility.isEmpty(response.message)
+                        && typeof response.message !== 'undefined'
+                        && response.message !== ''
                     ) {
                         // Set error
                         this.setError(response.message);
                     }
                 }
-            },
-            onFail: (response, message) => {
-                console.info(message);
-                // Remove the loading animation.
-                if (this.$preloaderButton) {
-                    this.$preloaderButton.remove();
-                }
+			} )
+			.catch( ( error ) => {
                 // Show error
-                this.setError(message.error);
-            },
-        });
+                this.setError(error);
+			} )
+			.finally( () => {
+				// Remove the loading animation.
+                this.$preloaderButton.remove();
+			} );
     }
 
     /**
@@ -88,7 +90,7 @@ class AutomatorFacebookGroupSettings {
     setError(error = '') {
 
         // Check if there is an error defined
-        if (!_uo.utility.isEmpty(error)) {
+        if ( error ) {
             this.$errorWrapper.innerHTML = error;
             this.$errorWrapper.style.display = 'block';
         } else {

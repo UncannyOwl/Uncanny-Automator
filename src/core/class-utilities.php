@@ -197,24 +197,6 @@ class Utilities {
 		return apply_filters( 'automator_time_format', 'g:i a' );
 	}
 
-	/**
-	 * Returns the full url for the recipe UI dist directory
-	 *
-	 * @param $file_name
-	 *
-	 * @return $asset_url
-	 * @since    1.0.0
-	 */
-	public static function automator_get_recipe_dist( $file_name ) {
-		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
-			$asset_url = plugins_url( 'src/recipe-ui/dist/' . $file_name, AUTOMATOR_BASE_FILE );
-		} else {
-			$asset_url = plugins_url( 'src/recipe-ui/dist/' . $file_name, AUTOMATOR_BASE_FILE );
-
-		}
-
-		return $asset_url;
-	}
 
 	/**
 	 * Returns the full url for the passed Icon within recipe UI
@@ -300,7 +282,7 @@ class Utilities {
 	 * @since    1.0.0
 	 */
 	public static function automator_get_media( $file_name ) {
-		return plugins_url( 'src/assets/backend/dist/img/' . $file_name, AUTOMATOR_BASE_FILE );
+		return plugins_url( 'src/assets/build/img/' . $file_name, AUTOMATOR_BASE_FILE );
 	}
 
 	/**
@@ -310,21 +292,6 @@ class Utilities {
 	 */
 	public static function automator_get_vendor_asset( $file_name ) {
 		return plugins_url( 'src/assets/legacy/vendor/' . $file_name, AUTOMATOR_BASE_FILE );
-	}
-
-	/**
-	 * Enqueues global JS and CSS files
-	 *
-	 * @param $file_name
-	 *
-	 * @since    1.0.0
-	 */
-	public static function legacy_automator_enqueue_global_assets() {
-		wp_enqueue_style( 'uap-admin-global-fonts', 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap', array(), self::automator_get_version() );
-
-		wp_enqueue_style( 'uap-admin-global', self::automator_get_asset( 'legacy/css/admin/global.css' ), array( 'uap-admin-global-fonts' ), self::automator_get_version() );
-
-		wp_enqueue_script( 'uap-admin-global', self::automator_get_asset( 'legacy/js/admin/global.js' ), array( 'jquery' ), self::automator_get_version(), true );
 	}
 
 	/**
@@ -359,18 +326,6 @@ class Utilities {
 	 */
 	public static function automator_get_version() {
 		return AUTOMATOR_PLUGIN_VERSION;
-	}
-
-	/**
-	 * Returns the full url for the passed JS file
-	 *
-	 * @param $file_name
-	 *
-	 * @return $asset_url
-	 * @since    1.0.0
-	 */
-	public static function automator_get_js( $file_name ) {
-		return plugins_url( 'src/assets/js/' . $file_name, AUTOMATOR_BASE_FILE );
 	}
 
 	/**
@@ -903,4 +858,309 @@ class Utilities {
 
 	}
 
+	/**
+     * Registers and optionally enqueues a script or style from the legacy vendor directory,
+     * automatically detecting the type based on the file extension (.js or .css).
+     *
+     * Note: This method is provided for handling existing legacy assets. It is strongly recommended to manage front-end dependencies using npm/yarn and bundle them using Webpack (or another bundler) with the `enqueue_asset` method for better performance, dependency management, and security.
+     *
+     * @see self::enqueue_asset() For the recommended way to enqueue modern assets.
+     *
+     * @since 6.7
+     * @param string $handle The unique handle for the script/style.
+     * @param string $path_fragment The relative path within '_legacy/vendor/' including the filename (e.g., 'codemirror/js/codemirror.min.js').
+     * @param array $deps An array of dependency handles.
+     * @param array $options {
+     * Optional. An array of options.
+     *
+     * @type string|bool $version Version string, or false to use main plugin version. Default false.
+     * @type bool $in_footer Load script in footer. Default true. Applies only to scripts.
+     * @type bool $enqueue Whether to enqueue after registering. Default true.
+     * }
+     *
+     * @return bool True on successful registration (and optional enqueue), false on failure.
+     */
+    public static function enqueue_legacy_vendor_asset( $handle, $path_fragment, $deps = array(), $options = array() ) {
+
+        // Ensure base constants are defined
+        if ( ! defined( 'UNCANNY_AUTOMATOR_ASSETS_DIR' ) || ! defined( 'UNCANNY_AUTOMATOR_ASSETS_URL' ) ) {
+            trigger_error( 'Asset constants UNCANNY_AUTOMATOR_ASSETS_DIR or UNCANNY_AUTOMATOR_ASSETS_URL are not defined.', E_USER_WARNING ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            return false;
+        }
+
+        // Sanitize input
+        $handle        = sanitize_key( $handle );
+        $path_fragment = trim( $path_fragment, '/\\' );
+        $deps          = (array) $deps; // Ensure it's an array
+
+        if ( empty( $handle ) || empty( $path_fragment ) ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                trigger_error( 'Invalid handle or path fragment supplied to enqueue_legacy_vendor_asset.', E_USER_WARNING ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            }
+            return false;
+        }
+
+		// Determine type from file extension
+        $extension = strtolower( pathinfo( $path_fragment, PATHINFO_EXTENSION ) );
+        $type      = null;
+
+        if ( 'js' === $extension ) {
+            $type = 'script';
+        } elseif ( 'css' === $extension ) {
+            $type = 'style';
+        } else {
+            // Invalid file type for this function
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                trigger_error( sprintf( 'Invalid file extension "%s" for legacy vendor asset "%s". Only .js or .css supported.', esc_html( $extension ), esc_html( $path_fragment ) ), E_USER_WARNING ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            }
+            return false;
+        }
+
+        // Default options
+        $defaults = array(
+            'version'   => false,
+            'in_footer' => true,
+            'enqueue'   => true,
+        );
+        $options = wp_parse_args( $options, $defaults );
+
+        // Determine version
+        $version = ( false === $options['version'] ) ? self::automator_get_version() : $options['version'];
+
+        // Construct path and URL
+        $file_path = UNCANNY_AUTOMATOR_ASSETS_DIR . '_legacy/vendor/' . $path_fragment;
+        $file_url  = UNCANNY_AUTOMATOR_ASSETS_URL . '_legacy/vendor/' . $path_fragment;
+
+        // Check if the file actually exists before trying to enqueue
+        if ( ! file_exists( $file_path ) ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                trigger_error(
+                    sprintf( 'Legacy vendor asset file not found for handle "%s": %s', esc_html( $handle ), esc_html( $file_path ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                    E_USER_WARNING
+                );
+            }
+            return false;
+        }
+
+        // Note: Manually including vendor libraries bypasses standard dependency management (like npm).
+        // Ensure these libraries are kept up-to-date and be mindful of potential version conflicts or security vulnerabilities.
+        // Prefer managing dependencies via npm and using `Utilities::enqueue_asset()` where possible.
+
+        $registered = false;
+
+        // Register and potentially enqueue based on determined type
+        if ( 'style' === $type ) {
+            $registered = wp_register_style( $handle, $file_url, $deps, $version );
+            if ( $options['enqueue'] && $registered ) {
+                wp_enqueue_style( $handle );
+            }
+        } elseif ( 'script' === $type ) {
+            $registered = wp_register_script( $handle, $file_url, $deps, $version, (bool) $options['in_footer'] );
+            if ( $options['enqueue'] && $registered ) {
+                wp_enqueue_script( $handle );
+            }
+        }
+
+        return (bool) $registered; // Return true if registration was successful
+    }
+
+	/**
+     * Registers and optionally enqueues a script and its associated style generated by Webpack, using the .asset.php file for dependencies and version.
+     *
+     * Assumes JS, CSS, and Asset files are named '[name].[js|css|asset.php]' within the specified asset path relative to UNCANNY_AUTOMATOR_ASSETS_DIR/URL.
+     * Uses wp_add_inline_script to make PHP data available to the script.
+     *
+     * @since 6.7 (Modified to use wp_add_inline_script in X.Y version)
+     * @param string $handle The unique handle for the script/style.
+     * @param string $asset_name The base name of the asset files (e.g., 'main', 'closure').
+     * @param array $options {
+     * Optional. An array of options.
+     *
+     * @type bool   $enqueue      Whether to enqueue after registering. Default true.
+     * @type bool   $in_footer    Load script in footer. Default true. Applies only to scripts.
+     * @type array  $style_deps   Array of additional style dependency handles. Default [].
+     * @type array  $script_deps  Array of additional script dependency handles. Default []. Merged with asset file dependencies.
+     * @type array  $localize     Data to pass to the script via wp_add_inline_script.
+     * Format: ['JsObjectName' => ['key' => 'value', ...]]. Default [].
+     * @type string $asset_sub_path Relative path within assets/ where the dist files are. Default 'dist/'.
+     * }
+     *
+     * @return bool True on successful registration (and optional enqueue) of at least one asset (script or style), false otherwise.
+     */
+    public static function enqueue_asset( $handle, $asset_name, $options = array() ) {
+
+        // Ensure base constants are defined for asset paths/URLs.
+        if ( ! defined( 'UNCANNY_AUTOMATOR_ASSETS_DIR' ) || ! defined( 'UNCANNY_AUTOMATOR_ASSETS_URL' ) ) {
+            // Log warning if constants are missing, crucial for locating assets.
+            trigger_error( 'Asset constants UNCANNY_AUTOMATOR_ASSETS_DIR or UNCANNY_AUTOMATOR_ASSETS_URL are not defined.', E_USER_WARNING ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            return false;
+        }
+
+        // Define default options for asset registration and enqueuing.
+        $defaults = array(
+            'enqueue'           => true,
+            'in_footer'         => true,
+            'style_deps'        => array(),
+            'script_deps'       => array(),
+            'localize'          => array(),
+			'asset_sub_path'    => 'build/',
+			'load_translations' => true,
+			'text_domain'       => 'uncanny-automator', 
+        );
+        // Merge provided options with defaults.
+        $options = wp_parse_args( $options, $defaults );
+
+        // Construct base filesystem path and URL for the assets distribution directory.
+        $base_path = UNCANNY_AUTOMATOR_ASSETS_DIR . trailingslashit( $options['asset_sub_path'] );
+        $base_url  = UNCANNY_AUTOMATOR_ASSETS_URL . trailingslashit( $options['asset_sub_path'] );
+
+        // Define full paths and URLs for asset files based on naming convention.
+        $asset_php_path = $base_path . $asset_name . '.asset.php';
+        $js_file_url    = $base_url . $asset_name . '.js';
+        $css_file_url   = $base_url . $asset_name . '.css';
+        $js_file_path   = $base_path . $asset_name . '.js'; // Used for file existence check.
+        $css_file_path  = $base_path . $asset_name . '.css'; // Used for file existence check.
+
+        // Check if the mandatory .asset.php file exists. This file contains dependencies and version.
+        if ( ! file_exists( $asset_php_path ) ) {
+            // Log a warning during development/debug if the asset metadata file is missing.
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                trigger_error(
+                    sprintf( 'Asset file not found for handle "%s": %s', esc_html( $handle ), esc_html( $asset_php_path ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                    E_USER_WARNING
+                );
+            }
+            // Cannot proceed without asset metadata.
+            return false;
+        }
+
+        // Load asset data (dependencies and version) from the .asset.php file.
+        $asset_data = require( $asset_php_path );
+        // Use version from asset file, or fall back to the plugin's main version.
+        $version    = isset( $asset_data['version'] ) ? $asset_data['version'] : static::automator_get_version();
+        // Get script dependencies from asset file.
+        $js_deps    = isset( $asset_data['dependencies'] ) ? $asset_data['dependencies'] : array();
+
+        // Combine dependencies from the asset file with any explicitly passed dependencies. Ensure uniqueness.
+		$final_script_deps = array_unique( array_merge( $js_deps, (array) $options['script_deps'] ) );
+
+		/**
+		 * Filters the final list of script dependencies for a registered asset.
+		 *
+		 * Allows adding context-specific dependencies.
+		 *
+		 * @since 6.7
+		 *
+		 * @param array  $final_script_deps The calculated script dependencies.
+		 * @param string $asset_name        The base name of the asset.
+		 * @param array  $options           The options passed to enqueue_asset.
+		 */
+		$final_script_deps = apply_filters( 'automator_asset_script_dependencies_' . $handle, $final_script_deps, $asset_name, $options );
+
+        // Flags to track successful registration.
+        $registered_script = false;
+        $registered_style  = false;
+
+        // Register the style if its corresponding CSS file exists.
+        if ( file_exists( $css_file_path ) ) {
+            $registered_style = wp_register_style(
+                $handle,                // Unique handle for the style.
+                $css_file_url,          // URL to the CSS file.
+                (array) $options['style_deps'], // Use only explicitly passed dependencies for styles.
+                $version                // Asset version for cache busting.
+            );
+        }
+
+        // Register the script if its corresponding JS file exists.
+        if ( file_exists( $js_file_path ) ) {
+            $registered_script = wp_register_script(
+                $handle,                // Unique handle for the script.
+                $js_file_url,           // URL to the JS file.
+                $final_script_deps,     // Combined script dependencies (from .asset.php and options).
+                $version,               // Asset version for cache busting.
+                (bool) $options['in_footer'] // Whether to load the script in the footer.
+            );
+        }
+
+		// Load translations if the script was registered and the option is enabled.
+        if ( $registered_script && $options['load_translations'] ) {
+		   	wp_set_script_translations(
+				$handle,                 // The script handle.
+				$options['text_domain'], // The text domain.
+			);
+	   	}
+
+		// Prepare the localization variables. Start with what was passed in options.
+        $localizable_vars = isset( $options['localize'] ) && is_array( $options['localize'] ) ? $options['localize'] : array();
+
+		/**
+         * Filters the entire array of variables to be localized for a specific script handle.
+         *
+         * Allows adding, removing, or modifying top-level JavaScript variables and their data before they are added inline.
+         *
+         * @since 6.7
+         *
+         * @param array  $localizable_vars The array of variables to localize [ 'JsObjectName' => $data_array, ... ].
+         * @param string $handle           The script handle.
+         * @param string $asset_name       The base name of the asset.
+         * @param array  $options          The original options passed to enqueue_asset.
+         */
+        $localizable_vars = apply_filters( 'automator_asset_script_localize_vars_' . $handle, $localizable_vars, $handle, $asset_name, $options );
+
+         // Add inline data using wp_add_inline_script if script was registered and data exists.
+		 if ( $registered_script && ! empty( $localizable_vars ) && is_array( $localizable_vars ) ) {
+            // Iterate over the potentially filtered array of variables
+            foreach ( $localizable_vars as $object_name => $data ) {
+                // Basic validation for the JavaScript variable name and data structure.
+                // Note: User must ensure $object_name is a strictly valid JS variable identifier.
+                if ( is_string( $object_name ) && ! empty( $object_name ) && is_array( $data ) ) {
+
+					/**
+					 * Filters the data before it's encoded and added inline.
+					 *
+					 * @since 6.7
+					 *
+					 * @param array $data The data to be filtered.
+					 * @return array The filtered data.
+					 */
+                    $filtered_data = apply_filters( 'automator_asset_script_data_' . $handle, $data );
+
+                    // Safely encode the PHP data into a JSON string suitable for JavaScript.
+                    $encoded_data = wp_json_encode( $filtered_data );
+
+                    // Check for JSON encoding errors, especially important if data structure is complex or from external sources.
+                    if ( false === $encoded_data ) {
+                         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                            trigger_error(
+                                sprintf( 'JSON encoding error for handle "%s", object "%s". Data not added.', esc_html( $handle ), esc_html( $object_name ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                E_USER_WARNING
+                            );
+                         }
+                         continue; // Skip adding this specific data if encoding failed.
+                    }
+
+                    // Create the inline JavaScript snippet.
+                    // Defines a JavaScript 'const' variable with the specified name, assigning the JSON encoded data.
+                    $inline_script = sprintf( 'const %s = %s;', $object_name, $encoded_data );
+
+                    // Add the inline script to execute *before* the main registered script ($handle).
+                    // This ensures the data variable is available when the main script runs.
+                    wp_add_inline_script( $handle, $inline_script, 'before' );
+                }
+            }
+        }
+
+        // Enqueue the registered script and style if the 'enqueue' option is true.
+        if ( $options['enqueue'] ) {
+            if ( $registered_style ) {
+                wp_enqueue_style( $handle );
+            }
+            if ( $registered_script ) {
+                wp_enqueue_script( $handle );
+            }
+        }
+
+        // Return true if either the script or the style was successfully registered.
+        return $registered_script || $registered_style;
+    }
 }

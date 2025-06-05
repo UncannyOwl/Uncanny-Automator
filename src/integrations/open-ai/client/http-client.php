@@ -160,6 +160,10 @@ class HTTP_Client {
 			)
 		);
 
+		if ( is_wp_error( $response ) ) {
+			throw new \Exception( esc_html( $response->get_error_message() ), 500 );
+		}
+
 		$status_code   = wp_remote_retrieve_response_code( $response );
 		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 

@@ -33,7 +33,9 @@ class WP_POSTRECEIVESCOMMENT {
 	public function __construct() {
 		$this->define_trigger();
 	}
-
+	/**
+	 * Define trigger.
+	 */
 	public function define_trigger() {
 
 		$trigger = array(
@@ -41,10 +43,9 @@ class WP_POSTRECEIVESCOMMENT {
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf( esc_attr__( "{{A user's post:%1\$s}} receives a comment", 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => esc_attr__( "{{A user's post}} receives a comment", 'uncanny-automator' ),
+			// translators: %1$s: post title
+			'sentence'            => sprintf( esc_attr_x( "{{A user's post:%1\$s}} receives a comment", 'WordPress', 'uncanny-automator' ), $this->trigger_meta ),
+			'select_option_name'  => esc_attr_x( "{{A user's post}} receives a comment", 'WordPress', 'uncanny-automator' ),
 			'action'              => 'comment_post',
 			'priority'            => 90,
 			'accepted_args'       => 3,
@@ -53,7 +54,6 @@ class WP_POSTRECEIVESCOMMENT {
 		);
 
 		Automator()->register->trigger( $trigger );
-
 	}
 
 	/**
@@ -79,14 +79,14 @@ class WP_POSTRECEIVESCOMMENT {
 			false
 		);
 
-		$temp = array(
+		$options = array(
 			'options_group' => array(
 				$this->trigger_meta => array(
 					$all_post_types,
 					Automator()->helpers->recipe->field->select(
 						array(
 							'option_code'     => $this->trigger_meta,
-							'label'           => esc_attr__( 'Post', 'uncanny-automator' ),
+							'label'           => esc_attr_x( 'Post', 'WordPress', 'uncanny-automator' ),
 							'relevant_tokens' => array(),
 						)
 					),
@@ -94,9 +94,27 @@ class WP_POSTRECEIVESCOMMENT {
 			),
 		);
 
-		return Automator()->utilities->keep_order_of_options( $temp );
+		// Add Akismet checkbox if plugin is active
+		if ( defined( 'AKISMET_VERSION' ) ) {
+			$options['options_group'][ $this->trigger_meta ][] = array(
+				'input_type'    => 'checkbox',
+				'label'         => esc_attr_x( 'Trigger only if the comment passes Akismet spam filtering', 'WordPress', 'uncanny-automator' ),
+				'option_code'   => 'AKISMET_CHECK',
+				'is_toggle'     => true,
+				'default_value' => false,
+			);
+		}
+
+		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
+	/**
+	 * Method post_receives_comment.
+	 *
+	 * @param $comment_id
+	 * @param $comment_approved
+	 * @param $commentdata
+	 */
 	/**
 	 * Method post_receives_comment.
 	 *
@@ -108,6 +126,7 @@ class WP_POSTRECEIVESCOMMENT {
 		if ( isset( $commentdata['posted_by_automator'] ) ) {
 			return;
 		}
+
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_post      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 		$user_id            = get_post_field( 'post_author', (int) $commentdata['comment_post_ID'] );
@@ -127,13 +146,16 @@ class WP_POSTRECEIVESCOMMENT {
 				// Check if trigger condition matches the comment id.
 				$trigger_condition_matched_comment_id = ( intval( $required_post[ $recipe_id ][ $trigger_id ] ) === intval( $commentdata['comment_post_ID'] ) );
 
-				if ( $is_any || $trigger_condition_matched_comment_id ) {
+				//Early return if comment is spam
+				if ( true === Automator()->helpers->recipe->wp->should_block_comment_by_akismet( $trigger, $comment_approved, $commentdata ) ) {
+					continue;
+				}
 
+				if ( $is_any || $trigger_condition_matched_comment_id ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
 					);
-
 				}
 			}
 		}
@@ -166,7 +188,6 @@ class WP_POSTRECEIVESCOMMENT {
 								);
 								// Comment ID
 								Automator()->db->token->save( 'comment_id', maybe_serialize( $comment_id ), $trigger_meta );
-
 								Automator()->maybe_trigger_complete( $result['args'] );
 							}
 						}

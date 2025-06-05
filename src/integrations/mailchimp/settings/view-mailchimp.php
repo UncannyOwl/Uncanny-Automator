@@ -1,6 +1,6 @@
 <?php
 /**
- * Facebook Settings
+ * MailChimp Settings
  * Settings > Premium Integrations > Facebook
  *
  * @since   3.7
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<uo-icon integration="MAILCHIMP"></uo-icon>
 
-				<?php esc_html_e( 'Mailchimp', 'uncanny-automator' ); ?>
+				<?php echo esc_html_x( 'Mailchimp', 'MailChimp', 'uncanny-automator' ); ?>
 
 			</div>
 
@@ -38,13 +38,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php if ( 1 === $connect_code && $this->is_connected ) { ?>
 					<?php /* translators: Success message */ ?>
-					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php echo esc_attr( sprintf( esc_html__( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $this->client->login->login_name ) ); ?>"></uo-alert>
+					<uo-alert class="uap-spacing-bottom" type="success" heading="<?php echo esc_attr( sprintf( esc_html_x( 'Your account "%s" has been connected successfully!', 'Mailchimp', 'uncanny-automator' ), $this->client->login->login_name ) ); ?>"></uo-alert>
 				<?php } ?>
 
 				<?php if ( 2 === $connect_code ) { ?>
 
 					<uo-alert type="error" class="uap-spacing-bottom">
-						<?php esc_html_e( 'Something went wrong while connecting to application. Please try again.', 'uncanny-automator' ); ?>
+						<?php echo esc_html_x( 'Something went wrong while connecting to application. Please try again.', 'MailChimp', 'uncanny-automator' ); ?>
 					</uo-alert>
 
 				<?php } ?>
@@ -52,39 +52,45 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( $this->is_connected ) { ?>
 
 					<uo-alert
-						heading="<?php esc_html_e( 'Uncanny Automator only supports connecting to one Mailchimp account at a time.', 'uncanny-automator' ); ?>"
+						heading="<?php echo esc_html_x( 'Uncanny Automator only supports connecting to one Mailchimp account at a time.', 'MailChimp', 'uncanny-automator' ); ?>"
 					></uo-alert>
 
 					<div class="uap-settings-panel-content-separator"></div>
 
-					<uo-switch id="uap_mailchimp_enable_webhook" <?php echo esc_attr( $enable_triggers ); ?> label="<?php esc_attr_e( 'Enable triggers', 'uncanny-automator' ); ?>"></uo-switch>
+					<uo-switch id="uap_mailchimp_enable_webhook" <?php echo esc_attr( $enable_triggers ); ?> label="<?php echo esc_attr_x( 'Enable triggers', 'Mailchimp', 'uncanny-automator' ); ?>"></uo-switch>
 
 					<div id="uap-mailchimp-webhook" style="display:none;">
 						<uo-alert
-							heading="<?php esc_attr_e( 'Setup instructions', 'uncanny-automator' ); ?>"
+							heading="<?php esc_attr_x( 'Setup instructions', 'MailChimp', 'uncanny-automator' ); ?>"
 							class="uap-spacing-top"
 						>
 
 							<p>
 								<?php
 									echo sprintf(
-										esc_html__( "Enabling Mailchimp triggers requires setting up a webhook in your Mailchimp account using the URL below. A few steps and you'll be up and running in no time. Visit our %1\$s for simple instructions.", 'uncanny-automator' ),
-										'<a href="' . esc_url( $kb_link ) . '" target="_blank">' . esc_html__( 'Knowledge Base article', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
+										esc_html_x(
+											"Enabling Mailchimp triggers requires setting up a webhook in your Mailchimp account using the URL below. A few steps and you'll be up and running in no time. Visit our %1\$s for simple instructions.",
+											'MailChimp',
+											'uncanny-automator'
+										),
+										'<a href="' . esc_url( $kb_link ) . '" target="_blank">' . esc_html_x( 'Knowledge Base article', 'MailChimp', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>'
 									);
 								?>
 							</p>
 
 							<uo-text-field
 								value="<?php echo esc_url( $webhook_url ); ?>"
-								label="<?php esc_attr_e( 'Webhook URL', 'uncanny-automator' ); ?>"
+								label="<?php echo esc_attr_x( 'Webhook URL', 'Mailchimp', 'uncanny-automator' ); ?>"
 								helper="
 								<?php
-									echo esc_attr(
-										sprintf(
-											/* translators: Settings field description */
-											esc_html__( 'Use this URL to create a webhook in %s of the audiences that you want to trigger recipes.', 'uncanny-automator' ),
-											'<strong>' . _x( 'each', 'Refers to the individual audience', 'uncanny-automator' ) . '</strong>'
-										)
+									echo sprintf(
+										/* translators: %1$s Settings field description */
+										esc_attr_x(
+											'Use this URL to create a webhook in %1$s of the audiences that you want to trigger recipes.',
+											'MailChimp',
+											'uncanny-automator'
+										),
+										'<strong>' . esc_html_x( 'each', 'MailChimp', 'uncanny-automator' ) . '</strong>'
 									);
 								?>
 								"
@@ -99,7 +105,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								class="uap-spacing-top"
 							>
 								<uo-icon id="rotate"></uo-icon> 
-								<?php esc_attr_e( 'Regenerate webhook URL', 'uncanny-automator' ); ?>
+								<?php echo esc_attr_x( 'Regenerate webhook URL', 'Mailchimp', 'uncanny-automator' ); ?>
 							</uo-button>
 
 						</uo-alert>
@@ -109,44 +115,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( ! $this->is_connected ) { ?>
 
 					<div class="uap-settings-panel-content-subtitle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Mailchimp', 'uncanny-automator' ); ?>
+						<?php echo esc_html_x( 'Connect Uncanny Automator to Mailchimp', 'Mailchimp', 'uncanny-automator' ); ?>
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Mailchimp to better segment and engage with your customers, or automatically send an email to subscribers when a new blog post is published. Add users to audiences and manage user tags based on activity on your WordPress site.', 'uncanny-automator' ); ?>
+						<?php echo esc_html_x( 'Connect Uncanny Automator to Mailchimp to better segment and engage with your customers, or automatically send an email to subscribers when a new blog post is published. Add users to audiences and manage user tags based on activity on your WordPress site.', 'Mailchimp', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
-						<strong><?php esc_html_e( 'Activating this integration will enable the following for use in your recipes:', 'uncanny-automator' ); ?></strong>
+						<strong><?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Mailchimp', 'uncanny-automator' ); ?></strong>
 					</p>
 
 					<ul>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'A contact email is changed', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Trigger:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'A contact email is changed', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'A contact is added to an audience', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Trigger:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'A contact is added to an audience', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'A contact is unsubscribed from an audience', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Trigger:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'A contact is unsubscribed from an audience', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add a note to the user', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add a note to the user', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add a tag to the user', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add a tag to the user', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add the user to an audience', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add the user to an audience', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Create and send a campaign', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Create and send a campaign', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Remove a tag from the user', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Remove a tag from the user', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Unsubscribe the user from an audience', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Mailchimp', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Unsubscribe the user from an audience', 'Mailchimp', 'uncanny-automator' ); ?>
 						</li>
 					</ul>
 
@@ -161,7 +167,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php if ( ! $this->is_connected ) { ?>
 
 					<uo-button href="<?php echo esc_url( $connect_uri ); ?>" target="_self" unsafe-force-target>
-						<?php esc_html_e( 'Connect Mailchimp account', 'uncanny-automator' ); ?>
+						<?php echo esc_html_x( 'Connect Mailchimp account', 'Mailchimp', 'uncanny-automator' ); ?>
 					</uo-button>
 
 				<?php } else { ?>
@@ -174,7 +180,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 								<?php if ( isset( $this->client->login->avatar ) ) { ?>
 
-									<img src="<?php echo esc_url( $this->client->login->avatar ); ?>" alt="<?php echo esc_url( $this->client->login->login_name ); ?>" />
+									<img src="<?php echo esc_url( $this->client->login->avatar ); ?>" alt="<?php echo esc_url( $this->client->login->login_name[0] ); ?>" />
 							   
 								<?php } else { ?>
 
@@ -209,13 +215,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 							<uo-icon id="right-from-bracket"></uo-icon>
 
-							<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
+							<?php echo esc_html_x( 'Disconnect', 'Mailchimp', 'uncanny-automator' ); ?>
 
 						</uo-button>
 
 						<uo-button type="submit">
 
-							<?php esc_html_e( 'Save settings', 'uncanny-automator' ); ?>
+							<?php echo esc_html_x( 'Save settings', 'Mailchimp', 'uncanny-automator' ); ?>
 
 						</uo-button>
 

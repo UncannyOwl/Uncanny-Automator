@@ -32,23 +32,29 @@ class AutomatorSendySettings {
 		const $count = $wrapper.querySelector('.uap-sendy-sync-items-count');
 		const key = $button.dataset.key;
 
-		_uo.utility.fetchData({
-			url: UncannyAutomatorBackend.ajax.url,
-			data: {
-				action: 'automator_sendy_sync_transient_data',
-				nonce: UncannyAutomatorBackend.ajax.nonce,
+		fetch( UncannyAutomatorBackend.ajax.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
+            },
+            body: new URLSearchParams({
+                action: 'automator_sendy_sync_transient_data',
+                nonce: UncannyAutomatorBackend.ajax.nonce,
 				key: key,
-			},
-			onSuccess: (response) => {
+            } )
+        })
+            .then( ( response ) => response.json() )
+			.then( ( response ) => {
 				console.info(response);
+				$count.innerHTML = response?.data?.count;
+			} )
+			.catch( ( error ) => {
+				console.warn(error);
+			} )
+			.finally( () => {
 				$button.removeAttribute('loading');
-				$count.innerHTML = response.data.count;
-			},
-			onFail: (response, message) => {
-				console.warn(message);
-				$button.removeAttribute('loading');
-			},
-		});
+			} );
 	}
 }
 

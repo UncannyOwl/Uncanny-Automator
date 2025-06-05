@@ -12,17 +12,6 @@ class Admin_Tools_Status_Table {
 	public function __construct() {
 		// Define the tab
 		$this->create_tab();
-
-		if ( 'uncanny-automator-admin-tools' === automator_filter_input( 'page' ) ) {
-			add_action( 'admin_enqueue_scripts', array( $this, 'assets' ) );
-		}
-	}
-
-	public function assets() {
-
-		// @TODO: Replace rand with automator version.
-		wp_enqueue_style( 'uap-admin-tools', Utilities::automator_get_asset( 'legacy/css/admin/tools.css' ), array(), Utilities::automator_get_version() . '-1.0.5' );
-
 	}
 
 	private function create_tab() {

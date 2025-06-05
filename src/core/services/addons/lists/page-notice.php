@@ -136,7 +136,7 @@ class Page_Notice {
 				$this->message = esc_html_x( 'Get access to these addons with Automator Pro with an Elite license', 'Addons', 'uncanny-automator' );
 				break;
 			// License requirements vs current plan ( Requires Plus or Elite )
-			case 'pro-installed-license-active-pro-basic-requires-plus':
+			case 'pro-installed-license-active-pro-basic-requires-pro-plus':
 				$this->message = esc_html_x( 'Get access to these with a Pro Plus or Pro Elite license', 'Addons', 'uncanny-automator' );
 				break;
 			// License requirements vs current plan ( Requires Elite )
@@ -158,9 +158,9 @@ class Page_Notice {
 
 		// Map to info else error.
 		$type_map = array(
-			'pro-installed-license-active-pro-basic-requires-plus'  => 'info',
-			'pro-installed-license-active-pro-basic-requires-elite' => 'info',
-			'pro-installed-license-active-pro-plus-requires-elite'  => 'info',
+			'pro-installed-license-active-pro-basic-requires-pro-plus' => 'info',
+			'pro-installed-license-active-pro-basic-requires-elite'    => 'info',
+			'pro-installed-license-active-pro-plus-requires-elite'     => 'info',
 		);
 
 		$this->type = $type_map[ $this->scenario_id ] ?? 'error';
@@ -195,7 +195,7 @@ class Page_Notice {
 				$this->cta = Calls_To_Action::get_activate_pro( 'error' );
 				break;
 			// Requires a plan upgrade.
-			case 'pro-installed-license-active-pro-basic-requires-plus':
+			case 'pro-installed-license-active-pro-basic-requires-pro-plus':
 			case 'pro-installed-license-active-pro-basic-requires-elite':
 			case 'pro-installed-license-active-pro-plus-requires-elite':
 				// Set Automator Pro pricing upgrade CTA.

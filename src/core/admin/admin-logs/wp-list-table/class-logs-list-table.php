@@ -1116,7 +1116,7 @@ class Logs_List_Table extends WP_List_Table {
 			return '
             <div class="uap-logs-user">
 			    <div class="uap-logs-user__avatar-container">
-				    <img class="uap-logs-user__avatar" src="' . esc_url( Utilities::automator_get_asset( 'backend/dist/img/gravatar-user-deleted.svg' ) ) . '">
+				    <img class="uap-logs-user__avatar" src="' . esc_url( Utilities::automator_get_asset( 'build/img/gravatar-user-deleted.svg' ) ) . '">
 				</div>
 			<div class="uap-logs-user__info">
 			    <div class="uap-logs-user__display-name--deleted-user">' . esc_html__( 'Deleted user', 'uncanny-automator' ) . '</div>'

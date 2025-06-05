@@ -247,17 +247,22 @@ class Facebook_Helpers {
 	 */
 	public function automator_integration_facebook_capture_token_disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), self::OPTION_KEY ) ) {
-
-			$this->remove_credentials();
-
-			wp_safe_redirect( $this->get_settings_page_uri() );
-
-			exit;
-
+		// Nonce verification.
+		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), self::OPTION_KEY ) ) {
+			wp_die( esc_html_x( 'Nonce Verification Failed', 'Facebook', 'uncanny-automator' ) );
 		}
 
-		wp_die( esc_html_x( 'Nonce Verification Failed', 'Facebook', 'uncanny-automator' ) );
+		// Current user check.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html_x( 'Unauthorized', 'Facebook', 'uncanny-automator' ) );
+		}
+
+		$this->remove_credentials();
+
+		wp_safe_redirect( $this->get_settings_page_uri() );
+
+		exit;
+
 	}
 
 	/**

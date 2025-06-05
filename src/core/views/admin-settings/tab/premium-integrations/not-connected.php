@@ -1,7 +1,5 @@
 <?php
 
-namespace Uncanny_Automator;
-
 /**
  * App integrations
  * Settings > App integrations > Not connected
@@ -15,10 +13,13 @@ namespace Uncanny_Automator;
  * @author  Daniela R. & Agustin B.
  *
  * Variables:
- * $upgrade_to_pro_url  URL to upgrade to Automator Pro
- * $credits_article_url URL to an article with information about the credits
- * $connect_site_url    URL to connect the site to automatorplugin.com
+ * $upgrade_to_pro_url      URL to upgrade to Automator Pro
+ * $credits_article_url     URL to an article with information about the credits
+ * $connect_site_url        URL to connect the site to automatorplugin.com
+ * $current_integration_tab The current integration tab object
  */
+
+namespace Uncanny_Automator;
 
 ?>
 
@@ -30,7 +31,13 @@ namespace Uncanny_Automator;
 			<uo-icon id="rotate"></uo-icon>
 
 			<div class="uap-settings-panel-title">
-				<?php esc_html_e( 'App integrations use credits', 'uncanny-automator' ); ?>
+				<?php
+				printf(
+					// translators: %s Integration name.
+					esc_html__( 'Get app credits to connect to %s', 'uncanny-automator' ),
+					esc_html( $current_integration_tab->name )
+				);
+				?>
 			</div>
 
 			<div class="uap-settings-panel-content">

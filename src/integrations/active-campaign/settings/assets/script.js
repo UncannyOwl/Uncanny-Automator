@@ -32,23 +32,27 @@ class AutomatorActiveCampaignSettings {
 
 		this.$localSyncBtn.setAttribute('loading', true);
 
-		_uo.utility.fetchData({
-			url: UncannyAutomatorBackend.ajax.url,
-			data: {
-				action: 'active-campaign-sync-data',
-				nonce: UncannyAutomatorBackend.ajax.nonce
-			},
-			onSuccess: (response) => {
-				console.info(response);
-				this.$localSyncBtn.removeAttribute('loading');
+		fetch( UncannyAutomatorBackend.ajax.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
+            },
+            body: new URLSearchParams({
+                action: 'active-campaign-sync-data',
+                nonce: UncannyAutomatorBackend.ajax.nonce,
+            } )
+        })
+            .then( ( response ) => response.json() )
+			.then( ( response ) => {
 				this.$syncContainer.innerHTML = response.messages;
-			},
-			onFail: (response, message) => {
-				console.warn(message);
+			} )
+			.catch( ( error ) => {
+				console.warn(error);
+			} )
+			.finally( () => {
 				this.$localSyncBtn.removeAttribute('loading');
-			},
-		});
-
+			} );
 	}
 
 	get $syncAlert() {

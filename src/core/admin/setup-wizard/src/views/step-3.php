@@ -5,7 +5,7 @@
 ?>
 <div class="center row-1">
 	<div class="automator-setup-wizard__branding">
-		<img width="380" src="<?php echo esc_url( Uncanny_Automator\Utilities::automator_get_asset( 'backend/dist/img/logo-horizontal.svg' ) ); ?>" alt="" />
+		<img width="380" src="<?php echo esc_url( Uncanny_Automator\Utilities::automator_get_asset( 'build/img/logo-horizontal.svg' ) ); ?>" alt="" />
 	</div>
 	<div class="automator-setup-wizard__steps">
 		<div class="automator-setup-wizard__steps__inner-wrap">
@@ -34,21 +34,19 @@
 	</p>
 
 	<p>
-		<a href="<?php echo esc_url( admin_url( 'post-new.php' ) . '?post_type=uo-recipe' ); ?>"
-			id="ua-connect-account-btn"
-			class="uo-settings-btn uo-settings-btn--primary"
-			title=" <?php esc_attr_e( 'Create my first recipe', 'uncanny-automator' ); ?>"
-			>
+		<uo-button
+			href="<?php echo esc_url( admin_url( 'post-new.php' ) . '?post_type=uo-recipe' ); ?>"
+		>
 			<?php esc_html_e( 'Create my first recipe', 'uncanny-automator' ); ?>
-		</a>
+		</uo-button>
 
-		<a href="<?php echo esc_url( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-dashboard' ); ?>"
-			id="ua-connect-account-btn"
-			class="uo-settings-btn uo-settings-btn--secondary"
-			title="<?php esc_attr_e( 'Return to dashboard', 'uncanny-automator' ); ?>"
-			>
+		<uo-button
+			href="<?php echo esc_url( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-dashboard' ); ?>"
+			color="secondary"
+			style="margin-left: 10px;"
+		>
 			<?php esc_html_e( 'Return to dashboard', 'uncanny-automator' ); ?>
-		</a>
+		</uo-button>
 	</p>
 
 </div>

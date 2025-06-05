@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+use TINCANNYSNC\Module_CRUD;
 use TINCANNYSNC\Database;
 
 /**
@@ -25,13 +26,9 @@ class UOTC_USERATTAINSSCORE {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-
-		// We are only loading it if Tin Canny exists
-		//if ( defined( 'UNCANNY_REPORTING_VERSION' ) ) {
 		$this->trigger_code = 'USERATTAINSSCORE';
 		$this->trigger_meta = 'TCUSERATTAINSSCORE';
 		$this->define_trigger();
-		//}
 	}
 
 	/**
@@ -44,10 +41,9 @@ class UOTC_USERATTAINSSCORE {
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/tin-canny-reporting/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - Uncanny Reporting */
-			'sentence'            => sprintf( esc_html__( 'A user attains a score {{greater than, less than or equal to:%1$s}} {{a score:%2$s}} on {{a Tin Can module:%3$s}}', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'TCMODULEINTERACTION' ),
-			/* translators: Logged-in trigger - Uncanny Reporting */
-			'select_option_name'  => esc_html__( 'A user attains {{a score}} {{greater than, less than or equal to}} on {{a Tin Can module}}', 'uncanny-automator' ),
+			// translators: %1$s is the condition, %2$s is the score, %3$s is the module
+			'sentence'            => sprintf( esc_html_x( 'A user attains a score {{greater than, less than or equal to:%1$s}} {{a score:%2$s}} on {{a Tin Can module:%3$s}}', 'Uncanny Tincanny', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'TCMODULEINTERACTION' ),
+			'select_option_name'  => esc_html_x( 'A user attains {{a score}} {{greater than, less than or equal to}} on {{a Tin Can module}}', 'Uncanny Tincanny', 'uncanny-automator' ),
 			'action'              => 'tincanny_module_result_processed',
 			'priority'            => 99,
 			'accepted_args'       => 3,
@@ -66,10 +62,10 @@ class UOTC_USERATTAINSSCORE {
 	 */
 	public function load_options() {
 
-		$modules = Database::get_modules();
+		$modules = Uncanny_Tincanny_Helpers::get_modules();
 
 		$options       = array();
-		$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
+		$options['-1'] = esc_attr_x( 'Any module', 'Uncanny Tincanny', 'uncanny-automator' );
 
 		foreach ( $modules as $module ) {
 			$options[ $module->ID ] = $module->file_name;
@@ -81,11 +77,11 @@ class UOTC_USERATTAINSSCORE {
 					Automator()->helpers->recipe->field->select(
 						array(
 							'option_code' => 'TCMODULEINTERACTION',
-							'label'       => esc_attr__( 'Module', 'uncanny-automator' ),
+							'label'       => esc_attr_x( 'Module', 'Uncanny Tincanny', 'uncanny-automator' ),
 							'options'     => $options,
 						)
 					),
-					Automator()->helpers->recipe->field->text_field( $this->trigger_meta, esc_attr__( 'Module Score', 'uncanny-automator' ), true, 'text', '0', true ),
+					Automator()->helpers->recipe->field->text_field( $this->trigger_meta, esc_attr_x( 'Module Score', 'Uncanny Tincanny', 'uncanny-automator' ), true, 'text', '0', true ),
 					Automator()->helpers->recipe->less_or_greater_than(),
 				),
 			)
@@ -127,7 +123,7 @@ class UOTC_USERATTAINSSCORE {
 
 				$trigger_id = $trigger['ID'];
 
-				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === (int) $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && Automator()->utilities->match_condition_vs_number( $required_conditions[ $recipe_id ][ $trigger_id ], $required_scores[ $recipe_id ][ $trigger_id ], $score ) ) {
+				if ( ( (int) $module_ids[ $recipe_id ][ $trigger_id ] === (int) $module_id || intval( '-1' ) === intval( $module_ids[ $recipe_id ][ $trigger_id ] ) ) && Automator()->utilities->match_condition_vs_number( $required_conditions[ $recipe_id ][ $trigger_id ], $required_scores[ $recipe_id ][ $trigger_id ], $score ) ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'          => $recipe_id,
 						'trigger_id'         => $trigger_id,
@@ -241,5 +237,4 @@ class UOTC_USERATTAINSSCORE {
 
 		return $matches;
 	}
-
 }

@@ -5,7 +5,7 @@
 ?>
 <div class="automator-setup-wizard-step-2-wrap">
 	<div class="center automator-setup-wizard__branding">
-		<img width="380" src="<?php echo esc_url( Uncanny_Automator\Utilities::automator_get_asset( 'backend/dist/img/logo-horizontal.svg' ) ); ?>" alt="" />
+		<img width="380" src="<?php echo esc_url( Uncanny_Automator\Utilities::automator_get_asset( 'build/img/logo-horizontal.svg' ) ); ?>" alt="" />
 	</div>
 	<div class="automator-setup-wizard__steps">
 		<div class="automator-setup-wizard__steps__inner-wrap">
@@ -44,18 +44,19 @@
 			</p>
 
 			<p style="margin-top: 20px;">
-				<a
+				<uo-button
 					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
-					title="<?php esc_html_e( 'Maybe later', 'uncanny-automator' ); ?>"
-					class="uo-settings-btn uo-settings-btn--secondary">
+					color="secondary"
+					>
 					<?php esc_html_e( 'Maybe later!', 'uncanny-automator' ); ?>
-				</a>
-				<a
+				</uo-button>
+
+				<uo-button
 					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
-					title="<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>"
-					class="uo-settings-btn uo-settings-btn--primary">
+					style="margin-left: 10px;"
+					>
 					<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>
-				</a>
+				</uo-button>
 			</p>
 
 		</div>
@@ -84,13 +85,13 @@
 				?>
 			</p>
 			<p>
-				<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
-					id="ua-connect-account-btn"
-					class="ua-connect-account-btn-class uo-settings-btn uo-settings-btn--primary"
-					target="popup"
-					>
+				<uo-button
+					href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
+					unsafe-force-target
+					target="_self"
+				>
 					<?php esc_html_e( 'Connect your free account!', 'uncanny-automator' ); ?>
-				</a>
+				</uo-button>
 			</p>
 		</div>
 
@@ -105,18 +106,20 @@
 			</p>
 
 			<p style="margin-top: 20px;">
-				<a
+
+				<uo-button
 					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
-					title="<?php esc_html_e( 'Maybe later', 'uncanny-automator' ); ?>"
-					class="uo-settings-btn uo-settings-btn--secondary">
+					color="secondary"
+					>
 					<?php esc_html_e( 'Maybe later!', 'uncanny-automator' ); ?>
-				</a>
-				<a
+				</uo-button>
+
+				<uo-button
 					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
-					title="<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>"
-					class="uo-settings-btn uo-settings-btn--primary">
+					style="margin-left: 10px;"
+					>
 					<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>
-				</a>
+				</uo-button>
 			</p>
 
 		</div>

@@ -9,7 +9,7 @@
 	<div class="center row-1">
 
 		<div class="automator-setup-wizard__branding">
-			<img width="380" src="<?php echo esc_url( Uncanny_Automator\Utilities::automator_get_asset( 'backend/dist/img/logo-horizontal.svg' ) ); ?>" alt="" />
+			<img width="380" src="<?php echo esc_url( Uncanny_Automator\Utilities::automator_get_asset( 'build/img/logo-horizontal.svg' ) ); ?>" alt="" />
 		</div>
 
 		<div class="automator-setup-wizard__steps">
@@ -36,12 +36,13 @@
 		</p>
 
 		<p>
-			<a href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
-				id="ua-connect-account-btn"
-				class="ua-connect-account-btn-class uo-settings-btn uo-settings-btn--primary"
-				>
+			<uo-button
+				href="<?php echo esc_url( $this->get_connect_button_uri() ); ?>"
+				unsafe-force-target
+				target="_self"
+			>
 				<?php esc_html_e( 'Connect your free account!', 'uncanny-automator' ); ?>
-			</a>
+			</uo-button>
 		</p>
 		
 	</div>
@@ -84,9 +85,12 @@
 				?>
 		</p>
 		<p class="footer-actions">
-			<a target="_blank" href="<?php echo esc_url( $this->get_checkout_uri() ); ?>" class="uo-settings-btn uo-settings-btn--primary">
+
+			<uo-button
+				href="<?php echo esc_url( $this->get_checkout_uri() ); ?>"
+				>
 				<?php esc_html_e( 'Upgrade to Pro now and save up to $200', 'uncanny-automator' ); ?>
-			</a>
+			</uo-button>
 			<span>
 				<uap-setup-wizard-step-1-skip
 					url-next-step="<?php echo esc_url( $this->get_dashboard_uri( 2 ) ); ?>&skip=true"

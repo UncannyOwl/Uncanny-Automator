@@ -76,7 +76,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</uo-alert>
 
 					<div class="uap-settings-panel-content-subtitle uap-spacing-bottom">
-						<?php esc_html_e( 'Linked Calendars', 'uncanny-automator' ); ?>
+						<?php esc_html_e( 'Linked calendars', 'uncanny-automator' ); ?>
 					</div>
 
 					<div id="google-calendar-preloader">
@@ -88,8 +88,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<uo-alert style="display:none;" id="google-calendar-errors" class="uap-spacing-bottom uap-spacing-bottom--big" type="error" heading="<?php esc_html_e( 'An unexpected error has occurred', 'uncanny-automator' ); ?>"></uo-alert>
 
 					<div id="google-calendar-list"></div>
-
-
 
 				<?php } ?>
 

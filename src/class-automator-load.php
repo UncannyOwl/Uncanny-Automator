@@ -361,9 +361,6 @@ class Automator_Load {
 
 		do_action( 'automator_before_configure' );
 
-		// Load Assets
-		$this->initialize_assets();
-
 		// Load Utilities
 		$this->initialize_utilities();
 
@@ -484,16 +481,6 @@ class Automator_Load {
 	}
 
 	/**
-	 *
-	 */
-	public function initialize_assets() {
-		if ( self::$is_admin_sect ) {
-			// Load same script for free and pro
-			add_action( 'admin_enqueue_scripts', array( $this, 'automator_license_style' ) );
-		}
-	}
-
-	/**
 	 * Initialize static singleton class that has shared functions and variables
 	 *
 	 * @since 1.0.0
@@ -598,17 +585,6 @@ class Automator_Load {
 				$args
 			)
 		);
-	}
-
-	/**
-	 * Licensing page styles
-	 *
-	 * @param $hook
-	 */
-	public function automator_license_style( $hook ) {
-		if ( strpos( $hook, 'uncanny-automator-license-activation' ) ) {
-			wp_enqueue_style( 'uap-admin-license', Utilities::automator_get_asset( 'legacy/css/admin/license.css' ), array(), Utilities::automator_get_version() );
-		}
 	}
 
 	/**
@@ -864,6 +840,7 @@ class Automator_Load {
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-triggers.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens-pro.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-option-types.php';
 	}
 
 	/**

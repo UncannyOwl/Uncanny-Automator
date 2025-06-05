@@ -286,6 +286,7 @@ CREATE TABLE {$tbl_automator_options} (
 `option_name` varchar(191) NOT NULL DEFAULT '',
 `option_value` longtext NOT NULL,
 `autoload` varchar(8) NOT NULL DEFAULT 'yes',
+`type` varchar(10) NOT NULL DEFAULT 'string',
 PRIMARY KEY (`option_id`),
 UNIQUE KEY `option_name` (`option_name`),
 KEY `autoload` (`autoload`)

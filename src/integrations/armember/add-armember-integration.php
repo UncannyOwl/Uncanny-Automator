@@ -33,6 +33,15 @@ class Add_Armember_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return DEFINED( 'MEMBERSHIPLITE_DIR_NAME' ) || defined( 'MEMBERSHIP_DIR_NAME' );
+		// Check if the plugin is active
+		if ( ! DEFINED( 'MEMBERSHIPLITE_DIR_NAME' ) && ! defined( 'MEMBERSHIP_DIR_NAME' ) ) {
+			return false;
+		}
+
+		include_once __DIR__ . '/triggers/armember-membership-added.php';
+
+		new \Uncanny_Automator\ARMEMBER_MEMBERSHIP_ADDED();
+
+		return true;
 	}
 }

@@ -680,6 +680,16 @@ class WhatsApp_Helpers {
 	 */
 	public function disconnect() {
 
+		// Nonce verification.
+		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), 'automator_whatsapp_disconnect' ) ) {
+			wp_die( esc_html_x( 'Nonce Verification Failed', 'WhatsApp', 'uncanny-automator' ) );
+		}
+
+		// Current user check.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html_x( 'Unauthorized', 'WhatsApp', 'uncanny-automator' ) );
+		}
+
 		// Delete the message template dropdown transient.
 		delete_transient( $this->get_dropdown_transient_key() );
 

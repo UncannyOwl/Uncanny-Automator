@@ -140,16 +140,9 @@ class Setup_Wizard {
 		if ( 'uncanny-automator-setup-wizard' === $page ) {
 
 			wp_enqueue_style(
-				'uap-admin-settings',
-				Utilities::automator_get_asset( '/legacy/css/admin/performance.css' ),
-				array(),
-				Utilities::automator_get_version()
-			);
-
-			wp_enqueue_style(
 				'uap-setup-wizard',
 				plugins_url( 'assets/css/setup-wizard.css', __FILE__ ),
-				array( 'uap-admin-settings' ),
+				array( 'uap-admin' ),
 				Utilities::automator_get_version()
 			);
 

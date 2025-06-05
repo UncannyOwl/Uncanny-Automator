@@ -32,7 +32,6 @@ class Activity_Log {
 	 */
 	public function __construct() {
 
-		add_action( 'admin_enqueue_scripts', array( $this, 'add_log_scripts' ) );
 		add_action( 'wp_ajax_recipe-triggers', array( $this, 'load_recipe_triggers' ), 50 );
 		add_action( 'wp_ajax_nopriv_recipe-triggers', array( $this, 'load_recipe_triggers' ), 50 );
 		add_action( 'wp_ajax_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
@@ -296,24 +295,6 @@ class Activity_Log {
 			}
 		</style>
 		<?php
-
-	}
-
-	/**
-	 * Add log scripts.
-	 */
-	public function add_log_scripts() {
-		global $current_screen;
-		if (
-			( ! automator_filter_has_var( 'post_type' ) && 'uo-recipe' !== automator_filter_input( 'post_type' ) ) &&
-			( 'admin_page_uncanny-automator-recipe-activity-details' !== $current_screen->id ) &&
-			( ! automator_filter_has_var( 'page' ) && 'uncanny-automator-recipe-activity' !== automator_filter_input( 'page' ) )
-		) {
-			return;
-		}
-
-		// Recipe details css.
-		wp_enqueue_style( 'uap-recipe-details', Utilities::automator_get_asset( 'legacy/css/admin/recipe-details.css' ), array(), Utilities::automator_get_version() );
 
 	}
 

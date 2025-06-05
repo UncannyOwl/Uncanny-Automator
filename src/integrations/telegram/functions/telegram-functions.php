@@ -94,13 +94,20 @@ class Telegram_Functions {
 	 */
 	public function disconnect() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_to_settings_page();
+		}
+
 		$this->webhook->delete_telegram_webhook();
 
 		automator_delete_option( self::BOT_SECRET_OPTION );
 		automator_delete_option( self::BOT_INFO );
 
-		wp_safe_redirect( $this->get_tab_url() );
+		$this->redirect_to_settings_page();
+	}
 
+	public function redirect_to_settings_page() {
+		wp_safe_redirect( $this->get_tab_url() );
 		exit;
 	}
 

@@ -33,14 +33,14 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_sentence(
 			sprintf(
 				/* translators: Anonymous trigger - Gravity Forms */
-				esc_html__( '{{A form:%1$s}} is submitted', 'uncanny-automator' ),
+				esc_html_x( '{{A form:%1$s}} is submitted', 'Gravity Forms', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
 			/* translators: Anonymous trigger - Gravity Forms */
-			esc_html__( '{{A form}} is submitted', 'uncanny-automator' )
+			esc_html_x( '{{A form}} is submitted', 'Gravity Forms', 'uncanny-automator' )
 		);
 
 		$this->add_action( 'gform_after_submission' );
@@ -51,6 +51,7 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/gravity-forms/' ) );
 
+		$this->set_can_log_in_new_user( true );
 	}
 
 	/**
@@ -60,7 +61,7 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 		return array(
 			array(
 				'option_code'     => $this->get_trigger_meta(),
-				'label'           => esc_attr__( 'Form', 'uncanny-automator' ),
+				'label'           => esc_attr_x( 'Form', 'Gravity Forms', 'uncanny-automator' ),
 				'input_type'      => 'select',
 				'required'        => true,
 				'options'         => $this->gf->get_forms_options(),
@@ -80,13 +81,13 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
 		$tokens[] = array(
 			'tokenId'   => 'ANONGFFORMS',
-			'tokenName' => esc_html__( 'Form title', 'uncanny-automator' ),
+			'tokenName' => esc_html_x( 'Form title', 'Gravity Forms', 'uncanny-automator' ),
 			'tokenType' => 'text',
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'ANONGFFORMS_ID',
-			'tokenName' => esc_html__( 'Form ID', 'uncanny-automator' ),
+			'tokenName' => esc_html_x( 'Form ID', 'Gravity Forms', 'uncanny-automator' ),
 			'tokenType' => 'int',
 		);
 

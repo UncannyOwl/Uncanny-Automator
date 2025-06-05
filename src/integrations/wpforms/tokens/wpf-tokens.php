@@ -100,50 +100,72 @@ class Wpf_Tokens {
 					continue;
 				}
 				$input_id    = $field['id'];
-				$input_title = isset( $field['label'] ) ? $field['label'] : sprintf( '%d- %s', $field['id'], esc_html__( 'No name', 'uncanny-automator' ) );
+				$input_title = isset( $field['label'] ) ? $field['label'] : sprintf( '%d- %s', $field['id'], esc_html_x( 'No name', 'WPForms', 'uncanny-automator' ) );
 				$token_id    = "$form_id|$input_id";
-				$input_title = 'address' === $field['type'] ? _x( 'Address (full)', 'WPForms', 'uncanny-automator' ) : $input_title;
-				$fields[]    = array(
-					'tokenId'         => $token_id,
-					'tokenName'       => $input_title,
-					'tokenType'       => in_array( $field['type'], $allowed_token_types, true ) ? $field['type'] : 'text',
-					'tokenIdentifier' => $trigger_meta,
-				);
+				$input_title = 'address' === $field['type'] ? esc_html_x( 'Address (full)', 'WPForms', 'uncanny-automator' ) : $input_title;
+				if ( 'name' !== $field['type'] ) {
+					$fields[] = array(
+						'tokenId'         => $token_id,
+						'tokenName'       => $input_title,
+						'tokenType'       => in_array( $field['type'], $allowed_token_types, true ) ? $field['type'] : 'text',
+						'tokenIdentifier' => $trigger_meta,
+					);
+				}
 
+				if ( 'name' === $field['type'] ) {
+					if ( 'simple' === $field['format'] ) {
+						$fields[] = array(
+							'tokenId'         => $token_id . '|name',
+							'tokenName'       => $input_title,
+							'tokenType'       => 'text',
+							'tokenIdentifier' => $trigger_meta,
+						);
+					} else {
+						$name_tokens = explode( '-', $field['format'] );
+						foreach ( $name_tokens as $name_token ) {
+							$fields[] = array(
+								'tokenId'         => $token_id . '|name|' . $name_token,
+								'tokenName'       => esc_html_x( ucfirst( $name_token ) . ' name', 'WPForms', 'uncanny-automator' ),
+								'tokenType'       => 'text',
+								'tokenIdentifier' => $trigger_meta,
+							);
+						}
+					}
+				}
 				if ( 'address' === $field['type'] ) {
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|address1',
-						'tokenName'       => esc_html__( 'Address - Line 1', 'uncanny-automator' ),
+						'tokenName'       => esc_html_x( 'Address - Line 1', 'WPForms', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|address2',
-						'tokenName'       => esc_html__( 'Address - Line 2', 'uncanny-automator' ),
+						'tokenName'       => esc_html_x( 'Address - Line 2', 'WPForms', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|city',
-						'tokenName'       => esc_html__( 'Address - City', 'uncanny-automator' ),
+						'tokenName'       => esc_html_x( 'Address - City', 'WPForms', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|state',
-						'tokenName'       => esc_html__( 'Address - State/Province/Region', 'uncanny-automator' ),
+						'tokenName'       => esc_html_x( 'Address - State/Province/Region', 'WPForms', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|postal',
-						'tokenName'       => esc_html__( 'Address - Zip/Postal code', 'uncanny-automator' ),
+						'tokenName'       => esc_html_x( 'Address - Zip/Postal code', 'WPForms', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
 					$fields[] = array(
 						'tokenId'         => $token_id . '|address|country',
-						'tokenName'       => esc_html__( 'Address - Country', 'uncanny-automator' ),
+						'tokenName'       => esc_html_x( 'Address - Country', 'WPForms', 'uncanny-automator' ),
 						'tokenType'       => 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
@@ -153,7 +175,7 @@ class Wpf_Tokens {
 				if ( isset( $field['choices'] ) ) {
 					$fields[] = array(
 						'tokenId'         => $token_id . '|label',
-						'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(label)', 'uncanny-automator' ) ),
+						'tokenName'       => sprintf( '%s %s', $input_title, esc_attr_x( '(label)', 'WPForms', 'uncanny-automator' ) ),
 						'tokenType'       => in_array( $field['type'], $allowed_token_types, true ) ? $field['type'] : 'text',
 						'tokenIdentifier' => $trigger_meta,
 					);
@@ -163,7 +185,7 @@ class Wpf_Tokens {
 				if ( 0 === strpos( $field['type'], 'payment' ) && isset( $field['enable_quantity'] ) && '1' === (string) $field['enable_quantity'] ) {
 					$fields[] = array(
 						'tokenId'         => $token_id . '|quantity',
-						'tokenName'       => sprintf( '%s %s', $input_title, esc_attr__( '(quantity)', 'uncanny-automator' ) ),
+						'tokenName'       => sprintf( '%s %s', $input_title, esc_attr_x( '(quantity)', 'WPForms', 'uncanny-automator' ) ),
 						'tokenType'       => 'int',
 						'tokenIdentifier' => $trigger_meta,
 					);
@@ -194,9 +216,7 @@ class Wpf_Tokens {
 			return $value;
 		}
 
-		if ( ! in_array( 'WPFFORMS', $pieces, true )
-			 && ! in_array( 'ANONWPFFORMS', $pieces, true )
-			 && ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
+		if ( ! in_array( 'WPFFORMS', $pieces, true ) && ! in_array( 'ANONWPFFORMS', $pieces, true ) && ! in_array( 'ANONWPFSUBFORM', $pieces, true ) ) {
 			return $value;
 		}
 
@@ -262,23 +282,22 @@ class Wpf_Tokens {
 		list( $form_id, $field_id ) = $token_info;
 
 		// Get Field config.
-		$form       = $this->get_wpforms_form( absint( $form_id ) );
-		$field      = $form['fields'][ $field_id ];
-		$field_type = $form['fields'][ $field_id ]['type'];
+		$form         = $this->get_wpforms_form( absint( $form_id ) );
+		$field        = $form['fields'][ $field_id ];
+		$field_type   = $form['fields'][ $field_id ]['type'];
+		$split_tokens = array( 'address', 'name' );
 
 		// Fetch label if needed.
 		if ( $this->should_fetch_label( $token_info ) ) {
 			$value = $this->get_field_label( $field, $entry, $to_match );
-		} elseif ( 'address' === $token_info[2] ) {
-			$value = Automator()->db->trigger->get_token_meta( $token_info[3], $parse_tokens );
-		} else {
-			// Populate non-dynamic choices index(es).
-			if ( ! empty( $field['choices'] ) && empty( $field['dynamic_choices'] ) ) {
-				$value = $this->get_non_dynamic_choice_index( $value, $field );
-				// Populate values for dynamic choices if show values is enabled.
-				if ( isset( $field['show_values'] ) && absint( $field['show_values'] ) > 0 ) {
-					$value = $this->populate_choice_index_show_values( $value, $field );
-				}
+		} elseif ( isset( $token_info[2] ) && in_array( $token_info[2], $split_tokens, true ) ) {
+			$token_key = isset( $token_info[3] ) ? $token_info[3] : $token_info[2];
+			$value     = Automator()->db->trigger->get_token_meta( $token_key, $parse_tokens );
+		} elseif ( ! empty( $field['choices'] ) && empty( $field['dynamic_choices'] ) ) {
+			$value = $this->get_non_dynamic_choice_index( $value, $field );
+			// Populate values for dynamic choices if show values is enabled.
+			if ( isset( $field['show_values'] ) && absint( $field['show_values'] ) > 0 ) {
+				$value = $this->populate_choice_index_show_values( $value, $field );
 			}
 		}
 
@@ -286,7 +305,7 @@ class Wpf_Tokens {
 		if ( class_exists( 'WPForms_Lite' ) ) {
 			// Check for Pro Only Fields.
 			if ( $this->is_pro_field( $field_type ) ) {
-				$value = esc_html__( 'This token requires WPForms Pro', 'uncanny-automator' );
+				$value = esc_html_x( 'This token requires WPForms Pro', 'WPForms', 'uncanny-automator' );
 			}
 		}
 
@@ -388,7 +407,6 @@ class Wpf_Tokens {
 						}
 
 						if ( 'address' === $field['type'] ) {
-
 							$args = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $trigger_id,
@@ -419,7 +437,41 @@ class Wpf_Tokens {
 							$args['meta_key']   = 'country';
 							$args['meta_value'] = $field['country'];
 							Automator()->insert_trigger_meta( $args );
+						}
 
+						if ( 'name' === $field['type'] ) {
+							$args = array(
+								'user_id'        => $user_id,
+								'trigger_id'     => $trigger_id,
+								'run_number'     => $run_number, //get run number
+								'trigger_log_id' => $trigger_log_id,
+							);
+
+							if ( ! empty( $field['first'] ) && ! empty( $field['middle'] ) && ! empty( $field['last'] ) ) {
+								$args['meta_key']   = 'first';
+								$args['meta_value'] = $field['first'];
+								Automator()->insert_trigger_meta( $args );
+
+								$args['meta_key']   = 'middle';
+								$args['meta_value'] = $field['middle'];
+								Automator()->insert_trigger_meta( $args );
+
+								$args['meta_key']   = 'last';
+								$args['meta_value'] = $field['last'];
+								Automator()->insert_trigger_meta( $args );
+							} elseif ( ! empty( $field['first'] ) && ! empty( $field['last'] ) && empty( $field['middle'] ) ) {
+								$args['meta_key']   = 'first';
+								$args['meta_value'] = $field['first'];
+								Automator()->insert_trigger_meta( $args );
+
+								$args['meta_key']   = 'last';
+								$args['meta_value'] = $field['last'];
+								Automator()->insert_trigger_meta( $args );
+							} else {
+								$args['meta_key']   = 'name';
+								$args['meta_value'] = $field['value'];
+								Automator()->insert_trigger_meta( $args );
+							}
 						}
 
 						// Maybe add spaces after commas.
@@ -463,19 +515,19 @@ class Wpf_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'WPFENTRYID',
-				'tokenName'       => esc_html__( 'Entry ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry ID', 'WPForms', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'WPFENTRYIP',
-				'tokenName'       => esc_html__( 'User IP', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'User IP', 'WPForms', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'WPFENTRYDATE',
-				'tokenName'       => esc_html__( 'Entry submission date', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry submission date', 'WPForms', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPFENTRYTOKENS',
 			),
@@ -506,7 +558,7 @@ class Wpf_Tokens {
 					$meta_key       = $pieces[2];
 					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 					if ( class_exists( 'WPForms_Lite' ) ) {
-						$meta_value = esc_html__( 'This token requires WPForms Pro', 'uncanny-automator' );
+						$meta_value = esc_html_x( 'This token requires WPForms Pro', 'WPForms', 'uncanny-automator' );
 					}
 					if ( ! empty( $meta_value ) ) {
 						$value = maybe_unserialize( $meta_value );
@@ -627,7 +679,6 @@ class Wpf_Tokens {
 	 * @return string The selected index(es).
 	 */
 	private function get_non_dynamic_choice_index( $value, $field ) {
-
 		// Skip if payment field.
 		if ( strpos( $field['type'], 'payment' ) === 0 ) {
 			return apply_filters( 'automator_wpforms_non_dynamic_choice_value', $value, $field );
@@ -635,7 +686,7 @@ class Wpf_Tokens {
 
 		$label_key        = isset( $field['show_values'] ) && absint( $field['show_values'] ) > 0 ? 'value' : 'label';
 		$labels           = wp_list_pluck( $field['choices'], $label_key );
-		$multiple         = isset( $field['multiple'] ) && absint( $field['multiple'] ) > 0 || $field['type'] === 'checkbox';
+		$multiple         = ( isset( $field['multiple'] ) && 0 < absint( $field['multiple'] ) ) || 'checkbox' === $field['type'];
 		$value_has_commas = strpos( $value, ',' ) !== false;
 
 		// Multiple Choice and value contains commas.
@@ -669,9 +720,9 @@ class Wpf_Tokens {
 	private function get_non_dynamic_multiple_choice_index( $value, $labels ) {
 
 		// Add a trailing comma to the value to avoid partial matches if label contains commas.
-		$value    .= ',';
-		$selected = array();
+		$value .= ',';
 
+		$selected = array();
 		// Loop through choices and search for label.
 		foreach ( $labels as $key => $label ) {
 			// Check if string is in value.
@@ -825,7 +876,6 @@ class Wpf_Tokens {
 	 * @return bool
 	 */
 	private function is_pro_field( $field_type ) {
-
 		// REVIEW - Would be nice to grab these from a function.
 		$pro_only = apply_filters(
 			'automator_wpforms_pro_only_fields',
@@ -855,29 +905,17 @@ class Wpf_Tokens {
 		);
 
 		return in_array( $field_type, $pro_only, true );
-
 	}
 
 	/**
 	 * Strip white space for single spaces.
 	 */
-	public function normalize_whitespace( $string ) {
-		if ( is_string( $string ) && ! empty( $string ) ) {
-			$string = preg_replace( '/\s+/', ' ', $string );
-			$string = trim( $string );
+	public function normalize_whitespace( $str ) {
+		if ( is_string( $str ) && ! empty( $str ) ) {
+			$str = preg_replace( '/\s+/', ' ', $str );
+			$str = trim( $str );
 		}
 
-		return $string;
+		return $str;
 	}
-
-	/**
-	 * @param $field
-	 * @param $address_key
-	 *
-	 * @return string
-	 */
-	public function get_address_field_value( $field, $address_key ) {
-		return '-';
-	}
-
 }

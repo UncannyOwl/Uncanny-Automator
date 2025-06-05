@@ -330,6 +330,17 @@ class Active_Campaign_Helpers {
 	 */
 	public function disconnect() {
 
+		// Nonce verification.
+		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), 'active-campaign-disconnect' ) ) {
+			wp_die( esc_html_x( 'Nonce Verification Failed', 'ActiveCampaign', 'uncanny-automator' ) );
+		}
+
+		// Current user check.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html_x( 'Unauthorized', 'ActiveCampaign', 'uncanny-automator' ) );
+		}
+
+		// Delete the connection settings.
 		automator_delete_option( 'uap_active_campaign_api_url' );
 		automator_delete_option( 'uap_active_campaign_api_key' );
 		automator_delete_option( 'uap_active_campaign_settings_timestamp' );

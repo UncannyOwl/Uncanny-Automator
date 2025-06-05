@@ -700,15 +700,19 @@ class Google_Calendar_Helpers {
 	 */
 	public function disconnect_user() {
 
-		if ( wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator-google-calendar-user-disconnect' ) ) {
-
-			// De-authorize app.
-			$this->api_revoke_access();
-
-			// Delete the connection settings.
-			$this->disconnect_client();
-
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator-google-calendar-user-disconnect' ) ) {
+			wp_die( esc_html_x( 'Nonce Verification Failed', 'Google Calendar', 'uncanny-automator' ) );
 		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html_x( 'Unauthorized', 'Google Calendar', 'uncanny-automator' ) );
+		}
+
+		// De-authorize app.
+		$this->api_revoke_access();
+
+		// Delete the connection settings.
+		$this->disconnect_client();
 
 		wp_safe_redirect( $this->get_settings_page_url() );
 

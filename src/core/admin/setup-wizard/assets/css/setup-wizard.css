@@ -16,6 +16,7 @@ body.uo-recipe_page_uncanny-automator-setup-wizard {
 
 .automator-setup-wizard__footer {
     text-align: center;
+    margin-top: 20px;
 }
 
 .automator-setup-wizard__footer a {

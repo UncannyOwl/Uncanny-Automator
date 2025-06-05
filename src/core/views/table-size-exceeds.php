@@ -17,7 +17,7 @@
 
 		<img
 			slot="icon"
-			src="<?php echo esc_url( Utilities::automator_get_asset( 'backend/dist/img/credits-left-hundred.svg' ) ); ?>"
+			src="<?php echo esc_url( Utilities::automator_get_asset( 'build/img/credits-left-hundred.svg' ) ); ?>"
 			width="90px"
 		>
 

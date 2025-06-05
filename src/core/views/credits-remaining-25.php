@@ -31,7 +31,7 @@ namespace Uncanny_Automator;
 
 		<img 
 			slot="icon"
-			src="<?php echo esc_url( Utilities::automator_get_asset( 'backend/dist/img/robot-feedback.svg' ) ); ?>"
+			src="<?php echo esc_url( Utilities::automator_get_asset( 'build/img/robot-feedback.svg' ) ); ?>"
 			width="90px"
 		>
 

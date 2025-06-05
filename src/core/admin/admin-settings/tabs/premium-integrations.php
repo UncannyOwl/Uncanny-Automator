@@ -16,7 +16,6 @@ class Admin_Settings_Premium_Integrations {
 	 */
 	public function __construct() {
 		// Define the tab
-		//$this->create_tab();
 		add_filter( 'automator_settings_sections', array( $this, 'create_tab' ) );
 	}
 
@@ -86,26 +85,45 @@ class Admin_Settings_Premium_Integrations {
 
 		// Add the actions and get the selected tab
 		foreach ( $integrations_tabs as $tab_key => &$tab ) {
-
+			// Ensure the tab is an object.
 			$tab = (object) $tab;
+			// Maybe add an action to show the settings for a tab.
+			$this->maybe_add_action_to_show_settings( $tab_key, $tab, $user_can_use_premium_integrations );
+			// Set the selected state.
+			$tab->is_selected = ! $user_can_use_premium_integrations && $tab->requires_credits
+				? false
+				: $tab_key === $current_integration;
 
-			if (
-				// Check if the user can use the premium integrations before adding the content of the tabs
-				$user_can_use_premium_integrations &&
-				// Check if the function is defined
-				isset( $tab->function )
-			) {
-				// Add action
-				add_action( 'automator_settings_premium_integrations_' . $tab_key . '_tab', $tab->function );
+			if ( $tab_key === $current_integration ) {
+				$current_integration_tab = $tab;
 			}
-
-			// Check if this is the selected tab
-			$tab->is_selected = $user_can_use_premium_integrations ? $tab_key === $current_integration : false;
-
 		}
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/premium-integrations.php' );
+	}
+
+	/**
+	 * Maybe add an action to show the settings for a tab.
+	 *
+	 * @param string $tab_key The key of the tab.
+	 * @param object $tab The tab object.
+	 * @param boolean $user_can_use_premium_integrations Whether the user can use the premium integrations.
+	 *
+	 * @return void
+	 */
+	private function maybe_add_action_to_show_settings( $tab_key, $tab, $user_can_use_premium_integrations ) {
+		// Bail if the tab function is not defined.
+		if ( ! isset( $tab->function ) ) {
+			return;
+		}
+
+		// Bail if user is not connected and the integration requires credits.
+		if ( ! $user_can_use_premium_integrations && $tab->requires_credits ) {
+			return;
+		}
+
+		add_action( 'automator_settings_premium_integrations_' . $tab_key . '_tab', $tab->function );
 	}
 
 	/**

@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+use TINCANNYSNC\Module_CRUD;
 use TINCANNYSNC\Database;
 
 /**
@@ -25,13 +26,9 @@ class UOTC_MODULEINTERACTION {
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
-
-		// We are only loading it if Tin Canny exists
-		//if ( defined( 'UNCANNY_REPORTING_VERSION' ) ) {
 		$this->trigger_code = 'MODULEINTERACTION';
 		$this->trigger_meta = 'TCMODULEINTERACTION';
 		$this->define_trigger();
-		//}
 	}
 
 	/**
@@ -45,9 +42,9 @@ class UOTC_MODULEINTERACTION {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Uncanny Reporting */
-			'sentence'            => sprintf( esc_attr__( '{{A Tin Can verb:%1$s}} is recorded from {{a Tin Can module:%2$s}}', 'uncanny-automator' ), 'TCVERB', $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr_x( '{{A Tin Can verb:%1$s}} is recorded from {{a Tin Can module:%2$s}}', 'Uncanny Tincanny', 'uncanny-automator' ), 'TCVERB', $this->trigger_meta ),
 			/* translators: Logged-in trigger - Uncanny Reporting */
-			'select_option_name'  => esc_attr__( '{{A Tin Can verb}} is recorded from {{a Tin Can module}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr_x( '{{A Tin Can verb}} is recorded from {{a Tin Can module}}', 'Uncanny Tincanny', 'uncanny-automator' ),
 			'action'              => 'tincanny_module_completed',
 			'priority'            => 99,
 			'accepted_args'       => 3,
@@ -67,8 +64,8 @@ class UOTC_MODULEINTERACTION {
 	public function load_options() {
 
 		$options       = array();
-		$modules       = Database::get_modules();
-		$options['-1'] = esc_attr__( 'Any module', 'uncanny-automator' );
+		$modules       = Uncanny_Tincanny_Helpers::get_modules();
+		$options['-1'] = esc_attr_x( 'Any module', 'Uncanny Tincanny', 'uncanny-automator' );
 
 		foreach ( $modules as $module ) {
 			$options[ $module->ID ] = $module->file_name;
@@ -80,7 +77,7 @@ class UOTC_MODULEINTERACTION {
 					Automator()->helpers->recipe->field->select(
 						array(
 							'option_code' => $this->trigger_meta,
-							'label'       => esc_attr__( 'Module', 'uncanny-automator' ),
+							'label'       => esc_attr_x( 'Module', 'Uncanny Tincanny', 'uncanny-automator' ),
 							'options'     => $options,
 						)
 					),
@@ -145,7 +142,7 @@ class UOTC_MODULEINTERACTION {
 				if ( ! isset( $module_ids[ $recipe_id ][ $trigger_id ] ) || ! isset( $verbs[ $recipe_id ][ $trigger_id ] ) ) {
 					continue;
 				}
-				if ( ( (string) $module_ids[ $recipe_id ][ $trigger_id ] === (string) $module_id || '-1' == $module_ids[ $recipe_id ][ $trigger_id ] ) && ( strtolower( $verbs[ $recipe_id ][ $trigger_id ] ) === strtolower( $verb ) || '-1' == $verbs[ $recipe_id ][ $trigger_id ] ) ) {
+				if ( ( (string) $module_ids[ $recipe_id ][ $trigger_id ] === (string) $module_id || intval( '-1' ) === intval( $module_ids[ $recipe_id ][ $trigger_id ] ) ) && ( strtolower( $verbs[ $recipe_id ][ $trigger_id ] ) === strtolower( $verb ) || intval( '-1' ) === intval( $verbs[ $recipe_id ][ $trigger_id ] ) ) ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
@@ -245,5 +242,4 @@ class UOTC_MODULEINTERACTION {
 
 		return $matches;
 	}
-
 }
