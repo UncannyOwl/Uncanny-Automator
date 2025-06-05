@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 use Error;
 use Exception;
+use Uncanny_Automator\Core\Lib\AI\Default_Providers_Loader;
 
 /**
  *
@@ -107,6 +108,7 @@ class Initialize_Automator extends Set_Up_Automator {
 		}
 
 		$this->load_framework_integrations();
+		$this->load_framework_ai();
 	}
 
 	/**
@@ -175,5 +177,18 @@ class Initialize_Automator extends Set_Up_Automator {
 		foreach ( $automator_file_map as $file ) {
 			include_once $file;
 		}
+	}
+
+	/**
+	 * Loads the AI framework.
+	 *
+	 * Will load the default AI providers.
+	 *
+	 * @return void
+	 */
+	public function load_framework_ai() {
+
+		$loader = new Default_Providers_Loader();
+		$loader->load_providers();
 	}
 }

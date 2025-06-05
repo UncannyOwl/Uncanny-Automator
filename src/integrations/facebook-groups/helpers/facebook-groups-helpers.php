@@ -373,42 +373,45 @@ class Facebook_Groups_Helpers {
 	 */
 	public function automator_integration_facebook_group_capture_token_disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), self::OPTION_KEY ) ) {
+		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), self::OPTION_KEY ) ) {
+			wp_die( esc_html_x( 'Nonce Verification Failed', 'Facebook Groups', 'uncanny-automator' ) );
+		}
 
-			try {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html_x( 'Unauthorized', 'Facebook Groups', 'uncanny-automator' ) );
+		}
 
-				$this->remove_credentials();
+		try {
 
-				// Redirect.
-				wp_safe_redirect( $this->get_settings_page_url() );
+			$this->remove_credentials();
 
-				exit;
-
-			} catch ( \Exception $e ) {
-
-				// Something went wrong?
-				$this->remove_credentials();
-
-				// Otherwise, redirect with an error message.
-				wp_safe_redirect(
-					add_query_arg(
-						array(
-							'error_message' => rawurlencode( $e->getMessage() ),
-							'error_code'    => $e->getCode(),
-							'status'        => 'error',
-						),
-						$this->get_settings_page_url()
-					)
-				);
-
-				exit;
-			}
+			// Redirect.
+			wp_safe_redirect( $this->get_settings_page_url() );
 
 			exit;
 
+		} catch ( \Exception $e ) {
+
+			// Something went wrong?
+			$this->remove_credentials();
+
+			// Otherwise, redirect with an error message.
+			wp_safe_redirect(
+				add_query_arg(
+					array(
+						'error_message' => rawurlencode( $e->getMessage() ),
+						'error_code'    => $e->getCode(),
+						'status'        => 'error',
+					),
+					$this->get_settings_page_url()
+				)
+			);
+
+			exit;
 		}
 
-		wp_die( esc_html_x( 'Nonce Verification Failed', 'Facebook Groups', 'uncanny-automator' ) );
+		exit;
+
 	}
 
 	/**

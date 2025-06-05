@@ -41,7 +41,7 @@ class WPForms_Uncanny_Automator extends WPForms_Provider {
 		$this->name     = 'Uncanny Automator';
 		$this->slug     = 'uncanny-automator';
 		$this->priority = 19;
-		$this->icon     = Utilities::automator_get_asset( 'external/wpforms/wpforms-automator-icon.png' );
+		$this->icon     = Utilities::automator_get_asset( 'build/img/wpforms-automator-icon.png' );
 
 		if ( is_admin() ) {
 			add_action( 'wpforms_admin_page', array( $this, 'learn_more_page' ) );
@@ -135,25 +135,14 @@ GROUP BY p.post_parent",
 	 * @since 1.7.0
 	 */
 	public function enqueue_assets() {
-
-		wp_enqueue_style(
+		Utilities::enqueue_asset(
 			'wpforms-admin-page-uncanny-automator',
-			Utilities::automator_get_asset( 'external/wpforms/wpforms.css' ),
-			null,
-			AUTOMATOR_PLUGIN_VERSION
-		);
-
-		wp_enqueue_script(
-			'wpforms-admin-page-uncanny-automator',
-			Utilities::automator_get_asset( 'external/wpforms/wpforms.js' ),
-			array(),
-			AUTOMATOR_PLUGIN_VERSION
-		);
-
-		\wp_localize_script(
-			'wpforms-admin-page-uncanny-automator',
-			'wpforms_uncannyautomator',
-			$this->get_js_strings()
+			'wpforms',
+			array(
+				'localize' => array(
+					'wpforms_uncannyautomator' => $this->get_js_strings()
+				)
+			)
 		);
 	}
 

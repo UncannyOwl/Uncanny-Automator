@@ -248,14 +248,26 @@ class Drip_Functions {
 	 */
 	public function disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
-
-			automator_delete_option( self::TOKEN_OPTION );
-			delete_transient( self::ACCOUNT_TRANSIENT );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_to_settings_page();
 		}
 
-		wp_safe_redirect( $this->get_settings_page_url() );
+		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
+			$this->redirect_to_settings_page();		
+		}
 
+		automator_delete_option( self::TOKEN_OPTION );
+		delete_transient( self::ACCOUNT_TRANSIENT );
+		$this->redirect_to_settings_page();
+	}
+	
+	/**
+	 * redirect_toSettings_page
+	 *
+	 * @return void
+	 */
+	public function redirect_to_settings_page() {
+		wp_safe_redirect( $this->get_settings_page_url() );
 		exit;
 	}
 

@@ -16,40 +16,43 @@ class AutomatorInstagramSettings {
         // Hide error, if visible
         this.setError( '' );
 
-        // Fetch data
-        _uo.utility.fetchData({
-            url: UncannyAutomatorBackend.ajax.url,
-            data: {
-                action: 'automator_integration_instagram_capture_token_fetch_user_pages',
-                nonce: UncannyAutomatorBackend.ajax.nonce
+        fetch( UncannyAutomatorBackend.ajax.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
             },
-            onSuccess: ( response ) => {
-                // Remove the loading animation frmo the "Update list" button
-                this.$updateListButton.removeAttribute( 'loading' );
-
+            body: new URLSearchParams({
+                action: 'automator_integration_instagram_capture_token_fetch_user_pages',
+                nonce: UncannyAutomatorBackend.ajax.nonce,
+            } )
+        })
+            .then( ( response ) => response.json() )
+			.then( ( response ) => {
                 // Check if there are pages
-                if ( ! _uo.utility.isEmpty( response.pages ) ) {
+                if ( Array.isArray( response.pages ) && response.pages.length > 0 ) {
                     // Set pages
                     this.createList( response.pages );
                 } else {
                     // Check if there is an error defined
                     if (
-                        _uo.utility.isDefined( response.error )
-                        && !_uo.utility.isEmpty( response.error_message )
+                        response.error
+                        && typeof response.error_message !== 'undefined'
+                        && response.error_message !== ''
                     ) {
                         // Set error
                         this.setError(response.error_message);
                     }
                 }
-            },
-            onFail: ( response, message ) => {
-                // Remove the loading animation frmo the "Update list" button
-                this.$updateListButton.removeAttribute( 'loading' );
-
+			} )
+			.catch( ( error ) => {
                 // Show error
-                this.setError( message.error );
-            },
-        });
+                this.setError(error);
+			} )
+			.finally( () => {
+				// Remove the loading animation frmo the "Update list" button
+                this.$updateListButton.removeAttribute( 'loading' );
+			} );
     }
 
     /**
@@ -84,7 +87,7 @@ class AutomatorInstagramSettings {
                         </div>
                         <div class="uap-instagram-account-actions">
                             <uo-tooltip>
-                                ${ _uo.utility.escHTML( wp.i18n.__( 'Refresh', 'uncanny-automator' ) ) }
+                                ${ wp.escapeHtml.escapeHTML( wp.i18n.__( 'Refresh', 'uncanny-automator' ) ) }
 
                                 <uo-button
                                     color="secondary"
@@ -100,7 +103,7 @@ class AutomatorInstagramSettings {
                         </div>
                     </div>
                     <div class="uap-linked-account">
-                        ${ _uo.utility.escHTML( wp.i18n.__( 'Account linked to Facebook Page:', 'uncanny-automator' ) ) }
+                        ${ wp.escapeHtml.escapeHTML( wp.i18n.__( 'Account linked to Facebook Page:', 'uncanny-automator' ) ) }
 
                         <a 
                             href="https://facebook.com/${ page.value }"
@@ -122,7 +125,7 @@ class AutomatorInstagramSettings {
             );
 
             // Check if there is an Instagram page connected already
-            if ( _uo.utility.isDefined( page.ig_account ) && _uo.utility.isDefined( page.ig_account.data ) && _uo.utility.isDefined( page.ig_account.data[0] ) ) {
+            if ( typeof page?.ig_account?.data?.[0] !== 'undefined' ) {
 
                 // Get data
                 const instagramAccountData = page.ig_account.data[0];
@@ -188,7 +191,7 @@ class AutomatorInstagramSettings {
          */
         const getInstagramAccounts = ( queue = instagramQueue, index = 0 ) => {
             // Check if the Facebook account is defined
-            if ( ! _uo.utility.isDefined( queue[ index ] ) ) {
+            if ( typeof queue[ index ] === 'undefined' || ! queue[ index ] ) {
                 return;
             }
 
@@ -201,7 +204,7 @@ class AutomatorInstagramSettings {
                 $instagramWrapper: facebookAccount.$instagramWrapper,
                 onSuccess: ( response ) => {
                     // Check if we can get another
-                    if ( _uo.utility.isDefined( queue[ index + 1 ] ) ) {
+                    if ( typeof queue[ index + 1 ] !== 'undefined' ) {
                         getInstagramAccounts( queue, ( index + 1 ) );
                     } else {
                         document.dispatchEvent( new CustomEvent( 'uap/instagram/get-accounts-finished' ) );
@@ -209,7 +212,7 @@ class AutomatorInstagramSettings {
                 },
                 onFail: () => {
                     // Check if we can get another
-                    if ( _uo.utility.isDefined( queue[ index + 1 ] ) ) {
+                    if ( typeof queue[ index + 1 ] !== 'undefined' ) {
                         getInstagramAccounts( queue, ( index + 1 ) );
                     } else {
                         document.dispatchEvent( new CustomEvent( 'uap/instagram/get-accounts-finished' ) );
@@ -218,7 +221,7 @@ class AutomatorInstagramSettings {
             });
         }
 
-        if ( ! _uo.utility.isEmpty( instagramQueue ) ) {
+        if ( instagramQueue ) {
             getInstagramAccounts();
         } else {
             document.dispatchEvent( new CustomEvent( 'uap/instagram/get-accounts-finished' ) );
@@ -232,7 +235,7 @@ class AutomatorInstagramSettings {
      */
     setError( error = '' ) {
         // Check if there is an error defined
-        if ( ! _uo.utility.isEmpty( error ) ) {
+        if ( error ) {
 
         } else {
             // Remove the current error, and hide the notice
@@ -249,22 +252,26 @@ class AutomatorInstagramSettings {
      * @return {undefined}                       
      */
     getInstagramAccount({ facebookPageId = '', $instagramWrapper, onSuccess, onFail }) {
-        // Fetch data
-        _uo.utility.fetchData({
-            url: UncannyAutomatorBackend.ajax.url,
-            data: {
+
+        fetch( UncannyAutomatorBackend.ajax.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
+            },
+            body: new URLSearchParams({
                 action: 'automator_integration_instagram_capture_token_fetch_instagram_accounts',
                 nonce: UncannyAutomatorBackend.ajax.nonce,
                 page_id: facebookPageId
-            },
-            onSuccess: ( response ) => {
+            } )
+        })
+            .then( ( response ) => response.json() )
+			.then( ( response ) => {
                 // Check if we found an account
                 if ( response.statusCode == '200' ) {
                     // Check if the required data is defined
                     if (
-                        _uo.utility.isDefined( response.data )
-                        && _uo.utility.isDefined( response.data.data )
-                        && _uo.utility.isDefined( response.data.data[0] )
+                        typeof response?.data?.data?.[0] !== 'undefined'
                     ) {
                         // Get data
                         const instagramAccountData = response.data.data[0];
@@ -287,7 +294,7 @@ class AutomatorInstagramSettings {
                     // Add message
                     $instagramWrapper.innerHTML = `
                         <span class="uap-instagram-account-no-account">
-                            ${ _uo.utility.escHTML( wp.i18n.__( 'No Instagram Business or Professional account connected to this Facebook page.', 'uncanny-automator' ) ) }
+                            ${ wp.escapeHtml.escapeHTML( wp.i18n.__( 'No Instagram Business or Professional account connected to this Facebook page.', 'uncanny-automator' ) ) }
                         </span>
                     `;
                 }
@@ -298,16 +305,15 @@ class AutomatorInstagramSettings {
                 } catch ( e ) {
                     console.error( e );
                 }
-            },
-            onFail: () => {
+			} )
+			.catch( ( error ) => {
                 // Try to invoke the callback
                 try {
-                    onFail( response );
+                    onFail( error );
                 } catch ( e ) {
                     console.error( e );
                 }
-            }
-        });
+			} ); 
     }
 
     /**

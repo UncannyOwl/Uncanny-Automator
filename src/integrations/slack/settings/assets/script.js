@@ -15,21 +15,19 @@ class AutomatorSlackSettings {
 	 */
 	listenFields() {
 		// Check if the "Name" field exists
-		if ( _uo.utility.isDefined( this.$inputName ) ) {
+		if ( typeof this.$inputName !== 'undefined' && this.$inputName ) {
 			// Listen the "Name" input
-			this.$inputName.addEventListener( 'change', _uo.utility.debounce( () => {
-				// Update avatar
-				this.setPreviews();
-			}, 100 ) );
+			this.$inputName.addEventListener( 'input', event => {
+				this.setPreviews( event );
+			} );
 		}
 
 		// Check if the "Name" field exists
-		if ( _uo.utility.isDefined( this.$inputIcon ) ) {
+		if ( typeof this.$inputIcon !== 'undefined' && this.$inputIcon ) {
 			// Listen the "Icon" input
-			this.$inputIcon.addEventListener( 'change', _uo.utility.debounce( () => {
-				// Update avatar
-				this.setPreviews();
-			}, 300 ) );
+			this.$inputIcon.addEventListener( 'input', event => {
+				this.setPreviews( event );
+			} );
 		}
 	}
 
@@ -53,12 +51,8 @@ class AutomatorSlackSettings {
 
 	/**
 	 * Sets the previews content
-	 * @param {Object} options      The options
-	 * @param {String} options.icon The icon URL
-	 * @param {String} options.name The name URL
-	 * @return {undefined}
 	 */
-	setPreviews() {
+	setPreviews( event ) {
 		// Get the values
 		const config = {
 			name: this.$inputName.value,
@@ -66,10 +60,10 @@ class AutomatorSlackSettings {
 		}
 
 		// Default name
-		config.name = ! _uo.utility.isEmpty( config.name ) ? config.name : this.defaultName;
+		config.name = typeof config.name !== 'undefined' && config.name !== '' ? config.name : this.defaultName;
 
 		// Default icon
-		config.icon = ! _uo.utility.isEmpty( config.icon ) ? config.icon : this.defaultIcon;
+		config.icon = typeof config.icon !== 'undefined' && config.icon !== '' ? config.icon : this.defaultIcon;
 
 		// Set the name
 		this.$lightModeName.innerText = config.name;

@@ -185,13 +185,7 @@ class EMAILS_SEND_EMAILS {
 								// Close the modal
 								$modal.close();
 
-								// Show Snackbar with loading message
-								const $snackbar = _uo.utility.createSnackbar( {
-									message: '<?php esc_html_e( 'Test email sent successfully', 'uncanny-automator' ); ?>',
-									duration: 5000,
-								} );
-
-								$snackbar.innerHTML = `<uo-icon slot="icon" id="check"></uo-icon>`;
+								alert( "<?php esc_html_e( 'Test email sent successfully', 'uncanny-automator' ); ?>" );
 
 								return;
 							}

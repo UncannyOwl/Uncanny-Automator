@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator\Services\Recipe\Action\Token;
 
+use Uncanny_Automator\Services\Loopable\Data_Integrations\Array_Group_Classifier;
+
 class Parser {
 
 	/**
@@ -32,7 +34,6 @@ class Parser {
 		$parser = new Parser();
 
 		return $parser->parse( $field_text, $args, $trigger_args );
-
 	}
 
 	/**
@@ -100,7 +101,6 @@ class Parser {
 		}
 
 		return $replaceables;
-
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Parser {
 
 			while ( $do_iterate && ( strpos( $field_text, '{{ACTION_FIELD' ) || strpos( $field_text, '{{ACTION_META' ) ) ) {
 
-				$count_iteration ++;
+				++$count_iteration;
 
 				// Terminate safely, in case for some reason, unexpected input turns into infinite loop.
 				if ( $count_iteration >= $max_iteration ) {
@@ -147,7 +147,6 @@ class Parser {
 		}
 
 		return $field_text;
-
 	}
 
 
@@ -205,7 +204,6 @@ class Parser {
 		}
 
 		return $token_value;
-
 	}
 
 	/**
@@ -238,13 +236,13 @@ class Parser {
 	 *
 	 * @return string
 	 */
-	private function stringify( $string = '' ) {
+	private function stringify( $given_string = '' ) {
 
-		if ( ! is_scalar( $string ) || empty( $string ) ) {
+		if ( ! is_scalar( $given_string ) || empty( $given_string ) ) {
 			return '';
 		}
 
-		return (string) $string;
+		return (string) $given_string;
 	}
 
 	/**
@@ -258,7 +256,6 @@ class Parser {
 	public function get_action_log_id( $action_id, $recipe_log_id ) {
 
 		return absint( Automator()->db->action->get_action_log_id( $action_id, $recipe_log_id ) );
-
 	}
 
 	/**
@@ -282,7 +279,6 @@ class Parser {
 		$has_correct_prefix = in_array( $token_pieces[0], array( 'META', 'FIELD' ), true );
 
 		return $has_four_parts && $second_arg_is_numeric && $has_correct_prefix;
-
 	}
 
 	/**
@@ -334,11 +330,19 @@ class Parser {
 
 		// Handle non-repeater JSON values from field.
 		if ( Automator()->utilities->is_json_string( $meta_value ) ) {
-			return join( ', ', json_decode( $meta_value ) );
+
+			$decoded = json_decode( $meta_value, true );
+
+			// Repeater field is classified as group 1.
+			if ( 'g1' === Array_Group_Classifier::classify_array( $decoded ) ) {
+				return wp_json_encode( $decoded );
+			}
+
+			return join( ', ', $decoded );
+
 		}
 
 		return ! empty( $meta_value ) ? $meta_value : '';
-
 	}
 
 	/**
@@ -408,6 +412,5 @@ class Parser {
 		}
 
 		return true;
-
 	}
 }

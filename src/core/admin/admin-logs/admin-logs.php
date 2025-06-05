@@ -18,9 +18,6 @@ class Admin_Logs {
 		// Load tabs
 		$this->load_tabs();
 
-		// Enqueue assets from PRO Filters.
-		$this->enqueue_assets();
-
 	}
 
 	public function set_asset( $asset ) {
@@ -153,16 +150,6 @@ class Admin_Logs {
 		}
 
 		return 'recipe';
-
-	}
-
-	private function enqueue_assets() {
-
-		require_once __DIR__ . DIRECTORY_SEPARATOR . 'src/asset-manager.php';
-
-		$this->set_asset( new Admin_Logs\Asset_Manager() );
-
-		add_action( 'admin_enqueue_scripts', array( $this->asset, 'enqueue_assets' ) );
 
 	}
 

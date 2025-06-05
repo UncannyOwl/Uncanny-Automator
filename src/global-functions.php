@@ -645,8 +645,7 @@ if ( ! function_exists( 'str_contains' ) ) {
  * @return mixed
  */
 function automator_get_option( $option, $default_value = false, $force = false ) {
-	$Automator_Options = new Automator_Options();
-	return $Automator_Options->get_option( $option, $default_value, $force );
+	return ( new Automator_Options() )->get_option( $option, $default_value, $force );
 }
 
 /**
@@ -660,8 +659,7 @@ function automator_get_option( $option, $default_value = false, $force = false )
  * @return void
  */
 function automator_add_option( $option, $value, $autoload = true, $run_actions = true ) {
-	$Automator_Options = new Automator_Options();
-	return $Automator_Options->add_option( $option, $value, $autoload, $run_actions );
+	return ( new Automator_Options() )->add_option( $option, $value, $autoload, $run_actions );
 }
 
 /**
@@ -670,8 +668,7 @@ function automator_add_option( $option, $value, $autoload = true, $run_actions =
  * @return bool
  */
 function automator_delete_option( $option ) {
-	$Automator_Options = new Automator_Options();
-	$Automator_Options->delete_option( $option );
+	return ( new Automator_Options() )->delete_option( $option );
 }
 
 /**
@@ -684,8 +681,7 @@ function automator_delete_option( $option ) {
  * @return bool True if the operation was successful, false otherwise.
  */
 function automator_update_option( $option, $value, $autoload = true ) {
-	$Automator_Options = new Automator_Options();
-	$Automator_Options->update_option( $option, $value, $autoload );
+	return ( new Automator_Options() )->update_option( $option, $value, $autoload );
 }
 
 /**
@@ -696,16 +692,62 @@ function automator_update_option( $option, $value, $autoload = true ) {
  * @param string $setting Slug title of the setting to which this error applies.
  * @param string $code Slug-name to identify the error. Used as part of 'id' attribute in HTML output.
  * @param string $message The formatted message text to display to the user (will be shown inside styled <div> and <p> tags).
- * @param string $type MMessage type, controls HTML class. Possible values include 'error', 'success', 'warning', 'info'. Default 'error'.
+ * @param string $type Message type, controls HTML class. Possible values include 'error', 'success', 'warning', 'info'. Default 'error'.
  *
  */
-function automator_add_settings_error( $setting = '', $code = '', $message = '', $type = '' ) {
+function automator_add_settings_error( $setting = '', $code = '', $message = '', $type = 'error' ) {
 
 	if ( ! function_exists( 'add_settings_error' ) ) {
 		return;
 	}
 
 	add_settings_error( $setting, $code, $message, $type );
+}
+
+/**
+ * Store a flash message.
+ *
+ * @param string $key    Unique key for the message (e.g. integration slug).
+ * @param string $message The message to show.
+ * @param string $type    Type of message: 'error', 'success', 'warning', 'info'.
+ * @param int    $ttl     Optional. Time-to-live in seconds. Default: 30.
+ */
+function automator_flash_message( string $key, string $message, string $type = 'error', int $ttl = 30 ): void {
+
+	set_transient(
+		"automator_flash_{$key}",
+		array(
+			'message' => $message,
+			'type'    => $type,
+		),
+		$ttl
+	);
+}
+
+/**
+ * Display and auto-clear a flash message if it exists.
+ *
+ * @param string $key Unique key used when storing the message.
+ *
+ * @return array|false False if no message is found. Otherwise, an array with the message type and message.
+ */
+function automator_get_flash_message( string $key ) {
+
+	$transient = get_transient( "automator_flash_{$key}" );
+
+	if ( ! $transient ) {
+		return false;
+	}
+
+	delete_transient( "automator_flash_{$key}" );
+
+	$type    = esc_attr( $transient['type'] ?? 'info' );
+	$message = wp_kses_post( $transient['message'] ?? '' );
+
+	return array(
+		'type'    => $type,
+		'message' => $message,
+	);
 }
 
 /**
@@ -933,4 +975,13 @@ function is_automator_running_unit_tests() {
 	}
 
 	return false;
+}
+
+/**
+ * Returns the Automator tables.
+ *
+ * @return array
+ */
+function get_automator_tables() {
+	return DB_Tables::get_automator_tables();
 }

@@ -44,6 +44,20 @@ trait Premium_Integrations {
 	protected $name;
 
 	/**
+	 * Whether the integration requires credits
+	 *
+	 * @var boolean
+	 */
+	public $requires_credits = true;
+
+	/**
+	 * Whether the integration is a third party integration
+	 *
+	 * @var boolean
+	 */
+	public $is_third_party = false;
+
+	/**
 	 * The status of the integration
 	 * This expects a valid <uo-tab> status
 	 * Check the Design Guidelines to see the list of valid statuses
@@ -195,6 +209,42 @@ trait Premium_Integrations {
 	}
 
 	/**
+	 * Returns whether the integration requires credits
+	 *
+	 * @return boolean TRUE if the integration requires credits
+	 */
+	public function get_requires_credits() {
+		return $this->requires_credits;
+	}
+
+	/**
+	 * Sets whether the integration requires credits
+	 *
+	 * @param boolean $requires_credits TRUE if the integration requires credits
+	 */
+	public function set_requires_credits( $requires_credits = true ) {
+		$this->requires_credits = $requires_credits;
+	}
+
+	/**
+	 * Returns whether the integration is a third party integration
+	 *
+	 * @return boolean TRUE if the integration is a third party integration
+	 */
+	public function get_is_third_party() {
+		return $this->is_third_party;
+	}
+
+	/**
+	 * Sets whether the integration is a third party integration
+	 *
+	 * @param boolean $is_third_party TRUE if the integration is a third party integration
+	 */
+	public function set_is_third_party( $is_third_party = false ) {
+		$this->is_third_party = $is_third_party;
+	}
+
+	/**
 	 * Sets the status of the integration
 	 * This expects a valid <uo-tab> status
 	 * Check the Design Guidelines to see the list of valid statuses
@@ -327,8 +377,8 @@ trait Premium_Integrations {
 	 */
 	public function is_current_page_settings() {
 		return automator_filter_input( 'page' ) === 'uncanny-automator-config'
-			   && automator_filter_input( 'tab' ) === 'premium-integrations'
-			   && automator_filter_input( 'integration' ) === $this->get_id();
+			&& automator_filter_input( 'tab' ) === 'premium-integrations'
+			&& automator_filter_input( 'integration' ) === $this->get_id();
 	}
 
 	/**
@@ -341,7 +391,6 @@ trait Premium_Integrations {
 		}
 
 		// Add the tab using the filter
-		//$this->add_tab();
 		add_filter( 'automator_settings_premium_integrations_tabs', array( $this, 'add_tab' ) );
 
 		// Register the options/settings
@@ -360,11 +409,13 @@ trait Premium_Integrations {
 		// Check if the ID is defined
 		// Create the tab
 		$tabs[ $this->get_id() ] = (object) array(
-			'name'     => $this->get_name(),
-			'icon'     => $this->get_icon(),
-			'status'   => $this->get_status(),
-			'preload'  => $this->get_preload(),
-			'function' => array( $this, 'output' ),
+			'name'             => $this->get_name(),
+			'icon'             => $this->get_icon(),
+			'status'           => $this->get_status(),
+			'preload'          => $this->get_preload(),
+			'requires_credits' => $this->get_requires_credits(),
+			'is_third_party'   => $this->get_is_third_party(),
+			'function'         => array( $this, 'output' ),
 		);
 
 		return $tabs;
@@ -436,7 +487,6 @@ trait Premium_Integrations {
 				true
 			);
 		}
-
 	}
 
 	/**
@@ -534,7 +584,6 @@ trait Premium_Integrations {
 		><?php echo( wp_kses( $alert['content'], $allowed_html ) ); ?></uo-alert>
 
 		<?php
-
 	}
 
 	/**

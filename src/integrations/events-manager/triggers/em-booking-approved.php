@@ -1,6 +1,9 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Events_Manager;
+
+use EM_Booking;
+use EM_Event;
 
 /**
  * Class EM_REGISTER
@@ -39,9 +42,9 @@ class EM_BOOKING_APPROVED {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - The Events Manager */
-			'sentence'            => sprintf( esc_attr__( "A user's booking for {{an event:%1\$s}} is approved", 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr_x( "A user's booking for {{an event:%1\$s}} is approved", 'Events Manager', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - The Events Manager */
-			'select_option_name'  => esc_attr__( "A user's booking for {{an event}} is approved", 'uncanny-automator' ),
+			'select_option_name'  => esc_attr_x( "A user's booking for {{an event}} is approved", 'Events Manager', 'uncanny-automator' ),
 			'action'              => array(
 				'em_booking_save',
 				'em_booking_set_status',
@@ -79,7 +82,7 @@ class EM_BOOKING_APPROVED {
 
 	/**
 	 * @param $em_status
-	 * @param \EM_Booking $em_booking_obj
+	 * @param EM_Booking $em_booking_obj
 	 *
 	 * @return mixed
 	 */
@@ -135,5 +138,4 @@ class EM_BOOKING_APPROVED {
 
 		return $em_status;
 	}
-
 }

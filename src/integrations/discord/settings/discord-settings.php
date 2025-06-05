@@ -152,6 +152,28 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 	}
 
 	/**
+	 * Generate a secure disconnect URL with nonce.
+	 *
+	 * @param string $type The type of disconnect ('user' or 'server').
+	 * @param int    $id   The server ID if type is 'server'.
+	 *
+	 * @return string The secure disconnect URL.
+	 */
+	private function get_secure_disconnect_url( $type, $id = 0 ) {
+		$args = array(
+			'_wpnonce' => wp_create_nonce( self::NONCE_KEY ),
+		);
+
+		if ( 'user' === $type ) {
+			$args['disconnect'] = '1';
+		} elseif ( 'server' === $type && absint( $id ) > 0 ) {
+			$args['disconnect-server'] = absint( $id );
+		}
+
+		return add_query_arg( $args, $this->get_settings_page_url() );
+	}
+
+	/**
 	 * Disconnect the integration
 	 *
 	 * @return void
@@ -166,15 +188,29 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		$disconnect_server = automator_filter_input( 'disconnect-server' );
 		$disconnect_user   = automator_filter_input( 'disconnect' );
 
+		// Bail early if no disconnect action is requested
+		if ( '1' !== $disconnect_user && empty( $disconnect_server ) ) {
+			return;
+		}
+
+		// Validate nonce
+		$nonce = automator_filter_input( '_wpnonce' );
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, self::NONCE_KEY ) ) {
+			wp_die( 'Error 403: Invalid security token.' );
+		}
+
+		// Validate user capabilities
+		$this->validate_user_capabilities();
+
+		// Handle user disconnect.
 		if ( '1' === $disconnect_user ) {
-			$this->validate_user_capabilities();
 			$this->helpers->remove_credentials();
 			wp_safe_redirect( $this->get_settings_page_url() );
 			exit;
 		}
 
+		// Handle server disconnect.
 		if ( absint( $disconnect_server ) > 0 ) {
-			$this->validate_user_capabilities();
 			$this->helpers->disconnect( $disconnect_server );
 			$this->helpers->update_server_connected_status( $disconnect_server, 0 );
 			wp_safe_redirect( $this->get_settings_page_url() . '&server-disconnect=' . $disconnect_server );
@@ -524,7 +560,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 			return;
 		}
 
-		$link = $this->get_settings_page_url() . '&disconnect=1';
+		$link = $this->get_secure_disconnect_url( 'user' );
 
 		?>
 		<uo-button color="danger" href="<?php echo esc_url( $link ); ?>">
@@ -547,7 +583,7 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 		// Server is connected.
 		if ( ! empty( $server['connected'] ) ) {
 			$date  = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $server['connected'] );
-			$url   = $this->get_settings_page_url() . '&disconnect-server=' . $server['id'];
+			$url   = $this->get_secure_disconnect_url( 'server', $server['id'] );
 			$label = esc_html_x( 'Disconnect server', 'Discord', 'uncanny-automator' );
 		}
 

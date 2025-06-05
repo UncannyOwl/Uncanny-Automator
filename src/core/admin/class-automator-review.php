@@ -10,6 +10,7 @@
 namespace Uncanny_Automator;
 
 use WP_REST_Response;
+use WP_REST_Request;
 
 /**
  * Class Automator_Review
@@ -56,7 +57,6 @@ class Automator_Review {
 	public function __construct() {
 
 		$this->register_hooks();
-
 	}
 
 	/**
@@ -87,7 +87,6 @@ class Automator_Review {
 		);
 
 		return true;
-
 	}
 
 	/**
@@ -101,13 +100,21 @@ class Automator_Review {
 
 		}
 
+		// Dismiss the banner.
 		$type = automator_filter_input( 'type' );
-
-		$redirect_url = automator_filter_input( 'redirect_url' );
 
 		automator_update_option( '_uncanny_automator_review_reminder', $type );
 
-		automator_update_option( '_uncanny_automator_review_reminder_date', strtotime( current_time( 'mysql' ) ) );
+		automator_update_option( '_uncanny_automator_review_reminder_date', time() );
+
+		// Track step.
+		$this->track_review_step(
+			automator_filter_input( 'banner' ),
+			automator_filter_input( 'track' )
+		);
+
+		// Handle redirects.
+		$redirect_url = automator_filter_input( 'redirect_url' );
 
 		if ( ! empty( $redirect_url ) ) {
 
@@ -120,7 +127,6 @@ class Automator_Review {
 		wp_redirect( wp_get_referer() ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 
 		exit;
-
 	}
 
 	/**
@@ -146,7 +152,6 @@ class Automator_Review {
 		wp_redirect( wp_get_referer() ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 
 		exit;
-
 	}
 
 	/**
@@ -176,7 +181,6 @@ class Automator_Review {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -192,13 +196,7 @@ class Automator_Review {
 			array(
 				'methods'             => 'POST, GET',
 				'callback'            => array( $this, 'get_credits' ),
-				'permission_callback' => function () {
-					if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
-						return true;
-					}
-
-					return false;
-				},
+				'permission_callback' => array( $this, 'rest_permissions' ),
 			)
 		);
 
@@ -208,13 +206,7 @@ class Automator_Review {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'get_recipes_using_credits' ),
-				'permission_callback' => function () {
-					if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
-						return true;
-					}
-
-					return false;
-				},
+				'permission_callback' => array( $this, 'rest_permissions' ),
 			)
 		);
 
@@ -224,14 +216,48 @@ class Automator_Review {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'save_tracking_settings' ),
-				'permission_callback' => function () {
-					if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
-						return true;
-					}
-
-					return false;
-				},
+				'permission_callback' => array( $this, 'rest_permissions' ),
 			)
+		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
+			'/track-review/',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'track_review_steps' ),
+				'permission_callback' => array( $this, 'rest_permissions' ),
+			)
+		);
+	}
+
+	/**
+	 * Valiate the rest api permissions.
+	 *
+	 * @return bool
+	 */
+	public function rest_permissions() {
+		return is_user_logged_in() && current_user_can( 'manage_options' );
+	}
+
+	/**
+	 * Callback for tracking review results.
+	 *
+	 * @param WP_REST_Request $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function track_review_steps( $request ) {
+
+		// Validate nonce ( in case called from external source ).
+		if ( ! wp_verify_nonce( $request->get_header( 'X-WP-Nonce' ), 'wp_rest' ) ) {
+			return new WP_REST_Response( array( 'success' => false ), 401 );
+		}
+
+		// Track the event.
+		return $this->track_review_step(
+			$request->get_param( 'banner' ),
+			$request->get_param( 'event' )
 		);
 	}
 
@@ -243,41 +269,34 @@ class Automator_Review {
 	 * @since 2.11
 	 */
 	public function save_review_settings_action() {
-		// check if its a valid request.
-		if ( automator_filter_has_var( 'action' ) && ( 'uo-maybe-later' === automator_filter_input( 'action' ) || 'uo-hide-forever' === automator_filter_input( 'action' ) ) ) {
-			if ( function_exists( 'is_admin' ) && is_admin() ) {
-				$_action = str_replace( 'uo-', '', automator_filter_input( 'action' ) );
 
-				automator_update_option( '_uncanny_automator_review_reminder', $_action );
-				automator_update_option( '_uncanny_automator_review_reminder_date', current_time( 'timestamp' ) );
-				$back_url = remove_query_arg( 'action' );
-				wp_safe_redirect( $back_url );
-				die;
-			}
+		$_action  = automator_filter_has_var( 'action' ) ? automator_filter_input( 'action' ) : false;
+		$is_admin = function_exists( 'is_admin' ) && is_admin();
+
+		if ( ! $_action || ! $is_admin ) {
+			return;
 		}
-		if ( automator_filter_has_var( 'action' ) && 'uo-allow-tracking' === automator_filter_input( 'action' ) ) {
-			if ( function_exists( 'is_admin' ) && is_admin() ) {
-				automator_update_option( 'automator_reporting', true );
+
+		switch ( $_action ) {
+			// @TODO: Review I don't believe these are being used anywhere.
+			case 'uo-maybe-later':
+			case 'uo-hide-forever':
+				automator_update_option( '_uncanny_automator_review_reminder', str_replace( 'uo-', '', $_action ) );
+				automator_update_option( '_uncanny_automator_review_reminder_date', time() );
+				wp_safe_redirect( remove_query_arg( 'action' ) );
+				die;
+
+			case 'uo-allow-tracking':
+			case 'uo-hide-track':
 				automator_update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
+				if ( 'uo-allow-tracking' === $_action ) {
+					automator_update_option( 'automator_reporting', true );
+				}
 
-				$back_url = remove_query_arg( 'action' );
-				wp_safe_redirect( $back_url );
+				wp_safe_redirect( remove_query_arg( 'action' ) );
 				die;
-			}
 		}
-		if ( automator_filter_has_var( 'action' ) && 'uo-hide-track' === automator_filter_input( 'action' ) ) {
-			if ( function_exists( 'is_admin' ) && is_admin() ) {
-
-				automator_update_option( '_uncanny_automator_tracking_reminder', 'hide-forever' );
-
-				$back_url = remove_query_arg( 'action' );
-				wp_safe_redirect( $back_url );
-				die;
-			}
-		}
-
 	}
-
 
 	/**
 	 * Callback for getting api credits.
@@ -293,7 +312,7 @@ class Automator_Review {
 		$response = (object) array();
 
 		// Default return message
-		$response->message       = __( 'Information is missing.', 'uncanny-automator' );
+		$response->message       = esc_html__( 'Information is missing.', 'uncanny-automator' );
 		$response->success       = true;
 		$response->credits_left  = 0;
 		$response->total_credits = 0;
@@ -329,7 +348,6 @@ class Automator_Review {
 		);
 
 		return $response;
-
 	}
 
 	/**
@@ -372,7 +390,7 @@ class Automator_Review {
 
 		$_is_reminder = automator_get_option( '_uncanny_automator_tracking_reminder', '' );
 
-		$_reminder_date = automator_get_option( '_uncanny_automator_tracking_reminder_date', current_time( 'timestamp' ) );
+		$_reminder_date = automator_get_option( '_uncanny_automator_tracking_reminder_date', time() );
 
 		if ( ! empty( $_is_reminder ) && 'hide-forever' === $_is_reminder ) {
 			return;
@@ -396,7 +414,7 @@ class Automator_Review {
 
 				$screen = get_current_screen();
 
-				if ( $screen->base === 'post' ) {
+				if ( 'post' === $screen->base ) {
 					return;
 				}
 
@@ -422,7 +440,6 @@ class Automator_Review {
 				include Utilities::automator_get_view( 'tracking-banner.php' );
 			}
 		);
-
 	}
 
 	/**
@@ -496,32 +513,18 @@ class Automator_Review {
 			return;
 		}
 
-		wp_enqueue_style( 'uap-admin', Utilities::automator_get_asset( 'backend/dist/main.bundle.min.css' ), array(), Utilities::automator_get_version() );
-
-		// Register main JS in case it wasnt registered.
-		wp_register_script(
-			'uap-admin',
-			Utilities::automator_get_asset( 'backend/dist/main.bundle.min.js' ),
-			array(
-				'wp-api-fetch',
-				'wp-i18n',
-				'wp-dom-ready'
-			),
-			Utilities::automator_get_version(),
-			true
-		);
-
 		$admin_menu_instance = Admin_Menu::get_instance();
 
-		// Get data for the main script
-		wp_localize_script(
+		Utilities::enqueue_asset(
 			'uap-admin',
-			'UncannyAutomatorBackend',
-			$admin_menu_instance->get_js_backend_inline_data( $screen->id )
+			'main',
+			array(
+				'localize' => array(
+					'UncannyAutomatorBackend' => $admin_menu_instance->get_js_backend_inline_data( $screen->id ),
+					'UncannyAutomator'        => array(),
+				),
+			)
 		);
-
-		// Enqueue uap-admin.
-		wp_enqueue_script( 'uap-admin' );
 	}
 
 	/**
@@ -561,9 +564,16 @@ class Automator_Review {
 			return;
 		}
 
-		// Loads the template.
-		$this->display_review_banner_template();
-
+		// Check if we should display the banner.
+		$config = $this->get_review_banner_config();
+		if ( ! empty( $config ) ) {
+			// Track the display of the banner.
+			$this->track_review_step( $config['banner'], 'displayed' );
+			// Include the love / don't love banners.
+			$this->review_love_dont_love_banners( $config );
+			// Include main banner.
+			$this->get_template( $config['banner'], $config );
+		}
 	}
 
 	/**
@@ -579,7 +589,6 @@ class Automator_Review {
 		}
 
 		return self::can_display_credits_notif();
-
 	}
 
 	/**
@@ -615,7 +624,6 @@ class Automator_Review {
 		}
 
 		return in_array( $current_screen->id, $automator_pages, true );
-
 	}
 
 	/**
@@ -638,7 +646,6 @@ class Automator_Review {
 		}
 
 		return in_array( $current_screen->id, self::get_allowed_page_for_credits_notif(), true );
-
 	}
 
 	/**
@@ -708,7 +715,6 @@ class Automator_Review {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -730,26 +736,24 @@ class Automator_Review {
 			'credits_used'      => $this->get_usage_count(),
 		);
 
-		// Can be an assoc array without if then else condition, but might be hard to read.
-		if ( $credits_remaining <= 0 && ! $this->is_credits_notification_hidden_forever( 0 ) ) {
-			$credits_remaining_args['dismiss_link'] = $this->credits_feedback_url( 0, 'dismiss' );
-
-			return $this->get_template( 'credits-remaining-0', $credits_remaining_args );
+		// Bail, plenty of credits remaining.
+		if ( $credits_remaining > 100 ) {
+			return;
 		}
 
-		if ( $credits_remaining <= 25 && ! $this->is_credits_notification_hidden_forever( 25 ) ) {
-			$credits_remaining_args['dismiss_link'] = $this->credits_feedback_url( 25, 'dismiss' );
+		$checks = array( 0, 25, 100 );
+		foreach ( $checks as $check ) {
+			if ( $credits_remaining <= $check ) {
+				if ( $this->is_credits_notification_hidden_forever( $check ) ) {
+					continue;
+				}
 
-			return $this->get_template( 'credits-remaining-25', $credits_remaining_args );
-		}
-
-		if ( $credits_remaining <= 100 && ! $this->is_credits_notification_hidden_forever( 100 ) ) {
-			$credits_remaining_args['dismiss_link'] = $this->credits_feedback_url( 100, 'dismiss' );
-
-			return $this->get_template( 'credits-remaining-100', $credits_remaining_args );
+				$credits_remaining_args['dismiss_link'] = $this->credits_feedback_url( $check, 'dismiss' );
+				$credits_remaining_args['key']          = 'credits-remaining-' . $check;
+				return $this->get_template( 'credits-remaining-' . $check, $credits_remaining_args );
+			}
 		}
 	}
-
 
 	/**
 	 * @param $type
@@ -757,7 +761,7 @@ class Automator_Review {
 	 *
 	 * @return string
 	 */
-	function credits_feedback_url( $type = 100, $procedure = 'dismiss' ) {
+	public function credits_feedback_url( $type = 100, $procedure = 'dismiss' ) {
 
 		$action = 'automator_handle_credits_notification_feedback';
 
@@ -770,56 +774,36 @@ class Automator_Review {
 			),
 			admin_url( 'admin-ajax.php' )
 		);
-
 	}
 
 	/**
-	 * Displays review banner template.
+	 * Gets config to display review banner templates.
 	 *
-	 * @return int|bool Returns 1 if template is successfully displayed. Returns false, if no banner was shown.
+	 * @return mixed - array|bool - The template array if the banner should be displayed. Otherwise, false.
 	 */
-	public function display_review_banner_template() {
+	public function get_review_banner_config() {
 
 		// User spent N_CREDITS_TO_SHOW (20 @ 4.10) credits. Only shows if Automator Pro is not enabled.
 		if ( $this->has_spent_credits( self::N_CREDITS_TO_SHOW ) && ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ) {
-
-			$this->review_love_dont_love_banners();
-
-			// Show free credits template.
-			return $this->get_template(
-				'review-credits-used',
-				array(
-					'credits_used' => $this->get_usage_count(),
-				)
+			return array(
+				'credits_used' => $this->get_usage_count(),
+				'banner'       => 'review-credits-used',
 			);
-
 		}
 
 		// Sent count is greater than or equal to self::N_EMAILS_COUNT (30 @ 4.10).
 		if ( $this->get_sent_emails_count() >= self::N_EMAILS_COUNT ) {
-
-			$this->review_love_dont_love_banners();
-
-			// Show sent emails template.
-			return $this->get_template(
-				'review-emails-sent',
-				array(
-					'emails_sent' => $this->get_sent_emails_count(),
-				)
+			return array(
+				'emails_sent' => $this->get_sent_emails_count(),
+				'banner'      => 'review-emails-sent',
 			);
 		}
 
 		// Completed recipes count is greater or equals to N_COMPLETED_RECIPE_COUNT (30 @ 4.10).
 		if ( $this->get_completed_recipes_count() >= self::N_COMPLETED_RECIPE_COUNT ) {
-
-			$this->review_love_dont_love_banners();
-
-			// Show recipe count template.
-			return $this->get_template(
-				'review-recipes-count',
-				array(
-					'total_recipe_completion_count' => $this->get_completed_recipes_count(),
-				)
+			return array(
+				'total_recipe_completion_count' => $this->get_completed_recipes_count(),
+				'banner'                        => 'review-recipes-count',
 			);
 		}
 
@@ -827,17 +811,21 @@ class Automator_Review {
 	}
 
 	/**
+	 * Include the love and dont love banners.
+	 *
+	 * @param array $config - The current banner config array.
+	 *
 	 * @return void
 	 */
-	public function review_love_dont_love_banners() {
+	public function review_love_dont_love_banners( $config ) {
 		/**
 		 * Always load the following templates.
 		 *
 		 * Up to JS to show it conditionally base on clicked button renderend on the template above.
 		 **/
-		$this->get_template( 'review-user-love-automator' );
+		$this->get_template( 'review-user-love-automator', $config );
 
-		$this->get_template( 'review-user-dont-love-automator' );
+		$this->get_template( 'review-user-dont-love-automator', $config );
 	}
 
 	/**
@@ -849,50 +837,60 @@ class Automator_Review {
 	 * @return int 1 if the view was successfully included. Otherwise, throws E_WARNING.
 	 */
 	public function get_template( $template = '', $args = array() ) {
-
-		$vars = array_merge( $this->get_common_vars(), $args );
+		$banner = isset( $args['banner'] ) && ! empty( $args['banner'] ) ? $args['banner'] : '';
+		$vars   = array_merge( $this->get_common_vars( $banner ), $args );
 
 		return include_once Utilities::automator_get_view( sanitize_file_name( $template . '.php' ) );
-
 	}
 
 	/**
 	 * Retrieves the common variables used in the template.
 	 *
+	 * @param string $banner - The banner key.
+	 *
 	 * @return array
 	 */
-	public function get_common_vars() {
+	public function get_common_vars( $banner = '' ) {
 
+		$args = array();
+
+		if ( ! empty( $banner ) ) {
+			$args['banner'] = $banner;
+		}
+
+		$wp_args       = array_merge( $args, array( 'redirect_url' => 'https://wordpress.org/support/plugin/uncanny-automator/reviews/?filter=5#new-post' ) );
+		$feedback_args = array_merge( $args, array( 'redirect_url' => $this->get_feedback_url() ) );
 		return array(
-			'url_wordpress'    => $this->get_banner_url( array( 'redirect_url' => 'https://wordpress.org/support/plugin/uncanny-automator/reviews/?filter=5#new-post' ), 'hide-forever' ),
-			'url_feedback'     => $this->get_banner_url( array( 'redirect_url' => $this->get_feedback_url() ), 'hide-forever' ),
-			'url_maybe_later'  => $this->get_banner_url( array(), 'maybe-later' ),
-			'url_already_did'  => $this->get_banner_url( array(), 'hide-forever' ),
-			'url_close_button' => $this->get_banner_url( array(), 'hide-forever' ),
+			'url_wordpress'    => $this->get_banner_url( 'hide-forever', $wp_args ),
+			'url_feedback'     => $this->get_banner_url( 'hide-forever', $feedback_args ),
+			'url_maybe_later'  => $this->get_banner_url( 'maybe-later', $args ),
+			'url_already_did'  => $this->get_banner_url( 'hide-forever', $args ),
+			'url_close_button' => $this->get_banner_url( 'hide-forever', $args ),
 		);
-
 	}
 
 	/**
 	 * Retrieves the banner URL.
 	 *
-	 * @param $args
 	 * @param $type
+	 * @param $args
 	 *
 	 * @return string
 	 */
-	public function get_banner_url( $args = array(), $type = '' ) {
+	public function get_banner_url( $type, $args = array() ) {
 
-		return add_query_arg(
-			array(
-				'type'         => $type,
-				'nonce'        => wp_create_nonce( 'feedback_banner' ),
-				'action'       => 'automator_handle_feedback',
-				'redirect_url' => isset( $args['redirect_url'] ) ? rawurlencode( esc_url( $args['redirect_url'] ) ) : '',
-			),
-			admin_url( 'admin-ajax.php' )
+		$defaults = array(
+			'type'   => $type,
+			'nonce'  => wp_create_nonce( 'feedback_banner' ),
+			'action' => 'automator_handle_feedback',
 		);
 
+		$args = array_merge( $defaults, $args );
+		if ( isset( $args['redirect_url'] ) ) {
+			$args['redirect_url'] = rawurlencode( esc_url( $args['redirect_url'] ) );
+		}
+
+		return add_query_arg( $args, admin_url( 'admin-ajax.php' ) );
 	}
 
 	/**
@@ -920,7 +918,6 @@ class Automator_Review {
 		$url_send_feedback_source = $is_pro ? 'uncanny_automator_pro' : 'uncanny_automator';
 
 		return esc_url( 'https://automatorplugin.com/feedback/?version=' . $url_send_feedback_version . '&utm_source=' . $url_send_feedback_source . '&utm_medium=review_banner' );
-
 	}
 
 	/**
@@ -938,7 +935,7 @@ class Automator_Review {
 		// Get current page
 		$page = automator_filter_input( 'page' );
 
-		if ( ( $page !== 'uncanny-automator-dashboard' ) && ( empty( $typenow ) || 'uo-recipe' !== $typenow ) ) {
+		if ( ( 'uncanny-automator-dashboard' !== $page ) && ( empty( $typenow ) || 'uo-recipe' !== $typenow ) ) {
 			return false;
 		}
 
@@ -949,7 +946,6 @@ class Automator_Review {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -966,7 +962,6 @@ class Automator_Review {
 		$seconds_passed = absint( $current_datetime - $date_updated );
 
 		return floor( $seconds_passed / ( 60 * 60 * 24 ) );
-
 	}
 
 	/**
@@ -1013,7 +1008,6 @@ class Automator_Review {
 		$credits_remaining = absint( intval( $user_connected['usage_limit'] ) - intval( $user_connected['paid_usage_count'] ) );
 
 		return apply_filters( 'automator_review_get_credits_remaining', $credits_remaining, $this );
-
 	}
 
 	/**
@@ -1022,7 +1016,6 @@ class Automator_Review {
 	public function get_connected_user() {
 
 		return Api_Server::is_automator_connected();
-
 	}
 
 	/**
@@ -1042,7 +1035,6 @@ class Automator_Review {
 		}
 
 		return $usage_count >= $number_of_credits;
-
 	}
 
 	/**
@@ -1058,7 +1050,6 @@ class Automator_Review {
 
 		// Allow overide for testing purposes.
 		return absint( apply_filters( 'automator_review_get_usage_count', $usage_count, $this ) );
-
 	}
 
 	/**
@@ -1069,7 +1060,6 @@ class Automator_Review {
 	public function get_sent_emails_count() {
 
 		return absint( apply_filters( 'automator_review_get_sent_emails_count', automator_get_option( 'automator_sent_email_completed', 0 ), $this ) );
-
 	}
 
 	/**
@@ -1080,7 +1070,45 @@ class Automator_Review {
 	public function get_completed_recipes_count() {
 
 		return apply_filters( 'automator_review_get_completed_recipe_count', absint( Automator()->get->completed_recipes_count() ), $this );
-
 	}
 
+	/**
+	 * Track review step.
+	 *
+	 * @param string $banner - The banner key.
+	 * @param string $event - The event of the review process.
+	 *
+	 * @return void
+	 */
+	public function track_review_step( $banner, $event ) {
+
+		// Bail if any of the values are empty.
+		if ( empty( $banner ) || empty( $event ) ) {
+			return new WP_REST_Response( array( 'success' => false ), 401 );
+		}
+
+		// Create a new WP_REST_Request object
+		$request = new WP_REST_Request(
+			'POST',
+			AUTOMATOR_REST_API_END_POINT . '/log-event/'
+		);
+
+		// Set the parameters for the request
+		$request->set_body_params(
+			array(
+				'event' => 'review-tracking',
+				'value' => array(
+					'banner' => $banner,
+					'event'  => $event,
+				),
+			)
+		);
+
+		// Get the instance of Usage_Reports class.
+		$reports = Automator_Load::get_core_class_instance( 'Usage_Reports' );
+		$reports = is_a( $reports, 'Usage_Reports' ) ? $reports : new Usage_Reports();
+
+		// Log the event.
+		return $reports->log_event( $request );
+	}
 }

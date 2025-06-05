@@ -783,7 +783,7 @@ class Mailchimp_Helpers {
 
 			try {
 
-				$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $api_message, wp_create_nonce( 'automator_api_mailchimp_authorize_nonce' ) );
+				$tokens = Automator_Helpers_Recipe::automator_api_decode_message( $api_message, wp_create_nonce( 'automator_api_mailchimp_authorize' ) );
 
 				if ( ! empty( $tokens['access_token'] ) ) {
 
@@ -840,14 +840,29 @@ class Mailchimp_Helpers {
 	 */
 	public function uo_mailchimp_disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), 'uo-mailchimp-disconnect' ) ) {
-			automator_delete_option( '_uncannyowl_mailchimp_settings' );
-			automator_delete_option( '_uncannyowl_mailchimp_settings_expired' );
-			automator_delete_option( '_uncannyowl_mailchimp_settings_user_info' );
-			delete_transient( 'automator_api_mailchimp_authorize_nonce' );
-			delete_transient( '_uncannyowl_mailchimp_settings' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_to_settings();
 		}
 
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'uo-mailchimp-disconnect' ) ) {
+			$this->redirect_to_settings();
+		}
+
+		automator_delete_option( '_uncannyowl_mailchimp_settings' );
+		automator_delete_option( '_uncannyowl_mailchimp_settings_expired' );
+		automator_delete_option( '_uncannyowl_mailchimp_settings_user_info' );
+		delete_transient( 'automator_api_mailchimp_authorize_nonce' );
+		delete_transient( '_uncannyowl_mailchimp_settings' );
+
+		$this->redirect_to_settings();
+	}
+
+	/**
+	 * redirect_to_settings
+	 *
+	 * @return void
+	 */
+	public function redirect_to_settings() {
 		wp_safe_redirect(
 			add_query_arg(
 				array(
@@ -905,6 +920,24 @@ class Mailchimp_Helpers {
 		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
 	}
 
+
+	/**
+	 * get_tab_url
+	 *
+	 * @return string
+	 */
+	public function get_settings_tab_url() {
+		return add_query_arg(
+			array(
+				'post_type'   => 'uo-recipe',
+				'page'        => 'uncanny-automator-config',
+				'tab'         => 'premium-integrations',
+				'integration' => $this->settings_tab,
+			),
+			admin_url( 'edit.php' )
+		);
+	}
+
 	/**
 	 * Get the Mailchimp OAuth URI.
 	 *
@@ -913,7 +946,7 @@ class Mailchimp_Helpers {
 	public function get_connect_uri() {
 
 		$action       = '';
-		$redirect_url = rawurlencode( admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=' . $this->settings_tab );
+		$redirect_url = rawurlencode( $this->get_settings_tab_url() );
 
 		return add_query_arg(
 			array(

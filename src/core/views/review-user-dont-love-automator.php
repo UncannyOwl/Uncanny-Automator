@@ -1,4 +1,7 @@
-<?php namespace Uncanny_Automator; ?>
+<?php
+namespace Uncanny_Automator;
+
+?>
 
 <div id="uap-review-banner-negative" class="uap notice" style="display: none">
 
@@ -6,11 +9,9 @@
 		heading="<?php echo esc_attr_x( "We're sorry to hear that you're not finding Uncanny Automator useful.", 'Reviews banner', 'uncanny-automator' ); ?>"
 		type="white"
 	>
-		<uo-button 
-			href="<?php echo esc_url( $vars['url_close_button'] ); ?>"
-
+		<uo-button
+			href="<?php echo esc_url( add_query_arg( 'track', 'second-dismissed', $vars['url_close_button'] ) ); ?>"
 			data-action="hide-banner-on-click"
-
 			slot="top-right-icon" 
 			color="transparent" 
 			size="small"
@@ -23,10 +24,10 @@
 		</p>
 
 		<div class="uap-spacing-top">
-			<uo-button
-				href="<?php echo esc_url( $vars['url_feedback'] ); ?>"
-				target="_blank"
 
+			<uo-button
+				href="<?php echo esc_url( add_query_arg( 'track', 'second-feedback', $vars['url_feedback'] ) ); ?>"
+				target="_blank"
 				data-action="hide-banner-on-click"
 				class="uap-spacing-right uap-spacing-right--xsmall"
 			>
@@ -34,10 +35,9 @@
 			</uo-button>
 
 			<uo-button
-				href="<?php echo esc_url( $vars['url_close_button'] ); ?>"
-
-				color="secondary"
+				href="<?php echo esc_url( add_query_arg( 'track', 'second-no', $vars['url_close_button'] ) ); ?>"
 				data-action="hide-banner-on-click"
+				color="secondary"
 			>
 				<?php echo esc_html_x( 'No, thanks', 'Reviews banner', 'uncanny-automator' ); ?>
 			</uo-button>

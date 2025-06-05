@@ -9,19 +9,20 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             6.5.0.2
+ * Version:             6.6.0
  * Requires at least:   5.6
  * Requires PHP:        7.3
  */
 
 use Uncanny_Automator\Automator_Functions;
 use Uncanny_Automator\Automator_Load;
+use Uncanny_Automator\DB_Tables;
 
 if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '6.5.0.2' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '6.6.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -29,6 +30,20 @@ if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
 	 * Specify Automator base file.
 	 */
 	define( 'AUTOMATOR_BASE_FILE', __FILE__ );
+}
+
+if ( ! defined( 'UNCANNY_AUTOMATOR_ASSETS_DIR' ) ) {
+	/*
+	 * Specify Automator assets directory.
+	 */
+	define( 'UNCANNY_AUTOMATOR_ASSETS_DIR', plugin_dir_path( __FILE__ ) . 'src/assets/' );
+}
+
+if ( ! defined( 'UNCANNY_AUTOMATOR_ASSETS_URL' ) ) {
+	/*
+	 * Specify Automator assets URL.
+	 */
+	define( 'UNCANNY_AUTOMATOR_ASSETS_URL', plugin_dir_url( __FILE__ ) . 'src/assets/' );
 }
 
 if ( version_compare( PHP_VERSION, '7.3', '<' ) ) {
@@ -84,6 +99,13 @@ if ( ! defined( 'UA_ABSPATH' ) ) {
 	 */
 	define( 'UA_ABSPATH', dirname( AUTOMATOR_BASE_FILE ) . DIRECTORY_SEPARATOR );
 }
+
+
+// Load database tables early
+require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'class-db-tables.php';
+
+// Load database tables.
+DB_Tables::register_tables();
 
 // Autoload files
 require UA_ABSPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';

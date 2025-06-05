@@ -2,7 +2,10 @@
 
 namespace Uncanny_Automator;
 
+use EM_Booking;
+use EM_Event;
 use EM_Event_Locations\Event_Location;
+use EM_Location;
 
 /**
  *
@@ -37,28 +40,28 @@ class Em_Tokens {
 		}
 		$trigger_meta    = $args['meta'];
 		$possible_tokens = array(
-			$trigger_meta . '_ATTENDEE_NAME'       => esc_attr__( 'Attendee - Name', 'uncanny-automator' ),
-			$trigger_meta . '_ATTENDEE_EMAIL'      => esc_attr__( 'Attendee - Email', 'uncanny-automator' ),
-			$trigger_meta . '_ATTENDEE_PHONE'      => esc_attr__( 'Attendee - Phone', 'uncanny-automator' ),
-			$trigger_meta . '_BOOKED_SPACES'       => esc_attr__( 'Booking - Spaces booked', 'uncanny-automator' ),
-			$trigger_meta . '_COMMENT'             => esc_attr__( 'Booking - Attendee comments', 'uncanny-automator' ),
-			$trigger_meta . '_PRICE_PAID'          => esc_attr__( 'Booking - Price paid', 'uncanny-automator' ),
-			$trigger_meta . '_START_DATE'          => esc_attr__( 'Event - Start date', 'uncanny-automator' ),
-			$trigger_meta . '_END_DATE'            => esc_attr__( 'Event - End date', 'uncanny-automator' ),
-			$trigger_meta . '_TOTAL_SPACES'        => esc_attr__( 'Event - Total spaces', 'uncanny-automator' ),
-			$trigger_meta . '_MAX_SPACES'          => esc_attr__( 'Event - Maximum spaces per booking', 'uncanny-automator' ),
-			$trigger_meta . '_CONFIRMED_SPACES'    => esc_attr__( 'Event - Confirmed spaces', 'uncanny-automator' ),
-			$trigger_meta . '_PENDING_SPACES'      => esc_attr__( 'Event - Pending spaces', 'uncanny-automator' ),
-			$trigger_meta . '_AVAILABLE_SPACES'    => esc_attr__( 'Event - Available spaces', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_NAME'       => esc_attr__( 'Location - Name', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_ADDRESS'    => esc_attr__( 'Location - Address', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_TOWN'       => esc_attr__( 'Location - Town', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_STATE'      => esc_attr__( 'Location - State', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_POSTCODE'   => esc_attr__( 'Location - Postcode', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_REGION'     => esc_attr__( 'Location - Region', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_COUNTRY'    => esc_attr__( 'Location - Country', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_URL'        => esc_attr__( 'Location - URL', 'uncanny-automator' ),
-			$trigger_meta . '_LOCATION_LINK_TITLE' => esc_attr__( 'Location - Link text', 'uncanny-automator' ),
+			$trigger_meta . '_ATTENDEE_NAME'       => esc_attr_x( 'Attendee - Name', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_ATTENDEE_EMAIL'      => esc_attr_x( 'Attendee - Email', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_ATTENDEE_PHONE'      => esc_attr_x( 'Attendee - Phone', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_BOOKED_SPACES'       => esc_attr_x( 'Booking - Spaces booked', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_COMMENT'             => esc_attr_x( 'Booking - Attendee comments', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_PRICE_PAID'          => esc_attr_x( 'Booking - Price paid', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_START_DATE'          => esc_attr_x( 'Event - Start date', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_END_DATE'            => esc_attr_x( 'Event - End date', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_TOTAL_SPACES'        => esc_attr_x( 'Event - Total spaces', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_MAX_SPACES'          => esc_attr_x( 'Event - Maximum spaces per booking', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_CONFIRMED_SPACES'    => esc_attr_x( 'Event - Confirmed spaces', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_PENDING_SPACES'      => esc_attr_x( 'Event - Pending spaces', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_AVAILABLE_SPACES'    => esc_attr_x( 'Event - Available spaces', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_NAME'       => esc_attr_x( 'Location - Name', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_ADDRESS'    => esc_attr_x( 'Location - Address', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_TOWN'       => esc_attr_x( 'Location - Town', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_STATE'      => esc_attr_x( 'Location - State', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_POSTCODE'   => esc_attr_x( 'Location - Postcode', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_REGION'     => esc_attr_x( 'Location - Region', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_COUNTRY'    => esc_attr_x( 'Location - Country', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_URL'        => esc_attr_x( 'Location - URL', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_LOCATION_LINK_TITLE' => esc_attr_x( 'Location - Link text', 'Events Manager', 'uncanny-automator' ),
 		);
 		$possible_tokens = apply_filters( 'automator_possible_tokens_' . $trigger_meta, $possible_tokens, $trigger_meta );
 		$fields          = array();
@@ -127,11 +130,11 @@ class Em_Tokens {
 	/**
 	 * @param $trigger_meta
 	 * @param $args
-	 * @param \EM_Booking $em_booking_obj
+	 * @param EM_Booking $em_booking_obj
 	 *
 	 * @return void
 	 */
-	public static function em_save_tokens( $trigger_meta, $args, \EM_Booking $em_booking_obj ) {
+	public static function em_save_tokens( $trigger_meta, $args, EM_Booking $em_booking_obj ) {
 		$em_event_obj = $em_booking_obj->get_event();
 		$person       = $em_booking_obj->person->data;
 		$user_id      = $em_booking_obj->person_id;
@@ -148,8 +151,8 @@ class Em_Tokens {
 
 		$location_obj = $em_event_obj->get_location();
 
-		if ( $em_event_obj instanceof \EM_Event ) {
-			if ( 0 !== $em_event_obj->location_id && $location_obj instanceof \EM_Location && 'url' !== $em_event_obj->event_location_type ) {
+		if ( $em_event_obj instanceof EM_Event ) {
+			if ( 0 !== $em_event_obj->location_id && $location_obj instanceof EM_Location && 'url' !== $em_event_obj->event_location_type ) {
 				$location_name     = $location_obj->location_name;
 				$location_address  = $location_obj->location_address;
 				$location_town     = $location_obj->location_town;
@@ -159,7 +162,7 @@ class Em_Tokens {
 				$location_country  = $location_obj->location_country;
 			}
 			if ( 'url' === $em_event_obj->event_location_type ) {
-				/** @var \EM_Event_Locations\Event_Location $event_location_obj */
+				/** @var Event_Location $event_location_obj */
 				$event_location_obj = $em_event_obj->event_location;
 				$data               = $event_location_obj->data;
 				$location_url       = ! empty( $data['url'] ) ? $data['url'] : '-';

@@ -1,19 +1,19 @@
-<?php namespace Uncanny_Automator; ?>
+<?php
+namespace Uncanny_Automator;
 
-<div id="uap-review-banner" class="uap notice">
+?>
+
+<div id="uap-review-banner" class="uap notice" data-banner="<?php echo esc_attr( $vars['banner'] ); ?>">
 
 	<uo-alert
-		heading="<?php printf( esc_attr_x( "Uncanny Automator has successfully {{completed %1\$s recipes}}. That's really cool!", 'Reviews banner', 'uncanny-automator' ), absint( $vars['total_recipe_completion_count'] ) ); ?>"
+		heading="<?php printf( esc_attr_x( "Uncanny Automator has successfully **completed %1\$s recipes**. That's really cool!", 'Reviews banner', 'uncanny-automator' ), absint( $vars['total_recipe_completion_count'] ) ); ?>"
 		type="white"
 		custom-icon
 	>
 		<uo-button
-			slot="top-right-icon"
-
-			href="<?php echo esc_url( $vars['url_close_button'] ); ?>"
-
+			href="<?php echo esc_url( add_query_arg( 'track', 'first-dismissed', $vars['url_close_button'] ) ); ?>"
 			data-action="hide-banner-on-click"
-
+			slot="top-right-icon"
 			color="transparent"
 			size="small"
 		>
@@ -22,8 +22,7 @@
 
 		<img
 			slot="icon"
-
-			src="<?php echo esc_url( Utilities::automator_get_asset( 'backend/dist/img/robot-feedback.svg' ) ); ?>"
+			src="<?php echo esc_url( Utilities::automator_get_asset( 'build/img/robot-feedback.svg' ) ); ?>"
 			width="90px"
 		>
 
@@ -34,8 +33,8 @@
 		<div class="uap-spacing-top">
 			<uo-button
 				id="uap-review-banner-btn-positive"
-
 				data-action="hide-banner-on-click"
+				data-track="first-positive"
 				class="uap-spacing-right uap-spacing-right--xsmall"
 			>
 				<?php echo esc_html_x( 'I love it', 'Reviews banner', 'uncanny-automator' ); ?> 😍
@@ -43,9 +42,9 @@
 
 			<uo-button
 				id="uap-review-banner-btn-negative"
-
 				color="secondary"
 				data-action="hide-banner-on-click"
+				data-track="first-negative"
 			>
 				<?php echo esc_html_x( 'Not really...', 'Reviews banner', 'uncanny-automator' ); ?>
 			</uo-button>

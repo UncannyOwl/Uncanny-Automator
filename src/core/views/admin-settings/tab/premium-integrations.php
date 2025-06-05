@@ -1,7 +1,5 @@
 <?php
 
-namespace Uncanny_Automator;
-
 /**
  * App integrations
  * Settings > App integrations
@@ -15,11 +13,14 @@ namespace Uncanny_Automator;
  * $user_can_use_premium_integrations  TRUE if the user can use the premium integrations
  * $integrations_tabs                  Array with the list of tabs
  * $current_integration                The ID of the current integration
+ * $current_integration_tab            The current integration tab object
  * $upgrade_to_pro_url                 URL to upgrade to Automator Pro
  * $credits_article_url                URL to an article with information about the credits
  * $connect_site_url                   URL to connect the site to automatorplugin.com
  * $layout_version  The UI version, either "default" or "focus"
  */
+
+namespace Uncanny_Automator;
 
 ?>
 
@@ -33,7 +34,7 @@ namespace Uncanny_Automator;
 
 	// Add navigation (tabs)
 	// But don't add them in the "Focus" mode
-	if ( $layout_version !== 'focus' ) {
+	if ( 'focus' !== $layout_version ) {
 
 		// Create tabs
 		foreach ( $integrations_tabs as $tab_key => $integration_tab ) {
@@ -85,31 +86,30 @@ namespace Uncanny_Automator;
 				}
 
 				?>
-
-				<?php
-
-				// IF the user CAN'T use App integrations, disable the tab
-				echo ! $user_can_use_premium_integrations ? 'disabled' : '';
-
-				?>
 			>
-				<?php
-
-				// Check if it has an icon
-				if ( isset( $integration_tab->icon ) ) {
-
-					?>
-
-					<uo-icon
-						integration="<?php echo esc_attr( $integration_tab->icon ); ?>"
-					></uo-icon>
-
+				<div class="uo-tab-content">
+					<div class="uo-tab-main">
+						<?php
+						// Check if it has an icon
+						if ( isset( $integration_tab->icon ) ) {
+							?>
+							<uo-icon
+								integration="<?php echo esc_attr( $integration_tab->icon ); ?>"
+							></uo-icon>
+							<?php
+						}
+						?>
+						<?php echo esc_html( $integration_tab->name ); ?>
+					</div>
 					<?php
-				}
-
-				?>
-
-				<?php echo esc_html( $integration_tab->name ); ?>
+					// Add a badge if the tab is a third party integration
+					if ( $integration_tab->is_third_party ) :
+						?>
+						<uo-chip size="small" filled>
+							<?php echo esc_html_x( '3rd-party', 'Integration settings', 'uncanny-automator' ); ?>
+						</uo-chip>
+					<?php endif; ?>
+				</div>
 			</uo-tab>
 
 			<?php
@@ -150,23 +150,18 @@ namespace Uncanny_Automator;
 		}
 	}
 
-	// If the user can't use the premium integrations, add a message with next steps
-	if ( ! $user_can_use_premium_integrations ) {
-
-		// Load "Not connected" panel
-		include Utilities::automator_get_view( 'admin-settings/tab/premium-integrations/not-connected.php' );
-
+	// Current integration is empty so we're on the landing page.
+	if ( empty( $current_integration_tab ) || ! is_object( $current_integration_tab ) ) {
+		// Load "None selected" panel
+		include Utilities::automator_get_view( 'admin-settings/tab/premium-integrations/none-selected.php' );
 	} else {
+		// We are on a specific integration page.
 
-		// Check if there is a selected integration
-		if ( empty( $current_integration ) ) {
-
-			// Load "None selected" panel
-			include Utilities::automator_get_view( 'admin-settings/tab/premium-integrations/none-selected.php' );
-
+		// Show message if not connected and integration requires credits.
+		if ( ! $user_can_use_premium_integrations && $current_integration_tab->requires_credits ) {
+			include Utilities::automator_get_view( 'admin-settings/tab/premium-integrations/not-connected.php' );
 		}
 	}
-
 	?>
 
 </uo-tabs>

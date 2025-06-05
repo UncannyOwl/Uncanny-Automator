@@ -86,7 +86,6 @@ class Usage_Reports {
 		add_action( 'rest_api_init', array( $this, 'register_rest_endpoints' ) );
 
 		add_action( 'automator_settings_premium_integration_before_output', array( $this, 'count_premium_integration_view' ) );
-
 	}
 
 	/**
@@ -167,7 +166,6 @@ class Usage_Reports {
 		}
 
 		$this->schedule_report();
-
 	}
 
 	/**
@@ -195,7 +193,6 @@ class Usage_Reports {
 		}
 
 		wp_unschedule_event( $timestamp, self::SCHEDULE_NAME );
-
 	}
 
 	/**
@@ -222,7 +219,6 @@ class Usage_Reports {
 		$next_monday = strtotime( 'next Monday' );
 
 		return wp_rand( $last_monday, $next_monday );
-
 	}
 
 	/**
@@ -237,7 +233,6 @@ class Usage_Reports {
 		}
 
 		return $this->send_report();
-
 	}
 
 	/**
@@ -324,6 +319,7 @@ class Usage_Reports {
 		$this->get_date();
 		$this->get_views();
 		$this->get_template_library_info();
+		$this->get_review_tracking_info();
 		$this->get_settings();
 
 		$finished_at = microtime( true );
@@ -347,7 +343,6 @@ class Usage_Reports {
 		$site_url                  = get_site_url();
 		$site_hash                 = md5( $site_url );
 		$this->report['site_hash'] = $site_hash;
-
 	}
 
 	/**
@@ -375,7 +370,6 @@ class Usage_Reports {
 		);
 
 		$this->import_from_system_report( $keys );
-
 	}
 
 	/**
@@ -473,7 +467,6 @@ class Usage_Reports {
 		}
 
 		return $active_plugins;
-
 	}
 
 	/**
@@ -530,7 +523,7 @@ class Usage_Reports {
 		foreach ( $this->recipes_data as $recipe_data ) {
 
 			if ( 'publish' !== $recipe_data['post_status'] ) {
-				$this->report['recipes']['unpublished_recipes_count'] ++;
+				++$this->report['recipes']['unpublished_recipes_count'];
 				continue;
 			}
 
@@ -541,7 +534,6 @@ class Usage_Reports {
 		$this->report['integrations_array'] = array_values( $this->report['integrations_array'] );
 
 		$this->report['recipes']['total_integrations_used'] = count( $this->report['integrations'] );
-
 	}
 
 	/**
@@ -589,7 +581,7 @@ class Usage_Reports {
 					);
 				}
 
-				$walkthroughs[ $id ][ $progress['step'] ]['value']++;
+				++$walkthroughs[ $id ][ $progress['step'] ]['value'];
 			}
 		}
 
@@ -622,15 +614,15 @@ class Usage_Reports {
 
 		$result = $wpdb->get_var(
 			$wpdb->prepare(
-			"SELECT COUNT(p1.ID) as recipes
+				"SELECT COUNT(p1.ID) as recipes
 FROM $wpdb->posts p
     JOIN $wpdb->posts p1
         ON p.ID = p1.post_parent
 WHERE p.post_type LIKE %s
   AND p1.post_type = %s",
-			'uo-recipe',
-			'uo-loop'
-		)
+				'uo-recipe',
+				'uo-loop'
+			)
 		);
 
 		return absint( $result );
@@ -643,7 +635,7 @@ WHERE p.post_type LIKE %s
 	 */
 	public function count_recipe_completion() {
 		$completed_runs = absint( automator_get_option( self::RECIPE_COUNT_OPTION, Automator()->get->total_completed_runs() - 1 ) );
-		automator_update_option( self::RECIPE_COUNT_OPTION, ++ $completed_runs );
+		automator_update_option( self::RECIPE_COUNT_OPTION, ++$completed_runs );
 	}
 
 	/**
@@ -655,16 +647,15 @@ WHERE p.post_type LIKE %s
 	 */
 	public function process_recipe_data( $recipe_data ) {
 
-		$this->report['recipes']['live_recipes_count'] ++;
+		++$this->report['recipes']['live_recipes_count'];
 
 		if ( 'user' === $recipe_data['recipe_type'] ) {
-			$this->report['recipes']['user_recipes_count'] ++;
+			++$this->report['recipes']['user_recipes_count'];
 		} elseif ( 'anonymous' === $recipe_data['recipe_type'] ) {
-			$this->report['recipes']['everyone_recipes_count'] ++;
+			++$this->report['recipes']['everyone_recipes_count'];
 		}
 
 		$this->process_recipe_items( $recipe_data );
-
 	}
 
 	/**
@@ -701,7 +692,6 @@ WHERE p.post_type LIKE %s
 		$recipe['actions_conditions'] = $this->get_actions_conditions( $recipe_data );
 
 		$this->report['recipe_items'][] = $recipe;
-
 	}
 
 	/**
@@ -733,7 +723,6 @@ WHERE p.post_type LIKE %s
 		}
 
 		return $output;
-
 	}
 
 	/**
@@ -797,7 +786,6 @@ WHERE p.post_type LIKE %s
 		}
 
 		return array_unique( $output );
-
 	}
 
 	/**
@@ -811,23 +799,22 @@ WHERE p.post_type LIKE %s
 
 		if ( isset( $data['meta']['async_mode'] ) ) {
 
-			$this->report['recipes']['async_actions_count'] ++;
+			++$this->report['recipes']['async_actions_count'];
 
 			if ( 'delay' === $data['meta']['async_mode'] ) {
 
-				$this->report['recipes']['delayed_actions_count'] ++;
+				++$this->report['recipes']['delayed_actions_count'];
 
 			} elseif ( 'schedule' === $data['meta']['async_mode'] ) {
 
-				$this->report['recipes']['scheduled_actions_count'] ++;
+				++$this->report['recipes']['scheduled_actions_count'];
 
 			} elseif ( 'custom' === $data['meta']['async_mode'] ) {
 
-				$this->report['recipes']['custom_actions_count'] ++;
+				++$this->report['recipes']['custom_actions_count'];
 
 			}
 		}
-
 	}
 
 	/**
@@ -850,13 +837,13 @@ WHERE p.post_type LIKE %s
 		$item_code        = $meta['code'];
 
 		if ( isset( $this->report['integrations'][ $integration_code ][ $type ][ $item_code ] ) ) {
-			$this->report['integrations'][ $integration_code ][ $type ][ $item_code ] ++;
+			++$this->report['integrations'][ $integration_code ][ $type ][ $item_code ];
 		} else {
 			$this->report['integrations'][ $integration_code ][ $type ][ $item_code ] = 1;
 		}
 
 		if ( isset( $this->report['integrations_array'][ $item_code ] ) ) {
-			$this->report['integrations_array'][ $item_code ]['usage'] ++;
+			++$this->report['integrations_array'][ $item_code ]['usage'];
 		} else {
 			$this->report['integrations_array'][ $item_code ] = array(
 				'integration_name' => $integration_name,
@@ -867,7 +854,7 @@ WHERE p.post_type LIKE %s
 			);
 		}
 
-		$this->report['recipes'][ 'total_' . $type ] ++;
+		++$this->report['recipes'][ 'total_' . $type ];
 	}
 
 	/**
@@ -941,12 +928,12 @@ WHERE p.post_type LIKE %s
 					);
 				}
 				// Increment count.
-				$library[ $key ][ $term ]['count']++;
+				++$library[ $key ][ $term ]['count'];
 			}
 
 			// Remove the array keys and convert to objects.
 			$library[ $key ] = array_map(
-				function( $item ) {
+				function ( $item ) {
 					return (object) $item;
 				},
 				array_values( $library[ $key ] )
@@ -955,6 +942,72 @@ WHERE p.post_type LIKE %s
 
 		$this->report['template-library-search'] = $library['search'];
 		$this->report['template-library-import'] = $library['import'];
+	}
+
+	/**
+	 * get_review_tracking_info
+	 *
+	 * @return void
+	 */
+	public function get_review_tracking_info() {
+		// Set default.
+		$this->report['review-banners'] = array();
+
+		// Collect events stats.
+		$stats   = automator_get_option( self::STATS_OPTION_NAME, array() );
+		$stats   = isset( $stats['events'] ) ? $stats['events'] : array();
+		$reviews = isset( $stats['review-tracking'] ) ? $stats['review-tracking'] : array();
+		if ( empty( $reviews ) ) {
+			return;
+		}
+
+		// Group results data and add counts.
+		$data = array();
+		foreach ( $reviews as $review ) {
+
+			$banner = $review['banner'];
+			$event  = $review['event'];
+
+			// Add to results if not already set.
+			if ( ! isset( $data[ $banner ] ) ) {
+				$data[ $banner ] = array(
+					'displayed'        => 0, // Amount of times banner was displayed.
+					'first-dismissed'  => 0, // User dismissed the first banner.
+					'first-positive'   => 0, // User clicked 'Yes, I love it'.
+					'first-negative'   => 0, // User clicked 'No, I don't like it'.
+					'second-dismissed' => 0, // User dismissed the second banner.
+					'second-feedback'  => 0, // User clicked 'Send feedback'.
+					'second-no'        => 0, // User clicked 'No thanks'.
+					'second-review'    => 0, // User clicked 'Leave a review'.
+					'second-later'     => 0, // User clicked 'Maybe later'.
+					'second-done'      => 0, // User clicked 'I've done it'.
+				);
+			}
+
+			// Increment valid banner events for the step.
+			if ( isset( $data[ $banner ][ $event ] ) ) {
+				++$data[ $banner ][ $event ];
+			}
+		}
+
+		foreach ( $data as $banner => $results ) {
+			// Filter out empty values and format the results
+			$filtered_results = array();
+			foreach ( $results as $name => $count ) {
+				if ( $count > 0 ) {
+					$filtered_results[] = array(
+						'name'  => ucfirst( str_replace( '-', ' ', $name ) ),
+						'count' => $count,
+					);
+				}
+			}
+
+			// Only add to the report if there are non-empty results
+			if ( ! empty( $filtered_results ) ) {
+				$name                                    = ucfirst( str_replace( '-', ' ', $banner ) );
+				$this->report['review-banners'][ $name ] = $filtered_results;
+			}
+		}
 	}
 
 	/**
@@ -1049,9 +1102,9 @@ WHERE p.post_type LIKE %s
 			$page_views['per_user'][ $user_id ] = 0;
 		}
 
-		$page_views['per_user'][ $user_id ] ++;
+		++$page_views['per_user'][ $user_id ];
 
-		$page_views['total'] ++;
+		++$page_views['total'];
 
 		$total_users = count( $page_views['per_user'] );
 
@@ -1062,8 +1115,15 @@ WHERE p.post_type LIKE %s
 		automator_update_option( self::STATS_OPTION_NAME, $usage_report_stats );
 	}
 
-	public function count_premium_integration_view( $Settings_Page ) {
-		$this->increment_view( $Settings_Page->get_name() . ' Settings' );
+	/**
+	 * Counts the number of times a premium integration settings page is viewed.
+	 *
+	 * @param $settings_page - instance of the settings page class
+	 *
+	 * @return void
+	 */
+	public function count_premium_integration_view( $settings_page ) {
+		$this->increment_view( $settings_page->get_name() . ' Settings' );
 	}
 
 	/**

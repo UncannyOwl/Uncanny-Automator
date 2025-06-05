@@ -543,12 +543,9 @@ class Automator_Cache_Handler {
 			return;
 		}
 
-		// Load the file
-		wp_enqueue_style(
-			'uap-admin-admin-menu',
-			Utilities::automator_get_asset( 'legacy/css/admin/admin-menu.css' ),
-			array(),
-			Utilities::automator_get_version()
+		Utilities::enqueue_asset(
+			'uncanny-automator-admin-bar',
+			'admin-bar',
 		);
 	}
 

@@ -1,25 +1,26 @@
 <?php
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\OpenAI\Actions;
 
-use Uncanny_Automator\OpenAI\HTTP_Client;
+use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_AI_Provider_Trait;
+use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_Payload_Message_Array_Builder_Trait;
+use Uncanny_Automator\Core\Lib\AI\Http\Response;
+use Uncanny_Automator\Recipe\Action;
 
 /**
- * Class OPEN_AI_CHAT_GENERATE
+ * Class OpenAI_Chat_Generate
  *
  * A handler class for wrapping chat generate action.
  *
  * @since 4.10
+ *
+ * @since 5.6 - Migrated to v3.
+ *
  * @package Uncanny_Automator
  */
-class OPEN_AI_CHAT_GENERATE {
+class OpenAI_Chat_Generate extends Action {
 
-	use Recipe\Actions, Recipe\Action_Tokens;
-
-	public function __construct() {
-
-		$this->setup_action();
-
-	}
+	use Base_Payload_Message_Array_Builder_Trait;
+	use Base_AI_Provider_Trait;
 
 	/**
 	 * Setup Action.
@@ -32,45 +33,55 @@ class OPEN_AI_CHAT_GENERATE {
 		$this->set_action_code( 'OPEN_AI_CHAT_GENERATE' );
 		$this->set_action_meta( 'OPEN_AI_CHAT_GENERATE_META' );
 		$this->set_is_pro( false );
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/open-ai/' ) );
+		$this->set_support_link(
+			Automator()->get_author_support_link(
+				$this->get_action_code(),
+				'knowledge-base/open-ai/'
+			)
+		);
 		$this->set_requires_user( false );
 
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
-				esc_attr__( 'Use {{a prompt:%1$s}} to generate text with the GPT model', 'uncanny-automator' ),
+				/* translators: 1: Prompt, 2: Instructions, 3: Model */
+				esc_html_x(
+					'Use {{a prompt:%1$s}} to generate text with the GPT model',
+					'OpenAI',
+					'uncanny-automator'
+				),
 				$this->get_action_meta()
 			)
 		);
 
-		/* translators: Action sentence */
-		$this->set_readable_sentence( esc_attr__( 'Use {{a prompt}} to generate text with the GPT model', 'uncanny-automator' ) );
+		$this->set_readable_sentence(
+			esc_html_x(
+				'Use {{a prompt}} to generate text with the GPT model',
+				'OpenAI',
+				'uncanny-automator'
+			)
+		);
 
-		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->set_wpautop( false );
 		$this->set_background_processing( false );
 
 		$this->set_action_tokens(
 			array(
 				'RESPONSE'                => array(
-					'name' => esc_html__( 'Response', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Response', 'Open Ai', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'USAGE_PROMPT_TOKENS'     => array(
-					'name' => esc_html__( 'Prompt tokens usage', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Prompt tokens usage', 'Open Ai', 'uncanny-automator' ),
 				),
 				'USAGE_COMPLETION_TOKENS' => array(
-					'name' => esc_html__( 'Completion tokens usage', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Completion tokens usage', 'Open Ai', 'uncanny-automator' ),
 				),
 				'USAGE_TOTAL_TOKENS'      => array(
-					'name' => esc_html__( 'Total tokens usage', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Total tokens usage', 'Open Ai', 'uncanny-automator' ),
 				),
 			),
 			$this->get_action_code()
 		);
-
-		$this->register_action();
-
 	}
 
 	/**
@@ -78,14 +89,14 @@ class OPEN_AI_CHAT_GENERATE {
 	 *
 	 * @return array The list of option fields.
 	 */
-	public function load_options() {
+	public function options() {
 
 		$description_max_len = wp_kses_post(
 			sprintf(
-				/* translators: OpenAI field description */
-				_x(
+				/* translators: 1: Learn more about tokens, 2: Learn more about tokens */
+				esc_html_x(
 					'The maximum number of tokens allowed for the prompt and response. %1$sLearn more about tokens%2$s.',
-					'OpenAI field description',
+					'OpenAI',
 					'uncanny-automator'
 				),
 				'<a href="https://platform.openai.com/docs/api-reference/chat/create#chat/create-max_tokens" target="_blank">',
@@ -95,10 +106,10 @@ class OPEN_AI_CHAT_GENERATE {
 
 		$description_models = wp_kses_post(
 			sprintf(
-				/* translators: OpenAI field description */
-				_x(
+				/* translators: 1: Learn more about GPT models, 2: Learn more about GPT models */
+				esc_html_x(
 					'Only GPT models that your account has access to are listed. %1$sLearn more about GPT models%2$s.',
-					'OpenAI field description',
+					'OpenAI',
 					'uncanny-automator'
 				),
 				'<a href="https://platform.openai.com/docs/models/overview" target="_blank">',
@@ -106,61 +117,59 @@ class OPEN_AI_CHAT_GENERATE {
 			)
 		);
 
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options_group' => array(
-					$this->get_action_meta() => array(
-						array(
-							'option_code'     => 'MODEL',
-							/* translators: Action field */
-							'label'           => esc_attr__( 'Model', 'uncanny-automator' ),
-							'description'     => $description_models,
-							'input_type'      => 'select',
-							'required'        => true,
-							'options'         => array(),
-							'options_show_id' => false,
-							'ajax'            => array(
-								'endpoint' => 'automator_openai_get_gpt_models',
-								'event'    => 'on_load',
-							),
-						),
-						array(
-							'option_code' => 'TEMPERATURE',
-							/* translators: Action field */
-							'label'       => esc_attr__( 'Temperature', 'uncanny-automator' ),
-							'input_type'  => 'text',
-							'placeholder' => '1',
-							'description' => esc_html__( 'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.', 'uncanny-automator' ),
-						),
-						array(
-							'option_code' => 'MAX_LEN',
-							/* translators: Action field */
-							'label'       => esc_attr__( 'Maximum length', 'uncanny-automator' ),
-							'description' => $description_max_len,
-							'input_type'  => 'text',
-						),
-						array(
-							'option_code' => 'SYSTEM_CONTENT',
-							/* translators: Action field */
-							'label'       => esc_attr__( 'System message', 'uncanny-automator' ),
-							'description' => esc_attr__( 'Add context or instructions to have GPT respond with those details in mind.', 'uncanny-automator' ),
-							'input_type'  => 'textarea',
-							'required'    => false,
-						),
-						array(
-							'option_code'       => $this->get_action_meta(),
-							/* translators: Action field */
-							'label'             => esc_attr__( 'Prompt', 'uncanny-automator' ),
-							'input_type'        => 'textarea',
-							'supports_markdown' => true,
-							'required'          => true,
-						),
-					),
-				),
-			)
+		$model = array(
+			'option_code'     => 'MODEL',
+			'label'           => esc_attr_x( 'Model', 'Open Ai', 'uncanny-automator' ),
+			'description'     => $description_models,
+			'input_type'      => 'select',
+			'required'        => true,
+			'options'         => array(),
+			'options_show_id' => false,
+			'ajax'            => array(
+				'endpoint' => 'automator_openai_get_gpt_models',
+				'event'    => 'on_load',
+			),
+		);
+
+		$temperature = array(
+			'option_code' => 'TEMPERATURE',
+			'label'       => esc_attr_x( 'Temperature', 'Open Ai', 'uncanny-automator' ),
+			'input_type'  => 'text',
+			'placeholder' => '1',
+			'description' => esc_html_x( 'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.', 'Open AI', 'uncanny-automator' ),
+		);
+
+		$max_len = array(
+			'option_code' => 'MAX_LEN',
+			'label'       => esc_attr_x( 'Maximum length', 'Open Ai', 'uncanny-automator' ),
+			'description' => $description_max_len,
+			'input_type'  => 'text',
+		);
+
+		$system_content = array(
+			'option_code' => 'SYSTEM_CONTENT',
+			'label'       => esc_attr_x( 'System message', 'Open Ai', 'uncanny-automator' ),
+			'description' => esc_attr_x( 'Add context or instructions to have GPT respond with those details in mind.', 'Open Ai', 'uncanny-automator' ),
+			'input_type'  => 'textarea',
+			'required'    => false,
+		);
+
+		$prompt = array(
+			'option_code'       => $this->get_action_meta(),
+			'label'             => esc_attr_x( 'Prompt', 'Open Ai', 'uncanny-automator' ),
+			'input_type'        => 'textarea',
+			'supports_markdown' => true,
+			'required'          => true,
+		);
+
+		return array(
+			$model,
+			$temperature,
+			$max_len,
+			$system_content,
+			$prompt,
 		);
 	}
-
 
 	/**
 	 * Processes action.
@@ -171,104 +180,68 @@ class OPEN_AI_CHAT_GENERATE {
 	 * @param $args
 	 * @param $parsed
 	 *
+	 * @throws \Exception
+	 *
 	 * @return void.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$model          = $this->handle_model( sanitize_text_field( $parsed['MODEL'] ?? null ), $action_data );
-		$temperature    = sanitize_text_field( $parsed['TEMPERATURE'] ?? 1 );
-		$max_tokens     = sanitize_text_field( $parsed['MAX_LEN'] ?? null );
-		$system_content = $this->sanitize_textarea_field( $parsed['SYSTEM_CONTENT'] ?? '' );
-		$prompt         = $this->sanitize_textarea_field( $parsed[ $this->get_action_meta() ?? '' ] );
+		$temperature = $this->get_parsed_meta_value( 'TEMPERATURE' ) ?? '1';
+		$max_tokens  = $this->get_parsed_meta_value( 'MAX_LEN' ) ?? '2048';
+		$model       = $this->get_parsed_meta_value( 'MODEL' ) ?? 'gpt-3.5-turbo';
 
-		$body = array(
-			'model'    => $model,
-			'messages' => array(
-				array(
-					'role'    => 'system',
-					'content' => $system_content,
-				),
-				array(
-					'role'    => 'user',
-					'content' => $prompt,
-				),
-			),
-		);
+		// Migration for 3.5-turbo-0301 to 3.5-turbo.
+		$model          = $this->handle_model( $model, $action_data );
+		$system_content = $this->get_parsed_meta_value( 'SYSTEM_CONTENT' ) ?? '';
+		$prompt         = $this->get_parsed_meta_value( $this->get_action_meta() ) ?? '';
 
-		if ( ! empty( $max_tokens ) ) {
-			$body['max_tokens'] = intval( $max_tokens );
-		}
+		/** @var \Uncanny_Automator\Core\Lib\AI\Provider\OpenAI_Provider $provider */
+		$provider        = $this->get_provider( 'OPENAI' );
+		$payload_builder = $this->get_payload_builder( $provider );
 
-		if ( ! empty( $temperature ) ) {
-			$body['temperature'] = floatval( $temperature );
-		}
+		$messages = $this->create_simple_message( $system_content, $prompt );
 
-		$body = apply_filters( 'automator_openai_chat_generate', $body );
+		$payload = $payload_builder->model( $model )
+			->endpoint( 'https://api.openai.com/v1/chat/completions' )
+			->temperature( $temperature )
+			->max_completion_tokens( $max_tokens )
+			->messages( $messages )
+			->json_content()
+			->build();
 
-		$client = new HTTP_Client( Api_Server::get_instance() );
-		$client->set_endpoint( 'v1/chat/completions' );
-		$client->set_api_key( (string) automator_get_option( 'automator_open_ai_secret', '' ) );
-		$client->set_request_body( $body );
+		$response    = $provider->send_request( $payload );
+		$ai_response = $provider->parse_response( $response );
 
-		try {
-			$client->send_request();
-			// Send the response as action tokens.
-			$this->hydrate_tokens_from_response( $client->get_response() );
-		} catch ( \Exception $e ) {
-			$action_data['complete_with_errors'] = true;
-			return Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-		}
+		$this->hydrate_tokens_from_response( $ai_response );
 
-		return Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-	}
-
-	/**
-	 * Sanitize the textarea field. Added a filter to enable/disable sanitization.
-	 *
-	 * @param mixed $text
-	 * @return mixed
-	 */
-	public function sanitize_textarea_field( $text ) {
-
-		$should_sanitize = apply_filters( 'automator_openai_chat_generate_should_sanitize_fields', true );
-
-		if ( true === $should_sanitize ) {
-			return sanitize_text_field( $text );
-		}
-
-		return $text;
-
+		return true;
 	}
 
 	/**
 	 * Hydrates this specific action tokens.
 	 *
-	 * @param array $response.
+	 * @param Response $ai_response.
 	 *
 	 * @return self
 	 */
-	private function hydrate_tokens_from_response( $response = array() ) {
+	private function hydrate_tokens_from_response( $ai_response ) {
 
-		$response_text = isset( $response['choices'][0]['message']['content'] )
-			? $response['choices'][0]['message']['content'] :
-			''; // Defaults to empty string.
-
-		if ( 0 === strlen( $response_text ) ) {
-			throw new \Exception( 'The model predicted a completion that results in no output. Consider adjusting your prompt.', 400 );
+		if ( ! $ai_response instanceof Response ) {
+			throw new \Exception( 'Invalid AI response', 400 );
 		}
+
+		$response_text = esc_html( $ai_response->get_content() );
 
 		$this->hydrate_tokens(
 			array(
 				'RESPONSE'                => $response_text,
-				'USAGE_PROMPT_TOKENS'     => $response['usage']['prompt_tokens'],
-				'USAGE_COMPLETION_TOKENS' => $response['usage']['completion_tokens'],
-				'USAGE_TOTAL_TOKENS'      => $response['usage']['total_tokens'],
+				'USAGE_PROMPT_TOKENS'     => $ai_response->get_meta_data()['prompt_tokens'] ?? 0,
+				'USAGE_COMPLETION_TOKENS' => $ai_response->get_meta_data()['completion_tokens'] ?? 0,
+				'USAGE_TOTAL_TOKENS'      => $ai_response->get_meta_data()['total_tokens'] ?? 0,
 			)
 		);
 
 		return $this;
-
 	}
 
 	/**
@@ -314,7 +287,5 @@ class OPEN_AI_CHAT_GENERATE {
 		}
 
 		return false;
-
 	}
-
 }

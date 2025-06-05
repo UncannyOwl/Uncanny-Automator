@@ -208,34 +208,43 @@ class Twilio_Helpers {
 	 */
 	public function automator_twilio_disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), 'automator_twilio_disconnect' ) ) {
-
-			// Remove option
-			$option_keys = array(
-				'_uncannyowl_twilio_settings',
-				'_uncannyowl_twilio_settings_expired',
-				'uap_automator_twilio_api_auth_token',
-				'uap_automator_twilio_api_phone_number',
-				'uap_automator_twilio_api_account_sid',
-				'uap_twilio_connected_user',
-			);
-
-			foreach ( $option_keys as $option_key ) {
-				automator_delete_option( $option_key );
-			}
-
-			// Remove transients.
-			$transient_keys = array(
-				'_uncannyowl_twilio_settings',
-				'_automator_twilio_account_info',
-				'uap_automator_twilio_api_accounts_response',
-			);
-
-			foreach ( $transient_keys as $transient_key ) {
-				delete_transient( $transient_key );
-			}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_to_settings_page();
 		}
 
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_twilio_disconnect' ) ) {
+			$this->redirect_to_settings_page();
+		}
+
+		// Remove option
+		$option_keys = array(
+			'_uncannyowl_twilio_settings',
+			'_uncannyowl_twilio_settings_expired',
+			'uap_automator_twilio_api_auth_token',
+			'uap_automator_twilio_api_phone_number',
+			'uap_automator_twilio_api_account_sid',
+			'uap_twilio_connected_user',
+		);
+
+		foreach ( $option_keys as $option_key ) {
+			automator_delete_option( $option_key );
+		}
+
+		// Remove transients.
+		$transient_keys = array(
+			'_uncannyowl_twilio_settings',
+			'_automator_twilio_account_info',
+			'uap_automator_twilio_api_accounts_response',
+		);
+
+		foreach ( $transient_keys as $transient_key ) {
+			delete_transient( $transient_key );
+		}
+
+		$this->redirect_to_settings_page();
+	}
+
+	public function redirect_to_settings_page() {
 		wp_safe_redirect(
 			add_query_arg(
 				array(

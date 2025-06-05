@@ -68,7 +68,7 @@ p.uap-instagram-error-message {
 .uap-linked-account {
 	padding: 10px;
 
-	background: rgba(var(--uap-color-gray-rgb), .2);
+	background: color(from var(--uap-color-gray) srgb r g b / 0.2);
 
 	font-size: var(--uap-font-size--body-xxsmall);
 	line-height: var(--uap-line-height--body-xxsmall);

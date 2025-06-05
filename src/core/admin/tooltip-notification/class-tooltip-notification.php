@@ -122,28 +122,15 @@ class Automator_Tooltip_Notification {
 			return;
 		}
 
-		wp_enqueue_style(
+		Utilities::enqueue_asset(
 			'uap-tooltip-notification',
-			Utilities::automator_get_asset( 'backend/dist/tooltip-notification.bundle.min.css' ),
-			array(),
-			Utilities::automator_get_version()
+			'tooltip-notification',
+			array(
+				'localize' => array(
+					'UncannyAutomatorTooltipNotification' => $this->assets_tooltip_notification_js_object()
+				)
+			)
 		);
-
-		wp_register_script(
-			'uap-tooltip-notification',
-			Utilities::automator_get_asset( 'backend/dist/tooltip-notification.bundle.min.js' ),
-			array(),
-			Utilities::automator_get_version(),
-			true
-		);
-
-		wp_localize_script(
-			'uap-tooltip-notification',
-			'UncannyAutomatorTooltipNotification',
-			$this->assets_tooltip_notification_js_object()
-		);
-
-		wp_enqueue_script( 'uap-tooltip-notification' );
 	}
 
 	/**

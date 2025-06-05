@@ -40,7 +40,17 @@ class Fi_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
 
-		$form_ids = array();
+		$form_ids            = array();
+		$repeating_field     = 0;
+		$disable_field_types = array(
+			'end_divider',
+			'captcha',
+			'break',
+			'html',
+			'form',
+			'summary',
+			\FrmSubmitHelper::FIELD_TYPE,
+		);
 
 		if ( ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 
@@ -56,49 +66,55 @@ class Fi_Tokens {
 		}
 
 		if ( ! empty( $form_ids ) ) {
-
 			foreach ( $form_ids as $form_id ) {
-
 				$fields = array();
 				$meta   = FrmField::get_all_for_form( $form_id );
-
 				if ( is_array( $meta ) ) {
-
 					foreach ( $meta as $field ) {
-
-						$input_id    = $field->id;
-						$input_title = $field->name . ( '' !== $field->description ? ' (' . $field->description . ') ' : '' );
-						$token_id    = "$form_id|$input_id";
-
-						$fields[] = array(
-							'tokenId'         => $token_id,
-							'tokenName'       => $input_title,
-							'tokenType'       => $field->type,
-							'tokenIdentifier' => $trigger_meta,
-						);
-
-						// Splits the token into three parts: First, middle, and last.
-						if ( 'name' === $field->type ) {
-
-							foreach ( array( 'first', 'middle', 'last' ) as $name_part ) {
-
-								if ( ! empty( $field->field_options[ $name_part . '_desc' ] ) ) {
-
-									$fields[] = array(
-										'tokenId'         => "$form_id|$input_id-$name_part",
-										'tokenName'       => $field->field_options[ $name_part . '_desc' ],
-										'tokenType'       => 'text',
-										'tokenIdentifier' => $trigger_meta,
-									);
-
+						if ( ! in_array( $field->type, $disable_field_types, true ) ) {
+							$input_id    = $field->id;
+							$input_title = $field->name . ( '' !== $field->description ? ' (' . $field->description . ') ' : '' );
+							$token_id    = "$form_id|$input_id";
+							// Splits the token into three parts: First, middle, and last.
+							if ( 'name' === $field->type ) {
+								foreach ( array( 'first', 'middle', 'last' ) as $name_part ) {
+									if ( ! empty( $field->field_options[ $name_part . '_desc' ] ) ) {
+										$fields[] = array(
+											'tokenId'         => "$form_id|$input_id-$name_part", // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
+											'tokenName'       => $field->field_options[ $name_part . '_desc' ], // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
+											'tokenType'       => 'text', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
+											'tokenIdentifier' => $trigger_meta,
+										);
+									}
 								}
+							} elseif ( FrmField::is_repeating_field( $field ) ) {
+								$repeating_field = $field->id;
+								$fields[]        = array(
+									'tokenId'         => $token_id,
+									'tokenName'       => $input_title,
+									'tokenType'       => $field->type,
+									'tokenIdentifier' => $trigger_meta,
+								);
+							} elseif ( 0 !== $repeating_field ) {
+								$fields[] = array(
+									'tokenId'         => "$form_id|$repeating_field-repeater-$input_id",
+									'tokenName'       => $input_title,
+									'tokenType'       => $field->type,
+									'tokenIdentifier' => $trigger_meta,
+								);
+							} else {
+								$fields[] = array(
+									'tokenId'         => $token_id,
+									'tokenName'       => $input_title,
+									'tokenType'       => $field->type,
+									'tokenIdentifier' => $trigger_meta,
+								);
 							}
 						}
 					}
 				}
-
-				$tokens = array_merge( $tokens, $fields );
 			}
+			$tokens = array_merge( $tokens, $fields );
 		}
 
 		return $tokens;
@@ -107,7 +123,6 @@ class Fi_Tokens {
 	/**
 	 * Parse the token.
 	 *
-	 * @todo Maybe convert the trigger into traits and use new token arch to handle this before it gets more complex.
 	 * @param string $value .
 	 * @param array $pieces .
 	 * @param string $recipe_id .
@@ -162,16 +177,13 @@ class Fi_Tokens {
 
 					// Collects all file field types.
 					$file_fields = array();
+					// Name fields.
+					$name_fields = array();
 
 					foreach ( $fields as $field ) {
 						if ( isset( $field->type ) && 'file' === $field->type ) {
 							$file_fields[] = $field->id;
 						}
-					}
-
-					// Name fields.
-					$name_fields = array();
-					foreach ( $fields as $field ) {
 						if ( isset( $field->type ) && 'name' === $field->type ) {
 							$name_fields[] = $field->id;
 						}
@@ -191,6 +203,14 @@ class Fi_Tokens {
 
 								return ! empty( $entry->metas[ $field_id ][ $name_part ] ) ? $entry->metas[ $field_id ][ $name_part ] : null;
 
+							}
+							// Try splitting the repeating field.
+							$repeating_field_split_meta_key = explode( '-', $meta_key );
+							if ( ! empty( $repeating_field_split_meta_key ) && 3 === count( $repeating_field_split_meta_key ) ) {
+								$item_meta = \FrmAppHelper::get_post_param( 'item_meta', array() );
+								$values    = $this->get_repeater_field_value( $item_meta, $repeating_field_split_meta_key[0], $repeating_field_split_meta_key[2] );
+
+								return join( ', ', $values );
 							}
 
 							if ( isset( $entry->metas ) && isset( $entry->metas[ $meta_key ] ) ) {
@@ -239,6 +259,7 @@ class Fi_Tokens {
 				}
 			}
 		}
+
 		return $value;
 	}
 
@@ -254,25 +275,25 @@ class Fi_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'FIENTRYID',
-				'tokenName'       => esc_html__( 'Entry ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry ID', 'Formidable', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'FIENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'FIUSERIP',
-				'tokenName'       => esc_html__( 'User IP', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'User IP', 'Formidable', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'FIENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'FIENTRYDATE',
-				'tokenName'       => esc_html__( 'Entry submission date', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry submission date', 'Formidable', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'FIENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'FIENTRYSOURCEURL',
-				'tokenName'       => esc_html__( 'Entry source URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry source URL', 'Formidable', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'FIENTRYTOKENS',
 			),
@@ -312,5 +333,32 @@ class Fi_Tokens {
 
 		return $value;
 	}
-}
 
+	/**
+	 * Get repeater field value.
+	 *
+	 * @param mixed $data The data.
+	 * @param mixed $section_id The ID.
+	 * @param mixed $field_id The ID.
+	 *
+	 * @return mixed
+	 */
+	private function get_repeater_field_value( $data, $section_id, $field_id ) {
+		if ( ! isset( $data[ $section_id ] ) || ! is_array( $data[ $section_id ] ) ) {
+			return array(); // Return empty array if section_id is not found or not an array
+		}
+
+		$repeater_data = $data[ $section_id ];
+		$values        = array();
+
+		if ( isset( $repeater_data['row_ids'] ) && is_array( $repeater_data['row_ids'] ) ) {
+			foreach ( $repeater_data['row_ids'] as $row_id ) {
+				if ( isset( $repeater_data[ $row_id ][ $field_id ] ) ) {
+					$values[] = $repeater_data[ $row_id ][ $field_id ]; // Store found value
+				}
+			}
+		}
+
+		return $values;
+	}
+}

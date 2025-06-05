@@ -16,38 +16,39 @@ class AutomatorFacebookSettings {
         // Hide error, if visible
         this.setError('');
 
-        // Fetch data
-        _uo.utility.fetchData({
-            url: UncannyAutomatorBackend.ajax.url,
-            data: {
-                action: 'automator_integration_facebook_capture_token_fetch_user_pages',
-                nonce: UncannyAutomatorBackend.ajax.nonce
+        fetch( UncannyAutomatorBackend.ajax.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
             },
-            onSuccess: (response) => {
-
-                // Remove the loading animation frmo the "Update list" button
-                this.$updateListButton.removeAttribute('loading');
-
+            body: new URLSearchParams({
+                action: 'automator_integration_facebook_capture_token_fetch_user_pages',
+                nonce: UncannyAutomatorBackend.ajax.nonce,
+            } )
+        })
+            .then( ( response ) => response.json() )
+			.then( ( response ) => {
                 // Check if there are pages
-                if (!_uo.utility.isEmpty(response.pages)) {
+                if ( Array.isArray( response.pages ) && response.pages.length > 0 ) {
                     // Set pages
                     this.createList(response.pages);
                 } else {
                     // Check if there is an error defined
-                    if (_uo.utility.isDefined(response.message)) {
+                    if ( typeof response.message !== 'undefined' && response.message ) {
                         // Set error
                         this.setError(response.message);
                     }
                 }
-            },
-            onFail: (response, message) => {
-                // Remove the loading animation frmo the "Update list" button
-                this.$updateListButton.removeAttribute('loading');
-
+			} )
+			.catch( ( error ) => {
                 // Show error
-                this.setError(message.error);
-            },
-        });
+                this.setError(error);
+			} )
+			.finally( () => {
+				// Remove the loading animation frmo the "Update list" button
+                this.$updateListButton.removeAttribute('loading');
+			} );
     }
 
     /**
@@ -88,7 +89,7 @@ class AutomatorFacebookSettings {
      */
     setError(error = '') {
         // Check if there is an error defined
-        if (!_uo.utility.isEmpty(error)) {
+        if ( error ) {
             this.$errorWrapper.innerHTML = error;
             this.$errorWrapper.style.display = 'block';
             return;

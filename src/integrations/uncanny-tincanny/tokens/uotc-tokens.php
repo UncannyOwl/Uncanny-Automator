@@ -3,6 +3,7 @@
 namespace Uncanny_Automator;
 
 use UCTINCAN\Database;
+use TINCANNYSNC\Module_CRUD;
 
 /**
  *
@@ -65,55 +66,55 @@ class UOTC_Tokens {
 
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Course title', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Course title', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Course ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Course ID', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Course URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Course URL', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_url',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Lesson title', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Lesson title', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Lesson ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Lesson ID', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Lesson URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Lesson URL', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_url',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Topic title', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Topic title', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Topic ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Topic ID', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Topic URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Topic URL', 'Uncanny Tincanny', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_url',
 			);
@@ -180,14 +181,14 @@ class UOTC_Tokens {
 				$maybe_trigger_log_id = Automator()->get->mayabe_get_real_trigger_log_id( $trigger_id, $run_number, $recipe_id, $user_id, $recipe_log_id );
 
 				// Verb can be found from trigger meta
-				if ( in_array( 'TCVERB', $pieces ) ) {
+				if ( in_array( 'TCVERB', $pieces, true ) ) {
 					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( 'TCVERB', $trigger_id, $trigger_log_id, $run_number, $user_id );
 
 					return $value;
 				}
 
 				// Score can be found from trigger meta
-				if ( in_array( 'TCUSERATTAINSSCORE', $pieces ) ) {
+				if ( in_array( 'TCUSERATTAINSSCORE', $pieces, true ) ) {
 					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( 'TCUSERATTAINSSCORE', $trigger_id, $trigger_log_id, $run_number, $user_id );
 
 					return $value;
@@ -196,10 +197,10 @@ class UOTC_Tokens {
 				// Otherwise get TC module id from trigger meta
 				$module_id = Automator()->get->maybe_get_meta_value_from_trigger_log( 'TCMODULEINTERACTION', $trigger_id, $trigger_log_id, $run_number, $user_id );
 
-				if ( class_exists( '\UCTINCAN\Database' ) ) {
+				if ( class_exists( '\TINCANNYSNC\Module_CRUD' ) || class_exists( '\TINCANNYSNC\Database' ) ) {
 					// In case just module name required.
-					if ( in_array( 'TCMODULEINTERACTION', $pieces ) ) {
-						$module_info = \TINCANNYSNC\Database::get_item( $module_id );
+					if ( in_array( 'TCMODULEINTERACTION', $pieces, true ) ) {
+						$module_info = Uncanny_Tincanny_Helpers::get_item( $module_id );
 						$value       = isset( $module_info['file_name'] ) ? $module_info['file_name'] : '';
 
 						return $value;
@@ -243,7 +244,7 @@ class UOTC_Tokens {
 								$value = get_the_permalink( $tin_can_data->lesson_id );
 							}
 							if ( in_array( $trigger_key_maybe_prefix . 'lesson', $pieces, true ) || in_array( $trigger_key_maybe_prefix . 'lesson_id', $pieces, true ) || in_array( $trigger_key_maybe_prefix . 'lesson_url', $pieces, true ) ) {
-								if ( ( ! empty( $tin_can_data->course_id ) ) && ( \LearnDash_Settings_Section::get_section_setting( 'LearnDash_Settings_Courses_Builder', 'shared_steps' ) == 'yes' ) ) {
+								if ( ( ! empty( $tin_can_data->course_id ) ) && ( \LearnDash_Settings_Section::get_section_setting( 'LearnDash_Settings_Courses_Builder', 'shared_steps' ) === 'yes' ) ) {
 									$lesson_id = learndash_course_get_single_parent_step( $tin_can_data->course_id, $tin_can_data->lesson_id );
 									if ( in_array( $trigger_key_maybe_prefix . 'lesson', $pieces, true ) && ! empty( $lesson_id ) ) {
 										$value = get_the_title( $lesson_id );
@@ -260,28 +261,28 @@ class UOTC_Tokens {
 					}
 				}
 
-				if ( in_array( 'NUMBERCOND', $pieces ) ) {
+				if ( in_array( 'NUMBERCOND', $pieces, true ) ) {
 					$parse = $pieces[2];
 					$val   = Automator()->get->maybe_get_meta_value_from_trigger_log( 'NUMBERCOND', $trigger_id, $trigger_log_id, $run_number, $user_id );
 
 					switch ( $val ) {
 						case '<':
-							$value = esc_attr__( 'less than', 'uncanny-automator' );
+							$value = esc_attr_x( 'less than', 'Uncanny Tincanny', 'uncanny-automator' );
 							break;
 						case '>':
-							$value = esc_attr__( 'greater than', 'uncanny-automator' );
+							$value = esc_attr_x( 'greater than', 'Uncanny Tincanny', 'uncanny-automator' );
 							break;
 						case '=':
-							$value = esc_attr__( 'equal to', 'uncanny-automator' );
+							$value = esc_attr_x( 'equal to', 'Uncanny Tincanny', 'uncanny-automator' );
 							break;
 						case '!=':
-							$value = esc_attr__( 'not equal to', 'uncanny-automator' );
+							$value = esc_attr_x( 'not equal to', 'Uncanny Tincanny', 'uncanny-automator' );
 							break;
 						case '>=':
-							$value = esc_attr__( 'greater or equal to', 'uncanny-automator' );
+							$value = esc_attr_x( 'greater or equal to', 'Uncanny Tincanny', 'uncanny-automator' );
 							break;
 						case '<=':
-							$value = esc_attr__( 'less or equal to', 'uncanny-automator' );
+							$value = esc_attr_x( 'less or equal to', 'Uncanny Tincanny', 'uncanny-automator' );
 							break;
 						default:
 							$value = '';

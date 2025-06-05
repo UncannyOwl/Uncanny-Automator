@@ -148,6 +148,10 @@ class Hubspot_Helpers {
 	 */
 	public function disconnect() {
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		if ( automator_filter_input( 'integration' ) !== $this->setting_tab ) {
 			return;
 		}

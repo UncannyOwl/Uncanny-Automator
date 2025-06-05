@@ -363,13 +363,25 @@ class Microsoft_Teams_Helpers {
 	 */
 	public function disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
-
-			$this->remove_credentials();
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_to_settings_page();
 		}
 
-		wp_safe_redirect( $this->get_settings_page_url() );
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE ) ) {
+			$this->redirect_to_settings_page();
+		}
 
+		$this->remove_credentials();
+		$this->redirect_to_settings_page();
+	}
+
+	/**
+	 * redirect_to_settings_page
+	 *
+	 * @return void
+	 */	
+	public function redirect_to_settings_page() {
+		wp_safe_redirect( $this->get_settings_page_url() );
 		exit;
 	}
 

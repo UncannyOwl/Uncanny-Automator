@@ -49,10 +49,9 @@ class WP_SUBMITCOMMENT {
 			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wordpress-core/' ),
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WordPress */
-			'sentence'            => sprintf( esc_attr__( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			/* translators: Logged-in trigger - WordPress */
-			'select_option_name'  => esc_attr__( 'A user submits a comment on {{a post}}', 'uncanny-automator' ),
+			// translators: %1$s: post title, %2$s: number of times
+			'sentence'            => sprintf( esc_attr_x( 'A user submits a comment on {{a post:%1$s}} {{a number of:%2$s}} time(s)', 'WordPress', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'select_option_name'  => esc_attr_x( 'A user submits a comment on {{a post}}', 'WordPress', 'uncanny-automator' ),
 			'action'              => 'comment_post',
 			'priority'            => 90,
 			'accepted_args'       => 3,
@@ -94,34 +93,34 @@ class WP_SUBMITCOMMENT {
 						$all_post_types,
 						Automator()->helpers->recipe->field->select_field(
 							$this->trigger_meta,
-							esc_html__( 'Post', 'uncanny-automator' ),
+							esc_html_x( 'Post', 'WordPress', 'uncanny-automator' ),
 							array(),
 							null,
 							false,
 							false,
 							array(
-								$this->trigger_meta    => esc_attr__( 'Post title', 'uncanny-automator' ),
-								$this->trigger_meta . '_ID' => esc_attr__( 'Post ID', 'uncanny-automator' ),
-								$this->trigger_meta . '_URL' => esc_attr__( 'Post URL', 'uncanny-automator' ),
-								$this->trigger_meta . '_POSTNAME' => esc_attr__( 'Post slug', 'uncanny-automator' ),
-								'POSTCONTENT'          => esc_attr__( 'Post content', 'uncanny-automator' ),
-								$this->trigger_meta . '_EXCERPT' => esc_attr__( 'Post excerpt', 'uncanny-automator' ),
-								'WPPOSTTYPES'          => esc_attr__( 'Post type', 'uncanny-automator' ),
-								$this->trigger_meta . '_THUMB_ID' => esc_attr__( 'Post featured image ID', 'uncanny-automator' ),
-								$this->trigger_meta . '_THUMB_URL' => esc_attr__( 'Post featured image URL', 'uncanny-automator' ),
-								'POSTAUTHORFN'         => esc_attr__( 'Post author first name', 'uncanny-automator' ),
-								'POSTAUTHORLN'         => esc_attr__( 'Post author last name', 'uncanny-automator' ),
-								'POSTAUTHORDN'         => esc_attr__( 'Post author display name', 'uncanny-automator' ),
-								'POSTAUTHOREMAIL'      => esc_attr__( 'Post author email', 'uncanny-automator' ),
-								'POSTAUTHORURL'        => esc_attr__( 'Post author URL', 'uncanny-automator' ),
-								'POSTCOMMENT_ID'       => esc_attr__( 'Comment ID', 'uncanny-automator' ),
-								'POSTCOMMENTCONTENT'   => esc_attr__( 'Comment content', 'uncanny-automator' ),
-								'POSTCOMMENTDATE'      => esc_attr__( 'Comment submitted date', 'uncanny-automator' ),
-								'POSTCOMMENTEREMAIL'   => esc_attr__( 'Commenter email', 'uncanny-automator' ),
-								'POSTCOMMENTERNAME'    => esc_attr__( 'Commenter name', 'uncanny-automator' ),
-								'POSTCOMMENTERWEBSITE' => esc_attr__( 'Commenter website', 'uncanny-automator' ),
-								'POSTCOMMENTSTATUS'    => esc_attr__( 'Commenter status', 'uncanny-automator' ),
-								'POSTCOMMENTURL'       => esc_attr__( 'Comment URL', 'uncanny-automator' ),
+								$this->trigger_meta    => esc_attr_x( 'Post title', 'WordPress', 'uncanny-automator' ),
+								$this->trigger_meta . '_ID' => esc_attr_x( 'Post ID', 'WordPress', 'uncanny-automator' ),
+								$this->trigger_meta . '_URL' => esc_attr_x( 'Post URL', 'WordPress', 'uncanny-automator' ),
+								$this->trigger_meta . '_POSTNAME' => esc_attr_x( 'Post slug', 'WordPress', 'uncanny-automator' ),
+								'POSTCONTENT'          => esc_attr_x( 'Post content', 'WordPress', 'uncanny-automator' ),
+								$this->trigger_meta . '_EXCERPT' => esc_attr_x( 'Post excerpt', 'WordPress', 'uncanny-automator' ),
+								'WPPOSTTYPES'          => esc_attr_x( 'Post type', 'WordPress', 'uncanny-automator' ),
+								$this->trigger_meta . '_THUMB_ID' => esc_attr_x( 'Post featured image ID', 'WordPress', 'uncanny-automator' ),
+								$this->trigger_meta . '_THUMB_URL' => esc_attr_x( 'Post featured image URL', 'WordPress', 'uncanny-automator' ),
+								'POSTAUTHORFN'         => esc_attr_x( 'Post author first name', 'WordPress', 'uncanny-automator' ),
+								'POSTAUTHORLN'         => esc_attr_x( 'Post author last name', 'WordPress', 'uncanny-automator' ),
+								'POSTAUTHORDN'         => esc_attr_x( 'Post author display name', 'WordPress', 'uncanny-automator' ),
+								'POSTAUTHOREMAIL'      => esc_attr_x( 'Post author email', 'WordPress', 'uncanny-automator' ),
+								'POSTAUTHORURL'        => esc_attr_x( 'Post author URL', 'WordPress', 'uncanny-automator' ),
+								'POSTCOMMENT_ID'       => esc_attr_x( 'Comment ID', 'WordPress', 'uncanny-automator' ),
+								'POSTCOMMENTCONTENT'   => esc_attr_x( 'Comment content', 'WordPress', 'uncanny-automator' ),
+								'POSTCOMMENTDATE'      => esc_attr_x( 'Comment submitted date', 'WordPress', 'uncanny-automator' ),
+								'POSTCOMMENTEREMAIL'   => esc_attr_x( 'Commenter email', 'WordPress', 'uncanny-automator' ),
+								'POSTCOMMENTERNAME'    => esc_attr_x( 'Commenter name', 'WordPress', 'uncanny-automator' ),
+								'POSTCOMMENTERWEBSITE' => esc_attr_x( 'Commenter website', 'WordPress', 'uncanny-automator' ),
+								'POSTCOMMENTSTATUS'    => esc_attr_x( 'Commenter status', 'WordPress', 'uncanny-automator' ),
+								'POSTCOMMENTURL'       => esc_attr_x( 'Comment URL', 'WordPress', 'uncanny-automator' ),
 
 							)
 						),
@@ -129,6 +128,17 @@ class WP_SUBMITCOMMENT {
 				),
 			)
 		);
+
+		// Add Akismet checkbox if plugin is active
+		if ( defined( 'AKISMET_VERSION' ) ) {
+			$options['options_group'][ $this->trigger_meta ][] = array(
+				'input_type'    => 'checkbox',
+				'label'         => esc_attr_x( 'Trigger only if the comment passes Akismet spam filtering', 'WordPress', 'uncanny-automator' ),
+				'option_code'   => 'AKISMET_CHECK',
+				'is_toggle'     => true,
+				'default_value' => false,
+			);
+		}
 
 		return $options;
 	}
@@ -143,62 +153,86 @@ class WP_SUBMITCOMMENT {
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Validation function when the trigger action is hit.
 	 *
-	 * @param int $comment_id The comment ID.
+	 * @param int    $comment_id The comment ID.
 	 * @param int|string $comment_approved 1 if the comment is approved, 0 if not, 'spam' if spam.
-	 * @param array $commentdata Comment data.
+	 * @param array  $commentdata Comment data.
 	 */
 	public function submitted_comment( $comment_id, $comment_approved, $commentdata ) {
 		if ( isset( $commentdata['posted_by_automator'] ) ) {
 			return;
 		}
+
 		$user_id   = get_current_user_id();
 		$post_type = get_post_type( $commentdata['comment_post_ID'] );
-		// We need backword compatibility along with new change
+
+		// Retrieve matching recipes and conditions
 		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$conditions = $this->match_condition( $commentdata['comment_post_ID'], $post_type, $recipes, $this->trigger_meta, $this->trigger_code );
 
 		if ( ! $conditions ) {
 			return;
 		}
-		$post_type = get_post_type_object( $post_type );
 
-		if ( ! empty( $conditions ) ) {
-			foreach ( $conditions['recipe_ids'] as $recipe_id => $trigger_id ) {
-				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-					$args = array(
-						'code'             => $this->trigger_code,
-						'meta'             => $this->trigger_meta,
-						'recipe_to_match'  => $recipe_id,
-						'trigger_to_match' => $trigger_id,
-						'post_id'          => $commentdata['comment_post_ID'],
-						'user_id'          => $user_id,
-					);
+		// Loop through all recipes and their triggers
+		foreach ( $recipes as $recipe_id => $recipe ) {
+			if ( empty( $recipe['triggers'] ) ) {
+				continue;
+			}
 
-					$arr = Automator()->maybe_add_trigger_entry( $args, false );
-					if ( $arr ) {
-						foreach ( $arr as $result ) {
-							if ( true === $result['result'] ) {
-								$trigger_meta = array(
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								);
+			foreach ( $recipe['triggers'] as $trigger ) {
+				$trigger_id = $trigger['ID'];
 
-								// Comment ID
-								Automator()->db->token->save( 'comment_id', $comment_id, $trigger_meta );
+				// Check if this trigger is in the matched conditions
+				if ( ! isset( $conditions['recipe_ids'][ $recipe_id ] ) || $conditions['recipe_ids'][ $recipe_id ] !== $trigger_id ) {
+					continue;
+				}
 
-								Automator()->maybe_trigger_complete( $result['args'] );
-							}
+				// Check if comment is spam based on trigger's meta
+				if ( Automator()->helpers->recipe->wp->should_block_comment_by_akismet( $trigger, $comment_approved, $commentdata ) ) {
+					continue;
+				}
+
+				// Skip if recipe is already completed
+				if ( Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
+					continue;
+				}
+
+				// Try to add a new trigger entry
+				$args = array(
+					'code'             => $this->trigger_code,
+					'meta'             => $this->trigger_meta,
+					'recipe_to_match'  => $recipe_id,
+					'trigger_to_match' => $trigger_id,
+					'post_id'          => $commentdata['comment_post_ID'],
+					'user_id'          => $user_id,
+				);
+
+				$results = Automator()->maybe_add_trigger_entry( $args, false );
+
+				if ( $results ) {
+					foreach ( $results as $result ) {
+						if ( true === $result['result'] ) {
+							$trigger_meta = array(
+								'user_id'        => $user_id,
+								'trigger_id'     => $result['args']['trigger_id'],
+								'trigger_log_id' => $result['args']['get_trigger_id'],
+								'run_number'     => $result['args']['run_number'],
+							);
+
+							// Save the comment ID as token
+							Automator()->db->token->save( 'comment_id', $comment_id, $trigger_meta );
+
+							// Attempt to complete the trigger
+							Automator()->maybe_trigger_complete( $result['args'] );
 						}
 					}
 				}
 			}
 		}
-
 	}
+
 
 	/**
 	 * Matching Form id because its not an integer.
@@ -227,9 +261,10 @@ class WP_SUBMITCOMMENT {
 					}
 				} else {
 					if ( key_exists( $trigger_meta, $trigger['meta'] )
-						 && ( (string) $trigger['meta'][ $trigger_meta ] === (string) $match_post_id || '-1' === (string) $trigger['meta'][ $trigger_meta ] )
-						 && ( (string) $trigger['meta']['WPPOSTTYPES'] === (string) $match_post_type || '-1' === (string) $trigger['meta']['WPPOSTTYPES'] )
+					&& ( (string) $trigger['meta'][ $trigger_meta ] === (string) $match_post_id || '-1' === (string) $trigger['meta'][ $trigger_meta ] )
+					&& ( (string) $trigger['meta']['WPPOSTTYPES'] === (string) $match_post_type || '-1' === (string) $trigger['meta']['WPPOSTTYPES'] )
 					) {
+
 						$recipe_ids[ $recipe['ID'] ] = $trigger['ID'];
 					}
 				}

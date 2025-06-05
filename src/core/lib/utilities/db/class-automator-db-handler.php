@@ -46,28 +46,8 @@ class Automator_DB_Handler {
 	 * Automator_DB_Handler constructor.
 	 */
 	public function __construct() {
-		$this->tables  = (object) apply_filters(
-			'automator_database_tables',
-			(object) array(
-				'recipe'            => 'uap_recipe_log',
-				'recipe_meta'       => 'uap_recipe_log_meta',
-				'trigger'           => 'uap_trigger_log',
-				'trigger_meta'      => 'uap_trigger_log_meta',
-				'action'            => 'uap_action_log',
-				'action_meta'       => 'uap_action_log_meta',
-				'closure'           => 'uap_closure_log',
-				'closure_meta'      => 'uap_closure_log_meta',
-				'api'               => 'uap_api_log',
-				'api_meta'          => 'uap_api_log_meta',
-				'recipe_logs'       => 'uap_recipe_logs_view',
-				'trigger_logs'      => 'uap_trigger_logs_view',
-				'action_logs'       => 'uap_action_logs_view',
-				'api_logs'          => 'uap_api_logs_view',
-				'api_response_logs' => 'uap_api_log_response',
-				'tokens_logs'       => 'uap_tokens_log',
-				'recipe_count'      => 'uap_recipe_count',
-			)
-		);
+
+		$this->tables  = DB_Tables::get_automator_tables();
 		$this->recipe  = Automator_DB_Handler_Recipes::get_instance();
 		$this->token   = Automator_DB_Handler_Tokens::get_instance();
 		$this->trigger = Automator_DB_Handler_Triggers::get_instance();

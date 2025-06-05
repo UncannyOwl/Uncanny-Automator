@@ -78,15 +78,9 @@ class Closure_Redirect {
 			return;
 		}
 
-		$script_uri = plugin_dir_url( AUTOMATOR_BASE_FILE ) . 'src/assets/closure/dist/redirect.min.js';
-
-		wp_enqueue_script( 'automator-closure', $script_uri, array( 'jquery' ), AUTOMATOR_PLUGIN_VERSION, true );
-		wp_localize_script(
-			'automator-closure',
-			'automatorClosure',
-			array(
-				'nonce' => wp_create_nonce( AUTOMATOR_BASE_FILE ),
-			)
+		Utilities::enqueue_asset(
+			'uap-closure',
+			'closure'
 		);
 	}
 

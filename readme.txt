@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.1
 Requires PHP: 7.3
-Stable tag: 6.5.0.2
+Stable tag: 6.6.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -61,14 +61,17 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 = Supported apps =
 
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Anthropic](https://automatorplugin.com/integration/anthropic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bluesky](https://automatorplugin.com/integration/bluesky/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Campaign Monitor](https://automatorplugin.com/integration/campaign-monitor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Cohere](https://automatorplugin.com/integration/cohere/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -77,6 +80,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [GetResponse](https://automatorplugin.com/integration/getresponse/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Calendar](https://automatorplugin.com/integration/google-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Contacts](https://automatorplugin.com/integration/google-contacts/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Google Gemini](https://automatorplugin.com/integration/gemini/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Sheets](https://automatorplugin.com/integration/google-sheets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Sheets Web App](https://automatorplugin.com/integration/sheets-web-app/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -89,10 +93,12 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Mautic](https://automatorplugin.com/integration/mautic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Mistral AI](https://automatorplugin.com/integration/mistral/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Notion](https://automatorplugin.com/integration/notion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ontraport](https://automatorplugin.com/integration/ontraport/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [OpenAI and GPT](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Perplexity](https://automatorplugin.com/integration/perplexity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Salesforce](https://automatorplugin.com/integration/salesforce/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Elite)
 - [Sendy](https://automatorplugin.com/integration/sendy/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -103,6 +109,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [xAI](https://automatorplugin.com/integration/xai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zoho Campaigns](https://automatorplugin.com/integration/zoho-campaigns/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -143,6 +150,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Fluent Support](https://automatorplugin.com/integration/fluent-support/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [FluentBooking](https://automatorplugin.com/integration/fluentbooking/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [FluentCommunity](https://automatorplugin.com/integration/fluentcommunity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [FluentCRM](https://automatorplugin.com/integration/fluentcrm/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Forminator](https://automatorplugin.com/integration/forminator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -171,6 +179,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Logging](https://automatorplugin.com/integration/logging/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Magic Button](https://automatorplugin.com/integration/magic-button/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [MailPoet](https://automatorplugin.com/integration/mailpoet/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Mailster](https://automatorplugin.com/integration/mailster/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Make](https://automatorplugin.com/integration/make/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Memberium For Keap](https://automatorplugin.com/integration/memberium-for-keap/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -382,78 +391,76 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.5.0.2 [2025-05-23] =
+= 6.6.0 [2025-06-05] =
 
-**Fixed:**
+**New App Integrations:**
 
-* Trigger firing behavior – Trigger firing behavior – WordPress 6.7 required that plugins make adjustments to loading priority. In version 6.5 we adjusted Automator to comply with the new guidelines. However, because of the nature of how Automator works, some triggers for plugins that do not yet comply with the new guidelines failed to fire. We've reverted the change for now. #5781
-* Outgoing Webhooks - The Type dropdown had stage fright in the latest release—it's now back on duty and ready to drop down like it should. #5780
+* [Anthropic](https://automatorplugin.com/integration/anthropic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5818  
+* [Cohere](https://automatorplugin.com/integration/cohere/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5819  
+* [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5821  
+* [Google Gemini](https://automatorplugin.com/integration/gemini/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5823  
+* [Mistral AI](https://automatorplugin.com/integration/mistral/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5827  
+* [Perplexity](https://automatorplugin.com/integration/perplexity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5829  
+* [xAI](https://automatorplugin.com/integration/xai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5825  
 
-**Known Issue:**
+**New Plugin Integrations:**
 
-* Notice: Function `_load_textdomain_just_in_time` was called incorrectly will now be displayed when debug is enabled, until all plugins that we integrate with have been updated to the new guidelines.
+* [FluentCommunity](https://automatorplugin.com/integration/fluentcommunity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5668  
+* [Mailster](https://automatorplugin.com/integration/mailster/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5405  
 
+**New Triggers:**
 
-= 6.5.0.1 [2025-05-09] =
-
-**Fixed:**
-
-* Recipe UI - Slack forgot it was connected and kept denying it. We've straightened things out. #5741
-* Import recipes - A sneaky little bug that prevented recipes from being imported thought it could slip past unnoticed in version 6.5. Nice try, bug. Not today! #5742
-
-= 6.5.0 [2025-05-09] =
-
-
-**New Features:**
-
-* Addons menu - Now you can install and activate Automator addons without spelunking through menus. One click, much wow. #5260
-* Recipe UI - Throttle Recipes - Give your recipes a breather! Control how often they run so they don't sprint endlessly. #4895
+* ARMember - A user is added to a membership plan #5769  
+* Events Manager - A user publishes a new event #5366  
+* FluentCommunity - A user completes a course #5704  
+* FluentCommunity - A user completes a lesson #5714  
+* FluentCommunity - A user is enrolled in a course #5702  
+* FluentCommunity - A user joins a space #5700  
+* FluentCommunity - A user posts to a space #5709  
+* Mailster - A new subscriber is added to a Mailster list #5406  
 
 **New Actions:**
 
-* WordPress - Duplicate a post #5498
-* WordPress - Duplicate a page #5498
-
-**Added:**
-
-* Discord - Shortcode `[automator_discord_user_mapping]` to capture/authorize individual user Discord member IDs - Now you can summon a user's Discord ID like a wizard casting a spell. #5690
-* Discord - Token selector added to action dropdowns - Choosing the right token just got easier than picking toppings on a pizza. #5687
-* Recipe UI - Added export button to Publish Metabox - Export your recipe like a boss—now just a click away. #5419
+* Anthropic - Use a prompt to generate a text response with a Claude model #5817  
+* Cohere - Use a prompt to generate a text response with a Cohere model #5820  
+* DeepSeek - Use a prompt to generate a text response with a DeepSeek model #5822  
+* FluentCommunity - Add the user to a space #5707  
+* FluentCommunity - Enroll the user in a course #5705  
+* Google Gemini - Use a prompt to generate a text response with a Gemini model #5824  
+* Mailster - Add a subscriber to a Mailster list #5407  
+* Mistral AI - Use a prompt to generate a text response with a Le Chat model #5828  
+* Newsletter - Add a subscriber to a list #5030  
+* OpenAI - Use a prompt to generate an image #5797  
+* Perplexity - Use a prompt to generate a text response with a Perplexity model #5830  
+* xAI - Use a prompt to generate a text response with a Grok model #5826  
 
 **Updated:**
 
-* All integrations page - Now correctly shows whether something is Addon, Elite, Plus, or just plain awesome. #5226
-* Automator UI - Made more RTL-friendly so everything flows beautifully from right to left. #5519
-* OpenAI - Twitter-friendly excerpts now have an option to exclude hashtags—because sometimes you just want to keep it classy. #5566
-* Plans - The button now politely suggests “Activate license” if Pro is installed but feeling unlicensed. #5554
-* Recipe Logs - Action IDs now make a guest appearance in the logs, just like they do in the Recipe UI. #5060
-* Recipe UI - Made the Draft/Live switch a little louder so it doesn't keep whispering in the corner. #4315
-* Recipe UI - Publish box got a glow-up—fresh look, same great taste. #4731
+* Gravity Forms - A form is submitted - Added "Can login user?" field for the user selector, because forms should know who's knocking before letting them in #5799  
+* OpenAI - "Use a prompt to generate an image" changed to "Use a prompt to generate an image with Dall-E" #5796  
+* WPForms - Separate the Name field's smart tag into multiple tokens - Because sometimes you just want the first name without dragging the last name along #5514  
+* WordPress - A user's post receives a comment - "Trigger only if the comment passes Akismet spam filtering" toggle added—only legit comments need apply #5841  
+* WordPress - A user submits a comment on a post - "Trigger only if the comment passes Akismet spam filtering" toggle added—no more false alarms from robot poets #5841  
+* Dashboard – Got a fresh coat of digital paint. Still the same great taste, now with better looks. #5632  
 
 **Fixed:**
 
-* AWeber & Campaign Monitor - Authorization error checks affecting other app integrations. #5674
-* Bluesky - Posts now respect line breaks like a well-mannered poet. #5629
-* Facebook Lead Ads - The sync icon has been coaxed back into visibility—no more hide-and-seek. #5637
-* Facebook Lead Ads - Connection and disconnection are now playing nicely—no more awkward breakups or clingy connections. #5637
-* Formatter - Fixed the clone wars in action token outputs—no more unintended doppelgängers. #5671
-* Recipe UI - Loop tokens - Tokens added in older recipes were not migrating to the newer framework, we've fixed that. #5664
-* Recipe UI - Auto Login Link token - Didn't migrate properly on some sites - Now showing up on time like a responsible adult. #5664
-* Recipe UI - App actions - Fixed the "connect your site" URL so it doesn't lead you astray when your site isn't connected. #5628
-* Recipe UI - Clicking a trigger/action multiple times no longer adds it to the recipe multiple times - We've added some manners. #5551
-* Recipe UI - `esc_html` and `esc_attr` break double quotes formatting on JS strings - Quotation marks are now safe and sound. #5502
-* Recipe UI - Various bug fixes - We squashed a bunch of tiny bugs with big attitudes. #5550
-* `automator_get_all_options` - Now shows proper respect to the autoload column. #5518
+* Repeater field tokens - Can now be output as a string in various actions (Email, Logging, etc.) #5765  
+* Addons - Pro basic licenses were not showing upgrade link on Addons page - That sneaky link was hiding from the spotlight—now it's front and center #5754  
+* Discord - Send a message to a channel - Discord messages were a little breathless—line breaks are now supported #5751  
+* Formidable - A form is submitted - Repeater tokens were being a bit rebellious—now they're back in line and returning correct values #5509  
+* Mailchimp - We've tamed the gremlins behind the connection issues—Mailchimp can now connect without drama #5786  
+* Tin Canny - We had a PHP tantrum on our hands—now it's cooled off and compatible with v5.0+ for Tin Canny for LearnDash #5803  
 
-**Security Fixes:**
+**Security Fix:**
 
-* App integrations - Tightened the gates with stronger nonce and capability checks for `wp_ajax` endpoints. #5657
-* `automator_api_decode_message` - Made additional modifications to further harden this method. #5631
+* App Integrations - Added nonce and capability checks for app disconnect requests #5746  
 
 **Under the hood:**
 
-* Recipe templates - API permissions check got an upgrade—more secure, less guesswork. #5650
-* Update various text strings. #5553
+* Frontend assets - We gave the frontend code a deep tissue massage—looser, faster, and better organized #5632  
+* Improved support for third-party App settings pages - Connecting to an Automator account now only required for native App integrations #5638  
+* uap_options - Added a new type column to store data type - Reduced stored rows by 50% #5793  
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

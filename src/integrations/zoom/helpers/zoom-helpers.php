@@ -557,12 +557,26 @@ class Zoom_Helpers {
 	 */
 	public function disconnect() {
 
-		if ( wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_DEFAULT ), 'uap_automator_zoom_api_disconnect' ) ) {
-			$this->delete_options();
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->redirect_to_settings_page();
 		}
 
-		wp_safe_redirect( $this->tab_url );
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'uap_automator_zoom_api_disconnect' ) ) {
+			$this->redirect_to_settings_page();
+		}
 
+		$this->delete_options();
+
+		$this->redirect_to_settings_page();
+	}
+	
+	/**
+	 * redirect_to_settings_page
+	 *
+	 * @return void
+	 */
+	public function redirect_to_settings_page() {
+		wp_safe_redirect( $this->tab_url );
 		exit;
 	}
 

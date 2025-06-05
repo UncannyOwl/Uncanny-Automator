@@ -13,50 +13,48 @@ class AutomatorGoogleCalendarSettings {
         // Set the loading status of the button
         this.$preloaderButton.setAttribute('loading', '');
 
-        // Fetch data
-        _uo.utility.fetchData({
-            url: UncannyAutomatorBackend.ajax.url,
-            data: {
+        fetch( UncannyAutomatorBackend.ajax.url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Cache-Control': 'no-cache'
+            },
+            body: new URLSearchParams({
                 action: 'automator_google_calendar_list_calendars',
                 nonce: UncannyAutomatorBackend.ajax.nonce,
-                timestamp: + new Date()
-            },
-            onSuccess: (response) => {
-
-                // Remove the loading animation.
-                this.$preloaderButton.remove();
-
+                timestamp: +new Date()
+            } )
+        })
+            .then( ( response ) => response.json() )
+            .then( response => {
                 // Check if there are pages
-                if (!_uo.utility.isEmpty(response.data)) {
+                if ( Array.isArray( response.data ) && response.data.length > 0 ) {
                     // Set pages
                     this.createList(response.data);
                 } else {
 
                     if (response.data) {
-                        if (!_uo.utility.isEmpty(response.data.error)) {
+                        if ( typeof response.data.error !== 'undefined' && response.data.error !== '' ) {
                             this.setError(response.data.error);
                         }
                     }
 
                     if (response.error) {
-                        if (!_uo.utility.isEmpty(response.error)) {
+                        if ( typeof response.error !== 'undefined' && response.error !== '' ) {
                             this.setError(response.error);
                         }
                     }
                 }
-
-            },
-            onFail: (response, message) => {
-
-                console.info(response);
-
-                // Remove the loading animation.
-                if (this.$preloaderButton) {
+            } )
+            .catch( error => {
+                console.error( error );
+            } )
+            .finally( () => {
+                if ( this.$preloaderButton ) {
+                    // Remove the loading animation.
                     this.$preloaderButton.remove();
                 }
-
-            },
-        });
+            } );
     }
 
     /**
@@ -103,7 +101,7 @@ class AutomatorGoogleCalendarSettings {
     setError(error = '') {
 
         // Check if there is an error defined
-        if (!_uo.utility.isEmpty(error)) {
+        if ( error ) {
             this.$errorWrapper.innerHTML = error;
             this.$errorWrapper.style.display = 'block';
         } else {

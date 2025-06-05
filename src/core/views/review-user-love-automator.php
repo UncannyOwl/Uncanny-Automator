@@ -1,4 +1,7 @@
-<?php namespace Uncanny_Automator; ?>
+<?php
+namespace Uncanny_Automator;
+
+?>
 
 <div id="uap-review-banner-positive" class="uap notice" style="display: none">
 
@@ -7,10 +10,8 @@
 		type="white"
 	>
 		<uo-button
-			href="<?php echo esc_url( $vars['url_close_button'] ); ?>"
-
+			href="<?php echo esc_url( add_query_arg( 'track', 'second-dismissed', $vars['url_close_button'] ) ); ?>"
 			data-action="hide-banner-on-click"
-
 			slot="top-right-icon"
 			color="transparent"
 			size="small"
@@ -24,9 +25,8 @@
 
 		<div class="uap-spacing-top">
 			<uo-button
-				href="<?php echo esc_url( $vars['url_wordpress'] ); ?>"
+				href="<?php echo esc_url( add_query_arg( 'track', 'second-review', $vars['url_wordpress'] ) ); ?>"
 				target="_blank"
-
 				data-action="hide-banner-on-click"
 				class="uap-spacing-right uap-spacing-right--xsmall"
 			>
@@ -34,8 +34,7 @@
 			</uo-button>
 
 			<uo-button
-				href="<?php echo esc_url( $vars['url_maybe_later'] ); ?>"
-
+				href="<?php echo esc_url( add_query_arg( 'track', 'second-later', $vars['url_maybe_later'] ) ); ?>"
 				color="secondary"
 				data-action="hide-banner-on-click"
 				class="uap-spacing-right uap-spacing-right--xsmall"
@@ -44,10 +43,9 @@
 			</uo-button>
 
 			<uo-button
-				href="<?php echo esc_url( $vars['url_already_did'] ); ?>"
-
-				color="secondary"
+				href="<?php echo esc_url( add_query_arg( 'track', 'second-done', $vars['url_already_did'] ) ); ?>"
 				data-action="hide-banner-on-click"
+				color="secondary"
 				class="uap-spacing-right uap-spacing-right--xsmall"
 			>
 				<?php echo esc_html_x( 'I already did', 'Reviews banner', 'uncanny-automator' ); ?>
