@@ -186,9 +186,19 @@ class OpenAI_Chat_Generate extends Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$temperature = $this->get_parsed_meta_value( 'TEMPERATURE' ) ?? '1';
-		$max_tokens  = $this->get_parsed_meta_value( 'MAX_LEN' ) ?? '2048';
-		$model       = $this->get_parsed_meta_value( 'MODEL' ) ?? 'gpt-3.5-turbo';
+		$temperature = $this->get_parsed_meta_value( 'TEMPERATURE', 1 );
+		$max_tokens  = $this->get_parsed_meta_value( 'MAX_LEN', 2048 );
+		$model       = $this->get_parsed_meta_value( 'MODEL', 'gpt-3.5-turbo' );
+
+		// If the temperature is not set, set it to 1.
+		if ( empty( $temperature ) ) {
+			$temperature = 1;
+		}
+
+		// If the max tokens is not set, set it to 2048.
+		if ( empty( $max_tokens ) ) {
+			$max_tokens = 2048;
+		}
 
 		// Migration for 3.5-turbo-0301 to 3.5-turbo.
 		$model          = $this->handle_model( $model, $action_data );
@@ -230,7 +240,7 @@ class OpenAI_Chat_Generate extends Action {
 			throw new \Exception( 'Invalid AI response', 400 );
 		}
 
-		$response_text = esc_html( $ai_response->get_content() );
+		$response_text = $ai_response->get_content();
 
 		$this->hydrate_tokens(
 			array(

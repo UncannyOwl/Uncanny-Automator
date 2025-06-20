@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.1
 Requires PHP: 7.3
-Stable tag: 6.6.0
+Stable tag: 6.6.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -390,6 +390,20 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.6.0.1 [2025-06-19] =
+
+**Fixed:**
+
+* MailChimp - Action tokens without labels where trying to show up - We've fixed that. #5861  
+* OpenAI - Use a prompt to generate text with the GPT model - The AI got too hot to handle when the temperature wasn't a number. We've cooled it down with proper checks. #5859  
+* Studiocart - A user purchases a product - Some customers were getting ghosted after checkout. Both logged-in and anonymous buyers now get the attention they deserve. #5869  
+
+**Under the hood:**
+
+* Dynamic field visibility - We taught the repeater field how to play hide and seek properly—visibility toggles are now working like a charm. #5845  
+* Recipe UI & admin banner - We told JavaScript to stop trying to add event listeners to thin air. Nulls are off-limits now. #5851  
+* Mailster - Future-proofing engaged! The helper got a shiny upgrade to prep for Pro-level wizardry. #5870  
 
 = 6.6.0 [2025-06-05] =
 

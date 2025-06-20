@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 6.6.0\n"
+"Project-Id-Version: Uncanny Automator 6.6.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-06-05T20:07:14+00:00\n"
+"POT-Creation-Date: 2025-06-19T21:58:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: uncanny-automator\n"
@@ -24131,9 +24131,24 @@ msgctxt "Mailster"
 msgid "The subscriber (%1$s) is already subscribed to the list (%2$s)."
 msgstr ""
 
-#: src/integrations/mailster/helpers/mailster-helpers.php:17
+#: src/integrations/mailster/helpers/mailster-helpers.php:18
 msgctxt "Mailster"
 msgid "Any list"
+msgstr ""
+
+#: src/integrations/mailster/helpers/mailster-helpers.php:25
+msgctxt "Mailster"
+msgid "All lists"
+msgstr ""
+
+#: src/integrations/mailster/helpers/mailster-helpers.php:54
+msgctxt "Mailster"
+msgid "Any campaign"
+msgstr ""
+
+#: src/integrations/mailster/helpers/mailster-helpers.php:60
+msgctxt "Mailster"
+msgid "All campaigns"
 msgstr ""
 
 #. translators: Mailster - Trigger

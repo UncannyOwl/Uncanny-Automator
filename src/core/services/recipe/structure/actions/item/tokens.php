@@ -92,6 +92,12 @@ final class Tokens implements \JsonSerializable {
 				// Generate token for field.
 				$token = new stdClass();
 
+				// Skip empty field code and label.
+				// @Todo: Support fields that has options and options_group combination.
+				if ( ! isset( $option['label'] ) || ! isset( $option['field_code'] ) ) {
+					continue;
+				}
+
 				$token->id = sprintf(
 					'ACTION_FIELD:%d:%s:%s',
 					self::$action_id,

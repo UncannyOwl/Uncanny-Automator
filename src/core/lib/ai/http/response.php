@@ -189,7 +189,7 @@ final class Response {
 	 */
 	// phpcs:ignore Uncanny_Automator.Commenting.FunctionCommentAutoFix.MissingFunctionComment
 	public function get_content(): string {
-		return esc_html( $this->content );
+		return $this->content;
 	}
 
 	/**

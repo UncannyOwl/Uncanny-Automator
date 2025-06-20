@@ -125,7 +125,7 @@ class STUDIOCART_USERPURCHASESPRODUCT {
 				if ( ! isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
 					continue;
 				}
-				if ( intval( '-1' ) === intval( $required_product[ $recipe_id ][ $trigger_id ] ) || in_array( $required_product[ $recipe_id ][ $trigger_id ], array( $order_data['product_id'] ), true ) ) {
+				if ( intval( '-1' ) === intval( $required_product[ $recipe_id ][ $trigger_id ] ) || intval( $required_product[ $recipe_id ][ $trigger_id ]) === intval( $order_data['product_id'] ) ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
 						'trigger_id' => $trigger_id,
