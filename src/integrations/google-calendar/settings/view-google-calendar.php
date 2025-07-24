@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<uo-icon integration="GOOGLE_CALENDAR"></uo-icon> 
 
-				<?php esc_html_e( 'Google Calendar', 'uncanny-automator' ); ?>
+				<?php echo esc_html_x( 'Google Calendar', 'Google Calendar', 'uncanny-automator' ); ?>
 
 			</div>
 
@@ -33,59 +33,59 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 				<?php if ( ! empty( $auth_error ) ) { ?>
 					<?php /* translators: Error message */ ?>
-					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Authentication Error', 'uncanny-automator' ) ) ); ?>" type="error" class="uap-spacing-bottom">
+					<uo-alert heading="<?php echo esc_attr( esc_html_x( 'Authentication Error', 'Google Calendar', 'uncanny-automator' ) ); ?>" type="error" class="uap-spacing-bottom">
 						<?php echo esc_html( $auth_error ); ?>
 					</uo-alert>
 				<?php } ?>
 
 				<?php if ( $client && ! empty( $auth_success ) ) { ?>
 					<?php /* translators: Success message */ ?>
-					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Your account "%s" has been connected successfully!', 'uncanny-automator' ), $user_info['email'] ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
+					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html_x( 'Your account "%s" has been connected successfully!', 'Google Calendar', 'uncanny-automator' ), $user_info['email'] ) ); ?>" type="success" class="uap-spacing-bottom"></uo-alert>
 				<?php } ?>
 
 				<?php if ( ! $client ) { ?>
 
 					<div class="uap-settings-panel-content-subtitle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Google Calendar', 'uncanny-automator' ); ?>
+						<?php echo esc_html_x( 'Connect Uncanny Automator to Google Calendar', 'Google Calendar', 'uncanny-automator' ); ?>
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php esc_html_e( 'Connect Uncanny Automator to Google Calendar to automatically create events and add and remove attendees when users perform actions like submitting forms, joining groups and making purchases on your site. Turn Google Calendar into a powerful event and appointment booking engine for your WordPress site.', 'uncanny-automator' ); ?>
+						<?php echo esc_html_x( 'Connect Uncanny Automator to Google Calendar to automatically create events and add and remove attendees when users perform actions like submitting forms, joining groups and making purchases on your site. Turn Google Calendar into a powerful event and appointment booking engine for your WordPress site.', 'Google Calendar', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
-						<strong><?php esc_html_e( 'Activating this integration will enable the following for use in your recipes:', 'uncanny-automator' ); ?></strong>
+						<strong><?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Google Calendar', 'uncanny-automator' ); ?></strong>
 					</p>
 
 					<ul>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add an event to a Google Calendar', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Google Calendar', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add an event to a Google Calendar', 'Google Calendar', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Add an attendee to an event in a Google Calendar', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Google Calendar', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add an attendee to an event in a Google Calendar', 'Google Calendar', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php esc_html_e( 'Remove an attendee from an event in a Google Calendar', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Google Calendar', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Remove an attendee from an event in a Google Calendar', 'Google Calendar', 'uncanny-automator' ); ?>
 						</li>
 					</ul>
 
 				<?php } else { ?>
 
-					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html__( 'Uncanny Automator only supports connecting to one Google Calendar account at a time.', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
-						<?php esc_html_e( 'You can only link Google Calendars that you have read and write access to.', 'uncanny-automator' ); ?>
+					<uo-alert heading="<?php echo esc_attr( esc_html_x( 'Uncanny Automator only supports connecting to one Google Calendar account at a time.', 'Google Calendar', 'uncanny-automator' ) ); ?>" class="uap-spacing-bottom">
+						<?php echo esc_html_x( 'You can only link Google Calendars that you have read and write access to.', 'Google Calendar', 'uncanny-automator' ); ?>
 					</uo-alert>
 
 					<div class="uap-settings-panel-content-subtitle uap-spacing-bottom">
-						<?php esc_html_e( 'Linked calendars', 'uncanny-automator' ); ?>
+						<?php echo esc_html_x( 'Linked calendars', 'Google Calendar', 'uncanny-automator' ); ?>
 					</div>
 
 					<div id="google-calendar-preloader">
-						<uo-button loading color="secondary" class="loading" class="uap-spacing-bottom uap-spacing-bottom--big">
-							<?php esc_html_e( 'Fetching calendars...', 'uncanny-automator' ); ?>
-						</button>
+						<uo-button loading color="secondary" class="loading uap-spacing-bottom uap-spacing-bottom--big">
+							<?php echo esc_html_x( 'Fetching calendars...', 'Google Calendar', 'uncanny-automator' ); ?>
+						</uo-button>
 					</div>
 
-					<uo-alert style="display:none;" id="google-calendar-errors" class="uap-spacing-bottom uap-spacing-bottom--big" type="error" heading="<?php esc_html_e( 'An unexpected error has occurred', 'uncanny-automator' ); ?>"></uo-alert>
+					<uo-alert style="display:none;" id="google-calendar-errors" class="uap-spacing-bottom uap-spacing-bottom--big" type="error" heading="<?php echo esc_attr( esc_html_x( 'An unexpected error has occurred', 'Google Calendar', 'uncanny-automator' ) ); ?>"></uo-alert>
 
 					<div id="google-calendar-list"></div>
 
@@ -107,7 +107,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							target="_self" 
 							unsafe-force-target
 						>
-							<uo-icon id="google"></uo-icon><?php esc_html_e( 'Sign in with Google', 'uncanny-automator' ); ?>
+							<uo-icon id="google"></uo-icon><?php echo esc_html_x( 'Sign in with Google', 'Google Calendar', 'uncanny-automator' ); ?>
 						</uo-button>
 
 					</div> <!--.uap-settings-panel-bottom-left -->
@@ -151,7 +151,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="uap-settings-panel-bottom-right">
 						<uo-button color="danger" href="<?php echo esc_url( $disconnect_uri ); ?>">
 							<uo-icon id="right-from-bracket"></uo-icon>
-							<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
+							<?php echo esc_html_x( 'Disconnect', 'Google Calendar', 'uncanny-automator' ); ?>
 						</uo-button>
 					</div>
 

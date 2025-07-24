@@ -146,8 +146,6 @@ class Recipe_Post_Type {
 					'edit_post'           => 'manage_options',
 					'delete_post'         => 'manage_options',
 				),
-				'show_in_rest'        => true,
-				'rest_base'           => 'uap',
 			);
 
 			register_post_type( 'uo-recipe', apply_filters( 'automator_post_type_recipe_args', $args ) );

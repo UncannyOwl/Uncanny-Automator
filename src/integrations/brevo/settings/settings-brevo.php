@@ -99,9 +99,12 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 			'i'      => true,
 		);
 		$kses_link = array(
-			'a' => array(
+			'a'       => array(
 				'href'   => true,
 				'target' => true,
+			),
+			'uo-icon' => array(
+				'id' => true,
 			),
 		);
 
@@ -111,12 +114,44 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 			<?php
 			// If we have an API Key but unable to connect show error message with disconnect button.
 			if ( ! empty( $this->account['error'] ) ) {
-				?>
-				<uo-alert type="error" heading="<?php echo esc_attr_x( 'Unable to connect to Brevo', 'Brevo', 'uncanny-automator' ); ?>">
-					<?php echo esc_html( $this->account['error'] ); ?>
-				</uo-alert>
-				<br/>
-				<?php
+				if ( 'unauthorized-ip' === $this->account['error'] ) {
+					?>
+					<uo-alert type="error" heading="<?php echo esc_attr_x( 'IP Whitelist Restriction', 'Brevo', 'uncanny-automator' ); ?>">
+						<?php echo esc_html_x( 'Unable to connect your Brevo account due to blocking of unknown IP addresses.', 'Brevo', 'uncanny-automator' ); ?>
+						<br><br>
+						<?php echo esc_html_x( 'To fix this please follow these steps:', 'Brevo', 'uncanny-automator' ); ?>
+						<ol class="uap-spacing-top uap-spacing-top--small">
+							<li>
+								<?php
+								printf(
+									/* translators: %s: Link to Brevo security page */
+									esc_html_x( 'Go to %s in your Brevo account', 'Brevo', 'uncanny-automator' ),
+									wp_kses( $this->helpers->get_authorized_ips_link(), $kses_link )
+								);
+								?>
+							</li>
+							<li>
+								<?php
+								printf(
+									/* translators: %s: Deactivate blocking text */
+									esc_html_x( 'Click %s', 'Brevo', 'uncanny-automator' ),
+									'<strong>' . esc_html_x( 'Deactivate blocking', 'Brevo', 'uncanny-automator' ) . '</strong>'
+								);
+								?>
+							</li>
+							<li><?php echo esc_html_x( 'Once deactivated, please try connecting your account again.', 'Brevo', 'uncanny-automator' ); ?></li>
+						</ol>
+					</uo-alert>
+					<br/>
+					<?php
+				} else {
+					?>
+					<uo-alert type="error" heading="<?php echo esc_attr_x( 'Unable to connect to Brevo', 'Brevo', 'uncanny-automator' ); ?>">
+						<?php echo esc_html( $this->account['error'] ); ?>
+					</uo-alert>
+					<br/>
+					<?php
+				}
 			}
 			?>
 
@@ -223,6 +258,18 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 						?>
 					</li>
 				</ol>
+
+				<div class="uap-spacing-top">
+					<strong><?php echo esc_html_x( 'Important:', 'Brevo', 'uncanny-automator' ); ?></strong>
+					<?php
+					printf(
+						/* translators: %1$s: Link to Brevo security page, %2$s: Deactivate blocking text */
+						esc_html_x( 'To use the Brevo integration with Automator you must %2$s from %1$s', 'Brevo', 'uncanny-automator' ),
+						wp_kses( $this->helpers->get_authorized_ips_link(), $kses_link ),
+						'<strong>' . esc_html_x( 'deactivate unknown IP blocking', 'Brevo', 'uncanny-automator' ) . '</strong>'
+					);
+					?>
+				</div>
 
 			</uo-alert>
 

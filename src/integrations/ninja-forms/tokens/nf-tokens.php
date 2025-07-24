@@ -162,12 +162,43 @@ class Nf_Tokens {
 				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
 					$value = $entry[ $to_match ];
 				}
+
 				if ( is_array( $value ) ) {
-					$value = join( ', ', $value );
+					$processed_values = array();
+					foreach ( $value as $item ) {
+						$processed_values[] = $this->process_array_item( $item );
+					}
+					$value = join( ', ', $processed_values );
 				}
 			}
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Process a single array item, handling nested arrays and value keys.
+	 *
+	 * @param mixed $item The item to process.
+	 * @return string The processed item as a string.
+	 */
+	private function process_array_item( $item ) {
+		// Handle items with 'value' key
+		if ( is_array( $item ) && isset( $item['value'] ) ) {
+			$value = $item['value'];
+			return is_array( $value ) ? $this->process_array_item( $value ) : $value;
+		}
+
+		// Handle regular arrays - recursively process each item
+		if ( is_array( $item ) ) {
+			$processed_items = array();
+			foreach ( $item as $sub_item ) {
+				$processed_items[] = $this->process_array_item( $sub_item );
+			}
+			return join( ', ', $processed_items );
+		}
+
+		// Handle scalar values
+		return $item;
 	}
 }

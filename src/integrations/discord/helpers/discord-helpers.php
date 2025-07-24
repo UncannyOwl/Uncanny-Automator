@@ -50,13 +50,6 @@ class Discord_Helpers {
 	const DISCORD_USER_MAPPING_META_KEY = 'automator_discord_member_id';
 
 	/**
-	 * Discord username meta key.
-	 *
-	 * @var string
-	 */
-	const DISCORD_USERNAME_META_KEY = 'automator_discord_member_username';
-
-	/**
 	 * Get api instance.
 	 * 
 	 * @return Discord_Api
@@ -131,7 +124,10 @@ class Discord_Helpers {
 
 		// Saving user credentials.
 		if ( isset( $credentials['user'] ) ) {
-			$data['user']            = $credentials['user'];
+			// Encrypt the user data for Discord policy compliance
+			$encrypted_user = $this->encrypt_data( $credentials['user'], $credentials['discord_id'], 'user' );
+			
+			$data['user']            = $encrypted_user;
 			$data['discord_id']      = $credentials['discord_id'];
 			$data['vault_signature'] = $credentials['vault_signature'];
 		}
@@ -225,8 +221,8 @@ class Discord_Helpers {
 	public function get_user_info() {
 		try {
 			$credentials = $this->get_credentials();
-			$user        = $credentials['user'];
-			$user['id']  = $credentials['discord_id'];	
+			$user        = $this->decrypt_data( $credentials['user'], $credentials['discord_id'], 'user' );
+			$user['id']  = $credentials['discord_id'];
 			return $user;
 		}
 		catch ( Exception $e ) {
@@ -452,7 +448,7 @@ class Discord_Helpers {
 	public function get_server_members_ajax() {
 		Automator()->utilities->verify_nonce();
 		$server_id = $this->get_server_id_from_post();
-		$members  = $this->api()->get_server_members( $server_id, $this->is_ajax_refresh() );
+		$members   = $this->api()->get_server_members( $server_id, $this->is_ajax_refresh() );
 
 		wp_send_json( array(
 			'success' => true,
@@ -761,15 +757,73 @@ class Discord_Helpers {
 	}
 
 	/**
-	 * Get the mapped Discord username for a user.
+	 * Encrypt data for Discord policy compliance.
 	 *
-	 * @param int $user_id
-	 * 
-	 * @return string|false
+	 * @param array  $data
+	 * @param int    $id
+	 * @param string $type
+	 *
+	 * @return string
 	 */
-	public function get_mapped_wp_user_discord_username( $user_id ) {
-		$username = get_user_meta( $user_id, self::DISCORD_USERNAME_META_KEY, true );
-		return ! empty( $username ) ? $username : false;
+	public function encrypt_data( $data, $id, $type ) {
+		// Serialize data and generate random IV.
+		$serialized = serialize( $data );
+		$iv         = random_bytes( 16 );
+		
+		// Create unique key using ID, salt, type, and IV
+		$key = hash( 'sha256', $id . NONCE_SALT . $type . $iv );
+		
+		// XOR encrypt with repeating key (handles any data size)
+		$encrypted = $serialized ^ str_repeat( $key, ceil( strlen( $serialized ) / strlen( $key ) ) );
+		
+		// Return IV + encrypted data as base64
+		return base64_encode( $iv . $encrypted );
+	}
+
+	/**
+	 * Decrypt data encrypted by encrypt_data().
+	 *
+	 * @param string $encrypted_data
+	 * @param int    $id
+	 * @param string $type
+	 *
+	 * @return array
+	 */
+	public function decrypt_data( $encrypted_data, $id, $type ) {
+		// Handle empty or invalid input
+		if ( empty( $encrypted_data ) ) {
+			return array();
+		}
+
+		// If the data is already an array (unencrypted), return it directly
+		if ( is_array( $encrypted_data ) ) {
+			return $encrypted_data;
+		}
+
+		// Ensure we have a string for base64_decode
+		if ( ! is_string( $encrypted_data ) ) {
+			return array();
+		}
+
+		// Decode and validate minimum length (16 bytes for IV)
+		$decoded = base64_decode( $encrypted_data );
+		if ( false === $decoded || strlen( $decoded ) < 16 ) {
+			return array();
+		}
+
+		// Extract IV and encrypted data
+		$iv        = substr( $decoded, 0, 16 );
+		$encrypted = substr( $decoded, 16 );
+		
+		// Recreate the same unique key used for encryption
+		$key = hash( 'sha256', $id . NONCE_SALT . $type . $iv );
+		
+		// XOR decrypt with repeating key
+		$decrypted = $encrypted ^ str_repeat( $key, ceil( strlen( $encrypted ) / strlen( $key ) ) );
+		
+		// Unserialize and return original data
+		$data = unserialize( $decrypted );
+		return is_array( $data ) ? $data : array();
 	}
 
 	/**
@@ -782,5 +836,4 @@ class Discord_Helpers {
 	public function get_constant( $constant ) {
 		return constant( 'self::' . $constant );
 	}
-
 }

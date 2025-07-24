@@ -73,6 +73,13 @@ class Brevo_Helpers {
 	const NONCE = 'automator_brevo_api_authentication';
 
 	/**
+	 * The Brevo IP security link.
+	 *
+	 * @var string
+	 */
+	const BREVO_IP_SECURITY_LINK = 'https://app.brevo.com/security/authorised_ips';
+
+	/**
 	 * Get settings page url.
 	 *
 	 * @return string
@@ -274,7 +281,7 @@ class Brevo_Helpers {
 				$account['status'] = '';
 				// Check if error is in regards to IP address.
 				$account['error'] = false !== strpos( $response['data']['error'], 'unrecognised' )
-					? $response['data']['error']
+					? 'unauthorized-ip'
 					: $this->get_invalid_key_message() . $api_key;
 			}
 		}
@@ -687,15 +694,30 @@ class Brevo_Helpers {
 			throw new \Exception( esc_html( $response['data']['error'] ), 400 );
 		}
 
+		// Check for specific error codes.
+		if ( isset( $response['data']['code'] ) && ! empty( $response['data']['code'] ) ) {
+			if ( 'unauthorized' === $response['data']['code'] ) {
+				// Check for IP whitelist blocking in the message
+				$error_message = isset( $response['data']['message'] ) ? $response['data']['message'] : '';
+				if ( false !== strpos( $error_message, 'unrecognised' ) ) {
+					throw new \Exception(
+						sprintf(
+							// translators: %s: Link to Brevo security page
+							esc_html_x( 'Brevo request blocked due to unknown IP address. Please [visit Security → Authorized IPs](%s) to deactivate blocking.', 'Brevo', 'uncanny-automator' ),
+							esc_url( self::BREVO_IP_SECURITY_LINK )
+						),
+						400
+					);
+				}
+
+				throw new \Exception( esc_html( $this->get_invalid_key_message() ), 400 );
+			}
+		}
+
+		// General status code check (after specific error code handling)
 		if ( $response['statusCode'] >= 400 ) {
 			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : esc_html_x( 'Brevo API Error', 'Brevo', 'uncanny-automator' );
 			throw new \Exception( esc_html( $message ), 400 );
-		}
-
-		if ( isset( $response['data']['code'] ) && ! empty( $response['data']['code'] ) ) {
-			if ( 'unauthorized' === $response['data']['code'] ) {
-				throw new \Exception( esc_html( $this->get_invalid_key_message() ), 400 );
-			}
 		}
 	}
 
@@ -750,5 +772,18 @@ class Brevo_Helpers {
 	 */
 	public function get_invalid_key_message() {
 		return esc_html_x( 'Invalid API Key : ', 'Brevo', 'uncanny-automator' );
+	}
+
+	/**
+	 * Get the formatted security link with external icon.
+	 *
+	 * @return string
+	 */
+	public function get_authorized_ips_link() {
+		return sprintf(
+			'<a href="%1$s" target="_blank">%2$s <uo-icon id="external-link"></uo-icon></a>',
+			esc_url( self::BREVO_IP_SECURITY_LINK ),
+			esc_html_x( 'Security → Authorized IPs', 'Brevo', 'uncanny-automator' )
+		);
 	}
 }

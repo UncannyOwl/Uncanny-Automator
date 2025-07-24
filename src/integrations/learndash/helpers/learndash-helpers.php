@@ -79,15 +79,6 @@ class Learndash_Helpers {
 			);
 			add_action( 'wp_ajax_select_topic_from_lesson_LD_TOPICDONE', array( $this, 'topic_from_lesson_func' ), 15 );
 
-			add_action(
-				'learndash_update_user_activity',
-				array(
-					$this,
-					'learndash_update_user_activity_func',
-				),
-				20,
-				1
-			);
 		}
 	}
 
@@ -120,7 +111,7 @@ class Learndash_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Course', 'uncanny-automator' );
+			$label = esc_attr_x( 'Course', 'Learndash', 'uncanny-automator' );
 		}
 
 		$args = array(
@@ -131,15 +122,15 @@ class Learndash_Helpers {
 			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr_x( 'Any course', 'Learndash', 'uncanny-automator' ) );
 
 		$courses_relevant_tokens = array();
 		if ( $include_relevant_tokens ) {
 			$courses_relevant_tokens = wp_list_pluck( $this->get_course_relevant_tokens( 'trigger', $option_code ), 'name' );
 
 			if ( self::is_course_timer_activated() ) {
-				$courses_relevant_tokens[ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = esc_html__( 'Course cumulative time', 'uncanny-automator' );
-				$courses_relevant_tokens[ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = esc_html__( 'Course time at completion', 'uncanny-automator' );
+				$courses_relevant_tokens[ $option_code . '_COURSE_CUMULATIVE_TIME' ]    = esc_html_x( 'Course cumulative time', 'Learndash', 'uncanny-automator' );
+				$courses_relevant_tokens[ $option_code . '_COURSE_TIME_AT_COMPLETION' ] = esc_html_x( 'Course time at completion', 'Learndash', 'uncanny-automator' );
 			}
 
 			if ( is_array( $relevant_tokens ) && ! empty( $relevant_tokens ) ) {
@@ -154,7 +145,7 @@ class Learndash_Helpers {
 			'required'                 => true,
 			'options'                  => $options,
 			'relevant_tokens'          => $courses_relevant_tokens,
-			'custom_value_description' => _x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
+			'custom_value_description' => esc_html_x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
 		return apply_filters( 'uap_option_all_ld_courses', $option );
@@ -214,7 +205,6 @@ class Learndash_Helpers {
 		);
 
 		return apply_filters( "automator_set_learndash_course_{$type}_tokens", $tokens );
-
 	}
 
 	/**
@@ -275,18 +265,18 @@ class Learndash_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Lesson', 'uncanny-automator' );
+			$label = esc_attr_x( 'Lesson', 'Learndash', 'uncanny-automator' );
 		}
 
 		$args = array(
 			'post_type'      => 'sfwd-lessons',
 			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-		'orderby'            => 'title',
-		'order'              => 'ASC',
-		'post_status'        => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_lesson, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_lesson, esc_attr_x( 'Any lesson', 'Learndash', 'uncanny-automator' ) );
 		$option  = array(
 			'option_code'              => $option_code,
 			'label'                    => $label,
@@ -294,7 +284,7 @@ class Learndash_Helpers {
 			'required'                 => true,
 			'options'                  => $options,
 			'relevant_tokens'          => wp_list_pluck( $this->get_lesson_relevant_tokens( 'trigger', $option_code ), 'name' ),
-			'custom_value_description' => _x( 'Lesson ID', 'LearnDash', 'uncanny-automator' ),
+			'custom_value_description' => esc_html_x( 'Lesson ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
 		return apply_filters( 'uap_option_all_ld_lessons', $option );
@@ -388,18 +378,18 @@ class Learndash_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Topic', 'uncanny-automator' );
+			$label = esc_attr_x( 'Topic', 'Learndash', 'uncanny-automator' );
 		}
 
 		$args = array(
 			'post_type'      => 'sfwd-topic',
 			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-		'orderby'            => 'title',
-		'order'              => 'ASC',
-		'post_status'        => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr__( 'Any topic', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, true, esc_attr_x( 'Any topic', 'Learndash', 'uncanny-automator' ) );
 
 		$option = array(
 			'option_code'              => $option_code,
@@ -408,7 +398,7 @@ class Learndash_Helpers {
 			'required'                 => true,
 			'options'                  => $options,
 			'relevant_tokens'          => wp_list_pluck( $this->get_topic_relevant_tokens( 'trigger', $option_code ), 'name' ),
-			'custom_value_description' => _x( 'Topic ID', 'LearnDash', 'uncanny-automator' ),
+			'custom_value_description' => esc_html_x( 'Topic ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
 		return apply_filters( 'uap_option_all_ld_topics', $option );
@@ -505,7 +495,7 @@ class Learndash_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Group', 'uncanny-automator' );
+			$label = esc_attr_x( 'Group', 'Learndash', 'uncanny-automator' );
 		}
 
 		$args = array(
@@ -517,9 +507,9 @@ class Learndash_Helpers {
 		);
 
 		if ( $all_label ) {
-			$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any group', 'uncanny-automator' ), $all_label );
+			$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr_x( 'Any group', 'Learndash', 'uncanny-automator' ), $all_label );
 		} else {
-			$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any group', 'uncanny-automator' ) );
+			$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr_x( 'Any group', 'Learndash', 'uncanny-automator' ) );
 		}
 
 		$option = array(
@@ -530,7 +520,7 @@ class Learndash_Helpers {
 			'options'                  => $options,
 			'supports_multiple_values' => $multiple_values,
 			'relevant_tokens'          => wp_list_pluck( $this->get_group_relevant_tokens( 'trigger', $option_code ), 'name' ),
-			'custom_value_description' => _x( 'Group ID', 'LearnDash', 'uncanny-automator' ),
+			'custom_value_description' => esc_html_x( 'Group ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
 		if ( false === $relevant_tokens ) {
@@ -630,18 +620,18 @@ class Learndash_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Quiz', 'uncanny-automator' );
+			$label = esc_attr_x( 'Quiz', 'Learndash', 'uncanny-automator' );
 		}
 
 		$args = array(
 			'post_type'      => 'sfwd-quiz',
 			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-		'orderby'            => 'title',
-		'order'              => 'ASC',
-		'post_status'        => 'publish',
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any quiz', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr_x( 'Any quiz', 'Learndash', 'uncanny-automator' ) );
 
 		$option = array(
 			'option_code'              => $option_code,
@@ -650,7 +640,7 @@ class Learndash_Helpers {
 			'required'                 => true,
 			'options'                  => $options,
 			'relevant_tokens'          => wp_list_pluck( $this->get_quiz_relevant_tokens( 'trigger', $option_code ), 'name' ),
-			'custom_value_description' => _x( 'Quiz ID', 'LearnDash', 'uncanny-automator' ),
+			'custom_value_description' => esc_html_x( 'Quiz ID', 'LearnDash', 'uncanny-automator' ),
 		);
 
 		return apply_filters( 'uap_option_all_ld_quiz', $option );
@@ -906,7 +896,7 @@ class Learndash_Helpers {
 		if ( $include_any ) {
 			$fields[] = array(
 				'value' => - 1,
-				'text'  => esc_attr__( 'Any topic', 'uncanny-automator' ),
+				'text'  => esc_attr_x( 'Any topic', 'Learndash', 'uncanny-automator' ),
 			);
 		}
 
@@ -1056,7 +1046,7 @@ class Learndash_Helpers {
 	 */
 	public function submitted_quiz_pased( $data ) {
 		if ( empty( $data ) || ! is_array( $data ) ) {
-			return new \WP_Error( 'no_data', esc_html__( 'No data provided', 'uncanny-automator' ) );
+			return new \WP_Error( 'no_data', esc_html_x( 'No data provided', 'Learndash', 'uncanny-automator' ) );
 		}
 
 		$passed = ! empty( (int) $data['pass'] );
@@ -1075,7 +1065,7 @@ class Learndash_Helpers {
 				foreach ( $graded as $grade_item ) {
 					// Quiz has not been graded yet.
 					if ( isset( $grade_item['status'] ) && 'not_graded' === $grade_item['status'] ) {
-						return new \WP_Error( 'not_graded', esc_html__( 'Quiz has not been graded', 'uncanny-automator' ) );
+						return new \WP_Error( 'not_graded', esc_html_x( 'Quiz has not been graded', 'Learndash', 'uncanny-automator' ) );
 					}
 				}
 			}
@@ -1096,12 +1086,12 @@ class Learndash_Helpers {
 	public function graded_quiz_passed( $essay, $pro_quiz_id ) {
 
 		if ( ! is_a( $essay, 'WP_Post' ) || 'sfwd-essays' !== $essay->post_type ) {
-			return new \WP_Error( 'essay', esc_html__( 'Not an essay post.', 'uncanny-automator' ) );
+			return new \WP_Error( 'essay', esc_html_x( 'Not an essay post.', 'Learndash', 'uncanny-automator' ) );
 		}
 
 		// Not graded yet.
 		if ( 'graded' !== $essay->post_status ) {
-			return new \WP_Error( 'not_graded', esc_html__( 'Quiz has not been graded', 'uncanny-automator' ) );
+			return new \WP_Error( 'not_graded', esc_html_x( 'Quiz has not been graded', 'Learndash', 'uncanny-automator' ) );
 		}
 
 		// Set vars to determine if the Quiz passed.
@@ -1111,13 +1101,13 @@ class Learndash_Helpers {
 		$user_quiz_meta = get_user_meta( $essay->post_author, '_sfwd-quizzes', true );
 		$user_quiz_meta = maybe_unserialize( $user_quiz_meta );
 		if ( ! is_array( $user_quiz_meta ) ) {
-			return new \WP_Error( 'no_data', esc_html__( 'No user quiz data recorded', 'uncanny-automator' ) );
+			return new \WP_Error( 'no_data', esc_html_x( 'No user quiz data recorded', 'Learndash', 'uncanny-automator' ) );
 		}
 		// Reverse the array so we can loop from the latest quiz attempt.
 		$user_quiz_meta = array_reverse( $user_quiz_meta );
 
 		foreach ( $user_quiz_meta as $quiz ) {
-			if ( $pro_quiz_id === absint( $quiz['pro_quizid'] ) && $course_id === absint( $quiz['course'] ) ) {
+			if ( absint( $quiz['pro_quizid'] ) === absint( $pro_quiz_id ) && absint( $course_id ) === absint( $quiz['course'] ) ) {
 				$graded = isset( $quiz['graded'] ) ? $quiz['graded'] : false;
 				if ( ! empty( $graded ) && is_array( $graded ) ) {
 					// Ensure the currently graded quiz ID is in the Graded array.
@@ -1127,7 +1117,7 @@ class Learndash_Helpers {
 					}
 					// Validate all graded items have been graded.
 					if ( in_array( 'not_graded', $graded_posts, true ) ) {
-						return new \WP_Error( 'not_graded', esc_html__( 'All quizzes have not been graded', 'uncanny-automator' ) );
+						return new \WP_Error( 'not_graded', esc_html_x( 'All quizzes have not been graded', 'Learndash', 'uncanny-automator' ) );
 					}
 					// All graded items have been graded return pass or fail bool.
 					return absint( $quiz['pass'] );
@@ -1135,7 +1125,7 @@ class Learndash_Helpers {
 			}
 		}
 
-		return new \WP_Error( 'no_data', esc_html__( 'No quiz data recorded', 'uncanny-automator' ) );
+		return new \WP_Error( 'no_data', esc_html_x( 'No quiz data recorded', 'Learndash', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -1164,14 +1154,19 @@ class Learndash_Helpers {
 		);
 		// Update the `meta_value` of the `add_action` meta key for the selected posts
 		if ( ! empty( $post_ids ) ) {
-			$wpdb->query(
-				$wpdb->prepare(
-					"UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id IN (" . implode( ',', array_fill( 0, count( $post_ids ), '%d' ) ) . ') AND meta_key = %s AND meta_value = %s',
-					maybe_serialize( array( 'learndash_quiz_submitted', 'learndash_essay_quiz_data_updated' ) ),
-					...array_merge( $post_ids, array( 'add_action', 'learndash_quiz_submitted' ) )
-				)
+			$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+
+			$sql = "UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id IN ($placeholders) AND meta_key = %s AND meta_value = %s";
+
+			$params = array_merge(
+				array( maybe_serialize( array( 'learndash_quiz_submitted', 'learndash_essay_quiz_data_updated' ) ) ),
+				$post_ids,
+				array( 'add_action', 'learndash_quiz_submitted' )
 			);
+
+			$wpdb->query( $wpdb->prepare( $sql, ...$params ) );// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
+
 		// Update option flag.
 		automator_update_option( $option_key, 'yes' );
 	}

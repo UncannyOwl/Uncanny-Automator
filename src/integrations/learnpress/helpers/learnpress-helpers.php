@@ -3,7 +3,8 @@
 
 namespace Uncanny_Automator;
 
-use LP_Course_CURD;
+use LearnPress\Models\UserItems\UserItemModel;
+use LearnPress\Models\UserItems\UserLessonModel;
 use LP_Section_CURD;
 use Uncanny_Automator_Pro\Learnpress_Pro_Helpers;
 
@@ -83,18 +84,18 @@ class Learnpress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Course', 'uncanny-automator' );
+			$label = esc_html_x( 'Course', 'Learnpress', 'uncanny-automator' );
 		}
 
 		$args = array(
 			'post_type'      => 'lp_course',
-			'posts_per_page' => 999,
+			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_html_x( 'Any course', 'Learnpress', 'uncanny-automator' ) );
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -106,9 +107,9 @@ class Learnpress_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code          => esc_attr__( 'Course title', 'uncanny-automator' ),
-				$option_code . '_ID'  => esc_attr__( 'Course ID', 'uncanny-automator' ),
-				$option_code . '_URL' => esc_attr__( 'Course URL', 'uncanny-automator' ),
+				$option_code          => esc_html_x( 'Course title', 'Learnpress', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_html_x( 'Course ID', 'Learnpress', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_html_x( 'Course URL', 'Learnpress', 'uncanny-automator' ),
 			),
 		);
 
@@ -128,18 +129,18 @@ class Learnpress_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Lesson', 'uncanny-automator' );
+			$label = esc_html_x( 'Lesson', 'Learnpress', 'uncanny-automator' );
 		}
 
 		$args = array(
 			'post_type'      => 'lp_lesson',
-			'posts_per_page' => 9999,
+			'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any lesson', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_html_x( 'Any lesson', 'Learnpress', 'uncanny-automator' ) );
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -151,9 +152,9 @@ class Learnpress_Helpers {
 			'validation_type' => 'text',
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code          => esc_attr__( 'Lesson title', 'uncanny-automator' ),
-				$option_code . '_ID'  => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
-				$option_code . '_URL' => esc_attr__( 'Lesson URL', 'uncanny-automator' ),
+				$option_code          => esc_html_x( 'Lesson title', 'Learnpress', 'uncanny-automator' ),
+				$option_code . '_ID'  => esc_html_x( 'Lesson ID', 'Learnpress', 'uncanny-automator' ),
+				$option_code . '_URL' => esc_html_x( 'Lesson URL', 'Learnpress', 'uncanny-automator' ),
 			),
 		);
 
@@ -173,8 +174,8 @@ class Learnpress_Helpers {
 		$value = absint( automator_filter_input( 'value', INPUT_POST ) );
 
 		if ( $value > 0 ) {
-			$course_curd = new LP_Course_CURD();
-			$sections    = $course_curd->get_course_sections( $value );
+			global $wpdb;
+			$sections = $wpdb->get_results( $wpdb->prepare( "SELECT section_id, section_name FROM {$wpdb->prefix}learnpress_sections WHERE section_course_id=%d", $value ) );
 
 			foreach ( $sections as $section ) {
 				$fields[] = array(
@@ -218,4 +219,44 @@ class Learnpress_Helpers {
 		die();
 	}
 
+	/**
+	 * @param $user_id
+	 * @param $lesson_id
+	 * @param $course_id
+	 *
+	 * @return int
+	 * @throws \Exception
+	 */
+	public function insert_user_item_model( $user_id, $lesson_id, $course_id ) {
+		$lp_user_item_db = \LP_User_Items_DB::getInstance();
+
+		return $lp_user_item_db->insert_data(
+			array(
+				'item_type'  => LP_LESSON_CPT,
+				'ref_type'   => LP_COURSE_CPT,
+				'user_id'    => $user_id,
+				'item_id'    => $lesson_id,
+				'start_time' => gmdate( 'Y-m-d H:i:s', time() ),
+				'ref_id'     => $course_id,
+			)
+		);
+	}
+
+	/**
+	 * @param $user_id
+	 * @param $lesson_id
+	 * @param $course_id
+	 *
+	 * @return false|UserItemModel|UserLessonModel
+	 */
+	public function get_user_lesson_model( $user_id, $lesson_id, $course_id ) {
+		return UserLessonModel::find_user_item(
+			$user_id,
+			$lesson_id,
+			LP_LESSON_CPT,
+			$course_id,
+			LP_COURSE_CPT,
+			true
+		);
+	}
 }

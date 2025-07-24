@@ -34,7 +34,6 @@ class Discord_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function load() {
-
 		new Discord_Settings( $this->helpers );
 		// Send a message to a channel
 		new DISCORD_SEND_MESSAGE_TO_CHANNEL( $this->helpers );
@@ -57,6 +56,11 @@ class Discord_Integration extends \Uncanny_Automator\Integration {
 
 		// Add shortcode for individual WP User OAuth Discord -> WP User mapping.
 		new Discord_User_Mapping_Shortcode( $this->helpers );
+
+		// Load universal tokens
+		new Discord_Universal_Token();
+		// Handle migrations.
+		new Discord_Member_Encryption_Migration( 'discord_member_encryption_6.7.0', $this->helpers );
 	}
 
 	/**

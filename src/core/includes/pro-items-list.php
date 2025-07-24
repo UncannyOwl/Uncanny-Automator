@@ -1814,6 +1814,30 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'MAILSTER' => array(
+			'name'       => 'Mailster',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'A subscriber clicks a link in a Mailster email', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					'name' => esc_html_x( 'A subscriber is removed from a Mailster list', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					'name' => esc_html_x( 'A subscriber opens a Mailster email', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'    => array(
+				array(
+					'name' => esc_html_x( 'Remove a subscriber from a Mailster list', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+		),
 		'MAKE' => array(
 			'name'       => 'Make',
 			'pro_only'   => 'no',
@@ -2217,6 +2241,29 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'QUICKBOOKS' => array(
+			'name'       => 'QuickBooks Online',
+			'pro_only'   => 'no',
+			'elite_only' => 'yes',
+			'triggers'   => array(),
+			'actions'    => array(
+				array(
+					'name' => esc_html_x( 'Create an expense', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Create an invoice', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Create a payment', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Create a product', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Create or update a customer', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+		),
 		'RAFFLE_PRESS' => array(
 			'name'       => 'RafflePress',
 			'pro_only'   => 'no',
@@ -2379,6 +2426,22 @@ function automator_pro_items_list() {
 				array(
 					'name' => esc_html_x( 'A refund for {{a product}} is issued to a customer', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'anonymous',
+				),
+			),
+			'actions'    => array(),
+		),
+		'SURE_FORMS' => array(
+			'name'       => 'SureForms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'A form is submitted with a specific value in a specific field', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					'name' => esc_html_x( 'A user submits a form with a specific value in a specific field', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 			),
 			'actions'    => array(),
@@ -2776,6 +2839,10 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name' => esc_html_x( 'An order is refunded', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					'name' => esc_html_x( 'A customer makes a payment and their lifetime value is greater than, less than, or equal to a specific amount', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
 				array(

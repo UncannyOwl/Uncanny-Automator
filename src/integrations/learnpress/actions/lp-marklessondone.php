@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+use LearnPress\Models\CourseModel;
+use LearnPress\Models\LessonPostModel;
+use LearnPress\Models\UserItems\UserLessonModel;
+
 /**
  * Class LP_MARKLESSONDONE
  *
@@ -39,9 +43,9 @@ class LP_MARKLESSONDONE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnPress */
-			'sentence'           => sprintf( esc_attr__( 'Mark {{a lesson:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_html_x( 'Mark {{a lesson:%1$s}} complete for the user', 'Learnpress', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnPress */
-			'select_option_name' => esc_attr__( 'Mark {{a lesson}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' => esc_html_x( 'Mark {{a lesson}} complete for the user', 'Learnpress', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lp_mark_lesson_done' ),
@@ -58,12 +62,12 @@ class LP_MARKLESSONDONE {
 
 		$args    = array(
 			'post_type'      => 'lp_course',
-			'posts_per_page' => 999,
+			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		);
-		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_html_x( 'Any course', 'Learnpress', 'uncanny-automator' ) );
 
 		return Automator()->utilities->keep_order_of_options(
 			array(
@@ -73,9 +77,9 @@ class LP_MARKLESSONDONE {
 							array(
 								'option_code'              => 'LPCOURSE',
 								'options'                  => $options,
-								'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
+								'label'                    => esc_html_x( 'Course', 'Learnpress', 'uncanny-automator' ),
 								'required'                 => true,
-								'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
+								'custom_value_description' => esc_html_x( 'Course ID', 'Learnpress', 'uncanny-automator' ),
 								'is_ajax'                  => true,
 								'target_field'             => 'LPSECTION',
 								'endpoint'                 => 'select_section_from_course_LPMARKLESSONDONE',
@@ -86,9 +90,9 @@ class LP_MARKLESSONDONE {
 							array(
 								'option_code'              => 'LPSECTION',
 								'options'                  => array(),
-								'label'                    => esc_attr__( 'Section', 'uncanny-automator' ),
+								'label'                    => esc_html_x( 'Section', 'Learnpress', 'uncanny-automator' ),
 								'required'                 => true,
-								'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
+								'custom_value_description' => esc_html_x( 'Section ID', 'Learnpress', 'uncanny-automator' ),
 								'is_ajax'                  => true,
 								'target_field'             => $this->action_meta,
 								'endpoint'                 => 'select_lesson_from_section_LPMARKLESSONDONE',
@@ -99,9 +103,9 @@ class LP_MARKLESSONDONE {
 							array(
 								'option_code'              => $this->action_meta,
 								'options'                  => array(),
-								'label'                    => esc_attr__( 'Lesson', 'uncanny-automator' ),
+								'label'                    => esc_html_x( 'Lesson', 'Learnpress', 'uncanny-automator' ),
 								'required'                 => true,
-								'custom_value_description' => esc_attr__( 'Lesson ID', 'uncanny-automator' ),
+								'custom_value_description' => esc_html_x( 'Lesson ID', 'Learnpress', 'uncanny-automator' ),
 							)
 						),
 					),
@@ -116,31 +120,47 @@ class LP_MARKLESSONDONE {
 	 * @param string $user_id user id.
 	 * @param array $action_data action data.
 	 * @param string $recipe_id recipe id.
+	 *
+	 * @throws \Exception
 	 */
 	public function lp_mark_lesson_done( $user_id, $action_data, $recipe_id, $args ) {
-
-		if ( ! function_exists( 'learn_press_get_current_user' ) ) {
-			$error_message = 'The function learn_press_get_current_user does not exist';
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
-		}
-		$user      = learn_press_get_user( $user_id );
 		$lesson_id = $action_data['meta'][ $this->action_meta ];
 		$course_id = $action_data['meta']['LPCOURSE'];
 
-		// Mark lesson completed.
-		$result = $user->complete_lesson( $lesson_id, $course_id );
-
-		if ( ! is_wp_error( $result ) ) {
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-		} else {
-			$error_message = $result->get_error_message();
+		if ( ! CourseModel::find( $course_id, true ) ) {
+			$action_data['complete_with_errors'] = true;
+			$error_message                       = esc_html_x( 'Course is invalid!', 'Learnpress', 'uncanny-automator' );
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
 
-	}
+		if ( ! LessonPostModel::find( $lesson_id, true ) ) {
+			$action_data['complete_with_errors'] = true;
+			$error_message                       = esc_html_x( 'Lesson is invalid!', 'Learnpress', 'uncanny-automator' );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
+			return;
+		}
+
+		$user_lesson_model = Automator()->helpers->recipe->learnpress->options->get_user_lesson_model( $user_id, $lesson_id, $course_id );
+		if ( ! $user_lesson_model instanceof UserLessonModel ) {
+			$new_user_item_id = Automator()->helpers->recipe->learnpress->options->insert_user_item_model( $user_id, $lesson_id, $course_id );
+			if ( $new_user_item_id ) {
+				$user_lesson_model = Automator()->helpers->recipe->learnpress->options->get_user_lesson_model( $user_id, $lesson_id, $course_id );
+			}
+		}
+
+		// Validate that we have a valid UserLessonModel before proceeding
+		if ( ! $user_lesson_model instanceof UserLessonModel ) {
+			$action_data['complete_with_errors'] = true;
+			$error_message                       = esc_html_x( 'Unable to create or retrieve user lesson model!', 'Learnpress', 'uncanny-automator' );
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+
+			return;
+		}
+
+		$user_lesson_model->set_complete();
+		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+	}
 }

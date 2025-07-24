@@ -23,6 +23,8 @@ class Automator_Recipe_Process_User {
 	 * @param      $args
 	 * @param bool $mark_trigger_complete
 	 * @param array $trigger_args
+	 * 
+	 * @since 6.7.0 - Moved is_recipe_throttled() to Automator_Functions class.
 	 *
 	 * @return array|null
 	 */
@@ -86,7 +88,7 @@ class Automator_Recipe_Process_User {
 			}
 
 			// Skip if the recipe is being throttled.
-			if ( $this->is_recipe_throttled( absint( $recipe_id ), absint( $user_id ) ) ) {
+			if ( Automator()->is_recipe_throttled( absint( $recipe_id ), absint( $user_id ) ) ) {
 				continue;
 			}
 
@@ -205,32 +207,6 @@ class Automator_Recipe_Process_User {
 
 	/**
 	 * @param int $recipe_id
-	 *
-	 * @return bool
-	 */
-	public function is_recipe_throttled( int $recipe_id, int $user_id ) {
-
-		$data = (array) get_post_meta( $recipe_id, 'field_recipe_throttle', true );
-
-		try {
-			$throttler = new Throttler( $recipe_id, $data );
-			// If the recipe can execute, return false because the recipe is not throttled.
-			if ( $throttler->can_execute( $user_id ) ) {
-				return false;
-			}
-		} catch ( \Exception $e ) {
-			// Log the error.
-			automator_log( 'Error creating throttler: ' . $e->getMessage(), 'error' );
-			// Return false because the recipe can't be throttled due to an error.
-			return false;
-		}
-
-		// Otherwise, return true.
-		return true;
-	}
-
-	/**
-	 * @param int $recipe_id
 	 * @param int $user_id
 	 * @param bool $create_recipe
 	 * @param array $args
@@ -249,6 +225,17 @@ class Automator_Recipe_Process_User {
 	 * Once trigger is validated. I pass $maybe_simulate to $maybe_add_log_id
 	 * and insert recipe log at this point.
 	 *
+	 */
+	/**
+	 * Maybe create recipe log entry.
+	 *
+	 * @param mixed $recipe_id The ID.
+	 * @param mixed $user_id The user ID.
+	 * @param mixed $create_recipe The create recipe.
+	 * @param mixed $args The arguments.
+	 * @param mixed $maybe_simulate The maybe simulate.
+	 * @param mixed $maybe_add_log_id The ID.
+	 * @return mixed
 	 */
 	public function maybe_create_recipe_log_entry( $recipe_id, $user_id, $create_recipe = true, $args = array(), $maybe_simulate = false, $maybe_add_log_id = null ) {
 
@@ -342,6 +329,12 @@ class Automator_Recipe_Process_User {
 	 * @param null $maybe_add_log_id
 	 *
 	 * @return int
+	 *
+	 * @since 6.0.2 Fixed race condition in log_number assignment. Bug identified by BugBot:
+	 *              https://github.com/UncannyOwl/Automator/pull/5357#pullrequestreview-3025989372
+	 *              WHAT: Race condition allowing duplicate log_number values and potential lock leaks.
+	 *              WHY: Multiple processes could retrieve same log count and MySQL locks weren't properly released on errors.
+	 *              HOW: Added MySQL named locks with try/finally for guaranteed release, fallback to original behavior when lock fails.
 	 */
 	public function insert_recipe_log( $recipe_id, $user_id, $maybe_add_log_id = null ) {
 
@@ -357,37 +350,155 @@ class Automator_Recipe_Process_User {
 		}
 
 		if ( ! $num_times_recipe_run ) {
-			$run_number = Automator()->get->next_run_number( $recipe_id, $user_id );
 
-			$insert = array(
-				'date_time'           => '0000-00-00 00:00:00',
-				'user_id'             => $user_id,
-				'automator_recipe_id' => $recipe_id,
-				'completed'           => - 1,
-				'run_number'          => $run_number,
-			);
+			// Acquire lock to prevent race conditions.
+			$lock_name     = 'automator_recipe_log_' . $recipe_id;
+			$lock_acquired = $wpdb->get_var( $wpdb->prepare( "SELECT GET_LOCK(%s, 10)", $lock_name ) );
 
-			$format = array(
-				'%s',
-				'%d',
-				'%d',
-				'%d',
-			);
+			$run_number    = Automator()->get->next_run_number( $recipe_id, $user_id );
+			$recipe_log_id = null;
 
-			/*
-			 * Force new ID
-			 * if ( ! is_null( $maybe_add_log_id ) ) {
-				$insert['ID'] = $maybe_add_log_id;
-				$format[]     = '%d';
-			}*/
+			if ( '1' === $lock_acquired ) {
+				// Lock acquired - proceed with log_number calculation.
+				try {
+					$insert = array(
+						'date_time'           => '0000-00-00 00:00:00',
+						'user_id'             => $user_id,
+						'automator_recipe_id' => $recipe_id,
+						'completed'           => -1,
+						'log_number'          => $this->get_recipe_log_count_atomic( $recipe_id ) + 1,
+						'run_number'          => $run_number,
+					);
 
-			$wpdb->insert( $table_name, $insert, $format );
-			$recipe_log_id = (int) $wpdb->insert_id;
+					$format = array(
+						'%s',
+						'%d',
+						'%d',
+						'%d',
+						'%d', // Format for log_number.
+						'%d', // Format for run_number.
+					);
+
+					$wpdb->insert( $table_name, $insert, $format );
+					$recipe_log_id = (int) $wpdb->insert_id;
+
+				} finally {
+					// Always release lock, even if insert fails.
+					$wpdb->query( $wpdb->prepare( "SELECT RELEASE_LOCK(%s)", $lock_name ) );
+				}
+			} else {
+				// Lock failed - fallback to original behavior WITHOUT log_number field.
+				automator_log( "Automator: Failed to acquire lock for recipe log creation. Falling back to original behavior without log_number. Recipe ID: $recipe_id", 'insert_recipe_log' );
+
+				$insert = array(
+					'date_time'           => '0000-00-00 00:00:00',
+					'user_id'             => $user_id,
+					'automator_recipe_id' => $recipe_id,
+					'completed'           => -1,
+					'run_number'          => $run_number,
+				);
+
+				$format = array(
+					'%s',
+					'%d',
+					'%d',
+					'%d',
+					'%d', // Format for run_number.
+				);
+
+				$wpdb->insert( $table_name, $insert, $format );
+				$recipe_log_id = (int) $wpdb->insert_id;
+			}
 
 			return $recipe_log_id;
 		}
 
 		return null;
+	}
+
+	/**
+	 * Get recipe log count atomically (only called when lock is held).
+	 *
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return int
+	 *
+	 * @since 6.0.2 Added to support atomic log_number calculation under MySQL lock.
+	 *              Related to race condition fix: https://github.com/UncannyOwl/Automator/pull/5357#pullrequestreview-3025989372
+	 */
+	private function get_recipe_log_count_atomic( int $recipe_id ) {
+
+		global $wpdb;
+
+		// Get both max log_number and total count to ensure proper sequencing.
+		$result = $wpdb->get_row(
+			$wpdb->prepare(
+				"
+				SELECT 
+					MAX(log_number) as max_log_number,
+					COUNT(*) as total_count
+				FROM {$wpdb->prefix}uap_recipe_log 
+				WHERE automator_recipe_id = %d
+				",
+				$recipe_id
+			)
+		);
+
+		// Check if result is null to prevent fatal errors.
+		if ( null === $result ) {
+			automator_log( "Automator: Database query failed in get_recipe_log_count_atomic. Recipe ID: $recipe_id", 'get_recipe_log_count_atomic' );
+			return 0; // Fallback to 0, next will be 1.
+		}
+
+		// Use the higher value to prevent gaps and duplicates.
+		$max_log_number = ! is_null( $result->max_log_number ) ? absint( $result->max_log_number ) : 0;
+		$total_count    = absint( $result->total_count );
+
+		return max( $max_log_number, $total_count );
+	}
+
+	/**
+	 * Get recipe log count for a specific recipe ID.
+	 *
+	 * @param int $recipe_id The recipe ID.
+	 *
+	 * @return int
+	 *
+	 * @since 6.0.2 Fixed flawed COALESCE logic and added null safety. Bug identified by BugBot:
+	 *              https://github.com/UncannyOwl/Automator/pull/5357#pullrequestreview-3025989372
+	 *              WHAT: Incorrect log_number assignments causing gaps and duplicates.
+	 *              WHY: COALESCE(MAX(log_number), COUNT(*)) returned wrong values during migration scenarios.
+	 *              HOW: Replaced with max(max_log_number, total_count) logic and added null result protection.
+	 */
+	public function get_recipe_log_count( int $recipe_id ) {
+
+		global $wpdb;
+
+		// Get both max log_number and total count to ensure proper sequencing.
+		$result = $wpdb->get_row(
+			$wpdb->prepare(
+				"
+				SELECT 
+					MAX(log_number) as max_log_number,
+					COUNT(*) as total_count
+				FROM {$wpdb->prefix}uap_recipe_log 
+				WHERE automator_recipe_id = %d
+				",
+				$recipe_id
+			)
+		);
+
+		// Check if result is null to prevent fatal errors.
+		if ( null === $result ) {
+			automator_log( "Automator: Database query failed in get_recipe_log_count. Recipe ID: $recipe_id", 'get_recipe_log_count' );
+			return 0;
+		}
+
+		// Use the higher value to prevent gaps and duplicates.
+		$max_log_number = ! is_null( $result->max_log_number ) ? absint( $result->max_log_number ) : 0;
+		$total_count    = absint( $result->total_count );
+
+		return max( $max_log_number, $total_count );
 	}
 
 	/**
@@ -705,10 +816,12 @@ class Automator_Recipe_Process_User {
 			$user_num_times     = 1;
 		} else {
 
-			++$user_num_times;
-			$run_number         = $run_number + 1; //phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
+			$user_num_times++; // phpcs:ignore Universal.Operators.DisallowStandalonePostIncrementDecrement.PostIncrementFound
+
+			$run_number         = $run_number + 1; // phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 			$args['run_number'] = $run_number;
 			$args['meta_value'] = 1;
+
 		}
 
 		$this->insert_trigger_meta( $args );
@@ -831,6 +944,12 @@ class Automator_Recipe_Process_User {
 	 * @param null $save_for_option
 	 *
 	 * @return array
+	 *
+	 * @since 6.0.2 Fixed undefined variables in update_trigger_meta() call. Bug identified by BugBot:
+	 *              https://github.com/UncannyOwl/Automator/pull/5357#pullrequestreview-3025989372
+	 *              WHAT: PHP undefined variable errors for $meta_key and $meta_value.
+	 *              WHY: Variables were used without being defined in function scope.
+	 *              HOW: Replaced with correctly scoped variables $trigger_meta and $post_id.
 	 */
 	public function maybe_trigger_add_any_option_meta( $option_meta, $save_for_option = null ) {
 		if ( is_null( $save_for_option ) ) {

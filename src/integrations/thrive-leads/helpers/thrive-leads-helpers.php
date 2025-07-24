@@ -30,10 +30,20 @@ class Thrive_Leads_Helpers {
 
 		$all_forms = array();
 		$lg_ids    = $this->get_thrive_leads();
+		$processed_forms = array(); // Track processed forms to avoid duplicates
+		
 		foreach ( $lg_ids as $lg_id => $lg_parent ) {
 			$variations = tve_leads_get_form_variations( $lg_parent );
 			foreach ( $variations as $variation ) {
-				$all_forms[ $lg_parent ] = $variation['post_title'];
+				// Use form parent ID as key to avoid duplicates
+				$form_key = $lg_parent;
+				$form_title = $variation['post_title'];
+				
+				// Only add if we haven't processed this form parent ID yet
+				if ( ! isset( $processed_forms[ $form_key ] ) ) {
+					$all_forms[ $form_key ] = $form_title;
+					$processed_forms[ $form_key ] = true;
+				}
 			}
 		}
 

@@ -25,11 +25,7 @@ class WPJM_SUBMITJOB {
 	public function __construct() {
 		$this->trigger_code = 'WPJMSUBMITJOB';
 		$this->trigger_meta = 'WPJMJOBTYPE';
-		if ( is_admin() ) {
-			add_action( 'init', array( $this, 'plugins_loaded' ), 19 );
-		} else {
-			$this->define_trigger();
-		}
+		$this->define_trigger();
 	}
 
 	/**
@@ -43,9 +39,9 @@ class WPJM_SUBMITJOB {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Job Manager */
-			'sentence'            => sprintf( esc_attr__( 'A user submits a {{specific type of:%1$s}} job', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html_x( 'A user submits a {{specific type of:%1$s}} job', 'WP Job Manager', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WP Job Manager */
-			'select_option_name'  => esc_attr__( 'A user submits a {{specific type of}} job', 'uncanny-automator' ),
+			'select_option_name'  => esc_html_x( 'A user submits a {{specific type of}} job', 'WP Job Manager', 'uncanny-automator' ),
 			'action'              => 'transition_post_status',
 			'priority'            => 20,
 			'accepted_args'       => 3,
@@ -83,6 +79,10 @@ class WPJM_SUBMITJOB {
 	 */
 	public function job_manager_job_submitted( $new_status, $old_status, $post ) {
 
+		if ( $new_status === $old_status ) {
+			return;
+		}
+
 		if ( empty( $post ) ) {
 			return;
 		}
@@ -97,7 +97,7 @@ class WPJM_SUBMITJOB {
 			return;
 		}
 
-		if ( ! in_array( $post->post_status, array( 'pending', 'publish' ), true ) ) {
+		if ( ! $this->is_valid_job_status( $post->post_status ) ) {
 			return;
 		}
 
@@ -171,7 +171,7 @@ class WPJM_SUBMITJOB {
 
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( in_array( (int) $trigger['meta'][ $trigger_meta ], $entry_to_match, true ) || $trigger['meta'][ $trigger_meta ] === '-1' ) ) {
+				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( in_array( (int) $trigger['meta'][ $trigger_meta ], $entry_to_match, true ) || intval( '-1' ) === intval( $trigger['meta'][ $trigger_meta ] ) ) ) {
 					$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
 					break;
 				}
@@ -186,5 +186,21 @@ class WPJM_SUBMITJOB {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Validates if the job status is appropriate based on approval requirements.
+	 *
+	 * @param string $post_status The post status to validate.
+	 * @return bool True if the status is valid for the current approval setting.
+	 */
+	private function is_valid_job_status( $post_status ) {
+		$requires_approval = get_option( 'job_manager_submission_requires_approval', false );
+		
+		if ( $requires_approval ) {
+			return 'pending' === $post_status;
+		}
+		
+		return 'publish' === $post_status;
 	}
 }

@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use LP_Global;
 use LP_Section_CURD;
 use LP_User_Item_Course;
 
@@ -43,9 +42,9 @@ class LP_MARKSECTIONDONE {
 			'integration'        => self::$integration,
 			'code'               => $this->action_code,
 			/* translators: Action - LearnPress */
-			'sentence'           => sprintf( esc_attr__( 'Mark {{a section:%1$s}} complete for the user', 'uncanny-automator' ), $this->action_meta ),
+			'sentence'           => sprintf( esc_html_x( 'Mark {{a section:%1$s}} complete for the user', 'Learnpress', 'uncanny-automator' ), $this->action_meta ),
 			/* translators: Action - LearnPress */
-			'select_option_name' => esc_attr__( 'Mark {{a section}} complete for the user', 'uncanny-automator' ),
+			'select_option_name' => esc_html_x( 'Mark {{a section}} complete for the user', 'Learnpress', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array( $this, 'lp_mark_section_done' ),
@@ -62,12 +61,12 @@ class LP_MARKSECTIONDONE {
 
 		$args    = array(
 			'post_type'      => 'lp_course',
-			'posts_per_page' => 999,
+			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'orderby'        => 'title',
 			'order'          => 'ASC',
 			'post_status'    => 'publish',
 		);
-		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any course', 'uncanny-automator' ) );
+		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_html_x( 'Any course', 'Learnpress', 'uncanny-automator' ) );
 
 		return Automator()->utilities->keep_order_of_options(
 			array(
@@ -77,9 +76,9 @@ class LP_MARKSECTIONDONE {
 							array(
 								'option_code'              => 'LPCOURSE',
 								'options'                  => $options,
-								'label'                    => esc_attr__( 'Course', 'uncanny-automator' ),
+								'label'                    => esc_html_x( 'Course', 'Learnpress', 'uncanny-automator' ),
 								'required'                 => true,
-								'custom_value_description' => esc_attr__( 'Course ID', 'uncanny-automator' ),
+								'custom_value_description' => esc_html_x( 'Course ID', 'Learnpress', 'uncanny-automator' ),
 								'is_ajax'                  => true,
 								'target_field'             => 'LPSECTION',
 								'endpoint'                 => 'select_section_from_course_LPMARKLESSONDONE',
@@ -90,9 +89,9 @@ class LP_MARKSECTIONDONE {
 							array(
 								'option_code'              => $this->action_meta,
 								'options'                  => array(),
-								'label'                    => esc_attr__( 'Section', 'uncanny-automator' ),
+								'label'                    => esc_html_x( 'Section', 'Learnpress', 'uncanny-automator' ),
 								'required'                 => true,
-								'custom_value_description' => esc_attr__( 'Section ID', 'uncanny-automator' ),
+								'custom_value_description' => esc_html_x( 'Section ID', 'Learnpress', 'uncanny-automator' ),
 							)
 						),
 					),
@@ -110,8 +109,8 @@ class LP_MARKSECTIONDONE {
 	 */
 	public function lp_mark_section_done( $user_id, $action_data, $recipe_id, $args ) {
 
-		if ( ! function_exists( 'learn_press_get_current_user' ) ) {
-			$error_message = 'The function learn_press_get_current_user does not exist';
+		if ( ! function_exists( 'learn_press_get_user' ) ) {
+			$error_message = esc_html_x( 'The function learn_press_get_user does not exist', 'Learnpress', 'uncanny-automator' );
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
@@ -121,43 +120,42 @@ class LP_MARKSECTIONDONE {
 		$course_id  = $action_data['meta']['LPCOURSE'];
 		$section_id = $action_data['meta'][ $this->action_meta ];
 		// Get All lessons from section.
-		$course_curd = new LP_Section_CURD( $course_id );
-		$lessons     = $course_curd->get_section_items( $section_id );
+		$course_curd      = new LP_Section_CURD( $course_id );
+		$lessons          = $course_curd->get_section_items( $section_id );
+		$total_count      = count( $lessons );
+		$completed_lesson = 0;
 		// Mark lesson completed.
 		foreach ( $lessons as $lesson ) {
-			if ( $lesson['type'] === 'lp_lesson' ) {
-				$result = $user->complete_lesson( $lesson['id'], $course_id );
-			} elseif ( $lesson['type'] === 'lp_quiz' ) {
-				$quiz_id = $lesson['id'];
-				$user    = LP_Global::user();
-
-				if ( ! $user->has_item_status(
-					array(
-						'started',
-						'completed',
-					),
-					$quiz_id,
-					$course_id
-				) ) {
-					$quiz_data = $user->start_quiz( $quiz_id, $course_id, false );
-					$item      = new LP_User_Item_Course( $quiz_data );
-					$item->finish();
-				} else {
-					$quiz_data = $user->get_item_data( $quiz_id, $course_id );
-					$quiz_data->finish();
+			if ( 'lp_lesson' === $lesson['type'] ) {
+				$user_item = $user->get_user_item( $lesson['id'], $course_id );
+				if ( ! $user_item instanceof \LP_User_Item ) {
+					Automator()->helpers->recipe->learnpress->options->insert_user_item_model( $user_id, $lesson['id'], $course_id );
 				}
+				$result = $user->complete_lesson( $lesson['id'], $course_id );
+				// @todo: This is a temporary fix to handle the error message. We need to find a better way to handle this.
+				$completed_lesson = ( true === $result || ( is_wp_error( $result ) && __( 'You have already completed this lesson.', 'learnpress' ) === $result->get_error_message() ) ) ? ++$completed_lesson : $completed_lesson; // phpcs:ignore
+			} elseif ( 'lp_quiz' === $lesson['type'] ) {
+				$quiz_id = $lesson['id'];
+				if ( ! $user->has_item_status( array( 'started', 'completed' ), $quiz_id, $course_id ) ) {
+					$quiz_data = $user->start_quiz( $quiz_id, $course_id, false );
+					$result    = $user->finish_quiz( $quiz_id, $course_id );
+				} else {
+					// Quiz already completed, consider it successful
+					$result = true;
+				}
+
+				$completed_lesson = ( true === $result ) ? ++$completed_lesson : $completed_lesson;
 			}
 		}
 
-		if ( ! is_wp_error( $result ) ) {
+		if ( $completed_lesson === $total_count ) {
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 		} else {
-			$error_message = $result->get_error_message();
+			$action_data['complete_with_errors'] = true;
+			$error_message                       = esc_html_x( 'Unable to complete the section.', 'Learnpress', 'uncanny-automator' );
 			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
 			return;
 		}
-
 	}
-
 }

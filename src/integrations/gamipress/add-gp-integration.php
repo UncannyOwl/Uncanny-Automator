@@ -33,6 +33,15 @@ class Add_Gp_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return class_exists( 'GamiPress' );
+		$is_active = class_exists( 'GamiPress' );
+
+		if ( true === $is_active ) {
+			include_once __DIR__ . '/triggers/gp-deduct-user-points.php';
+			new \Uncanny_Automator\GP_DEDUCT_USER_POINTS();
+
+			return true;
+		}
+
+		return false;
 	}
 }

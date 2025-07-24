@@ -60,7 +60,6 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		$this->set_action_tokens( $action_tokens, $this->get_action_code() );
-
 	}
 
 	/**
@@ -74,24 +73,25 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 	public function options() {
 
 		$database = array(
-			'input_type'      => 'select',
-			'option_code'     => $this->get_action_meta(),
-			'label'           => _x( 'Database', 'Notion', 'uncanny-automator' ),
-			'required'        => true,
-			'options'         => array(),
-			'options_show_id' => false,
-			'token_name'      => _x( 'Database ID', 'Notion', 'uncanny-automator' ),
-			'ajax'            => array(
+			'input_type'            => 'select',
+			'option_code'           => $this->get_action_meta(),
+			'label'                 => esc_html_x( 'Database', 'Notion', 'uncanny-automator' ),
+			'required'              => true,
+			'options'               => array(),
+			'options_show_id'       => false,
+			'token_name'            => esc_html_x( 'Database ID', 'Notion', 'uncanny-automator' ),
+			'ajax'                  => array(
 				'endpoint' => 'automator_notion_list_databases',
 				'event'    => 'on_load',
 			),
+			'supports_custom_value' => false, // Impossible to get databse UUID from the UI.
 		);
 
 		$key_value_pairs = array(
 			'option_code'     => 'FIELD_COLUMN_VALUE',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => _x( 'Row', 'Notion', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Row', 'Notion', 'uncanny-automator' ),
 			'required'        => true,
 			'layout'          => 'transposed',
 			'hide_header'     => true,
@@ -108,7 +108,6 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 			$database,
 			$key_value_pairs,
 		);
-
 	}
 
 	/**
@@ -128,12 +127,13 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		// Retrieve the column value from action data.
-		$column_value = $parsed['FIELD_COLUMN_VALUE'] ?? array();
+		// Using action data instead of parsed variables to avoid issues with the repeater field.
+		$column_value = $action_data['meta']['FIELD_COLUMN_VALUE'] ?? array();
 
 		// Create the payload for the fields.
 		$field_data = $this->helper->make_fields_payload( $column_value );
 
-		// Get the database ID from the parsed variables.
+		// Get the database ID from the parsed variables. The $parsed is fine because this is not a repeater field.
 		$db_id = $parsed[ $this->get_action_meta() ] ?? '';
 
 		// Construct the request body.
@@ -156,7 +156,5 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 		$this->hydrate_tokens( $at_key_values );
 
 		return true;
-
 	}
-
 }

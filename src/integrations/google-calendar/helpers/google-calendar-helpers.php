@@ -1,7 +1,8 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+<?php
+namespace Uncanny_Automator\Integrations\Google_Calendar;
 
 use Uncanny_Automator\Api_Server;
+use Uncanny_Automator\Automator_Helpers_Recipe;
 
 /**
  * Class Google_Calendar_Helpers
@@ -46,23 +47,8 @@ class Google_Calendar_Helpers {
 	const API_ENDPOINT = 'v2/google-calendar';
 
 	/**
-	 * Set the options.
-	 *
-	 * @param Google_Calendar_Helpers $options
+	 * Constructor.
 	 */
-	public function setOptions( Google_Calendar_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		$this->options = $options;
-	}
-
-	/**
-	 * Set pro method.
-	 *
-	 * @param Google_Calendar_Helpers $pro
-	 */
-	public function setPro( \Uncanny_Automator_Pro\Google_Calendar_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		$this->pro = $pro;
-	}
-
 	public function __construct() {
 
 		// Process authentication.
@@ -71,14 +57,20 @@ class Google_Calendar_Helpers {
 		// Disconnect.
 		add_action( 'wp_ajax_automator_google_calendar_disconnect_user', array( $this, 'disconnect_user' ) );
 
-		// List calendars.
+		// List calendars - Legacy
 		add_action( 'wp_ajax_automator_google_calendar_list_calendars', array( $this, 'list_calendars' ) );
 
-		// List calendards dropdown.
+		// List calendars dropdown - Legacy
 		add_action( 'wp_ajax_automator_google_calendar_list_calendars_dropdown', array( $this, 'list_calendars_dropdown' ) );
 
-		// List events.
+		// List events - Legacy
 		add_action( 'wp_ajax_automator_google_calendar_list_events', array( $this, 'list_events' ) );
+
+		// List calendars dropdown - Modern
+		add_action( 'wp_ajax_automator_google_calendar_updated_calendars_dropdown', array( $this, 'get_updated_calendars_dropdown' ) );
+
+		// List events - Modern
+		add_action( 'wp_ajax_automator_google_calendar_updated_events_dropdown', array( $this, 'get_updated_events_dropdown' ) );
 
 		require_once __DIR__ . '/../settings/settings-google-calendar.php';
 
@@ -118,15 +110,9 @@ class Google_Calendar_Helpers {
 
 		$response = get_transient( 'automator_google_calendar_calendar_list' );
 
-		$items = array();
-
 		// Serve from cache.
 		if ( false !== $response ) {
-
-			echo wp_json_encode( $this->parse_response( $response['data'] ) );
-
-			wp_die();
-
+			wp_send_json( $this->parse_response( $response['data'] ) );
 		}
 
 		// Otherwise, request live data.
@@ -140,24 +126,23 @@ class Google_Calendar_Helpers {
 
 			set_transient( 'automator_google_calendar_calendar_list', $response, 5 * MINUTE_IN_SECONDS );
 
-			$items = $this->parse_response( $response['data'] );
+			wp_send_json( $this->parse_response( $response['data'] ) );
 
 		} catch ( \Exception $e ) {
 
-			$items = array(
+			wp_send_json(
 				array(
-					/* translators: Error message */
-					'text'  => sprintf( esc_html_x( '%1$s: %2$s Please try again later.', 'Google Calendar', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
-					'value' => '-1',
-				),
+					array(
+						/* translators: Error message */
+						'text'  => sprintf( esc_html_x( '%1$s: %2$s Please try again later.', 'Google Calendar', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
+						'value' => '-1',
+					),
+				)
 			);
 
 		}
-
-		echo wp_json_encode( $items );
-
-		wp_die();
 	}
+
 
 	/**
 	 * Method list_calendars.
@@ -602,9 +587,10 @@ class Google_Calendar_Helpers {
 				$response = $this->parse_response( $response['data'] );
 
 				foreach ( $response as $calendar ) {
-
-					$items[ $calendar['value'] ] = $calendar['text'];
-
+					$items[] = array(
+						'value' => $calendar['value'],
+						'text'  => $calendar['text'],
+					);
 				}
 			}
 
@@ -621,16 +607,15 @@ class Google_Calendar_Helpers {
 				null
 			);
 
-			set_transient( 'automator_google_calendar_calendar_list', $response, 5 * MINUTE_IN_SECONDS );
-
 			if ( is_array( $response ) && ! empty( $response ) ) {
 
 				$response = $this->parse_response( $response['data'] );
 
 				foreach ( $response as $calendar ) {
-
-					$items[ $calendar['value'] ] = $calendar['text'];
-
+					$items[] = array(
+						'value' => $calendar['value'],
+						'text'  => $calendar['text'],
+					);
 				}
 			}
 
@@ -792,5 +777,191 @@ class Google_Calendar_Helpers {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Get calendar options for dropdown in modern dropdown.
+	 *
+	 * @param bool $include_any Whether to include "Any" option.
+	 *
+	 * @return array The calendar options.
+	 */
+	public function get_calendar_dropdown_options( $include_any = true ) {
+		$options = array();
+
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => -1,
+				'text'  => esc_html_x( 'Any calendar', 'Calendar selection', 'uncanny-automator' ),
+			);
+		}
+
+		$response = get_transient( 'automator_google_calendar_calendar_list' );
+
+		if ( false !== $response ) {
+			return array_merge( $options, $this->parse_response( $response['data'] ) );
+		}
+
+		try {
+			$response = $this->api_call(
+				array(
+					'action' => 'list_calendars',
+				)
+			);
+
+			set_transient( 'automator_google_calendar_calendar_list', $response, 5 * MINUTE_IN_SECONDS );
+
+			return array_merge( $options, $this->parse_response( $response['data'] ) );
+
+		} catch ( \Exception $e ) {
+			return array(
+				array(
+					'value' => '',
+					// translators: %1$s: Error code, %2$s: Error message
+					'text'  => sprintf( esc_html_x( '%1$s: %2$s Please try again later.', 'Google Calendar', 'uncanny-automator' ), $e->getCode(), $e->getMessage() ),
+				),
+			);
+		}
+	}
+
+	/**
+	 * Get event options for dropdown.
+	 *
+	 * @param string $calendar_id The calendar ID.
+	 * @param bool   $include_any Whether to include "Any" option.
+	 *
+	 * @return array The event options.
+	 */
+	protected function get_event_dropdown_options( $calendar_id, $include_any = true ) {
+		$options = array();
+
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => -1,
+				'text'  => esc_html_x( 'Any event', 'Event selection', 'uncanny-automator' ),
+			);
+		}
+
+		if ( intval( '-1' ) === intval( $calendar_id ) || 'automator_custom_value' === $calendar_id ) {
+			return $options;
+		}
+
+		try {
+			$response = $this->api_call(
+				array(
+					'action'      => 'list_events',
+					'calendar_id' => $calendar_id,
+					'timezone'    => Automator()->get_timezone_string(),
+				)
+			);
+
+			if ( is_array( $response['data'] ) && ! empty( $response['data'] ) ) {
+				foreach ( $response['data'] as $event ) {
+					if ( ! empty( $event['summary'] ) ) {
+						$date_start = isset( $event['datetime_start'] ) ? $event['datetime_start'] : '';
+						$type       = 'datetime';
+
+						if ( empty( $date_start ) ) {
+							$date_start = isset( $event['date_start'] ) ? $event['date_start'] : '';
+							$type       = 'date';
+						}
+
+						$date        = new \DateTime( $date_start, new \DateTimeZone( Automator()->get_timezone_string() ) );
+						$date_string = $date->format( 'F j, Y' );
+
+						if ( 'datetime' === $type ) {
+							$date_string = $date->format( 'F j, Y g:i A' );
+						}
+
+						$options[] = array(
+							'text'  => sprintf( '%1$s (%2$s)', $event['summary'], $date_string ),
+							'value' => $event['id'],
+						);
+					}
+				}
+			}
+		} catch ( \Exception $e ) {
+
+			$options = array(
+				array(
+					// translators: %1$s: Error code, %2$s: Error message
+					'text'  => sprintf( esc_html_x( '%1$s: %2$s Please try again later.', 'Google Calendar', 'uncanny-automator' ), esc_html( $e->getCode() ), esc_html( $e->getMessage() ) ),
+					'value' => '',
+				),
+			);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Modern handler for calendar dropdown.
+	 *
+	 * @return void
+	 */
+	public function get_updated_calendars_dropdown() {
+		Automator()->utilities->ajax_auth_check();
+
+		$options = $this->get_calendar_dropdown_options();
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $options,
+			)
+		);
+	}
+
+
+	/**
+	 * Modern handler for dynamically loading events based on selected calendar.
+	 *
+	 * @return void
+	 */
+
+	public function get_updated_events_dropdown() {
+
+		// Check for proper AJAX request authorization and nonce verification
+		Automator()->utilities->ajax_auth_check();
+
+		$values = automator_filter_has_var( 'values', INPUT_POST )
+		? automator_filter_input_array( 'values', INPUT_POST )
+		: array();
+
+		$calendar_id = '';
+
+		if ( ! empty( $values ) ) {
+			foreach ( $values as $key => $val ) {
+				if ( false !== stripos( $key, 'calendar_id' ) ) {
+					$calendar_id = sanitize_text_field( $val );
+					break;
+				}
+			}
+		}
+
+		if ( empty( $calendar_id ) ) {
+			wp_send_json_error(
+				array(
+					'message' => esc_html_x( 'Calendar ID is required.', 'Google Calendar', 'uncanny-automator' ),
+				)
+			);
+		}
+
+		try {
+			$events = $this->get_event_dropdown_options( $calendar_id, false );
+
+			wp_send_json(
+				array(
+					'success' => true,
+					'options' => $events,
+				)
+			);
+		} catch ( \Exception $e ) {
+			wp_send_json_error(
+				array(
+					'message' => $e->getMessage(),
+				)
+			);
+		}
 	}
 }

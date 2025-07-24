@@ -1,5 +1,5 @@
 <?php
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Thrive_Apprentice;
 
 /**
  * Class Thrive_Apprentice_Helpers
@@ -767,6 +767,35 @@ class Thrive_Apprentice_Helpers {
 		}
 
 		return $options_dropdown;
+	}
+	/**
+	 * Get dropdown options products.
+	 *
+	 * @param mixed $include_any The include any.
+	 * @param mixed $include_empty The include empty.
+	 * @return mixed
+	 */
+	public function get_dropdown_options_products( $include_any = true, $include_empty = false ) {
+		$products = $this->get_products();
+		$options  = array();
+
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => -1,
+				'text'  => esc_html_x( 'Any product', 'Product selection', 'uncanny-automator' ),
+			);
+		}
+
+		if ( ! empty( $products ) ) {
+			foreach ( $products as $product_id => $product_name ) {
+				$options[] = array(
+					'value' => $product_id,
+					'text'  => $product_name,
+				);
+			}
+		}
+
+		return $options;
 	}
 
 	/**

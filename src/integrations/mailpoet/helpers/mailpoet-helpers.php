@@ -3,6 +3,8 @@
 namespace Uncanny_Automator;
 
 use Uncanny_Automator_Pro\Mailpoet_Pro_Helpers;
+use MailPoet\DI\ContainerWrapper;
+use MailPoet\Tags\TagRepository;
 
 /**
  * Class Mailpoet_Helpers
@@ -30,20 +32,19 @@ class Mailpoet_Helpers {
 	 * Uoa_Helpers constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
 	 * @param Mailpoet_Helpers $options
 	 */
-	public function setOptions( Mailpoet_Helpers $options ) {
+	public function setOptions( Mailpoet_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Mailpoet_Pro_Helpers $pro
 	 */
-	public function setPro( Mailpoet_Pro_Helpers $pro ) {
+	public function setPro( Mailpoet_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -65,16 +66,16 @@ class Mailpoet_Helpers {
 		$all_include = key_exists( 'all_include', $args ) ? $args['all_include'] : false;
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'List', 'uncanny-automator' );
+			$label = esc_attr_x( 'List', 'Mailpoet', 'uncanny-automator' );
 		}
 
 		$options = array();
-		if ( $any_option === true ) {
-			$options['-1'] = esc_attr__( 'Any list', 'uncanny-automator' );
+		if ( true === $any_option ) {
+			$options['-1'] = esc_attr_x( 'Any list', 'Mailpoet', 'uncanny-automator' );
 		}
 
-		if ( $all_include === true ) {
-			$options['all'] = esc_attr__( 'All lists', 'uncanny-automator' );
+		if ( true === $all_include ) {
+			$options['all'] = esc_attr_x( 'All lists', 'Mailpoet', 'uncanny-automator' );
 		}
 
 		$mailpoet  = \MailPoet\API\API::MP( 'v1' );
@@ -91,8 +92,8 @@ class Mailpoet_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => esc_attr__( 'List', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_attr__( 'List ID', 'uncanny-automator' ),
+				$option_code         => esc_attr_x( 'List', 'Mailpoet', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr_x( 'List ID', 'Mailpoet', 'uncanny-automator' ),
 			),
 		);
 
@@ -113,7 +114,7 @@ class Mailpoet_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Subscriber', 'uncanny-automator' );
+			$label = esc_attr_x( 'Subscriber', 'Mailpoet', 'uncanny-automator' );
 		}
 
 		$options = array();
@@ -133,8 +134,8 @@ class Mailpoet_Helpers {
 			'required'        => true,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => esc_attr__( 'Subscriber', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_attr__( 'Subscriber ID', 'uncanny-automator' ),
+				$option_code         => esc_attr_x( 'Subscriber', 'Mailpoet', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr_x( 'Subscriber ID', 'Mailpoet', 'uncanny-automator' ),
 			),
 		);
 
@@ -156,7 +157,7 @@ class Mailpoet_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr_x( 'Form', 'Mailpoet', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -186,15 +187,83 @@ class Mailpoet_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code                => esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID'        => esc_attr__( 'Form ID', 'uncanny-automator' ),
-				$option_code . '_FIRSTNAME' => esc_attr__( 'First name', 'uncanny-automator' ),
-				$option_code . '_LASTNAME'  => esc_attr__( 'Last name', 'uncanny-automator' ),
-				$option_code . '_EMAIL'     => esc_attr__( 'Email', 'uncanny-automator' ),
+				$option_code                => esc_attr_x( 'Form title', 'Mailpoet', 'uncanny-automator' ),
+				$option_code . '_ID'        => esc_attr_x( 'Form ID', 'Mailpoet', 'uncanny-automator' ),
+				$option_code . '_FIRSTNAME' => esc_attr_x( 'First name', 'Mailpoet', 'uncanny-automator' ),
+				$option_code . '_LASTNAME'  => esc_attr_x( 'Last name', 'Mailpoet', 'uncanny-automator' ),
+				$option_code . '_EMAIL'     => esc_attr_x( 'Email', 'Mailpoet', 'uncanny-automator' ),
 			),
 		);
 
 		return apply_filters( 'uap_option_list_mailpoet_forms', $option );
 	}
 
+	/**
+	 * Get all MailPoet tags.
+	 *
+	 * @param string|null $label
+	 * @param string $option_code
+	 * @param array $args
+	 *
+	 * @return array|mixed|null
+	 */
+	public function get_mailpoet_tag_options() {
+		$options = array();
+
+		try {
+			// get MailPoet TagRepository instance
+			$tag_repository = ContainerWrapper::getInstance()->get( TagRepository::class );
+
+			// get all tags
+			$tags = $tag_repository->findAll();
+
+			// build Automator options array
+			foreach ( $tags as $tag ) {
+				$options[] = array(
+					'text'  => esc_html( $tag->getName() ),
+					'value' => $tag->getId(),
+				);
+			}
+
+			// if no tags, return fallback message
+			if ( empty( $options ) ) {
+				$options[] = array(
+					'text'  => esc_html_x( 'No tags found', 'MailPoet', 'uncanny-automator' ),
+					'value' => '',
+				);
+			}
+		} catch ( \Throwable $e ) {
+			$options[] = array(
+				'text'  => esc_html_x( 'Unable to load tags', 'MailPoet', 'uncanny-automator' ),
+				'value' => '',
+			);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Check if a tag exists for a subscriber
+	 *
+	 * @param array $subscriber Subscriber data from MailPoet API
+	 * @param int $tag_id Tag ID to check
+	 * @return bool True if tag exists, false otherwise
+	 */
+	public function check_tag_exists( $subscriber, $tag_id ) {
+		if ( ! isset( $subscriber['tags'] ) || ! is_array( $subscriber['tags'] ) ) {
+			// subscriber doesn't have tags or tags are not an array
+			return false;
+		}
+
+		foreach ( $subscriber['tags'] as $tag ) {
+			$actual_tag_id = isset( $tag['tag_id'] ) ? (int) $tag['tag_id'] : (int) $tag['id'];
+			if ( $actual_tag_id === (int) $tag_id ) {
+				// tag found
+				return true;
+			}
+		}
+
+		// subscriber tag not found
+		return false;
+	}
 }

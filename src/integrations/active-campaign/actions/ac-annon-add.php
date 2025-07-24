@@ -14,10 +14,13 @@ class AC_ANNON_ADD {
 
 	protected $ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
 
+	/**
+	 * Constructor.
+	 *
+	 * @return void.
+	 */
 	public function __construct() {
-
 		$this->setup_action();
-
 	}
 
 	/**
@@ -33,22 +36,24 @@ class AC_ANNON_ADD {
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
 
-		/* translators: Action - WordPress */
-		$this->set_sentence( sprintf( esc_attr__( 'Add {{a contact:%1$s}} to ActiveCampaign', 'uncanny-automator' ), $this->get_action_meta() ) );
+		// translators: %1$s is the contact email.
+		$this->set_sentence( sprintf( esc_attr_x( 'Add {{a contact:%1$s}} to ActiveCampaign', 'ActiveCampaign', 'uncanny-automator' ), $this->get_action_meta() ) );
 
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Add {{a contact}} to ActiveCampaign', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Add {{a contact}} to ActiveCampaign', 'ActiveCampaign', 'uncanny-automator' ) );
 
 		$this->set_options_callback( array( $this, 'load_options' ) );
 
 		$this->set_background_processing( true );
 
 		$this->register_action();
-
 	}
 
+	/**
+	 * Load the options.
+	 *
+	 * @return array
+	 */
 	public function load_options() {
-
 		$options_group = array(
 			$this->get_action_meta() => $this->get_fields(),
 		);
@@ -58,7 +63,6 @@ class AC_ANNON_ADD {
 				'options_group' => $options_group,
 			)
 		);
-
 	}
 
 	/**
@@ -132,26 +136,26 @@ class AC_ANNON_ADD {
 			array(
 				'option_code' => $this->get_action_meta(),
 				/* translators: Email address */
-				'label'       => esc_attr__( 'Email address', 'uncanny-automator' ),
+				'label'       => esc_attr_x( 'Email address', 'ActiveCampaign', 'uncanny-automator' ),
 				'input_type'  => 'email',
 				'required'    => true,
 			),
 			array(
 				'option_code' => $this->prefix . '_FIRST_NAME',
 				/* translators: First name */
-				'label'       => esc_attr__( 'First name', 'uncanny-automator' ),
+				'label'       => esc_attr_x( 'First name', 'ActiveCampaign', 'uncanny-automator' ),
 				'input_type'  => 'text',
 			),
 			array(
 				'option_code' => $this->prefix . '_LAST_NAME',
 				/* translators: Last name */
-				'label'       => esc_attr__( 'Last name', 'uncanny-automator' ),
+				'label'       => esc_attr_x( 'Last name', 'ActiveCampaign', 'uncanny-automator' ),
 				'input_type'  => 'text',
 			),
 			array(
 				'option_code' => $this->prefix . '_PHONE',
-				'label'       => esc_attr__( 'Phone number', 'uncanny-automator' ),
-				'placeholder' => esc_attr__( '(+00) 987 123 4567', 'uncanny-automator' ),
+				'label'       => esc_attr_x( 'Phone number', 'ActiveCampaign', 'uncanny-automator' ),
+				'placeholder' => esc_attr_x( '(+00) 987 123 4567', 'ActiveCampaign', 'uncanny-automator' ),
 				'input_type'  => 'text',
 			),
 		);
@@ -162,13 +166,11 @@ class AC_ANNON_ADD {
 		// Add the checkbox.
 		$fields[] = array(
 			'option_code' => $this->prefix . '_UPDATE_IF_CONTACT_EXISTS',
-			'label'       => esc_attr__( 'If the contact already exists, update their info.', 'uncanny-automator' ),
+			'label'       => esc_attr_x( 'If the contact already exists, update their info.', 'ActiveCampaign', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
-			'description' => esc_html__( 'To delete a value from a field, set its value to [delete], including the square brackets.', 'uncanny-automator' ),
+			'description' => esc_html_x( 'To delete a value from a field, set its value to [delete], including the square brackets.', 'ActiveCampaign', 'uncanny-automator' ),
 		);
 
 		return $fields;
-
 	}
-
 }

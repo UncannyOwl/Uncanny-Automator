@@ -139,8 +139,20 @@ class Automator_Load {
 		// Loads all cli commands.
 		$this->load_cli_commands();
 
+		// Load AI settings.
+		$this->load_ai_settings_admin_post_hooks();
+
 		// Auto-delete user logs.
 		add_action( 'deleted_user', array( $this, 'auto_prune_user_logs_handler' ), 10, 3 );
+	}
+
+	/**
+	 * Loads the AI settings admin post hooks.
+	 *
+	 * @return void
+	 */
+	public function load_ai_settings_admin_post_hooks() {
+		Core\Lib\AI\Adapters\Integration\AI_Settings::register_wp_hooks();
 	}
 
 	/**
