@@ -428,7 +428,10 @@ abstract class Trigger {
 	}
 
 	/**
-	 * process
+	 * Processes the trigger.
+	 *
+	 * @since 6.7.0
+	 *        Used Automator()->is_recipe_throttled() to check if the recipe is throttled. Early return if true to avoid creating a recipe log entry.
 	 *
 	 * @param mixed $recipe_id
 	 * @param mixed $trigger
@@ -437,6 +440,10 @@ abstract class Trigger {
 	 * @return void
 	 */
 	protected function process( $recipe_id, $trigger, $hook_args ) {
+
+		if ( Automator()->is_recipe_throttled( absint( $recipe_id ), absint( $this->user_id ) ) ) {
+			return;
+		}
 
 		$this->recipe_log_id = $this->maybe_create_recipe_log_entry( $this->recipe_id );
 

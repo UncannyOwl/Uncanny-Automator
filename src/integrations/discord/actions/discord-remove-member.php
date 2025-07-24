@@ -141,9 +141,16 @@ class DISCORD_REMOVE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 	 */
 	private function remove_member_from_cache( $server_id, $member_id ) {
 
+		// Get the cached members.
 		$key     = 'DISCORD_MEMBERS_' . $server_id;
 		$members = automator_get_option( $key, array() );
 
+		// Decrypt the data.
+		$members = ! empty( $members )
+			? $this->helpers->decrypt_data( $members, $server_id, 'members' )
+			: array();
+
+		// Remove the member from the cached list.
 		if ( ! empty( $members ) ) {
 			$members = array_filter(
 				$members,
@@ -151,7 +158,9 @@ class DISCORD_REMOVE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 					return $member['value'] !== $member_id;
 				}
 			);
-			automator_update_option( $key, $members, false );
+			// Encrypt the data and update the option.
+			$encrypted_members = $this->helpers->encrypt_data( $members, $server_id, 'members' );
+			automator_update_option( $key, $encrypted_members, false );
 		}
 	}
 }

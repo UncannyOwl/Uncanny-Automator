@@ -97,13 +97,15 @@ class Automator_DB {
 	 * @since 3.0
 	 */
 	public static function get_schema() {
+
 		global $wpdb;
+
 		$charset_collate = $wpdb->get_charset_collate();
 		// Automator Recipe log
 		$tbl_recipe_log = $wpdb->prefix . 'uap_recipe_log';
 		// Automator Recipe log meta.
 		$tbl_recipe_log_meta = $wpdb->prefix . 'uap_recipe_log_meta';
-		// Automator trigger log
+		// Automator trigger log.
 		$tbl_trigger_log = $wpdb->prefix . 'uap_trigger_log';
 		// Automator trigger meta data log
 		$tbl_trigger_log_meta = $wpdb->prefix . 'uap_trigger_log_meta';
@@ -133,6 +135,7 @@ class Automator_DB {
 `date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 `user_id` bigint unsigned NOT NULL,
 `automator_recipe_id` bigint unsigned NOT NULL,
+`log_number` bigint unsigned,
 `completed` tinyint(1) NOT NULL,
 `run_number` mediumint unsigned NOT NULL DEFAULT 1,
 PRIMARY KEY  (`ID`),
@@ -421,30 +424,41 @@ KEY `cleanup` (`last_run`)
 	}
 
 	/**
-	 * @return string
+	 * Get the query for recipe log view.
+	 *
+	 * @since 6.2 - Added log_number.
+	 *
+	 * @return string Filtered SQL query for the recipe log view.
 	 */
 	public static function recipe_log_view_query() {
+
 		global $wpdb;
 
-		return apply_filters(
-			'automator_recipe_log_view_query',
-			"SELECT
-       r.ID AS recipe_log_id,
-       r.user_id,
-       r.date_time AS recipe_date_time,
-       r.completed AS recipe_completed,
-       r.run_number,
-       r.completed,
-       r.automator_recipe_id,
-       u.user_email,
-       u.display_name,
-       p.post_title AS recipe_title
-FROM {$wpdb->prefix}uap_recipe_log r
-    LEFT JOIN {$wpdb->users} u
-    ON u.ID = r.user_id
-    JOIN {$wpdb->posts} p
-        ON p.ID = r.automator_recipe_id"
-		);
+		// Base query to fetch recipe log data.
+		$query = "SELECT 
+					r.ID AS recipe_log_id,
+					r.user_id,
+					r.date_time AS recipe_date_time,
+					r.completed AS recipe_completed,
+					r.run_number,
+					r.log_number,
+					r.completed,
+					r.automator_recipe_id,
+					u.user_email,
+					u.display_name,
+					p.post_title AS recipe_title
+				FROM {$wpdb->prefix}uap_recipe_log r
+				LEFT JOIN {$wpdb->users} u
+					ON u.ID = r.user_id
+				JOIN {$wpdb->posts} p
+					ON p.ID = r.automator_recipe_id";
+
+		/**
+		 * Filter the recipe log view query.
+		 *
+		 * @param string $query SQL query string.
+		 */
+		return apply_filters( 'automator_recipe_log_view_query', $query );
 	}
 
 	/**
@@ -456,35 +470,35 @@ FROM {$wpdb->prefix}uap_recipe_log r
 		return apply_filters(
 			'automator_trigger_log_view_query',
 			"SELECT u.ID AS user_id, u.user_email,
-                            u.display_name,
-                            t.automator_trigger_id,
-                            t.date_time AS trigger_date,
-                            t.completed AS trigger_completed,
-                            t.automator_recipe_id,
-                            t.ID,
-                            pt.post_title AS trigger_title,
-                            tm.meta_value AS trigger_sentence,
-                            tm.run_number AS trigger_run_number,
-                            tm.run_time AS trigger_run_time,
-                            pm.meta_value AS trigger_total_times,
-                            p.post_title AS recipe_title,
-                            t.automator_recipe_log_id AS recipe_log_id,
-                            r.date_time AS recipe_date_time,
-                            r.completed AS recipe_completed,
-                            r.run_number AS recipe_run_number
-                        FROM {$wpdb->prefix}uap_trigger_log t
-                        LEFT JOIN {$wpdb->users} u
-                        ON u.ID = t.user_id
-                        LEFT JOIN {$wpdb->posts} p
-                        ON p.ID = t.automator_recipe_id
-                        LEFT JOIN {$wpdb->posts} pt
-                        ON pt.ID = t.automator_trigger_id
-                        LEFT JOIN {$wpdb->prefix}uap_trigger_log_meta tm
-						ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'sentence_human_readable'
-                        LEFT JOIN {$wpdb->prefix}uap_recipe_log r
-                        ON t.automator_recipe_log_id = r.ID
-                        LEFT JOIN {$wpdb->postmeta} pm
-                        ON pm.post_id = t.automator_trigger_id AND pm.meta_key = 'NUMTIMES'"
+				u.display_name,
+				t.automator_trigger_id,
+				t.date_time AS trigger_date,
+				t.completed AS trigger_completed,
+				t.automator_recipe_id,
+				t.ID,
+				pt.post_title AS trigger_title,
+				tm.meta_value AS trigger_sentence,
+				tm.run_number AS trigger_run_number,
+				tm.run_time AS trigger_run_time,
+				pm.meta_value AS trigger_total_times,
+				p.post_title AS recipe_title,
+				t.automator_recipe_log_id AS recipe_log_id,
+				r.date_time AS recipe_date_time,
+				r.completed AS recipe_completed,
+				r.run_number AS recipe_run_number
+			FROM {$wpdb->prefix}uap_trigger_log t
+			LEFT JOIN {$wpdb->users} u
+			ON u.ID = t.user_id
+			LEFT JOIN {$wpdb->posts} p
+			ON p.ID = t.automator_recipe_id
+			LEFT JOIN {$wpdb->posts} pt
+			ON pt.ID = t.automator_trigger_id
+			LEFT JOIN {$wpdb->prefix}uap_trigger_log_meta tm
+			ON tm.automator_trigger_log_id = t.ID AND tm.meta_key = 'sentence_human_readable'
+			LEFT JOIN {$wpdb->prefix}uap_recipe_log r
+			ON t.automator_recipe_log_id = r.ID
+			LEFT JOIN {$wpdb->postmeta} pm
+			ON pm.post_id = t.automator_trigger_id AND pm.meta_key = 'NUMTIMES'"
 		);
 	}
 
@@ -736,7 +750,7 @@ FROM {$wpdb->prefix}uap_recipe_log r
 
 		$prefixed_tb_name = $wpdb->prefix . $table_name;
 
-		return $wpdb->query( "TRUNCATE `$prefixed_tb_name`" );
+		return $wpdb->query( "TRUNCATE `$prefixed_tb_name`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
 	/**

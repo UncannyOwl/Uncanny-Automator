@@ -84,7 +84,6 @@ class Mapper {
 		);
 
 		return $option_code;
-
 	}
 
 	/**
@@ -137,7 +136,6 @@ class Mapper {
 		$this->map_fields( $type );
 
 		return $this;
-
 	}
 
 	/**
@@ -154,7 +152,6 @@ class Mapper {
 		if ( method_exists( self::class, $callback_method ) ) {
 			return $this->$callback_method();
 		}
-
 	}
 
 	/**
@@ -167,7 +164,6 @@ class Mapper {
 	public static function is_field_not_supported( $field_type ) {
 
 		return in_array( $field_type, self::$not_supported_fields, true );
-
 	}
 
 	/**
@@ -178,7 +174,7 @@ class Mapper {
 	protected function create_read_only_field() {
 		$this->create_field_property( 'input_type', 'text' );
 		$this->create_field_property( 'read_only', true );
-		$this->create_field_property( 'placeholder', esc_html__( 'Non-editable field', 'uncanny-automator' ) );
+		$this->create_field_property( 'placeholder', esc_html_x( 'Non-editable field', 'Notion', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -203,10 +199,10 @@ class Mapper {
 			);
 		}
 
+		$this->create_field_property( 'supports_custom_value', false );
 		$this->create_field_property( 'options_show_id', false );
 		$this->create_field_property( 'input_type', 'select' );
 		$this->create_field_property( 'options', $options );
-
 	}
 
 	/**
@@ -231,11 +227,11 @@ class Mapper {
 			);
 		}
 
+		$this->create_field_property( 'supports_custom_value', false );
 		$this->create_field_property( 'options_show_id', false );
 		$this->create_field_property( 'supports_multiple_values', 'select' );
 		$this->create_field_property( 'input_type', 'select' );
 		$this->create_field_property( 'options', $options );
-
 	}
 
 	/**
@@ -245,7 +241,7 @@ class Mapper {
 	 */
 	protected function create_files_field() {
 		$this->create_field_property( 'input_type', 'url' );
-		$this->create_field_property( 'description', esc_html__( 'Supports file paths that begin with http:// or https://', 'uncanny-automator' ) );
+		$this->create_field_property( 'description', esc_html_x( 'Supports file paths that begin with http:// or https://', 'Notion', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -285,7 +281,6 @@ class Mapper {
 
 		$this->create_field_property( 'input_type', 'url' );
 		$this->create_field_property( 'placeholder', 'https://' );
-
 	}
 
 	/**
@@ -304,7 +299,7 @@ class Mapper {
 
 		$this->create_field_property( 'input_type', 'select' );
 		$this->create_field_property( 'supports_multiple_values', true );
-		$this->create_field_property( 'placeholder', esc_html__( 'Click to select a person from the list', 'uncanny-automator' ) );
+		$this->create_field_property( 'placeholder', esc_html_x( 'Click to select a person from the list', 'Notion', 'uncanny-automator' ) );
 		$this->create_field_property( 'options_show_id', false );
 
 		if ( false !== $persons_cached ) {
@@ -315,7 +310,6 @@ class Mapper {
 
 		$this->create_field_property( 'options', array() );
 		$this->create_field_property( 'ajax', $ajax_config );
-
 	}
 
 	/**
@@ -329,7 +323,6 @@ class Mapper {
 
 		$this->create_field_property( 'label', $props['name'] );
 		$this->create_field_property( 'input_type', 'checkbox' );
-
 	}
 
 	/**
@@ -354,10 +347,10 @@ class Mapper {
 			);
 		}
 
+		$this->create_field_property( 'supports_custom_value', false );
 		$this->create_field_property( 'options_show_id', false );
 		$this->create_field_property( 'input_type', 'select' );
 		$this->create_field_property( 'options', $options );
-
 	}
 
 	/**
@@ -382,5 +375,4 @@ class Mapper {
 			),
 		);
 	}
-
 }

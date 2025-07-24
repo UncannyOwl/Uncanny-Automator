@@ -34,7 +34,7 @@ function automator_setup_recipe_logs( $current_tab ) {
 		/* translators: Log column. The recipe completion date */
 		'recipe_date_time' => esc_attr__( 'Completion date', 'uncanny-automator' ),
 		/* translators: Log column. Noun. The recipe iteration */
-		'run_number'       => esc_attr__( 'User run #', 'uncanny-automator' ),
+		'run_number'       => esc_attr__( 'Run #', 'uncanny-automator' ),
 		/* translators: Log column. */
 		'display_name'     => esc_attr__( 'User', 'uncanny-automator' ),
 		// Added: actions
@@ -80,7 +80,7 @@ function automator_setup_trigger_logs( $current_tab, $args = array() ) {
 		/* translators: Log column. */
 		/* (Disabled @since 4.5) 'recipe_date_time'   => esc_attr__( 'Recipe completion date', 'uncanny-automator' ),
 		/* translators: Log column. Noun. The recipe iteration */
-		'recipe_run_number' => esc_attr__( 'User run #', 'uncanny-automator' ),
+		'recipe_run_number' => esc_attr__( 'Run #', 'uncanny-automator' ),
 		/* translators: Log column. Noun. The trigger iteration */
 		/* Moved below the title 'trigger_run_number' => esc_attr__( 'Trigger run #', 'uncanny-automator' ),
 		/* translators: Log column. */
@@ -135,7 +135,7 @@ function automator_setup_action_logs( $current_tab, $args = array() ) {
 		/* translators: Log column. */
 		/* 'recipe_date_time'  => esc_attr__( 'Recipe completion date', 'uncanny-automator' ),
 		/* translators: Log column. Noun. The recipe iteration */
-		'recipe_run_number' => esc_attr__( 'User run #', 'uncanny-automator' ),
+		'recipe_run_number' => esc_attr__( 'Run #', 'uncanny-automator' ),
 		/* translators: Log column. */
 		'display_name'      => esc_attr__( 'User', 'uncanny-automator' ), // linked
 		'actions'           => '&nbsp;', // Need to pass something so column become available.

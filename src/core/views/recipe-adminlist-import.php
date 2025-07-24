@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 
-<a id="ua-recipe-import-title-button" href="#" class="upload-view-toggle page-title-action" style="opacity:0;transition:opacity 1s ease-in-out">
+<a id="ua-recipe-import-title-button" href="#" class="upload-view-toggle page-title-action" style="display:none">
 	<?php echo esc_attr_x( 'Import', 'Import Recipe', 'uncanny-automator' ); ?>
 </a>
 
@@ -27,26 +27,60 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 </div>
 <script id="ua-recipe-import">
-	document.addEventListener("DOMContentLoaded", function () {
-		// Move the button after the title
+	// Function to initialize the import form
+	function initializeImportForm() {
 		var titleButton = document.getElementById('ua-recipe-import-title-button');
 		var pageTitleAction = document.querySelector('.wrap .page-title-action');
-		pageTitleAction.parentNode.insertBefore(titleButton, pageTitleAction.nextSibling);
-
-		// Fade in the titleButton
-		setTimeout(function() {
-			titleButton.style.opacity = "1";
-		}, 100);
-
-		// Toggle body class to show/hide the form.
-		titleButton.addEventListener('click', function (e) {
-			e.preventDefault();
-			document.body.classList.toggle('show-upload-view');
-		});
-
-		// Move the form after the header hr
 		var form = document.getElementById('ua-recipe-import-form');
 		var headerEnd = document.querySelector('.wrap .wp-header-end');
-		headerEnd.parentNode.insertBefore(form, headerEnd.nextSibling);
-	});
+		
+		// Always show the button if we have it
+		if (titleButton) {
+			titleButton.style.display = "inline-block";
+			
+			// Add click handler if not already added
+			if (!titleButton.hasAttribute('data-initialized')) {
+				titleButton.addEventListener('click', function (e) {
+					e.preventDefault();
+					document.body.classList.toggle('show-upload-view');
+				});
+				titleButton.setAttribute('data-initialized', 'true');
+			}
+		}
+		
+		// Move button if target element is available
+		if (titleButton && pageTitleAction) {
+			pageTitleAction.parentNode.insertBefore(titleButton, pageTitleAction.nextSibling);
+		}
+		
+		// Move form if target element is available
+		if (form && headerEnd) {
+			headerEnd.parentNode.insertBefore(form, headerEnd.nextSibling);
+		}
+		
+		// Return true if both elements were found
+		return !!(pageTitleAction && headerEnd);
+	}
+
+	// Try to initialize immediately
+	var success = initializeImportForm();
+	
+	// If not successful, retry with increasing delays
+	if (!success) {
+		var attempts = 0;
+		var maxAttempts = 5;
+		
+		function retry() {
+			attempts++;
+			if (attempts <= maxAttempts) {
+				setTimeout(function() {
+					if (!initializeImportForm()) {
+						retry();
+					}
+				}, attempts * 5); // 5ms, 10ms, 15ms, 20ms, 25ms
+			}
+		}
+		
+		retry();
+	}
 </script>

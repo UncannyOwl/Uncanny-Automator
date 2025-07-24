@@ -3,6 +3,7 @@
 use Uncanny_Automator\Automator_Exception;
 use Uncanny_Automator\Automator_Options;
 use Uncanny_Automator\Automator_WP_Error;
+use Uncanny_Automator\DB_Tables;
 use Uncanny_Automator\Services\File\Extension_Support;
 use Uncanny_Automator\Set_Up_Automator;
 use Uncanny_Automator\Utilities;
@@ -962,19 +963,69 @@ if ( ! function_exists( 'is_iterable' ) ) {
 }
 
 /**
+ * Detects if we're running Automator's unit tests
+ * This function uses multiple specific checks to ensure we're only detecting
+ * Automator's own test environment and not conflicting with other plugins
+ * 
  * @return bool
  */
 function is_automator_running_unit_tests() {
 
-	if ( isset( $_ENV['DOING_AUTOMATOR_TEST'] ) ) {
+	// Primary check - explicit environment variable (set in CI and local)
+	if ( isset( $_ENV['DOING_AUTOMATOR_TEST'] ) || defined( 'DOING_AUTOMATOR_TEST' ) ) {
 		return true;
 	}
 
-	if ( class_exists( '\Codeception\TestCase\WPTestCase' ) ) {
-		return true;
+	// Only proceed if we can confirm we're in Automator's directory context
+	if ( ! defined( 'UA_ABSPATH' ) ) {
+		return false;
 	}
 
-	return false;
+	// Secondary check - Multiple Automator-specific indicators must be present
+	$automator_indicators = 0;
+	
+	// Check 1: Automator-specific test class exists
+	if ( class_exists( '\\AutomatorTestCase' ) ) {
+		$automator_indicators++;
+	}
+	
+	// Check 2: WpunitTester exists (less specific, but adds confidence)
+	if ( class_exists( '\\WpunitTester' ) ) {
+		$automator_indicators++;
+	}
+	
+	// Check 3: Automator's specific test configuration exists
+	$test_config = UA_ABSPATH . '/tests/wpunit.suite.yml';
+	if ( file_exists( $test_config ) ) {
+		$automator_indicators++;
+		
+		// Additional validation - ensure config is specifically for Automator
+		$config_content = file_get_contents( $test_config );
+		if ( false !== strpos( $config_content, 'uncanny-automator/uncanny-automator.php' ) ) {
+			$automator_indicators++;
+		}
+	}
+	
+	// Check 4: We're running from within Automator's directory structure
+	$current_file = __FILE__;
+	if ( false !== strpos( $current_file, 'uncanny-automator' ) ) {
+		$automator_indicators++;
+	}
+	
+	// Check 5: PHPUnit with Automator's composer.json
+	if ( defined( 'PHPUNIT_COMPOSER_INSTALL' ) ) {
+		$composer_file = UA_ABSPATH . '/composer.json';
+		if ( file_exists( $composer_file ) ) {
+			$composer_content = file_get_contents( $composer_file );
+			if ( false !== strpos( $composer_content, 'uncanny-automator' ) ) {
+				$automator_indicators++;
+			}
+		}
+	}
+	
+	// Require at least 3 indicators to be confident this is Automator's test environment
+	// This significantly reduces the chance of false positives with other plugins
+	return 3 <= $automator_indicators;
 }
 
 /**

@@ -40,7 +40,6 @@ class Utils {
 
 		// Safely convert non-string and non-special inputs to a string.
 		return strval( $input );
-
 	}
 
 	/**
@@ -146,18 +145,18 @@ class Utils {
 	/**
 	 * Determines if the given array is associative and all its elements are arrays with identical keys.
 	 *
-	 * @param array $array The array to check.
+	 * @param array $input The array to check.
 	 * @return bool True if the array is associative and all elements are arrays with identical keys, false otherwise.
 	 */
-	public static function is_associative_with_identical_keys( $array ) {
+	public static function is_associative_with_identical_keys( $input ) {
 
 		// Ensure the input is a non-empty array.
-		if ( ! is_array( $array ) || empty( $array ) ) {
+		if ( ! is_array( $input ) || empty( $input ) ) {
 			return false;
 		}
 
 		// Get the keys of the first element for comparison.
-		$first_element = reset( $array );
+		$first_element = reset( $input );
 
 		// Ensure the first element is an associative array (not indexed).
 		if ( ! is_array( $first_element ) || array_keys( $first_element ) === range( 0, count( $first_element ) - 1 ) ) {
@@ -168,7 +167,7 @@ class Utils {
 		$first_keys = array_keys( $first_element );
 
 		// Iterate through the rest of the array elements to ensure they are associative arrays with identical keys.
-		foreach ( $array as $element ) {
+		foreach ( $input as $element ) {
 			// Ensure the element is an associative array.
 			if ( ! is_array( $element ) || array_keys( $element ) === range( 0, count( $element ) - 1 ) ) {
 				return false;  // The element is not associative or has a different structure.
@@ -187,11 +186,11 @@ class Utils {
 	/**
 	 * Helper function to check if an array is associative.
 	 *
-	 * @param array $array The array to check.
+	 * @param array $input The array to check.
 	 * @return bool True if the array is associative, false if indexed.
 	 */
-	public static function is_assoc( $array ) {
-		return array_keys( $array ) !== range( 0, count( $array ) - 1 );
+	public static function is_assoc( $input ) {
+		return array_keys( $input ) !== range( 0, count( $input ) - 1 );
 	}
 
 	/**
@@ -199,15 +198,15 @@ class Utils {
 	 *
 	 * This function can be slow. So use sparingly.
 	 *
-	 * @param mixed[] $array The array to sanitize.
+	 * @param mixed[] $input The array to sanitize.
 	 *
 	 * @return array|object The sanitized array or object.
 	 */
-	public static function sanitize_array_for_json( $array ) {
+	public static function sanitize_array_for_json( $input ) {
 
 		// Recursively sanitize all values in the array.
 		array_walk_recursive(
-			$array,
+			$input,
 			function ( &$value ) {
 				if ( is_string( $value ) ) {
 					// Ensure valid UTF-8 encoding.
@@ -217,7 +216,9 @@ class Utils {
 					$value = str_replace( array( "\r", "\n" ), "\\n", $value );
 
 					// Optionally encode HTML entities to prevent issues with HTML characters in JSON.
-					$value = htmlentities( $value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8' );
+					if ( self::should_encode_html_entities() ) {
+						$value = htmlentities( $value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8' );
+					}
 
 					// Remove any control characters that might break the JSON encoding.
 					$value = preg_replace( '/[\x00-\x1F\x7F]/u', '', $value );
@@ -225,7 +226,7 @@ class Utils {
 			}
 		);
 
-		return $array;
+		return $input;
 	}
 
 	/**
@@ -257,7 +258,6 @@ class Utils {
 		}
 
 		return $paths; // Return only root-level iterable paths, excluding numeric keys.
-
 	}
 
 	/**
@@ -330,4 +330,12 @@ class Utils {
 		return $encoded_url;
 	}
 
+	/**
+	 * Determines whether to encode HTML entities in the array.
+	 *
+	 * @return bool True if HTML entities should be encoded, false otherwise.
+	 */
+	public static function should_encode_html_entities() {
+		return apply_filters( 'automator_loopable_should_encode_html_entities', true );
+	}
 }

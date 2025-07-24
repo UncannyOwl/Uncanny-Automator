@@ -2529,4 +2529,53 @@ WHERE pm.post_id
 
 		return true;
 	}
+
+	/**
+	 * Determines if a recipe is throttled.
+	 * 
+	 * @param int $recipe_id The recipe ID.
+	 * @param int $user_id   The user ID.
+	 *
+	 * @since 6.7.0 Moved from Automator_Recipe_Process_User class.
+	 * @since 6.7.0
+	 * - Added filter `automator_recipe_throttler_can_execute` to allow for custom throttling logic.
+	 * 
+	 * @return bool Returns true if the recipe is throttled, false otherwise.
+	 */
+	public function is_recipe_throttled( int $recipe_id, int $user_id ) {
+
+		$data = (array) get_post_meta( $recipe_id, 'field_recipe_throttle', true );
+
+		try {
+			$throttler = new Services\Recipe\Process\Throttler( $recipe_id, $data );
+
+			$filter_args = array(
+				'throttler' => $throttler,
+				'data'      => $data,
+				'user_id'   => $user_id,
+				'recipe_id' => $recipe_id,
+			);
+
+			// Allow people to override the throttler execution and introduce their own logic on runtime.
+			$can_execute = apply_filters( 
+				'automator_recipe_throttler_can_execute', 
+				$throttler->can_execute( $user_id ),
+				$filter_args
+			);
+
+			// If the recipe can execute, return false because the recipe is not throttled.
+			if ( $can_execute ) {
+				return false;
+			}
+
+		} catch ( \Exception $e ) {
+			// Log the error.
+			automator_log( 'Error creating throttler: ' . $e->getMessage(), 'error' );
+			// Return false because the recipe can't be throttled due to an error.
+			return false;
+		}
+
+		// Otherwise, return true.
+		return true;
+	}
 }

@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator\Integrations\Thrive_Architect;
 
-use Uncanny_Automator\Integrations\Thrive_Architect\FORM_SUBMITTED;
-
 /**
  * Class Thrive_Architect_Integration
  *
@@ -30,6 +28,7 @@ class Thrive_Architect_Integration extends \Uncanny_Automator\Integration {
 	protected function load() {
 		new FORM_SUBMITTED();
 		new USER_FORM_SUBMITTED();
+		new USER_REGISTERED();
 	}
 
 	/**
@@ -40,5 +39,4 @@ class Thrive_Architect_Integration extends \Uncanny_Automator\Integration {
 	public function plugin_active() {
 		return defined( 'TVE_IN_ARCHITECT' );
 	}
-
 }

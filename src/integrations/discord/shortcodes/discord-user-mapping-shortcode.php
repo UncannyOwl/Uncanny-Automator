@@ -257,10 +257,8 @@ class Discord_User_Mapping_Shortcode {
 		}
 
 		$discord_id = sanitize_text_field( $credentials['discord_id'] );
-		update_user_meta( $current_user->ID, $this->get_meta_key( 'id' ), $discord_id );
-
-		$discord_username = sanitize_text_field( $credentials['username'] );
-		update_user_meta( $current_user->ID, $this->get_meta_key( 'username' ), $discord_username );
+		$meta_key   = $this->helpers->get_constant( 'DISCORD_USER_MAPPING_META_KEY' );
+		update_user_meta( $current_user->ID, $meta_key, $discord_id );
 
 		// Redirect back to the current page, removing our OAuth parameters
 		wp_safe_redirect( $this->get_current_page_url( true ) );
@@ -333,17 +331,5 @@ class Discord_User_Mapping_Shortcode {
 	private function get_validated_user() {
 		$current_user = wp_get_current_user();
 		return $current_user->exists() ? $current_user : false;
-	}
-
-	/**
-	 * Get the meta key
-	 *
-	 * @param string $key - id or username
-	 *
-	 * @return string
-	 */
-	private function get_meta_key( $key = 'id' ) {
-		$meta_key = 'id' === $key ? 'DISCORD_USER_MAPPING_META_KEY' : 'DISCORD_USERNAME_META_KEY';
-		return $this->helpers->get_constant( $meta_key );
 	}
 }

@@ -10,26 +10,32 @@ namespace Uncanny_Automator;
 class Thrive_Quiz_Builder_Helpers {
 
 	/**
-	 * get_all_thrive_quizzes
+	 * get_dropdown_options_quizzes
+	 * Returns quiz options in modern format: [ [ value => ID, text => Label ], ... ]
 	 *
-	 * @param $args
+	 * @param bool $include_any Whether to include the "Any" option.
+	 * @param bool $include_all Whether to include the "All" option.
 	 *
-	 * @return array|mixed|void
+	 * @return array
 	 */
-	public function get_all_thrive_quizzes( $args = array() ) {
-		$defaults = array(
-			'option_code'           => 'TQB_QUIZ',
-			'label'                 => esc_attr__( 'Quiz', 'uncanny-automator' ),
-			'is_any'                => false,
-			'is_all'                => false,
-			'supports_custom_value' => false,
-			'relevant_tokens'       => array(),
-		);
+	public function get_dropdown_options_quizzes( $include_any = true, $include_all = false ) {
+		$options = array();
 
-		$args = wp_parse_args( $args, $defaults );
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => -1,
+				'text'  => esc_html_x( 'Any quiz', 'Thrive Quiz Builder', 'uncanny-automator' ),
+			);
+		}
+
+		if ( $include_all ) {
+			$options[] = array(
+				'value' => -1,
+				'text'  => esc_html_x( 'All quizzes', 'Thrive Quiz Builder', 'uncanny-automator' ),
+			);
+		}
 
 		$query_args = array(
-			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page' => apply_filters( 'automator_select_all_posts_limit', 999, 'post' ),
 			'orderby'        => 'title',
 			'order'          => 'DESC',
@@ -37,28 +43,15 @@ class Thrive_Quiz_Builder_Helpers {
 			'post_status'    => 'publish',
 		);
 
-		$all_quizzes = Automator()->helpers->recipe->options->wp_query( $query_args );
+		$quizzes = Automator()->helpers->recipe->options->wp_query( $query_args );
 
-		if ( true === $args['is_any'] ) {
-			$all_quizzes = array( '-1' => esc_html__( 'Any quiz', 'uncanny-automator' ) ) + $all_quizzes;
+		foreach ( $quizzes as $id => $label ) {
+			$options[] = array(
+				'value' => $id,
+				'text'  => $label,
+			);
 		}
 
-		if ( true === $args['is_all'] ) {
-			$all_quizzes = array( '-1' => esc_html__( 'All quizzes', 'uncanny-automator' ) ) + $all_quizzes;
-		}
-
-		$option = array(
-			'option_code'           => $args['option_code'],
-			'label'                 => $args['label'],
-			'input_type'            => 'select',
-			'required'              => true,
-			'options_show_id'       => false,
-			'relevant_tokens'       => $args['relevant_tokens'],
-			'options'               => $all_quizzes,
-			'supports_custom_value' => $args['supports_custom_value'],
-		);
-
-		return apply_filters( 'uap_option_get_all_thrive_quizzes', $option );
+		return $options;
 	}
-
 }

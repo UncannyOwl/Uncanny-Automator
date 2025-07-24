@@ -274,20 +274,20 @@ abstract class Token {
 	 *
 	 * @param  mixed $replaceable
 	 * @param  mixed $field_text
-	 * @param  mixed $match
+	 * @param  mixed $matched
 	 * @param  mixed $current_user
 	 * @param  mixed $args
 	 * @return string
 	 */
-	public function validate_token_parser( $replaceable, $field_text, $match, $current_user, $args ) {
+	public function validate_token_parser( $replaceable, $field_text, $matched, $current_user, $args ) {
 
 		$this->args = $args;
 
-		if ( $this->id !== $match ) {
+		if ( $this->id !== $matched ) {
 			return $replaceable;
 		}
 
-		return $this->parse( $replaceable, $field_text, $match, $args['user_id'] );
+		return $this->parse( $replaceable, $field_text, $matched, $current_user );
 	}
 
 	/**
@@ -299,7 +299,7 @@ abstract class Token {
 	 * @param  mixed $current_user
 	 * @return string
 	 */
-	public function parse( $replaceable, $field_text, $match, $current_user ) {
+	public function parse( $replaceable, $field_text, $matched, $current_user ) {
 		return $replaceable;
 	}
 

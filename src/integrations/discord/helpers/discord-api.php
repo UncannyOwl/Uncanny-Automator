@@ -128,7 +128,7 @@ class Discord_Api {
 							// Loop through error data.
 							foreach ( $error_data as $error_item ) {
 								$message .= ' ';
-								$code    = isset( $error_item['code'] ) ? $error_item['code'] : '';
+								$code     = isset( $error_item['code'] ) ? $error_item['code'] : '';
 								$message .= ! empty( $code ) ? $code . ': ' : '';
 								$message .= $error_item['message'];
 							}
@@ -140,7 +140,7 @@ class Discord_Api {
 				if ( 50013 === absint( $code ) && ! empty( $server_id ) ) {
 					$message = sprintf(
 						// translators: Missing Permissions error message %s is the link to the knowledge base article.
-						_x( "Missing permissions: It looks like your bot doesn't have the required permissions to complete this action. To resolve please follow the steps outlined in [this guide](%s) and try again.", 'Discord', 'uncanny-automator' ),
+						esc_html_x( "Missing permissions: It looks like your bot doesn't have the required permissions to complete this action. To resolve please follow the steps outlined in [this guide](%s) and try again.", 'Discord', 'uncanny-automator' ),
 						'https://automatorplugin.com/knowledge-base/troubleshooting-discord-permissions/'
 					);
 				}
@@ -245,13 +245,15 @@ class Discord_Api {
 	 * @param bool $refresh
 	 */
 	public function get_server_members( $server_id, $refresh = false ) {
-
 		if ( empty( $server_id ) ) {
 			return array();
 		}
 
 		$key     = 'DISCORD_MEMBERS_' . $server_id;
 		$members = automator_get_option( $key, array() );
+		$members = ! empty( $members )
+			? $this->helpers->decrypt_data( $members, $server_id, 'members' )
+			: array();
 
 		// If we have the members cached, return them.
 		if ( ! $refresh ) {
@@ -274,8 +276,12 @@ class Discord_Api {
 				return array();
 			}
 
-			automator_update_option( $key, $response['data']['members'], false );
-			return $response['data']['members'];
+			// Encrypt the members data.
+			$members           = $response['data']['members'];
+			$encrypted_members = $this->helpers->encrypt_data( $members, $server_id, 'members' );
+			automator_update_option( $key, $encrypted_members, false );
+
+			return $members;
 		} catch ( \Exception $e ) {
 			return array();
 		}

@@ -1,16 +1,14 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+<?php
+namespace Uncanny_Automator\Integrations\Google_Calendar;
 
-use Uncanny_Automator\Recipe\Actions;
+use Uncanny_Automator\Recipe\Action;
 
 /**
  * Class GCALENDAR_REMOVEATTENDEE
  *
  * @package Uncanny_Automator
  */
-class GCALENDAR_REMOVEATTENDEE {
-
-	use Actions;
+class GCALENDAR_REMOVEATTENDEE extends Action {
 
 	/**
 	 * The prefix for the action fields.
@@ -19,11 +17,7 @@ class GCALENDAR_REMOVEATTENDEE {
 	 */
 	const PREFIX = 'GCALENDAR_REMOVEATTENDEE';
 
-	public function __construct() {
-
-		$this->setup_action();
-
-	}
+	protected $helper;
 
 	/**
 	 * Setup Action.
@@ -31,123 +25,104 @@ class GCALENDAR_REMOVEATTENDEE {
 	 * @return void.
 	 */
 	protected function setup_action() {
-
+		$this->helper = array_shift( $this->dependencies );
 		$this->set_integration( 'GOOGLE_CALENDAR' );
-
 		$this->set_action_code( self::PREFIX . '_CODE' );
-
 		$this->set_action_meta( self::PREFIX . '_META' );
-
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/google-calendar/' ) );
-
 		$this->set_is_pro( false );
-
 		$this->set_requires_user( false );
-
 		$this->set_sentence(
 			sprintf(
-			/* translators: Action sentence */
-				esc_attr__( 'Remove {{an attendee:%1$s}} from {{an event:%2$s}} in {{a Google Calendar:%3$s}}', 'uncanny-automator' ),
+				// translators: %1$s attendee, %2$s event title, %3$s calendar name
+				esc_attr_x( 'Remove {{an attendee:%1$s}} from {{an event:%2$s}} in {{a Google Calendar:%3$s}}', 'Google Calendar', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				$this->get_formatted_code( 'event_id' ) . ':' . $this->get_action_meta(),
 				$this->get_formatted_code( 'calendar_id' ) . ':' . $this->get_action_meta()
 			)
 		);
-
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Remove {{an attendee}} from {{an event}} in {{a Google Calendar}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
+		$this->set_readable_sentence( esc_attr_x( 'Remove {{an attendee}} from {{an event}} in {{a Google Calendar}}', 'Google Calendar', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
-		$this->register_action();
-
 	}
-
-	public function load_options() {
-
-		$helper = Automator()->helpers->recipe->google_calendar->options;
-
-		$options = array(
-			'options_group' => array(
-				$this->get_action_meta() => array(
-					array(
-						'option_code'           => $this->get_formatted_code( 'calendar_id' ),
-						'label'                 => esc_attr__( 'Calendar', 'uncanny-automator' ),
-						'input_type'            => 'select',
-						'required'              => true,
-						'supports_token'        => true,
-						'supports_custom_value' => true,
-						'options'               => $helper->get_calendar_options(),
-						'is_ajax'               => true,
-						'endpoint'              => 'automator_google_calendar_list_events',
-						'fill_values_in'        => $this->get_formatted_code( 'event_id' ),
-						'options_show_id'       => false,
-					),
-					array(
-						'option_code'           => $this->get_formatted_code( 'event_id' ),
-						'label'                 => esc_attr__( 'Event', 'uncanny-automator' ),
-						'input_type'            => 'select',
-						'required'              => true,
-						'supports_token'        => true,
-						'supports_custom_value' => true,
-						'options_show_id'       => false,
-					),
-					array(
-						'option_code'           => $this->get_action_meta(),
-						'label'                 => esc_attr__( 'Attendee email', 'uncanny-automator' ),
-						'input_type'            => 'email',
-						'required'              => true,
-						'supports_custom_value' => true,
-						'supports_token'        => true,
-					),
-				),
-			),
-		);
-
-		$options = Automator()->utilities->keep_order_of_options( $options );
-
-		return $options;
-	}
-
 	/**
 	 * Get formatted code.
 	 *
-	 * @param  string $option_code The option code.
-	 *
-	 * @return string The prefix underscore option code string.
+	 * @param mixed $option_code The option code.
+	 * @return mixed
 	 */
 	protected function get_formatted_code( $option_code = '' ) {
-
 		return sprintf( '%1$s_%2$s', self::PREFIX, $option_code );
-
 	}
-
-
 	/**
-	 * Process the action.
+	 * Options.
 	 *
-	 * @param int $user_id
-	 * @param array $action_data
-	 * @param int $recipe_id
-	 * @param array $args
-	 * @param $parsed
+	 * @return mixed
+	 */
+	public function options() {
+		$calendar_option_code = $this->get_formatted_code( 'calendar_id' );
+		$event_option_code    = $this->get_formatted_code( 'event_id' );
+		$calendar_options     = $this->helper->get_calendar_dropdown_options( false );
+
+		return array(
+			array(
+				'option_code'           => $calendar_option_code,
+				'label'                 => esc_attr_x( 'Calendar', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'required'              => true,
+				'supports_token'        => true,
+				'supports_custom_value' => true,
+				'options'               => $calendar_options,
+				'is_ajax'               => true,
+				'endpoint'              => 'automator_google_calendar_updated_calendars_dropdown',
+				'fill_values_in'        => $event_option_code,
+				'options_show_id'       => false,
+			),
+			array(
+				'option_code'           => $event_option_code,
+				'label'                 => esc_attr_x( 'Event', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'required'              => true,
+				'supports_token'        => true,
+				'supports_custom_value' => true,
+				'ajax'                  => array(
+					'event'         => 'parent_fields_change',
+					'endpoint'      => 'automator_google_calendar_updated_events_dropdown',
+					'listen_fields' => array( $calendar_option_code ),
+				),
+				'options_show_id'       => false,
+			),
+			array(
+				'option_code'           => $this->get_action_meta(),
+				'label'                 => esc_attr_x( 'Attendee email', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'            => 'email',
+				'required'              => true,
+				'supports_custom_value' => true,
+				'supports_token'        => true,
+			),
+		);
+	}
+	/**
+	 * Process action.
 	 *
-	 * @return void.
+	 * @param mixed $user_id The user ID.
+	 * @param mixed $action_data The data.
+	 * @param mixed $recipe_id The ID.
+	 * @param mixed $args The arguments.
+	 * @param mixed $parsed The parsed.
+	 * @return mixed
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$calendar_id    = sanitize_text_field( $parsed[ $this->get_formatted_code( 'calendar_id' ) ] ?? '' );
+		$event_id       = sanitize_text_field( $parsed[ $this->get_formatted_code( 'event_id' ) ] ?? '' );
+		$attendee_email = sanitize_text_field( $parsed[ $this->get_action_meta() ] ?? '' );
 
-		$calendar_id    = isset( $parsed[ $this->get_formatted_code( 'calendar_id' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'calendar_id' ) ] ) : null;
-		$event_id       = isset( $parsed[ $this->get_formatted_code( 'event_id' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'event_id' ) ] ) : null;
-		$attendee_email = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : null;
-
-		$helper = Automator()->helpers->recipe->google_calendar->options;
+		$helper       = $this->helper;
+		$client       = $helper->get_client();
+		$access_token = is_array( $client ) && isset( $client['access_token'] ) ? $client['access_token'] : '';
 
 		try {
-
 			$body = array(
-				'access_token'   => $helper->get_client(),
+				'access_token'   => $access_token,
 				'action'         => 'remove_attendee',
 				'calendar_id'    => $calendar_id,
 				'event_id'       => $event_id,
@@ -155,19 +130,11 @@ class GCALENDAR_REMOVEATTENDEE {
 			);
 
 			$helper->api_call( $body, $action_data );
-
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
 		} catch ( \Exception $e ) {
-
 			$action_data['complete_with_errors'] = true;
-
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
 		}
-
 		return true;
-
 	}
-
 }

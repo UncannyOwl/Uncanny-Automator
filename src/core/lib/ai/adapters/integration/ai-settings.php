@@ -92,7 +92,14 @@ final class AI_Settings implements Settings_Interface {
 	private $presentation;
 
 	/**
-	 * Flag to track if hooks are registered.
+	 * Settings instance.
+	 *
+	 * @var array
+	 */
+	private static $settings_instance = array();
+
+	/**
+	 * Hooks registered flag.
 	 *
 	 * @var bool
 	 */
@@ -115,12 +122,10 @@ final class AI_Settings implements Settings_Interface {
 	 *
 	 * @return void
 	 */
-	public function __construct( $args ) {
-
-		$this->create( $args );
-
-		// Totally valid since this is a concrete class for WordPress.
-		$this->register_wp_hooks();
+	public function __construct( $args = array() ) {
+		if ( ! empty( $args ) ) {
+			$this->create( $args );
+		}
 	}
 
 	/**
@@ -128,15 +133,17 @@ final class AI_Settings implements Settings_Interface {
 	 *
 	 * @return void
 	 */
-	private function register_wp_hooks() {
+	public static function register_wp_hooks() {
 
 		// Prevent duplicate registration.
 		if ( self::$hooks_registered ) {
 			return;
 		}
 
-		add_action( 'admin_post_' . self::ADMIN_POST_ACTION, array( $this, 'save_settings' ) );
-		add_action( 'admin_post_' . self::ADMIN_POST_ACTION_APP_DISCONNECT, array( $this, 'disconnect' ) );
+		$instance = new self();
+
+		add_action( 'admin_post_' . self::ADMIN_POST_ACTION, array( $instance, 'save_settings' ) );
+		add_action( 'admin_post_' . self::ADMIN_POST_ACTION_APP_DISCONNECT, array( $instance, 'disconnect' ) );
 
 		self::$hooks_registered = true;
 	}
@@ -179,7 +186,7 @@ final class AI_Settings implements Settings_Interface {
 				automator_flash_message(
 					$provider,
 					/* translators: %s - Field label */
-					sprintf( esc_html_x( '%s is required.', 'AI', 'uncanny-automator' ), $option['label'] ),
+					sprintf( esc_html_x( '%s is required.', 'AI', 'uncanny-automator' ), esc_html( $option['label'] ) ),
 					'error'
 				);
 
@@ -262,7 +269,7 @@ final class AI_Settings implements Settings_Interface {
 
 		// Flash a success message.
 		automator_flash_message(
-			$this->settings_id,
+			$provider,
 			esc_html_x( 'Disconnected successfully.', 'AI', 'uncanny-automator' ),
 			'success'
 		);
@@ -299,6 +306,16 @@ final class AI_Settings implements Settings_Interface {
 
 		$id = $args['id'] ?? '';
 
+		// Do not set any properties if the id is empty. This is a valid use case. Constructor accepts an empty array.
+		if ( empty( $id ) ) {
+			return $this;
+		}
+
+		// If the settings page already exists, return the instance.
+		if ( $this->settings_exists( $id ) ) {
+			return $this;
+		}
+
 		$option_key = 'automator_' . $id . '_api_key';
 		$success    = ! empty( automator_get_option( $option_key, '' ) ) ? 'success' : ''; // The 'success' is a valid uo-tab component status.
 
@@ -307,6 +324,8 @@ final class AI_Settings implements Settings_Interface {
 		$this->settings_name     = $args['name'] ?? '(empty value)';
 		$this->settings_options  = $args['options'] ?? array();
 		$this->connection_status = $success;
+
+		$this->add_settings( $id );
 
 		return $this;
 	}
@@ -394,5 +413,42 @@ final class AI_Settings implements Settings_Interface {
 		ob_start();
 		include $file;
 		return ob_get_clean();
+	}
+
+	/**
+	 * Check if the settings page exists.
+	 *
+	 * @param string $id The settings page ID.
+	 *
+	 * @return bool True if the settings id already exists, false otherwise.
+	 */
+	private function settings_exists( $id ) {
+		return self::$settings_instance[ $id ] ?? false;
+	}
+
+	/**
+	 * Add settings to the instance.
+	 *
+	 * @param string $id The settings page ID.
+	 *
+	 * @return void
+	 */
+	private function add_settings( $id ) {
+		self::$settings_instance[ $id ] = $id;
+	}
+
+	/**
+	 * Get settings from the instance.
+	 *
+	 * @param string $id The settings page ID.
+	 *
+	 * @return string|null The settings page ID, or null if it does not exist.
+	 */
+	private function get_settings( $id ) {
+		if ( ! $this->settings_exists( $id ) ) {
+			return null;
+		}
+
+		return self::$settings_instance[ $id ];
 	}
 }

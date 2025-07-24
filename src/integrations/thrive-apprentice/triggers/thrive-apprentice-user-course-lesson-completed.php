@@ -1,5 +1,5 @@
 <?php
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Thrive_Apprentice;
 
 use Uncanny_Automator\Recipe\Trigger;
 

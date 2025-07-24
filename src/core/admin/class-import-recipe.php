@@ -75,7 +75,7 @@ class Import_Recipe {
 
 		// Add upload handler and form to the recipe list page.
 		add_action( 'admin_init', array( $this, 'handle_upload' ) );
-		add_action( 'admin_footer', array( $this, 'render_import_form' ) );
+		add_action( 'in_admin_header', array( $this, 'render_import_form' ) );
 
 		// Notices.
 		add_action( 'automator_show_internal_admin_notice', array( $this, 'maybe_display_import_errors' ) );
@@ -188,6 +188,13 @@ class Import_Recipe {
 			return;
 		}
 
+		// Check if the import was successful
+		if ( empty( $new_recipe_id ) || ! is_numeric( $new_recipe_id ) ) {
+			$this->set_import_error( _x( 'Unable to create imported recipe.', 'Import Recipe', 'uncanny-automator' ) );
+
+			return;
+		}
+
 		do_action( 'automator_recipe_imported', $new_recipe_id );
 
 		// Success - redirect to newly imported recipe.
@@ -214,6 +221,12 @@ class Import_Recipe {
 
 			if ( is_wp_error( $new_recipe_id ) ) {
 				$this->set_import_error( $new_recipe_id->get_error_message() );
+				return;
+			}
+
+			// Check if the import was successful
+			if ( empty( $new_recipe_id ) || ! is_numeric( $new_recipe_id ) ) {
+				$this->set_import_error( _x( 'Unable to create imported recipe.', 'Import Recipe', 'uncanny-automator' ) );
 				return;
 			}
 
@@ -262,7 +275,7 @@ class Import_Recipe {
 	 *
 	 * @param object $json - The JSON object to import.
 	 *
-	 * @return void
+	 * @return int|\WP_Error - The new recipe ID on success, WP_Error on failure.
 	 */
 	public function import_recipe_json( $json ) {
 

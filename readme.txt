@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
-Tested up to: 6.8.1
+Tested up to: 6.8.2
 Requires PHP: 7.3
-Stable tag: 6.6.0.1
+Stable tag: 6.7.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -209,6 +209,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [SureForms](https://automatorplugin.com/integration/sureforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureMembers](https://automatorplugin.com/integration/suremembers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Apprentice](https://automatorplugin.com/integration/thrive-apprentice/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -391,90 +392,66 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.6.0.1 [2025-06-19] =
+= 6.7.0 [2025-07-24] =
 
-**Fixed:**
+**New Plugin Integration:**
 
-* MailChimp - Action tokens without labels where trying to show up - We've fixed that. #5861  
-* OpenAI - Use a prompt to generate text with the GPT model - The AI got too hot to handle when the temperature wasn't a number. We've cooled it down with proper checks. #5859  
-* Studiocart - A user purchases a product - Some customers were getting ghosted after checkout. Both logged-in and anonymous buyers now get the attention they deserve. #5869  
-
-**Under the hood:**
-
-* Dynamic field visibility - We taught the repeater field how to play hide and seek properly—visibility toggles are now working like a charm. #5845  
-* Recipe UI & admin banner - We told JavaScript to stop trying to add event listeners to thin air. Nulls are off-limits now. #5851  
-* Mailster - Future-proofing engaged! The helper got a shiny upgrade to prep for Pro-level wizardry. #5870  
-
-= 6.6.0 [2025-06-05] =
-
-**New App Integrations:**
-
-* [Anthropic](https://automatorplugin.com/integration/anthropic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5818  
-* [Cohere](https://automatorplugin.com/integration/cohere/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5819  
-* [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5821  
-* [Google Gemini](https://automatorplugin.com/integration/gemini/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5823  
-* [Mistral AI](https://automatorplugin.com/integration/mistral/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5827  
-* [Perplexity](https://automatorplugin.com/integration/perplexity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5829  
-* [xAI](https://automatorplugin.com/integration/xai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5825  
-
-**New Plugin Integrations:**
-
-* [FluentCommunity](https://automatorplugin.com/integration/fluentcommunity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5668  
-* [Mailster](https://automatorplugin.com/integration/mailster/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5405  
+* [SureForms](https://automatorplugin.com/integration/sureforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5774
 
 **New Triggers:**
 
-* ARMember - A user is added to a membership plan #5769  
-* Events Manager - A user publishes a new event #5366  
-* FluentCommunity - A user completes a course #5704  
-* FluentCommunity - A user completes a lesson #5714  
-* FluentCommunity - A user is enrolled in a course #5702  
-* FluentCommunity - A user joins a space #5700  
-* FluentCommunity - A user posts to a space #5709  
-* Mailster - A new subscriber is added to a Mailster list #5406  
+* GamiPress - A user loses greater than, less than, or equal to a number of a specific type of points #5894  
+* LearnDash - A user has completed X% of a course #5367  
+* SureForms - A form is submitted #5774  
+* SureForms - A user submits a form #5772  
+* Thrive Apprentice - A user receives access to a product #5878  
+* Thrive Architect - A user registers via a registration form #5893  
 
-**New Actions:**
+**New Action:**
 
-* Anthropic - Use a prompt to generate a text response with a Claude model #5817  
-* Cohere - Use a prompt to generate a text response with a Cohere model #5820  
-* DeepSeek - Use a prompt to generate a text response with a DeepSeek model #5822  
-* FluentCommunity - Add the user to a space #5707  
-* FluentCommunity - Enroll the user in a course #5705  
-* Google Gemini - Use a prompt to generate a text response with a Gemini model #5824  
-* Mailster - Add a subscriber to a Mailster list #5407  
-* Mistral AI - Use a prompt to generate a text response with a Le Chat model #5828  
-* Newsletter - Add a subscriber to a list #5030  
-* OpenAI - Use a prompt to generate an image #5797  
-* Perplexity - Use a prompt to generate a text response with a Perplexity model #5830  
-* xAI - Use a prompt to generate a text response with a Grok model #5826  
+* MailPoet - Add a tag to the subscriber #5511  
+* MailPoet - Remove a tag from the subscriber #5511  
+
+**New Token:**
+
+* Universal Token - Discord - Discord ID (Snowflake) #6002  
+
+**Addition:**
+
+* Recipe Logs - Track the total recipe run number relative to the user's run number—now you can see not just how many times a recipe ran, but how many times it ran for a specific user #3890  
 
 **Updated:**
 
-* Gravity Forms - A form is submitted - Added "Can login user?" field for the user selector, because forms should know who's knocking before letting them in #5799  
-* OpenAI - "Use a prompt to generate an image" changed to "Use a prompt to generate an image with Dall-E" #5796  
-* WPForms - Separate the Name field's smart tag into multiple tokens - Because sometimes you just want the first name without dragging the last name along #5514  
-* WordPress - A user's post receives a comment - "Trigger only if the comment passes Akismet spam filtering" toggle added—only legit comments need apply #5841  
-* WordPress - A user submits a comment on a post - "Trigger only if the comment passes Akismet spam filtering" toggle added—no more false alarms from robot poets #5841  
-* Dashboard – Got a fresh coat of digital paint. Still the same great taste, now with better looks. #5632  
+* ActiveCampaign - Support for adding tags via name when using a custom value —because "name dropping" is totally allowed here #5873  
+* Brevo - Error logs now show if an action failed due to IP whitelisting—so you're not left guessing if the gatekeeper said "no" #6006  
+* Discord - Discord usernames are now encrypted—your secrets are safe, even from your favorite Discord bot #5997  
+* JSON Trigger - WP filter `automator_loopable_should_encode_html_entities` to optionally allow HTML entities—because sometimes, <3 just wants to be seen as ❤️ #5899  
+* LearnPress - Improved compatibility with LearnPress v4.2+—they grew up so fast, but we've caught up #5544  
+* Loops & Common tokens - User tokens under "Common" will now return the details of the user that triggered the recipe instead of loop users—know thy trigger-happy users #6012  
 
 **Fixed:**
 
-* Repeater field tokens - Can now be output as a string in various actions (Email, Logging, etc.) #5765  
-* Addons - Pro basic licenses were not showing upgrade link on Addons page - That sneaky link was hiding from the spotlight—now it's front and center #5754  
-* Discord - Send a message to a channel - Discord messages were a little breathless—line breaks are now supported #5751  
-* Formidable - A form is submitted - Repeater tokens were being a bit rebellious—now they're back in line and returning correct values #5509  
-* Mailchimp - We've tamed the gremlins behind the connection issues—Mailchimp can now connect without drama #5786  
-* Tin Canny - We had a PHP tantrum on our hands—now it's cooled off and compatible with v5.0+ for Tin Canny for LearnDash #5803  
-
-**Security Fix:**
-
-* App Integrations - Added nonce and capability checks for app disconnect requests #5746  
+* ActiveCampaign - Add a contact to ActiveCampaign - No longer overwrites existing values when fields are left blank—now it politely updates without steamrolling your data #5902  
+* ActiveCampaign - Custom field dropdowns in actions no longer default to the first option—no more "surprise selections" when you're not looking #5916  
+* App Integrations - Some AI Integrations returning blank settings pages on some sites—fixed the disappearing act, now everything shows up to work #5907  
+* LearnPress - Mark a lesson complete for the user - PHP Error on some sites—gave the rogue lesson a hall pass and fixed the crash #5416  
+* Loop filters in Automator Pro - Custom values were not being saved—their memory wasn't so good; now they remember like an elephant #5864  
+* Ninja Forms - Improved handling of Repeatable Fieldset tokens—less token confusion, more repeatable joy #5930  
+* Notion - Create a database item - Action fails with 400 error when using custom select values in unsupported fields #5911  
+* Recipe throttling not working on some triggers—our recipe timers are back in sync, Gordon Ramsay would approve #5877  
+* Thrive Leads - Form dropdown listing some forms twice—now listing forms just once, because once is enough #5903  
+* WP Job Manager - A user submits a specific type of job - Trigger was also running when jobs were updated—we've stopped the trigger from being an overachiever #5974  
 
 **Under the hood:**
 
-* Frontend assets - We gave the frontend code a deep tissue massage—looser, faster, and better organized #5632  
-* Improved support for third-party App settings pages - Connecting to an Automator account now only required for native App integrations #5638  
-* uap_options - Added a new type column to store data type - Reduced stored rows by 50% #5793  
+* All Recipes - Import button now appears immediately without a fade in animation—no more dramatic entrances, just business #6027  
+* Closure - JS script converted to VanillaJS—ditched the fancy wrappers, went full vanilla #6030  
+* Codeception namespace check causing unexpected issues with a third-party plugin—cleaned up the namespace mess like a good houseguest #6029  
+* Disable public REST API endpoint for recipes—locked the front door to keep recipe secrets safe #6022  
+* Google Calendar - Migrated to the latest framework—now running smoother than a freshly scheduled meeting #5621  
+* Thrive Apprentice - Migrated to the latest framework—leveled up behind the scenes without messing with your flow #5927  
+* Thrive Quiz Builder - Migrated to newer framework and user tokens normalized—because even tokens need a bit of structure in their lives #5635  
+* Updated icons of built-in integrations—spruced up the icons so they shine like they mean it #5594  
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

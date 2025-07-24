@@ -1,17 +1,15 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+<?php
+namespace Uncanny_Automator\Integrations\Google_Calendar;
 
 use DateTime;
-use Uncanny_Automator\Recipe\Actions;
+use Uncanny_Automator\Recipe\Action;
 
 /**
  * Class GCALENDAR_ADDEVENT
  *
  * @package Uncanny_Automator
  */
-class GCALENDAR_ADDEVENT {
-
-	use Actions;
+class GCALENDAR_ADDEVENT extends Action {
 
 	/**
 	 * The prefix for the action fields.
@@ -20,10 +18,12 @@ class GCALENDAR_ADDEVENT {
 	 */
 	const PREFIX = 'GCALENDAR_ADDEVENT';
 
-	public function __construct() {
-
-		$this->setup_action();
-	}
+	/**
+	 * The helper.
+	 *
+	 * @var \Uncanny_Automator\Integrations\Google_Calendar\Google_Calendar_Helpers
+	 */
+	protected $helper;
 
 	/**
 	 * Setup Action.
@@ -31,6 +31,9 @@ class GCALENDAR_ADDEVENT {
 	 * @return void.
 	 */
 	protected function setup_action() {
+
+		/** @var \Uncanny_Automator\Integrations\Google_Calendar\Google_Calendar_Helpers $helper */
+		$this->helper = array_shift( $this->dependencies );
 
 		$this->set_integration( 'GOOGLE_CALENDAR' );
 
@@ -46,176 +49,16 @@ class GCALENDAR_ADDEVENT {
 
 		$this->set_sentence(
 			sprintf(
-			/* translators: Action sentence */
-				esc_attr__( 'Add {{an event:%1$s}} to {{a Google Calendar:%2$s}}', 'uncanny-automator' ),
+			/* translators: %1$s: Event title, %2$s: Calendar ID */
+				esc_attr_x( 'Add {{an event:%1$s}} to {{a Google Calendar:%2$s}}', 'Google Calendar', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				$this->get_formatted_code( 'calendar' ) . ':' . $this->get_action_meta()
 			)
 		);
 
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Add {{an event}} to {{a Google Calendar}}', 'uncanny-automator' ) );
-
-		$options_group = array(
-			$this->get_action_meta() => array(
-				// Calendar list.
-				array(
-					'option_code'           => $this->get_formatted_code( 'calendar' ),
-					/* translators: Calendar field */
-					'label'                 => esc_attr__( 'Calendar', 'uncanny-automator' ),
-					'input_type'            => 'select',
-					'is_ajax'               => true,
-					'endpoint'              => 'automator_google_calendar_list_calendars_dropdown',
-					'required'              => true,
-					'supports_custom_value' => false,
-					'required'              => true,
-					'options_show_id'       => false,
-				),
-				// Summary.
-				array(
-					'option_code'           => $this->get_action_meta(),
-					/* translators: Calendar field */
-					'label'                 => esc_attr__( 'Title', 'uncanny-automator' ),
-					'input_type'            => 'text',
-					'supports_custom_value' => true,
-					'required'              => true,
-				),
-				// Location.
-				array(
-					'option_code'           => $this->get_formatted_code( 'location' ),
-					/* translators: Calendar field */
-					'label'                 => esc_attr__( 'Location', 'uncanny-automator' ),
-					'input_type'            => 'text',
-					'supports_custom_value' => true,
-					'required'              => false,
-				),
-				// Description.
-				array(
-					'option_code'           => $this->get_formatted_code( 'description' ),
-					/* translators: Calendar field */
-					'label'                 => esc_attr__( 'Description', 'uncanny-automator' ),
-					'input_type'            => 'textarea',
-					'supports_custom_value' => true,
-					'required'              => false,
-				),
-				// Start date.
-				array(
-					'option_code'     => $this->get_formatted_code( 'start_date' ),
-					/* translators: Calendar field */
-					'label'           => esc_attr__( 'Start date', 'uncanny-automator' ),
-					'input_type'      => 'date',
-					'supports_tokens' => true,
-					'required'        => true,
-					'description'     => sprintf(
-						'%1$s <a target="_blank" title="%3$s" href="%2$s">%3$s</a>.',
-						esc_attr__( 'Start date must be in the date format set in', 'uncanny-automator' ),
-						admin_url( 'options-general.php#timezone_string' ),
-						esc_attr__( 'WordPress', 'uncanny-automator' )
-					),
-				),
-				// Start time.
-				array(
-					'option_code'     => $this->get_formatted_code( 'start_time' ),
-					/* translators: Calendar field */
-					'label'           => esc_attr__( 'Start time', 'uncanny-automator' ),
-					'input_type'      => 'time',
-					'supports_tokens' => true,
-					'required'        => false,
-					'description'     => sprintf(
-						'%1$s <a target="_blank" title="%3$s" href="%2$s">%3$s</a>. %4$s',
-						esc_attr__( 'The event time will match the timezone set in', 'uncanny-automator' ),
-						admin_url( 'options-general.php#timezone_string' ),
-						esc_attr__( 'WordPress Settings', 'uncanny-automator' ),
-						esc_attr__( 'Leave blank to create an all-day event.', 'uncanny-automator' )
-					),
-				),
-				// End date.
-				array(
-					'option_code'     => $this->get_formatted_code( 'end_date' ),
-					/* translators: Calendar field */
-					'label'           => esc_attr__( 'End date', 'uncanny-automator' ),
-					'input_type'      => 'date',
-					'supports_tokens' => true,
-					'required'        => true,
-					'description'     => sprintf(
-						'%1$s <a target="_blank" title="%3$s" href="%2$s">%3$s</a>.',
-						esc_attr__( 'End date must be in the date format set in', 'uncanny-automator' ),
-						admin_url( 'options-general.php#timezone_string' ),
-						esc_attr__( 'WordPress', 'uncanny-automator' )
-					),
-				),
-				// End time.
-				array(
-					'option_code'     => $this->get_formatted_code( 'end_time' ),
-					/* translators: Calendar field */
-					'label'           => esc_attr__( 'End time', 'uncanny-automator' ),
-					'input_type'      => 'time',
-					'supports_tokens' => true,
-					'required'        => false,
-					'description'     => sprintf(
-						'%1$s <a target="_blank" title="%3$s" href="%2$s">%3$s</a>. %4$s',
-						esc_attr__( 'The event time will match the timezone set in', 'uncanny-automator' ),
-						admin_url( 'options-general.php#timezone_string' ),
-						esc_attr__( 'WordPress Settings', 'uncanny-automator' ),
-						esc_attr__( 'Leave blank to create an all-day event.', 'uncanny-automator' )
-					),
-				),
-				// Attendees.
-				array(
-					'option_code'           => $this->get_formatted_code( 'attendees' ),
-					/* translators: Calendar field */
-					'label'                 => esc_attr__( 'Attendees', 'uncanny-automator' ),
-					'description'           => esc_attr__( 'Comma separated email addresses of the attendees', 'uncanny-automator' ),
-					'input_type'            => 'text',
-					'supports_custom_value' => true,
-					'required'              => false,
-				),
-				// Email Notifications.
-				array(
-					'option_code'   => $this->get_formatted_code( 'notification_email' ),
-					/* translators: Calendar field */
-					'label'         => esc_attr__( 'Enable email notifications in Google Calendar', 'uncanny-automator' ),
-					'input_type'    => 'checkbox',
-					'default_value' => true,
-				),
-
-				// Notification time.
-				array(
-					'option_code'   => $this->get_formatted_code( 'notification_time_email' ),
-					/* translators: Calendar field */
-					'label'         => esc_attr__( 'Minutes before event to trigger email notification', 'uncanny-automator' ),
-					'description'   => esc_attr__( 'If no value is entered, the notification will fire 15 minutes before the event.', 'uncanny-automator' ),
-					'placeholder'   => esc_attr__( '15', 'uncanny-automator' ),
-					'input_type'    => 'text',
-					'default_value' => 15,
-					'required'      => false,
-				),
-				// Popup Notifications.
-				array(
-					'option_code'   => $this->get_formatted_code( 'notification_popup' ),
-					/* translators: Calendar field */
-					'label'         => esc_attr__( 'Enable popup notifications in Google Calendar', 'uncanny-automator' ),
-					'input_type'    => 'checkbox',
-					'default_value' => true,
-				),
-				array(
-					'option_code'   => $this->get_formatted_code( 'notification_time_popup' ),
-					/* translators: Calendar field */
-					'label'         => esc_attr__( 'Minutes before event to trigger popup notification', 'uncanny-automator' ),
-					'description'   => esc_attr__( 'If no value is entered, the notification will fire 15 minutes before the event.', 'uncanny-automator' ),
-					'placeholder'   => esc_attr__( '15', 'uncanny-automator' ),
-					'input_type'    => 'text',
-					'default_value' => 15,
-					'required'      => false,
-				),
-			),
-		);
-
-		$this->set_options_group( $options_group );
+		$this->set_readable_sentence( esc_attr_x( 'Add {{an event}} to {{a Google Calendar}}', 'Google Calendar', 'uncanny-automator' ) );
 
 		$this->set_background_processing( true );
-
-		$this->register_action();
 	}
 
 	/**
@@ -230,6 +73,163 @@ class GCALENDAR_ADDEVENT {
 		return sprintf( '%1$s_%2$s', self::PREFIX, $option_code );
 	}
 
+	/**
+	 * Define the options for the action.
+	 *
+	 * @return array The options array.
+	 */
+	public function options() {
+
+		return array(
+			// Calendar list.
+			array(
+				'option_code'           => $this->get_formatted_code( 'calendar' ),
+				/* translators: Calendar field */
+				'label'                 => esc_attr_x( 'Calendar', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'is_ajax'               => true,
+				'endpoint'              => 'automator_google_calendar_list_calendars_dropdown',
+				'required'              => true,
+				'supports_custom_value' => false,
+				'options_show_id'       => false,
+			),
+			// Summary.
+			array(
+				'option_code'           => $this->get_action_meta(),
+				/* translators: Calendar field */
+				'label'                 => esc_attr_x( 'Title', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'supports_custom_value' => true,
+				'required'              => true,
+			),
+			// Location.
+			array(
+				'option_code'           => $this->get_formatted_code( 'location' ),
+				/* translators: Calendar field */
+				'label'                 => esc_attr_x( 'Location', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'supports_custom_value' => true,
+				'required'              => false,
+			),
+			// Description.
+			array(
+				'option_code'           => $this->get_formatted_code( 'description' ),
+				/* translators: Calendar field */
+				'label'                 => esc_attr_x( 'Description', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'            => 'textarea',
+				'supports_custom_value' => true,
+				'required'              => false,
+			),
+			// Start date.
+			array(
+				'option_code'     => $this->get_formatted_code( 'start_date' ),
+				'label'           => esc_attr_x( 'Start date', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'      => 'date',
+				'supports_tokens' => true,
+				'required'        => true,
+				'description'     => sprintf(
+					'%1$s <a target="_blank" title="%3$s" href="%2$s">%3$s</a>.',
+					esc_attr_x( 'Start date must be in the date format set in', 'Google Calendar', 'uncanny-automator' ),
+					admin_url( 'options-general.php#timezone_string' ),
+					esc_attr_x( 'WordPress', 'Google Calendar', 'uncanny-automator' )
+				),
+			),
+			// Start time.
+			array(
+				'option_code'     => $this->get_formatted_code( 'start_time' ),
+				/* translators: Calendar field */
+				'label'           => esc_attr_x( 'Start time', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'      => 'time',
+				'supports_tokens' => true,
+				'required'        => false,
+				'description'     => sprintf(
+					'%1$s <a target="_blank" title="%3$s" href="%2$s">%3$s</a>. %4$s',
+					esc_attr_x( 'The event time will match the timezone set in', 'Google Calendar', 'uncanny-automator' ),
+					admin_url( 'options-general.php#timezone_string' ),
+					esc_attr_x( 'WordPress Settings', 'Google Calendar', 'uncanny-automator' ),
+					esc_attr_x( 'Leave blank to create an all-day event.', 'Google Calendar', 'uncanny-automator' )
+				),
+			),
+			// End date.
+			array(
+				'option_code'     => $this->get_formatted_code( 'end_date' ),
+				/* translators: Calendar field */
+				'label'           => esc_attr_x( 'End date', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'      => 'date',
+				'supports_tokens' => true,
+				'required'        => true,
+				'description'     => sprintf(
+					'%1$s <a target="_blank" title="%3$s" href="%2$s">%3$s</a>.',
+					esc_attr_x( 'End date must be in the date format set in', 'Google Calendar', 'uncanny-automator' ),
+					admin_url( 'options-general.php#timezone_string' ),
+					esc_attr_x( 'WordPress', 'Google Calendar', 'uncanny-automator' )
+				),
+			),
+			// End time.
+			array(
+				'option_code'     => $this->get_formatted_code( 'end_time' ),
+				/* translators: Calendar field */
+				'label'           => esc_attr_x( 'End time', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'      => 'time',
+				'supports_tokens' => true,
+				'required'        => false,
+				'description'     => sprintf(
+					'%1$s <a target="_blank" title="%3$s" href="%2$s">%3$s</a>. %4$s',
+					esc_attr_x( 'The event time will match the timezone set in', 'Google Calendar', 'uncanny-automator' ),
+					admin_url( 'options-general.php#timezone_string' ),
+					esc_attr_x( 'WordPress Settings', 'Google Calendar', 'uncanny-automator' ),
+					esc_attr_x( 'Leave blank to create an all-day event.', 'Google Calendar', 'uncanny-automator' )
+				),
+			),
+			// Attendees.
+			array(
+				'option_code'           => $this->get_formatted_code( 'attendees' ),
+				/* translators: Calendar field */
+				'label'                 => esc_attr_x( 'Attendees', 'Google Calendar', 'uncanny-automator' ),
+				'description'           => esc_attr_x( 'Comma separated email addresses of the attendees', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'supports_custom_value' => true,
+				'required'              => false,
+			),
+			// Email Notifications.
+			array(
+				'option_code'   => $this->get_formatted_code( 'notification_email' ),
+				/* translators: Calendar field */
+				'label'         => esc_attr_x( 'Enable email notifications in Google Calendar', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'    => 'checkbox',
+				'default_value' => true,
+			),
+			// Notification time.
+			array(
+				'option_code'   => $this->get_formatted_code( 'notification_time_email' ),
+				/* translators: Calendar field */
+				'label'         => esc_attr_x( 'Minutes before event to trigger email notification', 'Google Calendar', 'uncanny-automator' ),
+				'description'   => esc_attr_x( 'If no value is entered, the notification will fire 15 minutes before the event.', 'Google Calendar', 'uncanny-automator' ),
+				'placeholder'   => esc_attr_x( '15', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'    => 'text',
+				'default_value' => 15,
+				'required'      => false,
+			),
+			// Popup Notifications.
+			array(
+				'option_code'   => $this->get_formatted_code( 'notification_popup' ),
+				/* translators: Calendar field */
+				'label'         => esc_attr_x( 'Enable popup notifications in Google Calendar', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'    => 'checkbox',
+				'default_value' => true,
+			),
+			array(
+				'option_code'   => $this->get_formatted_code( 'notification_time_popup' ),
+				/* translators: Calendar field */
+				'label'         => esc_attr_x( 'Minutes before event to trigger popup notification', 'Google Calendar', 'uncanny-automator' ),
+				'description'   => esc_attr_x( 'If no value is entered, the notification will fire 15 minutes before the event.', 'Google Calendar', 'uncanny-automator' ),
+				'placeholder'   => esc_attr_x( '15', 'Google Calendar', 'uncanny-automator' ),
+				'input_type'    => 'text',
+				'default_value' => 15,
+				'required'      => false,
+			),
+		);
+	}
 
 	/**
 	 * Process the action.
@@ -258,13 +258,11 @@ class GCALENDAR_ADDEVENT {
 		$notification_time_email = isset( $parsed[ $this->get_formatted_code( 'notification_time_email' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'notification_time_email' ) ] ) : 0;
 		$notification_time_popup = isset( $parsed[ $this->get_formatted_code( 'notification_time_popup' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'notification_time_popup' ) ] ) : 0;
 
-		$helper = Automator()->helpers->recipe->google_calendar->options;
-
 		try {
 
 			$body = array(
 				'action'                  => 'create_event',
-				'access_token'            => $helper->get_client(),
+				'access_token'            => $this->helper->get_client(),
 				'summary'                 => $summary,
 				'location'                => $location,
 				'calendar_id'             => $calendar_id,
@@ -284,7 +282,7 @@ class GCALENDAR_ADDEVENT {
 				'time_format'             => $this->get_time_format(),
 			);
 
-			$helper->api_call(
+			$this->helper->api_call(
 				$body,
 				$action_data
 			);
@@ -310,10 +308,10 @@ class GCALENDAR_ADDEVENT {
 		try {
 			$dt = new \DateTime( $time ); // Accept whatever date.
 		} catch ( \Exception $e ) {
+			// translators: %s: Invalid time that was provided
 			throw new \Exception(
 				sprintf(
-				/* translators: %s: Time */
-					esc_html__( 'Error: Invalid time provided (%s)', 'uncanny-automator' ),
+					esc_html_x( 'Error: Invalid time provided (%s)', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $time )
 				)
 			);
@@ -321,6 +319,7 @@ class GCALENDAR_ADDEVENT {
 
 		return $dt->format( $this->get_time_format() );
 	}
+
 	/**
 	 * Autoformats the given date base on the format from WordPress.
 	 *
@@ -331,10 +330,10 @@ class GCALENDAR_ADDEVENT {
 		try {
 			$dt = new \DateTime( $date ); // Accept whatever date.
 		} catch ( \Exception $e ) {
+			// translators: %s: Invalid date that was provided
 			throw new \Exception(
 				sprintf(
-				/* translators: %s: Date */
-					esc_html__( 'Error: Invalid date provided (%s)', 'uncanny-automator' ),
+					esc_html_x( 'Error: Invalid date provided (%s)', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $date )
 				)
 			);

@@ -8,12 +8,12 @@
  * @author  Joseph G.
  */
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Google_Calendar;
 
 /**
- * Google_ShGoogle_Calendar_Settingseet_Settings Settings
+ * Google_Calendar_Settings
  */
-class Google_Calendar_Settings extends Settings\Premium_Integration_Settings {
+class Google_Calendar_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
 
 	/**
 	 * Sets up the properties of the settings page
@@ -25,9 +25,12 @@ class Google_Calendar_Settings extends Settings\Premium_Integration_Settings {
 		$this->set_icon( 'GOOGLE_CALENDAR' );
 
 		$this->set_name( 'Google Calendar' );
-
 	}
-
+	/**
+	 * Get status.
+	 *
+	 * @return mixed
+	 */
 	public function get_status() {
 
 		$is_user_connected = false;
@@ -47,7 +50,6 @@ class Google_Calendar_Settings extends Settings\Premium_Integration_Settings {
 	public function get_helper() {
 
 		return $this->helpers;
-
 	}
 
 	/**
@@ -79,7 +81,5 @@ class Google_Calendar_Settings extends Settings\Premium_Integration_Settings {
 		$disconnect_uri = $helper->get_disconnect_url();
 
 		include_once 'view-google-calendar.php';
-
 	}
-
 }

@@ -155,7 +155,7 @@ class Logs_List_Table extends WP_List_Table {
 
 		if ( ! empty( $query ) && ! empty( $orderby ) && ! empty( $order ) ) {
 
-			$query .= ' ORDER BY ' . $orderby . ' ' . $order;
+			$query .= ' ORDER BY ' . $orderby . ' ' . $order . ', recipe_log_id DESC'; // Added recipe ID in case the recipe log has equal dates.
 
 		}
 
@@ -422,9 +422,11 @@ class Logs_List_Table extends WP_List_Table {
 				$recipe_id   = $recipe->automator_recipe_id;
 			}
 
-			// Recipe name
-			/* translators: Recipe ID */
-			$recipe_name = ! empty( $recipe->recipe_title ) ? $recipe->recipe_title : sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $recipe_id );
+			// Recipe name.
+			$recipe_name = ! empty( $recipe->recipe_title )
+				? $recipe->recipe_title
+				// translators: %1$s: Recipe ID
+				: sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $recipe_id );
 
 			if ( '#' !== $recipe_link ) {
 				//$recipe_name = '<a href="' . esc_url( $recipe_link ) . '" class="uap-log-table__recipe-name">' . esc_html( $recipe_name ) . '</a>';
@@ -470,12 +472,11 @@ class Logs_List_Table extends WP_List_Table {
 
 			$current_type = Automator()->utilities->get_recipe_type( $recipe_id );
 
-			$run_number = '&mdash;';
+			$run_number = '';
 
 			// Only show run numbers for non errors non in progress, or status with zero.
 			$status_list = array(
 				Automator_Status::NOT_COMPLETED,
-				Automator_Status::COMPLETED_WITH_ERRORS,
 			);
 
 			$recipe_status_not_in_list = ! in_array( absint( $recipe->recipe_completed ), $status_list, true );
@@ -483,26 +484,16 @@ class Logs_List_Table extends WP_List_Table {
 			if ( $recipe_status_not_in_list ) {
 
 				// Run #.
-				$run_number = 'anonymous' === $current_type ? '&mdash;' : $recipe->run_number;
+				$run_number = 'anonymous' === $current_type ? '&nbsp;' : $recipe->run_number;
 
 				// Run # when it is a anonymous recipe.
 				if ( 'anonymous' === $current_type ) {
-					$run_number = '
-						<div class="uap-logs-run-number">
-							<div class="uap-logs-run-number--user">
-								<uo-icon id="user-slash" icon-style="solid"></uo-icon>
-							</div>
-						</div>';
+					$run_number = $this->format_recipe_run_number( $recipe, $run_number, 'user-slash' );
 				}
 
 				// Run # when it is a logged-in recipe
 				if ( is_numeric( $run_number ) ) {
-					$run_number = '
-						<div class="uap-logs-run-number">
-							<div class="uap-logs-run-number--user">' .
-								esc_html( $run_number ) . '
-							</div>
-						</div>';
+					$run_number = $this->format_recipe_run_number( $recipe, $run_number, 'user' );
 				}
 			}
 
@@ -580,6 +571,50 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Formats the recipe run number.
+	 *
+	 * @param int $recipe
+	 * @param int $run_number
+	 * @param string $icon
+	 *
+	 * @return string
+	 */
+	private function format_recipe_run_number( $recipe, $run_number, $icon ) {
+
+		$log_number = $this->get_log_number( $recipe );
+
+		// @TODO: Convert to CSS class.
+		$style = 'justify-content:space-between;';
+
+		if ( '' === $log_number ) {
+			$style = 'justify-content:right;';
+		}
+
+		return sprintf(
+			'<div style="%1$s" class="uap-logs-run-number">
+				<div class="uap-logs-run-number--log-number">%2$s</div>
+				<div class="uap-logs-run-number--user">
+					<uo-icon id="%3$s" icon-style="solid" style="margin-top:2.5px;opacity: 0.75;"></uo-icon>
+					%4$s
+				</div>
+			</div>',
+			esc_attr( $style ),
+			esc_html( $log_number ),
+			esc_attr( $icon ),
+			esc_html( $run_number )
+		);
+	}
+
+	/**
+	 * @param object $recipe
+	 *
+	 * @return string
+	 */
+	private function get_log_number( $recipe ) {
+		return $recipe->log_number ?? '';
 	}
 
 	/**
@@ -671,8 +706,8 @@ class Logs_List_Table extends WP_List_Table {
 				$trigger_name = '
 					<div class="uap-logs-table-trigger">
 						<div class="uap-logs-table__item-main-sentence uap-logs-table__trigger-name">' .
-								$this->format_human_readable_sentence( $trigger_sentence ) .
-								'</div>
+							$this->format_human_readable_sentence( $trigger_sentence ) .
+						'</div>
 						<div class="uap-logs-table__trigger-run-number">' .
 								esc_html( $trigger_run_number_sentence ) . '
 						</div>

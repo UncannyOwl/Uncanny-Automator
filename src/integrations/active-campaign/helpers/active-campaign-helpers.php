@@ -103,20 +103,23 @@ class Active_Campaign_Helpers {
 		$webhook_enabled_option = automator_get_option( 'uap_active_campaign_enable_webhook', false );
 
 		// The get_option can return string or boolean sometimes.
-		if ( 'on' === $webhook_enabled_option || 1 == $webhook_enabled_option ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
-			return true;
-		}
-
-		return false;
+		return filter_var( $webhook_enabled_option, FILTER_VALIDATE_BOOLEAN );
 	}
 
+	/**
+	 * Load settings tab.
+	 */
 	public function load_settings_tab() {
 		// Load the settings page.
 		require_once __DIR__ . '/../settings/settings-active-campaign.php';
 
 		new Active_Campaign_Settings( $this );
 	}
-
+	/**
+	 * Integration status.
+	 *
+	 * @return mixed
+	 */
 	public function integration_status() {
 
 		if ( ! $this->has_connection_data() ) {
@@ -195,7 +198,9 @@ class Active_Campaign_Helpers {
 
 		return true;
 	}
-
+	/**
+	 * List retrieve.
+	 */
 	public function list_retrieve() {
 
 		Automator()->utilities->ajax_auth_check();
@@ -243,7 +248,7 @@ class Active_Campaign_Helpers {
 
 		$any_option = array(
 			array(
-				'text'  => esc_html__( 'Any tag', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Any tag', 'ActiveCampaign', 'uncanny-automator' ),
 				'value' => -1,
 			),
 		);
@@ -273,7 +278,9 @@ class Active_Campaign_Helpers {
 
 		wp_send_json( array_merge( $any_option, $tags ) );
 	}
-
+	/**
+	 * List contacts.
+	 */
 	public function list_contacts() {
 
 		Automator()->utilities->ajax_auth_check();
@@ -367,11 +374,11 @@ class Active_Campaign_Helpers {
 		$users       = false;
 
 		if ( empty( $account_url ) || empty( $api_key ) ) {
-			throw new \Exception( esc_html__( 'ActiveCampaign is not connected', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'ActiveCampaign is not connected', 'ActiveCampaign', 'uncanny-automator' ) );
 		}
 
 		if ( ! wp_http_validate_url( $account_url ) ) {
-			throw new \Exception( esc_html__( 'The account URL is not a valid URL', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'The account URL is not a valid URL', 'ActiveCampaign', 'uncanny-automator' ) );
 		}
 
 		$params = array(
@@ -386,13 +393,13 @@ class Active_Campaign_Helpers {
 		$response = Api_Server::call( $params );
 
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			throw new \Exception( esc_html__( 'Error validating the credentials', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Error validating the credentials', 'ActiveCampaign', 'uncanny-automator' ) );
 		}
 
 		$response = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( empty( $response['users'] ) ) {
-			throw new \Exception( esc_html__( 'User was not found', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'User was not found', 'ActiveCampaign', 'uncanny-automator' ) );
 		}
 
 		automator_update_option( 'uap_active_campaign_connected_user', $response['users'] );
@@ -420,7 +427,7 @@ class Active_Campaign_Helpers {
 
 			$message = sprintf(
 				// translators: 1: Status code, 2: Contact email, 3: Status code text
-				_x( 'ActiveCampaign has responded with status code: %1$d (%3$s) &mdash; %2$s', 'ActiveCampaign', 'uncanny-automator' ),
+				esc_html_x( 'ActiveCampaign has responded with status code: %1$d (%3$s) &mdash; %2$s', 'ActiveCampaign', 'uncanny-automator' ),
 				$response['statusCode'],
 				sprintf( 'The contact %s does not exist in ActiveCampaign', $email ),
 				Automator_Http_Response_Code::text( $response['statusCode'] )
@@ -516,7 +523,7 @@ class Active_Campaign_Helpers {
 
 		$response = array(
 			'success'                  => true,
-			'messages'                 => _x( 'Tags, lists, and custom fields has been successfully refreshed', 'ActiveCampaign', 'uncanny-automator' ),
+			'messages'                 => esc_html_x( 'Tags, lists, and custom fields has been successfully refreshed', 'ActiveCampaign', 'uncanny-automator' ),
 			'is_tags_synced'           => true,
 			'is_lists_synced'          => true,
 			'is_contact_fields_synced' => true,
@@ -601,12 +608,18 @@ class Active_Campaign_Helpers {
 
 		return $tag_items;
 	}
-
+	/**
+	 * Get tag options.
+	 *
+	 * @param mixed $code The code.
+	 * @param mixed $any The any.
+	 * @return mixed
+	 */
 	public function get_tag_options( $code, $any = false ) {
 
 		$tags_dropdown = array(
 			'option_code'           => $code,
-			'label'                 => esc_html__( 'Tag', 'uncanny-automator' ),
+			'label'                 => esc_html_x( 'Tag', 'ActiveCampaign', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
 			'is_ajax'               => true,
@@ -1003,10 +1016,10 @@ class Active_Campaign_Helpers {
 	 */
 	public function get_sync_btn_label() {
 		return array(
-			'default'  => esc_html__( 'Refresh available tags, lists, and custom fields', 'uncanny-automator' ),
-			'syncing'  => esc_html__( 'Connecting', 'uncanny-automator' ),
-			'working'  => esc_html__( 'Syncing tags, lists, and custom fields', 'uncanny-automator' ),
-			'complete' => esc_html__( 'Complete', 'uncanny-automator' ),
+			'default'  => esc_html_x( 'Refresh available tags, lists, and custom fields', 'ActiveCampaign', 'uncanny-automator' ),
+			'syncing'  => esc_html_x( 'Connecting', 'ActiveCampaign', 'uncanny-automator' ),
+			'working'  => esc_html_x( 'Syncing tags, lists, and custom fields', 'ActiveCampaign', 'uncanny-automator' ),
+			'complete' => esc_html_x( 'Complete', 'ActiveCampaign', 'uncanny-automator' ),
 		);
 	}
 
@@ -1036,7 +1049,7 @@ class Active_Campaign_Helpers {
 
 		// Placeholders.
 		$placeholder = array(
-			'datetime' => esc_html__( 'mm/dd/yyyy hh:mm', 'uncanny-automator' ),
+			'datetime' => esc_html_x( 'mm/dd/yyyy hh:mm', 'ActiveCampaign', 'uncanny-automator' ),
 		);
 
 		// Add the custom fields.
@@ -1045,6 +1058,11 @@ class Active_Campaign_Helpers {
 			foreach ( $custom_fields as $id => $custom_field ) {
 
 				$options = array();
+
+				// Add empty default option for dropdown fields.
+				if ( 'dropdown' === $custom_field['type'] ) {
+					$options[''] = esc_attr_x( 'Select an option', 'ActiveCampaign', 'uncanny-automator' );
+				}
 
 				if ( ! empty( $custom_field['options'] ) ) {
 					foreach ( $custom_field['options'] as $option ) {
@@ -1070,7 +1088,7 @@ class Active_Campaign_Helpers {
 
 				// Add some description if it is datetime.
 				if ( 'datetime' === $custom_field['type'] ) {
-					$args['description'] = esc_html__( 'ActiveCampaign automatically adjusts your time based your timezone. The timezone in your ActiveCampaign account must match your WordPress site settings.', 'uncanny-automator' );
+					$args['description'] = esc_html_x( 'ActiveCampaign automatically adjusts your time based your timezone. The timezone in your ActiveCampaign account must match your WordPress site settings.', 'ActiveCampaign', 'uncanny-automator' );
 				}
 
 				$fields[] = $args;
@@ -1099,6 +1117,7 @@ class Active_Campaign_Helpers {
 			$postfix      = $registered_field['postfix'];
 			$type         = $registered_field['type'];
 			$field_pieces = explode( '_', $postfix );
+			$field_key    = $prefix . $postfix;
 
 			if ( ! isset( $field_pieces[3] ) ) {
 				continue;
@@ -1107,14 +1126,13 @@ class Active_Campaign_Helpers {
 			// Get the field id.
 			$field_id = $field_pieces[3];
 
+			// Initialize value.
 			$value = '';
 
-			if ( isset( $parsed[ $prefix . $postfix ] ) ) {
-				if ( 'textarea' === $type ) {
-					$value = sanitize_textarea_field( $parsed[ $prefix . $postfix ] );
-				} else {
-					$value = sanitize_text_field( $parsed[ $prefix . $postfix ] );
-				}
+			if ( isset( $parsed[ $field_key ] ) ) {
+				$value = 'textarea' === $type
+					? sanitize_textarea_field( $parsed[ $field_key ] )
+					: sanitize_text_field( $parsed[ $field_key ] );
 			}
 
 			$is_delete = '[delete]' === trim( $value );
@@ -1132,22 +1150,75 @@ class Active_Campaign_Helpers {
 
 			}
 
-			// For list.
-			if ( 'listbox' === $type || 'checkbox' === $type ) {
-				$decoded_json = json_decode( $value );
-				if ( ! empty( $decoded_json ) && ! $is_delete ) {
-					$value = '||' . implode( '||', $decoded_json ) . '||';
+			// Check for default "Select an option" for dropdown fields only
+			if ( ! $is_delete && 'dropdown' === $type ) {
+				if ( $this->is_default_option_selected( $parsed, $field_key ) ) {
+					continue; // Exclude from API request.
 				}
 			}
 
-			$custom_fields[] = array(
-				'field' => absint( $field_id ),
-				'value' => $value,
-			);
+			// Handle multi-select fields (listbox, checkbox)
+			if ( ! $is_delete && in_array( $type, array( 'listbox', 'checkbox' ), true ) ) {
+				$value = $this->format_multi_select_value( $value, $parsed, $field_key );
+				// If null is returned, exclude from API request.
+				if ( is_null( $value ) ) {
+					continue;
+				}
+			}
 
+			// Skip adding empty values to avoid clearing existing field values in ActiveCampaign
+			if ( ! empty( $value ) ) {
+				$custom_fields[] = array(
+					'field' => absint( $field_id ),
+					'value' => $value,
+				);
+			}
 		}
 
 		return $custom_fields;
+	}
+
+	/**
+	 * Check if a field has the default "Select an option" value.
+	 *
+	 * @param array  $parsed    The parsed form data.
+	 * @param string $field_key The field key to check.
+	 *
+	 * @return bool True if it's the default option.
+	 */
+	private function is_default_option_selected( $parsed, $field_key ) {
+		$readable_key = $field_key . '_readable';
+		return isset( $parsed[ $readable_key ] ) && esc_attr_x( 'Select an option', 'ActiveCampaign', 'uncanny-automator' ) === $parsed[ $readable_key ];
+	}
+
+	/**
+	 * Format multi-select field values for ActiveCampaign API.
+	 *
+	 * @param string $value     The field value.
+	 * @param array  $parsed    The parsed form data.
+	 * @param string $field_key The field key to check readable value.
+	 *
+	 * @return string|null The formatted value or null to exclude from API request.
+	 */
+	private function format_multi_select_value( $value, $parsed, $field_key ) {
+
+		// Try to decode as JSON.
+		$decoded_json = json_decode( $value );
+		if ( ! empty( $decoded_json ) ) {
+			return '||' . implode( '||', $decoded_json ) . '||';
+		}
+
+		if ( ! empty( $value ) ) {
+			// Check if the value is a custom value.
+			$is_custom_value = isset( $parsed[ $field_key . '_readable' ] ) && esc_attr_x( 'Use a token/custom value', 'ActiveCampaign', 'uncanny-automator' ) === $parsed[ $field_key . '_readable' ];
+			// Format custom value for API.
+			if ( $is_custom_value ) {
+				return '||' . $value . '||';
+			}
+		}
+
+		// No selection - exclude from API request entirely.
+		return null;
 	}
 
 	/**
@@ -1162,24 +1233,55 @@ class Active_Campaign_Helpers {
 
 		$body = apply_filters( 'automator_active_campaign_add_contact_api_body', $body, $args );
 
-		// Clear out [delete] property values.
-		foreach ( $body as $key => $value ) {
-			if ( 'fields' === $key ) {
-				foreach ( $value as $i => $field ) {
-					$body[ $key ][ $i ] = $field;
-					if ( '[delete]' === trim( $field['value'] ) ) {
-						$body[ $key ][ $i ]['value'] = '';
-					}
-				}
-				$body[ $key ] = wp_json_encode( $body[ $key ] );
+		// Build the contact object
+		$contact = array(
+			'email' => $body['email'],
+		);
+
+		// Fields that should be included in contact object
+		$contact_fields = array( 'firstName', 'lastName', 'phone' );
+
+		foreach ( $contact_fields as $field ) {
+			if ( ! isset( $body[ $field ] ) ) {
 				continue;
 			}
-			if ( '[delete]' === trim( $value ) ) {
-				$body[ $key ] = '';
+
+			$value = $body[ $field ];
+
+			// Handle [DELETE] - add as empty to actively remove
+			if ( '[delete]' === trim( strtolower( $value ) ) ) {
+				$contact[ $field ] = '';
+			} elseif ( ! empty( trim( $value ) ) ) {
+				// Handle actual values - only add if not empty
+				$contact[ $field ] = $value;
 			}
 		}
 
-		return $body;
+		// Process custom fields
+		if ( isset( $body['fields'] ) && is_array( $body['fields'] ) ) {
+			$field_values = array();
+			foreach ( $body['fields'] as $field ) {
+				if ( '[delete]' === trim( $field['value'] ) ) {
+					$field['value'] = '';
+				}
+				$field_values[] = $field;
+			}
+			if ( ! empty( $field_values ) ) {
+				$contact['fieldValues'] = $field_values;
+			}
+		}
+
+		// Build the final body
+		return array(
+			'action'         => $body['action'],
+			'email'          => $body['email'],
+			'contact'        => wp_json_encode(
+				array(
+					'contact' => $contact,
+				)
+			),
+			'updateIfExists' => $body['updateIfExists'] ?? false,
+		);
 	}
 
 	/**
@@ -1244,12 +1346,12 @@ class Active_Campaign_Helpers {
 
 			if ( empty( $message ) ) {
 				// Fallback message in-case the error message is empty.
-				$message = _x( 'Try reconnecting your ActiveCampaign account and try again', 'ActiveCampaign', 'uncanny-automator' );
+				$message = esc_html_x( 'Try reconnecting your ActiveCampaign account and try again', 'ActiveCampaign', 'uncanny-automator' );
 			}
 
 			$error_message = sprintf(
 				// translators: 1: Status code, 2: Message, 3: Status code text
-				_x( 'ActiveCampaign has responded with status code: %1$d (%3$s) &mdash; %2$s', 'ActiveCampaign', 'uncanny-automator' ),
+				esc_html_x( 'ActiveCampaign has responded with status code: %1$d (%3$s) &mdash; %2$s', 'ActiveCampaign', 'uncanny-automator' ),
 				$response['statusCode'],
 				$message,
 				Automator_Http_Response_Code::text( $response['statusCode'] )
@@ -1259,6 +1361,14 @@ class Active_Campaign_Helpers {
 		}
 	}
 
+	/**
+	 * Complete with errors.
+	 *
+	 * @param mixed $user_id The user ID.
+	 * @param mixed $action_data The data.
+	 * @param mixed $recipe_id The ID.
+	 * @param mixed $error_message The message.
+	 */
 	public function complete_with_errors( $user_id, $action_data, $recipe_id, $error_message ) {
 
 		$action_data['complete_with_errors'] = true;
@@ -1266,7 +1376,13 @@ class Active_Campaign_Helpers {
 		// Complete the action with error.
 		Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 	}
-
+	/**
+	 * Get tag id.
+	 *
+	 * @param mixed $contact_id The ID.
+	 * @param mixed $tag_id The ID.
+	 * @return mixed
+	 */
 	public function get_tag_id( $contact_id, $tag_id ) {
 
 		$contact_tag_id = 0;
@@ -1279,7 +1395,7 @@ class Active_Campaign_Helpers {
 		$response = $this->api_request( $body );
 
 		if ( empty( $response['data']['contactTags'] ) ) {
-			throw new \Exception( esc_html( __( 'The contact has no tags.', 'uncanny-automator' ) ), absint( $response['statusCode'] ) );
+			throw new \Exception( esc_html_x( 'The contact has no tags.', 'ActiveCampaign', 'uncanny-automator' ), absint( $response['statusCode'] ) );
 		}
 
 		// Check if $tag_id is not numeric.
@@ -1295,7 +1411,7 @@ class Active_Campaign_Helpers {
 		}
 
 		if ( 0 === $contact_tag_id ) {
-			throw new \Exception( esc_html__( "The contact doesn't have the given tag.", 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( "The contact doesn't have the given tag.", 'ActiveCampaign', 'uncanny-automator' ) );
 		}
 
 		return $contact_tag_id;
