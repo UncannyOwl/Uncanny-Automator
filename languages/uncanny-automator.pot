@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 6.7.0\n"
+"Project-Id-Version: Uncanny Automator 6.7.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-24T16:51:15+00:00\n"
+"POT-Creation-Date: 2025-07-25T18:38:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -31297,7 +31297,7 @@ msgstr ""
 
 #: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:141
 #: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:144
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1090
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1094
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:260
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:263
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:153
@@ -31348,7 +31348,7 @@ msgstr ""
 
 #: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:171
 #: src/integrations/thrive-apprentice/actions/thrive-apprentice-issue-user-certificate.php:174
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1091
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1095
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:159
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-completes-all-free-lessons-in-premium-course.php:162
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php:154
@@ -31388,92 +31388,92 @@ msgctxt "Thrive Apprentice"
 msgid "Content ID is missing."
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:107
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:110
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:111
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:114
 msgctxt "Thrive Apprentice"
 msgid "Any course"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:176
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:180
 msgctxt "Content type selection"
 msgid "Any content type"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:250
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:266
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:254
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:270
 msgctxt "Thrive Apprentice"
 msgid "Any content"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:326
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:382
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:330
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:386
 msgctxt "Thrive Apprentice lesson selection"
 msgid "Any lesson"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:431
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:516
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:435
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:520
 msgctxt "Module selection"
 msgid "Any module"
 msgstr ""
 
 #. translators: %s is replaced with the error message
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:473
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:477
 #, php-format
 msgctxt "Error message"
 msgid "Error loading modules: %s"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:611
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:615
 msgctxt "Assessment selection"
 msgid "Any assessment"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:785
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:789
 msgctxt "Product selection"
 msgid "Any product"
 msgstr ""
 
 #. translators: %s is replaced with the content type name
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:975
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:979
 #, php-format
 msgctxt "Thrive Apprentice"
 msgid "Any %s"
 msgstr ""
 
 #. translators: %s is replaced with the content type name
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1023
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1027
 #, php-format
 msgctxt "Content type name"
 msgid "Any %s"
 msgstr ""
 
 #. translators: %s is replaced with the content type name
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1042
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1056
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1046
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1060
 #, php-format
 msgctxt "Error message"
 msgid "Error loading %s"
 msgstr ""
 
 #. translators: %s is replaced with the content type name
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1070
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1074
 #, php-format
 msgctxt "Content type name"
 msgid "No %s found"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1092
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1096
 msgctxt "Thrive Apprentice"
 msgid "Course author"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1093
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1097
 msgctxt "Thrive Apprentice"
 msgid "Course summary"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1094
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1098
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:266
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-content-unlocked.php:269
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-certificate-verified.php:159
@@ -31498,7 +31498,7 @@ msgctxt "Thrive Apprentice"
 msgid "Course title"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1107
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1111
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:198
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:201
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:162
@@ -31507,14 +31507,14 @@ msgctxt "Thrive Apprentice"
 msgid "Module ID"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1108
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1112
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:180
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:183
 msgctxt "Thrive Apprentice"
 msgid "Module URL"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1109
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1113
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:204
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:207
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-module-completed.php:168
@@ -31523,21 +31523,21 @@ msgctxt "Thrive Apprentice"
 msgid "Module title"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1122
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1126
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:174
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:177
 msgctxt "Thrive Apprentice"
 msgid "Lesson ID"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1123
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1127
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:180
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:183
 msgctxt "Thrive Apprentice"
 msgid "Lesson URL"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1124
+#: src/integrations/thrive-apprentice/helpers/thrive-apprentice-helpers.php:1128
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:186
 #: src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-lesson-completed.php:189
 msgctxt "Thrive Apprentice"
@@ -31568,32 +31568,33 @@ msgctxt "Thrive Apprentice"
 msgid "Content ID"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:37
+#. translators: %1$s: Product Name
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:58
 #, php-format
 msgctxt "Thrive Apprentice"
 msgid "A user receives access to {{a product:%1$s}}"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:43
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:64
 msgctxt "Thrive Apprentice"
 msgid "A user receives access to {{a product}}"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:56
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:79
 msgctxt "Thrive Apprentice"
 msgid "Product"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:121
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:124
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:120
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:123
 msgctxt "Thrive Apprentice"
 msgid "Product ID"
 msgstr ""
 
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:127
-#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:130
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:126
+#: src/integrations/thrive-apprentice/triggers/thrive-apprentice-product-access-received.php:129
 msgctxt "Thrive Apprentice"
-msgid "Product title"
+msgid "Product name"
 msgstr ""
 
 #. translators:  %1$s: Course

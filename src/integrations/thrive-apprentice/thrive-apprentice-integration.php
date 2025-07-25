@@ -36,6 +36,7 @@ class Thrive_Apprentice_Integration extends \Uncanny_Automator\Integration {
 		new THRIVE_APPRENTICE_USER_FAIL_ASSESSMENT_IN_COURSE($this->helpers);
 		new THRIVE_APPRENTICE_USER_PASS_ASSESSMENT_IN_COURSE($this->helpers);
 		new THRIVE_APPRENTICE_USER_SUBMITS_ASSESSMENT_IN_COURSE($this->helpers);
+		new THRIVE_APPRENTICE_USER_PRODUCT_ACCESS_RECEIVED($this->helpers);
 	}
 
 
@@ -47,6 +48,6 @@ class Thrive_Apprentice_Integration extends \Uncanny_Automator\Integration {
 	 * @return bool Returns true if \TVA_Manager class is active. Returns false, otherwise.
 	 */
 	public function plugin_active() {
-		return class_exists( '\TVA_Manager' );
+		return class_exists( '\TVA_Const', false );
 	}
 }

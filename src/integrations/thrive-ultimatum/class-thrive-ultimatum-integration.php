@@ -39,6 +39,6 @@ class Thrive_Ultimatum_Integration extends \Uncanny_Automator\Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return class_exists( 'TVE_Ult_Const' );
+		return class_exists( 'TVE_Ult_Const', false );
 	}
 }

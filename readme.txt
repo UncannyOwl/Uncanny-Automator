@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.2
 Requires PHP: 7.3
-Stable tag: 6.7.0
+Stable tag: 6.7.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -99,6 +99,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Ontraport](https://automatorplugin.com/integration/ontraport/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [OpenAI and GPT](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Perplexity](https://automatorplugin.com/integration/perplexity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [QuickBooks Online](https://automatorplugin.com/integration/quickbooks-online/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Elite)
 - [Salesforce](https://automatorplugin.com/integration/salesforce/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Elite)
 - [Sendy](https://automatorplugin.com/integration/sendy/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -391,6 +392,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.7.0.1 [2025-07-25] =
+
+**Update:**
+
+* Thrive Apprentice - `class_alias` added to support older Automator Pro versions
 
 = 6.7.0 [2025-07-24] =
 

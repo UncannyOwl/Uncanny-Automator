@@ -33,6 +33,6 @@ class Add_Thrive_Quiz_Builder_Integration {
 	 * @return bool
 	 */
 	public function plugin_active() {
-		return class_exists( 'Thrive_Quiz_Builder' );
+		return class_exists( 'Thrive_Quiz_Builder', false );
 	}
 }
