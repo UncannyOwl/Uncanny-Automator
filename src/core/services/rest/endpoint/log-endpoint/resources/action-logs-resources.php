@@ -10,7 +10,9 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Action_Logs_Helpers\C
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 
 /**
+ * Class Action_Logs_Resources
  *
+ * @package Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources
  */
 class Action_Logs_Resources {
 
@@ -63,7 +65,6 @@ class Action_Logs_Resources {
 		$this->action_logs_queries = $action_logs_queries;
 		$this->automator_factory   = $automator_factory;
 		$this->loop_log_resources  = $loop_log_resources;
-
 	}
 
 	/**
@@ -116,7 +117,6 @@ class Action_Logs_Resources {
 		Automator()->cache->set( $key, true, 'automator_logs' );
 
 		return ! is_null( $log );
-
 	}
 
 	/**
@@ -162,7 +162,6 @@ class Action_Logs_Resources {
 		}
 
 		return $fields;
-
 	}
 
 	/**
@@ -242,7 +241,6 @@ class Action_Logs_Resources {
 		}
 
 		return $fields;
-
 	}
 
 	/**
@@ -309,7 +307,6 @@ class Action_Logs_Resources {
 		}
 
 		return $action_runs;
-
 	}
 
 	/**
@@ -344,7 +341,6 @@ class Action_Logs_Resources {
 		}
 
 		return $interpolated;
-
 	}
 
 	/**
@@ -473,7 +469,6 @@ class Action_Logs_Resources {
 		}
 
 		return $item;
-
 	}
 
 	/**
@@ -553,7 +548,6 @@ class Action_Logs_Resources {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -618,7 +612,6 @@ class Action_Logs_Resources {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -812,7 +805,6 @@ class Action_Logs_Resources {
 			);
 		}
 		return $results_formatted;
-
 	}
 
 	/**
@@ -845,7 +837,6 @@ class Action_Logs_Resources {
 		}
 
 		return $results_formatted;
-
 	}
 
 	/**
@@ -878,7 +869,6 @@ class Action_Logs_Resources {
 		}
 
 		return $actions_flattened;
-
 	}
 
 	/**
@@ -964,7 +954,7 @@ class Action_Logs_Resources {
 			} else {
 				$results_formatted[] = $this->resolve_action_item( $params, $actions_flattened, $action_flow_key );
 			}
-			$item_index ++;
+			++$item_index;
 		}
 
 		// Handle legacy.
@@ -996,7 +986,6 @@ class Action_Logs_Resources {
 		}
 
 		return $results_formatted;
-
 	}
 
 	/**
@@ -1028,7 +1017,5 @@ class Action_Logs_Resources {
 		}
 
 		return $action_meta;
-
 	}
-
 }

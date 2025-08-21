@@ -50,7 +50,9 @@ class Active_Campaign_Settings extends Settings\Premium_Integration_Settings {
 	 * @var string $regenerate_alert
 	 */
 	public $regenerate_alert = '';
-
+	/**
+	 * Set properties.
+	 */
 	public function set_properties() {
 
 		$this->set_id( 'active-campaign' );
@@ -66,7 +68,6 @@ class Active_Campaign_Settings extends Settings\Premium_Integration_Settings {
 		$this->register_option( 'uap_active_campaign_settings_timestamp' );
 
 		$this->register_option( 'uap_active_campaign_enable_webhook' );
-
 	}
 
 	/**
@@ -107,11 +108,12 @@ class Active_Campaign_Settings extends Settings\Premium_Integration_Settings {
 		$this->regenerate_key_url = add_query_arg(
 			array(
 				'action' => 'active-campaign-regenerate-webhook-key',
+				'nonce'  => wp_create_nonce( 'active-campaign-regenerate-webhook-key' ),
 			),
 			admin_url( 'admin-ajax.php' )
 		);
 
-		$this->regenerate_alert = esc_html__( 'Regenerating the URL will prevent ActiveCampaign triggers from working until the new webhook URL is set in ActiveCampaign. Continue?', 'uncanny-automator' );
+		$this->regenerate_alert = esc_html_x( 'Regenerating the URL will prevent ActiveCampaign triggers from working until the new webhook URL is set in ActiveCampaign. Continue?', 'ActiveCampaign', 'uncanny-automator' );
 
 		$this->disconnect_url = add_query_arg(
 			array(
@@ -122,15 +124,12 @@ class Active_Campaign_Settings extends Settings\Premium_Integration_Settings {
 		);
 
 		include_once 'view-active-campaign.php';
-
 	}
-
+	/**
+	 * Localize button labels.
+	 */
 	public function localize_button_labels() {
 
 		wp_localize_script( 'uap-premium-integration-active-campaign', 'AutomatorActiveCampaignSettingsL10n', $this->helpers->get_sync_btn_label() );
-
 	}
-
-
 }
-

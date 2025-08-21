@@ -80,7 +80,7 @@ class DISCORD_ASSIGN_ROLE_TO_MEMBER extends \Uncanny_Automator\Recipe\Action {
 	public function options() {
 		return array(
 			$this->helpers->get_server_select_config( $this->server_key ),
-			$this->helpers->get_server_members_select_config( 'MEMBER', $this->server_key ),
+			$this->helpers->get_verified_members_select_config( 'MEMBER' ),
 			$this->helpers->get_server_roles_select_config( $this->get_action_meta(), $this->server_key ),
 		);
 	}
@@ -130,11 +130,7 @@ class DISCORD_ASSIGN_ROLE_TO_MEMBER extends \Uncanny_Automator\Recipe\Action {
 					$role_id,
 					$server_id
 				),
-				'USERNAME'    => $this->helpers->get_member_username_token_value(
-					$parsed['MEMBER_readable'],
-					$member_id,
-					$server_id
-				),
+				'USERNAME'    => $this->helpers->get_member_username_token_value( $member_id ),
 			)
 		);
 

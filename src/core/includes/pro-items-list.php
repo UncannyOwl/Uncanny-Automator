@@ -8,6 +8,7 @@
  *
  * @return array
  */
+
 function automator_pro_items_list() {
 	return array(
 		'ADVADS' => array(
@@ -116,7 +117,11 @@ function automator_pro_items_list() {
 			'elite_only' => 'no',
 			'triggers'   => array(
 				array(
-					'name' => esc_html_x( 'A user books an appointment for {{a specific service}}', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A user books an appointment {{for a specific service}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( "A user's booking for {{an event}} changes to {{a specific status}}", 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
@@ -1820,11 +1825,11 @@ function automator_pro_items_list() {
 			'elite_only' => 'no',
 			'triggers'   => array(
 				array(
-					'name' => esc_html_x( 'A subscriber clicks a link in a Mailster email', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A new subscriber is removed from {{a Mailster list}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
 				array(
-					'name' => esc_html_x( 'A subscriber is removed from a Mailster list', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A subscriber clicks a link in {{a Mailster email}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
 				array(
@@ -1834,7 +1839,7 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(
 				array(
-					'name' => esc_html_x( 'Remove a subscriber from a Mailster list', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Remove a subscriber from {{a Mailster list}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
 		),
@@ -2436,12 +2441,12 @@ function automator_pro_items_list() {
 			'elite_only' => 'no',
 			'triggers'   => array(
 				array(
-					'name' => esc_html_x( 'A form is submitted with a specific value in a specific field', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'anonymous',
+					'name' => esc_html_x( 'A user submits {{a form}} with {{a specific value}} in {{a specific field}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A user submits a form with a specific value in a specific field', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
+					'name' => esc_html_x( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
 				),
 			),
 			'actions'    => array(),
@@ -2604,6 +2609,22 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(),
 		),
+		'URL' => array(
+			'name'       => 'URL',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'A user visits a URL with {{a URL parameter}} set to {{a specific value}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( 'A URL with {{a URL parameter}} set to {{a specific value}} is visited', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'    => array(),
+		),
 		'UAUSERLISTS' => array(
 			'name'       => 'User Lists',
 			'pro_only'   => 'no',
@@ -2721,8 +2742,8 @@ function automator_pro_items_list() {
 			),
 		),
 		'WC' => array(
-			'name'       => 'Woo Subscriptions',
-			'pro_only'   => 'yes',
+			'name'       => 'Woo ShipStation',
+			'pro_only'   => 'no',
 			'elite_only' => 'no',
 			'triggers'   => array(
 				array(
@@ -2772,6 +2793,10 @@ function automator_pro_items_list() {
 				array(
 					'name' => esc_html_x( "A user's review on {{a product}} is approved", 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( 'A customer makes a payment and their lifetime value is {{greater than, less than, or equal to}} {{a specific amount}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
 				),
 				array(
 					'name' => esc_html_x( 'A guest {{completes, pays for, lands on a thank you page for}} an order with {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
@@ -2842,10 +2867,6 @@ function automator_pro_items_list() {
 					'type' => 'anonymous',
 				),
 				array(
-					'name' => esc_html_x( 'A customer makes a payment and their lifetime value is greater than, less than, or equal to a specific amount', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'anonymous',
-				),
-				array(
 					'name' => esc_html_x( "A user's access to {{a membership plan}} is cancelled", 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -2865,6 +2886,68 @@ function automator_pro_items_list() {
 					'name' => esc_html_x( 'An order with a total {{greater than, less than or equal to}} {{a specific amount}} is shipped', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
+			),
+			'actions'    => array(
+				array(
+					'name' => esc_html_x( 'Add {{a note}} to an order', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Add {{a product}} to {{an order}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Change the price of {{a specific product}} to {{a new price}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Create an order with {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Create an order with {{a product}} with a payment gateway', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Generate and email a coupon {{code}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Get order details', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Set {{a specific order}} to {{a specific status}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Generate a coupon code', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Remove the user from {{a membership plan}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+		),
+		'WC_BOOKINGS' => array(
+			'name'       => 'Woo Bookings',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'A booking status is changed to {{a specific status}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( 'A booking is updated', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'    => array(
+				array(
+					'name' => esc_html_x( 'Change booking to a specific status', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Create a booking', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+		),
+		'WOOCOMMERCE_SUBSCRIPTION' => array(
+			'name'       => 'Woo Subscriptions',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
+			'triggers'   => array(
 				array(
 					'name' => esc_html_x( 'A user cancels a subscription to {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
@@ -2928,36 +3011,6 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(
 				array(
-					'name' => esc_html_x( 'Add {{a note}} to an order', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Add {{a product}} to {{an order}}', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Change the price of {{a specific product}} to {{a new price}}', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Create an order with {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Create an order with {{a product}} with a payment gateway', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Generate and email a coupon {{code}}', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Get order details', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Set {{a specific order}} to {{a specific status}}', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Generate a coupon code', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Remove the user from {{a membership plan}}', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
 					'name' => esc_html_x( "Cancel the user's subscription to {{a specific variation}} of {{a variable subscription variation}}", 'Automator Pro item', 'uncanny-automator' ),
 				),
 				array(
@@ -2995,29 +3048,6 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name' => esc_html_x( "Shorten a user's subscription to {{a specific product}} by {{a number of days}}", 'Automator Pro item', 'uncanny-automator' ),
-				),
-			),
-		),
-		'WC_BOOKINGS' => array(
-			'name'       => 'Woo Bookings',
-			'pro_only'   => 'no',
-			'elite_only' => 'no',
-			'triggers'   => array(
-				array(
-					'name' => esc_html_x( 'A booking status is changed to {{a specific status}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					'name' => esc_html_x( 'A booking is updated', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'anonymous',
-				),
-			),
-			'actions'    => array(
-				array(
-					'name' => esc_html_x( 'Change booking to a specific status', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Create a booking', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
 		),

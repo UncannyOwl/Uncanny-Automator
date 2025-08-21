@@ -81,7 +81,7 @@ class DISCORD_ADD_MEMBER_TO_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 		return array(
 			$this->helpers->get_server_select_config( $this->server_key ),
 			$this->helpers->get_server_channel_select_config( 'CHANNEL', $this->server_key ),
-			$this->helpers->get_server_members_select_config( $this->get_action_meta(), $this->server_key ),
+			$this->helpers->get_verified_members_select_config( $this->get_action_meta() ),
 		);
 	}
 
@@ -130,11 +130,7 @@ class DISCORD_ADD_MEMBER_TO_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 					$channel_id,
 					$server_id
 				),
-				'USERNAME'     => $this->helpers->get_member_username_token_value(
-					$parsed[ $this->get_action_meta() . '_readable' ],
-					$member_id,
-					$server_id
-				),
+				'USERNAME'     => $this->helpers->get_member_username_token_value( $member_id ),
 			)
 		);
 

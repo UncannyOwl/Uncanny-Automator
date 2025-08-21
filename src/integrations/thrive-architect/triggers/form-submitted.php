@@ -29,7 +29,7 @@ class FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-				/* Translators: Trigger sentence */
+				// translators: %1$s: Form name
 				esc_html_x( 'A {{form:%1$s}} is submitted', 'Thrive Architect', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
@@ -55,7 +55,7 @@ class FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 		$form = array(
 			'input_type'      => 'select',
 			'option_code'     => $this->get_trigger_meta(),
-			'label'           => _x( 'Form', 'Thrive Architect', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Form', 'Thrive Architect', 'uncanny-automator' ),
 			'required'        => true,
 			'options'         => $options_value,
 			'options_show_id' => false,
@@ -63,7 +63,6 @@ class FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 		);
 
 		return array( $form );
-
 	}
 
 	/**
@@ -101,7 +100,6 @@ class FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 		}
 
 		return $config['form_identifier'] === $extracted_form_values['form_identifier'];
-
 	}
 
 	/**
@@ -116,13 +114,13 @@ class FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 
 		$tokens[] = array(
 			'tokenId'   => 'FORM_ID',
-			'tokenName' => _x( 'Form ID', 'Thrive Architect', 'uncanny-automator' ),
+			'tokenName' => esc_html_x( 'Form ID', 'Thrive Architect', 'uncanny-automator' ),
 			'tokenType' => 'text', // Token type can be 'text', 'int', 'email', 'url'.
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'FORM_TITLE',
-			'tokenName' => _x( 'Form title', 'Thrive Apprentice', 'uncanny-automator' ),
+			'tokenName' => esc_html_x( 'Form title', 'Thrive Apprentice', 'uncanny-automator' ),
 			'tokenType' => 'text', // Token type can be 'text', 'int', 'email', 'url'.
 		);
 
@@ -151,7 +149,6 @@ class FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 		}
 
 		return $tokens;
-
 	}
 
 	/**
@@ -187,7 +184,5 @@ class FORM_SUBMITTED extends \Uncanny_Automator\Recipe\Trigger {
 		}
 
 		return $token_values;
-
 	}
-
 }

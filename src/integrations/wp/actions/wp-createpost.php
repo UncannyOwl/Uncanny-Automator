@@ -50,9 +50,9 @@ class WP_CREATEPOST {
 			'code'               => $this->action_code,
 			'requires_user'      => false,
 			/* translators: Action - WordPress Core */
-			'sentence'           => sprintf( esc_attr__( 'Create {{a post:%1$s}}', 'uncanny-automator' ), $this->action_code ),
+			'sentence'           => sprintf( esc_html_x( 'Create {{a post:%1$s}}', 'Wp', 'uncanny-automator' ), $this->action_code ),
 			/* translators: Action - WordPress Core */
-			'select_option_name' => esc_attr__( 'Create {{a post}}', 'uncanny-automator' ),
+			'select_option_name' => esc_html_x( 'Create {{a post}}', 'Wp', 'uncanny-automator' ),
 			'priority'           => 11,
 			'accepted_args'      => 3,
 			'execution_function' => array( $this, 'create_post' ),
@@ -62,15 +62,15 @@ class WP_CREATEPOST {
 		$this->set_action_tokens(
 			array(
 				'POST_ID'       => array(
-					'name' => esc_html__( 'Post ID', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Post ID', 'Wp', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'POST_URL'      => array(
-					'name' => esc_html__( 'Post URL', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Post URL', 'Wp', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 				'POST_URL_EDIT' => array(
-					'name' => esc_html__( 'Post edit URL', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Post edit URL', 'Wp', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),
@@ -97,7 +97,7 @@ class WP_CREATEPOST {
 						Automator()->helpers->recipe->field->select_field_args(
 							array(
 								'option_code'           => 'PARENT_POST',
-								'label'                 => esc_attr__( 'Parent post', 'uncanny-automator' ),
+								'label'                 => esc_html_x( 'Parent post', 'Wp', 'uncanny-automator' ),
 								'options'               => array(),
 								'is_ajax'               => true,
 								'endpoint'              => 'select_specific_post_type_taxonomies',
@@ -110,10 +110,10 @@ class WP_CREATEPOST {
 						array(
 							'input_type'               => 'select',
 							'option_code'              => 'TAXONOMY',
-							'label'                    => esc_attr__( 'Taxonomies', 'uncanny-automator' ),
-							'custom_value_description' => esc_attr__( 'Taxonomy ID. Separated by comma.', 'uncanny-automator' ),
+							'label'                    => esc_html_x( 'Taxonomies', 'Wp', 'uncanny-automator' ),
+							'custom_value_description' => esc_html_x( 'Taxonomy ID. Separated by comma.', 'Wp', 'uncanny-automator' ),
 							'supports_multiple_values' => true,
-							'supports_custom_value'    => false,
+							'supports_custom_value'    => true,
 							'supports_tokens'          => false,
 							'required'                 => false,
 							'options'                  => array(),
@@ -127,10 +127,10 @@ class WP_CREATEPOST {
 						array(
 							'input_type'               => 'select',
 							'option_code'              => 'TERM',
-							'label'                    => esc_attr__( 'Terms', 'uncanny-automator' ),
-							'custom_value_description' => esc_attr__( 'Term ID. Separated by comma.', 'uncanny-automator' ),
+							'label'                    => esc_html_x( 'Terms', 'Wp', 'uncanny-automator' ),
+							'custom_value_description' => esc_html_x( 'Term ID. Separated by comma.', 'Wp', 'uncanny-automator' ),
 							'supports_multiple_values' => true,
-							'supports_custom_value'    => false,
+							'supports_custom_value'    => true,
 							'supports_tokens'          => false,
 							'required'                 => false,
 							'options'                  => array(),
@@ -139,23 +139,23 @@ class WP_CREATEPOST {
 
 						Automator()->helpers->recipe->field->select_field(
 							'WPCPOSTSTATUS',
-							esc_attr__( 'Status', 'uncanny-automator' ),
+							esc_html_x( 'Status', 'Wp', 'uncanny-automator' ),
 							$this->get_post_statuses()
 						),
 
 						Automator()->helpers->recipe->field->text_field(
 							'WPCPOSTAUTHOR',
-							esc_attr__( 'Author', 'uncanny-automator' ),
+							esc_html_x( 'Author', 'Wp', 'uncanny-automator' ),
 							true,
 							'text',
 							'{{admin_email}}',
 							true,
-							esc_attr__( 'Accepts user ID, email or username', 'uncanny-automator' )
+							esc_html_x( 'Accepts user ID, email or username', 'Wp', 'uncanny-automator' )
 						),
 
 						Automator()->helpers->recipe->field->text_field(
 							'WPCPOSTTITLE',
-							esc_attr__( 'Title', 'uncanny-automator' ),
+							esc_html_x( 'Title', 'Wp', 'uncanny-automator' ),
 							true,
 							'text',
 							'',
@@ -164,8 +164,8 @@ class WP_CREATEPOST {
 
 						array(
 							'option_code'   => 'IS_UNIQUE',
-							'label'         => esc_attr__( 'Title must be unique', 'uncanny-automator' ),
-							'description'   => esc_attr__( 'If a post with the same title is found, the action will not create a new post.', 'uncanny-automator' ),
+							'label'         => esc_html_x( 'Title must be unique', 'Wp', 'uncanny-automator' ),
+							'description'   => esc_html_x( 'If a post with the same title is found, the action will not create a new post.', 'Wp', 'uncanny-automator' ),
 							'input_type'    => 'checkbox',
 							'is_toggle'     => true,
 							'required'      => false,
@@ -174,7 +174,7 @@ class WP_CREATEPOST {
 
 						Automator()->helpers->recipe->field->text_field(
 							'WPCPOSTSLUG',
-							esc_attr__( 'Slug', 'uncanny-automator' ),
+							esc_html_x( 'Slug', 'Wp', 'uncanny-automator' ),
 							true,
 							'text',
 							'',
@@ -183,7 +183,7 @@ class WP_CREATEPOST {
 
 						Automator()->helpers->recipe->field->text_field(
 							'WPCPOSTCONTENT',
-							esc_attr__( 'Content', 'uncanny-automator' ),
+							esc_html_x( 'Content', 'Wp', 'uncanny-automator' ),
 							true,
 							'textarea',
 							'',
@@ -192,7 +192,7 @@ class WP_CREATEPOST {
 
 						array(
 							'option_code' => 'WPCPOSTCONTENTCUSTOMCSSCHECKBOX',
-							'label'       => _x( 'Add custom CSS', 'WordPress', 'uncanny-automator' ),
+							'label'       => esc_html_x( 'Add custom CSS', 'WordPress', 'uncanny-automator' ),
 							'input_type'  => 'checkbox',
 							'is_toggle'   => true,
 							'required'    => false,
@@ -200,10 +200,10 @@ class WP_CREATEPOST {
 
 						array(
 							'option_code'        => 'WPCPOSTCONTENTCUSTOMCSS',
-							'label'              => _x( 'Custom CSS', 'WordPress', 'uncanny-automator' ),
+							'label'              => esc_html_x( 'Custom CSS', 'WordPress', 'uncanny-automator' ),
 							'input_type'         => 'textarea',
 							'required'           => false,
-							'description'        => _x( 'Enter your CSS code into the field above. Please make sure that your CSS rules are correct and targeted appropriately.', 'WordPress', 'uncanny-automator' ),
+							'description'        => esc_html_x( 'Enter your CSS code into the field above. Please make sure that your CSS rules are correct and targeted appropriately.', 'WordPress', 'uncanny-automator' ),
 
 							'dynamic_visibility' => array(
 								// 'default_state' specifies the initial visibility state of the element
@@ -239,7 +239,7 @@ class WP_CREATEPOST {
 
 						array(
 							'option_code' => 'WPCPOSTCONTENTCUSTOMJSCHECKBOX',
-							'label'       => _x( 'Add custom JavaScript', 'WordPress', 'uncanny-automator' ),
+							'label'       => esc_html_x( 'Add custom JavaScript', 'WordPress', 'uncanny-automator' ),
 							'input_type'  => 'checkbox',
 							'is_toggle'   => true,
 							'required'    => false,
@@ -247,10 +247,10 @@ class WP_CREATEPOST {
 
 						array(
 							'option_code'        => 'WPCPOSTCONTENTCUSTOMJS',
-							'label'              => _x( 'Custom JavaScript', 'WordPress', 'uncanny-automator' ),
+							'label'              => esc_html_x( 'Custom JavaScript', 'WordPress', 'uncanny-automator' ),
 							'input_type'         => 'textarea',
 							'required'           => false,
-							'description'        => _x( "Enter your JavaScript code into the field above. Because JavaScript can affect your site's behaviour and security, only use scripts from trusted sources and make sure to validate and sanitize your inputs.", 'WordPress', 'uncanny-automator' ),
+							'description'        => esc_html_x( "Enter your JavaScript code into the field above. Because JavaScript can affect your site's behaviour and security, only use scripts from trusted sources and make sure to validate and sanitize your inputs.", 'WordPress', 'uncanny-automator' ),
 
 							'dynamic_visibility' => array(
 								// 'default_state' specifies the initial visibility state of the element
@@ -287,7 +287,7 @@ class WP_CREATEPOST {
 						array(
 							'option_code' => 'WPCPOSTEXCERPT',
 							/* translators: Post Excerpt field */
-							'label'       => esc_attr__( 'Excerpt', 'uncanny-automator' ),
+							'label'       => esc_html_x( 'Excerpt', 'Wp', 'uncanny-automator' ),
 							'placeholder' => '',
 							'input_type'  => 'textarea',
 							'required'    => false,
@@ -297,18 +297,18 @@ class WP_CREATEPOST {
 						array(
 							'option_code' => 'FEATURED_IMAGE_URL',
 							/* translators: Email field */
-							'label'       => esc_attr__( 'Featured image URL', 'uncanny-automator' ),
-							'placeholder' => esc_attr__( 'https://examplewebsite.com/path/to/image.jpg', 'uncanny-automator' ),
+							'label'       => esc_html_x( 'Featured image URL', 'Wp', 'uncanny-automator' ),
+							'placeholder' => esc_html_x( 'https://examplewebsite.com/path/to/image.jpg', 'Wp', 'uncanny-automator' ),
 							'input_type'  => 'url',
 							'required'    => false,
-							'description' => esc_attr__( 'The URL must include a supported image file extension (e.g. .jpg, .png, .svg, etc.). Some sites may block remote image download.', 'uncanny-automator' ),
+							'description' => esc_html_x( 'The URL must include a supported image file extension (e.g. .jpg, .png, .svg, etc.). Some sites may block remote image download.', 'Wp', 'uncanny-automator' ),
 						),
 
 						// The photo url field.
 						array(
 							'option_code'   => 'OPEN_COMMENTS',
 							/* translators: Allow comment field */
-							'label'         => esc_attr__( 'Allow people to submit comments', 'uncanny-automator' ),
+							'label'         => esc_html_x( 'Allow people to submit comments', 'Wp', 'uncanny-automator' ),
 							'input_type'    => 'checkbox',
 							'is_toggle'     => true,
 							'required'      => false,
@@ -319,26 +319,26 @@ class WP_CREATEPOST {
 							'input_type'        => 'repeater',
 							'option_code'       => 'CPMETA_PAIRS',
 							'relevant_tokens'   => array(),
-							'label'             => esc_attr__( 'Meta', 'uncanny-automator' ),
+							'label'             => esc_html_x( 'Meta', 'Wp', 'uncanny-automator' ),
 							'required'          => false,
 							'fields'            => array(
 								array(
 									'input_type'      => 'text',
 									'option_code'     => 'KEY',
-									'label'           => esc_attr__( 'Key', 'uncanny-automator' ),
+									'label'           => esc_html_x( 'Key', 'Wp', 'uncanny-automator' ),
 									'supports_tokens' => true,
 									'required'        => true,
 								),
 								array(
 									'input_type'      => 'text',
 									'option_code'     => 'VALUE',
-									'label'           => esc_attr__( 'Value', 'uncanny-automator' ),
+									'label'           => esc_html_x( 'Value', 'Wp', 'uncanny-automator' ),
 									'supports_tokens' => true,
 									'required'        => true,
 								),
 							),
-							'add_row_button'    => esc_attr__( 'Add pair', 'uncanny-automator' ),
-							'remove_row_button' => esc_attr__( 'Remove pair', 'uncanny-automator' ),
+							'add_row_button'    => esc_html_x( 'Add pair', 'Wp', 'uncanny-automator' ),
+							'remove_row_button' => esc_html_x( 'Remove pair', 'Wp', 'uncanny-automator' ),
 						),
 					),
 				),
@@ -375,7 +375,7 @@ class WP_CREATEPOST {
 			throw new LogicException(
 				sprintf(
 				/* translators: %s: Post title */
-					esc_html__( "Error: Post title must be unique. A post with the title '%s' already exists.", 'uncanny-automator' ),
+					esc_html_x( "Error: Post title must be unique. A post with the title '%s' already exists.", 'Wp', 'uncanny-automator' ),
 					esc_html( $post_title )
 				),
 				1001 // Exception code for duplicate title.
@@ -648,7 +648,7 @@ class WP_CREATEPOST {
 	public function get_all_post_types() {
 
 		$field = Automator()->helpers->recipe->wp->options->all_post_types(
-			esc_attr__( 'Type', 'uncanny-automator' ),
+			esc_html_x( 'Type', 'Wp', 'uncanny-automator' ),
 			$this->action_code,
 			array(
 				'token'        => false,

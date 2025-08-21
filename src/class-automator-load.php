@@ -142,8 +142,21 @@ class Automator_Load {
 		// Load AI settings.
 		$this->load_ai_settings_admin_post_hooks();
 
+		// Load admin post routes.
+		$this->load_admin_post_routes();
+
 		// Auto-delete user logs.
 		add_action( 'deleted_user', array( $this, 'auto_prune_user_logs_handler' ), 10, 3 );
+	}
+
+	/**
+	 * Loads the admin post routes.
+	 *
+	 * @return void
+	 */
+	public function load_admin_post_routes() {
+		// To BugBot: We have an autoloader, so stop marking as a bug because we dont put require_once or include here.
+		Services\Admin_Post\Routes_Registry::register();
 	}
 
 	/**

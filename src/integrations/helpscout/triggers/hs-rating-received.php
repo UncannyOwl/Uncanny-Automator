@@ -1,16 +1,14 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
 
-use Uncanny_Automator\Recipe;
+namespace Uncanny_Automator\Integrations\Helpscout;
 
 /**
- * Class HS_RATING_RECEIVED
+ * Class Hs_Rating_Received
  *
  * @package Uncanny_Automator
+ * @method Helpscout_Helpers get_item_helpers()
  */
-class HS_RATING_RECEIVED {
-
-	use Recipe\Triggers;
+class Hs_Rating_Received extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
 	 * Constant TRIGGER_CODE.
@@ -26,184 +24,222 @@ class HS_RATING_RECEIVED {
 	 */
 	const TRIGGER_META = 'HS_RATING_RECEIVED_META';
 
-	public function __construct() {
-
-		if ( automator_get_option( 'uap_helpscout_enable_webhook', false ) ) {
-
-			$this->set_helper( new Helpscout_Helpers( false ) );
-
-			$this->setup_trigger();
-
-		}
-
+	/**
+	 * Check if trigger requirements are met
+	 *
+	 * @return bool
+	 */
+	public function requirements_met() {
+		return automator_get_option( 'uap_helpscout_enable_webhook', false );
 	}
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object.
 	 *
-	 * @return void.
+	 * @return void
 	 */
 	public function setup_trigger() {
 
 		$this->set_integration( 'HELPSCOUT' );
-
 		$this->set_trigger_code( self::TRIGGER_CODE );
-
 		$this->set_trigger_meta( self::TRIGGER_META );
-
 		$this->set_is_pro( false );
-
 		$this->set_is_login_required( false );
-
 		$this->set_trigger_type( 'anonymous' );
-
-		// The action hook to attach this trigger into.
-		$this->set_action_hook( 'automator_helpscout_webhook_received' );
-
-		// The number of arguments that the action hook accepts.
-		$this->set_action_args_count( 2 );
-
 		$this->set_uses_api( true );
+		$this->set_support_link( \Automator()->get_author_support_link( $this->get_trigger_code(), 'knowledge-base/helpscout/' ) );
 
 		$this->set_sentence(
 			sprintf(
-				/* Translators: Trigger sentence */
-				esc_html__( 'A conversation receives {{a specific rating:%1$s}}', 'uncanny-automator' ),
+				/* translators: %1$s: Rating */
+				esc_html_x( 'A conversation receives {{a specific rating:%1$s}}', 'HelpScout', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
-			/* Translators: Trigger sentence */
-			esc_html__( 'A conversation receives {{a specific rating}}', 'uncanny-automator' )
+			esc_html_x( 'A conversation receives {{a specific rating}}', 'HelpScout', 'uncanny-automator' )
 		);
 
-		$this->set_tokens(
-			array(
-				'customer_name'    => array( 'name' => esc_html__( 'Customer name', 'uncanny-automator' ) ),
-				'customer_email'   => array( 'name' => esc_html__( 'Customer email', 'uncanny-automator' ) ),
-				'conversation_id'  => array( 'name' => esc_html__( 'Conversation ID', 'uncanny-automator' ) ),
-				'conversation_url' => array( 'name' => esc_html__( 'Conversation URL', 'uncanny-automator' ) ),
-				'date_created'     => array( 'name' => esc_html__( 'Date created', 'uncanny-automator' ) ),
-				'date_modified'    => array( 'name' => esc_html__( 'Date modified', 'uncanny-automator' ) ),
-				'user_id'          => array( 'name' => esc_html__( 'User ID', 'uncanny-automator' ) ),
-				'user_email'       => array( 'name' => esc_html__( 'User email', 'uncanny-automator' ) ),
-				'user_firstName'   => array( 'name' => esc_html__( 'User first name', 'uncanny-automator' ) ),
-				'user_lastName'    => array( 'name' => esc_html__( 'User last name', 'uncanny-automator' ) ),
-				'mailbox_id'       => array( 'name' => esc_html__( 'Mailbox ID', 'uncanny-automator' ) ),
-				'rating_label'     => array( 'name' => esc_html__( 'Rating label', 'uncanny-automator' ) ),
-				'rating_comments'  => array( 'name' => esc_html__( 'Rating comments', 'uncanny-automator' ) ),
-				'thread_id'        => array( 'name' => esc_html__( 'Thread ID', 'uncanny-automator' ) ),
-			)
-		);
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		// Register the trigger.
-		$this->register_trigger();
-
+		$this->add_action( 'automator_helpscout_webhook_received', 10, 2 );
 	}
 
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
+	/**
+	 * Define options
+	 *
+	 * @return array
+	 */
+	public function options() {
+
+		return array(
 			array(
-				'options_group' => array(
-					$this->get_trigger_meta() => array(
-						array(
-							'option_code'           => $this->get_trigger_meta(),
-							'label'                 => esc_attr__( 'Rating', 'uncanny-automator' ),
-							'input_type'            => 'select',
-							'options'               => array(
-								'-1'       => esc_html__( 'Any rating', 'uncanny-automator' ),
-								'great'    => esc_html__( 'Great', 'uncanny-automator' ),
-								'okay'     => esc_html__( 'Okay', 'uncanny-automator' ),
-								'not_good' => esc_html__( 'Not Good', 'uncanny-automator' ),
-							),
-							'supports_custom_value' => false,
-							'required'              => true,
-							'options_show_id'       => false,
-						),
+				'option_code'           => self::TRIGGER_META,
+				'label'                 => esc_html_x( 'Rating', 'Help Scout', 'uncanny-automator' ),
+				'token_name'           => esc_html_x( 'Selected rating', 'Help Scout', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'options'               => array(
+					array(
+						'text'  => esc_html_x( 'Any rating', 'Helpscout', 'uncanny-automator' ),
+						'value' => '-1',
+					),
+					array(
+						'text'  => esc_html_x( 'Great', 'Helpscout', 'uncanny-automator' ),
+						'value' => 'great',
+					),
+					array(
+						'text'  => esc_html_x( 'Okay', 'Helpscout', 'uncanny-automator' ),
+						'value' => 'okay',
+					),
+					array(
+						'text'  => esc_html_x( 'Not Good', 'Helpscout', 'uncanny-automator' ),
+						'value' => 'not_good',
 					),
 				),
-			)
+				'supports_custom_value' => false,
+				'required'              => true,
+				'options_show_id'       => false,
+			),
 		);
+	}
+
+	/**
+	 * Returns the trigger's tokens.
+	 *
+	 * @param array $trigger
+	 * @param array $tokens
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+
+		$helpscout_tokens = array(
+			array(
+				'tokenId'   => 'customer_name',
+				'tokenName' => esc_html_x( 'Customer name', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'customer_email',
+				'tokenName' => esc_html_x( 'Customer email', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'email',
+			),
+			array(
+				'tokenId'   => 'conversation_id',
+				'tokenName' => esc_html_x( 'Conversation ID', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'conversation_url',
+				'tokenName' => esc_html_x( 'Conversation URL', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'url',
+			),
+			array(
+				'tokenId'   => 'date_created',
+				'tokenName' => esc_html_x( 'Date created', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'date_modified',
+				'tokenName' => esc_html_x( 'Date modified', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'user_id',
+				'tokenName' => esc_html_x( 'User ID', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'user_email',
+				'tokenName' => esc_html_x( 'User email', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'email',
+			),
+			array(
+				'tokenId'   => 'user_firstName',
+				'tokenName' => esc_html_x( 'User first name', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'user_lastName',
+				'tokenName' => esc_html_x( 'User last name', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'mailbox_id',
+				'tokenName' => esc_html_x( 'Mailbox ID', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'rating_label',
+				'tokenName' => esc_html_x( 'Rating label', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'rating_comments',
+				'tokenName' => esc_html_x( 'Rating comments', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'thread_id',
+				'tokenName' => esc_html_x( 'Thread ID', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+		);
+
+		return array_merge( $tokens, $helpscout_tokens );
 	}
 
 	/**
 	 * Validate the trigger.
 	 *
-	 * @return boolean True.
+	 * @param array $trigger
+	 * @param array $hook_args
+	 * @return bool
 	 */
-	public function validate_trigger( ...$args ) {
+	public function validate( $trigger, $hook_args ) {
 
-		if ( empty( $args[0][1] ) ) {
+		list( $params, $headers ) = $hook_args;
+
+		// Check that this is a satisfaction rating event
+		if ( ! $this->get_item_helpers()->is_webhook_request_matches_event( $headers, 'satisfaction.ratings' ) ) {
 			return false;
 		}
 
-		return $this->get_helper()->is_webhook_request_matches_event( $args[0][1], 'satisfaction.ratings' );
+		// Check rating matches
+		$selected_rating = $trigger['meta'][ self::TRIGGER_META ];
 
+		// Allow "Any rating" (-1)
+		if ( intval( '-1' ) === intval( $selected_rating ) ) {
+			return true;
+		}
+
+		return isset( $params['rating'] ) && $selected_rating === $params['rating'];
 	}
 
 	/**
-	 * Prepare to run.
+	 * Hydrate tokens
 	 *
-	 * Sets the conditional trigger to true.
-	 *
-	 * @return void.
-	 */
-	public function prepare_to_run( $data ) {
-
-		$this->set_conditional_trigger( true );
-
-	}
-
-	public function validate_conditions( ...$args ) {
-
-		$params = array_shift( $args[0] );
-
-		$matching_recipes_triggers = $this->find_all( $this->trigger_recipes() )
-			->where( array( $this->get_trigger_meta() ) )
-			->match( array( $params['rating'] ) )
-			->format( array( 'trim' ) )
-			->get();
-
-		return $matching_recipes_triggers;
-
-	}
-
-	/**
-	 * Continue trigger process even for logged-in user.
-	 *
-	 * @return boolean True.
-	 */
-	public function do_continue_anon_trigger( ...$args ) {
-
-		return true;
-
-	}
-
-	/**
-	 * Method parse_additional_tokens.
-	 *
-	 * @param $parsed
-	 * @param $args
-	 * @param $trigger
-	 *
+	 * @param array $trigger
+	 * @param array $hook_args
 	 * @return array
 	 */
-	public function parse_additional_tokens( $parsed, $args, $trigger ) {
+	public function hydrate_tokens( $trigger, $hook_args ) {
 
-		$params = $args['trigger_args'][0];
+		list( $params, $headers ) = $hook_args;
 
 		$customer_name = implode( ' ', array( $params['customer']['firstName'], $params['customer']['lastName'] ) );
 
-		$hydrated_tokens = array(
+		// Smart conversation URL - use web href if available, otherwise construct it
+		$conversation_url = 'https://secure.helpscout.net/conversation/' . $params['conversationId'];
+		if ( isset( $params['_links']['web']['href'] ) && ! empty( $params['_links']['web']['href'] ) ) {
+			$conversation_url = $params['_links']['web']['href'];
+		}
+
+		return array(
 			'customer_name'    => ! empty( $customer_name ) ? $customer_name : $params['customer']['email'],
 			'customer_email'   => $params['customer']['email'],
 			'conversation_id'  => $params['conversationId'],
-			'conversation_url' => 'https://secure.helpscout.net/conversation/' . $params['conversationId'],
-			'date_created'     => $this->get_helper()->format_date_timestamp( strtotime( $params['createdAt'] ) ),
-			'date_modified'    => $this->get_helper()->format_date_timestamp( strtotime( $params['modifiedAt'] ) ),
+			'conversation_url' => $conversation_url,
+			'date_created'     => $this->get_item_helpers()->format_date_timestamp( strtotime( $params['createdAt'] ) ),
+			'date_modified'    => $this->get_item_helpers()->format_date_timestamp( strtotime( $params['modifiedAt'] ) ),
 			'user_id'          => $params['user']['id'],
 			'user_email'       => $params['user']['email'],
 			'user_firstName'   => $params['user']['firstName'],
@@ -213,9 +249,5 @@ class HS_RATING_RECEIVED {
 			'rating_comments'  => $params['comments'],
 			'thread_id'        => $params['threadId'],
 		);
-
-		return $parsed + $hydrated_tokens;
-
 	}
-
 }

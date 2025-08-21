@@ -25,20 +25,11 @@ class THRIVE_APPRENTICE_USER_COURSE_COMPLETED extends Trigger {
 	const TRIGGER_META = 'THRIVE_APPRENTICE_USER_COURSE_COMPLETED_META';
 
 	/**
-	 * Helper instance
-	 *
-	 * @var Thrive_Apprentice_Helpers
-	 */
-	protected $helper;
-
-	/**
 	 * Setup trigger
 	 *
 	 * @return void
 	 */
 	protected function setup_trigger() {
-		$this->helper = new Thrive_Apprentice_Helpers( false );
-
 		$this->set_integration( 'THRIVE_APPRENTICE' );
 		$this->set_trigger_code( self::TRIGGER_CODE );
 		$this->set_trigger_meta( self::TRIGGER_META );
@@ -67,13 +58,14 @@ class THRIVE_APPRENTICE_USER_COURSE_COMPLETED extends Trigger {
 	 * @return array The available trigger options.
 	 */
 	public function options() {
+		$helper = new Thrive_Apprentice_Helpers( false );
 		return array(
 			array(
 				'option_code'     => $this->get_trigger_meta(),
 				'required'        => true,
 				'label'           => esc_html_x( 'Course', 'Thrive Apprentice', 'uncanny-automator' ),
 				'input_type'      => 'select',
-				'options'         => $this->helper->get_dropdown_options_courses( true, true ),
+				'options'         => $helper->get_dropdown_options_courses( true, true ),
 				'relevant_tokens' => array(),
 			),
 		);
@@ -96,7 +88,7 @@ class THRIVE_APPRENTICE_USER_COURSE_COMPLETED extends Trigger {
 
 		$this->set_user_id( absint( $user['user_id'] ) );
 
-		$course_id          = absint( $course_data['course_id'] );
+		$course_id          = absint( $course['course_id'] );
 		$selected_course_id = $trigger['meta'][ $this->get_trigger_meta() ];
 
 		// Match if any course is selected (-1) or if specific course matches

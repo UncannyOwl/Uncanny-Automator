@@ -73,8 +73,8 @@ class Discord_Integration extends \Uncanny_Automator\Integration {
 		add_action( 'wp_ajax_automator_discord_get_servers', array( $this->helpers, 'get_servers_ajax' ) );
 		// Get server channels handler.
 		add_action( 'wp_ajax_automator_discord_get_server_channels', array( $this->helpers, 'get_server_channels_ajax' ) );
-		// Get server members handler.
-		add_action( 'wp_ajax_automator_discord_get_server_members', array( $this->helpers, 'get_server_members_ajax' ) );
+		// Get verified members handler.
+		add_action( 'wp_ajax_automator_discord_get_verified_members', array( $this->helpers, 'get_verified_members_ajax' ) );
 		// Get server roles handler.
 		add_action( 'wp_ajax_automator_discord_get_server_roles', array( $this->helpers, 'get_server_roles_ajax' ) );
 		// Get allowed server channel types handler.

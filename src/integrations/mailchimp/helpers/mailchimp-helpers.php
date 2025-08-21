@@ -633,6 +633,13 @@ class Mailchimp_Helpers {
 			);
 		}
 
+		if ( ! isset( $ajax_response ) ) {
+			$ajax_response = (object) array(
+				'success' => false,
+				'samples' => array(),
+			);
+		}
+
 		echo wp_json_encode( $ajax_response );
 		die();
 	}
@@ -1084,7 +1091,7 @@ class Mailchimp_Helpers {
 
 			$new_interests = array();
 
-			if ( ! empty( $existing_user['data']['interests'] ) ) {
+			if ( is_array( $existing_user ) && ! empty( $existing_user['data']['interests'] ) ) {
 				// First remove all interests
 				foreach ( $existing_user['data']['interests'] as $interest_id => $status ) {
 					$new_interests[ $interest_id ] = false;
@@ -1371,46 +1378,160 @@ class Mailchimp_Helpers {
 	}
 
 	/**
-	 * Dynamically sanitizes and validates Mailchimp merge fields.
+	 * Formats the repeater fields to the Mailchimp format.
 	 *
-	 * @param  array $fields The Mailchimp merge fields to validate.
+	 * Omits address fields if all values are empty.
 	 *
-	 * @return array The sanitized fields.
-	 * @throws \Exception If required sub-array fields are empty.
+	 * If any of the address fields are non-empty, all subfields must be populated,
+	 * otherwise an exception is thrown.
+	 *
+	 * @link https://mailchimp.com/developer/marketing/docs/merge-fields/
+	 *
+	 * @param string|array $fields JSON-encoded repeater data.
+	 * @return array         The merge_fields array ready for Mailchimp.
+	 *
+	 * @throws \Exception    If fields are invalid, which means JSON has failed or there are no fields to process.
 	 */
 	public static function handle_mailchimp_merge_fields( $fields ) {
 
-		$sanitized_fields = array();
+		$fields = self::normalize_merge_fields( $fields );
 
-		foreach ( $fields as $key => $value ) {
-			// Handle nested arrays.
-			if ( is_array( $value ) ) {
-				$nested_sanitized = self::handle_mailchimp_merge_fields( $value );
+		$merge        = array();
+		$addr_buckets = array();
 
-				// Ensure no empty values exist in nested arrays.
-				foreach ( $nested_sanitized as $sub_key => $sub_value ) {
-					if ( empty( $sub_value ) && '0' !== $sub_value ) {
-						throw new Exception(
+		// Split out address parts vs. regular fields
+		foreach ( $fields as $field ) {
+			$name  = $field['FIELD_NAME'] ?? '';
+			$value = $field['FIELD_VALUE'] ?? '';
+
+			if ( preg_match( '/^(.+?)_(addr1|addr2|city|state|zip|country)$/', $name, $match ) ) {
+				list( , $tag, $part )          = $match;
+				$addr_buckets[ $tag ][ $part ] = $value;
+			} else {
+				// Only include non-empty scalar values.
+				// Empty strings should not overwrite existing data per UI note.
+				if ( is_array( $value ) ) {
+					// For non-address arrays (rare), include as-is.
+					$merge[ $name ] = $value;
+				} else {
+					if ( '' !== (string) $value ) {
+						$merge[ $name ] = $value;
+					}
+				}
+			}
+		}
+
+		// Validate and emit address groups.
+		foreach ( $addr_buckets as $tag => $parts ) {
+
+			// Count how many sub-fields have non-empty values.
+			$has_any = count(
+				array_filter(
+					$parts,
+					function ( $v ) {
+						return '' !== $v;
+					}
+				)
+			) > 0;
+
+			if ( $has_any ) {
+				// Must have addr1 city state and zip. Subfields addr2 and country are optional.
+				foreach ( array( 'addr1', 'city', 'state', 'zip' ) as $key ) {
+					if ( empty( $parts[ $key ] ) ) {
+						throw new \Exception(
 							sprintf(
-							/* translators: %1$s: Sub-field key, %2$s: Parent field key */
-								esc_html_x( "The field '%1\$s' in '%2\$s' is required but is empty.", 'Mailchimp', 'uncanny-automator' ),
-								esc_html( $sub_key ),
+								'Address field "%s" is partially filled. Missing or empty subfield "%s".',
+								esc_html( $tag ),
 								esc_html( $key )
 							)
 						);
 					}
 				}
-
-				$sanitized_fields[ $key ] = $nested_sanitized;
-				continue;
+				$merge[ $tag ] = $parts;
 			}
-
-			// Sanitize scalar fields.
-			$sanitized_value = sanitize_text_field( $value );
-
-			$sanitized_fields[ $key ] = $sanitized_value;
+			// Else: All subfields are empty, omit entirely.
 		}
 
-		return $sanitized_fields;
+		return $merge;
+	}
+
+	/**
+	 * Parses the merge fields and returns the original JSON string with value parsed.
+	 *
+	 * @todo - When converting this action to f3, remove this function and use the $parsed variable.
+	 *
+	 * @param string $merge_fields
+	 * @param int    $recipe_id
+	 * @param int    $user_id
+	 * @param array  $args
+	 *
+	 * @return string
+	 */
+	public static function parse_merge_fields( $merge_fields, $recipe_id, $user_id, $args ) {
+
+		if ( ! is_string( $merge_fields ) ) {
+			throw new \Exception( 'Invalid merge fields format.' );
+		}
+
+		// Cast to array. This handles null if the JSON is invalid.
+		$merge_fields = (array) json_decode( $merge_fields, true );
+
+		$merge_fields = array_map(
+			function ( $field ) use ( $recipe_id, $user_id, $args ) {
+				if ( ! isset( $field['FIELD_NAME'] ) || ! isset( $field['FIELD_VALUE'] ) ) {
+						throw new \Exception( 'Invalid field format.' );
+				}
+				return array(
+					'FIELD_NAME'  => $field['FIELD_NAME'],
+					'FIELD_VALUE' => Automator()->parse->text( $field['FIELD_VALUE'], $recipe_id, $user_id, $args ),
+				);
+			},
+			$merge_fields
+		);
+
+		return wp_json_encode( $merge_fields );
+	}
+
+	/**
+	 * Validates an email address.
+	 *
+	 * @param string $email
+	 *
+	 * @return bool
+	 */
+	public static function validate_email( $email ) {
+
+		if ( empty( $email ) ) {
+			throw new \InvalidArgumentException( esc_html_x( 'Email is empty.', 'Mailchimp', 'uncanny-automator' ) );
+		}
+
+		if ( filter_var( $email, FILTER_VALIDATE_EMAIL ) === false ) {
+			throw new \InvalidArgumentException( esc_html_x( 'Email is invalid.', 'Mailchimp', 'uncanny-automator' ) );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Normalizes the merge fields to an array.
+	 *
+	 * @param string|array $fields The merge fields array or the merge field JSON string.
+	 *
+	 * @return array
+	 */
+	private static function normalize_merge_fields( $fields ) {
+
+		// Throw an Exception if the fields are not an array or a string.
+		if ( ! is_array( $fields ) && ! is_string( $fields ) ) {
+			throw new \InvalidArgumentException( esc_html_x( 'Invalid merge fields format.', 'Mailchimp', 'uncanny-automator' ) );
+		}
+
+		// If the fields are a string, decode it and cast to array.
+		if ( is_string( $fields ) ) {
+			return (array) json_decode( $fields, true );
+		}
+
+		// If the fields are an array, return it.
+		return $fields;
 	}
 }

@@ -38,6 +38,44 @@ abstract class Trigger {
 	protected $dependencies;
 
 	/**
+	 * item_helpers
+	 *
+	 * @var object|null
+	 */
+	protected $item_helpers;
+
+	/**
+	 * Set item helpers.
+	 *
+	 * @param object $helpers The helper object to set.
+	 * @return void
+	 */
+	protected function set_item_helpers( $helpers ) {
+		$this->item_helpers = $helpers;
+	}
+
+	/**
+	 * Get item helpers.
+	 *
+	 * @return object|null The helper object or null if not set.
+	 */
+	protected function get_item_helpers() {
+		return $this->item_helpers ?? null;
+	}
+
+	/**
+	 * Set multiple helpers from dependencies.
+	 *
+	 * @param array $dependencies Array of dependency objects.
+	 * @return void
+	 */
+	protected function set_helpers_from_dependencies( $dependencies ) {
+		if ( ! empty( $dependencies ) && isset( $dependencies[0] ) ) {
+			$this->set_item_helpers( $dependencies[0] );
+		}
+	}
+
+	/**
 	 * user_id
 	 *
 	 * @var mixed
@@ -145,6 +183,9 @@ abstract class Trigger {
 	final public function __construct( ...$dependencies ) {
 
 		$this->dependencies = $dependencies;
+
+		// Automatically set up helpers from dependencies
+		$this->set_helpers_from_dependencies( $this->dependencies );
 
 		$this->setup_trigger();
 

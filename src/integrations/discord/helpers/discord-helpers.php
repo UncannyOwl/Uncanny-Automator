@@ -50,6 +50,13 @@ class Discord_Helpers {
 	const DISCORD_USER_MAPPING_META_KEY = 'automator_discord_member_id';
 
 	/**
+	 * Cache key for verified members.
+	 *
+	 * @var string
+	 */
+	const VERIFIED_MEMBERS_CACHE_KEY = 'automator_discord_verified_members';
+
+	/**
 	 * Get api instance.
 	 * 
 	 * @return Discord_Api
@@ -403,11 +410,10 @@ class Discord_Helpers {
 	 * Get server members select config.
 	 *
 	 * @param string $option_code
-	 * @param string $server_key
 	 *
 	 * @return array
 	 */
-	public function get_server_members_select_config( $option_code, $server_key ) {
+	public function get_verified_members_select_config( $option_code ) {
 		return array(
 			'option_code'              => $option_code,
 			'label'                    => _x( 'Member', 'Discord', 'uncanny-automator' ),
@@ -418,10 +424,10 @@ class Discord_Helpers {
 			'custom_value_description' => _x( 'Enter a member ID ( snowflake eg: 1423695857943239309 )', 'Discord', 'uncanny-automator' ),
 			'show_label_in_sentence'   => true,
 			'relevant_tokens'          => array(),
+			'description'              => _x( 'Members that authenticated their WP Account are listed here', 'Discord', 'uncanny-automator' ),
 			'ajax'                     => array(
-				'endpoint'      => 'automator_discord_get_server_members',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $server_key ),
+				'endpoint' => 'automator_discord_get_verified_members',
+				'event'    => 'on_load',
 			),
 		);
 	}
@@ -441,42 +447,68 @@ class Discord_Helpers {
 	}
 
 	/**
-	 * Get server members via Ajax for select.
+	 * Get verified members via Ajax for select.
 	 *
 	 * @return array
 	 */
-	public function get_server_members_ajax() {
+	public function get_verified_members_ajax() {
 		Automator()->utilities->verify_nonce();
-		$server_id = $this->get_server_id_from_post();
-		$members   = $this->api()->get_server_members( $server_id, $this->is_ajax_refresh() );
+		
+		// Use object cache unless refresh requested.
+		$members = false;
+		if ( ! $this->is_ajax_refresh() ) {
+			$members = wp_cache_get( self::VERIFIED_MEMBERS_CACHE_KEY, 'automator' );
+		}
+		
+		if ( false === $members ) {
+			// Get WordPress users with Discord mapping.
+			$users = get_users(
+				array(
+					'meta_key'     => self::DISCORD_USER_MAPPING_META_KEY,
+					'meta_value'   => '',
+					'meta_compare' => '!=',
+				)
+			);
 
-		wp_send_json( array(
-			'success' => true,
-			'options' => $members,
-		) );
+			$members = array();
+			foreach ( $users as $user ) {
+				$discord_id = get_user_meta( $user->ID, self::DISCORD_USER_MAPPING_META_KEY, true );
+				if ( ! empty( $discord_id ) ) {
+					$members[] = array(
+						'text'  => $user->display_name . ' (' . $user->user_email . ')',
+						'value' => $discord_id,
+					);
+				}
+			}
+			
+			// Cache the results for 5 minutes (300 seconds).
+			wp_cache_set( self::VERIFIED_MEMBERS_CACHE_KEY, $members, 'automator', 300 );
+		}
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $members,
+			)
+		);
 	}
 
 	/**
 	 * Get member username token value.
 	 *
-	 * @param string $username
-	 * @param int $member_id
-	 * @param int $server_id
+	 * @param string $member_id
 	 *
 	 * @return string
 	 */
-	public function get_member_username_token_value( $username, $member_id, $server_id ) {
-
-		// If custom value was not used, return the parsed member name.
-		if ( ! $this->is_token_custom_value_text( $username ) ) {
-			return $username;
+	public function get_member_username_token_value( $member_id ) {
+		// Get user info from Discord API.
+		$user = $this->api()->get_user_info( $member_id );
+		
+		if ( ! empty( $user ) && isset( $user['username'] ) ) {
+			return $user['username'];
 		}
 
-		// Check against the existing server list of members.
-		$members = $this->api()->get_server_members( $server_id, false );
-		$member  = array_values( wp_list_filter( $members, array( 'value' => $member_id ) ) );
-
-		return $member[0]['text'] ?? '-';
+		return '-';
 	}
 
 	/**
@@ -754,6 +786,15 @@ class Discord_Helpers {
 	public function get_mapped_wp_user_discord_id( $user_id ) {
 		$member_id = get_user_meta( $user_id, self::DISCORD_USER_MAPPING_META_KEY, true );
 		return ! empty( $member_id ) ? $member_id : false;
+	}
+
+	/**
+	 * Clear the verified members cache.
+	 *
+	 * @return bool
+	 */
+	public function clear_verified_members_cache() {
+		return wp_cache_delete( self::VERIFIED_MEMBERS_CACHE_KEY, 'automator' );
 	}
 
 	/**

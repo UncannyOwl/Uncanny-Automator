@@ -75,11 +75,11 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		$database = array(
 			'input_type'      => 'select',
 			'option_code'     => $this->get_action_meta(),
-			'label'           => _x( 'Database', 'Notion', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Database', 'Notion', 'uncanny-automator' ),
 			'required'        => true,
 			'options'         => array(),
 			'options_show_id' => false,
-			'token_name'      => _x( 'Database ID', 'Notion', 'uncanny-automator' ),
+			'token_name'      => esc_html_x( 'Database ID', 'Notion', 'uncanny-automator' ),
 			'ajax'            => array(
 				'endpoint' => 'automator_notion_list_databases',
 				'event'    => 'on_load',
@@ -89,7 +89,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		$column_search = array(
 			'option_code'     => 'COLUMN_SEARCH',
 			'input_type'      => 'select',
-			'label'           => esc_html__( 'Column search', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Column search', 'Notion', 'uncanny-automator' ),
 			'required'        => true,
 			'relevant_tokens' => array(),
 			'options_show_id' => false,
@@ -104,7 +104,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		$value = array(
 			'input_type'      => 'text',
 			'option_code'     => 'MATCH_VALUE',
-			'label'           => _x( 'Match value', 'Notion', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Match value', 'Notion', 'uncanny-automator' ),
 			'required'        => true,
 			'relevant_tokens' => array(),
 		);
@@ -113,8 +113,8 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 			'option_code'     => 'FIELD_COLUMN_VALUE',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => _x( 'Row', 'Notion', 'uncanny-automator' ),
-			'description'     => _x( "Leaving fields blank keeps current values. Checkbox selections are reflected (unchecked or checked), so ensure checkboxes have the correct value if you're matching against them.", 'Notion', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Row', 'Notion', 'uncanny-automator' ),
+			'description'     => esc_html_x( "Leaving fields blank keeps current values. Checkbox selections are reflected (unchecked or checked), so ensure checkboxes have the correct value if you're matching against them.", 'Notion', 'uncanny-automator' ),
 			'required'        => true,
 			'layout'          => 'transposed',
 			'hide_header'     => true,
@@ -152,7 +152,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 
 		$column             = $parsed['COLUMN_SEARCH'] ?? '';
 		$match_value        = $parsed['MATCH_VALUE'] ?? '';
-		$field_column_value = $parsed ['FIELD_COLUMN_VALUE'] ?? array();
+		$field_column_value = $action_data['meta']['FIELD_COLUMN_VALUE'] ?? '';
 
 		// Make sure the match value is compatible with notion.
 		$match_value = $this->compat_match_value( $match_value );
@@ -162,7 +162,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		$property_type = $column_extracted['type'];
 
 		// Create the payload for the fields.
-		$field_data = $this->helper->make_fields_payload( $field_column_value );
+		$field_data = $this->helper->make_fields_payload( $recipe_id, $args, $parsed, $field_column_value );
 
 		// Get the database ID from the parsed variables.
 		$db_id = $parsed[ $this->get_action_meta() ] ?? '';
@@ -227,7 +227,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 			throw new Exception(
 				sprintf(
 				/* translators: %s: Column name */
-					esc_html__( 'Invalid column length after extracting: %s', 'uncanny-automator' ),
+					esc_html_x( 'Invalid column length after extracting: %s', 'Notion', 'uncanny-automator' ),
 					esc_html( $column_name )
 				),
 				400
@@ -250,13 +250,13 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 	 *
 	 * @return mixed
 	 */
-	private function compat_match_value( $string ) {
+	private function compat_match_value( $date_string ) {
 
-		// Handle dates.
-		if ( $this->helper->is_valid_date( $string ) ) {
-			return $this->helper->convert_to_iso_8601( $string );
+		// Check if the date is valid and convert it to ISO 8601 format.
+		if ( $this->helper->is_valid_date( $date_string ) ) {
+			return $this->helper->convert_to_iso_8601( $date_string );
 		}
 
-		return $string;
+		return $date_string;
 	}
 }

@@ -1,177 +1,170 @@
 <?php
-namespace Uncanny_Automator;
 
-class HELPSCOUT_CONVERSATION_CREATE {
+namespace Uncanny_Automator\Integrations\Helpscout;
 
-	use Recipe\Actions;
-
-	use Recipe\Action_Tokens;
-
-	protected $helper = null;
-
-	public function __construct() {
-
-		$this->setup_action();
-
-		$this->helper = new Helpscout_Helpers( false );
-
-	}
-
+/**
+ * Class Helpscout_Conversation_Create
+ *
+ * @package Uncanny_Automator
+ * @method Helpscout_Helpers get_item_helpers()
+ */
+class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\Action {
 
 	/**
-	 * Setups our action.
+	 * Setup action.
 	 *
-	 * @return void.
+	 * @return void
 	 */
 	protected function setup_action() {
 
 		$this->set_integration( 'HELPSCOUT' );
-
 		$this->set_action_code( 'HELPSCOUT_CONVERSATION_CREATE' );
-
 		$this->set_action_meta( 'HELPSCOUT_CONVERSATION_CREATE_META' );
-
 		$this->set_is_pro( false );
-
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/helpscout/' ) );
-
+		$this->set_support_link( \Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/helpscout/' ) );
 		$this->set_requires_user( false );
 
-		/* translators: Action - WordPress */
-		$this->set_sentence( sprintf( esc_attr__( 'Create a conversation in {{a mailbox:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
+		/* translators: %1$s: Mailbox */
+		$this->set_sentence( sprintf( esc_html_x( 'Create a conversation in {{a mailbox:%1$s}}', 'HelpScout', 'uncanny-automator' ), $this->get_action_meta() ) );
 
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Create a conversation in {{a mailbox}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
+		$this->set_readable_sentence( esc_html_x( 'Create a conversation in {{a mailbox}}', 'HelpScout', 'uncanny-automator' ) );
 
 		$this->set_background_processing( true );
 
 		$this->set_action_tokens(
 			array(
 				'CONVERSATION_ID'  => array(
-					'name' => esc_html__( 'Conversation ID', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Conversation ID', 'HelpScout', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'CONVERSATION_URL' => array(
-					'name' => esc_html__( 'Conversation URL', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Conversation URL', 'HelpScout', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),
 			$this->get_action_code()
 		);
-
-		$this->register_action();
-
 	}
 
-	public function load_options() {
+	/**
+	 * Define options
+	 *
+	 * @return array
+	 */
+	public function options() {
 
-		return Automator()->utilities->keep_order_of_options(
+		return array(
 			array(
-				'options_group' => array(
-					$this->get_action_meta() => array(
-						array(
-							'option_code'           => $this->get_action_meta(),
-							'label'                 => esc_html__( 'Mailbox', 'uncanny-automator' ),
-							'input_type'            => 'select',
-							'options'               => $this->helper->fetch_mailboxes(),
-							'is_ajax'               => true,
-							'endpoint'              => 'automator_helpscout_fetch_mailbox_users',
-							'fill_values_in'        => 'CREATED_BY',
-							'supports_custom_value' => false,
-							'required'              => true,
-						),
-						array(
-							'option_code'           => 'CREATED_BY',
-							'label'                 => esc_html__( 'Created by', 'uncanny-automator' ),
-							'input_type'            => 'select',
-							'is_ajax'               => true,
-							'endpoint'              => 'automator_helpscout_fetch_mailbox_users',
-							'fill_values_in'        => 'ASSIGNEE',
-							'options'               => array(),
-							'supports_custom_value' => false,
-							'required'              => true,
-							'options_show_id'       => false,
-						),
-						array(
-							'option_code'           => 'FIRST_NAME',
-							'label'                 => esc_html__( 'Customer first name', 'uncanny-automator' ),
-							'input_type'            => 'text',
-							'supports_custom_value' => true,
-						),
-						array(
-							'option_code'           => 'LAST_NAME',
-							'label'                 => esc_html__( 'Customer last name', 'uncanny-automator' ),
-							'input_type'            => 'text',
-							'supports_custom_value' => true,
-						),
-						array(
-							'option_code'           => 'EMAIL',
-							'label'                 => esc_html__( 'Customer email', 'uncanny-automator' ),
-							'input_type'            => 'email',
-							'supports_custom_value' => true,
-							'required'              => true,
-						),
-						array(
-							'option_code'           => 'SUBJECT',
-							'label'                 => esc_html__( 'Subject', 'uncanny-automator' ),
-							'input_type'            => 'text',
-							'supports_custom_value' => true,
-							'required'              => true,
-						),
-						array(
-							'option_code'           => 'BODY',
-							'label'                 => esc_html__( 'Body', 'uncanny-automator' ),
-							'input_type'            => 'textarea',
-							'supports_custom_value' => true,
-							'required'              => true,
-						),
-						array(
-							'option_code'           => 'TAGS',
-							'label'                 => esc_html__( 'Tags', 'uncanny-automator' ),
-							'description'           => esc_html__( 'Comma separated list of tags.', 'uncanny-automator' ),
-							'input_type'            => 'text',
-							'supports_custom_value' => true,
-						),
-						array(
-							'option_code'     => 'STATUS',
-							'label'           => esc_html__( 'Status', 'uncanny-automator' ),
-							'input_type'      => 'select',
-							'options'         => array(
-								'active'  => 'Active',
-								'closed'  => 'Closed',
-								'pending' => 'Pending',
-							),
-							'required'        => true,
-							'options_show_id' => false,
-						),
-						array(
-							'option_code'           => 'ASSIGNEE',
-							'label'                 => esc_html__( 'Assign to', 'uncanny-automator' ),
-							'input_type'            => 'select',
-							'options'               => array(),
-							'required'              => true,
-							'supports_custom_value' => false,
-							'options_show_id'       => false,
-						),
+				'option_code'           => $this->get_action_meta(),
+				'label'                 => esc_html_x( 'Mailbox', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'options'               => $this->get_item_helpers()->fetch_mailboxes(),
+				'supports_custom_value' => false,
+				'required'              => true,
+			),
+			array(
+				'option_code'           => 'CREATED_BY',
+				'label'                 => esc_html_x( 'Created by', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'options'               => array(),
+				'supports_custom_value' => false,
+				'required'              => true,
+				'options_show_id'       => false,
+				'ajax'                  => array(
+					'endpoint'       => 'automator_helpscout_fetch_mailbox_users',
+					'event'          => 'parent_fields_change',
+					'listen_fields'  => array( $this->get_action_meta() ),
+				),
+			),
+			array(
+				'option_code'           => 'FIRST_NAME',
+				'label'                 => esc_html_x( 'Customer first name', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'supports_custom_value' => true,
+			),
+			array(
+				'option_code'           => 'LAST_NAME',
+				'label'                 => esc_html_x( 'Customer last name', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'supports_custom_value' => true,
+			),
+			array(
+				'option_code'           => 'EMAIL',
+				'label'                 => esc_html_x( 'Customer email', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'email',
+				'supports_custom_value' => true,
+				'required'              => true,
+			),
+			array(
+				'option_code'           => 'SUBJECT',
+				'label'                 => esc_html_x( 'Subject', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'supports_custom_value' => true,
+				'required'              => true,
+			),
+			array(
+				'option_code'           => 'BODY',
+				'label'                 => esc_html_x( 'Body', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'textarea',
+				'supports_custom_value' => true,
+				'required'              => true,
+			),
+			array(
+				'option_code'           => 'TAGS',
+				'label'                 => esc_html_x( 'Tags', 'HelpScout', 'uncanny-automator' ),
+				'description'           => esc_html_x( 'Comma separated list of tags.', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'supports_custom_value' => true,
+			),
+			array(
+				'option_code'     => 'STATUS',
+				'label'           => esc_html_x( 'Status', 'HelpScout', 'uncanny-automator' ),
+				'input_type'      => 'select',
+				'options'         => array(
+					array(
+						'text'  => 'Active',
+						'value' => 'active',
+					),
+					array(
+						'text'  => 'Closed',
+						'value' => 'closed',
+					),
+					array(
+						'text'  => 'Pending',
+						'value' => 'pending',
 					),
 				),
-			)
+				'required'        => true,
+				'options_show_id' => false,
+			),
+			array(
+				'option_code'           => 'ASSIGNEE',
+				'label'                 => esc_html_x( 'Assign to', 'HelpScout', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'options'               => array(),
+				'required'              => true,
+				'supports_custom_value' => false,
+				'options_show_id'       => false,
+				'ajax'                  => array(
+					'endpoint'       => 'automator_helpscout_fetch_mailbox_users',
+					'event'          => 'parent_fields_change',
+					'listen_fields'  => array( 'CREATED_BY' ),
+				),
+			),
 		);
 	}
 
-
 	/**
-	 * Process action.
+	 * Process the action.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
+	 * @param int $user_id
+	 * @param array $action_data
+	 * @param int $recipe_id
+	 * @param array $args
+	 * @param array $parsed
 	 *
-	 * @return void.
+	 * @return bool
+	 * @throws \Exception
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
@@ -183,52 +176,40 @@ class HELPSCOUT_CONVERSATION_CREATE {
 		$first_name = isset( $parsed['FIRST_NAME'] ) ? sanitize_text_field( $parsed['FIRST_NAME'] ) : '';
 		$last_name  = isset( $parsed['LAST_NAME'] ) ? sanitize_text_field( $parsed['LAST_NAME'] ) : '';
 		$assignee   = isset( $parsed['ASSIGNEE'] ) ? sanitize_text_field( $parsed['ASSIGNEE'] ) : '';
-		$status     = isset( $parsed['ASSIGNEE'] ) ? sanitize_text_field( $parsed['STATUS'] ) : '';
+		$status     = isset( $parsed['STATUS'] ) ? sanitize_text_field( $parsed['STATUS'] ) : '';
 		$tags       = isset( $parsed['TAGS'] ) ? sanitize_text_field( $parsed['TAGS'] ) : '';
 
-		try {
-
-			if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-				throw new \Exception( 'Email is empty or invalid', 422 );
-			}
-
-			$body = array(
-				'mailbox'    => $mailbox,
-				'subject'    => $subject,
-				'email'      => $email,
-				'body'       => $body,
-				'created_by' => $created_by,
-				'assign_to'  => $assignee,
-				'status'     => $status,
-				'tags'       => $tags,
-				'action'     => 'create_conversation',
-			);
-
-			$customer_complete_name = $this->generate_first_and_last_name( $first_name, $last_name );
-
-			$body['first_name'] = $customer_complete_name['first_name'];
-			$body['last_name']  = $customer_complete_name['last_name'];
-
-			$response = $this->helper->api_request( $body, $action_data );
-
-			$this->hydrate_tokens(
-				array(
-					'CONVERSATION_ID'  => isset( $response['data']['data']['resourceId'] ) ? sanitize_text_field( $response['data']['data']['resourceId'] ) : 0,
-					'CONVERSATION_URL' => isset( $response['data']['data']['webLocation'] ) ? esc_url( $response['data']['data']['webLocation'] ) : '',
-				)
-			);
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			// Log error if there are any error messages.
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
+		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+			throw new \Exception( esc_html_x( 'Email is empty or invalid', 'Help Scout', 'uncanny-automator' ), 422 );
 		}
 
+		$body_params = array(
+			'mailbox'    => $mailbox,
+			'subject'    => $subject,
+			'email'      => $email,
+			'body'       => $body,
+			'created_by' => $created_by,
+			'assign_to'  => $assignee,
+			'status'     => $status,
+			'tags'       => $tags,
+			'action'     => 'create_conversation',
+		);
+
+		$customer_complete_name = $this->generate_first_and_last_name( $first_name, $last_name );
+
+		$body_params['first_name'] = $customer_complete_name['first_name'];
+		$body_params['last_name']  = $customer_complete_name['last_name'];
+
+		$response = $this->get_item_helpers()->api_request( $body_params, $action_data );
+
+		$this->hydrate_tokens(
+			array(
+				'CONVERSATION_ID'  => isset( $response['data']['data']['resourceId'] ) ? sanitize_text_field( $response['data']['data']['resourceId'] ) : 0,
+				'CONVERSATION_URL' => isset( $response['data']['data']['webLocation'] ) ? esc_url( $response['data']['data']['webLocation'] ) : '',
+			)
+		);
+
+		return true;
 	}
 
 	/**
@@ -254,7 +235,5 @@ class HELPSCOUT_CONVERSATION_CREATE {
 			'first_name' => ! empty( $first_name ) ? $first_name : '-',
 			'last_name'  => ! empty( $last_name ) ? $last_name : '-',
 		);
-
 	}
-
 }

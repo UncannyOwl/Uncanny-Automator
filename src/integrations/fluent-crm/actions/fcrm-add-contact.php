@@ -18,7 +18,6 @@ class FCRM_ADD_CONTACT {
 		$this->setup_action();
 	}
 
-
 	/**
 	 * Setup Action.
 	 *
@@ -33,9 +32,9 @@ class FCRM_ADD_CONTACT {
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
 		/* translators: Action - FluentCRM */
-		$this->set_sentence( sprintf( esc_attr__( 'Add/Update {{a contact:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_attr_x( 'Add/Update {{a contact:%1$s}}', 'FluentCRM', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - FluentCRM */
-		$this->set_readable_sentence( esc_attr__( 'Add/Update {{a contact}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Add/Update {{a contact}}', 'FluentCRM', 'uncanny-automator' ) );
 		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->register_action();
 	}
@@ -81,14 +80,14 @@ class FCRM_ADD_CONTACT {
 		$data['postal_code']     = Automator()->parse->text( $action_data['meta']['FCRMPOSTALCODE'], $recipe_id, $user_id, $args );
 		$data['country']         = Automator()->parse->text( $action_data['meta']['FCRMCOUNTRY'], $recipe_id, $user_id, $args );
 		$data['status']          = Automator()->parse->text( $action_data['meta']['FCRMSTATUS'], $recipe_id, $user_id, $args );
-		$data['lists']           = array_map( 'intval', json_decode( $action_data['meta']['FCRMLIST'] ) );
-		$data['tags']            = array_map( 'intval', json_decode( $action_data['meta']['FCRMTAG'] ) );
+		$data['lists']           = $this->validate_multiselect_value( $action_data['meta']['FCRMLIST'] );
+		$data['tags']            = $this->validate_multiselect_value( $action_data['meta']['FCRMTAG'] );
 		$data['query_timestamp'] = time();
 		$custom_fields           = fluentcrm_get_custom_contact_fields();
 		if ( $custom_fields ) {
 			foreach ( $custom_fields as $k => $custom_field ) {
 
-				if ( apply_filters( "automator_fluentcrm_omit_custom_field-{$custom_field['slug']}", false, $custom_field ) ) {
+				if ( apply_filters( "automator_fluentcrm_omit_custom_field-{$custom_field['slug']}", false, $custom_field ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 					continue;
 				}
 
@@ -104,7 +103,13 @@ class FCRM_ADD_CONTACT {
 						$data['custom_values'][ $custom_field['slug'] ] = $checkbox_val;
 						break;
 					case 'select-multi':
-						$data['custom_values'][ $custom_field['slug'] ] = json_decode( $action_data['meta'][ 'FLUENTCRM_CUSTOMFIELD_' . $k ] );
+						$data['custom_values'][ $custom_field['slug'] ] = $this->validate_multiselect_value( Automator()->parse->text( $action_data['meta'][ 'FLUENTCRM_CUSTOMFIELD_' . $k ], $recipe_id, $user_id, $args ), true );
+						break;
+					case 'date':
+						$data['custom_values'][ $custom_field['slug'] ] = $this->validate_date_value( Automator()->parse->text( $action_data['meta'][ 'FLUENTCRM_CUSTOMFIELD_' . $k ], $recipe_id, $user_id, $args ) );
+						break;
+					case 'date_time':
+						$data['custom_values'][ $custom_field['slug'] ] = $this->validate_date_value( Automator()->parse->text( $action_data['meta'][ 'FLUENTCRM_CUSTOMFIELD_' . $k ], $recipe_id, $user_id, $args ), 'Y-m-d H:i:s' );
 						break;
 					default:
 						$data['custom_values'][ $custom_field['slug'] ] = Automator()->parse->text( $action_data['meta'][ 'FLUENTCRM_CUSTOMFIELD_' . $k ], $recipe_id, $user_id, $args );
@@ -119,17 +124,78 @@ class FCRM_ADD_CONTACT {
 			$action_data['do-nothing']           = true;
 			$action_data['complete_with_errors'] = true;
 			/* translators: Subscriber email */
-			$message = sprintf( esc_html__( 'We are not able to create or update a contact %s.', 'uncanny-automator' ), $data['email'] );
+			$message = sprintf( esc_html_x( 'We are not able to create or update a contact %s.', 'FluentCRM', 'uncanny-automator' ), $data['email'] );
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
 
 			return;
 		}
 
-		if ( $contact->status === 'pending' ) {
+		if ( 'pending' === $contact->status ) {
 			$contact->sendDoubleOptinEmail();
 		}
 
 		Automator()->complete->action( $user_id, $action_data, $recipe_id );
+	}
+
+	/**
+	 * Validate and format date values.
+	 *
+	 * @param string $value The date value to validate
+	 * @param string $format The expected format (optional, defaults to 'Y-m-d')
+	 *
+	 * @return string The formatted date or empty string if invalid
+	 */
+	private function validate_date_value( $value, $format = 'Y-m-d' ) {
+		if ( empty( $value ) ) {
+			return $value;
+		}
+
+		// Try to parse the date using the expected format
+		$date = \DateTime::createFromFormat( $format, $value );
+
+		if ( $date && $date->format( $format ) === $value ) {
+			return $value; // Date is already in correct format
+		}
+
+		// Try to parse using strtotime for more flexible date parsing
+		$timestamp = strtotime( $value );
+		if ( false !== $timestamp ) {
+			return gmdate( $format, $timestamp );
+		}
+
+		// If we can't parse the date, return empty string to indicate invalid format
+		return '';
+	}
+
+	/**
+	 * Validate and format multiselect values.
+	 *
+	 * @param mixed $value The multiselect value
+	 * @param bool  $is_custom_field Whether the value is from a custom field
+	 *
+	 * @return array The formatted array of values
+	 */
+	private function validate_multiselect_value( $value, $is_custom_field = false ) {
+		// If value is already an array, return it
+		if ( is_array( $value ) ) {
+			return $is_custom_field ? $value : array_map( 'intval', $value );
+		}
+
+		// If value is a JSON string, decode it
+		if ( is_string( $value ) ) {
+			$decoded = json_decode( $value, true );
+			if ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) {
+				return $is_custom_field ? $decoded : array_map( 'intval', $decoded );
+			}
+		}
+
+		// If value is a single value (custom value), convert to array
+		if ( ! empty( $value ) ) {
+			return array( $is_custom_field ? $value : intval( $value ) );
+		}
+
+		// Return empty array if no valid value
+		return array();
 	}
 
 	/**
@@ -143,7 +209,7 @@ class FCRM_ADD_CONTACT {
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMFIRSTNAME',
-					'label'       => esc_attr__( 'First name', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'First name', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
@@ -151,7 +217,7 @@ class FCRM_ADD_CONTACT {
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMLASTNAME',
-					'label'       => esc_attr__( 'Last name', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'Last name', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
@@ -159,7 +225,7 @@ class FCRM_ADD_CONTACT {
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMUSEREMAIL',
-					'label'       => esc_attr__( 'Email', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'Email', 'FluentCRM', 'uncanny-automator' ),
 					'input_type'  => 'email',
 				)
 			),
@@ -167,7 +233,7 @@ class FCRM_ADD_CONTACT {
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMPHONE',
-					'label'       => esc_attr__( 'Phone', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'Phone', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
@@ -175,7 +241,7 @@ class FCRM_ADD_CONTACT {
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMDATEOFBIRTH',
-					'label'       => esc_attr__( 'Date of birth', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'Date of birth', 'FluentCRM', 'uncanny-automator' ),
 					'input_type'  => 'date',
 					'required'    => false,
 				)
@@ -184,42 +250,42 @@ class FCRM_ADD_CONTACT {
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMADDRESSLINE1',
-					'label'       => esc_attr__( 'Address line 1', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'Address line 1', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMADDRESSLINE2',
-					'label'       => esc_attr__( 'Address line 2', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'Address line 2', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMCITY',
-					'label'       => esc_attr__( 'City', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'City', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMSTATE',
-					'label'       => esc_attr__( 'State', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'State', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMPOSTALCODE',
-					'label'       => esc_attr__( 'Postal code', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'Postal code', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
 			Automator()->helpers->recipe->field->text(
 				array(
 					'option_code' => 'FCRMCOUNTRY',
-					'label'       => esc_attr__( 'Country', 'uncanny-automator' ),
+					'label'       => esc_attr_x( 'Country', 'FluentCRM', 'uncanny-automator' ),
 					'required'    => false,
 				)
 			),
@@ -228,9 +294,9 @@ class FCRM_ADD_CONTACT {
 				array(
 					'input_type'            => 'select',
 					'option_code'           => 'FCRMSTATUS',
-					'label'                 => esc_attr__( 'Status', 'uncanny-automator' ),
+					'label'                 => esc_attr_x( 'Status', 'FluentCRM', 'uncanny-automator' ),
 					'options'               => Automator()->helpers->recipe->fluent_crm->get_subscriber_statuses( false, true ),
-					'supports_custom_value' => false,
+					'supports_custom_value' => true,
 					'default_value'         => null,
 				)
 			),
@@ -241,6 +307,7 @@ class FCRM_ADD_CONTACT {
 					'supports_multiple_values' => true,
 					'is_any'                   => false,
 					'is_required'              => false,
+					'supports_custom_value'    => true,
 				)
 			),
 			Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags(
@@ -250,11 +317,11 @@ class FCRM_ADD_CONTACT {
 					'supports_multiple_values' => true,
 					'is_any'                   => false,
 					'is_required'              => false,
+					'supports_custom_value'    => true,
 				)
 			),
 		);
 
 		return array_merge( $predefined_fields, Automator()->helpers->recipe->fluent_crm->options->get_custom_field() );
 	}
-
 }

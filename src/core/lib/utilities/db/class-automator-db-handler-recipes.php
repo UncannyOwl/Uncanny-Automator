@@ -111,19 +111,25 @@ class Automator_DB_Handler_Recipes {
 	}
 
 	/**
-	 * Meaning of each number
+	 * Marks a recipe as complete in the recipe log.
 	 *
+	 * Updates the recipe log entry with completion status and timestamp.
+	 * Fires the 'automator_recipe_marked_complete' hook if the update is successful.
+	 *
+	 * Meaning of each number:
 	 * 0 = not completed
 	 * 1 = completed
 	 * 2 = completed with errors, error message provided
 	 * 5 = scheduled
 	 * 9 = completed, do nothing
 	 *
-	 * @param $recipe_log_id
-	 * @param $completed
+	 * @param int $recipe_log_id The recipe log ID.
+	 * @param int $completed     The completion status.
+	 *
+	 * @return void
 	 */
 	public function mark_complete( $recipe_log_id, $completed ) {
-		$this->update(
+		$updated = $this->update(
 			array(
 				'date_time' => current_time( 'mysql' ),
 				'completed' => $completed,
@@ -139,22 +145,57 @@ class Automator_DB_Handler_Recipes {
 				'%d',
 			)
 		);
+
+		if ( $updated ) {
+			/**
+			 * Fires after a recipe has been successfully marked as complete in the database.
+			 *
+			 * This hook allows developers to perform additional operations when a recipe
+			 * is marked complete, such as logging, notifications, or triggering other processes.
+			 *
+			 * @since 6.7.0
+			 *
+			 * @param int $recipe_log_id The recipe log ID that was marked complete.
+			 * @param int $completed     The completion status.
+			 *
+			 * @example
+			 * // Hook into the recipe completion event
+			 * add_action( 'automator_recipe_marked_complete', 'my_custom_recipe_complete_handler', 10, 2 );
+			 *
+			 * function my_custom_recipe_complete_handler( $recipe_log_id, $completed ) {
+			 *     if ( 1 === $completed ) {
+			 *         // Recipe completed successfully
+			 *         error_log( "Recipe log {$recipe_log_id} completed successfully" );
+			 *     } elseif ( 2 === $completed ) {
+			 *         // Recipe completed with errors
+			 *         error_log( "Recipe log {$recipe_log_id} completed with errors" );
+			 *     }
+			 * }
+			 */
+			do_action( 'automator_recipe_marked_complete', $recipe_log_id, $completed );
+		}
 	}
 
 	/**
-	 * Meaning of each number
+	 * Marks a recipe as complete with error status in the recipe log.
 	 *
+	 * Updates the recipe log entry with completion status for error scenarios.
+	 * Fires the 'automator_recipe_marked_complete_with_error' hook if the update is successful.
+	 *
+	 * Meaning of each number:
 	 * 0 = not completed
 	 * 1 = completed
 	 * 2 = completed with errors, error message is provided
 	 * 9 = completed, do nothing
 	 *
-	 * @param $recipe_id
-	 * @param $recipe_log_id
-	 * @param $complete
+	 * @param int $recipe_id     The recipe ID.
+	 * @param int $recipe_log_id The recipe log ID.
+	 * @param int $complete      The completion status.
+	 *
+	 * @return void
 	 */
 	public function mark_complete_with_error( $recipe_id, $recipe_log_id, $complete ) {
-		$this->update(
+		$updated = $this->update(
 			array(
 				'completed' => $complete,
 			),
@@ -170,6 +211,33 @@ class Automator_DB_Handler_Recipes {
 				'%d',
 			)
 		);
+
+		if ( $updated ) {
+			/**
+			 * Fires after a recipe has been successfully marked as complete with error in the database.
+			 *
+			 * This hook allows developers to perform additional operations when a recipe
+			 * is marked complete with error status, such as error logging, notifications, or cleanup.
+			 *
+			 * @since 6.7.0
+			 *
+			 * @param int $recipe_id     The recipe ID that was marked complete with error.
+			 * @param int $recipe_log_id The recipe log ID that was marked complete with error.
+			 * @param int $complete      The completion status.
+			 *
+			 * @example
+			 * // Hook into the recipe completion with error event
+			 * add_action( 'automator_recipe_marked_complete_with_error', 'my_custom_recipe_error_handler', 10, 3 );
+			 *
+			 * function my_custom_recipe_error_handler( $recipe_id, $recipe_log_id, $complete ) {
+			 *     if ( 2 === $complete ) {
+			 *         // Recipe completed with errors
+			 *         error_log( "Recipe {$recipe_id} (log {$recipe_log_id}) completed with errors" );
+			 *     }
+			 * }
+			 */
+			do_action( 'automator_recipe_marked_complete_with_error', $recipe_id, $recipe_log_id, $complete );
+		}
 	}
 
 	/**
@@ -282,7 +350,6 @@ class Automator_DB_Handler_Recipes {
 				'recipe_id' => $recipe_id,
 			)
 		);
-
 	}
 
 	/**
@@ -314,7 +381,6 @@ class Automator_DB_Handler_Recipes {
 		);
 
 		return $results;
-
 	}
 
 	/**
@@ -486,6 +552,34 @@ class Automator_DB_Handler_Recipes {
 	}
 
 	/**
+	 * Get a recipe log record by field and value
+	 *
+	 * @param string $field The field to search by (e.g., 'ID', 'user_id', 'automator_recipe_id')
+	 * @param mixed $value The value to search for
+	 *
+	 * @return object|null The recipe log record or null if not found
+	 */
+	public function get_by( $field, $value ) {
+		global $wpdb;
+
+		// Sanitize field name to prevent SQL injection
+		$allowed_fields = array(
+			'ID'                  => 'ID',
+			'user_id'             => 'user_id',
+			'automator_recipe_id' => 'automator_recipe_id',
+			'completed'           => 'completed',
+			'run_number'          => 'run_number',
+			'date_time'           => 'date_time',
+		);
+		if ( ! array_key_exists( $field, $allowed_fields ) ) {
+			return null;
+		}
+		$safe_field = $allowed_fields[ $field ];
+
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $wpdb->uap_recipe_log WHERE $safe_field = %s", $value ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	}
+
+	/**
 	 * @param int[] $args
 	 * @param string $meta_key
 	 * @param string $meta_value
@@ -530,5 +624,4 @@ class Automator_DB_Handler_Recipes {
 
 		return 'yes' === $has_record;
 	}
-
 }

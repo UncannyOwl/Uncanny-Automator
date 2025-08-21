@@ -26,7 +26,6 @@ class Thrive_Architect_Helpers {
 		}
 
 		return '';
-
 	}
 
 	/**
@@ -54,7 +53,6 @@ class Thrive_Architect_Helpers {
 			'form_post_id'    => isset( $parts[0] ) ? $parts[0] : '',
 			'form_identifier' => isset( $parts[1] ) ? $parts[1] : '',
 		);
-
 	}
 
 	/**
@@ -83,7 +81,7 @@ class Thrive_Architect_Helpers {
 
 		$options = array(
 			array(
-				'text'  => _x( 'Any form', 'Thrive Architect', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Any form', 'Thrive Architect', 'uncanny-automator' ),
 				'value' => -1,
 			),
 		);
@@ -98,7 +96,7 @@ class Thrive_Architect_Helpers {
 
 			$post = get_post( $form_post->post_parent );
 
-			if ( ! empty( $post ) && $post->post_status !== 'trash' ) {
+			if ( $post && 'trash' !== $post->post_status ) {
 
 				$saved_identifier = $form_settings->form_identifier;
 
@@ -122,7 +120,5 @@ class Thrive_Architect_Helpers {
 		}
 
 		return $options;
-
 	}
-
 }

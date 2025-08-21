@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Helpscout;
 
 use Uncanny_Automator\Api_Server;
 /**
@@ -20,7 +20,7 @@ class Helpscout_Helpers {
 
 	const CLIENT = 'automator_helpscout_client';
 
-	const TRANSIENT_MAILBOXES = 'automator_helpscout_mailboxes';
+	const TRANSIENT_MAILBOXES = 'automator_helpscout_mailboxes_v68';
 
 	const TRANSIENT_EXPIRES_TIME = 3600; // 1 hour in seconds.
 
@@ -81,7 +81,7 @@ class Helpscout_Helpers {
 		// Load the settings page.
 		require_once __DIR__ . '/../settings/settings-helpscout.php';
 
-		new Helpscout_Settings( $this );
+		new \Uncanny_Automator\Helpscout_Settings( $this );
 	}
 	/**
 	 * Fetch tags.
@@ -185,13 +185,20 @@ class Helpscout_Helpers {
 	 */
 	public function fetch_mailbox_users() {
 
-		$selected_mailbox = filter_input( INPUT_POST, 'value' );
+		// Handle new AJAX format - get mailbox from values array
+		$values           = automator_filter_input_array( 'values', INPUT_POST );
+		$selected_mailbox = isset( $values['HELPSCOUT_CONVERSATION_CREATE_META'] ) ? $values['HELPSCOUT_CONVERSATION_CREATE_META'] :
+						   ( isset( $values['CREATED_BY'] ) ? $values['CREATED_BY'] : automator_filter_input( 'value', INPUT_POST ) );
 
 		$from_created_by_field = false;
 
+		// Check if request is from an action by checking post type
+		$item_id   = automator_filter_input( 'item_id', INPUT_POST );
+		$is_action = ( $item_id && 'uo-action' === get_post_type( $item_id ) );
+
 		$data = array(
 			array(
-				'text'  => esc_attr_x( 'Customer', 'Helpscout', 'uncanny-automator' ),
+				'text'  => esc_attr_x( 'Customer', 'HelpScout', 'uncanny-automator' ),
 				'value' => $selected_mailbox . '|_CUSTOMER_',
 			),
 		);
@@ -202,9 +209,10 @@ class Helpscout_Helpers {
 			list( $selected_mailbox, $created_by ) = explode( '|', $selected_mailbox );
 		}
 
-		if ( $from_created_by_field ) {
+		if ( $from_created_by_field && ! $is_action ) {
+			// Only add "Anyone" option for triggers, not actions
 			$data[0] = array(
-				'text'  => esc_attr_x( 'Anyone', 'Helpscout', 'uncanny-automator' ),
+				'text'  => esc_attr_x( 'Anyone', 'HelpScout', 'uncanny-automator' ),
 				'value' => '_ANYONE_',
 			);
 		}
@@ -248,26 +256,44 @@ class Helpscout_Helpers {
 			);
 		}
 
-		wp_send_json( $data );
+		$response = array(
+			'success' => true,
+			'options' => $data,
+		);
+
+		wp_send_json( $response );
 	}
 	/**
 	 * Fetch conversations.
 	 */
 	public function fetch_conversations() {
 
-		$selected_mailbox = intval( filter_input( INPUT_POST, 'value' ) );
+		// Handle new AJAX format - get mailbox from values array
+		$values           = automator_filter_input_array( 'values', INPUT_POST );
+		$selected_mailbox = isset( $values['MAILBOX'] ) ? intval( $values['MAILBOX'] ) : intval( automator_filter_input( 'value', INPUT_POST ) );
 
-		$data = array(
-			array(
-				'text'  => esc_html_x( 'Any conversation', 'Helpscout', 'uncanny-automator' ),
-				'value' => -1,
-			),
-		);
+		// Check if request is from an action by checking post type
+		$item_id   = automator_filter_input( 'item_id', INPUT_POST );
+		$is_action = ( $item_id && 'uo-action' === get_post_type( $item_id ) );
+
+		$data = array();
+
+		// Only add "Any conversation" option for triggers, not actions
+		if ( ! $is_action ) {
+			$data[] = array(
+				'text'  => esc_html_x( 'Any conversation', 'HelpScout', 'uncanny-automator' ),
+				'value' => '-1',
+			);
+		}
 
 		try {
 
-			if ( -1 === $selected_mailbox ) {
-				wp_send_json( $data );
+			if ( intval( '-1' ) === intval( $selected_mailbox ) ) {
+				$response = array(
+					'success' => true,
+					'options' => $data,
+				);
+				wp_send_json( $response );
 			}
 
 			$response = $this->api_request(
@@ -282,7 +308,7 @@ class Helpscout_Helpers {
 				foreach ( $response['data']['_embedded']['conversations'] as $conversation ) {
 					$data[] = array(
 						'text'  => $conversation['subject'],
-						'value' => $conversation['id'],
+						'value' => (string) $conversation['id'],
 					);
 				}
 			}
@@ -295,7 +321,13 @@ class Helpscout_Helpers {
 			);
 		}
 
-		wp_send_json( $data );
+		$response = array(
+			'success' => true,
+			'options' => $data,
+		);
+
+		wp_send_json( $response );
+		exit;
 	}
 
 	/**
@@ -318,7 +350,7 @@ class Helpscout_Helpers {
 			'timeout'  => 15,
 		);
 
-		$response = Api_Server::api_call( $params );
+		$response = \Uncanny_Automator\Api_Server::api_call( $params );
 
 		$this->handle_errors( $response );
 
@@ -360,7 +392,7 @@ class Helpscout_Helpers {
 
 			}
 
-			throw new \Exception( esc_html( wp_json_encode( $response ) ), absint( $status_code ) );
+			throw new \Exception( wp_json_encode( $response ), absint( $status_code ) );
 
 		}
 
@@ -396,7 +428,7 @@ class Helpscout_Helpers {
 
 		$this->verify_access( $nonce );
 
-		$tokens = (array) Automator_Helpers_Recipe::automator_api_decode_message(
+		$tokens = (array) \Uncanny_Automator\Automator_Helpers_Recipe::automator_api_decode_message(
 			automator_filter_input( 'automator_api_message' ),
 			wp_create_nonce( self::NONCE_KEY )
 		);
@@ -643,7 +675,7 @@ class Helpscout_Helpers {
 				'timeout'  => 15,
 			);
 
-			$response = Api_Server::api_call( $params );
+			$response = \Uncanny_Automator\Api_Server::api_call( $params );
 
 			if ( 200 === $response['statusCode'] ) {
 
@@ -669,28 +701,39 @@ class Helpscout_Helpers {
 	 *
 	 * @return mixed
 	 */
-	public function fetch_mailboxes() {
+	public function fetch_mailboxes( $any_mailbox = false ) {
 
-		$saved_mailboxes = get_transient( self::TRANSIENT_MAILBOXES );
+		$any_key = $any_mailbox ? '_any' : '_not_any';
+
+		$saved_mailboxes = get_transient( self::TRANSIENT_MAILBOXES . $any_key );
 
 		if ( false === $saved_mailboxes ) {
-			return $this->request_mailboxes();
+			$options = $this->request_mailboxes( $any_mailbox );
+			set_transient( self::TRANSIENT_MAILBOXES . $any_key, $options, self::TRANSIENT_EXPIRES_TIME );
+
+			return $options;
 		}
 
 		return $saved_mailboxes;
 	}
+
 	/**
 	 * Request mailboxes.
 	 *
 	 * @return mixed
 	 */
-	public function request_mailboxes() {
+	public function request_mailboxes( $any_mailbox = false ) {
 
 		$options = array();
 
 		try {
 
-			$options[-1] = esc_html_x( 'Any mailbox', 'Helpscout', 'uncanny-automator' );
+			if ( true === $any_mailbox ) {
+				$options[] = array(
+					'text'  => esc_html_x( 'Any mailbox', 'HelpScout', 'uncanny-automator' ),
+					'value' => -1,
+				);
+			}
 
 			$response = $this->api_request(
 				array(
@@ -704,17 +747,21 @@ class Helpscout_Helpers {
 			}
 
 			foreach ( $response['data']['_embedded']['mailboxes'] as $mailbox ) {
-				$options[ $mailbox['id'] ] = $mailbox['name'];
+				$options[] = array(
+					'text'  => $mailbox['name'],
+					'value' => $mailbox['id'],
+				);
 			}
-
-			set_transient( self::TRANSIENT_MAILBOXES, $options, self::TRANSIENT_EXPIRES_TIME );
 
 			return ! empty( $options ) ? $options : array();
 
 		} catch ( \Exception $e ) {
 
 			return array(
-				'Error ' . $e->getCode() => $e->getMessage(),
+				array(
+					'text'  => 'Error ' . $e->getCode() . ': ' . $e->getMessage(),
+					'value' => 'error_' . $e->getCode(),
+				),
 			);
 
 		}

@@ -77,19 +77,31 @@ trait Action_Tokens {
 	/**
 	 * Handles the 'automator_action_created' action.
 	 *
+	 * @since 6.7.0.3 - Added remove_action to prevent hook accumulation when hydrate_tokens is called multiple times.
+	 *
 	 * @param array $hook_args Hook arguments.
 	 */
 	public function handle_automator_action_created( $hook_args ) {
 		$this->process_token_storage( $hook_args, 'automator_action_created' );
+		// Remove hook to prevent accumulation when hydrate_tokens() is called multiple times (e.g., in loops or duplicate actions).
+		// hydrate_tokens() is called per action execution, not per loop iteration, so this prevents hook accumulation.
+		// Loop actions are handled by the deduplication logic in process_token_storage() which allows multiple executions.
+		remove_action( 'automator_action_created', array( $this, 'handle_automator_action_created' ) );
 	}
 
 	/**
 	 * Handles the 'automator_pro_async_action_after_run_execution' action.
 	 *
+	 * @since 6.7.0.3 - Added remove_action to prevent hook accumulation when hydrate_tokens is called multiple times.
+	 *
 	 * @param array $hook_args Hook arguments.
 	 */
 	public function handle_automator_pro_async_action( $hook_args ) {
 		$this->process_token_storage( $hook_args, 'automator_pro_async_action_after_run_execution' );
+		// Remove hook to prevent accumulation when hydrate_tokens() is called multiple times (e.g., in loops or duplicate actions).
+		// hydrate_tokens() is called per action execution, not per loop iteration, so this prevents hook accumulation.
+		// Loop actions are handled by the deduplication logic in process_token_storage() which allows multiple executions.
+		remove_action( 'automator_pro_async_action_after_run_execution', array( $this, 'handle_automator_pro_async_action' ) );
 	}
 
 	/**

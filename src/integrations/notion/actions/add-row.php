@@ -3,6 +3,7 @@
 namespace Uncanny_Automator\Integrations\Notion\Actions;
 
 use Exception;
+use Uncanny_Automator\Integrations\Notion\Notion_Helpers;
 
 /**
  * @package Uncanny_Automator\Integrations\Notion\Actions
@@ -128,10 +129,10 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 
 		// Retrieve the column value from action data.
 		// Using action data instead of parsed variables to avoid issues with the repeater field.
-		$column_value = $action_data['meta']['FIELD_COLUMN_VALUE'] ?? array();
+		$column_value = $action_data['meta']['FIELD_COLUMN_VALUE'] ?? '';
 
 		// Create the payload for the fields.
-		$field_data = $this->helper->make_fields_payload( $column_value );
+		$field_data = $this->helper->make_fields_payload( $recipe_id, $args, $parsed, $column_value );
 
 		// Get the database ID from the parsed variables. The $parsed is fine because this is not a repeater field.
 		$db_id = $parsed[ $this->get_action_meta() ] ?? '';
