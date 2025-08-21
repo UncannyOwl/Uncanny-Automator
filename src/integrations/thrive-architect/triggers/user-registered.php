@@ -17,11 +17,16 @@ class USER_REGISTERED extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_code( 'THRIVE_ARCHITECT_USER_REGISTERED' );
 		$this->set_trigger_meta( 'THRIVE_ARCHITECT_USER_REGISTERED_META' );
 		$this->set_is_login_required( false );
+		$this->set_trigger_type( 'user' );
 		// translators: %1$s. Form meta key
-		$this->set_sentence( sprintf( esc_attr_x( 'A user registers via {{a registration form:%1$s}}', 'Thrive Architect', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		$this->set_sentence(
+			// translators: %1$s: Form name
+			sprintf( esc_attr_x( 'A user registers via {{a registration form:%1$s}}', 'Thrive Architect', 'uncanny-automator' ), $this->get_trigger_meta() )
+		);
 		$this->set_readable_sentence( esc_attr_x( 'A user registers via {{a registration form}}', 'Thrive Architect', 'uncanny-automator' ) );
 		$this->add_action( 'thrive_register_form_through_wordpress_user', 10, 2 );
 	}
+
 
 	/**
 	 * options
@@ -57,6 +62,9 @@ class USER_REGISTERED extends \Uncanny_Automator\Recipe\Trigger {
 		if ( ! Thrive_Architect_Helpers::is_dependencies_ready() ) {
 			return false;
 		}
+
+		// For user registration, the first argument is the user_id
+		$this->set_user_id( absint( $hook_args[0] ) );
 
 		$form_data     = $hook_args[1];
 		$form_settings = \TCB\inc\helpers\FormSettings::get_one( $form_data['_tcb_id'] );
@@ -94,13 +102,13 @@ class USER_REGISTERED extends \Uncanny_Automator\Recipe\Trigger {
 		$tokens[] = array(
 			'tokenId'   => 'FORM_ID',
 			'tokenName' => esc_html_x( 'Form ID', 'Thrive Architect', 'uncanny-automator' ),
-			'tokenType' => 'text', // Token type can be 'text', 'int', 'email', 'url'.
+			'tokenType' => 'text',
 		);
 
 		$tokens[] = array(
 			'tokenId'   => 'FORM_TITLE',
 			'tokenName' => esc_html_x( 'Form title', 'Thrive Architect', 'uncanny-automator' ),
-			'tokenType' => 'text', // Token type can be 'text', 'int', 'email', 'url'.
+			'tokenType' => 'text',
 		);
 
 		if ( ! Thrive_Architect_Helpers::is_dependencies_ready() ) {

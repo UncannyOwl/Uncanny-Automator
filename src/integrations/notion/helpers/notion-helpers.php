@@ -548,31 +548,54 @@ class Notion_Helpers {
 	/**
 	 * Create a payload from field data.
 	 *
-	 * @param  string $column_value JSON encoded string of column values.
-	 * @param  string $field_column_value The key value pairs of the reapeter.
+	 * @param int    $recipe_id The recipe ID.
+	 * @param array  $args The args.
+	 * @param array  $parsed The parsed variables.
+	 * @param string $field_column_value The key value pairs of the repeater.
+	 *
+	 * @since <VERSION> - Reshaped the function to accept recipe_id, args, and parsed variables.
 	 *
 	 * @return string JSON encoded string of fields ID and values or false on failure.
 	 *
 	 * @throws Exception If the JSON is invalid.
 	 */
-	public function make_fields_payload( $field_column_value = array() ) {
+	public function make_fields_payload( $recipe_id, $args, $parsed, $field_column_value = '' ) {
 
-		$column_value_decoded = json_decode( $field_column_value, true );
-
-		if ( json_last_error() !== JSON_ERROR_NONE ) {
+		// Handle empty input first.
+		if ( empty( trim( $field_column_value ) ) ) {
 			throw new Exception(
-				sprintf(
-				/* translators: %s: JSON error message */
-					esc_html_x( 'Invalid JSON detected: %s', 'Notion', 'uncanny-automator' ),
-					esc_html( json_last_error_msg() )
-				),
+				esc_html_x( 'Empty field column values detected.', 'Notion', 'uncanny-automator' ),
 				400
 			);
 		}
 
-		$fields_id_value = array();
+		// Check for JSON syntax errors.
+		$column_value_decoded = json_decode( $field_column_value, true );
 
-		foreach ( $column_value_decoded[0] as $key => $decoded ) {
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			$error_message = sprintf(
+				/* translators: %s: JSON error message */
+				esc_html_x( 'Invalid JSON format in field column values: %s', 'Notion', 'uncanny-automator' ),
+				esc_html( json_last_error_msg() )
+			);
+			// Already escaped in the sprintf.
+			throw new Exception( $error_message, 400 ); //phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+		}
+
+		// Convert to array and check if it's empty.
+		$column_value_decoded = (array) $column_value_decoded;
+
+		if ( empty( $column_value_decoded ) ) {
+			throw new Exception(
+				esc_html_x( 'Empty field column values detected.', 'Notion', 'uncanny-automator' ),
+				400
+			);
+		}
+
+		$fields_raw_values = $column_value_decoded[0] ?? array();
+		$fields_id_value   = array();
+
+		foreach ( (array) $fields_raw_values as $key => $value ) {
 
 			// Skip _readable fields.
 			if ( strpos( $key, '_readable' ) !== false ) {
@@ -582,12 +605,15 @@ class Notion_Helpers {
 			try {
 
 				$split = self::extract_field_parameters( $key );
-
+				// Extract the field ID and type.
 				list ( $notion, $field, $field_id, $type ) = $split;
+
+				// Parse the value.
+				$value = Automator()->parse->text( $value, $recipe_id, $args, $parsed );
 
 				$fields_id_value[ $field_id ] = array(
 					'type'  => $type,
-					'value' => $decoded,
+					'value' => $value,
 					'id'    => $field_id,
 				);
 

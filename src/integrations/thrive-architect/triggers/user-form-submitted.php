@@ -28,7 +28,7 @@ class USER_FORM_SUBMITTED extends FORM_SUBMITTED {
 
 		$this->set_sentence(
 			sprintf(
-				/* Translators: Trigger sentence */
+				// translators: %1$s: Form name
 				esc_html_x( 'A user submits a {{form:%1$s}}', 'Thrive Architect', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
@@ -41,5 +41,4 @@ class USER_FORM_SUBMITTED extends FORM_SUBMITTED {
 
 		$this->set_helper( new Thrive_Architect_Helpers() );
 	}
-
 }

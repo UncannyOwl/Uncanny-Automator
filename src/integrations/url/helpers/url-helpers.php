@@ -26,8 +26,8 @@ class URL_Helpers {
 		return array(
 			array(
 				'option_code'              => 'URL_CONDITION',
-				'label'                    => esc_attr_x( 'Condition', 'URL', 'uncanny-automator' ),
-				'description'              => esc_attr_x( 'Whether any or all of the following parameters are set in the URL', 'URL', 'uncanny-automator' ),
+				'label'                    => esc_html_x( 'Condition', 'URL', 'uncanny-automator' ),
+				'description'              => esc_html_x( 'Whether any or all of the following parameters are set in the URL', 'URL', 'uncanny-automator' ),
 				'input_type'               => 'select',
 				'required'                 => true,
 				'options_show_id'          => false,
@@ -37,32 +37,32 @@ class URL_Helpers {
 				'options'                  => array(
 					array(
 						'value' => '-1',
-						'text'  => esc_attr__( 'Any', 'uncanny-automator' ),
+						'text'  => esc_html_x( 'Any', 'Url', 'uncanny-automator' ),
 					),
 					array(
 						'value' => 'all',
-						'text'  => esc_attr__( 'All', 'uncanny-automator' ),
+						'text'  => esc_html_x( 'All', 'Url', 'uncanny-automator' ),
 					),
 				),
 			),
 			array(
 				'option_code'       => 'URL_PARAMETERS',
-				'label'             => esc_attr__( 'Parameters', 'uncanny-automator' ),
+				'label'             => esc_html_x( 'Parameters', 'Url', 'uncanny-automator' ),
 				'input_type'        => 'repeater',
 				'required'          => true,
 				'relevant_tokens'   => array(),
 				'fields'            => array(
 					array(
 						'option_code'           => 'PARAM_NAME',
-						'label'                 => esc_attr__( 'Parameter name', 'uncanny-automator' ),
+						'label'                 => esc_html_x( 'Parameter name', 'Url', 'uncanny-automator' ),
 						'input_type'            => 'text',
 						'required'              => true,
 						'supports_tokens'       => true,
 						'supports_custom_value' => true,
 					),
 				),
-				'add_row_button'    => esc_attr__( 'Add parameter', 'uncanny-automator' ),
-				'remove_row_button' => esc_attr__( 'Remove parameter', 'uncanny-automator' ),
+				'add_row_button'    => esc_html_x( 'Add parameter', 'Url', 'uncanny-automator' ),
+				'remove_row_button' => esc_html_x( 'Remove parameter', 'Url', 'uncanny-automator' ),
 			),
 		);
 	}
@@ -82,8 +82,8 @@ class URL_Helpers {
 
 		// Get request data, fallback to GET and POST superglobals securely
 		$request_data = $hook_args['request'] ?? array();
-		$get_params   = $request_data['get'] ?? filter_input_array( INPUT_GET, FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? array();
-		$post_params  = $request_data['post'] ?? filter_input_array( INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS ) ?? array();
+		$get_params   = $request_data['get'] ?? filter_input_array( INPUT_GET, FILTER_UNSAFE_RAW ) ?? array();
+		$post_params  = $request_data['post'] ?? filter_input_array( INPUT_POST, FILTER_UNSAFE_RAW ) ?? array();
 
 		$condition  = sanitize_text_field( $trigger_data['meta']['URL_CONDITION'] );
 		$parameters = json_decode( $trigger_data['meta']['URL_PARAMETERS'], true ) ?? array();
@@ -98,7 +98,7 @@ class URL_Helpers {
 			$name = sanitize_text_field( $param['PARAM_NAME'] ?? '' );
 
 			if ( '' !== $name && ( isset( $get_params[ $name ] ) || isset( $post_params[ $name ] ) ) ) {
-				++ $found_params;
+				++$found_params;
 			}
 		}
 
@@ -138,7 +138,7 @@ class URL_Helpers {
 		return array(
 			array(
 				'tokenId'         => 'URL',
-				'tokenName'       => esc_attr__( 'URL visited', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'URL visited', 'Url', 'uncanny-automator' ),
 				'tokenType'       => 'url',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -185,4 +185,3 @@ class URL_Helpers {
 		return $protocol . $host . $uri;
 	}
 }
-

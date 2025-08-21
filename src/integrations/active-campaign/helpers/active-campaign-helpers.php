@@ -463,6 +463,16 @@ class Active_Campaign_Helpers {
 	 * @return void
 	 */
 	public function regenerate_webhook_key_ajax() {
+		// Nonce verification.
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'active-campaign-regenerate-webhook-key' ) ) {
+			wp_die( esc_html_x( 'Security check failed. Please try again.', 'ActiveCampaign', 'uncanny-automator' ) );
+		}
+
+		// Current user capability check.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html_x( 'You do not have permission to perform this action.', 'ActiveCampaign', 'uncanny-automator' ) );
+		}
+
 		$this->regenerate_webhook_key();
 		$uri = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-config&tab=premium-integrations&integration=active-campaign';
 		wp_safe_redirect( $uri );

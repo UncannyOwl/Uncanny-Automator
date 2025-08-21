@@ -48,9 +48,9 @@ class ANON_ELEM_SUBMITFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Forminator */
-			'sentence'            => sprintf( esc_attr__( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html_x( '{{A form:%1$s}} is submitted', 'Elementor', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Forminator */
-			'select_option_name'  => esc_attr__( '{{A form}} is submitted', 'uncanny-automator' ),
+			'select_option_name'  => esc_html_x( '{{A form}} is submitted', 'Elementor', 'uncanny-automator' ),
 			'action'              => 'elementor_pro/forms/new_record',
 			'priority'            => 100,
 			'type'                => 'anonymous',
@@ -79,11 +79,11 @@ class ANON_ELEM_SUBMITFORM {
 	 * Validation function when the trigger action is hit
 	 *
 	 * @param object $record
-	 * @param object $object
+	 * @param object $obj
 	 */
-	public function elem_submit_form( $record, $object ) {
+	public function elem_submit_form( $record, $obj ) {
 
-		if ( ! $object->is_success ) {
+		if ( ! $obj->is_success ) {
 			return;
 		}
 
@@ -146,7 +146,7 @@ class ANON_ELEM_SUBMITFORM {
 
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) && (string) $trigger['meta'][ $trigger_meta ] === (string) $entry_to_match ) {
+				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( intval( '-1' ) === intval( $trigger['meta'][ $trigger_meta ] ) || (string) $trigger['meta'][ $trigger_meta ] === (string) $entry_to_match ) ) {
 					$recipe_ids[ $trigger['ID'] ] = $recipe['ID'];
 				}
 			}

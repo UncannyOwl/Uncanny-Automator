@@ -6,6 +6,7 @@ namespace Uncanny_Automator;
  * Class AUDIENCE_ADDAUSER
  *
  * @package Uncanny_Automator
+ *
  */
 class AUDIENCE_ADDAUSER {
 
@@ -16,15 +17,24 @@ class AUDIENCE_ADDAUSER {
 	 */
 	public static $integration = 'MAILCHIMP';
 
-	private $action_code;
-	private $action_meta;
+	/**
+	 * Action code
+	 *
+	 * @var string
+	 */
+	private $action_code = 'MCHIMPAUDIENCEADDAUSER';
+
+	/**
+	 * Action meta
+	 *
+	 * @var string
+	 */
+	private $action_meta = 'AUDIENCEADDAUSER';
 
 	/**
 	 * Set up Automator action constructor.
 	 */
 	public function __construct() {
-		$this->action_code = 'MCHIMPAUDIENCEADDAUSER';
-		$this->action_meta = 'AUDIENCEADDAUSER';
 		$this->define_action();
 	}
 
@@ -39,9 +49,12 @@ class AUDIENCE_ADDAUSER {
 			'is_pro'                => false,
 			'integration'           => self::$integration,
 			'code'                  => $this->action_code,
-			// translators: the selected Mailchimp's audience name
-			'sentence'              => sprintf( esc_html__( 'Add the user to {{an audience:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( 'Add the user to {{an audience}}', 'uncanny-automator' ),
+			'sentence'              => sprintf(
+				// translators: %1$s is the audience name.
+				esc_html_x( 'Add the user to {{an audience:%1$s}}', 'Mailchimp', 'uncanny-automator' ),
+				$this->action_meta
+			),
+			'select_option_name'    => esc_html_x( 'Add the user to {{an audience}}', 'Mailchimp', 'uncanny-automator' ),
 			'priority'              => 10,
 			'accepted_args'         => 1,
 			'execution_function'    => array( $this, 'add_update_audience_member' ),
@@ -50,7 +63,7 @@ class AUDIENCE_ADDAUSER {
 			'buttons'               => array(
 				array(
 					'show_in'     => $this->action_meta,
-					'text'        => esc_html__( 'Load fields', 'uncanny-automator' ),
+					'text'        => esc_html_x( 'Load fields', 'Mailchimp', 'uncanny-automator' ),
 					'css_classes' => 'uap-btn uap-btn--red',
 					'on_click'    => $this->get_samples_js(),
 					'modules'     => array( 'modal', 'markdown' ),
@@ -71,7 +84,7 @@ class AUDIENCE_ADDAUSER {
 			'options_group' => array(
 				$this->action_meta => array(
 					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						esc_html__( 'Audience', 'uncanny-automator' ),
+						esc_html_x( 'Audience', 'Mailchimp', 'uncanny-automator' ),
 						'MCLIST',
 						array(
 							'is_ajax'      => true,
@@ -80,76 +93,80 @@ class AUDIENCE_ADDAUSER {
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						esc_html__( 'Double opt-in', 'uncanny-automator' ),
+						esc_html_x( 'Double opt-in', 'Mailchimp', 'uncanny-automator' ),
 						'MCDOUBLEOPTIN',
 						array(
-							'description' => esc_html__( 'When set to "yes", a confirmation email will be sent before the user is added to the selected audience.', 'uncanny-automator' ),
+							'description' => esc_html_x( 'When set to "yes", a confirmation email will be sent before the user is added to the selected audience.', 'Mailchimp', 'uncanny-automator' ),
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						esc_html__( 'Update existing', 'uncanny-automator' ),
+						esc_html_x( 'Update existing', 'Mailchimp', 'uncanny-automator' ),
 						'MCUPDATEEXISTING',
 						array(
-							'description' => esc_html__( 'If this is set to Yes, the information provided will be used to update the existing user. Fields that are left blank will not be updated.', 'uncanny-automator' ),
+							'description' => esc_html_x( 'If this is set to Yes, the information provided will be used to update the existing user. Fields that are left blank will not be updated.', 'Mailchimp', 'uncanny-automator' ),
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						esc_html__( 'Change groups?', 'uncanny-automator' ),
+						esc_html_x( 'Change groups?', 'Mailchimp', 'uncanny-automator' ),
 						'MCCHANGEGROUPS',
 						array(
 							'options'     => array(
 								array(
 									'value' => 'replace-all',
-									'text'  => esc_html__( 'Replace all', 'uncanny-automator' ),
+									'text'  => esc_html_x( 'Replace all', 'Mailchimp', 'uncanny-automator' ),
 								),
 								array(
 									'value' => 'add-only',
-									'text'  => esc_html__( 'Add only', 'uncanny-automator' ),
+									'text'  => esc_html_x( 'Add only', 'Mailchimp', 'uncanny-automator' ),
 								),
 								array(
 									'value' => 'replace-matching',
-									'text'  => esc_html__( 'Remove matching', 'uncanny-automator' ),
+									'text'  => esc_html_x( 'Remove matching', 'Mailchimp', 'uncanny-automator' ),
 								),
 							),
-							'description' => esc_html__( "Add only: The group(s) specified below will be added to the subscriber's existing groups/interests. Replace All: All of the subscriber's existing groups will be cleared, and replaced with the groups selected below. \n Remove Matching: Clears any existing group selections only for the groups specified below.", 'uncanny-automator' ),
+							'description' => esc_html_x( "Add only: The group(s) specified below will be added to the subscriber's existing groups/interests. Replace All: All of the subscriber's existing groups will be cleared, and replaced with the groups selected below. \n Remove Matching: Clears any existing group selections only for the groups specified below.", 'Mailchimp', 'uncanny-automator' ),
 						)
 					),
 					Automator()->helpers->recipe->mailchimp->options->get_list_groups(
-						esc_html__( 'Groups', 'uncanny-automator' ),
+						esc_html_x( 'Groups', 'Mailchimp', 'uncanny-automator' ),
 						'MCLISTGROUPS',
 						array(
 							'required' => false,
 						)
 					),
-					Automator()->helpers->recipe->field->text_field( 'MCLANGUAGECODE', esc_html__( 'Language code', 'uncanny-automator' ), true, 'text', null, false ),
+					Automator()->helpers->recipe->field->text_field( 'MCLANGUAGECODE', esc_html_x( 'Language code', 'Mailchimp', 'uncanny-automator' ), true, 'text', null, false ),
 					array(
 						'option_code'       => 'MERGE_FIELDS',
 						'input_type'        => 'repeater',
 						'relevant_tokens'   => array(),
-						'label'             => esc_html__( 'Merge fields', 'uncanny-automator' ),
+						'label'             => esc_html_x( 'Merge fields', 'Mailchimp', 'uncanny-automator' ),
 						/* translators: 1. Button */
 						'description'       => '',
 						'required'          => true,
 						'fields'            => array(
 							array(
 								'option_code' => 'FIELD_NAME',
-								'label'       => esc_html__( 'Field', 'uncanny-automator' ),
+								'label'       => esc_html_x( 'Field', 'Mailchimp', 'uncanny-automator' ),
 								'input_type'  => 'text',
 								'required'    => true,
 								'read_only'   => true,
 								'options'     => array(),
 							),
-							Automator()->helpers->recipe->field->text_field( 'FIELD_VALUE', esc_html__( 'Value', 'uncanny-automator' ), true, 'text', '', false ),
+							Automator()->helpers->recipe->field->text_field( 'FIELD_VALUE', esc_html_x( 'Value', 'Mailchimp', 'uncanny-automator' ), true, 'text', '', false ),
 						),
-						'add_row_button'    => esc_html__( 'Add pair', 'uncanny-automator' ),
-						'remove_row_button' => esc_html__( 'Remove pair', 'uncanny-automator' ),
+						'add_row_button'    => esc_html_x( 'Add pair', 'Mailchimp', 'uncanny-automator' ),
+						'remove_row_button' => esc_html_x( 'Remove pair', 'Mailchimp', 'uncanny-automator' ),
 						'hide_actions'      => true,
 					),
 				),
 			),
 		);
 	}
-
+	/**
+	 * Get samples js.
+	 *
+	 * @return mixed
+	 */
 	public function get_samples_js() {
 		// Start output
 		ob_start();
@@ -175,15 +192,32 @@ class AUDIENCE_ADDAUSER {
 					},
 					// i18n
 					i18n: {
-						checkingHooks: "<?php /* translators: Number of seconds */ printf( esc_attr__( "We're checking for columns. We'll keep trying for %s seconds.", 'uncanny-automator' ), '{{time}}' ); ?>",
-						noResultsTrouble: "<?php esc_attr_e( 'We had trouble finding columns.', 'uncanny-automator' ); ?>",
-						noResultsSupport: "<?php esc_attr_e( 'See more details or get help', 'uncanny-automator' ); ?>",
-						samplesModalTitle: "<?php esc_attr_e( "Here is the data we've collected", 'uncanny-automator' ); ?>",
-						samplesModalWarning: "<?php /* translators: 1. Button */ printf( esc_attr__( 'Clicking on \"%1$s\" will remove your current fields and will use the ones on the table above instead.', 'uncanny-automator' ), '{{confirmButton}}' ); ?>",
-						samplesTableValueType: "<?php esc_attr_e( 'Value type', 'uncanny-automator' ); ?>",
-						samplesTableReceivedData: "<?php esc_attr_e( 'Received data', 'uncanny-automator' ); ?>",
-						samplesModalButtonConfirm: "<?php esc_attr_e( 'Use these fields', 'uncanny-automator' ); ?>",
-						samplesModalButtonCancel: "<?php esc_attr_e( 'Do nothing', 'uncanny-automator' ); ?>",
+						checkingHooks: `
+						<?php
+							/* translators: %s is the number of seconds */
+							printf( esc_attr_x( "We're checking for columns. We'll keep trying for %s seconds.", 'Mailchimp', 'uncanny-automator' ), '{{time}}' );
+						?>
+						`,
+						noResultsTrouble: "<?php echo esc_attr_x( 'We had trouble finding columns.', 'Mailchimp', 'uncanny-automator' ); ?>",
+						noResultsSupport: "<?php echo esc_attr_x( 'See more details or get help', 'Mailchimp', 'uncanny-automator' ); ?>",
+						samplesModalTitle: "<?php echo esc_attr_x( "Here is the data we've collected", 'Mailchimp', 'uncanny-automator' ); ?>",
+						samplesModalWarning: `
+							<?php
+								printf(
+									/* translators: %1$s is the button text */
+									esc_attr_x(
+										'Clicking on \"%1$s\" will remove your current fields and will use the ones on the table above instead.',
+										'Mailchimp',
+										'uncanny-automator'
+									),
+									'{{confirmButton}}'
+								);
+							?>
+							`,
+						samplesTableValueType: "<?php echo esc_attr_x( 'Value type', 'Mailchimp', 'uncanny-automator' ); ?>",
+						samplesTableReceivedData: "<?php echo esc_attr_x( 'Received data', 'Mailchimp', 'uncanny-automator' ); ?>",
+						samplesModalButtonConfirm: "<?php echo esc_attr_x( 'Use these fields', 'Mailchimp', 'uncanny-automator' ); ?>",
+						samplesModalButtonCancel: "<?php echo esc_attr_x( 'Do nothing', 'Mailchimp', 'uncanny-automator' ); ?>",
 					}
 				}
 
@@ -365,64 +399,48 @@ class AUDIENCE_ADDAUSER {
 	 */
 	public function add_update_audience_member( $user_id, $action_data, $recipe_id, $args ) {
 
+		/* @var Mailchimp_Helpers $helpers */
 		$helpers = Automator()->helpers->recipe->mailchimp->options;
 
 		try {
 
-			$list_id         = $action_data['meta']['MCLIST'];
-			$double_optin    = $action_data['meta']['MCDOUBLEOPTIN'];
-			$update_existing = $action_data['meta']['MCUPDATEEXISTING'];
-			$change_groups   = $action_data['meta']['MCCHANGEGROUPS'];
-			$groups_list     = json_decode( $action_data['meta']['MCLISTGROUPS'] );
-			$lang_code       = Automator()->parse->text( $action_data['meta']['MCLANGUAGECODE'], $recipe_id, $user_id, $args );
+			$list_id         = $action_data['meta']['MCLIST'] ?? '';
+			$double_optin    = $action_data['meta']['MCDOUBLEOPTIN'] ?? '';
+			$update_existing = $action_data['meta']['MCUPDATEEXISTING'] ?? '';
+			$change_groups   = $action_data['meta']['MCCHANGEGROUPS'] ?? '';
+			$groups_list     = json_decode( $action_data['meta']['MCLISTGROUPS'] ?? '' );
+			$lang_code       = Automator()->parse->text( $action_data['meta']['MCLANGUAGECODE'] ?? '', $recipe_id, $user_id, $args );
+			$merge_fields    = Mailchimp_Helpers::parse_merge_fields( $action_data['meta']['MERGE_FIELDS'] ?? '', $recipe_id, $user_id, $args );
+			// Convert parsed JSON string to properly formatted Mailchimp merge_fields associative array
+			$merge_fields = Mailchimp_Helpers::handle_mailchimp_merge_fields( $merge_fields );
 
-			$merge_fields = $action_data['meta']['MERGE_FIELDS'];
-			$fields       = json_decode( $merge_fields, true );
-			$key_values   = array();
+			// Get the current user email.
+			$user       = get_userdata( $user_id );
+			$user_email = $user->user_email ?? '';
 
-			$field_count = count( $fields );
+			Mailchimp_Helpers::validate_email( $user_email );
 
-			for ( $i = 0; $i < $field_count; $i ++ ) {
-				$key   = $fields[ $i ]['FIELD_NAME'];
-				$value = Automator()->parse->text( $fields[ $i ]['FIELD_VALUE'], $recipe_id, $user_id, $args );
-				if ( strpos( $key, '_addr1' ) || strpos( $key, '_addr2' ) || strpos( $key, '_city' ) || strpos( $key, '_state' ) || strpos( $key, '_zip' ) || strpos( $key, '_country' ) ) {
-					$key_split = explode( '_', $key, 2 );
-					if ( 2 === count( $key_split ) ) {
-						$key_values[ $key_split[0] ][ $key_split[1] ] = $value;
-					}
-				} else {
-					$key_values[ $key ] = $value;
-				}
-			}
-
-			// get current user email
-			$user           = get_userdata( $user_id );
-			$user_hash      = md5( strtolower( trim( $user->user_email ) ) );
-			$user_interests = array();
-
+			$user_hash     = md5( strtolower( trim( $user_email ) ) );
 			$existing_user = $helpers->get_list_user( $list_id, $user_hash );
 
-			// If the user already exists in this list
+			$user_interests = array();
+
+			// If the user already exists in this list.
 			if ( false !== $existing_user ) {
-
+				// If the user already exists and the update existing is no, throw an error.
 				if ( 'no' === $update_existing ) {
-					throw new \Exception( esc_html__( 'User already subscribed to the list.', 'uncanny-automator' ) );
+					throw new \Exception( esc_html_x( 'User already subscribed to the list.', 'Mailchimp', 'uncanny-automator' ) );
 				}
-
+				// Else, compile the user interests.
 				$user_interests = $helpers->compile_user_interests( $existing_user, $change_groups, $groups_list );
 			}
 
-			// Now create an audience
-			$status = 'subscribed';
-
-			if ( 'yes' === $double_optin ) {
-				$status = 'pending';
-			}
-
-			$merge_fields = automator_array_filter_recursive( $key_values );
+			// Now create an audience.
+			// If double opt-in is enabled, status must be 'pending'; otherwise 'subscribed'.
+			$status = ( 'yes' === $double_optin ) ? 'pending' : 'subscribed';
 
 			$user_data = array(
-				'email_address' => $user->user_email,
+				'email_address' => $user_email,
 				'status'        => $status,
 				'merge_fields'  => $merge_fields,
 				'language'      => $lang_code,
@@ -444,7 +462,7 @@ class AUDIENCE_ADDAUSER {
 				'user_data' => wp_json_encode( $user_data ),
 			);
 
-			$response = $helpers->api_request( $request_params, $action_data );
+			$helpers->api_request( $request_params, $action_data );
 
 			Automator()->complete_action( $user_id, $action_data, $recipe_id );
 

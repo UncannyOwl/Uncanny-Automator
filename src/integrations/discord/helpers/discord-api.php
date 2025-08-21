@@ -239,55 +239,6 @@ class Discord_Api {
 	}
 
 	/**
-	 * Get server members.
-	 *
-	 * @param int $server_id
-	 * @param bool $refresh
-	 */
-	public function get_server_members( $server_id, $refresh = false ) {
-		if ( empty( $server_id ) ) {
-			return array();
-		}
-
-		$key     = 'DISCORD_MEMBERS_' . $server_id;
-		$members = automator_get_option( $key, array() );
-		$members = ! empty( $members )
-			? $this->helpers->decrypt_data( $members, $server_id, 'members' )
-			: array();
-
-		// If we have the members cached, return them.
-		if ( ! $refresh ) {
-			if ( ! empty( $members ) ) {
-				return $members;
-			}
-		}
-
-		// Get the members from the API.
-		$body = array(
-			'action' => 'get_server_members',
-		);
-
-		try {
-			$response = $this->api_request( $body, null, $server_id );
-			if ( ! isset( $response['data'] ) ) {
-				return array();
-			}
-			if ( ! isset( $response['data']['members'] ) ) {
-				return array();
-			}
-
-			// Encrypt the members data.
-			$members           = $response['data']['members'];
-			$encrypted_members = $this->helpers->encrypt_data( $members, $server_id, 'members' );
-			automator_update_option( $key, $encrypted_members, false );
-
-			return $members;
-		} catch ( \Exception $e ) {
-			return array();
-		}
-	}
-
-	/**
 	 * Get server roles.
 	 *
 	 * @param int $server_id
@@ -396,6 +347,34 @@ class Discord_Api {
 		}
 
 		return $types;
+	}
+
+	/**
+	 * Get user information.
+	 *
+	 * @param string $user_id
+	 *
+	 * @return array
+	 */
+	public function get_user_info( $user_id ) {
+		if ( empty( $user_id ) ) {
+			return array();
+		}
+
+		$body = array(
+			'action'  => 'get_user_info',
+			'user_id' => $user_id,
+		);
+
+		try {
+			$response = $this->api_request( $body );
+			if ( ! isset( $response['data'] ) ) {
+				return array();
+			}
+			return $response['data'];
+		} catch ( \Exception $e ) {
+			return array();
+		}
 	}
 
 	/**

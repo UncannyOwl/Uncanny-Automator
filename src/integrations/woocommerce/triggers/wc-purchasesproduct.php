@@ -55,9 +55,9 @@ class WC_PURCHASESPRODUCT {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WooCommerce */
-			'sentence'            => sprintf( esc_attr__( 'A user {{completes, pays for, lands on a thank you page for:%3$s}} an order with {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES', $this->trigger_condition ),
+			'sentence'            => sprintf( esc_html_x( 'A user {{completes, pays for, lands on a thank you page for:%3$s}} an order with {{a product:%1$s}} {{a number of:%2$s}} time(s)', 'Woocommerce', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES', $this->trigger_condition ),
 			/* translators: Logged-in trigger - WooCommerce */
-			'select_option_name'  => esc_attr__( 'A user {{completes, pays for, lands on a thank you page for}} an order with {{a product}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_html_x( 'A user {{purchases}} {{a product}}', 'Woocommerce', 'uncanny-automator' ),
 			'action'              => array(
 				'woocommerce_order_status_completed',
 				'woocommerce_thankyou',
@@ -83,8 +83,8 @@ class WC_PURCHASESPRODUCT {
 	public function load_options() {
 		Automator()->helpers->recipe->woocommerce->options->load_options = true;
 
-		$options            = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_attr__( 'Product', 'uncanny-automator' ) );
-		$options['options'] = array( '-1' => esc_attr__( 'Any product', 'uncanny-automator' ) ) + $options['options'];
+		$options            = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_html_x( 'Product', 'Woocommerce', 'uncanny-automator' ) );
+		$options['options'] = array( '-1' => esc_html_x( 'Any product', 'Woocommerce', 'uncanny-automator' ) ) + $options['options'];
 		$trigger_condition  = Automator()->helpers->recipe->woocommerce->get_woocommerce_trigger_conditions( $this->trigger_condition );
 		$options_array      = array(
 			'options' => array(
@@ -103,6 +103,9 @@ class WC_PURCHASESPRODUCT {
 	 * @param $order_id
 	 */
 	public function payment_completed( $order_id ) {
+		// Capture original arguments for PHP 7.3 compatibility
+		$original_args = func_get_args();
+
 		if ( empty( $order_id ) || 0 === $order_id ) {
 			return;
 		}
@@ -172,6 +175,7 @@ class WC_PURCHASESPRODUCT {
 		//Add where Product ID is set for trigger
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
+				//phpcs:ignore WordPress.PHP.StrictInArray.FoundNonStrictFalse
 				if ( ! in_array( $recipe_id, $trigger_cond_ids, false ) ) {
 					continue;
 				}
@@ -182,6 +186,7 @@ class WC_PURCHASESPRODUCT {
 				if ( ! isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
 					continue;
 				}
+				//phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				if ( intval( '-1' ) === intval( $required_product[ $recipe_id ][ $trigger_id ] ) || in_array( $required_product[ $recipe_id ][ $trigger_id ], $product_ids ) ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,
@@ -213,7 +218,7 @@ class WC_PURCHASESPRODUCT {
 			if ( $args ) {
 				foreach ( $args as $result ) {
 					if ( true === $result['result'] ) {
-						do_action( 'automator_loopable_token_hydrate', $result['args'], func_get_args() );
+						do_action( 'automator_loopable_token_hydrate', $result['args'], $original_args );
 						Automator()->process->user->maybe_trigger_complete( $result['args'] );
 					}
 				}

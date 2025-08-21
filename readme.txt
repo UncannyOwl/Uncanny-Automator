@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.2
 Requires PHP: 7.3
-Stable tag: 6.7.0.1
+Stable tag: 6.8.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -393,72 +393,48 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.7.0.1 [2025-07-25] =
+= 6.8.0 [2025-08-21] =
 
-**Update:**
+**New Trigger:**  
 
-* Thrive Apprentice - `class_alias` added to support older Automator Pro versions
+* Help Scout - A conversation is created in a mailbox #6121
 
-= 6.7.0 [2025-07-24] =
+**New Token:**  
 
-**New Plugin Integration:**
+* Help Scout - Conversation Number, Folder ID #6090
 
-* [SureForms](https://automatorplugin.com/integration/sureforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5774
+**Added:**  
 
-**New Triggers:**
+* Discord - Updated members dropdown to show only verified users to comply with Discord recommendations #6048
+* Discord - Added caching for performance, and improved username handling without discriminators #6048
+* Post Loops - Post meta tokens are now available inside post loops (Automator Pro) #6038
+* Settings - Ability to enter Automator Pro License key to install and activate Automator Pro #5998
 
-* GamiPress - A user loses greater than, less than, or equal to a number of a specific type of points #5894  
-* LearnDash - A user has completed X% of a course #5367  
-* SureForms - A form is submitted #5774  
-* SureForms - A user submits a form #5772  
-* Thrive Apprentice - A user receives access to a product #5878  
-* Thrive Architect - A user registers via a registration form #5893  
+**Updated:**  
 
-**New Action:**
+* LearnDash - A user has completed X% of a course - Tweaked the sentence to stop pretending it knows algebra. It now just says "percentage." #6044
+* MailChimp - Refactored merge field handling and email validation to improve error handling, input validation, and overall integration robustness. Basically, it's a lot smarter and a little less dramatic now. #5341
+* Woo - The Woo triggers got a grammar upgrade. Fewer sentence fragments, more clarity. #6057
+* WordPress - Create a post - Taxonomy and Term fields now support custom field token #6102
 
-* MailPoet - Add a tag to the subscriber #5511  
-* MailPoet - Remove a tag from the subscriber #5511  
+**Fixed:**  
 
-**New Token:**
+* Run code - Call a custom function/method - Function return value - Race condition due to internal process being hooked multiple times. #6055
+* Elementor - Triggers not firing when "Any form" is selected - Apparently "Any form" meant "No form." That's been corrected—now it means what it says. #6045
+* FluentCRM – Support for Custom Values/Tokens for custom fields - Now giving you the custom field love you deserve, with fewer surprises in the dropdown. #6031
+* Mailchimp - Add an email to an audience - "Your merge fields were invalid" log error - Merge fields now know their place. Less sass, more class. #5933
+* MemberPress - PHP Warning of undefined array key on some sites - Silenced the PHP grumbles about undefined keys. All is calm. #6097
+* Notion - Create a Database Item - Fixed issues with database item creation and updates by improving JSON handling, token parsing, error handling, and data sanitization for labels and descriptions #6059
+* Outgoing Webhooks - Retrying a failed webhook when two or more webhooks failed subsequently would only resend the last webhook in the logs - Everyone gets a fair retry now, not just the caboose of the action train. #6053
+* Thrive Apprentice - A user completes a course not firing - Courses are now completing with celebratory trigger fireworks as expected. #6026
+* Thrive Architect - A user registers via a registration form - User data not available in some situations - The data finally decided to show up. #6051
+* Thrive Quiz Builder - A quiz is completed - This trigger is now smarter and knows when you've really finished your quiz. #6040
+* ActiveCampaign - Improved access control for the incoming webhook key regeneration function #6123
 
-* Universal Token - Discord - Discord ID (Snowflake) #6002  
+**Under the hood:**  
 
-**Addition:**
-
-* Recipe Logs - Track the total recipe run number relative to the user's run number—now you can see not just how many times a recipe ran, but how many times it ran for a specific user #3890  
-
-**Updated:**
-
-* ActiveCampaign - Support for adding tags via name when using a custom value —because "name dropping" is totally allowed here #5873  
-* Brevo - Error logs now show if an action failed due to IP whitelisting—so you're not left guessing if the gatekeeper said "no" #6006  
-* Discord - Discord usernames are now encrypted—your secrets are safe, even from your favorite Discord bot #5997  
-* JSON Trigger - WP filter `automator_loopable_should_encode_html_entities` to optionally allow HTML entities—because sometimes, <3 just wants to be seen as ❤️ #5899  
-* LearnPress - Improved compatibility with LearnPress v4.2+—they grew up so fast, but we've caught up #5544  
-* Loops & Common tokens - User tokens under "Common" will now return the details of the user that triggered the recipe instead of loop users—know thy trigger-happy users #6012  
-
-**Fixed:**
-
-* ActiveCampaign - Add a contact to ActiveCampaign - No longer overwrites existing values when fields are left blank—now it politely updates without steamrolling your data #5902  
-* ActiveCampaign - Custom field dropdowns in actions no longer default to the first option—no more "surprise selections" when you're not looking #5916  
-* App Integrations - Some AI Integrations returning blank settings pages on some sites—fixed the disappearing act, now everything shows up to work #5907  
-* LearnPress - Mark a lesson complete for the user - PHP Error on some sites—gave the rogue lesson a hall pass and fixed the crash #5416  
-* Loop filters in Automator Pro - Custom values were not being saved—their memory wasn't so good; now they remember like an elephant #5864  
-* Ninja Forms - Improved handling of Repeatable Fieldset tokens—less token confusion, more repeatable joy #5930  
-* Notion - Create a database item - Action fails with 400 error when using custom select values in unsupported fields #5911  
-* Recipe throttling not working on some triggers—our recipe timers are back in sync, Gordon Ramsay would approve #5877  
-* Thrive Leads - Form dropdown listing some forms twice—now listing forms just once, because once is enough #5903  
-* WP Job Manager - A user submits a specific type of job - Trigger was also running when jobs were updated—we've stopped the trigger from being an overachiever #5974  
-
-**Under the hood:**
-
-* All Recipes - Import button now appears immediately without a fade in animation—no more dramatic entrances, just business #6027  
-* Closure - JS script converted to VanillaJS—ditched the fancy wrappers, went full vanilla #6030  
-* Codeception namespace check causing unexpected issues with a third-party plugin—cleaned up the namespace mess like a good houseguest #6029  
-* Disable public REST API endpoint for recipes—locked the front door to keep recipe secrets safe #6022  
-* Google Calendar - Migrated to the latest framework—now running smoother than a freshly scheduled meeting #5621  
-* Thrive Apprentice - Migrated to the latest framework—leveled up behind the scenes without messing with your flow #5927  
-* Thrive Quiz Builder - Migrated to newer framework and user tokens normalized—because even tokens need a bit of structure in their lives #5635  
-* Updated icons of built-in integrations—spruced up the icons so they shine like they mean it #5594  
+* Help Scout - Code quality updated - We gave the Help Scout codebase a spa day. Cleaner, fresher, and ready for action. #6089
+* New WP Action hooks -  Laid down some fancy hooks so future integrations can jump in at just the right time. #6063
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

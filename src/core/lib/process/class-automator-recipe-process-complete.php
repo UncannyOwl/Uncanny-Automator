@@ -466,7 +466,7 @@ class Automator_Recipe_Process_Complete {
 		$this->set_log_properties(
 			array(
 				'type'       => 'code',
-				'label'      => _x( 'Stacktrace', 'Uncanny Automator', 'uncanny-automator' ),
+				'label'      => esc_html_x( 'Stacktrace', 'Uncanny Automator', 'uncanny-automator' ),
 				'value'      => $stack_trace,
 				'attributes' => array(
 					'code_language' => 'json',
@@ -628,6 +628,11 @@ class Automator_Recipe_Process_Complete {
 			'args'          => $args,
 		);
 
+		/**
+		 * Action DB entry created and status changed.
+		 *
+		 * @param array $do_action_args
+		 */
 		do_action( 'automator_action_created', $do_action_args );
 
 		/**
@@ -887,11 +892,7 @@ class Automator_Recipe_Process_Complete {
 		 * @var $completed
 		 * Meaning of each number
 		 *
-		 * 0 = not completed
-		 * 1 = completed
-		 * 2 = completed with errors, error message provided
-		 * 5 = in progress (some actions are scheduled)
-		 * 9 = completed, do nothing
+		 * See Automator_Status class for more details.
 		 */
 
 		$run_number = Automator()->get->next_run_number( $recipe_id, $user_id, true );
@@ -1076,11 +1077,11 @@ class Automator_Recipe_Process_Complete {
 	 *
 	 * @return bool
 	 */
-	private static function substring_exists( $substrings, $string ) {
+	private static function substring_exists( $substrings, $_string ) {
 
 		foreach ( $substrings as $substring ) {
 			// Check if the substring is found within the larger string.
-			if ( strpos( $string, $substring ) !== false ) {
+			if ( false !== strpos( $_string, $substring ) ) {
 				return true; // If any substring is found, return true.
 			}
 		}

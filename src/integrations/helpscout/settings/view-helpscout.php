@@ -126,6 +126,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?>
 							</strong>
 
+							<?php esc_html_e( 'A conversation in a mailbox is created', 'uncanny-automator' ); ?>
+
+						</li>
+						<li>
+
+							<uo-icon id="bolt"></uo-icon>
+
+							<strong>
+								<?php esc_html_e( 'Trigger:', 'uncanny-automator' ); ?>
+							</strong>
+
 							<?php esc_html_e( 'A conversation receives a reply from a customer', 'uncanny-automator' ); ?>
 
 						</li>

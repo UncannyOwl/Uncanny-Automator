@@ -119,6 +119,9 @@ class MP_PURCHASEPRODUCTRECURRING {
 		foreach ( $recipes as $recipe_id => $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
 				$trigger_id = $trigger['ID'];//return early for all products
+				if ( ! isset( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
+					continue; // Skip trigger when required product data is not available
+				}
 				if ( absint( $required_product[ $recipe_id ][ $trigger_id ] ) === $product_id || intval( '-1' ) === intval( $required_product[ $recipe_id ][ $trigger_id ] ) ) {
 					$matched_recipe_ids[] = array(
 						'recipe_id'  => $recipe_id,

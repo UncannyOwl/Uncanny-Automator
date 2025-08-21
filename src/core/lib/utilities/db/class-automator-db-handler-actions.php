@@ -81,7 +81,6 @@ class Automator_DB_Handler_Actions {
 		);
 
 		return $action_log_id ?? null;
-
 	}
 
 	/**
@@ -224,7 +223,6 @@ class Automator_DB_Handler_Actions {
 				'%d',
 			)
 		);
-
 	}
 
 	/**
@@ -250,7 +248,6 @@ class Automator_DB_Handler_Actions {
 				'meta_key'                => $meta_key,
 			)
 		);
-
 	}
 
 	/**
@@ -271,7 +268,6 @@ class Automator_DB_Handler_Actions {
 		}
 
 		return $result->meta_value;
-
 	}
 
 	/**
@@ -286,12 +282,10 @@ class Automator_DB_Handler_Actions {
 
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . Automator()->db->tables->action_meta;
-
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT meta_value FROM $table_name WHERE meta_key = %s AND automator_action_log_id = %d",
+				"SELECT meta_value FROM $wpdb->uap_action_log_meta WHERE meta_key = %s AND automator_action_log_id = %d",
 				$meta_key,
 				$action_log_id
 			),
@@ -321,10 +315,18 @@ class Automator_DB_Handler_Actions {
 	}
 
 	/**
-	 * @param $action_id
-	 * @param $recipe_log_id
-	 * @param $completed
-	 * @param $error_message
+	 * Marks an action as complete in the action log.
+	 *
+	 * Updates the action log entry with completion status, timestamp, and error message.
+	 * Fires the 'automator_action_completion_status_changed' hook if the update is successful.
+	 * Also fires a dynamic hook 'automator_action_marked_{$status_name}' based on the completion status.
+	 *
+	 * @param int    $action_id      The action ID.
+	 * @param int    $recipe_log_id  The recipe log ID.
+	 * @param int    $completed      The completion status. Default 1 (completed).
+	 * @param string $error_message  Optional error message. Default empty string.
+	 *
+	 * @return void
 	 */
 	public function mark_complete( $action_id, $recipe_log_id, $completed = 1, $error_message = '' ) {
 		$data = array(
@@ -338,8 +340,72 @@ class Automator_DB_Handler_Actions {
 			'automator_recipe_log_id' => $recipe_log_id,
 		);
 
-		Automator()->db->action->update( $data, $where );
+		$updated = $this->update( $data, $where );
 
+		$recipe_details = Automator()->db->recipe->get_by( 'ID', $recipe_log_id );
+
+		if ( $updated ) {
+			/**
+			 * Fires after an action has been successfully marked as complete in the database.
+			 *
+			 * This hook allows developers to perform additional operations when an action
+			 * is marked complete, such as logging, notifications, or triggering other processes.
+			 *
+			 * @since 6.7.0
+			 *
+			 * @param int    $action_id      The action ID that was marked complete.
+			 * @param int    $recipe_log_id  The recipe log ID associated with the action.
+			 * @param array  $recipe_details The recipe details associated with the action.
+			 * @param int    $completed      The completion status (see Automator_Status constants).
+			 * @param string $error_message  Error message if the action failed, empty string if successful.
+			 *
+			 * @example
+			 * // Hook into the action completion event
+			 * add_action( 'automator_action_completion_status_changed', 'my_custom_action_complete_handler', 10, 5 );
+			 *
+			 * function my_custom_action_complete_handler( $action_id, $recipe_log_id, $recipe_details, $completed, $error_message ) {
+			 *     if ( Automator_Status::COMPLETED === $completed ) {
+			 *         // Action completed successfully
+			 *         error_log( "Action {$action_id} completed successfully for recipe log {$recipe_log_id}" );
+			 *     } elseif ( Automator_Status::COMPLETED_WITH_ERRORS === $completed ) {
+			 *         // Action completed with errors
+			 *         error_log( "Action {$action_id} completed with errors: {$error_message}" );
+			 *     }
+			 * }
+			 */
+			do_action( 'automator_action_completion_status_changed', $action_id, $recipe_log_id, $recipe_details, $completed, $error_message );
+
+			// Fire specific hooks based on completion status
+			$all_statuses = Automator_Status::get_all_statuses();
+
+			if ( array_key_exists( $completed, $all_statuses ) ) {
+				// Convert status constant to hook-friendly name
+				$status_name = Automator_Status::get_class_name( $completed );
+				$status_name = str_replace( '-', '_', $status_name );
+
+				/**
+				 * Fires after an action has been marked with a specific status.
+				 *
+				 * Dynamic hook name based on the completion status. This allows developers
+				 * to hook into specific status changes for more targeted functionality.
+				 *
+				 * @since 6.7.0
+				 *
+				 * @param int    $action_id      The action ID that was marked with the status.
+				 * @param int    $recipe_log_id  The recipe log ID associated with the action.
+				 * @param array  $recipe_details Details of the recipe log associated with the action.
+				 * @param int    $completed      The completion status constant.
+				 * @param string $error_message  Error message if applicable, empty string otherwise.
+				 *
+				 * @example
+				 * // Hook into specific status events
+				 * add_action( 'automator_action_marked_completed_with_errors', 'handle_action_errors', 10, 5 );
+				 * add_action( 'automator_action_marked_failed', 'handle_action_failure', 10, 5 );
+				 * add_action( 'automator_action_marked_completed', 'handle_action_success', 10, 5 );
+				 */
+				do_action( "automator_action_marked_{$status_name}", $action_id, $recipe_log_id, $recipe_details, $completed, $error_message );
+			}
+		}
 	}
 
 	/**
@@ -485,7 +551,5 @@ class Automator_DB_Handler_Actions {
 		}
 
 		return $action_log_result;
-
 	}
-
 }

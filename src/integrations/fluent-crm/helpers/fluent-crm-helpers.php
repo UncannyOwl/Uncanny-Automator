@@ -50,20 +50,19 @@ class Fluent_Crm_Helpers {
 		foreach ( $fluent_crm_targetted_actions as $status_action ) {
 			add_action( $status_action, array( $this, 'do_fluent_crm_actions' ), 2, 99 );
 		}
-
 	}
 
 	/**
 	 * @param Fluent_Crm_Helpers $options
 	 */
-	public function setOptions( Fluent_Crm_Helpers $options ) {
+	public function setOptions( Fluent_Crm_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->options = $options;
 	}
 
 	/**
 	 * @param Fluent_Crm_Pro_Helpers $pro
 	 */
-	public function setPro( Fluent_Crm_Pro_Helpers $pro ) {
+	public function setPro( Fluent_Crm_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
 
@@ -107,6 +106,7 @@ class Fluent_Crm_Helpers {
 		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$supports_multiple_values = key_exists( 'supports_multiple_values', $args ) ? $args['supports_multiple_values'] : false;
+		$supports_custom_value    = key_exists( 'supports_custom_value', $args ) ? $args['supports_custom_value'] : false;
 
 		$options = array();
 
@@ -139,10 +139,10 @@ class Fluent_Crm_Helpers {
 			'fill_values_in'           => $target_field,
 			'endpoint'                 => $end_point,
 			'options'                  => $options,
+			'supports_custom_value'    => $supports_custom_value,
 		);
 
 		return $option;
-
 	}
 
 	/**
@@ -171,6 +171,7 @@ class Fluent_Crm_Helpers {
 		$target_field             = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point                = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 		$supports_multiple_values = key_exists( 'supports_multiple_values', $args ) ? $args['supports_multiple_values'] : false;
+		$supports_custom_value    = key_exists( 'supports_custom_value', $args ) ? $args['supports_custom_value'] : false;
 
 		$options = array();
 
@@ -202,10 +203,10 @@ class Fluent_Crm_Helpers {
 			'fill_values_in'           => $target_field,
 			'endpoint'                 => $end_point,
 			'options'                  => $options,
+			'supports_custom_value'    => $supports_custom_value,
 		);
 
 		return $option;
-
 	}
 
 	/**
@@ -321,34 +322,33 @@ class Fluent_Crm_Helpers {
 		}
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			if ( $user_id !== get_current_user_id() ) {
+			if ( get_current_user_id() !== $user_id ) {
 				// The user is not an admin and subscriber added to a list is not the current user
 				return 0;
 			}
 		}
 
 		return $user_id;
-
 	}
 
 	/**
-	 * @param $attachedListIds
+	 * @param $attached_list_ids
 	 *
 	 * @return array
 	 */
-	public function get_attached_list_ids( $attachedListIds ) {
+	public function get_attached_list_ids( $attached_list_ids ) {
 
 		/**
 		 * SubscriberPivot::whereIn is causing the list ids to return an empty array.
 		 *
 		 * @since 4.4
 		 */
-		$disable_pivot_check = apply_filters( 'automator_fluentcrm_subscriber_pivot_list', true, $attachedListIds );
+		$disable_pivot_check = apply_filters( 'automator_fluentcrm_subscriber_pivot_list', true, $attached_list_ids );
 
-		// Disable the pivot check by default since $attachedListIds already returns the ids.
+		// Disable the pivot check by default since $attached_list_ids already returns the ids.
 		if ( $disable_pivot_check ) {
 
-			return $attachedListIds;
+			return $attached_list_ids;
 
 		}
 
@@ -361,38 +361,38 @@ class Fluent_Crm_Helpers {
 		$request_type = automator_filter_input( 'type', INPUT_POST );
 
 		if ( ! empty( $request_type ) ) {
-			// the $attachedListIds are actually pivot IDs
-			$pivots = SubscriberPivot::whereIn( 'id', $attachedListIds )->get();
+			// the $attached_list_ids are actually pivot IDs
+			$pivots = SubscriberPivot::whereIn( 'id', $attached_list_ids )->get();
 			if ( ! empty( $pivots ) ) {
 				foreach ( $pivots as $pivot ) {
 					$list_ids[] = $pivot->object_id;
 				}
 			}
 		} else {
-			$list_ids = $attachedListIds;
+			$list_ids = $attached_list_ids;
 		}
 
 		return $list_ids;
 	}
 
 	/**
-	 * @param $attachedTagIds
+	 * @param $attached_tag_ids
 	 *
 	 * @return array
 	 */
-	public function get_attached_tag_ids( $attachedTagIds ) {
+	public function get_attached_tag_ids( $attached_tag_ids ) {
 
 		/**
 		 * SubscriberPivot::whereIn is causing the list ids to return an empty array.
 		 *
 		 * @since 4.4
 		 */
-		$disable_pivot_check = apply_filters( 'automator_fluentcrm_subscriber_pivot_tags', true, $attachedTagIds );
+		$disable_pivot_check = apply_filters( 'automator_fluentcrm_subscriber_pivot_tags', true, $attached_tag_ids );
 
-		// Disable the pivot check by default since $attachedListIds already returns the ids.
+		// Disable the pivot check by default since $attached_list_ids already returns the ids.
 		if ( $disable_pivot_check ) {
 
-			return $attachedTagIds;
+			return $attached_tag_ids;
 
 		}
 
@@ -404,21 +404,21 @@ class Fluent_Crm_Helpers {
 
 		// Just check to see if the user is logged in or not.
 		if ( ! is_user_logged_in() ) {
-			$list_ids = $attachedTagIds;
+			$list_ids = $attached_tag_ids;
 		}
 
 		$request_type = automator_filter_input( 'type', INPUT_POST );
 
 		if ( ! empty( $request_type ) ) {
-			// the $attachedListIds are actually pivot IDs
-			$pivots = SubscriberPivot::whereIn( 'id', $attachedTagIds )->get();
+			// the $attached_list_ids are actually pivot IDs
+			$pivots = SubscriberPivot::whereIn( 'id', $attached_tag_ids )->get();
 			if ( ! empty( $pivots ) ) {
 				foreach ( $pivots as $pivot ) {
 					$list_ids[] = $pivot->object_id;
 				}
 			}
 		} else {
-			$list_ids = $attachedTagIds;
+			$list_ids = $attached_tag_ids;
 		}
 
 		return $list_ids;
@@ -440,19 +440,19 @@ class Fluent_Crm_Helpers {
 		$formatted_statues = array();
 
 		$trans_maps = array(
-			'subscribed'   => esc_html__( 'Subscribed', 'uncanny-automator' ),
-			'pending'      => esc_html__( 'Pending', 'uncanny-automator' ),
-			'unsubscribed' => esc_html__( 'Unsubscribed', 'uncanny-automator' ),
-			'bounced'      => esc_html__( 'Bounced', 'uncanny-automator' ),
-			'complained'   => esc_html__( 'Complained', 'uncanny-automator' ),
+			'subscribed'   => esc_html_x( 'Subscribed', 'FluentCRM', 'uncanny-automator' ),
+			'pending'      => esc_html_x( 'Pending', 'FluentCRM', 'uncanny-automator' ),
+			'unsubscribed' => esc_html_x( 'Unsubscribed', 'FluentCRM', 'uncanny-automator' ),
+			'bounced'      => esc_html_x( 'Bounced', 'FluentCRM', 'uncanny-automator' ),
+			'complained'   => esc_html_x( 'Complained', 'FluentCRM', 'uncanny-automator' ),
 		);
 
 		if ( true === $any ) {
-			$formatted_statues['-1'] = esc_html__( 'Any status', 'uncanny-automator' );
+			$formatted_statues['-1'] = esc_html_x( 'Any status', 'FluentCRM', 'uncanny-automator' );
 		}
 
 		if ( true === $disable_default ) {
-			$formatted_statues[''] = esc_html__( 'Select status', 'uncanny-automator' );
+			$formatted_statues[''] = esc_html_x( 'Select status', 'FluentCRM', 'uncanny-automator' );
 		}
 
 		foreach ( $statuses as $status ) {
@@ -460,17 +460,18 @@ class Fluent_Crm_Helpers {
 		}
 
 		return $formatted_statues;
-
 	}
 
 	/**
 	 * Add the wp user as a FluentCrm contact.
 	 *
 	 * @param object $user The WordPress user object returned by function get_userdata.
+	 * @param array $tags The tags to add to the contact.
+	 * @param array $lists The lists to add the contact to.
 	 *
 	 * @return mixed Returns false if not successful. Otherwise instance of \FluentCrm\App\Models\Subscriber.
 	 */
-	public function add_user_as_contact( $user, $tags = array(), $list = array() ) {
+	public function add_user_as_contact( $user, $tags = array(), $lists = array() ) {
 
 		if ( ! function_exists( 'FluentCrmApi' ) ) {
 			return 0;
@@ -491,14 +492,13 @@ class Fluent_Crm_Helpers {
 		}
 
 		// Update the list if argument is supplied.
-		if ( ! empty( $list ) ) {
-			$data['lists'] = $list;
+		if ( ! empty( $lists ) ) {
+			$data['lists'] = $lists;
 		}
 
 		$contact = $contact_api->createOrUpdate( $data );
 
 		return $contact;
-
 	}
 
 	/**
@@ -519,14 +519,16 @@ class Fluent_Crm_Helpers {
 			'number'       => 'int',
 		);
 
-		$placeholder = array(
-			'date_time' => esc_html__( 'yyyy-mm-dd hh:mm:ss', 'uncanny-automator' ),
+		$placeholders = array(
+			'date'       => esc_html_x( 'yyyy-mm-dd', 'FluentCRM', 'uncanny-automator' ),
+			'date_time'  => esc_html_x( 'yyyy-mm-dd hh:mm:ss', 'FluentCRM', 'uncanny-automator' ),
+			'select-one' => esc_html_x( 'Select an option', 'FluentCRM', 'uncanny-automator' ),
 		);
 
 		$fields = array();
 		foreach ( $custom_fields as $k => $custom_field ) {
 
-			if ( apply_filters( "automator_fluentcrm_omit_custom_field-{$custom_field['slug']}", false, $custom_field ) ) {
+			if ( apply_filters( "automator_fluentcrm_omit_custom_field-{$custom_field['slug']}", false, $custom_field ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 				continue;
 			}
 
@@ -558,16 +560,24 @@ class Fluent_Crm_Helpers {
 					);
 				}
 			} else {
+
+				// Set placeholders for defined field types.
+				$placeholder = isset( $placeholders[ $custom_field['type'] ] ) ? $placeholders[ $custom_field['type'] ] : '';
+
+				// Radio fields do not support custom values because they are designed to work with predefined options only.
+				// Allowing custom values for radio fields could lead to inconsistent behavior and break the expected functionality.
+				$supports_custom_value = 'radio' !== $custom_field['type'];
+
 				$fields[] = array(
 					'input_type'               => $field_types[ $custom_field['type'] ],
 					'option_code'              => 'FLUENTCRM_CUSTOMFIELD_' . $k,
 					'options'                  => $options,
 					'required'                 => false,
 					'label'                    => $custom_field['label'],
-					'supports_token'           => true,
-					'placeholder'              => isset( $placeholder[ $custom_field['type'] ] ) ? $placeholder[ $custom_field['type'] ] : '',
+					'supports_tokens'          => true,
+					'placeholder'              => $placeholder,
 					'supports_multiple_values' => $supports_multiple_values,
-					'supports_custom_value'    => false,
+					'supports_custom_value'    => $supports_custom_value,
 				);
 			}
 		}
@@ -584,7 +594,7 @@ class Fluent_Crm_Helpers {
 		return array(
 			'option_code' => 'EMAIL',
 			'input_type'  => 'text',
-			'label'       => esc_attr__( 'Email address', 'uncanny-automator' ),
+			'label'       => esc_attr_x( 'Email address', 'FluentCRM', 'uncanny-automator' ),
 			'placeholder' => '',
 			'description' => '',
 			'required'    => true,

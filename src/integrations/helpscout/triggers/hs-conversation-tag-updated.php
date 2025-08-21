@@ -1,16 +1,14 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
 
-use Uncanny_Automator\Recipe;
+namespace Uncanny_Automator\Integrations\Helpscout;
 
 /**
- * Class HS_CONVERSATION_TAG_UPDATED
+ * Class Hs_Conversation_Tag_Updated
  *
  * @package Uncanny_Automator
+ * @method Helpscout_Helpers get_item_helpers()
  */
-class HS_CONVERSATION_TAG_UPDATED {
-
-	use Recipe\Triggers;
+class Hs_Conversation_Tag_Updated extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
 	 * Constant TRIGGER_CODE.
@@ -27,117 +25,155 @@ class HS_CONVERSATION_TAG_UPDATED {
 	const TRIGGER_META = 'HS_CONVERSATION_TAG_UPDATED_META';
 
 	/**
-	 * __construct
+	 * Check if trigger requirements are met
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function __construct() {
-
-		if ( automator_get_option( 'uap_helpscout_enable_webhook', false ) ) {
-
-			$this->set_helper( new Helpscout_Helpers( false ) );
-
-			$this->setup_trigger();
-
-		}
+	public function requirements_met() {
+		return automator_get_option( 'uap_helpscout_enable_webhook', false );
 	}
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object.
 	 *
-	 * @return void.
+	 * @return void
 	 */
 	public function setup_trigger() {
 
 		$this->set_integration( 'HELPSCOUT' );
-
 		$this->set_trigger_code( self::TRIGGER_CODE );
-
 		$this->set_trigger_meta( self::TRIGGER_META );
-
 		$this->set_is_pro( false );
-
 		$this->set_is_login_required( false );
-
 		$this->set_trigger_type( 'anonymous' );
-
-		// The action hook to attach this trigger into.
-		$this->add_action( 'automator_helpscout_webhook_received' );
-
 		$this->set_uses_api( true );
-
-		// The number of arguments that the action hook accepts.
-		$this->set_action_args_count( 2 );
+		$this->set_support_link( \Automator()->get_author_support_link( $this->get_trigger_code(), 'knowledge-base/helpscout/' ) );
 
 		$this->set_sentence(
-			sprintf(
-				esc_html_x( "A conversation's tags are updated", 'Help Scout', 'uncanny-automator' )
-			)
+			esc_html_x( "A conversation's tags are updated", 'Help Scout', 'uncanny-automator' )
 		);
 
 		$this->set_readable_sentence(
 			esc_html_x( "A conversation's tags are updated", 'Help Scout', 'uncanny-automator' )
 		);
 
-		$this->set_tokens(
+		$this->add_action( 'automator_helpscout_webhook_received', 10, 2 );
+	}
+
+	/**
+	 * Define options
+	 *
+	 * @return array
+	 */
+	public function options() {
+		return array(); // This trigger has no options
+	}
+
+	/**
+	 * Returns the trigger's tokens.
+	 *
+	 * @param array $trigger
+	 * @param array $tokens
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+
+		$helpscout_tokens = array(
 			array(
-				'assigned_to'            => array( 'name' => esc_html_x( 'Assigned to', 'Help Scout', 'uncanny-automator' ) ),
-				'conversation_url'       => array( 'name' => esc_html_x( 'Conversation URL', 'Help Scout', 'uncanny-automator' ) ),
-				'conversation_created'   => array( 'name' => esc_html_x( 'Conversation created on', 'Help Scout', 'uncanny-automator' ) ),
-				'conversation_status'    => array( 'name' => esc_html_x( 'Conversation status', 'Help Scout', 'uncanny-automator' ) ),
-				'conversation_title'     => array( 'name' => esc_html_x( 'Conversation title', 'Help Scout', 'uncanny-automator' ) ),
-				'customer_email'         => array( 'name' => esc_html_x( 'Customer email', 'Help Scout', 'uncanny-automator' ) ),
-				'customer_name'          => array( 'name' => esc_html_x( 'Customer name', 'Help Scout', 'uncanny-automator' ) ),
-				'customer_waiting_since' => array( 'name' => esc_html_x( 'Customer waiting since', 'Help Scout', 'uncanny-automator' ) ),
-				'folder_id'              => array( 'name' => esc_html_x( 'Folder ID', 'Help Scout', 'uncanny-automator' ) ),
-				'mailbox_id'             => array( 'name' => esc_html_x( 'Mailbox ID', 'Help Scout', 'uncanny-automator' ) ),
-				'tags'                   => array( 'name' => esc_html_x( 'Tags', 'Help Scout', 'uncanny-automator' ) ),
-			)
+				'tokenId'   => 'number',
+				'tokenName' => esc_html_x( 'Conversation number', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'conversation_id',
+				'tokenName' => esc_html_x( 'Conversation ID', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'folder_id',
+				'tokenName' => esc_html_x( 'Folder ID', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'mailbox_id',
+				'tokenName' => esc_html_x( 'Mailbox ID', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'conversation_url',
+				'tokenName' => esc_html_x( 'Conversation URL', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'url',
+			),
+			array(
+				'tokenId'   => 'conversation_title',
+				'tokenName' => esc_html_x( 'Conversation title', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'conversation_status',
+				'tokenName' => esc_html_x( 'Conversation status', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'conversation_created',
+				'tokenName' => esc_html_x( 'Conversation created on', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'customer_name',
+				'tokenName' => esc_html_x( 'Customer name', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'customer_email',
+				'tokenName' => esc_html_x( 'Customer email', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'email',
+			),
+			array(
+				'tokenId'   => 'customer_waiting_since',
+				'tokenName' => esc_html_x( 'Customer waiting since', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'assigned_to',
+				'tokenName' => esc_html_x( 'Assigned to', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'tags',
+				'tokenName' => esc_html_x( 'Tags', 'Help Scout', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
 		);
 
-		// Register the trigger.
-		$this->register_trigger();
+		return array_merge( $tokens, $helpscout_tokens );
 	}
 
 	/**
 	 * Validate the trigger.
 	 *
-	 * @return boolean True.
+	 * @param array $trigger
+	 * @param array $hook_args
+	 * @return bool
 	 */
-	public function validate_trigger( ...$args ) {
+	public function validate( $trigger, $hook_args ) {
 
-		if ( empty( $args[0][1] ) ) {
-			return false;
-		}
+		list( $params, $headers ) = $hook_args;
 
-		return $this->get_helper()->is_webhook_request_matches_event( $args[0][1], 'convo.tags' );
+		// Check that this is a tag updated event
+		return $this->get_item_helpers()->is_webhook_request_matches_event( $headers, 'convo.tags' );
 	}
 
 	/**
-	 * Prepare to run.
+	 * Hydrate tokens
 	 *
-	 * Sets the conditional trigger to true.
-	 *
-	 * @return void.
+	 * @param array $trigger
+	 * @param array $hook_args
+	 * @return array
 	 */
-	public function prepare_to_run( $data ) {
+	public function hydrate_tokens( $trigger, $hook_args ) {
 
-		$this->set_conditional_trigger( false );
-	}
-
-	/**
-	 * Continue trigger process even for logged-in user.
-	 *
-	 * @return boolean True.
-	 */
-	public function do_continue_anon_trigger( ...$args ) {
-
-		return true;
-	}
-
-	public function parse_additional_tokens( $parsed, $args, $trigger ) {
-
-		$params = $args['trigger_args'][0];
+		list( $params, $headers ) = $hook_args;
 
 		$customer_name = implode( ' ', array( $params['primaryCustomer']['first'], $params['primaryCustomer']['last'] ) );
 
@@ -145,11 +181,9 @@ class HS_CONVERSATION_TAG_UPDATED {
 			$customer_name = $params['primaryCustomer']['email'];
 		}
 
-		$threads = $params['_embedded']['threads'];
-
+		$threads   = $params['_embedded']['threads'];
 		$assignees = array_column( $threads, 'assignedTo' );
-
-		$assignee = $assignees[0]; // Helpscout index zero is the recent assignee.
+		$assignee  = $assignees[0]; // Helpscout index zero is the recent assignee.
 
 		$assign_to = implode( ' ', array( $assignee['first'], $assignee['last'] ) ) . ' (' . $assignee['email'] . ')';
 
@@ -166,29 +200,37 @@ class HS_CONVERSATION_TAG_UPDATED {
 		$conversation_created = '';
 
 		if ( isset( $params['createdAt'] ) ) {
-			$conversation_created = $this->get_helper()->format_date_timestamp( strtotime( $params['createdAt'] ) );
+			$conversation_created = $this->get_item_helpers()->format_date_timestamp( strtotime( $params['createdAt'] ) );
 		}
 
 		$customer_waiting_since = '';
 
 		if ( isset( $params['customerWaitingSince']['time'] ) ) {
-			$customer_waiting_since = $this->get_helper()->format_date_timestamp( strtotime( $params['customerWaitingSince']['time'] ) );
+			$customer_waiting_since = $this->get_item_helpers()->format_date_timestamp( strtotime( $params['customerWaitingSince']['time'] ) );
 		}
 
-		$hydrated_tokens = array(
-			'assigned_to'            => $assign_to,
-			'conversation_url'       => 'https://secure.helpscout.net/conversation/' . $conversation_id,
-			'conversation_created'   => $conversation_created,
-			'conversation_status'    => $params['status'] ?? '',
-			'conversation_title'     => $params['subject'] ?? '',
-			'customer_email'         => $params['primaryCustomer']['email'] ?? '',
-			'customer_name'          => $customer_name ?? '',
-			'customer_waiting_since' => $customer_waiting_since,
-			'folder_id'              => $params['folderId'] ?? '',
-			'mailbox_id'             => $params['mailboxId'] ?? '',
-			'tags'                   => implode( ', ', array_column( $params['tags'] ?? array(), 'tag' ) ),
-		);
+		// Smart conversation URL - use web href if available, otherwise construct it
+		$conversation_url = 'https://secure.helpscout.net/conversation/' . $conversation_id;
+		if ( isset( $params['_links']['web']['href'] ) && ! empty( $params['_links']['web']['href'] ) ) {
+			$conversation_url = $params['_links']['web']['href'];
+		} elseif ( isset( $params['number'] ) ) {
+			$conversation_url = 'https://secure.helpscout.net/conversation/' . $conversation_id . '/' . $params['number'];
+		}
 
-		return $parsed + $hydrated_tokens;
+		return array(
+			'number'                  => isset( $params['number'] ) ? $params['number'] : '',
+			'conversation_id'         => $conversation_id,
+			'folder_id'               => $params['folderId'] ?? '',
+			'mailbox_id'              => $params['mailboxId'] ?? '',
+			'conversation_url'        => $conversation_url,
+			'conversation_title'      => $params['subject'] ?? '',
+			'conversation_status'     => $params['status'] ?? '',
+			'conversation_created'    => $conversation_created,
+			'customer_name'           => $customer_name ?? '',
+			'customer_email'          => $params['primaryCustomer']['email'] ?? '',
+			'customer_waiting_since'  => $customer_waiting_since,
+			'assigned_to'             => $assign_to,
+			'tags'                    => implode( ', ', array_column( $params['tags'] ?? array(), 'tag' ) ),
+		);
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Thrive_Quiz_Builder;
 
 /**
  * Class Thrive_Quiz_Builder_Helpers

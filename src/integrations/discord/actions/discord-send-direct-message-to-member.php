@@ -75,7 +75,7 @@ class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\Ac
 	public function options() {
 		return array(
 			$this->helpers->get_server_select_config( $this->server_key ),
-			$this->helpers->get_server_members_select_config( $this->get_action_meta(), $this->server_key ),
+			$this->helpers->get_verified_members_select_config( $this->get_action_meta() ),
 			array(
 				'option_code' => 'MESSAGE',
 				'label'       => esc_html_x( 'Message', 'Discord', 'uncanny-automator' ),
@@ -122,11 +122,7 @@ class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\Ac
 			array(
 				'SERVER_ID'   => $server_id,
 				'SERVER_NAME' => $parsed[ $this->server_key . '_readable' ],
-				'USERNAME'    => $this->helpers->get_member_username_token_value(
-					$parsed[ $this->get_action_meta() . '_readable' ],
-					$member_id,
-					$server_id
-				),
+				'USERNAME'    => $this->helpers->get_member_username_token_value( $member_id ),
 			)
 		);
 

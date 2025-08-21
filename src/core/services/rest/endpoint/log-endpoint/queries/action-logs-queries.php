@@ -34,24 +34,23 @@ class Action_Logs_Queries {
 	/**
 	 * Ensures array data.
 	 *
-	 * @param mixed $mixed
+	 * @param mixed $input
 	 *
 	 * @return mixed[]
 	 */
-	private function to_array( $mixed = null ) {
+	private function to_array( $input = null ) {
 
 		// Return blank array for falsy variables.
-		if ( empty( $mixed ) ) {
+		if ( empty( $input ) ) {
 			return array();
 		}
 
 		// Return blank array for non-arrays.
-		if ( ! is_array( $mixed ) ) {
+		if ( ! is_array( $input ) ) {
 			return array();
 		}
 
-		return $mixed;
-
+		return $input;
 	}
 
 	/**
@@ -88,7 +87,6 @@ class Action_Logs_Queries {
 		);
 
 		return $this->to_array( $results );
-
 	}
 
 	/**
@@ -123,7 +121,6 @@ class Action_Logs_Queries {
 		);
 
 		return $this->to_array( $results );
-
 	}
 
 	/**
@@ -158,7 +155,6 @@ class Action_Logs_Queries {
 				'flow'               => array(),
 			)
 		);
-
 	}
 
 	/**
@@ -186,7 +182,6 @@ class Action_Logs_Queries {
 		);
 
 		return ! empty( $meta_val ) ? $meta_val : '';
-
 	}
 
 	/**
@@ -229,7 +224,6 @@ class Action_Logs_Queries {
 		}
 
 		return $this->to_array( $result );
-
 	}
 
 	/**
@@ -273,7 +267,6 @@ class Action_Logs_Queries {
 		);
 
 		return (array) $results;
-
 	}
 
 	/**
@@ -299,7 +292,6 @@ class Action_Logs_Queries {
 		);
 
 		return $this->to_array( $results ); // @phpstan-ignore-line The result is array<mixed[]>, but we cannot force to_array to be a flat array.
-
 	}
 
 	/**
@@ -313,13 +305,23 @@ class Action_Logs_Queries {
 
 		$results = $this->db->get_results(
 			$this->db->prepare(
-				"SELECT log.ID, log.item_log_id, log.date_time, log.endpoint, log_response.result, log_response.message
+				"SELECT 
+					-- The API log.
+					log.ID, 
+					log.date_time, 
+					log.endpoint, 
+					-- Log response.
+					log_response.item_log_id, 
+					log_response.result,
+					log_response.message
+					-- JOIN
 					FROM {$this->db->prefix}uap_api_log AS log
 					INNER JOIN {$this->db->prefix}uap_api_log_response AS log_response
 					ON log_response.api_log_id = log.ID
+					-- CONDITIONS
 					WHERE type = 'action'
 					AND log.recipe_log_id = %d
-					AND log.item_log_id = %d
+					AND log_response.item_log_id = %d
 					ORDER BY log_response.ID ASC
 				",
 				$params['recipe_log_id'],
@@ -329,7 +331,6 @@ class Action_Logs_Queries {
 		);
 
 		return $this->to_array( $results );
-
 	}
 
 	/**
@@ -359,7 +360,6 @@ class Action_Logs_Queries {
 		}
 
 		return (array) json_decode( $result, true );
-
 	}
 
 	/**
@@ -415,7 +415,5 @@ class Action_Logs_Queries {
 		);
 
 		return $result;
-
 	}
-
 }

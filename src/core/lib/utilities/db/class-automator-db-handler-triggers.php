@@ -355,11 +355,16 @@ class Automator_DB_Handler_Triggers {
 	}
 
 	/**
-	 * @param $trigger_id
-	 * @param $user_id
-	 * @param $recipe_id
-	 * @param $recipe_log_id
-	 * @param $trigger_log_id
+	 * Marks a trigger as complete in the trigger log.
+	 *
+	 * Updates the trigger log entry with completion status and timestamp.
+	 * Fires the 'automator_trigger_marked_complete' hook if the update is successful.
+	 *
+	 * @param int      $trigger_id     The trigger ID.
+	 * @param int      $user_id        The user ID.
+	 * @param int      $recipe_id      The recipe ID.
+	 * @param int|null $recipe_log_id  The recipe log ID.
+	 * @param int|null $trigger_log_id The trigger log ID.
 	 *
 	 * @return bool|int
 	 */
@@ -396,7 +401,35 @@ class Automator_DB_Handler_Triggers {
 			$where_format[]                   = '%d';
 		}
 
-		return $this->update( $update, $where, $update_format, $where_format );
+		$updated = $this->update( $update, $where, $update_format, $where_format );
+
+		if ( $updated ) {
+			/**
+			 * Fires after a trigger has been successfully marked as complete in the database.
+			 *
+			 * This hook allows developers to perform additional operations when a trigger
+			 * is marked complete, such as logging, notifications, or triggering other processes.
+			 *
+			 * @since 6.7.0
+			 *
+			 * @param int      $trigger_id     The trigger ID that was marked complete.
+			 * @param int      $user_id        The user ID associated with the trigger.
+			 * @param int      $recipe_id      The recipe ID associated with the trigger.
+			 * @param int|null $recipe_log_id  The recipe log ID associated with the trigger.
+			 * @param int|null $trigger_log_id The trigger log ID that was marked complete.
+			 *
+			 * @example
+			 * // Hook into the trigger completion event
+			 * add_action( 'automator_trigger_marked_complete', 'my_custom_trigger_complete_handler', 10, 5 );
+			 *
+			 * function my_custom_trigger_complete_handler( $trigger_id, $user_id, $recipe_id, $recipe_log_id, $trigger_log_id ) {
+			 *     error_log( "Trigger {$trigger_id} completed for user {$user_id} in recipe {$recipe_id}" );
+			 * }
+			 */
+			do_action( 'automator_trigger_marked_complete', $trigger_id, $user_id, $recipe_id, $recipe_log_id, $trigger_log_id );
+		}
+
+		return $updated;
 	}
 
 	/**

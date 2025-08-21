@@ -41,9 +41,9 @@ class ELEM_SUBMITFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Forminator */
-			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html_x( 'A user submits {{a form:%1$s}}', 'Elementor', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Forminator */
-			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_html_x( 'A user submits {{a form}}', 'Elementor', 'uncanny-automator' ),
 			'action'              => 'elementor_pro/forms/new_record',
 			'priority'            => 100,
 			'accepted_args'       => 2,
@@ -71,15 +71,15 @@ class ELEM_SUBMITFORM {
 	 * Validation function when the trigger action is hit
 	 *
 	 * @param object $record
-	 * @param object $object
+	 * @param object $obj
 	 */
-	public function elem_submit_form( $record, $object ) {
-
-		if ( ! $object->is_success ) {
+	public function elem_submit_form( $record, $obj ) {
+		if ( ! $obj->is_success ) {
 			return;
 		}
 
 		$form_id = $record->get_form_settings( 'id' );
+
 		if ( empty( $form_id ) ) {
 			return;
 		}
@@ -93,11 +93,12 @@ class ELEM_SUBMITFORM {
 		}
 
 		if ( ! empty( $conditions ) ) {
-			foreach ( $conditions['recipe_ids'] as $recipe_id ) {
+			foreach ( $conditions['recipe_ids'] as $trigger_id => $recipe_id ) {
 				$args = array(
 					'code'            => $this->trigger_code,
 					'meta'            => $this->trigger_meta,
 					'recipe_to_match' => $recipe_id,
+					'trigger_to_match' => $trigger_id,
 					'ignore_post_id'  => true,
 					'user_id'         => $user_id,
 				);
@@ -136,8 +137,8 @@ class ELEM_SUBMITFORM {
 
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) && (string) $trigger['meta'][ $trigger_meta ] === (string) $entry_to_match ) {
-					$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
+				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( intval( '-1' ) === intval( $trigger['meta'][ $trigger_meta ] ) || (string) $trigger['meta'][ $trigger_meta ] === (string) $entry_to_match ) ) {
+					$recipe_ids[ $trigger['ID'] ] = $recipe['ID'];
 				}
 			}
 		}

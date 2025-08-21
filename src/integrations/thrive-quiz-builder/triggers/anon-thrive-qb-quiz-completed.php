@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Thrive_Quiz_Builder;
 
 use Uncanny_Automator\Recipe\Trigger;
 
@@ -12,42 +12,16 @@ use Uncanny_Automator\Recipe\Trigger;
 class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 
 	/**
-	 * Constant TRIGGER_CODE.
-	 *
-	 * @var string
-	 */
-	const TRIGGER_CODE = 'TQB_QUIZ_COMPLETED';
-
-	/**
-	 * Constant TRIGGER_META.
-	 *
-	 * @var string
-	 */
-	const TRIGGER_META = 'TQB_QUIZ';
-
-	/**
-	 * Helper instance
-	 *
-	 * @var Thrive_Quiz_Builder_Helpers
-	 */
-	protected $helper;
-
-	/**
-	 * Setup trigger
-	 *
 	 * @return void
 	 */
 	protected function setup_trigger() {
-		$this->helper = new Thrive_Quiz_Builder_Helpers();
-
 		$this->set_integration( 'THRIVE_QB' );
-		$this->set_trigger_code( self::TRIGGER_CODE );
-		$this->set_trigger_meta( self::TRIGGER_META );
+		$this->set_trigger_code( 'TQB_QUIZ_COMPLETED' );
+		$this->set_trigger_meta( 'TQB_QUIZ' );
 		$this->set_is_login_required( false );
 		$this->set_trigger_type( 'anonymous' );
 
-		$this->add_action( 'thrive_quizbuilder_quiz_completed' );
-		$this->set_action_args_count( 3 );
+		$this->add_action( 'thrive_quizbuilder_quiz_completed', 20, 3 );
 
 		$this->set_sentence(
 			sprintf(
@@ -68,27 +42,32 @@ class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 	 * @return array The available trigger options.
 	 */
 	public function options() {
+
+		$helper = new Thrive_Quiz_Builder_Helpers();
+
 		return array(
 			array(
 				'option_code'     => $this->get_trigger_meta(),
 				'required'        => true,
 				'label'           => esc_html_x( 'Quiz', 'Thrive Quiz Builder', 'uncanny-automator' ),
 				'input_type'      => 'select',
-				'options'         => $this->helper->get_dropdown_options_quizzes( true ),
+				'options'         => $helper->get_dropdown_options_quizzes( true ),
 				'relevant_tokens' => array(),
 			),
 		);
 	}
 
 	/**
-	 * Validate the trigger.
+	 * @param $trigger
+	 * @param $hook_args
 	 *
-	 * @param array $trigger The trigger data.
-	 * @param array $hook_args The hook arguments.
-	 *
-	 * @return bool True if validation was successful.
+	 * @return bool
 	 */
 	public function validate( $trigger, $hook_args ) {
+		if ( ! isset( $trigger['meta'][ $this->get_trigger_meta() ] ) ) {
+			return false;
+		}
+
 		if ( empty( $hook_args ) ) {
 			return false;
 		}
@@ -99,24 +78,23 @@ class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 		}
 
 		// Quiz info
-		$quiz_id          = isset( $quiz_data['quiz_id'] ) ? absint( $quiz_data['quiz_id'] ) : 0;
-		$selected_quiz_id = isset( $trigger['meta'][ $this->get_trigger_meta() ] ) ? $trigger['meta'][ $this->get_trigger_meta() ] : 0;
+		$quiz_id          = isset( $quiz_data['quiz_id'] ) ? $quiz_data['quiz_id'] : 0;
+		$selected_quiz_id = $trigger['meta'][ $this->get_trigger_meta() ];
 
-		// Match if any quiz is selected (-1) or if specific quiz matches
-		if ( intval( '-1' ) === intval( $selected_quiz_id ) ) {
+		if ( intval( '-1' ) === intval( $selected_quiz_id ) || absint( $quiz_id ) === absint( $selected_quiz_id ) ) {
 			return true;
 		}
 
-		return $selected_quiz_id === $quiz_id;
+		return false;
 	}
 
 	/**
-	 * Hydrate tokens with values.
+	 * Hydrate Tokens.
 	 *
-	 * @param array $trigger The trigger data.
-	 * @param array $hook_args The hook arguments.
+	 * @param array $trigger
+	 * @param array $hook_args
 	 *
-	 * @return array The token values.
+	 * @return array
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
 		if ( empty( $hook_args ) ) {
@@ -125,7 +103,9 @@ class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 
 		// The data structure is different for logged-in and anonymous users
 		$quiz_data = $hook_args[0];
-		$user_data = ! empty( $hook_args[1] ) ? $hook_args[1] : $hook_args[2];
+		$user_data = $hook_args[1];
+		$form_data = $hook_args[2];
+		$post_id   = empty( $_REQUEST['tqb-post-id'] ) ? 0 : (int) sanitize_text_field( wp_unslash( $_REQUEST['tqb-post-id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		// Quiz info
 		$quiz_id     = isset( $quiz_data['quiz_id'] ) ? absint( $quiz_data['quiz_id'] ) : 0;
@@ -138,7 +118,7 @@ class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 		$quiz_type = ucfirst( str_replace( '_', ' ', $quiz_type ) );
 
 		// User info
-		$user_id = isset( $user_data['user_id'] ) ? absint( $user_data['user_id'] ) : 0;
+		$user_id = isset( $user_data['user_id'] ) ? absint( $user_data['user_id'] ) : get_current_user_id();
 		$email   = isset( $quiz_data['user_email'] ) ? $quiz_data['user_email'] : '';
 
 		// Get user name based on authentication status.
@@ -154,13 +134,15 @@ class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 			}
 		} else {
 			// Anonymous user: extract name from provided data.
-			$full_name = $this->get_anonymous_user_name( $user_data );
+			// The name is in $form_data (hook_args[2]), not in $user_data
+			$full_name = $this->get_anonymous_user_name( $form_data );
+
 			if ( ! empty( $full_name ) ) {
 				list( $first_name, $last_name ) = $this->split_full_name( $full_name );
 			}
 		}
 
-		return array(
+		$tokens = array(
 			'TQB_QUIZ_ID'         => $quiz_id,
 			'TQB_QUIZ_TITLE'      => $quiz_title,
 			'TQB_QUIZ_RESULT'     => $text_result,
@@ -169,14 +151,17 @@ class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 			'TQB_USER_EMAIL'      => $email,
 			'TQB_USER_FIRST_NAME' => $first_name,
 			'TQB_USER_LAST_NAME'  => $last_name,
+			'TQB_POST_ID'         => $post_id,
 		);
+
+		return $tokens;
 	}
 
 	/**
-	 * Define tokens.
+	 * Define Tokens.
 	 *
-	 * @param array $trigger The trigger configuration.
-	 * @param array $tokens The existing tokens.
+	 * @param array $tokens
+	 * @param array $trigger - options selected in the current recipe/trigger
 	 *
 	 * @return array
 	 */
@@ -230,9 +215,15 @@ class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 				'tokenId'   => 'TQB_USER_LAST_NAME',
 				'tokenName' => esc_html_x( 'User last name', 'Thrive Quiz Builder', 'uncanny-automator' ),
 			),
+			'TQB_POST_ID'         => array(
+				'name'      => esc_html_x( 'Post ID', 'Thrive Quiz Builder', 'uncanny-automator' ),
+				'type'      => 'int',
+				'tokenId'   => 'TQB_POST_ID',
+				'tokenName' => esc_html_x( 'Post ID', 'Thrive Quiz Builder', 'uncanny-automator' ),
+			),
 		);
 
-		return $trigger_tokens;
+		return array_merge( $tokens, $trigger_tokens );
 	}
 
 	/**
@@ -243,12 +234,14 @@ class ANON_THRIVE_QB_QUIZ_COMPLETED extends Trigger {
 	 * @return string The full name or empty string if not found.
 	 */
 	private function get_anonymous_user_name( $user_data ) {
-		if ( isset( $user_data['username'] ) && ! empty( $user_data['username'] ) ) {
-			return $user_data['username'];
-		}
-
+		// Check for name in user_data first (this is where Thrive Quiz Builder stores the name)
 		if ( isset( $user_data['name'] ) && ! empty( $user_data['name'] ) ) {
 			return $user_data['name'];
+		}
+
+		// Fallback to username if name is not available
+		if ( isset( $user_data['username'] ) && ! empty( $user_data['username'] ) ) {
+			return $user_data['username'];
 		}
 
 		return '';

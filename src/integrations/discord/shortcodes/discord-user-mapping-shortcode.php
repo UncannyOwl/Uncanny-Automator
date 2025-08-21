@@ -260,6 +260,9 @@ class Discord_User_Mapping_Shortcode {
 		$meta_key   = $this->helpers->get_constant( 'DISCORD_USER_MAPPING_META_KEY' );
 		update_user_meta( $current_user->ID, $meta_key, $discord_id );
 
+		// Clear the verified members cache.
+		$this->helpers->clear_verified_members_cache();
+
 		// Redirect back to the current page, removing our OAuth parameters
 		wp_safe_redirect( $this->get_current_page_url( true ) );
 		exit;
