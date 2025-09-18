@@ -2,12 +2,28 @@
 
 namespace Uncanny_Automator\Integrations\Bitly;
 
+use Uncanny_Automator\App_Integrations\App_Integration;
+
 /**
  * Class Bitly_Integration
  *
  * @package Uncanny_Automator
  */
-class Bitly_Integration extends \Uncanny_Automator\Integration {
+class Bitly_Integration extends App_Integration {
+
+	/**
+	 * Get the integration config.
+	 *
+	 * @return array
+	 */
+	public static function get_config() {
+		return array(
+			'integration'  => 'BITLY',       // Integration code.
+			'name'         => 'Bitly',       // Integration name.
+			'api_endpoint' => 'v2/bitly',    // Automator API server endpoint.
+			'settings_id'  => 'bitly',       // Settings ID ( Settings url / tab id ).
+		);
+	}
 
 	/**
 	 * Spins up new integration.
@@ -16,16 +32,14 @@ class Bitly_Integration extends \Uncanny_Automator\Integration {
 	 */
 	protected function setup() {
 
-		$this->helpers = new Bitly_Helpers();
+		// Define helpers with common config values.
+		$this->helpers = new Bitly_App_Helpers( self::get_config() );
 
-		$this->set_integration( 'BITLY' );
-		$this->set_name( 'Bitly' );
+		// Set the icon URL.
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/bitly-icon.svg' );
-		$this->set_connected( $this->helpers->integration_status() );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'bitly' ) );
-		// Register wp-ajax callbacks.
-		$this->register_hooks();
 
+		// Finalize setup via the parent class with the common config.
+		$this->setup_app_integration( self::get_config() );
 	}
 
 	/**
@@ -34,19 +48,19 @@ class Bitly_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function load() {
-
-		new Bitly_Settings( $this->helpers );
-		new BITLY_SHORTEN_URL( $this->helpers );
+		// Load settings.
+		new Bitly_Settings( $this->dependencies, $this->get_settings_config() );
+		// Load actions.
+		new BITLY_SHORTEN_URL( $this->dependencies );
 	}
 
 	/**
-	 * Register hooks.
+	 * Check if app is connected.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function register_hooks() {
-		// Disconnect handler.
-		add_action( 'wp_ajax_automator_bitly_disconnect_account', array( $this->helpers, 'disconnect' ) );
+	protected function is_app_connected() {
+		$account = $this->helpers->get_account_info();
+		return isset( $account['login'] ) && ! empty( $account['login'] );
 	}
-
 }

@@ -7,8 +7,11 @@ use Exception;
  * Class DISCORD_SEND_MESSAGE_TO_CHANNEL
  *
  * @package Uncanny_Automator
+ *
+ * @property Discord_App_Helpers $helpers
+ * @property Discord_Api_Caller $api
  */
-class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\Action {
+class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Prefix for action code / meta.
@@ -30,9 +33,8 @@ class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\Ac
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers    = array_shift( $this->dependencies );
-		$this->server_key = $this->helpers->get_constant( 'ACTION_SERVER_META_KEY' );
+		// Set server key property.
+		$this->server_key = $this->helpers->get_const( 'ACTION_SERVER_META_KEY' );
 
 		$this->set_integration( 'DISCORD' );
 		$this->set_action_code( $this->prefix . '_CODE' );
@@ -113,9 +115,7 @@ class DISCORD_SEND_DIRECT_MESSAGE_TO_MEMBER extends \Uncanny_Automator\Recipe\Ac
 		);
 
 		// Send the message.
-		$response = $this->helpers->api()->api_request( $body, $action_data, $server_id );
-
-		// REVIEW - Check for errors?
+		$response = $this->api->discord_request( $body, $action_data, $server_id );
 
 		// Hydrate tokens.
 		$this->hydrate_tokens(

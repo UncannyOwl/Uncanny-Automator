@@ -8,23 +8,25 @@ use Uncanny_Automator\Recipe\Trigger;
  * Class EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD
  *
  * @package Uncanny_Automator
+ * @method Uncanny_Automator\Integrations\Edd_SL\Edd_Sl_Helpers get_item_helpers()
  */
 class EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD extends Trigger {
-
-	protected $helpers;
 
 	/**
 	 * @return mixed|void
 	 */
 	protected function setup_trigger() {
-		$this->helpers = array_shift( $this->dependencies );
 		$this->set_integration( 'EDD_SL' );
 		$this->set_trigger_code( 'EDD_SL_USERS_LICENSE_EXPIRED' );
 		$this->set_trigger_meta( 'EDD_SL_LICENSES' );
 		// Trigger sentence - EDD - Software Licensing
-		$this->set_sentence( sprintf( esc_attr_x( "A user's license for {{a download:%1\$s}} expires", 'EDD - Software Licensing', 'uncanny-automator' ), $this->get_trigger_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( "A user's license for {{a download}} expires", 'EDD - Software Licensing', 'uncanny-automator' ) );
-		$this->add_action( 'edd_sl_post_set_expiration', 20, 2 );
+		$this->set_sentence(
+			// translators: 1: Download name
+			sprintf( esc_html_x( "A user's license for {{a download:%1\$s}} expires", 'EDD - Software Licensing', 'uncanny-automator' ), $this->get_trigger_meta() )
+		);
+		$this->set_readable_sentence( esc_html_x( "A user's license for {{a download}} expires", 'EDD - Software Licensing', 'uncanny-automator' ) );
+		// Use a hook that triggers when license status changes to expired
+		$this->add_action( 'edd_sl_post_set_status', 20, 2 );
 	}
 
 	/**
@@ -35,9 +37,9 @@ class EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD extends Trigger {
 			Automator()->helpers->recipe->field->select(
 				array(
 					'option_code'     => $this->get_trigger_meta(),
-					'label'           => esc_attr_x( 'Download', 'EDD - Software Licensing', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Download', 'EDD - Software Licensing', 'uncanny-automator' ),
 					// Load the options from the helpers file
-					'options'         => $this->helpers->get_all_downloads(),
+					'options'         => $this->get_item_helpers()->get_all_downloads(),
 					'relevant_tokens' => array(),
 				)
 			),
@@ -55,13 +57,24 @@ class EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD extends Trigger {
 			return false;
 		}
 
-		$license_id           = $hook_args[0];
+		$license_id = $hook_args[0];
+		$status     = $hook_args[1];
+
+		// Only trigger when license status changes to 'expired'
+		if ( 'expired' !== $status ) {
+			return false;
+		}
+
 		$download_id          = edd_software_licensing()->get_download_id( $license_id );
 		$selected_download_id = $trigger['meta'][ $this->get_trigger_meta() ];
 
+		// Check if this is the selected download or any download
 		if ( intval( '-1' ) === intval( $selected_download_id ) || (int) $download_id === (int) $selected_download_id ) {
-			$license = edd_software_licensing()->get_license( $hook_args[0] );
-			$this->set_user_id( $license->user_id );
+			$user_id = $this->get_item_helpers()->get_user_id_from_license( $license_id );
+
+			if ( $user_id ) {
+				$this->set_user_id( $user_id );
+			}
 
 			return true;
 		}
@@ -78,7 +91,7 @@ class EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD extends Trigger {
 	 * @return array
 	 */
 	public function define_tokens( $trigger, $tokens ) {
-		$common_tokens = $this->helpers->get_common_tokens();
+		$common_tokens = $this->get_item_helpers()->get_common_tokens();
 
 		return array_merge( $tokens, $common_tokens );
 	}
@@ -95,6 +108,6 @@ class EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD extends Trigger {
 		$license_id  = $hook_args[0];
 		$download_id = edd_software_licensing()->get_download_id( $license_id );
 
-		return $this->helpers->parse_common_token_values( $license_id, $download_id );
+		return $this->get_item_helpers()->parse_common_token_values( $license_id, $download_id );
 	}
 }

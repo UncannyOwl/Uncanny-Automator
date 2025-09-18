@@ -38,20 +38,20 @@ class GP_EARNSSPECIFICPOINTS {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - GamiPress */
-			'sentence'            => sprintf( esc_attr__( 'A user earns {{greater than, less than, or equal to:%3$s}} {{a number of:%1$s}} {{a specific type of:%2$s}} points in a single transaction', 'uncanny-automator' ), 'GPPOINTVALUE', $this->trigger_meta, 'NUMBERCOND' ),
+			'sentence'            => sprintf( esc_html_x( 'A user earns {{greater than, less than, or equal to:%3$s}} {{a number of:%1$s}} {{a specific type of:%2$s}} points in a single transaction', 'GamiPress', 'uncanny-automator' ), 'GPPOINTVALUE', $this->trigger_meta, 'NUMBERCOND' ),
 			/* translators: Logged-in trigger - GamiPress */
-			'select_option_name'  => esc_attr__( 'A user earns {{greater than, less than, or equal to}} {{a number of}} {{a specific type of}} points in a single transaction', 'uncanny-automator' ),
+			'select_option_name'  => esc_html_x( 'A user earns {{greater than, less than, or equal to}} {{a number of}} {{a specific type of}} points in a single transaction', 'GamiPress', 'uncanny-automator' ),
 			'action'              => 'gamipress_award_points_to_user',
 			'priority'            => 20,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'earns_specific_points' ),
 			'options'             => array(
-				Automator()->helpers->recipe->gamipress->options->list_gp_points_types( esc_attr__( 'Point type', 'uncanny-automator' ), $this->trigger_meta ),
+				Automator()->helpers->recipe->gamipress->options->list_gp_points_types( esc_html_x( 'Point type', 'Gamipress', 'uncanny-automator' ), $this->trigger_meta ),
 				Automator()->helpers->recipe->field->int(
 					array(
 						'option_code' => 'GPPOINTVALUE',
-						'label'       => esc_attr__( 'Points', 'uncanny-automator' ),
-						'placeholder' => esc_attr__( 'Example: 15', 'uncanny-automator' ),
+						'label'       => esc_html_x( 'Points', 'Gamipress', 'uncanny-automator' ),
+						'placeholder' => esc_html_x( 'Example: 15', 'Gamipress', 'uncanny-automator' ),
 						'input_type'  => 'int',
 						'default'     => null,
 					)
@@ -128,6 +128,14 @@ class GP_EARNSSPECIFICPOINTS {
 								$trigger_meta['meta_value'] = maybe_serialize( $points );
 								Automator()->insert_trigger_meta( $trigger_meta );
 
+								$trigger_meta['meta_key']   = 'GPPOINTSCHANGED';
+								$trigger_meta['meta_value'] = maybe_serialize( $points );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
+								$trigger_meta['meta_key']   = 'GPPOINTSAFTER';
+								$trigger_meta['meta_value'] = maybe_serialize( gamipress_get_user_points( $user_id, $points_type ) );
+								Automator()->insert_trigger_meta( $trigger_meta );
+
 								Automator()->maybe_trigger_complete( $result['args'] );
 							}
 						}
@@ -136,5 +144,4 @@ class GP_EARNSSPECIFICPOINTS {
 			}
 		}
 	}
-
 }

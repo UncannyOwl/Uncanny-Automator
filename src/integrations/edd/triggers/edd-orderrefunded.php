@@ -1,148 +1,157 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Easy_Digital_Downloads;
+
+use Uncanny_Automator\Recipe\Trigger;
 
 /**
  * Class EDD_ORDERREFUNDED
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Easy_Digital_Downloads
+ * @method \Uncanny_Automator\Integrations\Easy_Digital_Downloads\EDD_Helpers get_item_helpers()
  */
-class EDD_ORDERREFUNDED {
+class EDD_ORDERREFUNDED extends Trigger {
 
 	/**
-	 * Integration code
+	 * Trigger code
 	 *
 	 * @var string
 	 */
-	public static $integration = 'EDD';
+	const TRIGGER_CODE = 'EDDORDERREFUND';
 
-	private $trigger_code;
-	private $trigger_meta;
+	/**
+	 * Trigger meta
+	 *
+	 * @var string
+	 */
+	const TRIGGER_META = 'EDDORDERREFUNDED';
 
-	public function __construct() {
-		$this->trigger_code = 'EDDORDERREFUND';
-		$this->trigger_meta = 'EDDORDERREFUNDED';
-		$this->define_trigger();
+	/**
+	 * Set up Automator trigger.
+	 */
+	protected function setup_trigger() {
+		$this->set_integration( 'EDD' );
+		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_meta( self::TRIGGER_META );
+		$this->add_action( 'edds_payment_refunded', 10, 1 );
+		$this->set_sentence( esc_html_x( "A user's Stripe payment is refunded", 'Easy Digital Downloads', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( "A user's Stripe payment is refunded", 'Easy Digital Downloads', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object.
+	 * Define tokens.
 	 *
-	 * @return void.
+	 * @param array $trigger
+	 * @param array $tokens
+	 *
+	 * @return array
 	 */
-	public function define_trigger() {
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/easy-digital-downloads/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'sentence'            => sprintf( esc_attr__( "A user's Stripe payment is refunded", 'uncanny-automator' ) ),
-			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'select_option_name'  => esc_attr__( "A user's Stripe payment is refunded", 'uncanny-automator' ),
-			'action'              => 'edds_payment_refunded',
-			'priority'            => 10,
-			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'edd_order_refunded' ),
-			'options'             => array(),
-		);
-		Automator()->register->trigger( $trigger );
+	public function define_tokens( $trigger, $tokens ) {
+		// All tokens are already defined in edd-tokens.php, no need to add any here
+		return $tokens;
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Validate the trigger.
 	 *
-	 * @param $order_id
-	 * @param $refund_id
-	 * @param $all_refunded
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
+	 * @return bool
 	 */
-	public function edd_order_refunded( $order_id ) {
-
-		$order_detail   = edd_get_payment( $order_id );
-		$total_discount = 0;
-
-		if ( empty( $order_detail ) ) {
-			return;
+	public function validate( $trigger, $hook_args ) {
+		if ( empty( $hook_args ) ) {
+			return false;
 		}
 
-		$post_id    = 0;
-		$payment_id = $order_detail->ID;
-		$user_id    = edd_get_payment_user_id( $payment_id );
+		$order_id     = $hook_args[0];
+		$order_detail = edd_get_payment( $order_id );
+
+		if ( empty( $order_detail ) ) {
+			return false;
+		}
+
+		$user_id = edd_get_payment_user_id( $order_detail->ID );
 
 		if ( ! $user_id ) {
 			$user_id = wp_get_current_user()->ID;
 		}
 
-		$pass_args = array(
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => $post_id,
-			'user_id' => $user_id,
+		// Check if user is logged in
+		if ( ! $user_id ) {
+			return false;
+		}
+
+		// Set user ID for the trigger
+		$this->set_user_id( $user_id );
+
+		return true;
+	}
+
+	/**
+	 * Hydrate tokens.
+	 *
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		$order_id       = $hook_args[0];
+		$order_detail   = edd_get_payment( $order_id );
+		$total_discount = 0;
+
+		// Initialize default values using the same token IDs as edd-tokens.php
+		$tokens = array(
+			'EDDCUSTOMER_EMAIL'          => '',
+			'EDDPRODUCT_DISCOUNT_CODES'  => '',
+			'EDDPRODUCT_LICENSE_KEY'     => '',
+			'EDDORDER_ID'                => $order_id,
+			'EDDPRODUCT_ORDER_DISCOUNTS' => '0.00',
+			'EDDORDER_SUBTOTAL'          => '0.00',
+			'EDDPRODUCT_ORDER_TAX'       => '0.00',
+			'EDDORDER_TOTAL'             => '0.00',
+			'EDDORDER_ITEMS'             => '',
+			'EDDPRODUCT_PAYMENT_METHOD'  => '',
 		);
 
-		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
+		// Return default values if order detail is not found
+		if ( empty( $order_detail ) ) {
+			return $tokens;
+		}
 
-		if ( $args ) {
-			foreach ( $args as $result ) {
-				if ( true === $result['result'] ) {
+		$item_names  = array();
+		$order_items = edd_get_payment_meta_cart_details( $order_id );
 
-					$trigger_meta = array(
-						'user_id'        => $user_id,
-						'trigger_id'     => $result['args']['trigger_id'],
-						'trigger_log_id' => $result['args']['get_trigger_id'],
-						'run_number'     => $result['args']['run_number'],
-					);
-
-					$item_names = array();
-
-					$order_items = edd_get_payment_meta_cart_details( $order_id );
-
-					foreach ( $order_items as $item ) {
-						$item_names[] = $item['name'];
-						// Sum the discount.
-						if ( is_numeric( $item['discount'] ) ) {
-							$total_discount += $item['discount'];
-						}
-					}
-
-					// Save the payment order info.
-					$payment_info = array(
-						'discount_codes'  => $order_detail->discounts,
-						'order_discounts' => $total_discount,
-						'order_subtotal'  => $order_detail->subtotal,
-						'order_total'     => $order_detail->total,
-						'order_tax'       => $order_detail->tax,
-						'payment_method'  => $order_detail->gateway,
-						'license_key'     => Automator()->helpers->recipe->edd->options->get_licenses( $payment_id ),
-					);
-
-					$trigger_meta['meta_key']   = 'EDD_DOWNLOAD_ORDER_PAYMENT_INFO';
-					$trigger_meta['meta_value'] = maybe_serialize( wp_json_encode( $payment_info ) );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					$trigger_meta['meta_key']   = 'EDDORDER_ITEMS';
-					$trigger_meta['meta_value'] = maybe_serialize( implode( ',', $item_names ) );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					$trigger_meta['meta_key']   = 'EDDCUSTOMER_EMAIL';
-					$trigger_meta['meta_value'] = maybe_serialize( $order_detail->email );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					$trigger_meta['meta_key']   = 'EDDORDER_SUBTOTAL';
-					$trigger_meta['meta_value'] = maybe_serialize( $order_detail->subtotal );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					$trigger_meta['meta_key']   = 'EDDORDER_TOTAL';
-					$trigger_meta['meta_value'] = maybe_serialize( $order_detail->total );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					$trigger_meta['meta_key']   = 'EDDORDER_ID';
-					$trigger_meta['meta_value'] = maybe_serialize( $order_id );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					Automator()->maybe_trigger_complete( $result['args'] );
+		if ( ! empty( $order_items ) ) {
+			foreach ( $order_items as $item ) {
+				if ( isset( $item['name'] ) ) {
+					$item_names[] = $item['name'];
+				}
+				// Sum the discount.
+				if ( isset( $item['discount'] ) && is_numeric( $item['discount'] ) ) {
+					$total_discount += $item['discount'];
 				}
 			}
 		}
+
+		// Get license key if Software Licensing plugin is active
+		$license_key = '';
+		if ( class_exists( '\EDD_Software_Licensing' ) ) {
+			$license_key = $this->get_item_helpers()->get_licenses( $order_detail->ID );
+		}
+
+		// Update tokens with actual values using the same token IDs as edd-tokens.php
+		$tokens['EDDCUSTOMER_EMAIL']          = isset( $order_detail->email ) ? $order_detail->email : '';
+		$tokens['EDDPRODUCT_DISCOUNT_CODES']  = isset( $order_detail->discounts ) ? $order_detail->discounts : '';
+		$tokens['EDDPRODUCT_LICENSE_KEY']     = $license_key;
+		$tokens['EDDPRODUCT_ORDER_DISCOUNTS'] = edd_currency_filter( edd_format_amount( $total_discount ) );
+		$tokens['EDDORDER_SUBTOTAL']          = isset( $order_detail->subtotal ) ? edd_currency_filter( edd_format_amount( $order_detail->subtotal ) ) : '0.00';
+		$tokens['EDDPRODUCT_ORDER_TAX']       = isset( $order_detail->tax ) ? edd_currency_filter( edd_format_amount( $order_detail->tax ) ) : '0.00';
+		$tokens['EDDORDER_TOTAL']             = isset( $order_detail->total ) ? edd_currency_filter( edd_format_amount( $order_detail->total ) ) : '0.00';
+		$tokens['EDDORDER_ITEMS']             = implode( ', ', $item_names );
+		$tokens['EDDPRODUCT_PAYMENT_METHOD']  = isset( $order_detail->gateway ) ? $order_detail->gateway : '';
+
+		return $tokens;
 	}
 }

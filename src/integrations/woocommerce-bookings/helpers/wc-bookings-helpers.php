@@ -4,6 +4,8 @@ namespace Uncanny_Automator\Integrations\WooCommerce_Bookings;
 
 use Uncanny_Automator\Wc_Tokens;
 
+class_alias( 'Uncanny_Automator\Integrations\WooCommerce_Bookings\Wc_Bookings_Helpers', 'Uncanny_Automator\Wc_Bookings_Helpers' );
+
 /**
  * Class Wc_Bookings_Helpers
  *
@@ -38,57 +40,117 @@ class Wc_Bookings_Helpers {
 		$tokens = array(
 			array(
 				'tokenId'   => 'WCB_BOOKING_ORDER_ID',
-				'tokenName' => esc_html__( 'Booking order ID', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking order ID', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'WCB_BOOKING_ID',
-				'tokenName' => esc_html__( 'Booking ID', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking ID', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'WCB_CUSTOMER_EMAIL',
-				'tokenName' => esc_html__( 'Customer email', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Customer email', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'email',
 			),
 			array(
 				'tokenId'   => 'WCB_CUSTOMER_NAME',
-				'tokenName' => esc_html__( 'Customer name', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Customer name', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'WCB_PRODUCT_TITLE',
-				'tokenName' => esc_html__( 'Booking product title', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking product title', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
+				'tokenId'   => 'WCB_PRODUCT_ID',
+				'tokenName' => esc_html_x( 'Booking product ID', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
 				'tokenId'   => 'WCB_PRODUCT_URL',
-				'tokenName' => esc_html__( 'Booking product URL', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking product URL', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'url',
 			),
 			array(
 				'tokenId'   => 'WCB_PRODUCT_DETAILS',
-				'tokenName' => esc_html__( 'Booking details', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking details', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'WCB_PRODUCT_PRICE',
-				'tokenName' => esc_html__( 'Booking product price', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking product price', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
 				'tokenId'   => 'WCB_BOOKING_START',
-				'tokenName' => esc_html__( 'Booking start', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking start date and time', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'WCB_BOOKING_END',
-				'tokenName' => esc_html__( 'Booking end', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking end date and time', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'date',
 			),
 			array(
 				'tokenId'   => 'WCB_BOOKING_STATUS',
-				'tokenName' => esc_html__( 'Booking status', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Booking status', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_DURATION_TYPE',
+				'tokenName' => esc_html_x( 'Booking duration type', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_DURATION',
+				'tokenName' => esc_html_x( 'Booking duration', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_DURATION_UNIT',
+				'tokenName' => esc_html_x( 'Booking duration unit', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_DURATION_MINUTES',
+				'tokenName' => esc_html_x( 'Booking duration (in minutes)', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_TIMEZONE',
+				'tokenName' => esc_html_x( 'Booking timezone', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_START_DATE',
+				'tokenName' => esc_html_x( 'Booking start date', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'date',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_START_TIME',
+				'tokenName' => esc_html_x( 'Booking start time', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_END_DATE',
+				'tokenName' => esc_html_x( 'Booking end date', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'date',
+			),
+			array(
+				'tokenId'   => 'WCB_BOOKING_END_TIME',
+				'tokenName' => esc_html_x( 'Booking end time', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WCB_PRODUCT_TAGS',
+				'tokenName' => esc_html_x( 'Booking product tags', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WCB_PRODUCT_CATEGORIES',
+				'tokenName' => esc_html_x( 'Booking product categories', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);
@@ -103,33 +165,43 @@ class Wc_Bookings_Helpers {
 	 * @return string
 	 */
 	public function get_booked_details_token_value( $product, $booking ) {
-		$booked_data = '';
-		if ( $product->has_resources() ) {
-			// translators: 1: Resource title
-			$booked_data .= esc_html( sprintf( __( 'Type: %s', 'woocommerce-bookings' ), $product->get_resource( $booking->get_resource_id() )->get_title() ) ) . "\n"; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
-		}
-		if ( $product->has_persons() ) {
-			if ( $product->has_person_types() ) {
-				$person_types  = $product->get_person_types();
-				$person_counts = $booking->get_person_counts();
-
-				if ( ! empty( $person_types ) && is_array( $person_types ) ) {
-					foreach ( $person_types as $person_type ) {
-
-						if ( empty( $person_counts[ $person_type->get_id() ] ) ) {
-							continue;
-						}
-
-						$booked_data .= esc_html( sprintf( '%s: %d', $person_type->get_name(), $person_counts[ $person_type->get_id() ] ) ) . "\n";
-					}
-				}
-			} else {
-				/* translators: 1: person count */
-				$booked_data = esc_html( sprintf( __( '%d Persons', 'woocommerce-bookings' ), array_sum( $booking->get_person_counts() ) ) ) . "\n"; // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+		try {
+			$booked_data = '';
+			if ( $product->has_resources() ) {
+				// translators: 1: Resource title
+				$booked_data .= esc_html( sprintf( esc_html_x( 'Type: %s', 'Woocommerce Bookings', 'uncanny-automator' ), $product->get_resource( $booking->get_resource_id() )->get_title() ) ) . "\n";
 			}
-		}
+			if ( $product->has_persons() ) {
+				if ( $product->has_person_types() ) {
+					$person_types  = $product->get_person_types();
+					$person_counts = $booking->get_person_counts();
 
-		return $booked_data;
+					if ( ! empty( $person_types ) && is_array( $person_types ) ) {
+						foreach ( $person_types as $person_type ) {
+
+							if ( empty( $person_counts[ $person_type->get_id() ] ) ) {
+								continue;
+							}
+
+							$booked_data .= esc_html( sprintf( '%s: %d', $person_type->get_name(), $person_counts[ $person_type->get_id() ] ) ) . "\n";
+						}
+					}
+				} else {
+					/* translators: 1: person count */
+					$booked_data = esc_html( sprintf( esc_html_x( '%d Persons', 'Woocommerce Bookings', 'uncanny-automator' ), array_sum( $booking->get_person_counts() ) ) ) . "\n";
+				}
+			}
+
+			return $booked_data;
+		} catch ( \Error $e ) {
+
+			// Return a fallback value instead of failing completely
+			return esc_html_x( 'Booking details unavailable', 'Woocommerce Bookings', 'uncanny-automator' );
+		} catch ( \Exception $e ) {
+
+			// Return a fallback value instead of failing completely
+			return esc_html_x( 'Booking details unavailable', 'Woocommerce Bookings', 'uncanny-automator' );
+		}
 	}
 
 	/**
@@ -163,7 +235,7 @@ class Wc_Bookings_Helpers {
 					$product                  = $item->get_product();
 					$ordered_products[]       = $product->get_title();
 					$ordered_products_qty[]   = $product->get_title() . ' x ' . $item->get_quantity();
-					$qty                      += $item->get_quantity();
+					$qty                     += $item->get_quantity();
 					$ordered_products_links[] = '<a href="' . $product->get_permalink() . '">' . $product->get_title() . '</a>';
 				}
 			}
@@ -246,5 +318,4 @@ class Wc_Bookings_Helpers {
 
 		return $order_token_values;
 	}
-
 }

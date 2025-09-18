@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Easy_Digital_Downloads;
 
 /**
  * Class EDD_CANCEL_USERS_SUBSCRIPTION
@@ -10,47 +10,38 @@ namespace Uncanny_Automator;
 class EDD_CANCEL_USERS_SUBSCRIPTION extends \Uncanny_Automator\Recipe\Action {
 
 	/**
+	 * Check if the action requirements are met.
+	 *
+	 * @return bool
+	 */
+	public function requirements_met() {
+		if ( ! class_exists( 'EDD_Recurring' ) ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * @return mixed|void
 	 */
 	protected function setup_action() {
 
-		if ( ! class_exists( 'EDD_Recurring' ) ) {
-			return;
-		}
-
 		$this->set_integration( 'EDD' );
 		$this->set_action_code( 'EDDR_CANCEL_SUBSCRIPTION' );
 		$this->set_action_meta( 'EDDR_PRODUCTS' );
-		$this->set_sentence( sprintf( esc_attr_x( "Cancel the user's subscription to {{a download:%1\$s}}", 'EDD Recurring', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( "Cancel the user's subscription to {{a download}}", 'EDD Recurring', 'uncanny-automator' ) );
+		// translators: %1$s: Download
+		$this->set_sentence( sprintf( esc_html_x( "Cancel the user's subscription to {{a download:%1\$s}}", 'Easy Digital Downloads', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( "Cancel the user's subscription to {{a download}}", 'Easy Digital Downloads', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * Define the Action's options
+	 * Options.
 	 *
 	 * @return array
 	 */
 	public function options() {
-
-		$options = Automator()->helpers->recipe->options->edd->all_edd_downloads( '', $this->get_action_meta(), false, false, true );
-
-		$all_subscription_products = array();
-		foreach ( $options['options'] as $key => $option ) {
-			$all_subscription_products[] = array(
-				'text'  => $option,
-				'value' => $key,
-			);
-		}
-
 		return array(
-			array(
-				'input_type'      => 'select',
-				'option_code'     => $this->get_action_meta(),
-				'label'           => _x( 'Download', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ),
-				'required'        => true,
-				'options'         => $all_subscription_products,
-				'relevant_tokens' => array(),
-			),
+			$this->get_item_helpers()->all_edd_downloads( esc_html_x( 'Download', 'Easy Digital Downloads', 'uncanny-automator' ), $this->get_action_meta(), false, false, true ),
 		);
 	}
 
@@ -66,7 +57,7 @@ class EDD_CANCEL_USERS_SUBSCRIPTION extends \Uncanny_Automator\Recipe\Action {
 		$download_id = sanitize_text_field( $parsed[ $this->get_action_meta() ] );
 
 		if ( empty( $download_id ) ) {
-			$this->add_log_error( esc_attr_x( 'Invalid download ID', 'EDD Recurring', 'uncanny-automator' ) );
+			$this->add_log_error( esc_html_x( 'Invalid download ID', 'Easy Digital Downloads', 'uncanny-automator' ) );
 
 			return false;
 		}
@@ -76,7 +67,7 @@ class EDD_CANCEL_USERS_SUBSCRIPTION extends \Uncanny_Automator\Recipe\Action {
 		$subscriptions = $subscriber->get_subscriptions( $download_id, array( 'active', 'trialling' ) );
 		if ( empty( $subscriptions ) ) {
 			// translators: 1: Download name
-			$this->add_log_error( sprintf( esc_attr_x( 'The user does not have any active subscription for download: %s.', 'EDD Recurring', 'uncanny-automator' ), $download_name ) );
+			$this->add_log_error( sprintf( esc_html_x( 'The user does not have any active subscription for download: %s.', 'Easy Digital Downloads', 'uncanny-automator' ), $download_name ) );
 
 			return false;
 		}
@@ -85,7 +76,7 @@ class EDD_CANCEL_USERS_SUBSCRIPTION extends \Uncanny_Automator\Recipe\Action {
 			$subs = new \EDD_Subscription( $subscription->id );
 			if ( false === $subs->can_cancel() ) {
 				// translators: 1: Subscription ID
-				$this->add_log_error( sprintf( esc_attr_x( 'Sorry, unable to cancel the subscription ID: %d.', 'EDD Recurring', 'uncanny-automator' ), $subscription->id ) );
+				$this->add_log_error( sprintf( esc_html_x( 'Sorry, unable to cancel the subscription ID: %d.', 'Easy Digital Downloads', 'uncanny-automator' ), $subscription->id ) );
 
 				return false;
 			}
@@ -96,5 +87,4 @@ class EDD_CANCEL_USERS_SUBSCRIPTION extends \Uncanny_Automator\Recipe\Action {
 
 		return true;
 	}
-
 }

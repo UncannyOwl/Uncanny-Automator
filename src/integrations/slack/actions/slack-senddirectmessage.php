@@ -1,117 +1,91 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Slack;
 
 /**
  * Class SLACK_SENDDIRECTMESSAGE
  *
  * @package Uncanny_Automator
+ *
+ * @property Slack_App_Helpers $helpers
+ * @property Slack_Api_Caller $api
  */
-class SLACK_SENDDIRECTMESSAGE {
-	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'SLACK';
+class SLACK_SENDDIRECTMESSAGE extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * @var string
-	 */
-	private $action_code;
-	/**
-	 * @var string
-	 */
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'SLACKSENDDIRECTMESSAGE';
-		$this->action_meta = 'SLACKUSER';
-		$this->define_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object.
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name(),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/slack/' ),
-			'is_pro'                => false,
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			'requires_user'         => false,
-			// translators: slack username
-			'sentence'              => sprintf( esc_html__( 'Send a direct message to {{a Slack user:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( 'Send a direct message to {{a Slack user}}', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'execution_function'    => array( $this, 'send_message' ),
-			'options_callback'      => array( $this, 'load_options' ),
-			'background_processing' => true,
-		);
-
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * load_options
+	 * Setup Action
 	 *
 	 * @return void
 	 */
-	public function load_options() {
-
-		$user_selector = Automator()->helpers->recipe->slack->options->get_slack_users( null, 'SLACKUSER', array( 'supports_custom_value' => true ) );
-
-		$message_input = Automator()->helpers->recipe->slack->textarea_field(
-			'SLACKMESSAGE',
-			esc_attr__( 'Message', 'uncanny-automator' ),
-			true,
-			'textarea',
-			'',
-			true,
-			esc_html__( '* Markdown is supported', 'uncanny-automator' ),
-			esc_html__( 'Enter the message', 'uncanny-automator' )
+	protected function setup_action() {
+		$this->set_integration( 'SLACK' );
+		$this->set_action_code( 'SLACKSENDDIRECTMESSAGE' );
+		$this->set_action_meta( 'SLACKUSER' );
+		$this->set_is_pro( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/slack/' ) );
+		$this->set_requires_user( false );
+		$this->set_sentence(
+			sprintf(
+				// translators: slack username
+				esc_html_x( 'Send a direct message to {{a Slack user:%1$s}}', 'Slack', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
 		);
+		$this->set_readable_sentence( esc_html_x( 'Send a direct message to {{a Slack user}}', 'Slack', 'uncanny-automator' ) );
+		$this->set_background_processing( true );
+	}
 
+	/**
+	 * Define the action options.
+	 *
+	 * @return array
+	 */
+	public function options() {
 		return array(
-			'options_group' => array(
-				$this->action_meta => array(
-					$user_selector,
-					Automator()->helpers->recipe->slack->bot_name_field(),
-					Automator()->helpers->recipe->slack->bot_icon_field(),
-					$message_input,
+			array(
+				'option_code'            => $this->get_action_meta(),
+				'label'                  => esc_attr_x( 'User', 'Slack', 'uncanny-automator' ),
+				'input_type'             => 'select',
+				'required'               => true,
+				'supports_custom_value'  => true,
+				'show_label_in_sentence' => true,
+				'ajax'                   => array(
+					'endpoint' => 'automator_slack_get_users',
+					'event'    => 'on_load',
 				),
 			),
+			$this->helpers->get_bot_name_config(),
+			$this->helpers->get_bot_icon_config(),
+			$this->helpers->get_message_textarea_config(),
 		);
 	}
 
 	/**
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
+	 * Process the Slack action.
+	 *
+	 * @param int    $user_id
+	 * @param array  $action_data
+	 * @param int    $recipe_id
+	 * @param array  $args
+	 * @param array  $parsed
+	 *
+	 * @return bool
+	 * @throws \Exception When the action fails.
 	 */
-	public function send_message( $user_id, $action_data, $recipe_id, $args ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$message = array(
+			'channel'  => $this->get_parsed_meta_value( 'SLACKUSER' ),
+			'text'     => $this->get_parsed_meta_value( 'SLACKMESSAGE' ),
+			'username' => $this->get_parsed_meta_value( 'BOT_NAME' ),
+			'icon_url' => $this->get_parsed_meta_value( 'BOT_ICON' ),
+		);
 
-		$message             = array();
-		$message['channel']  = $action_data['meta']['SLACKUSER'];
-		$message['text']     = Automator()->parse->text( $action_data['meta']['SLACKMESSAGE'], $recipe_id, $user_id, $args );
-		$error_msg           = '';
-		$message['username'] = Automator()->parse->text( $action_data['meta']['BOT_NAME'], $recipe_id, $user_id, $args );
-		$message['icon_url'] = Automator()->parse->text( $action_data['meta']['BOT_ICON'], $recipe_id, $user_id, $args );
+		$response = $this->api->chat_post_message( $message, $action_data );
 
-		try {
-			$response = Automator()->helpers->recipe->slack->chat_post_message( $message, $action_data );
-		} catch ( \Exception $e ) {
-			$error_msg                           = $e->getMessage();
-			$action_data['complete_with_errors'] = true;
+		if ( isset( $response['data']['error'] ) ) {
+			throw new \Exception( esc_html( $response['data']['error'] ), 400 );
 		}
 
-		Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
+		return true;
 	}
 }

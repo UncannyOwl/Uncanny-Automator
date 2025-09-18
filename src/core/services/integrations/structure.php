@@ -93,7 +93,7 @@ class Structure {
 		// Retrieve the recipe action conditions.
 		$this->recipe_action_conditions = get_post_meta( $this->recipe_id, 'actions_conditions', true );
 
-		return $this->restructure_integrations_object();
+		return $this->restructure_integrations_object(); // phpcs:ignore Universal.CodeAnalysis.ConstructorDestructorReturn.ReturnValueFound
 	}
 
 	/**
@@ -108,7 +108,6 @@ class Structure {
 		$this->recipe_id = absint( $id );
 
 		return $this;
-
 	}
 
 	/**
@@ -119,7 +118,6 @@ class Structure {
 	public function get_recipe_id() {
 
 		return $this->recipe_id;
-
 	}
 
 	/**
@@ -132,7 +130,6 @@ class Structure {
 	private function is_integration_active( $code ) {
 
 		return isset( $this->active_integrations[ $code ] );
-
 	}
 
 	/**
@@ -148,7 +145,6 @@ class Structure {
 		$has_connected_prop = isset( $this->active_integrations[ $code ]['connected'] );
 
 		return $has_settings && $has_connected_prop;
-
 	}
 
 	/**
@@ -179,7 +175,6 @@ class Structure {
 		}
 
 		return $list;
-
 	}
 
 	/**
@@ -429,7 +424,6 @@ class Structure {
 		}
 
 		return array_unique( $recipe_objects_meta );
-
 	}
 
 	/**
@@ -472,18 +466,19 @@ class Structure {
 			$actions  = $this->get_integration_property( $code, 'actions' );
 
 			$items[ $code ] = array(
-				'name'          => $props['name'],
-				'icon'          => $props['icon_svg'],
-				'is_available'  => $this->is_integration_active( $code ),
-				'is_app'        => $this->has_settings_and_has_connected_prop( $code ),
-				'miscellaneous' => array(
+				'name'           => $props['name'],
+				'icon'           => $props['icon_svg'],
+				'is_available'   => $this->is_integration_active( $code ),
+				'is_app'         => $this->has_settings_and_has_connected_prop( $code ),
+				'is_third_party' => $props['is_third_party'] ?? false,
+				'miscellaneous'  => array(
 					'is_app_connected'  => $is_app_connected,
 					'url_settings_page' => $url_settings_page,
 				),
-				'triggers'      => $triggers,
-				'actions'       => $actions,
-				'conditions'    => $this->restructure_conditions( $code ),
-				'loop_filters'  => isset( $filters[ $code ] ) ? $filters[ $code ] : array(),
+				'triggers'       => $triggers,
+				'actions'        => $actions,
+				'conditions'     => $this->restructure_conditions( $code ),
+				'loop_filters'   => isset( $filters[ $code ] ) ? $filters[ $code ] : array(),
 			);
 		}
 
@@ -500,15 +495,16 @@ class Structure {
 			$actions  = $this->get_pro_integration_property( $code, 'actions' );
 
 			$items[ $code ] = array(
-				'name'          => $props['name'],
-				'icon'          => $props['icon_svg'],
-				'is_available'  => $this->is_integration_active( $code ),
-				'is_app'        => $this->has_settings_and_has_connected_prop( $code ),
-				'miscellaneous' => array(),
-				'triggers'      => $triggers,
-				'actions'       => $actions,
-				'conditions'    => $this->restructure_conditions( $code ),
-				'loop_filters'  => isset( $filters[ $code ] ) ? $filters[ $code ] : array(),
+				'name'           => $props['name'],
+				'icon'           => $props['icon_svg'],
+				'is_available'   => $this->is_integration_active( $code ),
+				'is_app'         => $this->has_settings_and_has_connected_prop( $code ),
+				'is_third_party' => $props['is_third_party'] ?? false,
+				'miscellaneous'  => array(),
+				'triggers'       => $triggers,
+				'actions'        => $actions,
+				'conditions'     => $this->restructure_conditions( $code ),
+				'loop_filters'   => isset( $filters[ $code ] ) ? $filters[ $code ] : array(),
 			);
 		}
 
@@ -517,7 +513,6 @@ class Structure {
 		$this->structure = apply_filters( 'automator_integration_items', $items, $this );
 
 		return $this;
-
 	}
 
 	/**
@@ -569,7 +564,6 @@ class Structure {
 		}
 
 		return $conditions;
-
 	}
 
 	/**
@@ -580,5 +574,4 @@ class Structure {
 	public function toJSON() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		return (string) wp_json_encode( $this->structure );
 	}
-
 }

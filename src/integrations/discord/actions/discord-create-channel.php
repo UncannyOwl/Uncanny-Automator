@@ -7,8 +7,11 @@ use Exception;
  * Class DISCORD_CREATE_CHANNEL
  *
  * @package Uncanny_Automator
+ *
+ * @property Discord_App_Helpers $helpers
+ * @property Discord_Api_Caller $api
  */
-class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
+class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Prefix for action code / meta.
@@ -30,9 +33,8 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers    = array_shift( $this->dependencies );
-		$this->server_key = $this->helpers->get_constant( 'ACTION_SERVER_META_KEY' );
+		// Set server key property.
+		$this->server_key = $this->helpers->get_const( 'ACTION_SERVER_META_KEY' );
 
 		$this->set_integration( 'DISCORD' );
 		$this->set_action_code( $this->prefix . '_CODE' );
@@ -51,23 +53,23 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'SERVER_ID'    => array(
-					'name' => _x( 'Server ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'SERVER_NAME'  => array(
-					'name' => _x( 'Server name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Server name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CHANNEL_NAME' => array(
-					'name' => _x( 'Channel name', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Channel name', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CHANNEL_ID'   => array(
-					'name' => _x( 'Channel ID', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Channel ID', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 				'CHANNEL_TYPE' => array(
-					'name' => _x( 'Channel type', 'Discord', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Channel type', 'Discord', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -85,14 +87,14 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 			$this->helpers->get_server_select_config( $this->server_key ),
 			array(
 				'option_code' => $this->get_action_meta(),
-				'label'       => _x( 'Channel name', 'Discord', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Channel name', 'Discord', 'uncanny-automator' ),
 				'input_type'  => 'text',
 				'required'    => true,
-				'description' => _x( 'Enter a channel name no longer than 100 characters', 'Discord', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter a channel name no longer than 100 characters', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code'           => 'CHANNEL_TYPE',
-				'label'                 => _x( 'Channel type', 'Discord', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Channel type', 'Discord', 'uncanny-automator' ),
 				'input_type'            => 'select',
 				'required'              => true,
 				'options'               => array(),
@@ -104,41 +106,38 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 					'event'         => 'parent_fields_change',
 					'listen_fields' => array( $this->server_key ),
 				),
-				'description'           => wp_kses(
-					_x( 'To create Announcement, Stage, Forum or Media channels, your Discord server must have Community features enabled <a href="https://support.discord.com/hc/en-us/articles/360047132851-Enabling-Your-Community-Server" target="_blank">Learn more.</a>', 'Discord', 'uncanny-automator' ),
-					array(
-						'a' => array(
-							'href'   => array(),
-							'target' => array(),
-						),
-					)
+				'description'           => sprintf(
+					// translators: %1$s Opening anchor tag, %2$s Closing anchor tag
+					esc_html_x( 'To create Announcement, Stage, Forum or Media channels, your Discord server must have Community features enabled %1$sLearn more.%2$s', 'Discord', 'uncanny-automator' ),
+					'<a href="https://support.discord.com/hc/en-us/articles/360047132851-Enabling-Your-Community-Server" target="_blank">',
+					'</a>'
 				),
 			),
 			array(
 				'option_code'        => 'TOPIC',
-				'label'              => _x( 'Topic', 'Discord', 'uncanny-automator' ),
+				'label'              => esc_html_x( 'Topic', 'Discord', 'uncanny-automator' ),
 				'input_type'         => 'text',
 				'dynamic_visibility' => $this->get_channel_type_visibility_rule( $this->valid_topic_channel_types ),
-				'description'        => _x( 'Optional topic no longer than 1024 characters', 'Discord', 'uncanny-automator' ),
+				'description'        => esc_html_x( 'Optional topic no longer than 1024 characters', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code'        => 'USER_RATE_LIMIT',
-				'label'              => _x( 'Rate limit per user', 'Discord', 'uncanny-automator' ),
+				'label'              => esc_html_x( 'Rate limit per user', 'Discord', 'uncanny-automator' ),
 				'input_type'         => 'int',
 				'default_value'      => 0,
 				'dynamic_visibility' => $this->get_channel_type_visibility_rule( $this->valid_rate_channel_types ),
-				'description'        => _x( 'Optional amount of seconds a user must wait before sending another message (0-21600)', 'Discord', 'uncanny-automator' ),
+				'description'        => esc_html_x( 'Optional amount of seconds a user must wait before sending another message (0-21600)', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code'   => 'POSITION',
-				'label'         => _x( 'Position', 'Discord', 'uncanny-automator' ),
+				'label'         => esc_html_x( 'Position', 'Discord', 'uncanny-automator' ),
 				'input_type'    => 'int',
 				'default_value' => 0,
-				'description'   => _x( 'Optional sorting position for the channel (0-1000)', 'Discord', 'uncanny-automator' ),
+				'description'   => esc_html_x( 'Optional sorting position for the channel (0-1000)', 'Discord', 'uncanny-automator' ),
 			),
 			array(
 				'option_code'        => 'NSFW',
-				'label'              => _x( 'NSFW', 'Discord', 'uncanny-automator' ),
+				'label'              => esc_html_x( 'NSFW', 'Discord', 'uncanny-automator' ),
 				'input_type'         => 'checkbox',
 				'is_toggle'          => true,
 				'dynamic_visibility' => $this->get_channel_type_visibility_rule( $this->valid_nsfw_channel_types ),
@@ -218,7 +217,7 @@ class DISCORD_CREATE_CHANNEL extends \Uncanny_Automator\Recipe\Action {
 			'type'        => $type,
 			'conditional' => $conditional,
 		);
-		$response = $this->helpers->api()->api_request( $body, $action_data, $server_id );
+		$response = $this->api->discord_request( $body, $action_data, $server_id );
 
 		// REVIEW - Check for errors.
 		$channel_id = $response['data']['id'];

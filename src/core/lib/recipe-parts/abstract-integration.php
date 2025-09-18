@@ -56,6 +56,13 @@ abstract class Integration {
 	protected $helpers;
 
 	/**
+	 * Is third party flag
+	 *
+	 * @var null|bool - Null if not set
+	 */
+	protected $is_third_party = null;
+
+	/**
 	 * __construct
 	 *
 	 * @param mixed $helpers
@@ -69,8 +76,9 @@ abstract class Integration {
 		Automator()->set_all_integrations(
 			$this->get_integration(),
 			array(
-				'name'     => $this->get_name(),
-				'icon_svg' => $this->get_icon_url(),
+				'name'           => $this->get_name(),
+				'icon_svg'       => $this->get_icon_url(),
+				'is_third_party' => $this->get_is_third_party(),
 			)
 		);
 
@@ -213,6 +221,31 @@ abstract class Integration {
 	 */
 	protected function set_name( $name ) {
 		$this->name = $name;
+	}
+
+	/**
+	 * Set is_third_party
+	 *
+	 * @param bool $is_third_party
+	 *
+	 * @return void
+	 */
+	protected function set_is_third_party( $is_third_party ) {
+		$this->is_third_party = (bool) $is_third_party;
+	}
+
+	/**
+	 * Get is_third_party
+	 *
+	 * @return bool
+	 */
+	protected function get_is_third_party() {
+		// Check if value has not been set yet.
+		if ( is_null( $this->is_third_party ) ) {
+			$this->set_is_third_party( Automator()->is_third_party_integration_by_class( $this ) );
+		}
+
+		return $this->is_third_party;
 	}
 
 	/**

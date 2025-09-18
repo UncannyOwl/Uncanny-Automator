@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Easy_Digital_Downloads;
 
 /**
  * Class Edd_Tokens
@@ -15,6 +15,11 @@ class Edd_Tokens {
 	 */
 	public static $integration = 'EDD';
 
+	/**
+	 * Constructor
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 
 		// Parse all EDD triggers.
@@ -26,7 +31,6 @@ class Edd_Tokens {
 
 		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_edd_tokens' ), 20, 6 );
-
 	}
 
 	/**
@@ -48,7 +52,7 @@ class Edd_Tokens {
 			$args
 		);
 
-		if ( in_array( $args['entry_args']['code'], $trigger_meta_validations ) ) {
+		if ( in_array( $args['entry_args']['code'], $trigger_meta_validations, true ) ) {
 			$payment_id        = $args['trigger_args'][0];
 			$trigger_log_entry = $args['trigger_entry'];
 			if ( ! empty( $payment_id ) ) {
@@ -101,88 +105,88 @@ class Edd_Tokens {
 		$payment = new \EDD_Payment( $payment_id );
 
 		switch ( $to_replace ) {
-			case 'EDD_PAYMENT_KEY';
+			case 'EDD_PAYMENT_KEY':
 				$value = $payment->key;
 				break;
-			case 'EDD_PAYMENT_ID';
+			case 'EDD_PAYMENT_ID':
 				$value = $payment->ID;
 				break;
-			case 'EDD_PAYMENT_SUBTOTAL';
+			case 'EDD_PAYMENT_SUBTOTAL':
 				$value = edd_currency_filter( edd_format_amount( $payment->subtotal ) );
 				break;
-			case 'EDD_PAYMENT_TOTAL';
+			case 'EDD_PAYMENT_TOTAL':
 				$value = edd_currency_filter( edd_format_amount( $payment->total ) );
 				break;
-			case 'EDD_PAYMENT_TAX';
+			case 'EDD_PAYMENT_TAX':
 				$value = edd_currency_filter( edd_format_amount( $payment->tax ) );
 				break;
-			case 'EDD_PAYMENT_DISCOUNT';
+			case 'EDD_PAYMENT_DISCOUNT':
 				$value = edd_currency_filter( edd_format_amount( $payment->discounted_amount ) );
 				break;
-			case 'EDD_PAYMENT_STATUS';
+			case 'EDD_PAYMENT_STATUS':
 				$value = $payment->status_nicename;
 				break;
-			case 'EDD_PAYMENT_GATEWAY';
+			case 'EDD_PAYMENT_GATEWAY':
 				$value = $payment->gateway;
 				break;
-			case 'EDD_PAYMENT_CURRENCY';
+			case 'EDD_PAYMENT_CURRENCY':
 				$value = $payment->currency;
 				break;
-			case 'EDD_CUSTOMER_ID';
+			case 'EDD_CUSTOMER_ID':
 				$value = $payment->customer_id;
 				break;
-			case 'EDD_CUSTOMER_FIRSTNAME';
+			case 'EDD_CUSTOMER_FIRSTNAME':
 				$value = $payment->first_name;
 				break;
-			case 'EDD_CUSTOMER_LASTNAME';
+			case 'EDD_CUSTOMER_LASTNAME':
 				$value = $payment->last_name;
 				break;
-			case 'EDD_CUSTOMER_EMAIL';
+			case 'EDD_CUSTOMER_EMAIL':
 				$value = $payment->email;
 				break;
-			case 'EDD_CUSTOMER_ADDRESS_LINE1';
+			case 'EDD_CUSTOMER_ADDRESS_LINE1':
 				$value = $payment->address['line1'];
 				break;
-			case 'EDD_CUSTOMER_ADDRESS_LINE2';
+			case 'EDD_CUSTOMER_ADDRESS_LINE2':
 				$value = $payment->address['line2'];
 				break;
-			case 'EDD_CUSTOMER_ADDRESS_CITY';
+			case 'EDD_CUSTOMER_ADDRESS_CITY':
 				$value = $payment->address['city'];
 				break;
-			case 'EDD_CUSTOMER_ADDRESS_STATE';
+			case 'EDD_CUSTOMER_ADDRESS_STATE':
 				$value = $payment->address['state'];
 				break;
-			case 'EDD_CUSTOMER_ADDRESS_COUNTRY';
+			case 'EDD_CUSTOMER_ADDRESS_COUNTRY':
 				$value = $payment->address['country'];
 				break;
-			case 'EDD_CUSTOMER_ADDRESS_ZIP';
+			case 'EDD_CUSTOMER_ADDRESS_ZIP':
 				$value = $payment->address['zip'];
 				break;
-			case 'EDD_DOWNLOAD_NAME';
+			case 'EDD_DOWNLOAD_NAME':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'name' );
 				break;
-			case 'EDD_DOWNLOAD_ID';
+			case 'EDD_DOWNLOAD_ID':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'id' );
 				break;
-			case 'EDD_DOWNLOAD_PRICE';
+			case 'EDD_DOWNLOAD_PRICE':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'price' );
 				break;
-			case 'EDD_DOWNLOAD_QUANTITY';
+			case 'EDD_DOWNLOAD_QUANTITY':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'quantity' );
 				break;
-			case 'EDD_DOWNLOAD_SUBTOTAL';
+			case 'EDD_DOWNLOAD_SUBTOTAL':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'subtotal' );
 				break;
-			case 'EDD_DOWNLOAD_TAX';
+			case 'EDD_DOWNLOAD_TAX':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'tax' );
 				break;
-			case 'EDD_DOWNLOAD_URL';
+			case 'EDD_DOWNLOAD_URL':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'link' );
 				break;
-			case 'EDD_DOWNLOAD_THUMB_ID';
+			case 'EDD_DOWNLOAD_THUMB_ID':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'thumb_id' );
 				break;
-			case 'EDD_DOWNLOAD_THUMB_URL';
+			case 'EDD_DOWNLOAD_THUMB_URL':
 				$value = $this->get_product_data( $trigger_data, $payment_id, 'thumb_url' );
 				break;
 		}
@@ -235,7 +239,7 @@ class Edd_Tokens {
 			}
 		}
 
-		return join( ', ', $products[ $type ] );
+		return isset( $products[ $type ] ) && is_array( $products[ $type ] ) ? join( ', ', $products[ $type ] ) : '';
 	}
 
 	/**
@@ -257,55 +261,55 @@ class Edd_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'EDDCUSTOMER_EMAIL',
-				'tokenName'       => esc_html__( 'Customer email', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Customer email', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'EDDPRODUCT_DISCOUNT_CODES',
-				'tokenName'       => esc_html__( 'Discount codes used', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Discount codes used', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'EDDORDER_ID',
-				'tokenName'       => esc_html__( 'Order ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Order ID', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'EDDPRODUCT_ORDER_DISCOUNTS',
-				'tokenName'       => esc_html__( 'Order discounts', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Order discounts', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'EDDORDER_SUBTOTAL',
-				'tokenName'       => esc_html__( 'Order subtotal', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Order subtotal', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'EDDPRODUCT_ORDER_TAX',
-				'tokenName'       => esc_html__( 'Order tax', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Order tax', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'EDDORDER_TOTAL',
-				'tokenName'       => esc_html__( 'Order total', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Order total', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'EDDORDER_ITEMS',
-				'tokenName'       => esc_html__( 'Ordered items', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Ordered items', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
 			array(
 				'tokenId'         => 'EDDPRODUCT_PAYMENT_METHOD',
-				'tokenName'       => esc_html__( 'Payment method', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Payment method', 'Easy Digital Downloads', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			),
@@ -316,7 +320,7 @@ class Edd_Tokens {
 				$fields,
 				array(
 					'tokenId'         => 'EDDPRODUCT_LICENSE_KEY',
-					'tokenName'       => esc_html__( 'License key', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'License key', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				)
@@ -330,10 +334,11 @@ class Edd_Tokens {
 		array_multisort( $arr_column_tokens_collection, SORT_ASC, $tokens );
 
 		return $tokens;
-
 	}
 
 	/**
+	 * EDD payment possible tokens.
+	 *
 	 * @param $tokens
 	 * @param $args
 	 *
@@ -357,169 +362,169 @@ class Edd_Tokens {
 			$fields = array(
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_ID',
-					'tokenName'       => esc_html__( 'Download ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download ID', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_NAME',
-					'tokenName'       => esc_html__( 'Download name', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download name', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_URL',
-					'tokenName'       => esc_html__( 'Download URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download URL', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'url',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_THUMB_ID',
-					'tokenName'       => esc_html__( 'Download featured image ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download featured image ID', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_THUMB_URL',
-					'tokenName'       => esc_html__( 'Download featured image URL', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download featured image URL', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'url',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_PRICE',
-					'tokenName'       => esc_html__( 'Download price', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download price', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_QUANTITY',
-					'tokenName'       => esc_html__( 'Download quantity', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download quantity', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_SUBTOTAL',
-					'tokenName'       => esc_html__( 'Download subtotal', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download subtotal', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_DOWNLOAD_TAX',
-					'tokenName'       => esc_html__( 'Download tax', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Download tax', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_KEY',
-					'tokenName'       => esc_html__( 'Payment key', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment key', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_ID',
-					'tokenName'       => esc_html__( 'Payment ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment ID', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_SUBTOTAL',
-					'tokenName'       => esc_html__( 'Payment subtotal', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment subtotal', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_TOTAL',
-					'tokenName'       => esc_html__( 'Payment total', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment total', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_TAX',
-					'tokenName'       => esc_html__( 'Payment tax', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment tax', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_DISCOUNT',
-					'tokenName'       => esc_html__( 'Payment discount', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment discount', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_STATUS',
-					'tokenName'       => esc_html__( 'Payment status', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment status', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_GATEWAY',
-					'tokenName'       => esc_html__( 'Payment gateway', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment gateway', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_PAYMENT_CURRENCY',
-					'tokenName'       => esc_html__( 'Payment currency', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Payment currency', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_ID',
-					'tokenName'       => esc_html__( 'Customer ID', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer ID', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'int',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_FIRSTNAME',
-					'tokenName'       => esc_html__( 'Customer first name', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer first name', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_LASTNAME',
-					'tokenName'       => esc_html__( 'Customer last name', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer last name', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_EMAIL',
-					'tokenName'       => esc_html__( 'Customer email', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer email', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'email',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_ADDRESS_LINE1',
-					'tokenName'       => esc_html__( 'Customer address - Line 1', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer address - Line 1', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_ADDRESS_LINE2',
-					'tokenName'       => esc_html__( 'Customer address - Line 2', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer address - Line 2', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_ADDRESS_CITY',
-					'tokenName'       => esc_html__( 'Customer address - City', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer address - City', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_ADDRESS_STATE',
-					'tokenName'       => esc_html__( 'Customer address - State', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer address - State', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_ADDRESS_COUNTRY',
-					'tokenName'       => esc_html__( 'Customer address - Country', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer address - Country', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
 				array(
 					'tokenId'         => 'EDD_CUSTOMER_ADDRESS_ZIP',
-					'tokenName'       => esc_html__( 'Customer address - Zip', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Customer address - Zip', 'Easy Digital Downloads', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_code,
 				),
@@ -529,7 +534,6 @@ class Edd_Tokens {
 		}
 
 		return $tokens;
-
 	}
 
 	/**
@@ -650,20 +654,20 @@ class Edd_Tokens {
 	 *
 	 * @return mixed The value.
 	 */
-	public function meta_to_value( $object, $key = '' ) {
+	public function meta_to_value( $edd_object, $key = '' ) {
 
 		if ( empty( $key ) ) {
 			return '';
 		}
 
 		$meta = array(
-			'EDDPRODUCT_DISCOUNT_CODES'  => $object->discount_codes,
-			'EDDPRODUCT_ORDER_DISCOUNTS' => number_format( $object->order_discounts, 2 ),
-			'EDDPRODUCT_ORDER_SUBTOTAL'  => number_format( $object->order_subtotal, 2 ),
-			'EDDPRODUCT_ORDER_TAX'       => number_format( $object->order_tax, 2 ),
-			'EDDPRODUCT_ORDER_TOTAL'     => number_format( $object->order_total, 2 ),
-			'EDDPRODUCT_PAYMENT_METHOD'  => $object->payment_method,
-			'EDDPRODUCT_LICENSE_KEY'     => $object->license_key,
+			'EDDPRODUCT_DISCOUNT_CODES'  => $edd_object->discount_codes,
+			'EDDPRODUCT_ORDER_DISCOUNTS' => number_format( $edd_object->order_discounts, 2 ),
+			'EDDPRODUCT_ORDER_SUBTOTAL'  => number_format( $edd_object->order_subtotal, 2 ),
+			'EDDPRODUCT_ORDER_TAX'       => number_format( $edd_object->order_tax, 2 ),
+			'EDDPRODUCT_ORDER_TOTAL'     => number_format( $edd_object->order_total, 2 ),
+			'EDDPRODUCT_PAYMENT_METHOD'  => $edd_object->payment_method,
+			'EDDPRODUCT_LICENSE_KEY'     => $edd_object->license_key,
 		);
 
 		if ( ! array_key_exists( $key, $meta ) ) {
@@ -671,6 +675,5 @@ class Edd_Tokens {
 		}
 
 		return $meta[ $key ];
-
 	}
 }

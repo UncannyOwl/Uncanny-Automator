@@ -7,8 +7,11 @@ use Exception;
  * Class DISCORD_INVITE_MEMBER_TO_SERVER
  *
  * @package Uncanny_Automator
+ *
+ * @property Discord_App_Helpers $helpers
+ * @property Discord_Api_Caller $api
  */
-class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
+class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Prefix for action code / meta.
@@ -30,9 +33,8 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers    = array_shift( $this->dependencies );
-		$this->server_key = $this->helpers->get_constant( 'ACTION_SERVER_META_KEY' );
+		// Set server key property.
+		$this->server_key = $this->helpers->get_const( 'ACTION_SERVER_META_KEY' );
 
 		$this->set_integration( 'DISCORD' );
 		$this->set_action_code( $this->prefix . '_CODE' );
@@ -205,7 +207,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		$channel_id = $this->helpers->get_channel_id_from_parsed( $parsed, 'CHANNEL', $server_id );
 
 		// Make request for invite URL.
-		$invite_url = $this->get_invite_url( $parsed, $server_id, $channel_id );
+		$invite_url = $this->get_invite_url( $server_id, $channel_id, $action_data );
 
 		// Prepare token variables.
 		$server_name  = $parsed[ $this->server_key . '_readable' ];
@@ -283,14 +285,14 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 	/**
 	 * Get invite URL.
 	 *
-	 * @param array $parsed
 	 * @param string $server_id
 	 * @param string $channel_id
+	 * @param array $action_data
 	 *
 	 * @return string
 	 * @throws Exception
 	 */
-	private function get_invite_url( $parsed, $server_id, $channel_id ) {
+	private function get_invite_url( $server_id, $channel_id, $action_data ) {
 
 		// Validate the expiration.
 		$expiration = absint( $this->get_parsed_meta_value( 'EXPIRATION', 0 ) );
@@ -314,7 +316,7 @@ class DISCORD_INVITE_MEMBER_TO_SERVER extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		// Send the message.
-		$response = $this->helpers->api()->api_request( $body, $action_data, $server_id );
+		$response = $this->api->discord_request( $body, $action_data, $server_id );
 		$error    = esc_html_x( 'Error generating invite URL.', 'Discord', 'uncanny-automator' );
 
 		// Check for errors.

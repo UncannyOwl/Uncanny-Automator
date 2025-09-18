@@ -7,8 +7,11 @@ use Exception;
  * Class DISCORD_REMOVE_ROLE_FROM_MEMBER
  *
  * @package Uncanny_Automator
+ *
+ * @property Discord_App_Helpers $helpers
+ * @property Discord_Api_Caller $api
  */
-class DISCORD_REMOVE_ROLE_FROM_MEMBER extends \Uncanny_Automator\Recipe\Action {
+class DISCORD_REMOVE_ROLE_FROM_MEMBER extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Prefix for action code / meta.
@@ -30,9 +33,8 @@ class DISCORD_REMOVE_ROLE_FROM_MEMBER extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers    = array_shift( $this->dependencies );
-		$this->server_key = $this->helpers->get_constant( 'ACTION_SERVER_META_KEY' );
+		// Set server key property.
+		$this->server_key = $this->helpers->get_const( 'ACTION_SERVER_META_KEY' );
 
 		$this->set_integration( 'DISCORD' );
 		$this->set_action_code( $this->prefix . '_CODE' );
@@ -112,7 +114,7 @@ class DISCORD_REMOVE_ROLE_FROM_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		// Send the message.
-		$response = $this->helpers->api()->api_request( $body, $action_data, $server_id );
+		$response = $this->api->discord_request( $body, $action_data, $server_id );
 
 		// Check for errors.
 		$status_code = isset( $response['statusCode'] ) ? absint( $response['statusCode'] ) : 0;

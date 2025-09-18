@@ -11,10 +11,13 @@ class Gamipress_Tokens {
 
 	public static $integration = 'GP';
 
+	/**
+	 * GamiPress tokens constructor
+	 */
 	public function __construct() {
 
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_token' ), 20, 6 );
-
+		add_filter( 'automator_maybe_trigger_gp_gpspecificpoints_tokens', array( $this, 'gp_possible_tokens' ), 20, 2 );
 	}
 
 	/**
@@ -34,6 +37,35 @@ class Gamipress_Tokens {
 	}
 
 	/**
+	 * Gp possible tokens.
+	 *
+	 * @param mixed $tokens The destination.
+	 * @param mixed $args The arguments.
+	 * @return mixed
+	 */
+	public function gp_possible_tokens( $tokens = array(), $args = array() ) {
+		$trigger_meta = $args['meta'];
+
+		$fields = array(
+			array(
+				'tokenId'         => 'GPPOINTSCHANGED',
+				'tokenName'       => esc_html_x( 'Points changed', 'Gamipress', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			),
+			array(
+				'tokenId'         => 'GPPOINTSAFTER',
+				'tokenName'       => esc_html_x( 'Points after change', 'Gamipress', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			),
+		);
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
+
+	/**
 	 * Parse the token as usual.
 	 *
 	 * @return string the value of the token.
@@ -48,6 +80,24 @@ class Gamipress_Tokens {
 					$meta_key       = $pieces[2];
 					if ( 'NUMBERCOND' === $meta_key ) {
 						$meta_value = $trigger['meta']['NUMBERCOND_readable'];
+					} else {
+						$meta_value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					}
+					if ( ! empty( $meta_value ) ) {
+						$value = maybe_unserialize( $meta_value );
+					}
+				}
+			}
+		}
+
+		if ( in_array( 'GP_DEDUCT_POINTS', $pieces, true ) ) {
+			if ( $trigger_data ) {
+				foreach ( $trigger_data as $trigger ) {
+					$trigger_id     = $trigger['ID'];
+					$trigger_log_id = $replace_args['trigger_log_id'];
+					$meta_key       = $pieces[2];
+					if ( 'GP_NUMBER_CONDITION' === $meta_key ) {
+						$meta_value = $trigger['meta']['GP_NUMBER_CONDITION_readable'];
 					} else {
 						$meta_value = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 					}
@@ -78,7 +128,5 @@ class Gamipress_Tokens {
 		}
 
 		return $value;
-
 	}
-
 }

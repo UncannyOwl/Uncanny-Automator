@@ -57,7 +57,8 @@ class Wp_Helpers {
 				'select_terms_for_selected_taxonomy',
 			)
 		);
-		add_action( 'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE', array( $this, 'select_posts_by_post_type' ) );
+		add_action( 'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE', array( $this, 'select_posts_by_post_type_legacy' ) );
+		add_action( 'wp_ajax_select_posts_by_post_type', array( $this, 'select_posts_by_post_type' ) );
 	}
 
 	/**
@@ -377,14 +378,23 @@ class Wp_Helpers {
 		$options = array();
 
 		$group_id   = automator_filter_input( 'group_id', INPUT_POST );
-		$taxonomies = $this->get_taxonomies( automator_filter_input( 'value', INPUT_POST ) );
+		$values     = automator_filter_has_var( 'values', INPUT_POST )
+			? automator_filter_input_array( 'values', INPUT_POST )
+			: array();
+		$taxonomies = array();
+
 		if ( 'CREATEPOST' === $group_id ) {
-			$post_type  = sanitize_text_field( $_POST['values']['CREATEPOST'] ); //phpcs:ignore
+			$post_type  = $values['CREATEPOST'] ?? '';
 			$taxonomies = $this->get_taxonomies( $post_type );
 		}
 
 		if ( empty( $taxonomies ) ) {
-			wp_send_json( array() );
+			wp_send_json(
+				array(
+					'success' => true,
+					'options' => array(),
+				)
+			);
 		}
 
 		foreach ( $taxonomies as $id => $item ) {
@@ -397,7 +407,12 @@ class Wp_Helpers {
 			}
 		}
 
-		wp_send_json( $options );
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $options,
+			)
+		);
 	}
 
 	/**
@@ -409,12 +424,19 @@ class Wp_Helpers {
 
 		Automator()->utilities->ajax_auth_check();
 
-		$options = array();
-
-		$taxonomies = automator_filter_input_array( 'value', INPUT_POST );
+		$options    = array();
+		$values     = automator_filter_has_var( 'values', INPUT_POST )
+			? automator_filter_input_array( 'values', INPUT_POST )
+			: array();
+		$taxonomies = $values['TAXONOMY'] ?? array();
 
 		if ( empty( $taxonomies ) ) {
-			wp_send_json( array() );
+			wp_send_json(
+				array(
+					'success' => true,
+					'options' => array(),
+				)
+			);
 		}
 
 		$terms = get_terms(
@@ -425,7 +447,12 @@ class Wp_Helpers {
 		);
 
 		if ( empty( $terms ) ) {
-			wp_send_json( array() );
+			wp_send_json(
+				array(
+					'success' => true,
+					'options' => array(),
+				)
+			);
 		}
 
 		foreach ( $terms as $term ) {
@@ -437,7 +464,12 @@ class Wp_Helpers {
 			}
 		}
 
-		wp_send_json( $options );
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $options,
+			)
+		);
 	}
 
 	/**
@@ -494,23 +526,16 @@ class Wp_Helpers {
 	}
 
 	/**
-	 * Return all the specific fields of post type in ajax call
+	 * Helper method to get posts by post type
+	 *
+	 * @param string $post_type The post type
+	 * @param string $group_id The group ID
+	 * @return array The options array
 	 */
-	public function select_posts_by_post_type() {
-
+	private function get_posts_by_post_type_options( $post_type, $group_id = '' ) {
 		global $uncanny_automator;
 
-		$uncanny_automator->utilities->ajax_auth_check();
-
 		$fields = array();
-
-		if ( ! automator_filter_has_var( 'value', INPUT_POST ) ) {
-			echo wp_json_encode( $fields );
-			die();
-		}
-
-		$post_type = automator_filter_input( 'value', INPUT_POST );
-		$group_id  = automator_filter_input( 'group_id', INPUT_POST );
 
 		$args       = array(
 			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
@@ -568,9 +593,72 @@ class Wp_Helpers {
 			}
 		}
 
+		return $fields;
+	}
+
+	/**
+	 * Return all the specific fields of post type in ajax call (legacy format)
+	 *
+	 */
+	public function select_posts_by_post_type_legacy() {
+
+		Automator()->utilities->ajax_auth_check();
+
+		if ( ! automator_filter_has_var( 'value', INPUT_POST ) ) {
+			echo wp_json_encode( array() );
+			die();
+		}
+
+		$post_type = automator_filter_input( 'value', INPUT_POST );
+		$group_id  = automator_filter_input( 'group_id', INPUT_POST );
+
+		$fields = $this->get_posts_by_post_type_options( $post_type, $group_id );
+
 		echo wp_json_encode( $fields );
 
 		die();
+	}
+
+	/**
+	 * Return all the specific fields of post type in ajax call (modern format)
+	 */
+	public function select_posts_by_post_type() {
+
+		Automator()->utilities->ajax_auth_check();
+
+		if ( ! automator_filter_has_var( 'values', INPUT_POST ) ) {
+			wp_send_json(
+				array(
+					'success' => true,
+					'options' => array(),
+				)
+			);
+		}
+
+		$values    = automator_filter_input_array( 'values', INPUT_POST );
+		$group_id  = automator_filter_input( 'group_id', INPUT_POST );
+		$post_type = '';
+		if ( 'CREATEPOST' === $group_id ) {
+			$post_type = $values[ $group_id ] ?? '';
+		}
+
+		if ( empty( $post_type ) ) {
+			wp_send_json(
+				array(
+					'success' => true,
+					'options' => array(),
+				)
+			);
+		}
+
+		$fields = $this->get_posts_by_post_type_options( $post_type, $group_id );
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $fields,
+			)
+		);
 	}
 
 	/**

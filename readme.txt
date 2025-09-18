@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.2
 Requires PHP: 7.3
-Stable tag: 6.8.0
+Stable tag: 6.9.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -62,6 +62,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Anthropic](https://automatorplugin.com/integration/anthropic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Asana](https://automatorplugin.com/integration/asana/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bluesky](https://automatorplugin.com/integration/bluesky/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -78,6 +79,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Facebook Lead Ads](https://automatorplugin.com/integration/facebook-lead-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Pages](https://automatorplugin.com/integration/facebook/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GetResponse](https://automatorplugin.com/integration/getresponse/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [GitHub](https://automatorplugin.com/integration/github/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Calendar](https://automatorplugin.com/integration/google-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Contacts](https://automatorplugin.com/integration/google-contacts/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Gemini](https://automatorplugin.com/integration/gemini/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -393,48 +395,102 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.8.0 [2025-08-21] =
+= 6.9.0 [2025-09-18] =
 
-**New Trigger:**  
+**New App Integrations:**
 
-* Help Scout - A conversation is created in a mailbox #6121
+* [Asana](https://automatorplugin.com/integration/asana/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6079
+* [GitHub](https://automatorplugin.com/integration/github/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4351
 
-**New Token:**  
+**New Trigger:**
 
-* Help Scout - Conversation Number, Folder ID #6090
+* EDD - A user purchases a price option of a download #6094
 
-**Added:**  
+**New Actions:**
 
-* Discord - Updated members dropdown to show only verified users to comply with Discord recommendations #6048
-* Discord - Added caching for performance, and improved username handling without discriminators #6048
-* Post Loops - Post meta tokens are now available inside post loops (Automator Pro) #6038
-* Settings - Ability to enter Automator Pro License key to install and activate Automator Pro #5998
+* Asana - Add a comment to a task in a specific project #6081
+* Asana - Add a tag to a task in a specific project #6082
+* Asana - Create a task in a specific project #6080
+* Asana - Get details from a task #6091
+* Asana - Remove a tag from a task in a specific project #6083
+* Asana - Update a specific task in a specific project #6100
+* GitHub - Add a comment to an issue or pull request in a repository #6070
+* GitHub - Add a label to an issue or pull request in a repository #6072
+* GitHub - Add a release tag to a branch #6071
+* GitHub - Remove a label from an issue or pull request in a repository #6073
+* Slack - Add users to a channel #6188
+* Zoom - Create a meeting #6157
+* Zoom - Create a recurring meeting #6175
+* Zoom Webinars - Create a webinar #6158
 
-**Updated:**  
+**New Tokens:**
 
-* LearnDash - A user has completed X% of a course - Tweaked the sentence to stop pretending it knows algebra. It now just says "percentage." #6044
-* MailChimp - Refactored merge field handling and email validation to improve error handling, input validation, and overall integration robustness. Basically, it's a lot smarter and a little less dramatic now. #5341
-* Woo - The Woo triggers got a grammar upgrade. Fewer sentence fragments, more clarity. #6057
-* WordPress - Create a post - Taxonomy and Term fields now support custom field token #6102
+* Date time - Current month (with leading zero) #6204
 
-**Fixed:**  
+* EDD - Universal new tokens #6105  
+  * User orders. (loopable type)  
+  * User spent  
+  * User address line 1  
+  * User address line 2  
+  * User city  
+  * User state/province  
+  * User country
 
-* Run code - Call a custom function/method - Function return value - Race condition due to internal process being hooked multiple times. #6055
-* Elementor - Triggers not firing when "Any form" is selected - Apparently "Any form" meant "No form." That's been corrected—now it means what it says. #6045
-* FluentCRM – Support for Custom Values/Tokens for custom fields - Now giving you the custom field love you deserve, with fewer surprises in the dropdown. #6031
-* Mailchimp - Add an email to an audience - "Your merge fields were invalid" log error - Merge fields now know their place. Less sass, more class. #5933
-* MemberPress - PHP Warning of undefined array key on some sites - Silenced the PHP grumbles about undefined keys. All is calm. #6097
-* Notion - Create a Database Item - Fixed issues with database item creation and updates by improving JSON handling, token parsing, error handling, and data sanitization for labels and descriptions #6059
-* Outgoing Webhooks - Retrying a failed webhook when two or more webhooks failed subsequently would only resend the last webhook in the logs - Everyone gets a fair retry now, not just the caboose of the action train. #6053
-* Thrive Apprentice - A user completes a course not firing - Courses are now completing with celebratory trigger fireworks as expected. #6026
-* Thrive Architect - A user registers via a registration form - User data not available in some situations - The data finally decided to show up. #6051
-* Thrive Quiz Builder - A quiz is completed - This trigger is now smarter and knows when you've really finished your quiz. #6040
-* ActiveCampaign - Improved access control for the incoming webhook key regeneration function #6123
+* GamiPress - Add new Balance Points Token for related Triggers #6132  
+  * Points  
+  * Points after change
 
-**Under the hood:**  
+* Google Calendar - Add an event to a Google Calendar - Several new Action tokens #6160  
+  * Event ID  
+  * Event link  
+  * Event start time  
+  * Event end time  
+  * Calendar ID  
+  * Add to Google Calendar URL  
+  * Add to Google Calendar anchor link  
+  * Add to Apple Calendar URL  
+  * Add to Apple Calendar anchor link  
+  * Add to Outlook URL  
+  * Add to Outlook anchor link  
+  * All calendar platform links
 
-* Help Scout - Code quality updated - We gave the Help Scout codebase a spa day. Cleaner, fresher, and ready for action. #6089
-* New WP Action hooks -  Laid down some fancy hooks so future integrations can jump in at just the right time. #6063
+* Woo Bookings - Several tokens for all triggers #6159  
+  * Booking product ID  
+  * Booking duration type  
+  * Booking duration  
+  * Booking duration unit  
+  * Booking duration (in minutes)  
+  * Booking timezone  
+  * Booking start date  
+  * Booking start time  
+  * Booking end date  
+  * Booking end time  
+  * Booking product tags  
+  * Booking product categories
+
+* WordPress - Post triggers #6143  
+  * Post published date  
+  * Post published date (GMT)  
+  * Post modified date  
+  * Post modified date (GMT)
+
+**Updated:**
+
+* Google Calendar - Add an event to a Google Calendar - Added timezone field - Google Calendar events now know what time it is and where they are. #6161
+
+**Fixed:**
+
+* Discord - Universal tokens were freeloading without a connection. We've kicked them out until Discord signs in. #6136
+* Recipe UI - Conditions Dialog - Mutliselect text margin fixed – That multiselect margin finally got a makeover. No more squished text awkwardness. #6162
+* WordPress - Create a post - UI Issue for Taxonomy and Term fields showing custom token instead of the actual taxonomy and term selected. #6152
+
+**Under the hood:**
+
+* ARMember icon makeover. #6199
+* App integration settings framework - Added a standardized backend with PHP classes and traits, plus slick Lit components for managing settings in style – Because app settings deserve to be handled with class... and traits. #6066
+* Integration framework upgrades: Bit.ly, Discord, EDD Software Licensing, Slack, Zoom Meetings, Zoom Webinars #6164, #6174, #6127, #6166, #6178, #6179
+* Recipe UI - Improved support for 3rd Party connection settings in recipe UI – Third-party settings now feel right at home in the recipe UI. #6147
+* Fixed options memory leak - Options have finally stopped repeating themselves. We told them once is enough. #5789
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

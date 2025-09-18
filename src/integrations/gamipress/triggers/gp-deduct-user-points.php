@@ -16,8 +16,8 @@ class GP_DEDUCT_USER_POINTS extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_trigger_code( 'GP_DEDUCT_POINTS' );
 		$this->set_trigger_meta( 'GP_POINTS_TYPES' );
 		// translators: GamiPress - Membership plan
-		$this->set_sentence( sprintf( esc_attr_x( 'A user loses {{greater than, less than, or equal to:%3$s}} {{a number of:%1$s}} {{a specific type of:%2$s}} points', 'GamiPress', 'uncanny-automator' ), 'GP_POINT_VALUE:' . $this->get_trigger_meta(), $this->get_trigger_meta(), 'GP_NUMBER_CONDITION:' . $this->get_trigger_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( 'A user loses {{greater than, less than, or equal to}} {{a number of}} {{a specific type of}} points', 'GamiPress', 'uncanny-automator' ) );
+		$this->set_sentence( sprintf( esc_html_x( 'A user loses {{greater than, less than, or equal to:%3$s}} {{a number of:%1$s}} {{a specific type of:%2$s}} points', 'GamiPress', 'uncanny-automator' ), 'GP_POINT_VALUE:' . $this->get_trigger_meta(), $this->get_trigger_meta(), 'GP_NUMBER_CONDITION:' . $this->get_trigger_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'A user loses {{greater than, less than, or equal to}} {{a number of}} {{a specific type of}} points', 'GamiPress', 'uncanny-automator' ) );
 		$this->add_action( 'gamipress_deduct_points_to_user', 10, 4 );
 	}
 
@@ -84,6 +84,16 @@ class GP_DEDUCT_USER_POINTS extends \Uncanny_Automator\Recipe\Trigger {
 			'tokenName' => 'Points changed',
 			'tokenType' => 'text',
 		);
+		$tokens[] = array(
+			'tokenId' => 'GP_POINTS_AFTER',
+			'tokenName' => 'Points after change',
+			'tokenType' => 'text',
+		);
+		$tokens[] = array(
+			'tokenId' => 'GP_POINTS',
+			'tokenName' => 'Points',
+			'tokenType' => 'text',
+		);
 		return $tokens;
 	}
 
@@ -118,12 +128,15 @@ class GP_DEDUCT_USER_POINTS extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function hydrate_tokens( $completed_trigger, $hook_args ) {
 		list( $user_id, $points, $points_type, $args ) = $hook_args;
+		$current_points                                = gamipress_get_user_points( $user_id, $points_type );
 
 		return array(
 			'GP_POINTS_TYPES'     => gamipress_get_points_type_singular( $points_type ),
 			'GP_NUMBER_CONDITION' => $completed_trigger['meta']['GP_NUMBER_CONDITION_readable'],
 			'GP_POINT_VALUE'      => $completed_trigger['meta']['GP_POINT_VALUE'],
 			'GP_POINT_VALUE_CHANGED'      => $points,
+			'GP_POINTS_AFTER'     => $current_points,
+			'GP_POINTS'     => $current_points,
 		);
 	}
 }

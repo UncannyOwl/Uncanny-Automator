@@ -1,184 +1,84 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Zoom_Webinar;
+
+use Uncanny_Automator\Recipe\App_Action;
+use Exception;
 
 /**
  * Class ZOOM_WEBINAR_REGISTERUSER
  *
  * @package Uncanny_Automator
+ * @property Zoom_Webinar_App_Helpers $helpers
+ * @property Zoom_Webinar_Api_Caller $api
  */
-class ZOOM_WEBINAR_REGISTERUSER {
+class ZOOM_WEBINAR_REGISTERUSER extends App_Action {
+
+	use Zoom_Webinar_Registration_Trait;
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'ZOOMWEBINAR';
-
-	private $action_code;
-	private $action_meta;
-	private $helpers;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'ZOOMWEBINARREGISTERUSER';
-		$this->action_meta = 'ZOOMWEBINAR';
-		$this->helpers     = new Zoom_Webinar_Helpers();
-		$this->define_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
-			'is_pro'                => false,
-			//'is_deprecated'      => true,
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			/* translators: Webinar topic */
-			'sentence'              => sprintf( esc_html__( 'Add the user to {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( 'Add the user to {{a webinar}}', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'execution_function'    => array( $this, 'zoom_webinar_register_user' ),
-			'options_callback'      => array( $this, 'load_options' ),
-			'background_processing' => true,
-			'buttons'               => array(
-				array(
-					'show_in'     => $this->action_meta,
-					'text'        => esc_html__( 'Get webinar questions', 'uncanny-automator' ),
-					'css_classes' => 'uap-btn uap-btn--red',
-					'on_click'    => 'uap_zoom_get_webinar_questions',
-					'modules'     => array( 'modal', 'markdown' ),
-				),
-			),
-		);
-
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * load_options
+	 * Setup action.
 	 *
 	 * @return void
 	 */
-	public function load_options() {
-
-		$account_users_field = array(
-			'option_code'           => 'ZOOMUSER',
-			'label'                 => esc_html__( 'Account user', 'uncanny-automator' ),
-			'input_type'            => 'select',
-			'required'              => false,
-			'is_ajax'               => true,
-			'endpoint'              => 'uap_zoom_api_get_webinars',
-			'fill_values_in'        => $this->action_meta,
-			'options'               => $this->helpers->get_account_user_options(),
-			'relevant_tokens'       => array(),
-			'supports_custom_value' => false,
-		);
-
-		$user_webinars_field = array(
-			'option_code'           => $this->action_meta,
-			'label'                 => esc_html__( 'Webinar', 'uncanny-automator' ),
-			'input_type'            => 'select',
-			'required'              => true,
-			'options'               => array(),
-			'supports_tokens'       => true,
-			'supports_custom_value' => true,
-			'is_ajax'               => true,
-			'endpoint'              => 'uap_zoom_api_get_webinar_occurrences',
-			'fill_values_in'        => 'OCCURRENCES',
-		);
-
-		$webinar_occurrences_field = array(
-			'option_code'              => 'OCCURRENCES',
-			'label'                    => esc_html__( 'Occurrences', 'uncanny-automator' ),
-			'input_type'               => 'select',
-			'required'                 => false,
-			'options'                  => array(),
-			'supports_tokens'          => true,
-			'supports_custom_value'    => true,
-			'supports_multiple_values' => true,
-		);
-
-		$option_fileds = array(
-			$account_users_field,
-			$user_webinars_field,
-			$webinar_occurrences_field,
-			$this->helpers->get_webinar_questions_repeater(),
-		);
-
-		return array(
-			'options_group' => array(
-				$this->action_meta => $option_fileds,
-			),
-		);
-
+	protected function setup_action() {
+		$this->set_integration( 'ZOOMWEBINAR' );
+		$this->set_action_code( 'ZOOMWEBINARREGISTERUSER' );
+		$this->set_action_meta( 'ZOOMWEBINAR' );
+		$this->set_is_pro( false );
+		$this->set_requires_user( true );
+		// translators: %1$s Webinar topic
+		$this->set_sentence( sprintf( esc_html_x( 'Add the user to {{a webinar:%1$s}}', 'Zoom Webinar', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Add the user to {{a webinar}}', 'Zoom Webinar', 'uncanny-automator' ) );
+		$this->set_background_processing( true );
 	}
 
 	/**
-	 * Validation function when the action is hit
+	 * Define options.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @return array
 	 */
-	public function zoom_webinar_register_user( $user_id, $action_data, $recipe_id, $args ) {
+	public function options() {
+		return array(
+			$this->get_account_user_field(),
+			$this->get_webinar_selection_field( $this->get_action_meta() ),
+			$this->get_webinar_occurrences_field( $this->get_action_meta() ),
+			$this->get_webinar_questions_repeater( $this->get_action_meta() ),
+		);
+	}
 
-		$helpers = Automator()->helpers->recipe->zoom_webinar;
+	/**
+	 * Process the action.
+	 *
+	 * @param int $user_id
+	 * @param array $action_data
+	 * @param int $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$webinar_key = $this->get_parsed_meta_value( $this->get_action_meta() );
 
-		try {
-
-			$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
-
-			if ( empty( $user_id ) ) {
-				throw new \Exception( esc_html__( 'User was not found.', 'uncanny-automator' ) );
-			}
-
-			if ( empty( $webinar_key ) ) {
-				throw new \Exception( esc_html__( 'Webinar was not found.', 'uncanny-automator' ) );
-			}
-
-			$webinar_key = str_replace( '-objectkey', '', $webinar_key );
-			$user        = get_userdata( $user_id );
-
-			if ( is_wp_error( $user ) ) {
-				throw new \Exception( esc_html__( 'User not found.', 'uncanny-automator' ) );
-			}
-
-			$webinar_user          = array();
-			$webinar_user['email'] = $user->user_email;
-
-			$webinar_user['first_name'] = $user->first_name;
-			$webinar_user['last_name']  = $user->last_name;
-
-			$email_parts                = explode( '@', $webinar_user['email'] );
-			$webinar_user['first_name'] = empty( $webinar_user['first_name'] ) ? $email_parts[0] : $webinar_user['first_name'];
-
-			if ( ! empty( $action_data['meta']['WEBINARQUESTIONS'] ) ) {
-				$webinar_user = $helpers->add_custom_questions( $webinar_user, $action_data['meta']['WEBINARQUESTIONS'], $recipe_id, $user_id, $args );
-			}
-
-			$webinar_occurrences = array();
-
-			if ( ! empty( $action_data['meta']['OCCURRENCES'] ) ) {
-				$webinar_occurrences = json_decode( $action_data['meta']['OCCURRENCES'] );
-			}
-
-			$response = $helpers->add_to_webinar( $webinar_user, $webinar_key, $webinar_occurrences, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+		if ( empty( $webinar_key ) ) {
+			throw new Exception( esc_html_x( 'Webinar was not found.', 'Zoom Webinar', 'uncanny-automator' ) );
 		}
+
+		$webinar_key  = $this->parse_webinar_key( $webinar_key );
+		$webinar_user = $this->parse_user_data_from_wp_user( $user_id );
+
+		$webinar_questions = $this->get_parsed_meta_value( 'WEBINARQUESTIONS' );
+		if ( ! empty( $webinar_questions ) ) {
+			$webinar_user = $this->parse_webinar_questions( $webinar_user, $webinar_questions, $recipe_id, $user_id, $args );
+		}
+
+		$occurrences         = $this->get_parsed_meta_value( 'OCCURRENCES' );
+		$webinar_occurrences = $this->parse_webinar_occurrences( $occurrences );
+
+		$this->api->register_user_for_webinar( $webinar_user, $webinar_key, $webinar_occurrences, $action_data );
+
+		return true;
 	}
 }

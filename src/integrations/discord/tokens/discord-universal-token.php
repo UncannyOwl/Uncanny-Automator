@@ -54,7 +54,7 @@ class Discord_Universal_Token extends Universal_Token {
 
 		// Handle Discord ID token
 		if ( self::DISCORD_SNOWFLAKE === $token_id ) {
-			$discord_id = get_user_meta( $user_id, Discord_Helpers::DISCORD_USER_MAPPING_META_KEY, true );
+			$discord_id = get_user_meta( $user_id, Discord_App_Helpers::DISCORD_USER_MAPPING_META_KEY, true );
 			return ! empty( $discord_id ) ? $discord_id : '';
 		}
 

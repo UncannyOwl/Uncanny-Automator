@@ -16,7 +16,7 @@ class Discord_Member_Encryption_Migration extends Migration {
 	/**
 	 * Discord helpers instance
 	 *
-	 * @var Discord_Helpers
+	 * @var Discord_App_Helpers
 	 */
 	private $helpers;
 
@@ -42,8 +42,8 @@ class Discord_Member_Encryption_Migration extends Migration {
 	 * @return bool
 	 */
 	public function conditions_met() {
-		// Check if Discord integration is connected
-		return $this->helpers->is_connected();
+		// This class will only be loaded if the Discord integration is connected.
+		return true;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class Discord_Member_Encryption_Migration extends Migration {
 		$total     = 0;
 
 		// Get all Discord server configurations
-		$servers = automator_get_option( $this->helpers->get_constant( 'SERVERS' ), array() );
+		$servers = automator_get_option( $this->helpers->get_const( 'SERVERS' ), array() );
 
 		// Loop through servers.
 		foreach ( $servers as $server_id => $server ) {
@@ -69,23 +69,12 @@ class Discord_Member_Encryption_Migration extends Migration {
 			$key     = 'DISCORD_MEMBERS_' . $server_id;
 			$members = automator_get_option( $key, array() );
 
-			if ( empty( $members ) ) {
-				++$processed;
-				continue;
+			if ( ! empty( $members ) ) {
+				// Delete the option we no longer store this.
+				automator_delete_option( $key );
 			}
 
-			// If the data is already encrypted, skip it.
-			if ( is_string( $members ) ) {
-				++$processed;
-				continue;
-			}
-
-			// Encrypt the data.
-			if ( is_array( $members ) ) {
-				$encrypted_members = $this->helpers->encrypt_data( $members, $server_id, 'members' );
-				automator_update_option( $key, $encrypted_members, false );
-				++$processed;
-			}
+			++$processed;
 		}
 
 		automator_log(
@@ -98,7 +87,7 @@ class Discord_Member_Encryption_Migration extends Migration {
 		if ( ! is_string( $credentials['user'] ) ) {
 			$encrypted_user      = $this->helpers->encrypt_data( $credentials['user'], $credentials['discord_id'], 'user' );
 			$credentials['user'] = $encrypted_user;
-			automator_update_option( $this->helpers->get_constant( 'CREDENTIALS' ), $credentials );
+			automator_update_option( $this->helpers->get_const( 'CREDENTIALS' ), $credentials );
 			automator_log(
 				"Discord connected account user data encryption complete",
 				$this->name
