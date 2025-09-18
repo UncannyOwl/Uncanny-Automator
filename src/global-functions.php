@@ -1,5 +1,5 @@
 <?php
-
+//phpcs:disable Universal.Operators.DisallowStandalonePostIncrementDecrement.PostIncrementFound
 use Uncanny_Automator\Automator_Exception;
 use Uncanny_Automator\Automator_Options;
 use Uncanny_Automator\Automator_WP_Error;
@@ -638,38 +638,56 @@ if ( ! function_exists( 'str_contains' ) ) {
 }
 
 /**
+ * Get the Automator_Options instance.
+ *
+ * Retrieves the existing instance of the Automator_Options class.
+ *
+ * @return Automator_Options
+ */
+function automator_options() {
+
+	static $instance = null;
+
+	if ( null === $instance ) {
+		$instance = new Automator_Options();
+	}
+
+	return $instance;
+}
+
+/**
  * automator_get_option
  *
- * @param string $option
+ * @param string $key
  * @param mixed $default_value
  *
  * @return mixed
  */
-function automator_get_option( $option, $default_value = false, $force = false ) {
-	return ( new Automator_Options() )->get_option( $option, $default_value, $force );
+function automator_get_option( $key, $default_value = false, $force = false ) {
+	return automator_options()->get_option( $key, $default_value, $force );
 }
 
 /**
  * Adds or updates an option in the uap_options table.
  *
- * @param string $option Name of the option.
- * @param mixed $value Value of the option.
- * @param bool $autoload Whether to autoload the option or not.
- * @param bool $run_actions Whether to run do_action hooks or not.
+ * @param string $key Name of the option.
+ * @param mixed  $value Value of the option.
+ * @param bool   $autoload Whether to autoload the option or not.
+ * @param bool   $run_actions Whether to run do_action hooks or not.
  *
  * @return void
  */
-function automator_add_option( $option, $value, $autoload = true, $run_actions = true ) {
-	return ( new Automator_Options() )->add_option( $option, $value, $autoload, $run_actions );
+function automator_add_option( $key, $value, $autoload = true, $run_actions = true ) {
+	return automator_options()->add_option( $key, $value, $autoload, $run_actions );
 }
 
 /**
- * @param $option
+ * @param $key
  *
  * @return bool
  */
-function automator_delete_option( $option ) {
-	return ( new Automator_Options() )->delete_option( $option );
+function automator_delete_option( $key ) {
+	return automator_options()->delete_option( $key );
 }
 
 /**
@@ -682,7 +700,7 @@ function automator_delete_option( $option ) {
  * @return bool True if the operation was successful, false otherwise.
  */
 function automator_update_option( $option, $value, $autoload = true ) {
-	return ( new Automator_Options() )->update_option( $option, $value, $autoload );
+	return automator_options()->update_option( $option, $value, $autoload );
 }
 
 /**
@@ -966,7 +984,7 @@ if ( ! function_exists( 'is_iterable' ) ) {
  * Detects if we're running Automator's unit tests
  * This function uses multiple specific checks to ensure we're only detecting
  * Automator's own test environment and not conflicting with other plugins
- * 
+ *
  * @return bool
  */
 function is_automator_running_unit_tests() {
@@ -983,46 +1001,46 @@ function is_automator_running_unit_tests() {
 
 	// Secondary check - Multiple Automator-specific indicators must be present
 	$automator_indicators = 0;
-	
+
 	// Check 1: Automator-specific test class exists
 	if ( class_exists( '\\AutomatorTestCase' ) ) {
 		$automator_indicators++;
 	}
-	
+
 	// Check 2: WpunitTester exists (less specific, but adds confidence)
 	if ( class_exists( '\\WpunitTester' ) ) {
 		$automator_indicators++;
 	}
-	
+
 	// Check 3: Automator's specific test configuration exists
 	$test_config = UA_ABSPATH . '/tests/wpunit.suite.yml';
 	if ( file_exists( $test_config ) ) {
 		$automator_indicators++;
-		
+
 		// Additional validation - ensure config is specifically for Automator
-		$config_content = file_get_contents( $test_config );
+		$config_content = file_get_contents( $test_config ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		if ( false !== strpos( $config_content, 'uncanny-automator/uncanny-automator.php' ) ) {
 			$automator_indicators++;
 		}
 	}
-	
+
 	// Check 4: We're running from within Automator's directory structure
 	$current_file = __FILE__;
 	if ( false !== strpos( $current_file, 'uncanny-automator' ) ) {
 		$automator_indicators++;
 	}
-	
+
 	// Check 5: PHPUnit with Automator's composer.json
 	if ( defined( 'PHPUNIT_COMPOSER_INSTALL' ) ) {
 		$composer_file = UA_ABSPATH . '/composer.json';
 		if ( file_exists( $composer_file ) ) {
-			$composer_content = file_get_contents( $composer_file );
+			$composer_content = file_get_contents( $composer_file ); //phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			if ( false !== strpos( $composer_content, 'uncanny-automator' ) ) {
 				$automator_indicators++;
 			}
 		}
 	}
-	
+
 	// Require at least 3 indicators to be confident this is Automator's test environment
 	// This significantly reduces the chance of false positives with other plugins
 	return 3 <= $automator_indicators;

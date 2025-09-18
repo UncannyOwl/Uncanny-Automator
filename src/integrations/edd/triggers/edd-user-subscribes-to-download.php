@@ -1,66 +1,95 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Easy_Digital_Downloads;
+
+use Uncanny_Automator\Recipe\Trigger;
 
 /**
  * Class EDD_USER_SUBSCRIBES_TO_DOWNLOAD
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Easy_Digital_Downloads
+ * @method \Uncanny_Automator\Integrations\Easy_Digital_Downloads\EDD_Helpers get_item_helpers()
  */
-class EDD_USER_SUBSCRIBES_TO_DOWNLOAD extends \Uncanny_Automator\Recipe\Trigger {
+class EDD_USER_SUBSCRIBES_TO_DOWNLOAD extends Trigger {
 
 	/**
-	 * @return mixed|void
+	 * Trigger code
+	 *
+	 * @var string
+	 */
+	const TRIGGER_CODE = 'EDDR_SUBSCRIBES';
+
+	/**
+	 * Trigger meta
+	 *
+	 * @var string
+	 */
+	const TRIGGER_META = 'EDDR_PRODUCTS';
+
+	/**
+	 * Check if the trigger requirements are met.
+	 *
+	 * @return bool
+	 */
+	public function requirements_met() {
+		if ( ! class_exists( 'EDD_Recurring' ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Set up Automator trigger.
 	 */
 	protected function setup_trigger() {
 
-		if ( ! class_exists( 'EDD_Recurring' ) ) {
-			return;
-		}
-
 		$this->set_integration( 'EDD' );
-		$this->set_trigger_code( 'EDDR_SUBSCRIBES' );
-		$this->set_trigger_meta( 'EDDR_PRODUCTS' );
-		// translators: 1: Download
-		$this->set_sentence( sprintf( esc_attr_x( 'A user subscribes to {{a download:%1$s}}', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ), $this->get_trigger_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( 'A user subscribes to {{a download}}', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ) );
+		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_meta( self::TRIGGER_META );
+		// translators: %1$s: Download
+		$this->set_sentence( sprintf( esc_html_x( 'A user subscribes to {{a download:%1$s}}', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'A user subscribes to {{a download}}', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ) );
 		$this->add_action( 'edd_recurring_post_record_signup', 10, 3 );
 	}
 
+	/**
+	 * Options. We don't need `load_options` here, since we're using abstract method.
+	 *
+	 * @return array
+	 */
 	public function options() {
-		$options = Automator()->helpers->recipe->options->edd->all_edd_downloads( '', $this->get_trigger_meta(), true, true, true );
-
-		$all_subscription_products = array();
-		foreach ( $options['options'] as $key => $option ) {
-			$all_subscription_products[] = array(
-				'text'  => $option,
-				'value' => $key,
-			);
-		}
-
 		return array(
-			array(
-				'input_type'      => 'select',
-				'option_code'     => $this->get_trigger_meta(),
-				'label'           => _x( 'Download', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ),
-				'required'        => true,
-				'options'         => $all_subscription_products,
-				'relevant_tokens' => $options['relevant_tokens'],
-			),
+			$this->get_item_helpers()->all_edd_downloads( esc_html_x( 'Download', 'Easy Digital Downloads', 'uncanny-automator' ), $this->get_trigger_meta(), true, false ),
 		);
 	}
 
 	/**
+	 * Validate the trigger.
+	 *
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
 	 * @return bool
 	 */
 	public function validate( $trigger, $hook_args ) {
-		if ( ! isset( $trigger['meta'][ $this->get_trigger_meta() ] ) ) {
+		if ( empty( $hook_args ) || count( $hook_args ) < 2 || ! isset( $hook_args[1] ) ) {
 			return false;
 		}
 
-		$selected_product_id = $trigger['meta'][ $this->get_trigger_meta() ];
+		if ( ! isset( $trigger['meta'][ self::TRIGGER_META ] ) ) {
+			return false;
+		}
+
+		$selected_product_id = $trigger['meta'][ self::TRIGGER_META ];
 		$subscription        = $hook_args[1];
 		$download_id         = $subscription['id'];
+
+		// Set user ID for the trigger
+		$user_id = get_current_user_id();
+		if ( $user_id ) {
+			$this->set_user_id( $user_id );
+		}
 
 		if ( intval( '-1' ) !== intval( $selected_product_id ) && absint( $selected_product_id ) !== absint( $download_id ) ) {
 			return false;
@@ -70,69 +99,154 @@ class EDD_USER_SUBSCRIBES_TO_DOWNLOAD extends \Uncanny_Automator\Recipe\Trigger 
 	}
 
 	/**
-	 * define_tokens
+	 * Define tokens.
 	 *
-	 * @param mixed $tokens
-	 * @param mixed $trigger - options selected in the current recipe/trigger
+	 * @param array $trigger
+	 * @param array $tokens
 	 *
 	 * @return array
 	 */
 	public function define_tokens( $trigger, $tokens ) {
-
-		$tokens[] = array(
-			'tokenId'   => 'EDDR_PERIOD',
-			'tokenName' => _x( 'Recurring period', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ),
-			'tokenType' => 'text',
+		return array(
+			'EDDR_PRODUCTS_DISCOUNT_CODES'  => array(
+				'name'      => esc_html_x( 'Discount codes used', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PRODUCTS_DISCOUNT_CODES',
+				'tokenName' => esc_html_x( 'Discount codes used', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS'                 => array(
+				'name'      => esc_html_x( 'Download title', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PRODUCTS',
+				'tokenName' => esc_html_x( 'Download title', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_ID'              => array(
+				'name'      => esc_html_x( 'Download ID', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'int',
+				'tokenId'   => 'EDDR_PRODUCTS_ID',
+				'tokenName' => esc_html_x( 'Download ID', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_URL'             => array(
+				'name'      => esc_html_x( 'Download URL', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'url',
+				'tokenId'   => 'EDDR_PRODUCTS_URL',
+				'tokenName' => esc_html_x( 'Download URL', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_THUMB_ID'        => array(
+				'name'      => esc_html_x( 'Download featured image ID', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'int',
+				'tokenId'   => 'EDDR_PRODUCTS_THUMB_ID',
+				'tokenName' => esc_html_x( 'Download featured image ID', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_THUMB_URL'       => array(
+				'name'      => esc_html_x( 'Download featured image URL', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'url',
+				'tokenId'   => 'EDDR_PRODUCTS_THUMB_URL',
+				'tokenName' => esc_html_x( 'Download featured image URL', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_LICENSE_KEY'     => array(
+				'name'      => esc_html_x( 'License key', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PRODUCTS_LICENSE_KEY',
+				'tokenName' => esc_html_x( 'License key', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_ORDER_DISCOUNTS' => array(
+				'name'      => esc_html_x( 'Order discounts', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PRODUCTS_ORDER_DISCOUNTS',
+				'tokenName' => esc_html_x( 'Order discounts', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_ORDER_SUBTOTAL'  => array(
+				'name'      => esc_html_x( 'Order subtotal', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PRODUCTS_ORDER_SUBTOTAL',
+				'tokenName' => esc_html_x( 'Order subtotal', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_ORDER_TAX'       => array(
+				'name'      => esc_html_x( 'Order tax', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PRODUCTS_ORDER_TAX',
+				'tokenName' => esc_html_x( 'Order tax', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_ORDER_TOTAL'     => array(
+				'name'      => esc_html_x( 'Order total', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PRODUCTS_ORDER_TOTAL',
+				'tokenName' => esc_html_x( 'Order total', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PRODUCTS_PAYMENT_METHOD'  => array(
+				'name'      => esc_html_x( 'Payment method', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PRODUCTS_PAYMENT_METHOD',
+				'tokenName' => esc_html_x( 'Payment method', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_PERIOD'                   => array(
+				'name'      => esc_html_x( 'Recurring period', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_PERIOD',
+				'tokenName' => esc_html_x( 'Recurring period', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_SIGN_UP_FEE'              => array(
+				'name'      => esc_html_x( 'Signup fee', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_SIGN_UP_FEE',
+				'tokenName' => esc_html_x( 'Signup fee', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ),
+			),
+			'EDDR_TIMES'                    => array(
+				'name'      => esc_html_x( 'Times', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'int',
+				'tokenId'   => 'EDDR_TIMES',
+				'tokenName' => esc_html_x( 'Times', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			'EDDR_FREE_TRAIL_PERIOD'        => array(
+				'name'      => esc_html_x( 'Free trial period', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'type'      => 'text',
+				'tokenId'   => 'EDDR_FREE_TRAIL_PERIOD',
+				'tokenName' => esc_html_x( 'Free trial period', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
 		);
-
-		$tokens[] = array(
-			'tokenId'   => 'EDDR_SIGN_UP_FEE',
-			'tokenName' => _x( 'Signup fee', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ),
-			'tokenType' => 'text',
-		);
-		$tokens[] = array(
-			'tokenId'   => 'EDDR_TIMES',
-			'tokenName' => _x( 'Times', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ),
-			'tokenType' => 'int',
-		);
-		$tokens[] = array(
-			'tokenId'   => 'EDDR_FREE_TRAIL_PERIOD',
-			'tokenName' => _x( 'Free trial period', 'Easy Digital Downloads - Recurring Payments', 'uncanny-automator' ),
-			'tokenType' => 'text',
-		);
-
-		return $tokens;
 	}
 
 	/**
-	 * hydrate_tokens
+	 * Hydrate tokens.
 	 *
-	 * @param $trigger
-	 * @param $hook_args
+	 * @param array $trigger
+	 * @param array $hook_args
 	 *
 	 * @return array
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
 
+		if ( empty( $hook_args ) || count( $hook_args ) < 3 ) {
+			return array();
+		}
+
 		list( $subscription_object, $subscription, $payment_object ) = $hook_args;
-		$purchase_data                                               = $payment_object->purchase_data;
+		$purchase_data = $payment_object->purchase_data;
+
+		// Get license key if Software Licensing plugin is active
+		$license_key = '';
+		if ( class_exists( '\EDD_Software_Licensing' ) ) {
+			$license_key = $this->get_item_helpers()->get_licenses( $subscription_object->parent_payment_id );
+		}
 
 		$token_values = array(
-			'EDDR_PERIOD'                   => $subscription['period'],
-			'EDDR_SIGN_UP_FEE'              => number_format( $subscription['signup_fee'], 2 ),
-			'EDDR_TIMES'                    => $subscription['frequency'],
-			'EDDR_FREE_TRAIL_PERIOD'        => $subscription_object->trial_period,
 			'EDDR_PRODUCTS_DISCOUNT_CODES'  => $purchase_data['user_info']['discount'],
 			'EDDR_PRODUCTS'                 => $subscription['name'],
 			'EDDR_PRODUCTS_ID'              => $subscription['id'],
 			'EDDR_PRODUCTS_URL'             => get_permalink( $subscription['id'] ),
 			'EDDR_PRODUCTS_THUMB_ID'        => get_post_thumbnail_id( $subscription['id'] ),
 			'EDDR_PRODUCTS_THUMB_URL'       => get_the_post_thumbnail_url( $subscription['id'] ),
+			'EDDR_PRODUCTS_LICENSE_KEY'     => $license_key,
 			'EDDR_PRODUCTS_ORDER_DISCOUNTS' => number_format( $purchase_data['discount'], 2 ),
 			'EDDR_PRODUCTS_ORDER_SUBTOTAL'  => number_format( $purchase_data['subtotal'], 2 ),
 			'EDDR_PRODUCTS_ORDER_TAX'       => number_format( $purchase_data['tax'], 2 ),
 			'EDDR_PRODUCTS_ORDER_TOTAL'     => number_format( $purchase_data['price'], 2 ),
 			'EDDR_PRODUCTS_PAYMENT_METHOD'  => edd_get_payment_gateway( $subscription_object->parent_payment_id ),
+			'EDDR_PERIOD'                   => $subscription['period'],
+			'EDDR_SIGN_UP_FEE'              => number_format( $subscription['signup_fee'], 2 ),
+			'EDDR_TIMES'                    => $subscription['frequency'],
+			'EDDR_FREE_TRAIL_PERIOD'        => $subscription_object->trial_period,
 		);
 
 		return $token_values;

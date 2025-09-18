@@ -21,6 +21,7 @@ use Exception;
  * @package Uncanny_Automator\Settings
  */
 abstract class Premium_Integration_Settings {
+
 	/**
 	 * The ID of the integration
 	 * This will also be used as the tab ID
@@ -950,12 +951,7 @@ abstract class Premium_Integration_Settings {
 	 * @return void
 	 */
 	protected function maybe_set_third_party_integration( $this_class ) {
-		$reflector = new \ReflectionClass( $this_class );
-		$file_path = $reflector->getFileName();
-		$pattern   = '#/plugins/(uncanny-automator(?:-pro|-elite-integrations-addon)?)/#';
-		$result    = preg_match( $pattern, $file_path, $matches, PREG_OFFSET_CAPTURE );
-
-		if ( false === boolval( $result ) ) {
+		if ( Automator()->is_third_party_integration_by_class( $this_class ) ) {
 			$this->set_is_third_party( true );
 			$this->set_requires_credits( false );
 		}

@@ -99,11 +99,13 @@ class WP_CREATEPOST {
 								'option_code'           => 'PARENT_POST',
 								'label'                 => esc_html_x( 'Parent post', 'Wp', 'uncanny-automator' ),
 								'options'               => array(),
-								'is_ajax'               => true,
-								'endpoint'              => 'select_specific_post_type_taxonomies',
-								'target_field'          => 'TAXONOMY',
 								'supports_custom_value' => true,
 								'relevant_tokens'       => array(),
+								'ajax'                  => array(
+									'endpoint'      => 'select_posts_by_post_type',
+									'event'         => 'parent_fields_change',
+									'listen_fields' => array( $this->action_code ),
+								),
 							)
 						),
 
@@ -117,11 +119,12 @@ class WP_CREATEPOST {
 							'supports_tokens'          => false,
 							'required'                 => false,
 							'options'                  => array(),
-							'is_ajax'                  => true,
-							'endpoint'                 => 'select_specific_taxonomy_terms',
-							'fill_values_in'           => 'TERM',
 							'relevant_tokens'          => array(),
-
+							'ajax'                     => array(
+								'endpoint'      => 'select_specific_post_type_taxonomies',
+								'event'         => 'parent_fields_change',
+								'listen_fields' => array( $this->action_code ),
+							),
 						),
 
 						array(
@@ -135,6 +138,11 @@ class WP_CREATEPOST {
 							'required'                 => false,
 							'options'                  => array(),
 							'relevant_tokens'          => array(),
+							'ajax'                     => array(
+								'endpoint'      => 'select_specific_taxonomy_terms',
+								'event'         => 'parent_fields_change',
+								'listen_fields' => array( 'TAXONOMY' ),
+							),
 						),
 
 						Automator()->helpers->recipe->field->select_field(
@@ -462,8 +470,12 @@ class WP_CREATEPOST {
 		}
 
 		if ( $post_id ) {
-
-			$this->set_taxonomy_terms( $post_id, json_decode( $post_terms ) );
+			// Handle custom value provided TERMs
+			if ( $this->is_token_custom_value_text( $action_data['meta']['TERM_readable'] ?? '' ) ) {
+				$this->set_custom_taxonomy_terms( $post_id, $post_terms );
+			} else {
+				$this->set_taxonomy_terms( $post_id, json_decode( $post_terms ) );
+			}
 
 			if ( ! empty( $post_fimage ) ) {
 				$this->add_featured_image( $post_fimage, $post_id );
@@ -513,6 +525,17 @@ class WP_CREATEPOST {
 	}
 
 	/**
+	 * Check if the value is a custom value text.
+	 *
+	 * @param string $string_to_check
+	 *
+	 * @return bool
+	 */
+	private function is_token_custom_value_text( $string_to_check ) {
+		return esc_attr__( 'Use a token/custom value', 'uncanny-automator' ) === $string_to_check; // phpcs:ignore Uncanny_Automator.Strings
+	}
+
+	/**
 	 * Set the taxonomy term relationship for the given post using post ID.
 	 *
 	 * @param array $taxonomy_terms The taxonomy and terms combination.
@@ -532,6 +555,39 @@ class WP_CREATEPOST {
 			list( $taxonomy, $term )         = explode( ':', $term );
 			$curated_taxonomy[ $taxonomy ][] = $term;
 
+		}
+
+		foreach ( $curated_taxonomy as $taxonomy => $taxonomy_terms ) {
+			wp_set_object_terms( $post_id, (array) $taxonomy_terms, $taxonomy, false );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Set custom taxonomy terms (single term ID or CSV)
+	 *
+	 * @param int $post_id The post ID
+	 * @param string $terms The terms string (single ID or CSV)
+	 *
+	 * @return boolean True if there are no errors. Otherwise, false.
+	 */
+	public function set_custom_taxonomy_terms( $post_id = 0, $terms = '' ) {
+
+		if ( empty( $terms ) || empty( $post_id ) ) {
+			return false;
+		}
+
+		$curated_taxonomy = array();
+		$term_ids         = array_map( 'trim', explode( ',', $terms ) );
+
+		foreach ( $term_ids as $term_id ) {
+			if ( ctype_digit( $term_id ) ) {
+				$term_obj = get_term( $term_id );
+				if ( $term_obj && ! is_wp_error( $term_obj ) ) {
+					$curated_taxonomy[ $term_obj->taxonomy ][] = (int) $term_id;
+				}
+			}
 		}
 
 		foreach ( $curated_taxonomy as $taxonomy => $taxonomy_terms ) {
@@ -651,10 +707,7 @@ class WP_CREATEPOST {
 			esc_html_x( 'Type', 'Wp', 'uncanny-automator' ),
 			$this->action_code,
 			array(
-				'token'        => false,
-				'is_ajax'      => true,
-				'endpoint'     => 'select_all_post_from_SELECTEDPOSTTYPE',
-				'target_field' => 'PARENT_POST',
+				'token' => false,
 			)
 		);
 

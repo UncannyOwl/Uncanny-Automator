@@ -392,7 +392,6 @@ class Automator_Functions {
 	 */
 	public function loop_filters_db() {
 		return new Services\Structure\Actions\Item\Loop\Filters_Db();
-
 	}
 
 	/**
@@ -437,7 +436,7 @@ class Automator_Functions {
 		if ( $this->add_unique_recipe_item( $trigger, 'triggers' ) ) {
 			// Code is a required field.
 			$this->triggers[ $trigger['code'] ] = $trigger;
-		};
+		}
 	}
 
 	/**
@@ -502,7 +501,6 @@ class Automator_Functions {
 		}
 
 		return $actions;
-
 	}
 
 	/**
@@ -830,8 +828,8 @@ class Automator_Functions {
 				if ( $recipe_data[ $recipe_id ]['triggers'] ) {
 					//Grab tokens for each of trigger
 					foreach ( $recipe_data[ $recipe_id ]['triggers'] as $t_id => $tr ) {
-						$t_id                                                     = absint( $t_id );
-						$tokens                                                   = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
+						$t_id   = absint( $t_id );
+						$tokens = $this->tokens->trigger_tokens( $tr['meta'], $recipe_id );
 						$recipe_data[ $recipe_id ]['triggers'][ $t_id ]['tokens'] = $tokens;
 					}
 				}
@@ -839,7 +837,7 @@ class Automator_Functions {
 				// Add action tokens to recipe_objects.
 				if ( ! empty( $recipe_data[ $recipe_id ] ['actions'] ) ) {
 					foreach ( $recipe_data[ $recipe_id ] ['actions'] as $recipe_action_id => $recipe_action ) {
-						$recipe_action_id                                                    = absint( $recipe_action_id );
+						$recipe_action_id = absint( $recipe_action_id );
 						$recipe_data[ $recipe_id ]['actions'][ $recipe_action_id ]['tokens'] = $this->tokens->get_action_tokens_renderable( $recipe_action['meta'], $recipe_action_id, $recipe_id );
 					}
 				}
@@ -1045,7 +1043,7 @@ class Automator_Functions {
 		}
 
 		// Create a new Fields_Shared_Callable object.
-		if ( $fields === null ) {
+		if ( null === $fields ) {
 			$fields = Fields_Shared_Callable::get_instance();
 		}
 
@@ -1570,7 +1568,6 @@ WHERE pm.post_id
 		}
 
 		return $recipe_conditions;
-
 	}
 
 	/**
@@ -1825,6 +1822,17 @@ WHERE pm.post_id
 	 *
 	 * @deprecated 3.0
 	 */
+	/**
+	 * Maybe create recipe log entry.
+	 *
+	 * @param mixed $recipe_id The ID.
+	 * @param mixed $user_id The user ID.
+	 * @param mixed $create_recipe The create recipe.
+	 * @param mixed $args The arguments.
+	 * @param mixed $maybe_simulate The maybe simulate.
+	 * @param mixed $maybe_add_log_id The ID.
+	 * @return mixed
+	 */
 	public function maybe_create_recipe_log_entry( $recipe_id, $user_id, $create_recipe = true, $args = array(), $maybe_simulate = false, $maybe_add_log_id = null ) {
 		if ( defined( 'AUTOMATOR_DEBUG_MODE' ) && true === AUTOMATOR_DEBUG_MODE ) {
 			_doing_it_wrong( 'maybe_create_recipe_log_entry', 'Please use Automator()->process->user->maybe_create_recipe_log_entry() instead.', 3.0 );
@@ -2020,7 +2028,6 @@ WHERE pm.post_id
 	public function is_trigger_type_user( $trigger_code = '' ) {
 
 		return $this->is_trigger_type( 'user', $trigger_code );
-
 	}
 
 	/**
@@ -2033,7 +2040,6 @@ WHERE pm.post_id
 	public function is_trigger_type_anonymous( $trigger_code = '' ) {
 
 		return $this->is_trigger_type( 'anonymous', $trigger_code );
-
 	}
 
 	/**
@@ -2047,7 +2053,6 @@ WHERE pm.post_id
 	public function is_trigger_type( $type = '', $trigger_code = '' ) {
 
 		return (string) $type === (string) $this->get_trigger_type( $trigger_code );
-
 	}
 
 	/**
@@ -2088,7 +2093,6 @@ WHERE pm.post_id
 		}
 
 		return $this->get_timezone_string_offset();
-
 	}
 
 	/**
@@ -2118,7 +2122,6 @@ WHERE pm.post_id
 		$tz_offset = sprintf( '%s%02d:%02d', $sign, $abs_hour, $abs_mins );
 
 		return $tz_offset;
-
 	}
 
 	/**
@@ -2134,7 +2137,6 @@ WHERE pm.post_id
 		$args = json_decode( $json_string, true );
 
 		return wp_parse_args( $args, $defaults );
-
 	}
 
 	/**
@@ -2169,7 +2171,6 @@ WHERE pm.post_id
 		}
 
 		return $result;
-
 	}
 
 	/**
@@ -2208,7 +2209,6 @@ WHERE pm.post_id
 		}
 
 		return $condition_id_failure_message;
-
 	}
 
 	/**
@@ -2238,7 +2238,6 @@ WHERE pm.post_id
 		}
 
 		return $closure;
-
 	}
 
 	/**
@@ -2269,7 +2268,6 @@ WHERE pm.post_id
 		}
 
 		return $recipe_object->retrieve()->toJSON();
-
 	}
 
 	/**
@@ -2284,7 +2282,6 @@ WHERE pm.post_id
 		$integration_struc = new Services\Integrations\Structure( $recipe_id );
 
 		return $integration_struc->restructure_integrations_object()->toJSON();
-
 	}
 
 	/**
@@ -2330,7 +2327,6 @@ WHERE pm.post_id
 		$properties->dispatch();
 
 		return $properties;
-
 	}
 
 	/**
@@ -2434,7 +2430,6 @@ WHERE pm.post_id
 			$type = apply_filters( 'automator_recipe_part_user_type', $type, $post_type, $item_code, $integration_code );
 			update_post_meta( $post_id, 'user_type', $type );
 		}
-
 	}
 
 	/**
@@ -2493,11 +2488,11 @@ WHERE pm.post_id
 	 * This method fetches the 'date_format' option from the WordPress database.
 	 * If the option is not set, it defaults to 'F j, Y'.
 	 *
-	 * @param string $default The default date format. Default is 'F j, Y'.
+	 * @param string $default_format The default date format. Default is 'F j, Y'.
 	 * @return string The date format.
 	 */
-	public function get_date_format( $default = 'F j, Y' ) {
-		return get_option( 'date_format', $default );
+	public function get_date_format( $default_format = 'F j, Y' ) {
+		return get_option( 'date_format', $default_format );
 	}
 
 	/**
@@ -2506,11 +2501,11 @@ WHERE pm.post_id
 	 * This method fetches the 'time_format' option from the WordPress database.
 	 * If the option is not set, it uses the provided default value.
 	 *
-	 * @param string $default The default time format. Default is 'g:i a'.
+	 * @param string $default_format The default time format. Default is 'g:i a'.
 	 * @return string The time format.
 	 */
-	public function get_time_format( $default = 'g:i a' ) {
-		return get_option( 'time_format', $default );
+	public function get_time_format( $default_format = 'g:i a' ) {
+		return get_option( 'time_format', $default_format );
 	}
 
 	/**
@@ -2532,14 +2527,14 @@ WHERE pm.post_id
 
 	/**
 	 * Determines if a recipe is throttled.
-	 * 
+	 *
 	 * @param int $recipe_id The recipe ID.
 	 * @param int $user_id   The user ID.
 	 *
 	 * @since 6.7.0 Moved from Automator_Recipe_Process_User class.
 	 * @since 6.7.0
 	 * - Added filter `automator_recipe_throttler_can_execute` to allow for custom throttling logic.
-	 * 
+	 *
 	 * @return bool Returns true if the recipe is throttled, false otherwise.
 	 */
 	public function is_recipe_throttled( int $recipe_id, int $user_id ) {
@@ -2557,8 +2552,8 @@ WHERE pm.post_id
 			);
 
 			// Allow people to override the throttler execution and introduce their own logic on runtime.
-			$can_execute = apply_filters( 
-				'automator_recipe_throttler_can_execute', 
+			$can_execute = apply_filters(
+				'automator_recipe_throttler_can_execute',
 				$throttler->can_execute( $user_id ),
 				$filter_args
 			);
@@ -2567,7 +2562,6 @@ WHERE pm.post_id
 			if ( $can_execute ) {
 				return false;
 			}
-
 		} catch ( \Exception $e ) {
 			// Log the error.
 			automator_log( 'Error creating throttler: ' . $e->getMessage(), 'error' );
@@ -2577,5 +2571,33 @@ WHERE pm.post_id
 
 		// Otherwise, return true.
 		return true;
+	}
+
+	/**
+	 * Check if an integration is third-party by analyzing the file path.
+	 *
+	 * A third-party integration is one that is NOT located within the core
+	 * Uncanny Automator plugins or Addons.
+	 *
+	 * @param mixed $class_instance The class instance to check
+	 * @return bool True if third-party, false if core Automator integration
+	 */
+	public function is_third_party_integration_by_class( $class_instance ) {
+		$reflector = new \ReflectionClass( $class_instance );
+		$file_path = $reflector->getFileName();
+
+		// Bail if the file path is not set ( shouldn't happen ).
+		if ( false === $file_path ) {
+			return false;
+		}
+
+		// Get the plugin directory from WordPress.
+		$plugin_dir = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : WP_CONTENT_DIR . '/plugins';
+
+		// Build pattern using actual WordPress plugin directory
+		$pattern = '#' . preg_quote( $plugin_dir, '#' ) . '/(uncanny-automator(?:-pro|-elite-integrations-addon)?)/#';
+
+		// If it matches our core plugins, it's NOT third-party
+		return preg_match( $pattern, $file_path ) !== 1;
 	}
 }

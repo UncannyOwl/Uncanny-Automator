@@ -1,112 +1,165 @@
 <?php
+
+namespace Uncanny_Automator\Integrations\Zoom;
+
+use Uncanny_Automator\Settings\App_Integration_Settings;
+
 /**
- * Zoom settings page
+ * Class Zoom_Settings
  *
- * @since   3.7
- * @version 3.7
  * @package Uncanny_Automator
- * @author  Ajay Verma.
+ *
+ * @property Zoom_App_Helpers $helpers
+ * @property Zoom_Api_Caller $api
  */
-
-namespace Uncanny_Automator;
-
-/**
- * Zoom Settings
- */
-class Zoom_Settings extends Settings\Premium_Integration_Settings {
-
-	protected $api_key;
-	protected $api_secret;
-	protected $account_id;
-	protected $user;
-	protected $is_connected;
+class Zoom_Settings extends App_Integration_Settings {
 
 	/**
-	 * Sets up the properties of the settings page
-	 */
-	public function set_properties() {
-
-		$this->set_id( 'zoom-api' );
-
-		$this->set_icon( 'ZOOM' );
-
-		$this->set_name( 'Zoom Meetings' );
-
-		$this->register_option( 'uap_automator_zoom_api_account_id' );
-		$this->register_option( 'uap_automator_zoom_api_client_id' );
-		$this->register_option( 'uap_automator_zoom_api_client_secret' );
-
-		$this->register_option( 'uap_automator_zoom_api_settings_version' );
-
-	}
-
-	public function get_status() {
-
-		if ( $this->helpers->legacy_client_connected() ) {
-			$this->helpers->delete_options();
-		}
-
-		$user = automator_get_option( 'uap_zoom_api_connected_user', array() );
-
-		return ! empty( $user['email'] ) ? 'success' : '';
-	}
-
-	/**
-	 * Creates the output of the settings page
+	 * Get formatted account info for connected user display.
 	 *
-	 * @return void.
+	 * @return array
 	 */
-	public function output() {
+	protected function get_formatted_account_info() {
+		$user = $this->helpers->get_account_info();
 
-		$this->account_id = trim( automator_get_option( 'uap_automator_zoom_api_account_id', '' ) );
-		$this->api_key    = trim( automator_get_option( 'uap_automator_zoom_api_client_id', '' ) );
-		$this->api_secret = trim( automator_get_option( 'uap_automator_zoom_api_client_secret', '' ) );
-
-		$this->user = false;
-
-		if ( ! empty( $this->api_key ) && ! empty( $this->api_secret ) ) {
-			$this->user = automator_get_option( 'uap_zoom_api_connected_user', array() );
+		if ( empty( $user['email'] ) ) {
+			return array();
 		}
 
-		$this->is_connected = false;
-
-		if ( ! empty( $this->user['email'] ) ) {
-			$this->is_connected = true;
-		}
-
-		$disconnect_url = $this->helpers->disconnect_url();
-
-		include_once 'view-zoom-v3.php';
+		return array(
+			'avatar_type'    => 'icon',
+			'avatar_value'   => $this->get_icon(),
+			'main_info'      => $user['email'],
+			'main_info_icon' => false,
+			'additional'     => ! empty( $user['display_name'] ) ? $user['display_name'] : '',
+		);
 	}
 
-	public function settings_updated() {
+	/**
+	 * Register disconnected options.
+	 *
+	 * @return void
+	 */
+	public function register_disconnected_options() {
+		$this->register_option( $this->helpers->get_const( 'ACCOUNT_ID' ) );
+		$this->register_option( $this->helpers->get_const( 'CLIENT_ID' ) );
+		$this->register_option( $this->helpers->get_const( 'CLIENT_SECRET' ) );
+		$this->register_option( 'uap_automator_zoom_api_settings_version' );
+	}
 
+	/**
+	 * Handle authorization flow ( registered options have been saved ).
+	 *
+	 * @param array $data
+	 * @param array $response
+	 *
+	 * @return array
+	 */
+	public function authorize_account( $data, $response ) {
 		try {
+			// Clear any existing data.
+			$this->helpers->delete_account_info();
+			$this->helpers->delete_credentials();
 
-			automator_delete_option( 'uap_zoom_api_connected_user' );
-			automator_delete_option( '_uncannyowl_zoom_settings' );
+			// Authorize account ( sets token credentials )
+			$this->api->authorize_account();
 
-			$this->user = $this->helpers->api_get_user_info();
+			// Get user info.
+			$user = $this->api->get_user_info();
 
-			$this->add_alert(
-				array(
-					'type'    => 'success',
-					'heading' => esc_html__( 'You have successfully connected your Zoom Meetings account', 'uncanny-automator' ),
-				)
+			// Store user info
+			$this->helpers->store_account_info( $user['data'] );
+
+			// Register success alert for reload.
+			$this->register_success_alert(
+				esc_html_x( 'You have successfully connected your Zoom Meetings account', 'Zoom', 'uncanny-automator' )
 			);
+
+			$response['reload'] = true;
 
 		} catch ( \Exception $e ) {
-
-			$this->add_alert(
-				array(
-					'type'    => 'error',
-					'heading' => 'Connection error',
-					'content' => esc_html__( 'There was an error connecting your Zoom Meetings account:', 'uncanny-automator' ) . $e->getMessage(),
-				)
-			);
-			return;
+			$response['success'] = false;
+			$response['alert']   = $this->get_error_alert( $e->getMessage() );
 		}
+
+		return $response;
 	}
 
-}
+	////////////////////////////////////////////////////////////
+	// Templating methods
+	////////////////////////////////////////////////////////////
 
+	/**
+	 * Output main disconnected content
+	 */
+	public function output_main_disconnected_content() {
+
+		// Disconnected header with custom description.
+		$this->output_disconnected_header(
+			esc_html_x(
+				'Automatically register users for Zoom Meetings when they complete actions on your site, such as completing a course, filling out a form, or even simply clicking a button!
+',
+				'Zoom',
+				'uncanny-automator'
+			)
+		);
+
+		// Automatically generated list of available triggers and actions scanned from Premium_Integration_Items trait.
+		$this->output_available_items();
+
+		// Setup instructions.
+		$this->alert_html(
+			array(
+				'heading' => esc_html_x( 'Setup instructions', 'Zoom', 'uncanny-automator' ),
+				'content' => sprintf(
+					// translators: %1$s: Knowledge Base article link
+					esc_html_x( "Connecting to Zoom requires setting up a Server-to-Server OAuth app and getting 3 values from inside your account. It's really easy, we promise! Visit our %1\$s for simple instructions.", 'Zoom', 'uncanny-automator' ),
+					$this->get_escaped_link(
+						automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/zoom/', 'settings', 'zoom_meeting-kb_article' ),
+						esc_html_x( 'Knowledge Base article', 'Zoom', 'uncanny-automator' )
+					)
+				),
+			)
+		);
+
+		// Display App fields.
+		$this->text_input_html(
+			array(
+				'id'       => $this->helpers->get_const( 'ACCOUNT_ID' ),
+				'value'    => $this->helpers->get_const_option_value( 'ACCOUNT_ID' ),
+				'label'    => esc_html_x( 'Account ID', 'Zoom', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
+
+		$this->text_input_html(
+			array(
+				'id'       => $this->helpers->get_const( 'CLIENT_ID' ),
+				'value'    => $this->helpers->get_const_option_value( 'CLIENT_ID' ),
+				'label'    => esc_html_x( 'Client ID', 'Zoom', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
+
+		$this->text_input_html(
+			array(
+				'id'       => $this->helpers->get_const( 'CLIENT_SECRET' ),
+				'value'    => $this->helpers->get_const_option_value( 'CLIENT_SECRET' ),
+				'label'    => esc_html_x( 'Client secret', 'Zoom', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
+
+		$this->text_input_html(
+			array(
+				'id'       => 'uap_automator_zoom_api_settings_version',
+				'value'    => '3',
+				'hidden'   => true,
+				'disabled' => true,
+			)
+		);
+	}
+}

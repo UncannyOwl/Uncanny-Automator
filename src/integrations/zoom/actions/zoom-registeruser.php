@@ -1,181 +1,88 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Zoom;
+
+use Uncanny_Automator\Recipe\App_Action;
+use Uncanny_Automator\Integrations\Zoom\Zoom_Common_Trait;
+use Uncanny_Automator\Integrations\Zoom\Zoom_Registration_Trait;
 
 /**
  * Class ZOOM_REGISTERUSER
  *
  * @package Uncanny_Automator
+ * @property Zoom_App_Helpers $helpers
+ * @property Zoom_Api_Caller $api
  */
-class ZOOM_REGISTERUSER {
+class ZOOM_REGISTERUSER extends App_Action {
+
+	use Zoom_Common_Trait;
+	use Zoom_Registration_Trait;
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'ZOOM';
-
-	private $action_code;
-	private $action_meta;
-	private $helpers;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'ZOOMREGISTERUSER';
-		$this->action_meta = 'ZOOMMEETING';
-		$this->helpers     = new Zoom_Helpers();
-		$this->define_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
-			'is_pro'                => false,
-			//'is_deprecated'      => true,
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			/* translators: Meeting topic */
-			'sentence'              => sprintf( esc_html__( 'Add the user to {{a meeting:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( 'Add the user to {{a meeting}}', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'execution_function'    => array( $this, 'zoom_register_user' ),
-			'options_callback'      => array( $this, 'load_options' ),
-			'background_processing' => true,
-			'buttons'               => array(
-				array(
-					'show_in'     => $this->action_meta,
-					'text'        => esc_html__( 'Get meeting questions', 'uncanny-automator' ),
-					'css_classes' => 'uap-btn uap-btn--red',
-					'on_click'    => 'uap_zoom_get_meeting_questions',
-					'modules'     => array( 'modal', 'markdown' ),
-				),
-			),
-		);
-
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * load_options
+	 * Setup the action.
 	 *
 	 * @return void
 	 */
-	public function load_options() {
+	protected function setup_action() {
+		$this->set_integration( 'ZOOM' );
+		$this->set_action_code( 'ZOOMREGISTERUSER' );
+		$this->set_action_meta( 'ZOOMMEETING' );
+		$this->set_is_pro( false );
+		$this->set_requires_user( true );
+		// translators: %1$s Meeting topic
+		$this->set_sentence( sprintf( esc_html_x( 'Add the user to {{a meeting:%1$s}}', 'Zoom', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Add the user to {{a meeting}}', 'Zoom', 'uncanny-automator' ) );
+		$this->set_background_processing( true );
+	}
 
-		$account_users_field = array(
-			'option_code'           => 'ZOOMUSER',
-			'label'                 => esc_html__( 'Account user', 'uncanny-automator' ),
-			'input_type'            => 'select',
-			'required'              => false,
-			'is_ajax'               => true,
-			'endpoint'              => 'uap_zoom_api_get_meetings',
-			'fill_values_in'        => $this->action_meta,
-			'options'               => $this->helpers->get_account_user_options(),
-			'relevant_tokens'       => array(),
-			'supports_custom_value' => false,
-		);
-
-		$user_meetings_field = array(
-			'option_code'           => $this->action_meta,
-			'label'                 => esc_html__( 'Meeting', 'uncanny-automator' ),
-			'input_type'            => 'select',
-			'required'              => true,
-			'options'               => array(),
-			'supports_tokens'       => true,
-			'supports_custom_value' => true,
-			'is_ajax'               => true,
-			'endpoint'              => 'uap_zoom_api_get_meeting_occurrences',
-			'fill_values_in'        => 'OCCURRENCES',
-		);
-
-		$meeting_occurrences_field = array(
-			'option_code'              => 'OCCURRENCES',
-			'label'                    => esc_html__( 'Occurrences', 'uncanny-automator' ),
-			'input_type'               => 'select',
-			'required'                 => false,
-			'options'                  => array(),
-			'supports_tokens'          => true,
-			'supports_custom_value'    => true,
-			'supports_multiple_values' => true,
-		);
-
-		$option_fileds = array(
-			$account_users_field,
-			$user_meetings_field,
-			$meeting_occurrences_field,
-			$this->helpers->get_meeting_questions_repeater(),
-		);
-
+	/**
+	 * Define options
+	 *
+	 * @return array
+	 */
+	public function options() {
 		return array(
-			'options_group' => array(
-				$this->action_meta => $option_fileds,
-			),
+			$this->get_account_users_field(),
+			$this->get_user_meetings_field( $this->get_action_meta() ),
+			$this->get_meeting_occurrences_field( $this->get_action_meta() ),
+			$this->get_meeting_questions_repeater( $this->get_action_meta() ),
 		);
 	}
 
 	/**
-	 * Validation function when the action is hit
+	 * Process the action.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @param int $user_id
+	 * @param array $action_data
+	 * @param int $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool
+	 * @throws \Exception
 	 */
-	public function zoom_register_user( $user_id, $action_data, $recipe_id, $args ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		// Parse options.
+		$user_id     = $this->parse_user_id( $user_id );
+		$meeting_key = $this->parse_meeting_key( $this->get_action_meta() );
 
-		try {
+		// Build user data.
+		$meeting_user = $this->build_user_data( $user_id );
 
-			$meeting_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
+		// Add custom questions.
+		$questions    = $this->get_parsed_meta_value( 'MEETINGQUESTIONS' );
+		$meeting_user = $this->parse_meeting_questions( $meeting_user, $questions, $recipe_id, $user_id, $args );
 
-			if ( empty( $user_id ) ) {
-				throw new \Exception( esc_html__( 'User was not found.', 'uncanny-automator' ) );
-			}
-
-			if ( empty( $meeting_key ) ) {
-				throw new \Exception( esc_html__( 'Meeting was not found.', 'uncanny-automator' ) );
-			}
-
-			$meeting_key = str_replace( '-objectkey', '', $meeting_key );
-			$user        = get_userdata( $user_id );
-
-			if ( is_wp_error( $user ) ) {
-				throw new \Exception( esc_html__( 'User was not found.', 'uncanny-automator' ) );
-			}
-
-			$meeting_user          = array();
-			$meeting_user['email'] = $user->user_email;
-
-			$meeting_user['first_name'] = $user->first_name;
-			$meeting_user['last_name']  = $user->last_name;
-
-			$email_parts                = explode( '@', $meeting_user['email'] );
-			$meeting_user['first_name'] = empty( $meeting_user['first_name'] ) ? $email_parts[0] : $meeting_user['first_name'];
-
-			if ( ! empty( $action_data['meta']['MEETINGQUESTIONS'] ) ) {
-				$meeting_user = $this->helpers->add_custom_questions( $meeting_user, $action_data['meta']['MEETINGQUESTIONS'], $recipe_id, $user_id, $args );
-			}
-
-			$meeting_occurrences = array();
-
-			if ( ! empty( $action_data['meta']['OCCURRENCES'] ) ) {
-				$meeting_occurrences = json_decode( $action_data['meta']['OCCURRENCES'] );
-			}
-
-			$response = $this->helpers->add_to_meeting( $meeting_user, $meeting_key, $meeting_occurrences, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+		// Get meeting occurrences.
+		$meeting_occurrences = array();
+		$occurrences         = $this->get_parsed_meta_value( 'OCCURRENCES' );
+		if ( ! empty( $occurrences ) ) {
+			$meeting_occurrences = json_decode( $occurrences );
 		}
+
+		// Register user for meeting.
+		$this->api->register_user_for_meeting( $meeting_user, $meeting_key, $meeting_occurrences, $action_data );
+
+		return true;
 	}
 }

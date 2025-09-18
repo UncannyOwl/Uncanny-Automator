@@ -2,15 +2,17 @@
 
 namespace Uncanny_Automator\Integrations\Bitly;
 
-use Exception;
 use Uncanny_Automator\Recipe\Log_Properties;
 
 /**
  * Class BITLY_SHORTEN_URL
  *
  * @package Uncanny_Automator
+ *
+ * @property Bitly_Api_Caller $api
  */
-class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\Action {
+class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\App_Action {
+
 	use Log_Properties;
 
 	/**
@@ -24,11 +26,6 @@ class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		/**@var Bitly_Helpers $helpers */
-		$helpers       = array_shift( $this->dependencies );
-		$this->helpers = $helpers;
-
 		$this->set_integration( 'BITLY' );
 		$this->set_action_code( 'BITLY_SHORTEN_URL_CODE' );
 		$this->set_action_meta( 'BITLY_SHORTEN_URL_META' );
@@ -60,7 +57,7 @@ class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\Action {
 			array(
 				'option_code'     => 'BITLY_DOMAIN',
 				'label'           => esc_attr_x( 'Domain', 'Bitly', 'uncanny-automator' ),
-				'description'     => _x( 'Enter custom domain for your Bitly account (only available for Paid accounts).', 'Bitly', 'uncanny-automator' ),
+				'description'     => esc_html_x( 'Enter custom domain for your Bitly account (only available for Paid accounts).', 'Bitly', 'uncanny-automator' ),
 				'input_type'      => 'url',
 				'required'        => false,
 				'placeholder'     => 'example.com',
@@ -75,15 +72,15 @@ class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\Action {
 	public function define_tokens() {
 		return array(
 			'DOMAIN'    => array(
-				'name' => _x( 'Domain', 'Bitly', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Domain', 'Bitly', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 			'LONG_URL'  => array(
-				'name' => _x( 'Long URL', 'Bitly', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Long URL', 'Bitly', 'uncanny-automator' ),
 				'type' => 'url',
 			),
 			'SHORT_URL' => array(
-				'name' => _x( 'Short URL', 'Bitly', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Short URL', 'Bitly', 'uncanny-automator' ),
 				'type' => 'url',
 			),
 		);
@@ -102,12 +99,14 @@ class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\Action {
 		$long_url = sanitize_url( $parsed[ $this->get_action_meta() ] );
 		$domain   = sanitize_text_field( $parsed['BITLY_DOMAIN'] );
 
-		$options = array(
+		// Set request body.
+		$body = array(
+			'action'   => 'shorten_url',
 			'long_url' => $long_url,
 			'domain'   => $domain,
 		);
 
-		$response = $this->helpers->api_request( 'shorten_url', $options );
+		$response = $this->api->api_request( $body, $action_data );
 
 		if ( false === $response ) {
 			$this->add_log_error( sprintf( 'Error: Unable to shorten the given URL: "%s"', $long_url ) );
@@ -115,7 +114,7 @@ class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\Action {
 			return false;
 		}
 
-		//Populate the custom token values
+		// Populate the custom token values
 		$this->hydrate_tokens(
 			array(
 				'DOMAIN'    => $domain,
@@ -128,7 +127,7 @@ class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\Action {
 		$this->set_log_properties(
 			array(
 				'type'  => 'url',
-				'label' => _x( 'Shorten URL', 'Bitly', 'uncanny-automator' ),
+				'label' => esc_html_x( 'Shorten URL', 'Bitly', 'uncanny-automator' ),
 				'value' => $response['data']['short_url'],
 			)
 		);

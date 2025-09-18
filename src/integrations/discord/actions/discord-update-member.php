@@ -7,8 +7,11 @@ use Exception;
  * Class DISCORD_UPDATE_MEMBER
  *
  * @package Uncanny_Automator
+ *
+ * @property Discord_App_Helpers $helpers
+ * @property Discord_Api_Caller $api
  */
-class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
+class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Prefix for action code / meta.
@@ -30,9 +33,8 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers    = array_shift( $this->dependencies );
-		$this->server_key = $this->helpers->get_constant( 'ACTION_SERVER_META_KEY' );
+		// Set server key property.
+		$this->server_key = $this->helpers->get_const( 'ACTION_SERVER_META_KEY' );
 
 		$this->set_integration( 'DISCORD' );
 		$this->set_action_code( $this->prefix . '_CODE' );
@@ -148,26 +150,12 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		// Roles.
+		$roles      = $this->parse_roles_data( $this->get_parsed_meta_value( 'ROLES', array() ) );
 		$role_names = '';
-		$roles      = sanitize_text_field( $this->get_parsed_meta_value( 'ROLES', array() ) );
-
 		if ( ! empty( $roles ) ) {
-
-			$role_names = $this->get_parsed_meta_value( 'ROLES_readable', array() );
-
-			// User manually selected options.
-			if ( is_array( $roles ) ) {
-				$update['roles'] = $roles;
-			} else {
-				// User used a custom value.
-				$update['roles'] = array( $roles );
-				// Get role name using helper method
-				$role_names = $this->helpers->get_role_name_token_value(
-					$role_names, // Custom value text
-					$roles, // role ID
-					$server_id
-				);
-			}
+			$update['roles'] = array_map( 'strval', $roles );
+			// Get role names for tokens
+			$role_names = $this->get_role_names_for_tokens( $roles, $server_id );
 		}
 
 		if ( empty( $update ) ) {
@@ -182,7 +170,7 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		// Make request
-		$response = $this->helpers->api()->api_request( $body, $action_data, $server_id );
+		$response = $this->api->discord_request( $body, $action_data, $server_id );
 
 		// Check for errors.
 		$status_code = isset( $response['statusCode'] ) ? absint( $response['statusCode'] ) : 0;
@@ -201,5 +189,63 @@ class DISCORD_UPDATE_MEMBER extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		return true;
+	}
+
+	/**
+	 * Parse roles data from multi-value field
+	 *
+	 * @param mixed $roles_data
+	 * @return array
+	 */
+	private function parse_roles_data( $roles_data ) {
+		if ( empty( $roles_data ) ) {
+			return array();
+		}
+
+		// If it's already an array, return it
+		if ( is_array( $roles_data ) ) {
+			return array_filter( $roles_data ); // Remove empty values
+		}
+
+		// If it's a string, try to decode as JSON
+		if ( is_string( $roles_data ) ) {
+			$decoded = json_decode( $roles_data, true );
+
+			// If JSON decode worked and returned an array, use it
+			if ( is_array( $decoded ) ) {
+				return array_filter( $decoded ); // Remove empty values
+			}
+
+			// Otherwise treat as single custom value
+			$sanitized = sanitize_text_field( $roles_data );
+			return empty( $sanitized ) ? array() : array( $sanitized );
+		}
+
+		return array();
+	}
+
+	/**
+	 * Get role names for tokens when multiple roles are selected
+	 *
+	 * @param array $role_ids
+	 * @param string $server_id
+	 *
+	 * @return string
+	 */
+	private function get_role_names_for_tokens( $role_ids, $server_id ) {
+		if ( empty( $role_ids ) ) {
+			return '';
+		}
+
+		// Get all server roles
+		$roles = $this->api->get_server_roles( $server_id, false );
+		$names = array();
+
+		foreach ( $role_ids as $role_id ) {
+			$role    = array_values( wp_list_filter( $roles, array( 'value' => $role_id ) ) );
+			$names[] = $role[0]['text'] ?? $role_id;
+		}
+
+		return implode( ', ', $names );
 	}
 }

@@ -459,6 +459,10 @@ class Automator_Load {
 		$this->register_fields_logger();
 
 		require_once UA_ABSPATH . 'src/core/services/logger/async-logger.php';
+
+		// App integration REST and Admin Post action manager.
+		require_once UA_ABSPATH . 'src/core/services/app-integrations/action-manager.php';
+		( new \Uncanny_Automator\Services\App_Integrations\Action_Manager() )->register_hooks();
 	}
 
 	/**
@@ -766,6 +770,9 @@ class Automator_Load {
 		// Load migrations
 		$this->load_migrations();
 
+		// Load migrations that uses hooks.
+		$this->load_migrations_hooks();
+
 		// Only initialize classes if there're any active recipes OR if user is editing recipe
 		$classes = $this->maybe_initialize_automator( $classes );
 
@@ -855,6 +862,17 @@ class Automator_Load {
 	}
 
 	/**
+	 * Load migrations that uses hooks.
+	 *
+	 * @return void
+	 */
+	public function load_migrations_hooks() {
+		// Options migration.
+		$options_migration = new \Uncanny_Automator\Migrations\Automator_Options_Migration();
+		$options_migration->register_hooks();
+	}
+
+	/**
 	 * load_migrations
 	 *
 	 * @return void
@@ -878,6 +896,8 @@ class Automator_Load {
 		$classes['Trait_Settings_Premium_Integrations'] = UA_ABSPATH . 'src/core/lib/settings/trait-premium-integrations.php';
 
 		$classes['Premium_Integration_Settings'] = UA_ABSPATH . 'src/core/lib/settings/premium-integration-settings.php';
+		// Temp v2 version of Premium_Integration_Settings
+		$classes['App_Integration_Settings'] = UA_ABSPATH . 'src/core/lib/settings/app-integration-settings.php';
 
 		// Integrations
 		$classes['Integrations'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-integrations.php';

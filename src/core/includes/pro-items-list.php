@@ -8,7 +8,6 @@
  *
  * @return array
  */
-
 function automator_pro_items_list() {
 	return array(
 		'ADVADS' => array(
@@ -168,6 +167,29 @@ function automator_pro_items_list() {
 					'name' => esc_html_x( 'Remove the user from {{a membership plan}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
+		),
+		'ASANA' => array(
+			'name'       => 'Asana',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'A comment is added to a task in a specific project', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'A custom field of a task is set to a specific value', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'An approval task is set to a status', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'A task is created in a specific project', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'A task is updated in a specific project', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+			'actions'    => array(),
 		),
 		'UOA' => array(
 			'name'       => 'Automator Core',
@@ -779,6 +801,18 @@ function automator_pro_items_list() {
 					'type' => 'anonymous',
 				),
 				array(
+					'name' => esc_html_x( 'A user cancels their subscription to a price option of a download', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( 'A user receives a Stripe refund for their subscription to a price option of a download', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( 'A user subscribes to a price option of a download', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
 					'name' => esc_html_x( 'A user cancels a subscription to {{a download}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -793,6 +827,9 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name' => esc_html_x( 'Delete a customer by {{ID}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Generate a discount code', 'Automator Pro item', 'uncanny-automator' ),
 				),
 				array(
 					'name' => esc_html_x( "Cancel the user's subscription matching a {{subscription ID}}", 'Automator Pro item', 'uncanny-automator' ),
@@ -1180,6 +1217,32 @@ function automator_pro_items_list() {
 					'name' => esc_html_x( 'Generate a random {{string}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
+		),
+		'GITHUB' => array(
+			'name'       => 'GitHub',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'A pull request is merged in a repository', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'A pull request is opened in a repository', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'A push is made to a repository', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'A release is published in a repository', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'An event occurs in a repository', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'An issue is created in a repository', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+			'actions'    => array(),
 		),
 		'GIVEWP' => array(
 			'name'       => 'GiveWP',
@@ -2751,31 +2814,27 @@ function automator_pro_items_list() {
 					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A user {{completes, pays for, lands on a thank you page for}} {{a variable product}} with {{a variation}} selected', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A user {{purchases a product variation}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A user {{completes, pays for, lands on a thank you page for}} an order paid for with {{a specific payment method}}', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A user {{completes}} an order with {{ specific payment method}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A user {{completes, pays for, lands on a thank you page for}} an order with a product in {{a category}}', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A user {{purchases}} a product in {{a category}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A user {{completes, pays for, lands on a thank you page for}} an order with a product with {{a tag}}', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A user {{purchases}} a product with {{a tag}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A user {{completes, pays for, lands on a thank you page for}} an order with a quantity {{greater than, less than or equal to}} {{a quantity}} of {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A user {{purchases}} {{a quantity}} of {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A user {{completes, pays for, lands on a thank you page for}} an order with {{a specific quantity}} of {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					'name' => esc_html_x( 'A user {{completes, pays for, lands on a thank you page for}} an order with a total {{greater than, less than or equal to}} {{a specific amount}}', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A user {{completes}} an order with a total {{greater than, less than or equal to}} {{a specific amount}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(

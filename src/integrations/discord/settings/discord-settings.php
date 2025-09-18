@@ -8,107 +8,97 @@
 namespace Uncanny_Automator\Integrations\Discord;
 
 use Exception;
+use Uncanny_Automator\Settings\App_Integration_Settings;
+use Uncanny_Automator\Settings\OAuth_App_Integration;
 
 /**
  * Discord_Settings
+ *
+ * @property Discord_App_Helpers $helpers
+ * @property Discord_Api_Caller $api
  */
-class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
+class Discord_Settings extends App_Integration_Settings {
+
+	use OAuth_App_Integration;
+
+	////////////////////////////////////////////////////////////
+	// Required abstract method
+	////////////////////////////////////////////////////////////
 
 	/**
-	 * The connected status
+	 * Get formatted account information for connected user info display
 	 *
-	 * @var bool
+	 * @return array Formatted account information for UI display
 	 */
-	private $is_connected;
+	protected function get_formatted_account_info() {
+		$account    = $this->helpers->get_account_info();
+		$avatar_url = ! empty( $account['avatar'] )
+			? 'https://cdn.discordapp.com/avatars/' . $account['id'] . '/' . $account['avatar'] . '.png'
+			: '';
+
+		return array(
+			'avatar_url' => $avatar_url,
+			'main_info'  => $account['email'],
+			'additional' => $account['username'],
+		);
+	}
+
+	////////////////////////////////////////////////////////////
+	// Override framework methods.
+	////////////////////////////////////////////////////////////
 
 	/**
-	 * Resync servers
+	 * Validate integration credentials
 	 *
-	 * @var bool
+	 * @param array $credentials
+	 *
+	 * @return array
 	 */
-	private $resync_servers = false;
+	public function validate_integration_credentials( $credentials ) {
 
-	/**
-	 * The nonce key
-	 *
-	 * @var string
-	 */
-	const NONCE_KEY = 'automator_discord';
+		// Check for vault signature.
+		$this->validate_vault_signature( $credentials );
 
-	/**
-	 * Integration status.
-	 *
-	 * @return string - 'success' or empty string
-	 */
-	public function get_status() {
-		return $this->helpers->integration_status();
+		// Validate Discord ID was returned.
+		if ( empty( $credentials['discord_id'] ) ) {
+			throw new Exception(
+				esc_html_x( 'Missing Discord ID', 'Integration settings', 'uncanny-automator' )
+			);
+		}
+
+		return $credentials;
 	}
 
 	/**
-	 * Set the properties of the class and the integration
-	 */
-	public function set_properties() {
-
-		// The unique page ID that will be added to the URL.
-		$this->set_id( 'discord' );
-
-		// The integration icon will be used for the settings page.
-		$this->set_icon( 'DISCORD' );
-
-		// The name of the settings tab
-		$this->set_name( 'Discord' );
-
-		$this->is_connected = $this->helpers->is_connected();
-
-		$this->check_for_errors();
-
-		// Handle the disconnect button action.
-		add_action( 'init', array( $this, 'disconnect' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
-		// Capture the OAuth tokens.
-		add_action( 'init', array( $this, 'capture_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
-	}
-
-	/**
-	 * Check for request errors.
+	 * Store credentials in uap_options table
+	 *
+	 * @param array $credentials
 	 *
 	 * @return void
 	 */
-	public function check_for_errors() {
+	protected function store_credentials( $credentials ) {
+		$this->helpers->store_credentials( $credentials );
 
-		if ( ! $this->is_current_page_settings() ) {
-			return;
+		// If this is initial main user account connection, sync the servers.
+		if ( isset( $credentials['user'] ) ) {
+			$this->api->get_servers();
 		}
+	}
 
-		// Initial connection.
-		$connection_result = automator_filter_input( 'connect' );
-		if ( '1' === $connection_result ) {
-			$this->add_alert(
-				array(
-					'type'    => 'success',
-					'heading' => esc_html_x( 'Connected', 'Discord', 'uncanny-automator' ),
-					'content' => esc_html_x( 'The integration has been connected successfully.', 'Discord', 'uncanny-automator' ),
-				)
-			);
-		}
-
-		// Check for server sync.
-		$sync_servers = automator_filter_input( 'sync-servers' );
-		if ( '1' === $sync_servers ) {
-			$this->resync_servers = true;
-			$this->add_alert(
-				array(
-					'type'    => 'success',
-					'heading' => esc_html_x( 'Server list synced', 'Discord', 'uncanny-automator' ),
-					'content' => esc_html_x( 'The list of available servers have been synced successfully.', 'Discord', 'uncanny-automator' ),
-				)
-			);
-		}
-
-		// Server connected.
-		$server_connected = automator_filter_input( 'server-connect' );
-		if ( absint( $server_connected ) > 0 ) {
-			$server = $this->helpers->get_server_by_id( $server_connected );
-			$this->add_alert(
+	/**
+	 * Register success message alert
+	 *
+	 * @param array $credentials
+	 *
+	 * @return void
+	 */
+	protected function register_oauth_success_alert( $credentials ) {
+		// Check if this is a server connection.
+		$is_bot = $credentials['bot'] ?? false;
+		if ( $is_bot ) {
+			$discord_id = $credentials['discord_id'] ?? '';
+			$server     = $this->helpers->get_server_by_id( absint( $discord_id ) );
+			$this->register_alert(
 				array(
 					'type'    => 'success',
 					'heading' => esc_html_x( 'Server connected', 'Discord', 'uncanny-automator' ),
@@ -119,302 +109,329 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 					),
 				)
 			);
+			return;
 		}
 
-		// Server disconnected.
-		$server_disconnected = automator_filter_input( 'server-disconnect' );
-		if ( absint( $server_disconnected ) > 0 ) {
-			$server = $this->helpers->get_server_by_id( $server_disconnected );
-			$this->add_alert(
+		// Initial account connection flow.
+		$this->register_alert( $this->get_connected_alert() );
+	}
+
+	/**
+	 * Before Authorized Account Disconnect.
+	 *
+	 * @param array $response The current response array
+	 * @param array $data The posted data
+	 *
+	 * @return void
+	 */
+	protected function before_disconnect( $response = array(), $data = array() ) {
+		$this->helpers->remove_credentials();
+
+		return $response;
+	}
+
+	/**
+	 * Maybe filter the OAuth args for server ID bot connection flow.
+	 *
+	 * @param array $args
+	 * @param array $data
+	 *
+	 * @return array
+	 */
+	protected function maybe_filter_oauth_args( $args, $data = array() ) {
+		// Check if the server ID has been posted and add it to the args.
+		$server_id = $this->maybe_get_posted_row_id( $data );
+		if ( ! empty( $server_id ) ) {
+			$args['bot_server_id'] = $server_id;
+		}
+
+		return $args;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Custom Discord form handling.
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Handle server disconnect
+	 *
+	 * @param array $response - The current response array
+	 * @param array $data - The data posted to the settings page.
+	 *
+	 * @return array
+	 */
+	protected function handle_server_disconnect( $response = array(), $data = array() ) {
+		try {
+			$server_id = $this->maybe_get_posted_row_id( $data );
+			$this->helpers->disconnect( $server_id );
+			$this->register_alert(
 				array(
 					'type'    => 'success',
 					'heading' => esc_html_x( 'Server disconnected', 'Discord', 'uncanny-automator' ),
 					'content' => sprintf(
-						// translators: %s: Server name.
-						esc_html_x( '%s has been disconnected successfully.', 'Discord', 'uncanny-automator' ),
-						$server['name']
+						// translators: %1$s is the server name.
+						esc_html_x( 'The server "%1$s" has been disconnected successfully.', 'Discord', 'uncanny-automator' ),
+						$this->get_server_name( $server_id )
 					),
 				)
 			);
-		}
-
-		$error = automator_filter_input( 'error' );
-
-		if ( '' !== $error ) {
-			$this->add_alert(
+		} catch ( Exception $e ) {
+			$this->register_alert(
 				array(
 					'type'    => 'error',
-					'heading' => esc_html_x( 'Something went wrong', 'Discord', 'uncanny-automator' ),
-					'content' => $error,
+					'heading' => esc_html_x( 'Server disconnect failed', 'Discord', 'uncanny-automator' ),
+					'content' => $e->getMessage(),
 				)
 			);
 		}
+
+		// Redirect to settings page.
+		$response['reload'] = true;
+		return $response;
 	}
 
 	/**
-	 * Generate a secure disconnect URL with nonce.
+	 * Handle server sync
 	 *
-	 * @param string $type The type of disconnect ('user' or 'server').
-	 * @param int    $id   The server ID if type is 'server'.
+	 * @param array $response - The current response array
+	 * @param array $data - The data posted to the settings page.
 	 *
-	 * @return string The secure disconnect URL.
+	 * @return array
 	 */
-	private function get_secure_disconnect_url( $type, $id = 0 ) {
-		$args = array(
-			'_wpnonce' => wp_create_nonce( self::NONCE_KEY ),
+	protected function handle_server_sync( $response = array(), $data = array() ) {
+		try {
+			$this->api->get_servers( true ); // Force refresh
+			$this->register_alert(
+				array(
+					'type'    => 'success',
+					'heading' => esc_html_x( 'Server list synced', 'Discord', 'uncanny-automator' ),
+					'content' => esc_html_x( 'The list of available servers have been synced successfully.', 'Discord', 'uncanny-automator' ),
+				)
+			);
+		} catch ( Exception $e ) {
+			$this->register_alert(
+				array(
+					'type'    => 'error',
+					'heading' => esc_html_x( 'Server sync failed', 'Discord', 'uncanny-automator' ),
+					'content' => $e->getMessage(),
+				)
+			);
+		}
+
+		// Redirect to settings page.
+		$response['reload'] = true;
+		return $response;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Custom Settings helper methods.
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Get server name by ID
+	 *
+	 * @param int $server_id
+	 *
+	 * @return string
+	 */
+	private function get_server_name( $server_id ) {
+		$server = $this->helpers->get_server_by_id( absint( $server_id ) );
+		return $server['name'] ?? '';
+	}
+
+	////////////////////////////////////////////////////////////
+	// Content output methods.
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Display - Main panel disconnected content.
+	 *
+	 * @return string - HTML
+	 */
+	public function output_main_disconnected_content() {
+		// Output the standard disconnected integration header with description.
+		$this->output_disconnected_header(
+			esc_html_x( 'Connect Uncanny Automator to Discord to streamline automations to message and manage Servers and Members', 'Discord', 'uncanny-automator' )
 		);
 
-		if ( 'user' === $type ) {
-			$args['disconnect'] = '1';
-		} elseif ( 'server' === $type && absint( $id ) > 0 ) {
-			$args['disconnect-server'] = absint( $id );
-		}
-
-		return add_query_arg( $args, $this->get_settings_page_url() );
+		// Automatically generated list of available triggers and actions.
+		$this->output_available_items();
 	}
 
 	/**
-	 * Disconnect the integration
+	 * Display - Main panel connected content.
 	 *
-	 * @return void
+	 * @return void - Outputs HTML directly
 	 */
-	public function disconnect() {
-
-		// Make sure this settings page is the one that is active
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-		$disconnect_server = automator_filter_input( 'disconnect-server' );
-		$disconnect_user   = automator_filter_input( 'disconnect' );
-
-		// Bail early if no disconnect action is requested
-		if ( '1' !== $disconnect_user && empty( $disconnect_server ) ) {
-			return;
-		}
-
-		// Validate nonce
-		$nonce = automator_filter_input( '_wpnonce' );
-		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, self::NONCE_KEY ) ) {
-			wp_die( 'Error 403: Invalid security token.' );
-		}
-
-		// Validate user capabilities
-		$this->validate_user_capabilities();
-
-		// Handle user disconnect.
-		if ( '1' === $disconnect_user ) {
-			$this->helpers->remove_credentials();
-			wp_safe_redirect( $this->get_settings_page_url() );
-			exit;
-		}
-
-		// Handle server disconnect.
-		if ( absint( $disconnect_server ) > 0 ) {
-			$this->helpers->disconnect( $disconnect_server );
-			$this->helpers->update_server_connected_status( $disconnect_server, 0 );
-			wp_safe_redirect( $this->get_settings_page_url() . '&server-disconnect=' . $disconnect_server );
-			exit;
-		}
-	}
-
-	/**
-	 * Capture Oauth tokens
-	 *
-	 * @return void
-	 */
-	public function capture_oauth_tokens() {
-
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-		$automator_message = automator_filter_input( 'automator_api_message' );
-
-		if ( empty( $automator_message ) ) {
-			return;
-		}
-
-		// Validate user capabilities.
-		$this->validate_user_capabilities();
-
-		$credentials = (array) \Uncanny_Automator\Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, wp_create_nonce( self::NONCE_KEY ) );
-
-		// Validate token vault details.
-		if ( empty( $credentials['discord_id'] ) || empty( $credentials['vault_signature'] ) ) {
-			wp_safe_redirect(
-				add_query_arg(
-					array(
-						'error' => esc_html_x( 'Missing credentials', 'Discord', 'uncanny-automator' ),
-					),
-					$this->get_settings_page_url()
-				)
-			);
-			die;
-		}
-
-		$connect = $this->helpers->store_credentials( $credentials );
-		$args    = array();
-
-		// Check for user details ( initial connection )
-		if ( isset( $credentials['user'] ) ) {
-			// Get the servers.
-			$this->helpers->api()->get_servers();
-			$args['connect'] = $connect;
-		}
-
-		// Check for server details ( connecting a server )
-		if ( isset( $credentials['bot'] ) ) {
-			$args['server-connect'] = $credentials['discord_id'];
-		}
-
-		wp_safe_redirect(
-			add_query_arg(
-				$args,
-				$this->get_settings_page_url()
+	public function output_main_connected_content() {
+		// One account warning.
+		$this->alert_html(
+			array(
+				'heading' => esc_html_x( 'Uncanny Automator only supports connecting to one Discord account at a time, although you may connect multiple servers.', 'Discord', 'uncanny-automator' ),
+				'class'   => 'uap-spacing-bottom',
 			)
 		);
 
-		die;
-	}
+		// Servers subtitle.
+		$this->output_panel_subtitle( esc_html_x( 'Servers', 'Discord', 'uncanny-automator' ) );
 
-	/**
-	 * Validate user capabilities.
-	 *
-	 * @return void
-	 */
-	public function validate_user_capabilities() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Error 403: Insufficient permissions.' );
-		}
-	}
-
-	/**
-	 * Generates the OAuth2 URL.
-	 *
-	 * @param mixed null | string $server_id - The server ID.
-	 *
-	 * @return string The OAuth URL.
-	 */
-	public function get_oauth_url( $server_id = null ) {
-
-		$args = array(
-			'action'       => 'authorization_request',
-			'nonce'        => wp_create_nonce( self::NONCE_KEY ),
-			'redirect_url' => rawurlencode( $this->get_settings_page_url() ),
-			'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
+		// Servers description.
+		$this->output_subtle_panel_paragraph(
+			esc_html_x( 'The following servers are available to connect for use in your recipes :', 'Discord', 'uncanny-automator' )
 		);
 
-		if ( ! is_null( $server_id ) ) {
-			$args['bot_server_id'] = $server_id;
-		}
-
-		return add_query_arg(
-			$args,
-			AUTOMATOR_API_URL . $this->helpers->api()->get_api_endpoint()
-		);
+		// Servers list.
+		$this->output_server_list();
 	}
 
-	/**
-	 * Display - Settings panel.
-	 *
-	 * @return string - HTML
-	 * @throws Exception
-	 */
-	public function output_panel() {
-		?>
-		<div class="uap-settings-panel">
-			<div class="uap-settings-panel-top">
-				<?php $this->output_panel_top(); ?>
-				<?php $this->display_alerts(); ?>
-				<div class="uap-settings-panel-content">
-					<?php $this->output_panel_content(); ?>
-				</div>
-			</div>
-			<div class="uap-settings-panel-bottom" <?php echo esc_attr( ! $this->is_connected ? 'has-arrow' : '' ); ?>>
-				<?php $this->output_panel_bottom(); ?>
-			</div>
-		</div>
-		<?php
-	}
+	////////////////////////////////////////////////////////////
+	// Custom Discord templating.
+	////////////////////////////////////////////////////////////
 
 	/**
-	 * Display - Main panel content.
+	 * Output the server list
 	 *
-	 * @return string - HTML
+	 * @return string HTML
 	 */
-	public function output_panel_content() {
-
-		if ( $this->is_connected ) {
-			$this->output_panel_content_connected();
+	private function output_server_list() {
+		$servers = $this->api->get_servers();
+		if ( empty( $servers ) ) {
+			$this->alert_html(
+				array(
+					'type'    => 'warning',
+					'heading' => esc_html_x( 'No servers found.', 'Discord', 'uncanny-automator' ),
+					'class'   => 'uap-spacing-bottom',
+				)
+			);
 			return;
 		}
 
-		$this->output_panel_content_disconnected();
+		$this->output_server_table( $servers );
+		$this->output_resync_alert();
+		$this->output_user_verification_alert();
 	}
 
 	/**
-	 * Display - Connected main panel content.
+	 * Output the server table
 	 *
-	 * @return string - HTML
+	 * @param array $servers The servers to output
+	 *
+	 * @return void - Outputs HTML directly
 	 */
-	public function output_panel_content_connected() {
-		$link = $this->get_settings_page_url() . '&sync-servers=1';
+	private function output_server_table( $servers ) {
+		// Define the columns for the table.
+		$columns = array(
+			array(
+				'header' => esc_html_x( 'Server', 'Discord', 'uncanny-automator' ),
+				'key'    => 'name',
+			),
+			array(
+				'header' => esc_html_x( 'Status', 'Discord', 'uncanny-automator' ),
+				'key'    => 'status',
+			),
+			array(
+				'header' => esc_html_x( 'Action', 'Discord', 'uncanny-automator' ),
+				'key'    => 'action',
+			),
+		);
+
+		// Ensure we have a sequential array
+		$servers = array_values( $servers );
+
+		// Format the data for the table component.
+		$table_data = array_map(
+			function ( $server ) {
+				$is_connected = ! empty( $server['connected'] );
+				$action       = $is_connected ? 'server_disconnect' : 'oauth_init';
+				return array(
+					'id'      => $server['id'],
+					'columns' => array(
+						'name'   => array(
+							'options' => array(
+								array(
+									'type' => 'text',
+									'data' => $server['name'],
+								),
+							),
+						),
+						'status' => array(
+							'options' => array(
+								array(
+									'type' => 'text',
+									'data' => $is_connected
+										? wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $server['connected'] )
+										: esc_html_x( 'Not connected', 'Discord', 'uncanny-automator' ),
+								),
+							),
+						),
+						'action' => array(
+							'options' => array(
+								array(
+									'type' => 'button',
+									'data' => array(
+										// phpcs:disable WordPress.Arrays
+										'name'                      => 'automator_action',
+										'value'                     => $action,
+										'label'                     => $is_connected
+											? esc_html_x( 'Disconnect server', 'Discord', 'uncanny-automator' )
+											: esc_html_x( 'Connect server', 'Discord', 'uncanny-automator' ),
+										'color'                     => 'secondary',
+										'type'                      => 'submit',
+										'row-submission'            => true,
+										'needs-confirmation'        => $is_connected,
+										'confirmation-heading'      => $is_connected
+											? esc_html_x( 'Disconnect Server', 'Discord', 'uncanny-automator' )
+											: '',
+										'confirmation-content'      => $is_connected
+											? esc_html_x( 'Are you sure you want to disconnect this server? This will remove the connection between Automator and Discord.', 'Discord', 'uncanny-automator' )
+											: '',
+										'confirmation-button-label' => $is_connected
+											? esc_html_x( 'Yes, disconnect server', 'Discord', 'uncanny-automator' )
+											: '',
+										// phpcs:enable WordPress.Arrays
+									),
+								),
+							),
+						),
+					),
+				);
+			},
+			$servers
+		);
+
+		$this->output_settings_table( $columns, $table_data );
+	}
+
+	/**
+	 * Output the resync alert for the `handle_server_sync` method.
+	 *
+	 * @return void - Outputs HTML directly
+	 */
+	private function output_resync_alert() {
 		?>
-		<uo-alert
-			heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Discord account at a time, although you may connect multiple servers.', 'Discord', 'uncanny-automator' ); ?>" <?php // phpcs:ignore Uncanny_Automator.Strings.SentenceCase.PotentialCaseIssue ?>
-			class="uap-spacing-bottom">
-		</uo-alert>
-
-		<div class="uap-settings-panel-content-subtitle">
-			<?php echo esc_html_x( 'Servers', 'Discord', 'uncanny-automator' ); ?>
-		</div>
-
-		<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-			<p><?php echo esc_html_x( 'The following servers are available to connect for use in your recipes :', 'Discord', 'uncanny-automator' ); ?></p>
-		</div>
-
-		<?php
-		$servers = $this->helpers->api()->get_servers( $this->resync_servers );
-		if ( empty( $servers ) ) :
-			?>
-			<uo-alert type="warning" heading="<?php echo esc_attr_x( 'No servers found.', 'Discord', 'uncanny-automator' ); ?>" class="uap-spacing-bottom"></uo-alert>
-			<?php
-			return;
-		endif;
-
-		// Load the connected settings styles.
-		$this->load_css( '/discord/settings/assets/style.css' );
-
-		?>
-		<div id="uap-discord-server-connect-list">
-			<table>
-				<thead>
-					<tr>
-						<th><?php echo esc_attr_x( 'Server', 'Discord', 'uncanny-automator' ); ?></th>
-						<th><?php echo esc_attr_x( 'Status', 'Discord', 'uncanny-automator' ); ?></th>
-						<th><?php echo esc_attr_x( 'Action', 'Discord', 'uncanny-automator' ); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-					foreach ( $servers as $server ) :
-						$this->output_server_row( $server );
-					endforeach;
-					?>
-				</tbody>
-			</table>
-		</div>
-
-		<uo-alert 
-			heading="<?php echo esc_attr_x( 'Need to update your server list?', 'Discord', 'uncanny-automator' ); ?>" 
+		<uo-alert heading="<?php echo esc_attr_x( 'Need to update your server list?', 'Discord', 'uncanny-automator' ); ?>" 
 			class="uap-spacing-bottom">
 			<p><?php echo esc_html_x( "If you've added or removed servers since connecting, click the Resync Servers button below to refresh the list.", 'Discord', 'uncanny-automator' ); ?></p>
-			<uo-button href="<?php echo esc_url( $link ); ?>" type="button">
-			<?php echo esc_html( esc_html_x( 'Resync servers', 'Discord', 'uncanny-automator' ) ); ?>
-			</uo-button>
+			<?php
+			$this->output_action_button(
+				'server_sync',
+				esc_html_x( 'Resync servers', 'Discord', 'uncanny-automator' ),
+				array(
+					'color' => 'secondary',
+				)
+			);
+			?>
 		</uo-alert>
+		<?php
+	}
 
+	/**
+	 * Output the user verification alert
+	 *
+	 * @return string HTML
+	 */
+	private function output_user_verification_alert() {
+		?>
 		<uo-alert 
 			heading="<?php echo esc_attr_x( 'User Discord Verification', 'Discord', 'uncanny-automator' ); ?>" 
 			class="uap-spacing-bottom">
@@ -426,184 +443,6 @@ class Discord_Settings extends \Uncanny_Automator\Settings\Premium_Integration_S
 				</uo-button>
 			</p>
 		</uo-alert>
-
-		<?php
-	}
-
-	/**
-	 * Display - Disconnected main panel content.
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_content_disconnected() {
-		?>
-		<div class="uap-settings-panel-content-subtitle">
-			<?php echo esc_html_x( 'Connect Uncanny Automator to Discord', 'Discord', 'uncanny-automator' ); ?>
-		</div>
-
-		<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-			<?php echo esc_html_x( 'Connect Uncanny Automator to Discord to streamline automations to message and manage Servers and Members', 'Discord', 'uncanny-automator' ); ?>
-		</div>
-
-		<p>
-			<strong>
-				<?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Discord', 'uncanny-automator' ); ?>
-			</strong>
-		</p>
-
-		<ul>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Send a message to a channel', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Send a direct message to a Discord member', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Assign a role to a member', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Remove a role from a member', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Remove a member', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Update a member', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Add a member to a channel', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Create a channel', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-			<li>
-				<uo-icon id="bolt"></uo-icon> <strong>
-				<?php echo esc_html_x( 'Action:', 'Discord', 'uncanny-automator' ); ?></strong> 
-				<?php echo esc_html_x( 'Send an invitation to join a server to an email', 'Discord', 'uncanny-automator' ); ?>
-			</li>
-		</ul>
-		<?php
-	}
-
-	/**
-	 * Display - Bottom left panel content.
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_bottom_left() {
-
-		// Add the connect button if not connected
-		if ( ! $this->is_connected ) {
-			?>
-			<uo-button href="<?php echo esc_url( $this->get_oauth_url() ); ?>" type="button" target="_self" unsafe-force-target>
-				<?php echo esc_html_x( 'Connect Discord account', 'Discord', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-			return;
-		}
-
-		// Show the connected account details.
-		$user  = $this->helpers->get_user_info();
-		$name  = $user['username'];
-		$email = $user['email'];
-		// If the user has an avatar, get the URL.
-		$avatar = $user['avatar'];
-		if ( ! empty( $avatar ) ) {
-			$avatar = 'https://cdn.discordapp.com/avatars/' . $user['id'] . '/' . $avatar . '.png';
-		}
-
-		?>
-		<div class="uap-settings-panel-user">
-			<div class="uap-settings-panel-user__avatar">
-				<?php if ( ! empty( $avatar ) ) : ?>
-					<img src="<?php echo esc_url( $avatar ); ?>" alt="<?php echo esc_attr( $name ); ?>">
-				<?php else : ?>
-					<uo-icon integration="DISCORD"></uo-icon>
-				<?php endif; ?>
-			</div>
-			<div class="uap-settings-panel-user-info">
-				<div class="uap-settings-panel-user-info__main">
-					<?php echo esc_html( $email ); ?>
-				</div>
-				<div class="uap-settings-panel-user-info__additional">
-					<?php echo esc_html( $name ); ?>		
-				</div>
-			</div>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Display - Outputs the bottom right panel content
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_bottom_right() {
-
-		if ( ! $this->is_connected ) {
-			return;
-		}
-
-		$link = $this->get_secure_disconnect_url( 'user' );
-
-		?>
-		<uo-button color="danger" href="<?php echo esc_url( $link ); ?>">
-			<uo-icon id="sign-out"></uo-icon>
-			<?php echo esc_html_x( 'Disconnect', 'Discord', 'uncanny-automator' ); ?>
-		</uo-button>
-
-		<?php
-	}
-
-	/**
-	 * Output a server table row.
-	 *
-	 * @param array $server The server data.
-	 *
-	 * @return string
-	 */
-	public function output_server_row( $server ) {
-
-		// Server is connected.
-		if ( ! empty( $server['connected'] ) ) {
-			$date  = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $server['connected'] );
-			$url   = $this->get_secure_disconnect_url( 'server', $server['id'] );
-			$label = esc_html_x( 'Disconnect server', 'Discord', 'uncanny-automator' );
-		}
-
-		// Server not connected.
-		if ( empty( $server['connected'] ) ) {
-			$date  = esc_html_x( 'Not connected', 'Discord', 'uncanny-automator' );
-			$url   = $this->get_oauth_url( $server['id'] );
-			$label = esc_html_x( 'Connect server', 'Discord', 'uncanny-automator' );
-		}
-
-		?>
-		<tr>
-			<td><?php echo esc_html( $server['name'] ); ?></td>
-			<td class="uap-discord-server-connect-date"><?php echo esc_html( $date ); ?></td>
-			<td>
-				<uo-button href="<?php echo esc_url( $url ); ?>" type="button">
-					<?php echo esc_html( $label ); ?>
-				</uo-button>
-			</td>
-		</tr>
 		<?php
 	}
 }

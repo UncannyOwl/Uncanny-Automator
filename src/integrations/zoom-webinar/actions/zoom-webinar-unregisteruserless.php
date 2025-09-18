@@ -1,144 +1,83 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Zoom_Webinar;
+
+use Uncanny_Automator\Recipe\App_Action;
+use Exception;
 
 /**
  * Class ZOOM_WEBINAR_UNREGISTERUSERLESS
  *
  * @package Uncanny_Automator
+ * @property Zoom_Webinar_App_Helpers $helpers
+ * @property Zoom_Webinar_Api_Caller $api
  */
-class ZOOM_WEBINAR_UNREGISTERUSERLESS {
+class ZOOM_WEBINAR_UNREGISTERUSERLESS extends App_Action {
+
+	use Zoom_Webinar_Registration_Trait;
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'ZOOMWEBINAR';
-
-	private $action_code;
-	private $action_meta;
-	private $helpers;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'ZOOMWEBINARUNREGISTERUSERLESS';
-		$this->action_meta = 'ZOOMWEBINAR';
-		$this->helpers     = new Zoom_Webinar_Helpers();
-		$this->define_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/zoom/' ),
-			'is_pro'                => false,
-			'requires_user'         => false,
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			/* translators: Webinar topic */
-			'sentence'              => sprintf( esc_html__( 'Remove an attendee from {{a webinar:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( 'Remove an attendee from {{a webinar}}', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'execution_function'    => array( $this, 'zoom_webinar_unregister_user' ),
-			'options_callback'      => array( $this, 'load_options' ),
-			'background_processing' => true,
-
-		);
-
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * load_options
+	 * Setup action.
 	 *
 	 * @return void
 	 */
-	public function load_options() {
-
-		$email_field_options = array(
-			'option_code' => 'EMAIL',
-			'input_type'  => 'text',
-			'label'       => esc_attr__( 'Email address', 'uncanny-automator' ),
-			'placeholder' => '',
-			'description' => '',
-			'required'    => true,
-			'tokens'      => true,
-			'default'     => '',
-		);
-
-		$email_field = Automator()->helpers->recipe->field->text( $email_field_options );
-
-		$account_users_field = array(
-			'option_code'           => 'ZOOMUSER',
-			'label'                 => esc_html__( 'Account user', 'uncanny-automator' ),
-			'input_type'            => 'select',
-			'required'              => false,
-			'is_ajax'               => true,
-			'endpoint'              => 'uap_zoom_api_get_webinars',
-			'fill_values_in'        => $this->action_meta,
-			'options'               => $this->helpers->get_account_user_options(),
-			'relevant_tokens'       => array(),
-			'supports_custom_value' => false,
-		);
-
-		$user_webinars_field = array(
-			'option_code'           => $this->action_meta,
-			'label'                 => esc_html__( 'Webinar', 'uncanny-automator' ),
-			'input_type'            => 'select',
-			'required'              => true,
-			'options'               => array(),
-			'supports_tokens'       => false,
-			'supports_custom_value' => false,
-		);
-
-		$option_fileds = array(
-			$email_field,
-			$account_users_field,
-			$user_webinars_field,
-		);
-
-		return array(
-			'options_group' => array(
-				$this->action_meta => $option_fileds,
-			),
-		);
-
+	protected function setup_action() {
+		$this->set_integration( 'ZOOMWEBINAR' );
+		$this->set_action_code( 'ZOOMWEBINARUNREGISTERUSERLESS' );
+		$this->set_action_meta( 'ZOOMWEBINAR' );
+		$this->set_is_pro( false );
+		$this->set_requires_user( false );
+		// translators: %1$s Webinar topic
+		$this->set_sentence( sprintf( esc_html_x( 'Remove an attendee from {{a webinar:%1$s}}', 'Zoom Webinar', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Remove an attendee from {{a webinar}}', 'Zoom Webinar', 'uncanny-automator' ) );
+		$this->set_background_processing( true );
 	}
 
 	/**
-	 * Validation function when the action is hit
+	 * Define options.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @return array
 	 */
-	public function zoom_webinar_unregister_user( $user_id, $action_data, $recipe_id, $args ) {
+	public function options() {
+		return array(
+			$this->get_email_field(),
+			$this->get_account_user_field(),
+			$this->get_webinar_selection_field( $this->get_action_meta() ),
+		);
+	}
 
-		try {
-			$webinar_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
-			$email       = Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
+	/**
+	 * Process the action.
+	 *
+	 * @param int $user_id
+	 * @param array $action_data
+	 * @param int $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$webinar_key = $this->get_parsed_meta_value( $this->get_action_meta() );
+		$email       = $this->get_parsed_meta_value( 'EMAIL' );
 
-			if ( empty( $webinar_key ) ) {
-				throw new \Exception( esc_html__( 'Webinar was not found.', 'uncanny-automator' ) );
-			}
-
-			$webinar_key = str_replace( '-objectkey', '', $webinar_key );
-
-			$result = Automator()->helpers->recipe->zoom_webinar->unregister_user( $email, $webinar_key, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
+		if ( empty( $webinar_key ) ) {
+			throw new Exception( esc_html_x( 'Webinar was not found.', 'Zoom Webinar', 'uncanny-automator' ) );
 		}
+
+		if ( empty( $email ) ) {
+			throw new Exception( esc_html_x( 'Email address is missing.', 'Zoom Webinar', 'uncanny-automator' ) );
+		}
+
+		if ( false === is_email( $email ) ) {
+			throw new Exception( esc_html_x( 'Invalid email address.', 'Zoom Webinar', 'uncanny-automator' ) );
+		}
+
+		$webinar_key = $this->parse_webinar_key( $webinar_key );
+
+		$this->api->unregister_user_from_webinar( $email, $webinar_key, $action_data );
+
+		return true;
 	}
 }

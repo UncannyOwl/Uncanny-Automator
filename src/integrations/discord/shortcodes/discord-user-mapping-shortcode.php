@@ -46,20 +46,28 @@ class Discord_User_Mapping_Shortcode {
 	/**
 	 * Helpers
 	 *
-	 * @var Discord_Helpers
+	 * @var Discord_App_Helpers
 	 */
 	protected $helpers;
 
 	/**
+	 * API
+	 *
+	 * @var Discord_Api_Caller
+	 */
+	protected $api;
+
+	/**
 	 * Discord_User_Mapping_Shortcode constructor.
 	 *
-	 * @param  Discord_Helpers $helpers
+	 * @param  Discord_App_Helpers $helpers
 	 *
 	 * @return void
 	 */
-	public function __construct( $helpers ) {
+	public function __construct( $dependencies ) {
 
-		$this->helpers = $helpers;
+		$this->helpers = $dependencies->helpers;
+		$this->api     = $dependencies->api;
 
 		$this->register_hooks();
 	}
@@ -86,11 +94,6 @@ class Discord_User_Mapping_Shortcode {
 		// Validate current user.
 		$current_user = $this->get_validated_user();
 		if ( ! $current_user ) {
-			return '';
-		}
-
-		// Validate Discord is connected.
-		if ( ! $this->helpers->is_connected() ) {
 			return '';
 		}
 
@@ -257,7 +260,7 @@ class Discord_User_Mapping_Shortcode {
 		}
 
 		$discord_id = sanitize_text_field( $credentials['discord_id'] );
-		$meta_key   = $this->helpers->get_constant( 'DISCORD_USER_MAPPING_META_KEY' );
+		$meta_key   = $this->helpers->get_const( 'DISCORD_USER_MAPPING_META_KEY' );
 		update_user_meta( $current_user->ID, $meta_key, $discord_id );
 
 		// Clear the verified members cache.
@@ -293,7 +296,7 @@ class Discord_User_Mapping_Shortcode {
 				'plugin_ver'             => AUTOMATOR_PLUGIN_VERSION,
 				self::IDENTIFY_QUERY_ARG => 'discord-user',
 			),
-			AUTOMATOR_API_URL . $this->helpers->api()->get_api_endpoint()
+			AUTOMATOR_API_URL . $this->api->get_api_endpoint()
 		);
 	}
 

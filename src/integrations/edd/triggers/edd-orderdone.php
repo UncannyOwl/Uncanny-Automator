@@ -1,89 +1,237 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Easy_Digital_Downloads;
+
+use Uncanny_Automator\Recipe\Trigger;
 
 /**
  * Class EDD_ORDERDONE
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Easy_Digital_Downloads
+ * @method \Uncanny_Automator\Integrations\Easy_Digital_Downloads\EDD_Helpers get_item_helpers()
  */
-class EDD_ORDERDONE {
+class EDD_ORDERDONE extends Trigger {
 
 	/**
-	 * Integration code
+	 * Trigger code
 	 *
 	 * @var string
 	 */
-	public static $integration = 'EDD';
-
-	private $trigger_code;
-	private $trigger_meta;
+	const TRIGGER_CODE = 'EDDORDERDONE';
 
 	/**
-	 * SetAutomatorTriggers constructor.
+	 * Trigger meta
+	 *
+	 * @var string
 	 */
-	public function __construct() {
-		$this->trigger_code = 'EDDORDERDONE';
-		$this->trigger_meta = 'EDDORDERTOTAL';
-		//$this->define_trigger();
-	}
+	const TRIGGER_META = 'EDDORDERTOTAL';
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Set up Automator trigger.
 	 */
-	public function define_trigger() {
-
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/easy-digital-downloads/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'sentence'            => sprintf( esc_attr__( 'Order total is {{equals to:%1$s}} ${{0:%2$s}} and placed {{a number of:%3$s}} time(s)', 'uncanny-automator' ), 'NUMBERCOND', $this->trigger_meta, 'NUMTIMES' ),
-			/* translators: Logged-in trigger - Easy Digital Downloads */
-			'select_option_name'  => esc_attr__( 'User completes {{an order}}', 'uncanny-automator' ),
-			'action'              => 'edd_complete_purchase',
-			'priority'            => 10,
-			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'edd_complete_purchase' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
-
-		Automator()->register->trigger( $trigger );
-	}
-
-	/**
-	 * @return array[]
-	 */
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					Automator()->helpers->recipe->field->integer_field( $this->trigger_meta ),
-					Automator()->helpers->recipe->field->less_or_greater_than(),
-					Automator()->helpers->recipe->options->number_of_times(),
-				),
+	protected function setup_trigger() {
+		$this->set_integration( 'EDD' );
+		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_meta( self::TRIGGER_META );
+		$this->add_action( 'edd_complete_purchase', 10, 3 );
+		$this->set_sentence(
+			/* translators: %1$s: Order total, %2$s: less or greater than, %3$s: number of times */
+			sprintf(
+				esc_html_x( 'Order total is {{equals to:%1$s}} ${{0:%2$s}} and placed {{a number of:%3$s}} time(s)', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'NUMBERCOND:' . self::TRIGGER_META,
+				$this->get_trigger_meta() . ':' . self::TRIGGER_META,
+				'NUMTIMES:' . self::TRIGGER_META
 			)
 		);
+		$this->set_readable_sentence( esc_html_x( 'User completes {{an order}}', 'Easy Digital Downloads', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
-	 *
-	 * @param $payment_id
+	 * @return array
 	 */
-	public function edd_complete_purchase( $payment_id ) {
+	public function options() {
+		return array(
+			array(
+				'option_code' => $this->get_trigger_meta(),
+				'label'       => esc_html_x( 'Order total', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'input_type'  => 'float',
+				'required'    => true,
+				'placeholder' => esc_html_x( 'Example: 100', 'Easy Digital Downloads', 'uncanny-automator' ),
+			),
+			array(
+				'option_code'   => 'NUMTIMES',
+				'label'         => esc_html_x( 'Number of times', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'input_type'    => 'int',
+				'required'      => true,
+				'placeholder'   => esc_html_x( 'Example: 1', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'default_value' => 1,
+			),
+			array(
+				'option_code' => 'NUMBERCOND',
+				/* translators: Noun */
+				'label'       => esc_html_x( 'Condition', 'Easy Digital Downloads', 'uncanny-automator' ),
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => array(
+					array(
+						'text'  => esc_html_x( 'equal to', 'Easy Digital Downloads', 'uncanny-automator' ),
+						'value' => '=',
+					),
+					array(
+						'text'  => esc_html_x( 'not equal to', 'Easy Digital Downloads', 'uncanny-automator' ),
+						'value' => '!=',
+					),
+					array(
+						'text'  => esc_html_x( 'less than', 'Easy Digital Downloads', 'uncanny-automator' ),
+						'value' => '<',
+					),
+					array(
+						'text'  => esc_html_x( 'greater than', 'Easy Digital Downloads', 'uncanny-automator' ),
+						'value' => '>',
+					),
+					array(
+						'text'  => esc_html_x( 'greater or equal to', 'Easy Digital Downloads', 'uncanny-automator' ),
+						'value' => '>=',
+					),
+					array(
+						'text'  => esc_html_x( 'less or equal to', 'Easy Digital Downloads', 'uncanny-automator' ),
+						'value' => '<=',
+					),
+				),
+			),
+		);
+	}
 
-		//TODO:: Complete this function
-		$post_id = 0;
-		$user_id = get_current_user_id();
-		$args    = array(
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => $post_id,
-			'user_id' => $user_id,
+	/**
+	 * Validate the trigger.
+	 *
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
+	 * @return bool
+	 */
+	public function validate( $trigger, $hook_args ) {
+		if ( empty( $hook_args ) || ! isset( $hook_args[0] ) ) {
+			return false;
+		}
+
+		$payment_id = $hook_args[0];
+		$user_id    = get_current_user_id();
+
+		// Check if user is logged in
+		if ( ! $user_id ) {
+			return false;
+		}
+
+		// Set user ID for the trigger
+		$this->set_user_id( $user_id );
+
+		// Get payment details
+		$payment = new \EDD_Payment( $payment_id );
+		if ( ! $payment->ID ) {
+			return false;
+		}
+
+		// Check if payment belongs to current user
+		if ( absint( $payment->user_id ) !== absint( $user_id ) ) {
+			return false;
+		}
+
+		// Get order total from trigger meta
+		$selected_total = $trigger['meta'][ self::TRIGGER_META ];
+		$actual_total   = $payment->total;
+
+		// Get comparison condition
+		$condition = $trigger['meta']['NUMBERCOND'] ?? '=';
+
+		// Convert to float for consistent comparison
+		$actual_total_float   = floatval( $actual_total );
+		$selected_total_float = floatval( $selected_total );
+
+		// Check if total matches condition
+		$total_matches = false;
+		switch ( $condition ) {
+			case '=':
+				// Use small epsilon for floating point comparison
+				$total_matches = ( abs( $actual_total_float - $selected_total_float ) < 0.01 );
+				break;
+			case '!=':
+				$total_matches = ( abs( $actual_total_float - $selected_total_float ) >= 0.01 );
+				break;
+			case '>':
+				$total_matches = ( $actual_total_float > $selected_total_float );
+				break;
+			case '<':
+				$total_matches = ( $actual_total_float < $selected_total_float );
+				break;
+			case '>=':
+				$total_matches = ( $actual_total_float >= $selected_total_float );
+				break;
+			case '<=':
+				$total_matches = ( $actual_total_float <= $selected_total_float );
+				break;
+		}
+
+		return $total_matches;
+	}
+
+	/**
+	 * Define tokens.
+	 *
+	 * @param array $trigger
+	 * @param array $tokens
+	 *
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+		$tokens['EDD_DOWNLOAD_ORDER_PAYMENT_INFO'] = array(
+			'name' => esc_html_x( 'Payment information', 'Easy Digital Downloads', 'uncanny-automator' ),
+			'type' => 'text',
 		);
 
-		Automator()->maybe_add_trigger_entry( $args );
+		return $tokens;
+	}
+
+	/**
+	 * Hydrate tokens.
+	 *
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		if ( empty( $hook_args ) || ! isset( $hook_args[0] ) ) {
+			return array();
+		}
+		$payment_id = $hook_args[0];
+		$payment    = new \EDD_Payment( $payment_id );
+		$cart_items = edd_get_payment_meta_cart_details( $payment_id );
+
+		// Prepare payment info
+		$payment_info = array(
+			'discount_codes'  => $payment->discounts,
+			'order_discounts' => 0, // Will be calculated from cart items
+			'order_subtotal'  => number_format( (float) $payment->subtotal, 2, '.', '' ),
+			'order_total'     => number_format( (float) $payment->total, 2, '.', '' ),
+			'order_tax'       => number_format( (float) $payment->tax, 2, '.', '' ),
+			'payment_method'  => $payment->gateway,
+			'license_key'     => $this->get_item_helpers()->get_licenses( $payment_id ),
+		);
+
+		// Calculate total discounts from cart items
+		if ( ! empty( $cart_items ) ) {
+			$total_discount = 0;
+			foreach ( $cart_items as $item ) {
+				if ( is_numeric( $item['discount'] ) ) {
+					$total_discount += $item['discount'];
+				}
+			}
+			$payment_info['order_discounts'] = number_format( (float) $total_discount, 2, '.', '' );
+		}
+
+		return array(
+			'EDD_DOWNLOAD_ORDER_PAYMENT_INFO' => wp_json_encode( $payment_info ),
+		);
 	}
 }
