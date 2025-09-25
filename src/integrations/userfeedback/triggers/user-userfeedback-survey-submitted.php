@@ -95,7 +95,7 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 	public function load_options() {
 		global $wpdb;
 		$surveys = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}userfeedback_surveys WHERE status = %s", 'publish' ) );
-		$options = array( '-1' => esc_html( esc_html__( 'Any survey', 'uncanny-automator' ) ) );
+		$options = array( '-1' => esc_html__( 'Any survey', 'uncanny-automator' ) );
 		foreach ( $surveys as $survey ) {
 			$options[ $survey->id ] = $survey->title;
 		}
@@ -108,7 +108,7 @@ class USER_USERFEEDBACK_SURVEY_SUBMITTED {
 							'input_type'            => 'select',
 							'option_code'           => $this->trigger_meta,
 							/* translators: HTTP request method */
-							'label'                 => esc_html( esc_html__( 'Survey', 'uncanny-automator' ) ),
+							'label'                 => esc_html__( 'Survey', 'uncanny-automator' ),
 							'required'              => true,
 							'supports_custom_value' => false,
 							'options'               => $options,
