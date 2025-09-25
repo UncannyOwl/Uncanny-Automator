@@ -20,7 +20,7 @@ $bot_name       = ! empty( $bot_info['first_name'] ) ? $bot_info['first_name'] :
 $bot_username   = ! empty( $bot_info['username'] ) ? $bot_info['username'] : '';
 
 $kb_url  = esc_attr( automator_utm_parameters( 'https://automatorplugin.com/knowledge-base/telegram/', 'settings', 'telegram-kb_article' ) );
-$kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_attr( esc_html__( 'Knowledge Base article', 'uncanny-automator' ) ), '<uo-icon id="external-link"></uo-icon>' );
+$kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_html__( 'Knowledge Base article', 'uncanny-automator' ), '<uo-icon id="external-link"></uo-icon>' );
 
 
 ?>
