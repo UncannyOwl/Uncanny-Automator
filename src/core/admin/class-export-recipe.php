@@ -183,8 +183,8 @@ class Export_Recipe {
 					)
 				)
 			),
-			esc_attr( esc_html__( 'Export this recipe', 'uncanny-automator' ) ),
-			esc_html( esc_html__( 'Export', 'uncanny-automator' ) )
+			esc_attr__( 'Export this recipe', 'uncanny-automator' ),
+			esc_html__( 'Export', 'uncanny-automator' )
 		);
 
 		return $actions;
