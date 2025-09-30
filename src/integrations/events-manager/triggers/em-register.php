@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Integrations\Events_Manager;
 
 use EM_Booking;
 use EM_Event;
+use Uncanny_Automator\Em_Tokens;
 
 /**
  * Class ANON_EM_REGISTER
