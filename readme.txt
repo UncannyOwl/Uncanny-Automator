@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
-Tested up to: 6.8.2
+Tested up to: 6.8.3
 Requires PHP: 7.3
-Stable tag: 6.9.0
+Stable tag: 6.9.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -44,7 +44,7 @@ Personalize student experiences and deliver better learning outcomes with no-cod
 
 = Social Media Automation =
 
-Spend less time sharing your posts and announcements on social media with automatic posting. Automatically post anything you want to Facebook Pages, Facebook Groups, Twitter, LinkedIn and Instagram, including with images and links. Sign up for a free account to get 250 credits for social posting; Pro plugin users get unlimited posting.
+Spend less time sharing your posts and announcements on social media with automatic posting. Automatically post anything you want to Facebook Pages, Facebook Groups, X/Twitter, LinkedIn and Instagram, including with images and links. Sign up for a free account to get 250 credits for social posting; Pro plugin users get unlimited posting.
 
 = OpenAI Automation =
 
@@ -71,7 +71,6 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Cohere](https://automatorplugin.com/integration/cohere/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [ConvertKit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -91,6 +90,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [HubSpot](https://automatorplugin.com/integration/hubspot/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Instagram](https://automatorplugin.com/integration/instagram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Keap](https://automatorplugin.com/integration/keap/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Kit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
@@ -110,7 +110,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Threads](https://automatorplugin.com/integration/threads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Trello](https://automatorplugin.com/integration/trello/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [X/Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [xAI](https://automatorplugin.com/integration/xai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zoho Campaigns](https://automatorplugin.com/integration/zoho-campaigns/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -127,7 +127,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Amelia](https://automatorplugin.com/integration/amelia/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Autonami](https://automatorplugin.com/integration/autonami/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [FunnelKit Automations](https://automatorplugin.com/integration/autonami/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [bbPress](https://automatorplugin.com/integration/bbpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bricks Builder](https://automatorplugin.com/integration/bricks-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -135,17 +135,20 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [BuddyPress](https://automatorplugin.com/integration/buddypress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [CSV](https://automatorplugin.com/integration/csv/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [Custom User Fields](https://automatorplugin.com/integration/custom-user-fields-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
 - [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Code Snippets](https://automatorplugin.com/integration/code-snippets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Custom Action](https://automatorplugin.com/integration/custom-action/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Date and Time](https://automatorplugin.com/integration/date-and-time/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [Database Query](https://automatorplugin.com/integration/database-query/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Divi](https://automatorplugin.com/integration/divi/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Dynamic Content](https://automatorplugin.com/integration/dynamic-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Elite Addon)
 - [Duplicator](https://automatorplugin.com/integration/duplicator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Easy Affiliate](https://automatorplugin.com/integration/easy-affiliate/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Easy Digital Downloads - Recurring Payments](https://automatorplugin.com/integration/easy-digital-downloads-recurring-payments/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Easy Digital Downloads - Software Licensing](https://automatorplugin.com/integration/easy-digital-downloads-software-licensing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Easy Digital Downloads-Recurring Payments](https://automatorplugin.com/integration/easy-digital-downloads-recurring-payments/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Easy Digital Downloads-Software Licensing](https://automatorplugin.com/integration/easy-digital-downloads-software-licensing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Elementor Pro](https://automatorplugin.com/integration/elementor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -156,6 +159,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [FluentCommunity](https://automatorplugin.com/integration/fluentcommunity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [FluentCRM](https://automatorplugin.com/integration/fluentcrm/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Formatter](https://automatorplugin.com/integration/formatter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Forminator](https://automatorplugin.com/integration/forminator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GamiPress](https://automatorplugin.com/integration/gamipress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Generator](https://automatorplugin.com/integration/generator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
@@ -179,6 +183,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [LearnDash Achievements](https://automatorplugin.com/integration/learndash-achievements/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnPress](https://automatorplugin.com/integration/learnpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LifterLMS](https://automatorplugin.com/integration/lifterlms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Loop](https://automatorplugin.com/integration/loop/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Logging](https://automatorplugin.com/integration/logging/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Magic Button](https://automatorplugin.com/integration/magic-button/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [MailPoet](https://automatorplugin.com/integration/mailpoet/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -205,8 +210,10 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [QR Code](https://automatorplugin.com/integration/qr-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [RSS](https://automatorplugin.com/integration/rss/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [RSS feed](https://automatorplugin.com/integration/rss-feed/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [Restrict Content](https://automatorplugin.com/integration/restrict-content-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
 - [Run Code](https://automatorplugin.com/integration/run-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [Run Now](https://automatorplugin.com/integration/run-now/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -222,9 +229,12 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Thrive Quiz Builder](https://automatorplugin.com/integration/thrive-quiz-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Theme Builder](https://automatorplugin.com/integration/thrive-theme-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Thrive Ultimatum](https://automatorplugin.com/integration/thrive-ultimatum/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [ThriveCart](https://automatorplugin.com/integration/thrivecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Tin Canny Reporting](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Typeform](https://automatorplugin.com/integration/typeform/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [User Lists](https://automatorplugin.com/integration/user-lists-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
 - [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Uncanny Continuing Education Credits](https://automatorplugin.com/integration/uncanny-ceus/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -278,7 +288,7 @@ Beyond the plugin and app integrations, this free version of Uncanny Automator a
 
 All WP plugin triggers and actions included in Uncanny Automator come with a forever free license, which allows unlimited usage on your WordPress site. By creating a free, optional Automator account, you can unlock [250 credits](https://automatorplugin.com/knowledge-base/what-are-credits) to try out app integrations. You can use credits on your site to:
 
-- Post new content to Facebook Groups, Facebook Pages, Twitter and Instagram
+- Post new content to Facebook Groups, Facebook Pages, X/Twitter and Instagram
 - Pass records to Google Sheets (to generate charts or reports or manipulate data outside of WordPress)
 - Notify staff of key events in Slack
 - Register customers in Zoom events on product purchase
@@ -288,7 +298,7 @@ All WP plugin triggers and actions included in Uncanny Automator come with a for
 
 = Take automation to the next level =
 
-[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of app integrations like Google Sheets and Twitter. It also triples the number of available triggers and actions.
+[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of app integrations like Google Sheets and X/Twitter. It also triples the number of available triggers and actions.
 
 Pro also adds features like [Run Now](https://automatorplugin.com/knowledge-base/run-now/?utm_source=wp_repo_automator&utm_medium=readme) and [Loops](https://automatorplugin.com/knowledge-base/user-loops/?utm_source=wp_repo_automator&utm_medium=readme), which allow you to do things like send emails to all users matching certain criteria, tagging users based on site activity, or even generating instant reports in Google Sheets of all users that completed a specific course, purchased a certain product, or anything else you can imagine. 
 
@@ -340,7 +350,7 @@ Uncanny Automator is built from the ground up for efficiency and performance. Au
 
 = What are the limits of your free version? =
 
-All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=what_are_the_limits_of_your_free_version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include apps, like Twitter and Facebook, you can create a free account to unlock 250 credits to try out these integrations.
+All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=what_are_the_limits_of_your_free_version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include apps, like X/Twitter and Facebook, you can create a free account to unlock 250 credits to try out these integrations.
 
 = Is Automator translation friendly? =
 
@@ -356,7 +366,7 @@ Check out our developer documentation over at [https://developer.automatorplugin
 
 = Can I automatically share posts & updates on social media? =
 
-Yes. It is easy to set up automation and share content on Social Media platforms. Set up integrations with Instagram, Facebook Pages, Facebook Groups, LinkedIn Pages and Twitter by creating a free account to unlock 250 free credits.
+Yes. It is easy to set up automation and share content on Social Media platforms. Set up integrations with Instagram, Facebook Pages, Facebook Groups, LinkedIn Pages and X/Twitter by creating a free account to unlock 250 free credits.
 
 = Do I need coding skills or help from a developer? =
 
@@ -394,6 +404,23 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.9.0.1 [2025-10-06] =
+
+**New Tokens:**
+
+* EDD - Software Licensing - Price option ID and Price option name #6250
+
+**Fixed:**
+
+* BuddyBoss - Squashed a rare PHP warning about undefined array keys #6186
+* Slack - Slack actions got a little too honest and started showing raw HTML. We've taught it some markdown manners #6264
+
+**Under the hood:**
+
+* App Integration framework - We gave the params a quick spa day to normalize things—now everyone's playing by the same rules #6220
+* Added a tagging system so third-party integrations can finally feel seen #6253
+* Companion code for Loops table in Automator Pro - Packed a little helper kit to support Loops in Pro—teamwork makes the tables work #6074
 
 = 6.9.0 [2025-09-18] =
 

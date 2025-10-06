@@ -245,6 +245,7 @@ class ComposerStaticInitaa80a46dcd5e844a40fb57e1487ef832
         'Uncanny_Automator\\Armember_Tokens' => __DIR__ . '/../..' . '/src/integrations/armember/tokens/armember-tokens.php',
         'Uncanny_Automator\\Auth' => __DIR__ . '/../..' . '/src/core/lib/auth.php',
         'Uncanny_Automator\\Automator_Cache_Handler' => __DIR__ . '/../..' . '/src/core/lib/helpers/class-automator-cache-handler.php',
+        'Uncanny_Automator\\Automator_Compression' => __DIR__ . '/../..' . '/src/core/lib/utilities/class-automator-compression.php',
         'Uncanny_Automator\\Automator_DB' => __DIR__ . '/../..' . '/src/core/class-automator-db.php',
         'Uncanny_Automator\\Automator_DB_Handler' => __DIR__ . '/../..' . '/src/core/lib/utilities/db/class-automator-db-handler.php',
         'Uncanny_Automator\\Automator_DB_Handler_Actions' => __DIR__ . '/../..' . '/src/core/lib/utilities/db/class-automator-db-handler-actions.php',

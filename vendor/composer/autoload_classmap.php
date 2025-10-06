@@ -234,6 +234,7 @@ return array(
     'Uncanny_Automator\\Armember_Tokens' => $baseDir . '/src/integrations/armember/tokens/armember-tokens.php',
     'Uncanny_Automator\\Auth' => $baseDir . '/src/core/lib/auth.php',
     'Uncanny_Automator\\Automator_Cache_Handler' => $baseDir . '/src/core/lib/helpers/class-automator-cache-handler.php',
+    'Uncanny_Automator\\Automator_Compression' => $baseDir . '/src/core/lib/utilities/class-automator-compression.php',
     'Uncanny_Automator\\Automator_DB' => $baseDir . '/src/core/class-automator-db.php',
     'Uncanny_Automator\\Automator_DB_Handler' => $baseDir . '/src/core/lib/utilities/db/class-automator-db-handler.php',
     'Uncanny_Automator\\Automator_DB_Handler_Actions' => $baseDir . '/src/core/lib/utilities/db/class-automator-db-handler-actions.php',

@@ -514,7 +514,7 @@ class Admin_Menu {
 					array(
 						'title' => esc_html__( 'PHP version', 'uncanny-automator' ),
 						'url' => 'https://automatorplugin.com/knowledge-base/php-version/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
-					)
+					),
 				),
 			),
 			array(
@@ -914,7 +914,7 @@ class Admin_Menu {
 						'url' => 'https://automatorplugin.com/knowledge-base/woocommerce/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
 					),
 				),
-			)
+			),
 		);
 
 		$faq_items = array(
@@ -1363,7 +1363,7 @@ class Admin_Menu {
 				'localize' => array(
 					'UncannyAutomatorBackend' => $this->get_js_backend_inline_data( $hook ),
 					'UncannyAutomator' => array(),
-				)
+				),
 			)
 		);
 	}
@@ -1437,8 +1437,8 @@ class Admin_Menu {
 							'all_recipes'        => admin_url( 'edit.php?post_type=uo-recipe' ),
 							'tools'              => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-tools' ),
 							'manage_license'     => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
-						)
-					)
+						),
+					),
 				),
 			),
 		);
@@ -1716,6 +1716,7 @@ class Admin_Menu {
 				'is_elite'           => isset( $integration['is_elite_integration'] ) ? $integration['is_elite_integration'] : false,
 				'is_built_in'        => $integration['is_app_integration'],
 				'is_addon'           => $integration['is_automator_addon'],
+				'is_third_party'     => $integration['is_third_party_integration'],
 				'is_installed'       => $this->is_installed( $integration_id ),
 				'short_description'  => $integration['short_description'],
 				'icon_url'           => $integration['integration_icon'],

@@ -93,6 +93,6 @@ class EDD_SL_LICENSE_CREATED_FOR_DOWNLOAD extends \Uncanny_Automator\Recipe\Trig
 	public function hydrate_tokens( $trigger, $hook_args ) {
 		list( $license_id, $download_id, $order_id, $type ) = $hook_args;
 
-		return $this->get_item_helpers()->parse_common_token_values( $license_id, $download_id );
+		return $this->get_item_helpers()->parse_common_token_values( $license_id, $download_id, $order_id );
 	}
 }

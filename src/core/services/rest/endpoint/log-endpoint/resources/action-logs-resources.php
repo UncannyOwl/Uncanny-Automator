@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:disable Universal.Operators.DisallowStandalonePostIncrementDecrement.PostIncrementFound
 namespace Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources;
 
 use Uncanny_Automator\Resolver\Fields_Conditions_Resolver;
@@ -954,7 +954,7 @@ class Action_Logs_Resources {
 			} else {
 				$results_formatted[] = $this->resolve_action_item( $params, $actions_flattened, $action_flow_key );
 			}
-			++$item_index;
+			$item_index++;
 		}
 
 		// Handle legacy.

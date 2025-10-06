@@ -108,6 +108,10 @@ class EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD extends Trigger {
 		$license_id  = $hook_args[0];
 		$download_id = edd_software_licensing()->get_download_id( $license_id );
 
-		return $this->get_item_helpers()->parse_common_token_values( $license_id, $download_id );
+		// Get order ID from license
+		$license  = edd_software_licensing()->get_license( $license_id );
+		$order_id = $license ? $license->payment_id : null;
+
+		return $this->get_item_helpers()->parse_common_token_values( $license_id, $download_id, $order_id );
 	}
 }

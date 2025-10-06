@@ -59,6 +59,16 @@ class Edd_Sl_Helpers {
 				'tokenType' => 'text',
 			),
 			array(
+				'tokenId'   => 'PRICE_OPTION_ID',
+				'tokenName' => esc_html_x( 'Price option ID', 'EDD - Software Licensing', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'PRICE_OPTION_NAME',
+				'tokenName' => esc_html_x( 'Price option name', 'EDD - Software Licensing', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
 				'tokenId'   => 'DOWNLOAD_QTY',
 				'tokenName' => esc_html_x( 'Download quantity', 'EDD - Software Licensing', 'uncanny-automator' ),
 				'tokenType' => 'int',
@@ -162,10 +172,11 @@ class Edd_Sl_Helpers {
 	 *
 	 * @param int $license_id License ID
 	 * @param int $download_id Download ID
+	 * @param int $order_id Order ID (optional)
 	 *
 	 * @return array Token values
 	 */
-	public function parse_common_token_values( $license_id, $download_id ) {
+	public function parse_common_token_values( $license_id, $download_id, $order_id = null ) {
 		$license = edd_software_licensing()->get_license( $license_id );
 
 		// Return empty tokens if license doesn't exist
@@ -204,6 +215,10 @@ class Edd_Sl_Helpers {
 
 		$customer_tokens = $this->extract_customer_tokens( $customer );
 		$tokens          = array_merge( $tokens, $customer_tokens );
+
+		// Price option information
+		$price_option_tokens = $this->get_price_option_tokens( $download_id, $order_id );
+		$tokens              = array_merge( $tokens, $price_option_tokens );
 
 		return $tokens;
 	}
@@ -341,5 +356,48 @@ class Edd_Sl_Helpers {
 		$customer = new \EDD_Customer( $license->customer_id );
 
 		return $customer && $customer->user_id ? $customer->user_id : null;
+	}
+
+	/**
+	 * Get price option tokens for EDD Software Licensing
+	 *
+	 * @param int $download_id Download ID
+	 * @param int $order_id Order ID (optional)
+	 *
+	 * @return array Price option token values
+	 */
+	private function get_price_option_tokens( $download_id, $order_id = null ) {
+		$price_option_tokens = array(
+			'PRICE_OPTION_ID'   => '',
+			'PRICE_OPTION_NAME' => '',
+		);
+
+		// If no order ID provided, return empty tokens
+		if ( ! $order_id ) {
+			return $price_option_tokens;
+		}
+
+		// Get cart items from the order
+		$cart_items = edd_get_payment_meta_cart_details( $order_id );
+
+		if ( empty( $cart_items ) ) {
+			return $price_option_tokens;
+		}
+
+		// Find the matching cart item for this download
+		foreach ( $cart_items as $item ) {
+			if ( absint( $item['id'] ) === absint( $download_id ) ) {
+				// Get price option ID from cart item
+				$price_option_id = isset( $item['item_number']['options']['price_id'] ) ? $item['item_number']['options']['price_id'] : null;
+
+				if ( null !== $price_option_id ) {
+					$price_option_tokens['PRICE_OPTION_ID']   = (string) $price_option_id;
+					$price_option_tokens['PRICE_OPTION_NAME'] = edd_get_price_option_name( $download_id, $price_option_id );
+				}
+				break;
+			}
+		}
+
+		return $price_option_tokens;
 	}
 }

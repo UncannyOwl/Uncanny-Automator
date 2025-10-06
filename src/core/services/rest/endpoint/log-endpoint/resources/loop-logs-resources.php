@@ -1,6 +1,7 @@
 <?php
 namespace Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources;
 
+use Uncanny_Automator\Automator_Compression;
 use Uncanny_Automator\Automator_Status;
 use Uncanny_Automator\Resolver\Fields_Resolver;
 use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Factory\Automator_Factory;
@@ -41,7 +42,6 @@ class Loop_Logs_Resources {
 		$this->utils             = $utils;
 		$this->loop_logs_queries = $loop_logs_queries;
 		$this->automator_factory = $automator_factory;
-
 	}
 
 	/**
@@ -73,7 +73,6 @@ class Loop_Logs_Resources {
 		}
 
 		return $fields_item;
-
 	}
 
 	/**
@@ -237,7 +236,6 @@ class Loop_Logs_Resources {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -310,7 +308,6 @@ class Loop_Logs_Resources {
 
 		// Individual action summary.
 		return $flow_items;
-
 	}
 
 	/**
@@ -337,7 +334,6 @@ class Loop_Logs_Resources {
 		}
 
 		return $statuses;
-
 	}
 
 	/**
@@ -360,7 +356,7 @@ class Loop_Logs_Resources {
 		// Retrieve the distinct statuses collection for the current action.
 		$distinct_statuses = $this->loop_logs_queries->get_distinct_statuses( $action_id, $params );
 
-		$type = isset( $loop['iterable_expression']['type'] ) ? $loop['iterable_expression']['type'] : null;
+		$type = $loop['iterable_expression']['type'] ?? null;
 
 		$statuses = array();
 
@@ -389,7 +385,7 @@ class Loop_Logs_Resources {
 					$identifier = sprintf( '#%d %s', $entity_id, get_userdata( $entity_id )->display_name );
 				}
 
-				$properties = self::build_loop_properties_from_entry( $entry );
+				$properties = $this->build_loop_properties_from_entry( $entry );
 
 				if ( 'token' === $type ) {
 
@@ -422,7 +418,6 @@ class Loop_Logs_Resources {
 		}
 
 		return $statuses;
-
 	}
 
 	/**
@@ -445,10 +440,12 @@ class Loop_Logs_Resources {
 	 *
 	 * @return array
 	 */
-	public static function build_loop_properties_from_entry( $entry ) {
-		$action_data = maybe_unserialize( $entry['action_data'] );
+	public function build_loop_properties_from_entry( $entry ) {
 
-		$action_status = $action_data['action_data']['completed'] ?? Automator_Status::SKIPPED;
+		$action_data = $this->get_action_data( $entry );
+
+		// Use the entry status instead of action data.
+		$action_status = $entry['status'] ?? Automator_Status::SKIPPED;
 
 		// Do not add properties for skipped actions.
 		if ( Automator_Status::SKIPPED === absint( $action_status ) ) {
@@ -457,7 +454,7 @@ class Loop_Logs_Resources {
 
 		$fields = self::get_loop_action_fields_by_entry( $entry );
 
-		$parsed_data = isset( $action_data['action_data']['maybe_parsed'] ) ? $action_data['action_data']['maybe_parsed'] : array();
+		$parsed_data = $this->create_parse_data( $action_data, $entry );
 
 		$properties = array();
 		if ( ! empty( $fields['options'] ) ) {
@@ -488,6 +485,53 @@ class Loop_Logs_Resources {
 		}
 
 		return $properties;
+	}
+	/**
+	 * Create parse data.
+	 *
+	 * @param mixed $action_data The data.
+	 * @param mixed $entry The entry.
+	 * @return mixed
+	 */
+	private function create_parse_data( $action_data, $entry ) {
+
+		// Backwards compatibility.
+		if ( isset( $action_data['action_data']['maybe_parsed'] ) ) {
+			return $action_data['action_data']['maybe_parsed'];
+		}
+
+		// New schema.
+		if ( isset( $entry['tokens_snapshot'] ) ) {
+			$payload              = maybe_unserialize( $entry['tokens_snapshot'] );
+			$uncompressed_payload = Automator_Compression::maybe_decompress_string( $payload );
+			return maybe_unserialize( $uncompressed_payload );
+		}
+
+		return array();
+	}
+
+	/**
+	 * Retrieve the action data.
+	 *
+	 * @param array $entry
+	 *
+	 * @return array
+	 */
+	private function get_action_data( $entry ) {
+
+		$action_data = maybe_unserialize( $entry['action_data'] );
+
+		// Fallback to latest schema for empty result. Otherwise, if the data is there, it will be in the old format.
+		if ( empty( $action_data ) ) {
+			$action_data_id = isset( $entry['action_data_id'] ) ? absint( $entry['action_data_id'] ) : 0; // Prevent undefined index and invalid IDs.
+			if ( $action_data_id > 0 ) {
+				$action_data = $this->loop_logs_queries->get_action_data( $action_data_id );
+			} else {
+				$action_data = array();
+			}
+		}
+
+		return (array) $action_data;
 	}
 
 	/**
@@ -551,30 +595,29 @@ class Loop_Logs_Resources {
 	/**
 	 * Extracts the value from loopable xml text.
 	 *
-	 * @param mixed[] $array
+	 * @param mixed[] $xml_item_array
 	 *
 	 * @return string
 	 */
-	public static function extract_xml_text( $array ) {
+	public static function extract_xml_text( $xml_item_array ) {
 
-		if ( ! is_array( $array ) ) {
+		if ( ! is_array( $xml_item_array ) ) {
 			return false;
 		}
 
-		if ( 1 !== count( $array ) ) {
+		if ( 1 !== count( $xml_item_array ) ) {
 			return false;
 		}
 
-		if ( ! isset( $array[0]['_loopable_xml_text'] ) ) {
+		if ( ! isset( $xml_item_array[0]['_loopable_xml_text'] ) ) {
 			return false;
 		}
 
-		if ( ! is_string( $array[0]['_loopable_xml_text'] ) ) {
+		if ( ! is_string( $xml_item_array[0]['_loopable_xml_text'] ) ) {
 			return false;
 		}
 
-		return $array[0]['_loopable_xml_text'] ?? '';
-
+		return $xml_item_array[0]['_loopable_xml_text'] ?? '';
 	}
 
 	/**
@@ -612,7 +655,6 @@ class Loop_Logs_Resources {
 		}
 
 		return '';
-
 	}
 
 	/**
@@ -633,7 +675,6 @@ class Loop_Logs_Resources {
 		}
 
 		return $template;
-
 	}
 
 	/**
@@ -670,7 +711,6 @@ class Loop_Logs_Resources {
 		}
 
 		return $fields_item;
-
 	}
 
 	/**
@@ -701,7 +741,5 @@ class Loop_Logs_Resources {
 		}
 
 		return $conditions_restructured;
-
 	}
-
 }

@@ -64,7 +64,7 @@ class SLACK_SENDMESSAGE extends \Uncanny_Automator\Recipe\App_Action {
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 		$message = array(
 			'channel' => $this->get_parsed_meta_value( 'SLACKCHANNEL' ),
-			'text'    => $this->get_parsed_meta_value( 'SLACKMESSAGE' ),
+			'text'    => Automator()->parse->text( $action_data['meta']['SLACKMESSAGE'] ?? '', $recipe_id, $user_id, $args ),
 		);
 
 		$bot_name = $this->get_parsed_meta_value( 'BOT_NAME' );
