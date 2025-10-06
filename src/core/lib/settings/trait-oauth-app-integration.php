@@ -117,7 +117,7 @@ trait OAuth_App_Integration {
 
 			// Check if authorize_account method exists for account verification
 			if ( method_exists( $this, 'authorize_account' ) ) {
-				$response = $this->authorize_account( $credentials, $response );
+				$response = $this->authorize_account( $response, $credentials );
 			}
 
 			// Register success alert.

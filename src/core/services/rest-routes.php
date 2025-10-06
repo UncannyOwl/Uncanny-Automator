@@ -167,6 +167,9 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 				// Logs Factory is a class for retrieving various logs objects.
 				$logs_factory = new Logs_Factory( $recipe_logs_resources, $trigger_logs_resources, $action_logs_resources, $loops_logs_resources );
 
+				// Allow for customizing the logs factory.
+				$logs_factory = apply_filters( 'automator_rest_routes_log_endpoint_logs_factory', $logs_factory );
+
 				// The main endpoint controller.
 				$log_endpoint = new Log_Endpoint( $automator_factory, $logs_factory );
 

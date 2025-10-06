@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 6.9.0\n"
+"Project-Id-Version: Uncanny Automator 6.9.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-18T22:06:18+00:00\n"
+"POT-Creation-Date: 2025-10-06T18:55:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -3031,7 +3031,7 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:288
 #: src/core/admin/class-admin-menu.php:289
-#: src/core/admin/class-admin-menu.php:1772
+#: src/core/admin/class-admin-menu.php:1773
 #: src/core/views/admin-integrations/archive/search.php:20
 msgid "All integrations"
 msgstr ""
@@ -3545,7 +3545,7 @@ msgstr ""
 msgid "Ready-to-use integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1773
+#: src/core/admin/class-admin-menu.php:1774
 msgid "Put your WordPress site on autopilot"
 msgstr ""
 
@@ -7667,11 +7667,11 @@ msgctxt "API error message"
 msgid "This action may only be used in an Automator action context."
 msgstr ""
 
-#: src/core/lib/class-recipe-template-library.php:249
+#: src/core/lib/class-recipe-template-library.php:250
 msgid "Automator Pro includes conditions, delays and loops, thousands of additional triggers, actions and tokens, and unlimited app credits for app integrations."
 msgstr ""
 
-#: src/core/lib/class-recipe-template-library.php:279
+#: src/core/lib/class-recipe-template-library.php:280
 msgid "The Elite Integrations Addon for Uncanny Automator adds additional integrations with enterprise-level software."
 msgstr ""
 
@@ -9315,14 +9315,18 @@ msgid "Built-in"
 msgstr ""
 
 #: src/core/views/admin-integrations/archive/integration-item.php:87
-msgid "Addon"
+msgid "3rd party"
 msgstr ""
 
 #: src/core/views/admin-integrations/archive/integration-item.php:95
+msgid "Addon"
+msgstr ""
+
+#: src/core/views/admin-integrations/archive/integration-item.php:103
 msgid "Installed"
 msgstr ""
 
-#: src/core/views/admin-integrations/archive/integration-item.php:116
+#: src/core/views/admin-integrations/archive/integration-item.php:124
 msgid "Requires Uncanny Automator Pro"
 msgstr ""
 
@@ -17578,95 +17582,105 @@ msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:63
 msgctxt "EDD - Software Licensing"
-msgid "Download quantity"
+msgid "Price option ID"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:68
 msgctxt "EDD - Software Licensing"
-msgid "Download subtotal"
+msgid "Price option name"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:73
 msgctxt "EDD - Software Licensing"
-msgid "Download tax"
+msgid "Download quantity"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:78
 msgctxt "EDD - Software Licensing"
-msgid "Download price"
+msgid "Download subtotal"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:83
 msgctxt "EDD - Software Licensing"
-msgid "License key"
+msgid "Download tax"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:88
 msgctxt "EDD - Software Licensing"
-msgid "License purchase date"
+msgid "Download price"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:93
 msgctxt "EDD - Software Licensing"
-msgid "License expiration date"
+msgid "License key"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:98
 msgctxt "EDD - Software Licensing"
-msgid "License term"
+msgid "License purchase date"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:103
 msgctxt "EDD - Software Licensing"
+msgid "License expiration date"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:108
+msgctxt "EDD - Software Licensing"
+msgid "License term"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:113
+msgctxt "EDD - Software Licensing"
 msgid "License activation limit"
-msgstr ""
-
-#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:109
-msgctxt "EDD - Software Licensing"
-msgid "Customer ID"
-msgstr ""
-
-#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:114
-msgctxt "EDD - Software Licensing"
-msgid "Customer email"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:119
 msgctxt "EDD - Software Licensing"
-msgid "Customer first name"
+msgid "Customer ID"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:124
 msgctxt "EDD - Software Licensing"
-msgid "Customer last name"
+msgid "Customer email"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:129
 msgctxt "EDD - Software Licensing"
-msgid "Customer full name"
+msgid "Customer first name"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:134
 msgctxt "EDD - Software Licensing"
-msgid "Customer address"
+msgid "Customer last name"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:139
 msgctxt "EDD - Software Licensing"
-msgid "Customer city"
+msgid "Customer full name"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:144
 msgctxt "EDD - Software Licensing"
-msgid "Customer state"
+msgid "Customer address"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:149
 msgctxt "EDD - Software Licensing"
-msgid "Customer country"
+msgid "Customer city"
 msgstr ""
 
 #: src/integrations/edd-sl/helpers/edd-sl-helpers.php:154
+msgctxt "EDD - Software Licensing"
+msgid "Customer state"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:159
+msgctxt "EDD - Software Licensing"
+msgid "Customer country"
+msgstr ""
+
+#: src/integrations/edd-sl/helpers/edd-sl-helpers.php:164
 msgctxt "EDD - Software Licensing"
 msgid "Customer ZIP code"
 msgstr ""

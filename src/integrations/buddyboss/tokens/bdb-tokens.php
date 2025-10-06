@@ -240,7 +240,7 @@ class Bdb_Tokens {
 
 					foreach ( $trigger_data as $trigger ) {
 
-						$token_value = $trigger['meta']['BDBUSERS'];
+						$token_value = $trigger['meta']['BDBUSERS'] ?? '';
 
 						$value = ( intval( $token_value ) === - 1 ) ? $user_id : $token_value;
 

@@ -608,8 +608,11 @@ class Notion_Helpers {
 				// Extract the field ID and type.
 				list ( $notion, $field, $field_id, $type ) = $split;
 
-				// Parse the value.
-				$value = Automator()->parse->text( $value, $recipe_id, $args, $parsed );
+				$value = is_array( $value )
+					// Skip array values (like people, multi_select) - they don't need parsing.
+					? $value 
+					// Parse string and other scalar values.
+					:  Automator()->parse->text( $value, $recipe_id, $args, $parsed );
 
 				$fields_id_value[ $field_id ] = array(
 					'type'  => $type,

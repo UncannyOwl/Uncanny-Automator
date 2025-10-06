@@ -12,7 +12,7 @@ namespace Uncanny_Automator;
 <?php
 
 // Check if the integration has tags
-$has_tags = $integration->is_pro || $integration->is_built_in || $integration->is_installed || $integration->is_addon || $integration->is_plus;
+$has_tags = $integration->is_pro || $integration->is_built_in || $integration->is_installed || $integration->is_addon || $integration->is_plus || $integration->is_third_party;
 
 // Check if the integration has description
 $has_description = ! empty( $integration->short_description );
@@ -77,6 +77,14 @@ if ( isset( $integration->external_permalink ) && ! empty( $integration->externa
 
 					<div class="uap-integrations-collections-integration__tag uap-integrations-collections-integration__tag-built-in">
 						<?php esc_html_e( 'Built-in', 'uncanny-automator' ); ?>
+					</div>
+
+				<?php } ?>
+
+				<?php if ( $integration->is_third_party ) { ?>
+
+					<div class="uap-integrations-collections-integration__tag uap-integrations-collections-integration__tag-third-party">
+						<?php esc_html_e( '3rd party', 'uncanny-automator' ); ?>
 					</div>
 
 				<?php } ?>

@@ -50,12 +50,12 @@ class Zoom_Settings extends App_Integration_Settings {
 	/**
 	 * Handle authorization flow ( registered options have been saved ).
 	 *
-	 * @param array $data
 	 * @param array $response
+	 * @param array $data
 	 *
 	 * @return array
 	 */
-	public function authorize_account( $data, $response ) {
+	public function authorize_account( $response, $data ) {
 		try {
 			// Clear any existing data.
 			$this->helpers->delete_account_info();

@@ -80,7 +80,6 @@ class Loop_Logs_Queries {
 		);
 
 		return (array) $results;
-
 	}
 
 	/**
@@ -136,7 +135,33 @@ class Loop_Logs_Queries {
 		);
 
 		return (array) $results;
-
 	}
 
+	/**
+	 * Retrieve the action data.
+	 *
+	 * @param int $id The primary key ID in the deduplicated data table.
+	 *
+	 * @return array The unserialized action data array. Empty array if not found or on error.
+	 */
+	public function get_action_data( $id ) {
+
+		$id = absint( $id );
+
+		if ( $id <= 0 ) {
+			return array();
+		}
+
+		$results = $this->db->get_var(
+			$this->db->prepare(
+				"SELECT data as `action_data` FROM {$this->db->prefix}uap_loop_entries_items_data WHERE id = %d",
+				$id
+			)
+		);
+
+		// maybe_unserialize returns false for invalid/empty serialized data. Normalize to empty array.
+		$unserialized = maybe_unserialize( $results );
+
+		return is_array( $unserialized ) ? $unserialized : array();
+	}
 }
