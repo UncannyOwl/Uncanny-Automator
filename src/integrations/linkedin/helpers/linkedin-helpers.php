@@ -109,6 +109,9 @@ class Linkedin_Helpers {
 		$tokens['expires_on']               = strtotime( current_time( 'mysql' ) ) + $tokens['expires_in'];
 		$tokens['refresh_token_expires_on'] = strtotime( current_time( 'mysql' ) ) + $tokens['refresh_token_expires_in'];
 
+		// Delete any credentials from the database on reconnect to avoid conflicts.
+		$this->remove_credentials();
+
 		automator_update_option( self::LINKEDIN_CLIENT, $tokens, false );
 
 		$this->set_connected_user( $this->get_client() );
@@ -126,8 +129,9 @@ class Linkedin_Helpers {
 	 * @return false|mixed
 	 */
 	public function get_client() {
-
-		return automator_get_option( self::LINKEDIN_CLIENT );
+		$default = false;
+		$force   = true;
+		return automator_get_option( self::LINKEDIN_CLIENT, $default, $force );
 	}
 
 	/**
@@ -328,17 +332,27 @@ class Linkedin_Helpers {
 	}
 
 	/**
+	 * Remove credentials.
+	 *
+	 * @return void
+	 */
+	public function remove_credentials() {
+
+		automator_delete_option( self::LINKEDIN_CLIENT );
+		automator_delete_option( self::LINKEDIN_CONNECTED_USER );
+
+		delete_transient( 'automator_linkedin_pages' );
+
+	}
+
+	/**
 	 * @return void
 	 */
 	public function disconnect() {
 
 		$this->verify_access( automator_filter_input( 'nonce' ) );
 
-		automator_delete_option( self::LINKEDIN_CLIENT );
-
-		automator_delete_option( self::LINKEDIN_CONNECTED_USER );
-
-		delete_transient( 'automator_linkedin_pages' );
+		$this->remove_credentials();
 
 		$this->redirect(
 			$this->get_settings_url(),

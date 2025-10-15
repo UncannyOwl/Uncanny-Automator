@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.3
 Requires PHP: 7.3
-Stable tag: 6.9.0.1
+Stable tag: 6.9.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -405,6 +405,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 6.9.0.2 [2025-10-15] =
+
+**Fixed:**
+
+* LinkedIn - Some users were seeing LinkedIn as not connected even after a successful connection was established
+
 = 6.9.0.1 [2025-10-06] =
 
 **New Tokens:**
@@ -419,7 +425,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 **Under the hood:**
 
 * App Integration framework - We gave the params a quick spa day to normalize things—now everyone's playing by the same rules #6220
-* Added a tagging system so third-party integrations can finally feel seen #6253
+* Added third-party integrations to the Integrations screen #6253
 * Companion code for Loops table in Automator Pro - Packed a little helper kit to support Loops in Pro—teamwork makes the tables work #6074
 
 = 6.9.0 [2025-09-18] =
