@@ -1,149 +1,67 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Twitter;
 
 /**
  * Class TWITTER_POSTSTATUS
  *
  * @package Uncanny_Automator
+ *
+ * @property Twitter_App_Helpers $helpers
+ * @property Twitter_Api_Caller $api
  */
-class TWITTER_POSTSTATUS {
+class TWITTER_POSTSTATUS extends \Uncanny_Automator\Recipe\App_Action {
+
 	/**
-	 * Integration code
+	 * Setup Action.
 	 *
-	 * @var string
+	 * @return void
 	 */
-	public static $integration = 'TWITTER';
-
-	/**
-	 *
-	 * @var string
-	 */
-	private $action_code;
-
-	/**
-	 *
-	 * @var string
-	 */
-	private $action_meta;
-
-	public $functions;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'TWITTERPOSTSTATUS';
-		$this->action_meta = 'TWITTERSTATUSCONTENT';
-		$this->functions   = new Twitter_Functions();
-		$this->define_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object.
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/twitter/' ),
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			// translators: 1: Tweet content
-			'sentence'              => sprintf( esc_html__( 'Post {{a tweet:%1$s}} to X/Twitter', 'uncanny-automator' ), $this->action_meta ),
-			// translators: 1: Tweet content
-			'select_option_name'    => esc_html__( 'Post {{a tweet}} to X/Twitter', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'is_deprecated'         => true,
-			'requires_user'         => false,
-			'execution_function'    => array( $this, 'post_status' ),
-			'options_group'         => array(
-				$this->action_meta => array(
-					$this->functions->textarea_field(
-						'TWITTERSTATUSCONTENT',
-						esc_attr__( 'Status', 'uncanny-automator' ),
-						true,
-						'textarea',
-						'',
-						true,
-						esc_attr__( 'Messages posted to X/Twitter have a 280 character limit.', 'uncanny-automator' ),
-						esc_html__( 'Enter the message', 'uncanny-automator' ),
-						278
-					),
-				),
-			),
-			'background_processing' => true,
+	protected function setup_action() {
+		$this->set_integration( 'TWITTER' );
+		$this->set_action_code( 'TWITTERPOSTSTATUS' );
+		$this->set_action_meta( 'TWITTERSTATUSCONTENT' );
+		$this->set_is_pro( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/twitter/' ) );
+		$this->set_requires_user( false );
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s is the tweet content
+				esc_attr_x( 'Post {{a tweet:%1$s}} to X/Twitter', 'Twitter', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
 		);
-
-		Automator()->register->action( $action );
+		$this->set_readable_sentence( esc_attr_x( 'Post {{a tweet}} to X/Twitter', 'Twitter', 'uncanny-automator' ) );
+		$this->set_background_processing( true );
 	}
 
 	/**
-	 * Action validation function.
+	 * Define the action options.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
-	public function post_status( $user_id, $action_data, $recipe_id, $args ) {
-
-		$status = Automator()->parse->text( $action_data['meta']['TWITTERSTATUSCONTENT'], $recipe_id, $user_id, $args );
-
-		try {
-
-			$response = $this->statuses_update( $status );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-			return;
-
-		} catch ( \Exception $e ) {
-			$error_msg                           = $e->getMessage();
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_msg );
-
-			return;
-		}
+	public function options() {
+		return array(
+			$this->helpers->get_recipe_status_config( $this->get_action_meta() ),
+		);
 	}
 
 	/**
-	 * Send data to Automator API.
+	 * Process the Twitter action.
 	 *
-	 * @param string $status
+	 * @param int    $user_id
+	 * @param array  $action_data
+	 * @param int    $recipe_id
+	 * @param array  $args
+	 * @param array  $parsed
 	 *
-	 * @return mixed
+	 * @return bool
+	 * @throws \Exception When the action fails.
 	 */
-	public function statuses_update( $status, $media_id = '' ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$status   = sanitize_textarea_field( $parsed[ $this->get_action_meta() ] );
+		$response = $this->api->statuses_update( $status, '', $action_data );
 
-		// Get twitter credentials.
-		$request_body = $this->functions->get_client();
-
-		$url = AUTOMATOR_API_URL . 'v2/twitter';
-
-		$request_body['action']    = 'twitter_statuses_update';
-		$request_body['status']    = $status;
-		$request_body['media_ids'] = $media_id;
-
-		$args         = array();
-		$args['body'] = $request_body;
-
-		$response = wp_remote_post( $url, $args );
-
-		if ( is_array( $response ) && ! is_wp_error( $response ) ) {
-			$body = json_decode( wp_remote_retrieve_body( $response ) );
-			if ( ! isset( $body->errors ) ) {
-				return $body;
-			} else {
-				$error_msg = '';
-
-				foreach ( $body->errors as $error ) {
-					$error_msg .= $error->code . ': ' . $error->message . PHP_EOL;
-				}
-
-				throw new \Exception( esc_html( $error_msg ) );
-			}
-		} else {
-			$error_msg = $response->get_error_message();
-			throw new \Exception( esc_html( $error_msg ) );
-		}
+		return true;
 	}
 }

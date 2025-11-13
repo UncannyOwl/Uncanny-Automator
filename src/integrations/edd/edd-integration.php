@@ -46,10 +46,6 @@ class Edd_Integration extends Integration {
 		new EDD_ORDERREFUNDED( $this->helpers );
 		new EDD_PRODUCTPURCHASE( $this->helpers );
 		new EDD_PRODUCTPURCHASEWITHPRICE( $this->helpers );
-		new EDD_USER_SUBSCRIBES_TO_DOWNLOAD( $this->helpers );
-
-		//actions
-		new EDD_CANCEL_USERS_SUBSCRIPTION( $this->helpers );
 
 		// Register AJAX handlers
 		add_action( 'wp_ajax_automator_edd_price_options_handler', array( $this->helpers, 'get_download_price_options_ajax_handler' ) );

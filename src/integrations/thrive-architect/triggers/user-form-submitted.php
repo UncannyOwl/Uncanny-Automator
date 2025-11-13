@@ -26,18 +26,10 @@ class USER_FORM_SUBMITTED extends FORM_SUBMITTED {
 		// The number of arguments that the action hook accepts.
 		$this->set_action_args_count( 1 );
 
-		$this->set_sentence(
-			sprintf(
-				// translators: %1$s: Form name
-				esc_html_x( 'A user submits a {{form:%1$s}}', 'Thrive Architect', 'uncanny-automator' ),
-				$this->get_trigger_meta()
-			)
-		);
+		// translators: %1$s: Form name
+		$this->set_sentence( sprintf( esc_html_x( 'A user submits a {{form:%1$s}}', 'Thrive Architect', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 
-		$this->set_readable_sentence(
-			/* Translators: Trigger sentence */
-			esc_html_x( 'A user submits a {{form}}', 'Thrive Architect', 'uncanny-automator' )
-		);
+		$this->set_readable_sentence( esc_html_x( 'A user submits a {{form}}', 'Thrive Architect', 'uncanny-automator' ) );
 
 		$this->set_helper( new Thrive_Architect_Helpers() );
 	}

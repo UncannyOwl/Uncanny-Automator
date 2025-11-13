@@ -45,10 +45,10 @@ class AMELIA_APPOINTMENT_BOOKED {
 		$this->set_is_login_required( false );
 
 		/* Translators: Trigger sentence */
-		$this->set_sentence( esc_html__( 'An appointment is booked', 'uncanny-automator' ) );
+		$this->set_sentence( esc_html_x( 'An appointment is booked', 'Amelia Booking', 'uncanny-automator' ) );
 
 		/* Translators: Trigger sentence */
-		$this->set_readable_sentence( esc_html__( 'An appointment is booked', 'uncanny-automator' ) ); // Non-active state sentence to show
+		$this->set_readable_sentence( esc_html_x( 'An appointment is booked', 'Amelia Booking', 'uncanny-automator' ) ); // Non-active state sentence to show
 
 		$this->add_action( 'AmeliaBookingAddedBeforeNotify' ); // which do_action() fires this trigger
 

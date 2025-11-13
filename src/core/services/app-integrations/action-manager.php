@@ -13,7 +13,7 @@ use Uncanny_Automator\Automator_Helpers_Recipe;
  * Class Action_Manager
  *
  * Handles all settings actions via REST API
- * Handles OAuth callbacks via admin-post
+ * Handles OAuth callbacks via settings page load hook: load-uo-recipe_page_uncanny-automator-config
  * Handles webhook requests from external services
  *
  * @package Uncanny_Automator\Services\App_Integrations
@@ -48,10 +48,10 @@ final class Action_Manager {
 			array( $this, 'register_routes' )
 		);
 
-		// Admin-post handler for OAuth callbacks maintaining user session.
+		// OAuth callback handler on settings page.
 		add_action(
-			'admin_post_' . self::OAUTH_CALLBACK_ACTION,
-			array( $this, 'handle_admin_post_oauth_callback' )
+			'load-uo-recipe_page_uncanny-automator-config',
+			array( $this, 'maybe_handle_oauth_callback' )
 		);
 	}
 
@@ -195,24 +195,31 @@ final class Action_Manager {
 	}
 
 	/**
-	 * Handle OAuth callback via admin-post (maintains user context)
+	 * Maybe handle OAuth callback via load hook.
 	 *
 	 * @return void
 	 */
-	public function handle_admin_post_oauth_callback() {
+	public function maybe_handle_oauth_callback() {
+
+		// Early bail if not our OAuth callback request.
+		// Note: While the callback URL is generated with the parameter value set to '1',
+		// any truthy value will trigger OAuth callback processing.
+		if ( ! automator_filter_has_var( self::OAUTH_CALLBACK_ACTION ) ) {
+			return;
+		}
 
 		// Check user capabilities / logged in status.
 		if ( ! $this->check_user_capabilities() ) {
 			wp_die( 'Invalid request', 'OAuth Error', array( 'response' => 401 ) );
 		}
 
-		// Check if the integration ID is valid
+		// Get the integration ID.
 		$integration_id = automator_filter_has_var( 'integration' )
 			? sanitize_text_field( automator_filter_input( 'integration' ) )
 			: null;
 
 		try {
-			// Get the integration instance via filter
+			// Get the integration instance via filter.
 			$integration = $this->get_integration_settings_instance( $integration_id );
 
 			// Check if integration has the process_oauth_authentication method.
@@ -221,7 +228,7 @@ final class Action_Manager {
 			// Process the OAuth authentication.
 			$result = $integration->process_oauth_authentication( $this );
 
-			// Redirect to success page or show success message
+			// Redirect to success page.
 			if ( isset( $result['redirect_url'] ) ) {
 				wp_safe_redirect( $result['redirect_url'] );
 				exit;
@@ -242,6 +249,7 @@ final class Action_Manager {
 	 * Handle webhook requests from external services.
 	 *
 	 * @param WP_REST_Request $request
+	 *
 	 * @return WP_REST_Response
 	 */
 	public function handle_webhook_request( WP_REST_Request $request ) {
@@ -391,19 +399,12 @@ final class Action_Manager {
 	}
 
 	/**
-	 * Get the OAuth callback URL
+	 * Get the OAuth callback parameter name
 	 *
-	 * @param string $integration_id
-	 * @return string The callback URL
+	 * @return string The OAuth callback parameter name
 	 */
-	public function get_oauth_callback_url( $integration_id ) {
-		return add_query_arg(
-			array(
-				'integration' => $integration_id,
-				'action'      => self::OAUTH_CALLBACK_ACTION,
-			),
-			admin_url( 'admin-post.php' )
-		);
+	public function get_oauth_callback_param() {
+		return self::OAUTH_CALLBACK_ACTION;
 	}
 
 	/**

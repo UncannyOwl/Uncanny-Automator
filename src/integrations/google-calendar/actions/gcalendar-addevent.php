@@ -2,105 +2,89 @@
 namespace Uncanny_Automator\Integrations\Google_Calendar;
 
 use DateTime;
-use Uncanny_Automator\Recipe\Action;
-use Uncanny_Automator\Recipe\Action_Tokens;
+use DateTimeZone;
+use Exception;
 
 /**
  * Class GCALENDAR_ADDEVENT
  *
+ * @property Google_Calendar_Helpers $helpers
+ * @property Google_Calendar_Api_Caller $api
+ *
  * @package Uncanny_Automator
  */
-class GCALENDAR_ADDEVENT extends Action {
+class GCALENDAR_ADDEVENT extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * The prefix for the action fields.
+	 * Meta key prefix.
 	 *
 	 * @var string
 	 */
-	const PREFIX = 'GCALENDAR_ADDEVENT';
-
-	/**
-	 * The helper.
-	 *
-	 * @var \Uncanny_Automator\Integrations\Google_Calendar\Google_Calendar_Helpers
-	 */
-	protected $helper;
+	private $prefix = 'GCALENDAR_ADDEVENT';
 
 	/**
 	 * Setup Action.
 	 *
-	 * @return void.
+	 * @return void
 	 */
 	protected function setup_action() {
-
-		/** @var \Uncanny_Automator\Integrations\Google_Calendar\Google_Calendar_Helpers $helper */
-		$this->helper = array_shift( $this->dependencies );
-
 		$this->set_integration( 'GOOGLE_CALENDAR' );
-
-		$this->set_action_code( self::PREFIX . '_CODE' );
-
-		$this->set_action_meta( self::PREFIX . '_META' );
-
+		$this->set_action_code( "{$this->prefix}_CODE" );
+		$this->set_action_meta( "{$this->prefix}_META" );
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/google-calendar/' ) );
-
 		$this->set_is_pro( false );
-
 		$this->set_requires_user( false );
-
 		$this->set_sentence(
 			sprintf(
-			/* translators: %1$s: Event title, %2$s: Calendar ID */
+				// translators: %1$s: Event title, %2$s: Calendar ID
 				esc_attr_x( 'Add {{an event:%1$s}} to {{a Google Calendar:%2$s}}', 'Google Calendar', 'uncanny-automator' ),
 				$this->get_action_meta(),
-				$this->get_formatted_code( 'calendar' ) . ':' . $this->get_action_meta()
+				"{$this->prefix}_calendar" . ':' . $this->get_action_meta()
 			)
 		);
-
 		$this->set_readable_sentence( esc_attr_x( 'Add {{an event}} to {{a Google Calendar}}', 'Google Calendar', 'uncanny-automator' ) );
-
 		$this->set_background_processing( true );
 
 		// Set action tokens for event information
 		$this->set_action_tokens(
 			array(
-				'EVENT_ID' => array(
+				'EVENT_ID'                => array(
 					'name' => esc_html_x( 'Event ID', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'text',
 				),
-				'EVENT_LINK' => array(
+				'EVENT_LINK'              => array(
 					'name' => esc_html_x( 'Event link', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'url',
 				),
-				'EVENT_START' => array(
+				'EVENT_START'             => array(
 					'name' => esc_html_x( 'Event start time', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'text',
 				),
-				'EVENT_END' => array(
+				'EVENT_END'               => array(
 					'name' => esc_html_x( 'Event end time', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'text',
 				),
-				'CALENDAR_ID' => array(
+				'CALENDAR_ID'             => array(
 					'name' => esc_html_x( 'Calendar ID', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'text',
 				),
-				'GOOGLE_CALENDAR_LINK' => array(
+				'GOOGLE_CALENDAR_LINK'    => array(
 					'name' => esc_html_x( 'Add to Google Calendar URL', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'url',
 				),
-				'GOOGLE_CALENDAR_ANCHOR' => array(
+				'GOOGLE_CALENDAR_ANCHOR'  => array(
 					'name' => esc_html_x( 'Add to Google Calendar anchor link', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'text',
 				),
-				'APPLE_CALENDAR_LINK' => array(
+				'APPLE_CALENDAR_LINK'     => array(
 					'name' => esc_html_x( 'Add to Apple Calendar URL', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'url',
 				),
-				'APPLE_CALENDAR_ANCHOR' => array(
+				'APPLE_CALENDAR_ANCHOR'   => array(
 					'name' => esc_html_x( 'Add to Apple Calendar anchor link', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'text',
 				),
-				'OUTLOOK_CALENDAR_LINK' => array(
+				'OUTLOOK_CALENDAR_LINK'   => array(
 					'name' => esc_html_x( 'Add to Outlook URL', 'Google Calendar', 'uncanny-automator' ),
 					'type' => 'url',
 				),
@@ -113,20 +97,8 @@ class GCALENDAR_ADDEVENT extends Action {
 					'type' => 'text',
 				),
 			),
-			$this->action_code
+			$this->get_action_code()
 		);
-	}
-
-	/**
-	 * Get formatted code.
-	 *
-	 * @param  string $option_code The option code.
-	 *
-	 * @return string The prefix underscore option code string.
-	 */
-	protected function get_formatted_code( $option_code = '' ) {
-
-		return sprintf( '%1$s_%2$s', self::PREFIX, $option_code );
 	}
 
 	/**
@@ -138,21 +110,10 @@ class GCALENDAR_ADDEVENT extends Action {
 
 		return array(
 			// Calendar list.
-			array(
-				'option_code'           => $this->get_formatted_code( 'calendar' ),
-				/* translators: Calendar field */
-				'label'                 => esc_attr_x( 'Calendar', 'Google Calendar', 'uncanny-automator' ),
-				'input_type'            => 'select',
-				'is_ajax'               => true,
-				'endpoint'              => 'automator_google_calendar_list_calendars_dropdown',
-				'required'              => true,
-				'supports_custom_value' => false,
-				'options_show_id'       => false,
-			),
+			$this->helpers->get_calendar_config( "{$this->prefix}_calendar" ),
 			// Summary.
 			array(
 				'option_code'           => $this->get_action_meta(),
-				/* translators: Calendar field */
 				'label'                 => esc_attr_x( 'Title', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'            => 'text',
 				'supports_custom_value' => true,
@@ -160,8 +121,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// Location.
 			array(
-				'option_code'           => $this->get_formatted_code( 'location' ),
-				/* translators: Calendar field */
+				'option_code'           => "{$this->prefix}_location",
 				'label'                 => esc_attr_x( 'Location', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'            => 'text',
 				'supports_custom_value' => true,
@@ -169,8 +129,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// Description.
 			array(
-				'option_code'           => $this->get_formatted_code( 'description' ),
-				/* translators: Calendar field */
+				'option_code'           => "{$this->prefix}_description",
 				'label'                 => esc_attr_x( 'Description', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'            => 'textarea',
 				'supports_custom_value' => true,
@@ -178,7 +137,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// Start date.
 			array(
-				'option_code'     => $this->get_formatted_code( 'start_date' ),
+				'option_code'     => "{$this->prefix}_start_date",
 				'label'           => esc_attr_x( 'Start date', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'      => 'date',
 				'supports_tokens' => true,
@@ -192,8 +151,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// Start time.
 			array(
-				'option_code'     => $this->get_formatted_code( 'start_time' ),
-				/* translators: Calendar field */
+				'option_code'     => "{$this->prefix}_start_time",
 				'label'           => esc_attr_x( 'Start time', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'      => 'time',
 				'supports_tokens' => true,
@@ -208,8 +166,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// End date.
 			array(
-				'option_code'     => $this->get_formatted_code( 'end_date' ),
-				/* translators: Calendar field */
+				'option_code'     => "{$this->prefix}_end_date",
 				'label'           => esc_attr_x( 'End date', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'      => 'date',
 				'supports_tokens' => true,
@@ -223,8 +180,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// End time.
 			array(
-				'option_code'     => $this->get_formatted_code( 'end_time' ),
-				/* translators: Calendar field */
+				'option_code'     => "{$this->prefix}_end_time",
 				'label'           => esc_attr_x( 'End time', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'      => 'time',
 				'supports_tokens' => true,
@@ -239,8 +195,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// Timezone.
 			array(
-				'option_code'   => $this->get_formatted_code( 'timezone' ),
-				/* translators: Calendar field */
+				'option_code'   => "{$this->prefix}_timezone",
 				'label'         => esc_attr_x( 'Timezone', 'Google Calendar', 'uncanny-automator' ),
 				'description'   => esc_attr_x( 'Select the timezone for this event. Leave blank to use the site default timezone.', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'    => 'select',
@@ -250,8 +205,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// Attendees.
 			array(
-				'option_code'           => $this->get_formatted_code( 'attendees' ),
-				/* translators: Calendar field */
+				'option_code'           => "{$this->prefix}_attendees",
 				'label'                 => esc_attr_x( 'Attendees', 'Google Calendar', 'uncanny-automator' ),
 				'description'           => esc_attr_x( 'Comma separated email addresses of the attendees', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'            => 'text',
@@ -260,16 +214,14 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// Email Notifications.
 			array(
-				'option_code'   => $this->get_formatted_code( 'notification_email' ),
-				/* translators: Calendar field */
+				'option_code'   => "{$this->prefix}_notification_email",
 				'label'         => esc_attr_x( 'Enable email notifications in Google Calendar', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'    => 'checkbox',
 				'default_value' => true,
 			),
 			// Notification time.
 			array(
-				'option_code'   => $this->get_formatted_code( 'notification_time_email' ),
-				/* translators: Calendar field */
+				'option_code'   => "{$this->prefix}_notification_time_email",
 				'label'         => esc_attr_x( 'Minutes before event to trigger email notification', 'Google Calendar', 'uncanny-automator' ),
 				'description'   => esc_attr_x( 'If no value is entered, the notification will fire 15 minutes before the event.', 'Google Calendar', 'uncanny-automator' ),
 				'placeholder'   => esc_attr_x( '15', 'Google Calendar', 'uncanny-automator' ),
@@ -279,15 +231,13 @@ class GCALENDAR_ADDEVENT extends Action {
 			),
 			// Popup Notifications.
 			array(
-				'option_code'   => $this->get_formatted_code( 'notification_popup' ),
-				/* translators: Calendar field */
+				'option_code'   => "{$this->prefix}_notification_popup",
 				'label'         => esc_attr_x( 'Enable popup notifications in Google Calendar', 'Google Calendar', 'uncanny-automator' ),
 				'input_type'    => 'checkbox',
 				'default_value' => true,
 			),
 			array(
-				'option_code'   => $this->get_formatted_code( 'notification_time_popup' ),
-				/* translators: Calendar field */
+				'option_code'   => "{$this->prefix}_notification_time_popup",
 				'label'         => esc_attr_x( 'Minutes before event to trigger popup notification', 'Google Calendar', 'uncanny-automator' ),
 				'description'   => esc_attr_x( 'If no value is entered, the notification will fire 15 minutes before the event.', 'Google Calendar', 'uncanny-automator' ),
 				'placeholder'   => esc_attr_x( '15', 'Google Calendar', 'uncanny-automator' ),
@@ -305,101 +255,84 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param array $action_data
 	 * @param int $recipe_id
 	 * @param array $args
-	 * @param $parsed
+	 * @param array $parsed
 	 *
-	 * @return void.
+	 * @return bool
+	 * @throws Exception If any fields are invalid or if the API request fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$calendar_id             = isset( $parsed[ $this->get_formatted_code( 'calendar' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'calendar' ) ] ) : 0;
-		$summary                 = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
-		$location                = isset( $parsed[ $this->get_formatted_code( 'location' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'location' ) ] ) : '';
-		$description             = isset( $parsed[ $this->get_formatted_code( 'description' ) ] ) ? sanitize_textarea_field( $parsed[ $this->get_formatted_code( 'description' ) ] ) : '';
-		$start_date              = isset( $parsed[ $this->get_formatted_code( 'start_date' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'start_date' ) ] ) : false;
-		$start_time              = isset( $parsed[ $this->get_formatted_code( 'start_time' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'start_time' ) ] ) : false;
-		$end_date                = isset( $parsed[ $this->get_formatted_code( 'end_date' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'end_date' ) ] ) : false;
-		$end_time                = isset( $parsed[ $this->get_formatted_code( 'end_time' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'end_time' ) ] ) : false;
-		$attendees               = isset( $parsed[ $this->get_formatted_code( 'attendees' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'attendees' ) ] ) : '';
-		$notification_email      = isset( $parsed[ $this->get_formatted_code( 'notification_email' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'notification_email' ) ] ) : 0;
-		$notification_popup      = isset( $parsed[ $this->get_formatted_code( 'notification_popup' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'notification_popup' ) ] ) : 0;
-		$notification_time_email = isset( $parsed[ $this->get_formatted_code( 'notification_time_email' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'notification_time_email' ) ] ) : 0;
-		$notification_time_popup = isset( $parsed[ $this->get_formatted_code( 'notification_time_popup' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'notification_time_popup' ) ] ) : 0;
-		$timezone                = isset( $parsed[ $this->get_formatted_code( 'timezone' ) ] ) ? sanitize_text_field( $parsed[ $this->get_formatted_code( 'timezone' ) ] ) : '';
+		$calendar_id             = sanitize_text_field( $parsed[ "{$this->prefix}_calendar" ] ?? 0 );
+		$summary                 = sanitize_text_field( $parsed[ $this->get_action_meta() ] ?? '' );
+		$location                = sanitize_text_field( $parsed[ "{$this->prefix}_location" ] ?? '' );
+		$description             = sanitize_textarea_field( $parsed[ "{$this->prefix}_description" ] ?? '' );
+		$start_date              = sanitize_text_field( $parsed[ "{$this->prefix}_start_date" ] ?? false );
+		$start_time              = sanitize_text_field( $parsed[ "{$this->prefix}_start_time" ] ?? false );
+		$end_date                = sanitize_text_field( $parsed[ "{$this->prefix}_end_date" ] ?? false );
+		$end_time                = sanitize_text_field( $parsed[ "{$this->prefix}_end_time" ] ?? false );
+		$attendees               = sanitize_text_field( $parsed[ "{$this->prefix}_attendees" ] ?? '' );
+		$notification_email      = sanitize_text_field( $parsed[ "{$this->prefix}_notification_email" ] ?? 0 );
+		$notification_popup      = sanitize_text_field( $parsed[ "{$this->prefix}_notification_popup" ] ?? 0 );
+		$notification_time_email = sanitize_text_field( $parsed[ "{$this->prefix}_notification_time_email" ] ?? 0 );
+		$notification_time_popup = sanitize_text_field( $parsed[ "{$this->prefix}_notification_time_popup" ] ?? 0 );
+		$timezone                = sanitize_text_field( $parsed[ "{$this->prefix}_timezone" ] ?? '' );
 
-		// Validate attendees email addresses if provided (before try block)
-		// NOTE: This is intentionally outside the try-catch block because:
-		// 1. The Uncanny Automator framework handles exceptions from process_action() at the abstract Action class level
-		// 2. Input validation should happen before main processing logic
-		// 3. Framework will catch exceptions, log errors, and complete action with errors properly
-		// 4. This separation keeps validation logic separate from API processing logic
+		// Validate attendees email addresses if provided.
 		if ( ! empty( $attendees ) ) {
 			$this->validate_attendee_emails( $attendees );
 		}
 
-		try {
+		// Create event body.
+		$body = array(
+			'action'                  => 'create_event',
+			'summary'                 => $summary,
+			'location'                => $location,
+			'calendar_id'             => $calendar_id,
+			'description'             => $description,
+			'start_date'              => $this->autoformat_date( $start_date ),
+			'start_time'              => $this->autoformat_time( $start_time ),
+			'end_date'                => $this->autoformat_date( $end_date ),
+			'end_time'                => $this->autoformat_time( $end_time ),
+			'attendees'               => str_replace( ' ', '', trim( $attendees ) ),
+			'notification_email'      => $notification_email,
+			'notification_popup'      => $notification_popup,
+			'notification_time_email' => $notification_time_email,
+			'notification_time_popup' => $notification_time_popup,
+			'timezone'                => ! empty( $timezone ) ? $timezone : apply_filters( 'automator_google_calendar_add_event_timezone', Automator()->get_timezone_string() ),
+			// Google Calendar endpoint is written so the date format can be changed from the Client.
+			'date_format'             => $this->get_date_format(),
+			'time_format'             => $this->get_time_format(),
+		);
 
-			$body = array(
-				'action'                  => 'create_event',
-				'access_token'            => $this->helper->get_client(),
-				'summary'                 => $summary,
-				'location'                => $location,
-				'calendar_id'             => $calendar_id,
-				'description'             => $description,
-				'start_date'              => $this->autoformat_date( $start_date ),
-				'start_time'              => $this->autoformat_time( $start_time ),
-				'end_date'                => $this->autoformat_date( $end_date ),
-				'end_time'                => $this->autoformat_time( $end_time ),
-				'attendees'               => str_replace( ' ', '', trim( $attendees ) ),
-				'notification_email'      => $notification_email,
-				'notification_popup'      => $notification_popup,
-				'notification_time_email' => $notification_time_email,
-				'notification_time_popup' => $notification_time_popup,
-				'timezone'                => ! empty( $timezone ) ? $timezone : apply_filters( 'automator_google_calendar_add_event_timezone', Automator()->get_timezone_string() ),
-				// Google Calendar endpoint is written so the date format can be changed from the Client.
-				'date_format'             => $this->get_date_format(),
-				'time_format'             => $this->get_time_format(),
+		$response = $this->api->api_request( $body, $action_data );
+
+		// Hydrate action tokens with event information
+		if ( ! empty( $response ) && ! empty( $response['data'] ) && ! empty( $response['data']['event'] ) ) {
+			$event_data = $response['data']['event'];
+
+			// Get formatted dates for calendar links
+			$start_datetime = $this->format_datetime_for_calendar( $start_date, $start_time );
+			$end_datetime   = $this->format_datetime_for_calendar( $end_date, $end_time );
+
+			$this->hydrate_tokens(
+				array(
+					'EVENT_ID'                => $event_data['id'] ?? '',
+					'EVENT_LINK'              => $event_data['htmlLink'] ?? '',
+					'EVENT_START'             => $event_data['start']['dateTime'] ?? $start_datetime,
+					'EVENT_END'               => $event_data['end']['dateTime'] ?? $end_datetime,
+					'CALENDAR_ID'             => $calendar_id,
+					'GOOGLE_CALENDAR_LINK'    => $this->generate_google_calendar_link( $summary, $start_datetime, $end_datetime, $description, $location ),
+					'APPLE_CALENDAR_LINK'     => $this->generate_apple_calendar_link( $summary, $start_datetime, $end_datetime, $description, $location ),
+					'OUTLOOK_CALENDAR_LINK'   => $this->generate_outlook_calendar_link( $summary, $start_datetime, $end_datetime, $description, $location ),
+					'COMBINED_CALENDAR_LINKS' => $this->generate_combined_calendar_links( $summary, $start_datetime, $end_datetime, $description, $location ),
+					'GOOGLE_CALENDAR_ANCHOR'  => $this->generate_google_calendar_anchor( $summary, $start_datetime, $end_datetime, $description, $location ),
+					'APPLE_CALENDAR_ANCHOR'   => $this->generate_apple_calendar_anchor( $summary, $start_datetime, $end_datetime, $description, $location ),
+					'OUTLOOK_CALENDAR_ANCHOR' => $this->generate_outlook_calendar_anchor( $summary, $start_datetime, $end_datetime, $description, $location ),
+				)
 			);
-
-			$response = $this->helper->api_call(
-				$body,
-				$action_data
-			);
-
-			// Hydrate action tokens with event information
-			if ( ! empty( $response ) && ! empty( $response['data'] ) && ! empty( $response['data']['event'] ) ) {
-				$event_data = $response['data']['event'];
-
-				// Get formatted dates for calendar links
-				$start_datetime = $this->format_datetime_for_calendar( $start_date, $start_time );
-				$end_datetime   = $this->format_datetime_for_calendar( $end_date, $end_time );
-
-				$this->hydrate_tokens(
-					array(
-						'EVENT_ID' => $event_data['id'] ?? '',
-						'EVENT_LINK' => $event_data['htmlLink'] ?? '',
-						'EVENT_START' => $event_data['start']['dateTime'] ?? $start_datetime,
-						'EVENT_END' => $event_data['end']['dateTime'] ?? $end_datetime,
-						'CALENDAR_ID' => $calendar_id,
-						'GOOGLE_CALENDAR_LINK' => $this->generate_google_calendar_link( $summary, $start_datetime, $end_datetime, $description, $location ),
-						'APPLE_CALENDAR_LINK' => $this->generate_apple_calendar_link( $summary, $start_datetime, $end_datetime, $description, $location ),
-						'OUTLOOK_CALENDAR_LINK' => $this->generate_outlook_calendar_link( $summary, $start_datetime, $end_datetime, $description, $location ),
-						'COMBINED_CALENDAR_LINKS' => $this->generate_combined_calendar_links( $summary, $start_datetime, $end_datetime, $description, $location ),
-						'GOOGLE_CALENDAR_ANCHOR' => $this->generate_google_calendar_anchor( $summary, $start_datetime, $end_datetime, $description, $location ),
-						'APPLE_CALENDAR_ANCHOR' => $this->generate_apple_calendar_anchor( $summary, $start_datetime, $end_datetime, $description, $location ),
-						'OUTLOOK_CALENDAR_ANCHOR' => $this->generate_outlook_calendar_anchor( $summary, $start_datetime, $end_datetime, $description, $location ),
-					)
-				);
-			}
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
 		}
+
+		return true;
 	}
 
 	/**
@@ -410,10 +343,10 @@ class GCALENDAR_ADDEVENT extends Action {
 	protected function autoformat_time( $time ) {
 
 		try {
-			$dt = new \DateTime( $time ); // Accept whatever date.
-		} catch ( \Exception $e ) {
+			$dt = new DateTime( $time ); // Accept whatever date.
+		} catch ( Exception $e ) {
 			// translators: %s: Invalid time that was provided
-			throw new \Exception(
+			throw new Exception(
 				sprintf(
 					esc_html_x( 'Error: Invalid time provided (%s)', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $time )
@@ -432,10 +365,10 @@ class GCALENDAR_ADDEVENT extends Action {
 	protected function autoformat_date( $date = '' ) {
 
 		try {
-			$dt = new \DateTime( $date ); // Accept whatever date.
-		} catch ( \Exception $e ) {
+			$dt = new DateTime( $date ); // Accept whatever date.
+		} catch ( Exception $e ) {
 			// translators: %s: Invalid date that was provided
-			throw new \Exception(
+			throw new Exception(
 				sprintf(
 					esc_html_x( 'Error: Invalid date provided (%s)', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $date )
@@ -452,7 +385,18 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @return string The date format. E.g. 'F j, Y'. Overridable with `automator_google_calendar_date_format`
 	 */
 	protected function get_date_format() {
-
+		/**
+		 * Filter the date format.
+		 *
+		 * @param string $date_format The date format.
+		 * @param GCALENDAR_ADDEVENT $this The current instance.
+		 *
+		 * @return string The date format.
+		 * @example
+		 * add_filter( 'automator_google_calendar_date_format', function ( $date_format, $this ) {
+		 *  return 'Y-m-d';
+		 * }, 10, 2 );
+		 */
 		return apply_filters( 'automator_google_calendar_date_format', get_option( 'date_format', 'F j, Y' ), $this );
 	}
 
@@ -462,7 +406,18 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @return string The date format. E.g. 'g:i a'. Overridable with `automator_google_calendar_time_format`
 	 */
 	protected function get_time_format() {
-
+		/**
+		 * Filter the time format.
+		 *
+		 * @param string $time_format The time format.
+		 * @param GCALENDAR_ADDEVENT $this The current instance.
+		 *
+		 * @return string The time format.
+		 * @example
+		 * add_filter( 'automator_google_calendar_time_format', function ( $time_format, $this ) {
+		 *  return 'H:i';
+		 * }, 10, 2 );
+		 */
 		return apply_filters( 'automator_google_calendar_time_format', get_option( 'time_format', 'g:i a' ), $this );
 	}
 
@@ -472,12 +427,12 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @return array
 	 */
 	private function get_timezone_options() {
-		$timezones = \DateTimeZone::listIdentifiers();
+		$timezones = DateTimeZone::listIdentifiers();
 		$options   = array();
 
 		// Add default option
 		$options[] = array(
-			'text' => esc_html_x( 'Use site default timezone', 'Google Calendar', 'uncanny-automator' ),
+			'text'  => esc_html_x( 'Use site default timezone', 'Google Calendar', 'uncanny-automator' ),
 			'value' => '',
 		);
 
@@ -499,8 +454,8 @@ class GCALENDAR_ADDEVENT extends Action {
 		foreach ( $grouped as $region => $cities ) {
 			// Add region header
 			$options[] = array(
-				'text' => '--- ' . $region . ' ---',
-				'value' => '',
+				'text'     => '--- ' . $region . ' ---',
+				'value'    => '',
 				'disabled' => true,
 			);
 
@@ -508,7 +463,7 @@ class GCALENDAR_ADDEVENT extends Action {
 			foreach ( $cities as $timezone => $city ) {
 				$offset    = $this->get_timezone_offset( $timezone );
 				$options[] = array(
-					'text' => $city . ' (' . $offset . ')',
+					'text'  => $city . ' (' . $offset . ')',
 					'value' => $timezone,
 				);
 			}
@@ -521,14 +476,15 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * Get timezone offset for display
 	 *
 	 * @param string $timezone
+	 *
 	 * @return string
 	 */
 	private function get_timezone_offset( $timezone ) {
 		try {
-			$dt     = new \DateTime( 'now', new \DateTimeZone( $timezone ) );
+			$dt     = new DateTime( 'now', new DateTimeZone( $timezone ) );
 			$offset = $dt->format( 'P' );
 			return $offset;
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			return '';
 		}
 	}
@@ -538,6 +494,7 @@ class GCALENDAR_ADDEVENT extends Action {
 	 *
 	 * @param string $date
 	 * @param string $time
+	 *
 	 * @return string
 	 */
 	private function format_datetime_for_calendar( $date, $time ) {
@@ -548,9 +505,9 @@ class GCALENDAR_ADDEVENT extends Action {
 		if ( empty( $time ) ) {
 			// All-day event
 			try {
-				$datetime = new \DateTime( $date );
+				$datetime = new DateTime( $date );
 				return $datetime->format( 'Y-m-d' );
-			} catch ( \Exception $e ) {
+			} catch ( Exception $e ) {
 				return '';
 			}
 		}
@@ -558,9 +515,9 @@ class GCALENDAR_ADDEVENT extends Action {
 		// Combine date and time
 		$datetime_string = $date . ' ' . $time;
 		try {
-			$datetime = new \DateTime( $datetime_string );
+			$datetime = new DateTime( $datetime_string );
 			return $datetime->format( 'Y-m-d\TH:i:s' );
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			return '';
 		}
 	}
@@ -573,21 +530,22 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param string $end_datetime
 	 * @param string $description
 	 * @param string $location
+	 *
 	 * @return string
 	 */
 	private function generate_google_calendar_link( $title, $start_datetime, $end_datetime, $description, $location ) {
 		$params = array(
 			'action' => 'TEMPLATE',
-			'text' => urlencode( $title ),
-			'dates' => urlencode( $start_datetime . '/' . $end_datetime ),
+			'text'   => rawurlencode( $title ),
+			'dates'  => rawurlencode( $start_datetime . '/' . $end_datetime ),
 		);
 
 		if ( ! empty( $description ) ) {
-			$params['details'] = urlencode( $description );
+			$params['details'] = rawurlencode( $description );
 		}
 
 		if ( ! empty( $location ) ) {
-			$params['location'] = urlencode( $location );
+			$params['location'] = rawurlencode( $location );
 		}
 
 		return 'https://calendar.google.com/calendar/render?' . http_build_query( $params );
@@ -601,6 +559,7 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param string $end_datetime
 	 * @param string $description
 	 * @param string $location
+	 *
 	 * @return string
 	 */
 	private function generate_apple_calendar_link( $title, $start_datetime, $end_datetime, $description, $location ) {
@@ -608,7 +567,7 @@ class GCALENDAR_ADDEVENT extends Action {
 		$ics_content = $this->generate_ics_content( $title, $start_datetime, $end_datetime, $description, $location );
 
 		// Use charset=utf-8 (with dash) and prefer %20 for spaces - EXACT same format as working anchor
-		$encoded_content = str_replace( '+', '%20', urlencode( $ics_content ) );
+		$encoded_content = str_replace( '+', '%20', rawurlencode( $ics_content ) );
 		return 'data:text/calendar;charset=utf-8,' . $encoded_content . '#.ics';
 	}
 
@@ -620,21 +579,22 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param string $end_datetime
 	 * @param string $description
 	 * @param string $location
+	 *
 	 * @return string
 	 */
 	private function generate_outlook_calendar_link( $title, $start_datetime, $end_datetime, $description, $location ) {
 		$params = array(
-			'subject' => urlencode( $title ),
-			'startdt' => urlencode( $start_datetime ),
-			'enddt' => urlencode( $end_datetime ),
+			'subject' => rawurlencode( $title ),
+			'startdt' => rawurlencode( $start_datetime ),
+			'enddt'   => rawurlencode( $end_datetime ),
 		);
 
 		if ( ! empty( $description ) ) {
-			$params['body'] = urlencode( $description );
+			$params['body'] = rawurlencode( $description );
 		}
 
 		if ( ! empty( $location ) ) {
-			$params['location'] = urlencode( $location );
+			$params['location'] = rawurlencode( $location );
 		}
 
 		return 'https://outlook.live.com/calendar/0/deeplink/compose?' . http_build_query( $params );
@@ -648,6 +608,7 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param string $end_datetime
 	 * @param string $description
 	 * @param string $location
+	 *
 	 * @return string
 	 */
 	private function generate_google_calendar_anchor( $title, $start_datetime, $end_datetime, $description, $location ) {
@@ -663,6 +624,7 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param string $end_datetime
 	 * @param string $description
 	 * @param string $location
+	 *
 	 * @return string
 	 */
 	private function generate_apple_calendar_anchor( $title, $start_datetime, $end_datetime, $description, $location ) {
@@ -678,6 +640,7 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param string $end_datetime
 	 * @param string $description
 	 * @param string $location
+	 *
 	 * @return string
 	 */
 	private function generate_outlook_calendar_anchor( $title, $start_datetime, $end_datetime, $description, $location ) {
@@ -693,6 +656,7 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param string $end_datetime
 	 * @param string $description
 	 * @param string $location
+	 *
 	 * @return string
 	 */
 	private function generate_combined_calendar_links( $title, $start_datetime, $end_datetime, $description, $location ) {
@@ -720,6 +684,7 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * @param string $end_datetime
 	 * @param string $description
 	 * @param string $location
+	 *
 	 * @return string
 	 */
 	private function generate_ics_content( $title, $start_datetime, $end_datetime, $description, $location ) {
@@ -734,23 +699,23 @@ class GCALENDAR_ADDEVENT extends Action {
 
 		if ( ! empty( $start_datetime ) ) {
 			try {
-				$datetime = new \DateTime( $start_datetime );
+				$datetime = new DateTime( $start_datetime );
 				$ics     .= "DTSTART:" . $datetime->format( 'Ymd\THis\Z' ) . "\r\n";
-			} catch ( \Exception $e ) {
+			} catch ( Exception $e ) {
 				// Skip this field if date parsing fails
 				// Log the error for debugging purposes
-				error_log( 'Google Calendar: Failed to parse start datetime: ' . $e->getMessage() );
+				automator_log( esc_html( $e->getMessage() ), 'Google Calendar: Failed to parse start datetime', false, 'gcalendar-addevent' );
 			}
 		}
 
 		if ( ! empty( $end_datetime ) ) {
 			try {
-				$datetime = new \DateTime( $end_datetime );
+				$datetime = new DateTime( $end_datetime );
 				$ics     .= "DTEND:" . $datetime->format( 'Ymd\THis\Z' ) . "\r\n";
-			} catch ( \Exception $e ) {
+			} catch ( Exception $e ) {
 				// Skip this field if date parsing fails
 				// Log the error for debugging purposes
-				error_log( 'Google Calendar: Failed to parse end datetime: ' . $e->getMessage() );
+				automator_log( esc_html( $e->getMessage() ), 'Google Calendar: Failed to parse end datetime', false, 'gcalendar-addevent' );
 			}
 		}
 
@@ -776,6 +741,7 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * Escape text for ICS format
 	 *
 	 * @param string $text
+	 *
 	 * @return string
 	 */
 	private function escape_ics_text( $text ) {
@@ -788,8 +754,9 @@ class GCALENDAR_ADDEVENT extends Action {
 	 * Validate attendee email addresses
 	 *
 	 * @param string $attendees Comma-separated list of email addresses
-	 * @throws \Exception If any email is invalid
+
 	 * @return void
+	 * @throws Exception If any email is invalid
 	 */
 	private function validate_attendee_emails( $attendees ) {
 		// Split by comma and clean up whitespace
@@ -818,7 +785,7 @@ class GCALENDAR_ADDEVENT extends Action {
 		if ( ! empty( $invalid_emails ) ) {
 			$invalid_list = implode( ', ', $invalid_emails );
 			// translators: %s: List of invalid email addresses
-			throw new \Exception(
+			throw new Exception(
 				sprintf(
 					esc_html_x( 'Invalid email address(es) in attendees field: %s. Please provide valid email addresses separated by commas.', 'Google Calendar', 'uncanny-automator' ),
 					esc_html( $invalid_list )

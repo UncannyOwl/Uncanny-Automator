@@ -28,6 +28,12 @@ final class Trigger implements \JsonSerializable {
 
 	private static $recipe = null;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param mixed[] $recipe The recipe.
+	 * @return void
+	 */
 	public function __construct( $recipe ) {
 		self::$recipe = $recipe;
 	}
@@ -58,10 +64,17 @@ final class Trigger implements \JsonSerializable {
 
 		$misc->uses_credit = isset( $trigger_arr_from_object['uses_api'] );
 
+		// Add custom name field
+		$misc->custom_name = $trigger['meta'][ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '';
+
 		return $misc;
-
 	}
-
+	/**
+	 * Backup.
+	 *
+	 * @param mixed $trigger The trigger.
+	 * @return mixed
+	 */
 	private function backup( $trigger ) {
 
 		$backup = new stdClass();
@@ -80,7 +93,6 @@ final class Trigger implements \JsonSerializable {
 		$backup->sentence_html    = $sentence_html;
 
 		return $backup;
-
 	}
 
 	/**

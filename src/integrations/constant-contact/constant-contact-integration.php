@@ -7,7 +7,21 @@ namespace Uncanny_Automator\Integrations\Constant_Contact;
  *
  * @package Uncanny_Automator
  */
-class Constant_Contact_Integration extends \Uncanny_Automator\Integration {
+class Constant_Contact_Integration extends \Uncanny_Automator\App_Integrations\App_Integration {
+
+	/**
+	 * Get the integration config.
+	 *
+	 * @return array
+	 */
+	public static function get_config() {
+		return array(
+			'integration'  => 'CONSTANT_CONTACT',
+			'name'         => 'Constant Contact',
+			'api_endpoint' => 'v2/constant-contact',
+			'settings_id'  => 'constant-contact',
+		);
+	}
 
 	/**
 	 * Setup Automator integration.
@@ -15,17 +29,14 @@ class Constant_Contact_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	protected function setup() {
+		// Create helpers instance with config.
+		$this->helpers = new Constant_Contact_App_Helpers( self::get_config() );
 
-		$this->helpers = new Constant_Contact_Helpers();
-
-		$this->register_hooks();
-
-		$this->set_integration( 'CONSTANT_CONTACT' );
-		$this->set_name( 'Constant Contact' );
+		// Set icon URL.
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/constant-contact-icon.svg' );
-		$this->set_connected( $this->helpers->integration_status() );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'constant-contact' ) );
 
+		// Finalize setup.
+		$this->setup_app_integration( self::get_config() );
 	}
 
 	/**
@@ -34,16 +45,20 @@ class Constant_Contact_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function load() {
-		// Fires the settings class.
-		new Constant_Contact_Settings( $this->helpers );
-		// Fires the upsert action.
-		new CREATE( $this->helpers );
-		// Contact list add to.
-		new CONTACT_LIST_ADD_TO( $this->helpers );
-		// Contact tag add to.
-		new CONTACT_TAG_ADD_TO( $this->helpers );
-		// Delete a contact.
-		new CONTACT_DELETE( $this->helpers );
+		// Load settings page.
+		new Constant_Contact_Settings(
+			$this->dependencies,
+			$this->get_settings_config()
+		);
+
+		// Load actions with dependencies.
+		new CREATE_UPDATE_CONTACT( $this->dependencies );
+		new CONTACT_LIST_ADD_TO( $this->dependencies );
+		new CONTACT_TAG_ADD_TO( $this->dependencies );
+		new CONTACT_DELETE( $this->dependencies );
+
+		// Deprecated since Oct 2025
+		new CREATE( $this->dependencies );
 	}
 
 	/**
@@ -52,12 +67,24 @@ class Constant_Contact_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function register_hooks() {
-		add_action( 'wp_ajax_automator_constant_contact_handle_disconnect', array( $this->helpers, 'handle_disconnect' ) );
-		add_action( 'wp_ajax_automator_constant_contact_handle_credentials', array( $this->helpers, 'handle_credentials_callback' ) );
+		// Register AJAX handlers for field loading only.
 		add_action( 'wp_ajax_automator_constant_contact_list_memberships_get', array( $this->helpers, 'list_memberships_get' ) );
 		add_action( 'wp_ajax_automator_constant_contact_tags_get', array( $this->helpers, 'tag_list' ) );
 		add_action( 'wp_ajax_automator_constant_contact_contact_fields_get', array( $this->helpers, 'contact_contact_fields_get' ) );
-		add_action( 'automator_constant_contact_settings_before', array( $this->helpers, 'fetch_user_info' ) );
+		add_action( 'wp_ajax_automator_constant_contact_get_custom_fields_repeater', array( $this->helpers, 'get_custom_fields_repeater' ) );
 	}
 
+	/**
+	 * Check if app is connected.
+	 *
+	 * @return bool
+	 */
+	protected function is_app_connected() {
+		try {
+			$credentials = $this->helpers->get_credentials();
+			return ! empty( $credentials['access_token'] );
+		} catch ( \Exception $e ) {
+			return false;
+		}
+	}
 }

@@ -16,6 +16,7 @@ class Initialize_Automator extends Set_Up_Automator {
 	 * @throws Exception
 	 */
 	public function __construct() {
+
 		$this->integrations_directory_path = UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'integrations';
 
 		$this->default_directories = apply_filters(
@@ -29,11 +30,7 @@ class Initialize_Automator extends Set_Up_Automator {
 			)
 		);
 
-		add_action(
-			'plugins_loaded',
-			array( $this, 'automator_configure' ),
-			AUTOMATOR_CONFIGURATION_PRIORITY
-		);
+		add_action( 'init', array( $this, 'automator_configure' ), AUTOMATOR_CONFIGURATION_PRIORITY_TRIGGER_ENGINE );
 	}
 
 	/**
@@ -86,8 +83,8 @@ class Initialize_Automator extends Set_Up_Automator {
 		// Load Helpers
 		$this->load_helpers();
 
-		// Load Recipe parts
-		$this->load_recipe_parts();
+		// 6.7 translation fix if using trigger engine.
+		add_action( 'init', array( $this, 'load_recipe_parts' ), AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE );
 	}
 
 	/**
@@ -161,14 +158,6 @@ class Initialize_Automator extends Set_Up_Automator {
 		$vendor_dir = dirname( AUTOMATOR_BASE_FILE ) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR;
 
 		$automator_file_map = include $vendor_dir . 'autoload_filemap.php';
-
-		if ( empty( $automator_file_map ) ) {
-			return;
-		}
-
-		foreach ( $automator_file_map as $file ) {
-			include_once $file;
-		}
 
 		if ( empty( $automator_file_map ) ) {
 			return;

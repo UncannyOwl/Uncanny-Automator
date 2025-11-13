@@ -94,6 +94,7 @@ class WC_BOOKINGS_ANON_BOOKING_CREATED extends Trigger {
 			'WCB_PRODUCT_URL'             => get_permalink( $booking->get_product_id() ),
 			'WCB_PRODUCT_TITLE'           => $booking->get_product()->get_title(),
 			'WCB_PRODUCT_ID'              => $booking->get_product_id(),
+			'WCB_BOOKING_ORDER_ITEM_ID'   => $booking->get_order_item_id(),
 			'WCB_PRODUCT_DETAILS'         => $booked_data,
 			'WCB_PRODUCT_PRICE'           => wc_price( $booking->get_cost() ),
 			'WCB_BOOKING_STATUS'          => $booking->get_status(),

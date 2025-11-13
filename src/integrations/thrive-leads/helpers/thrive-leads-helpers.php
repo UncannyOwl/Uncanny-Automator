@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Thrive_Leads;
 
 use TCB\inc\helpers\FormSettings;
 
@@ -12,61 +12,55 @@ use TCB\inc\helpers\FormSettings;
 class Thrive_Leads_Helpers {
 
 	/**
-	 * @param $args
+	 * Get all Thrive Lead forms for dropdown options
 	 *
-	 * @return array|mixed|void
+	 * @param bool $has_option_any Whether to include "Any form" option
+	 * @param bool $latest Whether to use latest format (value/text arrays)
+	 *
+	 * @return array The list of forms
 	 */
-	public function get_all_thrive_lead_forms( $args = array() ) {
-		$defaults = array(
-			'option_code'           => 'TL_FORMS',
-			'label'                 => esc_attr__( 'Form', 'uncanny-automator' ),
-			'is_any'                => false,
-			'is_all'                => false,
-			'supports_custom_value' => false,
-			'relevant_tokens'       => array(),
-		);
-
-		$args = wp_parse_args( $args, $defaults );
-
-		$all_forms = array();
-		$lg_ids    = $this->get_thrive_leads();
+	public function get_all_thrive_lead_forms( $has_option_any = false, $latest = true ) {
+		$all_forms       = array();
+		$lg_ids          = $this->get_thrive_leads();
 		$processed_forms = array(); // Track processed forms to avoid duplicates
-		
+
 		foreach ( $lg_ids as $lg_id => $lg_parent ) {
 			$variations = tve_leads_get_form_variations( $lg_parent );
 			foreach ( $variations as $variation ) {
 				// Use form parent ID as key to avoid duplicates
-				$form_key = $lg_parent;
+				$form_key   = $lg_parent;
 				$form_title = $variation['post_title'];
-				
+
 				// Only add if we haven't processed this form parent ID yet
 				if ( ! isset( $processed_forms[ $form_key ] ) ) {
-					$all_forms[ $form_key ] = $form_title;
+					if ( $latest ) {
+						$all_forms[] = array(
+							'value' => $form_key,
+							'text'  => $form_title,
+						);
+					} else {
+						$all_forms[ $form_key ] = $form_title;
+					}
 					$processed_forms[ $form_key ] = true;
 				}
 			}
 		}
 
-		if ( true === $args['is_any'] ) {
-			$all_forms = array( '-1' => esc_html__( 'Any form', 'uncanny-automator' ) ) + $all_forms;
+		if ( $has_option_any ) {
+			if ( $latest ) {
+				array_unshift(
+					$all_forms,
+					array(
+						'value' => -1,
+						'text'  => esc_html_x( 'Any form', 'Thrive Leads', 'uncanny-automator' ),
+					)
+				);
+			} else {
+				$all_forms = array( '-1' => esc_html_x( 'Any form', 'Thrive Leads', 'uncanny-automator' ) ) + $all_forms;
+			}
 		}
 
-		if ( true === $args['is_all'] ) {
-			$all_forms = array( '-1' => esc_html__( 'All forms', 'uncanny-automator' ) ) + $all_forms;
-		}
-
-		$option = array(
-			'option_code'           => $args['option_code'],
-			'label'                 => $args['label'],
-			'input_type'            => 'select',
-			'required'              => true,
-			'options_show_id'       => false,
-			'relevant_tokens'       => $args['relevant_tokens'],
-			'options'               => $all_forms,
-			'supports_custom_value' => $args['supports_custom_value'],
-		);
-
-		return apply_filters( 'uap_option_get_all_thrive_lead_forms', $option );
+		return $all_forms;
 	}
 
 	/**
@@ -116,5 +110,54 @@ class Thrive_Leads_Helpers {
 		}
 
 		return $return;
+	}
+
+	public function get_common_tokens() {
+		return array(
+			'FORM_ID' => array(
+				'name' => esc_html_x( 'Form ID', 'Thrive Leads', 'uncanny-automator' ),
+				'type' => 'int',
+				'tokenId' => 'FORM_ID',
+				'tokenName' => esc_html_x( 'Form ID', 'Thrive Leads', 'uncanny-automator' ),
+			),
+			'FORM_NAME' => array(
+				'name' => esc_html_x( 'Form name', 'Thrive Leads', 'uncanny-automator' ),
+				'type' => 'text',
+				'tokenId' => 'FORM_NAME',
+				'tokenName' => esc_html_x( 'Form name', 'Thrive Leads', 'uncanny-automator' ),
+			),
+			'GROUP_ID' => array(
+				'name' => esc_html_x( 'Lead group ID', 'Thrive Leads', 'uncanny-automator' ),
+				'type' => 'int',
+				'tokenId' => 'GROUP_ID',
+				'tokenName' => esc_html_x( 'Lead group ID', 'Thrive Leads', 'uncanny-automator' ),
+			),
+			'GROUP_NAME' => array(
+				'name' => esc_html_x( 'Lead group name', 'Thrive Leads', 'uncanny-automator' ),
+				'type' => 'text',
+				'tokenId' => 'GROUP_NAME',
+				'tokenName' => esc_html_x( 'Lead group name', 'Thrive Leads', 'uncanny-automator' ),
+			),
+		);
+	}
+
+	public function get_form_field_tokens($form_id) {
+
+		$fields = array();
+
+		if ( intval( '-1' ) !== intval( $form_id ) ) {
+			$inputs      = $this->get_form_fields_by_form_id( $form_id );
+			$valid_types = array( 'email', 'url', 'int', 'float' );
+			foreach ( $inputs as $id => $input ) {
+				$type     = in_array( $input['type'], $valid_types, true ) ? $input['type'] : 'text';
+				$fields[] = array(
+					'tokenId'         => 'FORM_FIELD|' . $id,
+					'tokenName'       => esc_html( $input['label'] ),
+					'tokenType'       => $type,
+				);
+			}
+		}
+		
+		return $fields;
 	}
 }

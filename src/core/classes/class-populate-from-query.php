@@ -227,12 +227,31 @@ class Populate_From_Query {
 	 * @throws Automator_Exception
 	 */
 	public static function add_trigger() {
+		$integration_param = automator_filter_input( 'integration' );
+		$item_code         = automator_filter_input( 'item_code' );
+		
+		// Fallback integration mapping for known trigger codes when integration is not provided
+		if ( empty( $integration_param ) && ! empty( $item_code ) ) {
+			$integration_fallbacks = array(
+				'ANONWPFSUBFORM'     => 'WPF',
+				'ANONWPFSUBMITFIELD' => 'WPF',
+				'UCBATCH'            => 'UNCANNYCODE',
+			);
+			
+			if ( isset( $integration_fallbacks[ $item_code ] ) ) {
+				$integration_param = $integration_fallbacks[ $item_code ];
+			}
+		}
+		
+		$integration_param = ! empty( $integration_param ) ? $integration_param : '';
+		
 		$request = new WP_REST_Request( 'POST', '', '' );
 		$request->set_body_params(
 			array(
 				'recipePostID' => self::$post->ID,
 				'action'       => automator_filter_input( 'action' ),
-				'item_code'    => automator_filter_input( 'item_code' ),
+				'item_code'    => $item_code,
+				'integration'  => $integration_param,
 			)
 		);
 

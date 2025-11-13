@@ -45,9 +45,9 @@ class WPFF_SUBFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Ninja Forms */
-			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr_x( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'Wp Fluent Forms', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Ninja Forms */
-			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr_x( 'A user submits {{a form}}', 'Wp Fluent Forms', 'uncanny-automator' ),
 			'action'              => 'fluentform_before_insert_submission',
 			'priority'            => 20,
 			'accepted_args'       => 3,
@@ -134,22 +134,7 @@ class WPFF_SUBFORM {
 
 								$wp_ff_args['meta_key'] = $this->trigger_meta;
 								Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $entry_data, $form, $wp_ff_args );
-
-								$wp_ff_args['meta_key']   = 'WPFFENTRYID';
-								$wp_ff_args['meta_value'] = $insert_data['serial_number'];
-								Automator()->insert_trigger_meta( $wp_ff_args );
-
-								$wp_ff_args['meta_key']   = 'WPFFENTRYIP';
-								$wp_ff_args['meta_value'] = $insert_data['ip'];
-								Automator()->insert_trigger_meta( $wp_ff_args );
-
-								$wp_ff_args['meta_key']   = 'WPFFENTRYSOURCEURL';
-								$wp_ff_args['meta_value'] = $insert_data['source_url'];
-								Automator()->insert_trigger_meta( $wp_ff_args );
-
-								$wp_ff_args['meta_key']   = 'WPFFENTRYDATE';
-								$wp_ff_args['meta_value'] = maybe_serialize( wp_date( 'Y-m-d H:i:s', strtotime( $insert_data['created_at'] ) ) );
-								Automator()->insert_trigger_meta( $wp_ff_args );
+								Automator()->helpers->recipe->wp_fluent_forms->save_wp_fluent_form_entry_data( $insert_data, $wp_ff_args, $this->trigger_meta . '_ID', $form->id );
 
 								Automator()->maybe_trigger_complete( $r['args'] );
 							}
@@ -197,5 +182,4 @@ class WPFF_SUBFORM {
 
 		return false;
 	}
-
 }

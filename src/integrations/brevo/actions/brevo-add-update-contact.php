@@ -8,8 +8,11 @@ use Uncanny_Automator\Recipe\Log_Properties;
  * Class BREVO_ADD_UPDATE_CONTACT
  *
  * @package Uncanny_Automator
+ *
+ * @property Brevo_App_Helpers $helpers
+ * @property Brevo_Api_Caller $api
  */
-class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
+class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 
 	use Log_Properties;
 
@@ -33,16 +36,13 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'BREVO' );
 		$this->set_action_code( $this->prefix . '_CODE' );
 		$this->set_action_meta( 'CONTACT_EMAIL' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/brevo/' ) );
 		$this->set_requires_user( false );
-		/* translators: Contact Email */
+		// translators: Contact Email
 		$this->set_sentence( sprintf( esc_attr_x( 'Create or update {{a contact:%1$s}}', 'Brevo', 'uncanny-automator' ), $this->get_action_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( 'Create or update {{a contact}}', 'Brevo', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
@@ -57,102 +57,107 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		$fields   = array();
 		$fields[] = array(
-			'option_code' => $this->action_meta,
-			'label'       => _x( 'Email', 'Brevo', 'uncanny-automator' ),
+			'option_code' => $this->get_action_meta(),
+			'label'       => esc_html_x( 'Email', 'Brevo', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
 		);
 
 		$fields[] = array(
 			'option_code' => 'FIRSTNAME',
-			'label'       => _x( 'First name', 'Brevo', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'First name', 'Brevo', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
 		);
 
 		$fields[] = array(
 			'option_code' => 'LASTNAME',
-			'label'       => _x( 'Last name', 'Brevo', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Last name', 'Brevo', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
 		);
 
 		$fields[] = array(
 			'option_code' => 'SMS',
-			'label'       => _x( 'SMS', 'Brevo', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'SMS', 'Brevo', 'uncanny-automator' ),
 			'placeholder' => esc_attr_x( '00 987 123 4567', 'Brevo', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
-			'description' => _x( '* SMS numbers must include country code.', 'Brevo', 'uncanny-automator' ),
+			'description' => esc_html_x( '* SMS numbers must include country code.', 'Brevo', 'uncanny-automator' ),
 		);
 
 		$fields[] = array(
 			'option_code'       => 'CONTACT_ATTRIBUTES',
 			'input_type'        => 'repeater',
 			'relevant_tokens'   => array(),
-			'label'             => _x( 'Contact attributes', 'Brevo', 'uncanny-automator' ),
-			'description'       => _x( '* Date fields must follow year-month-day format yyyy-mm-dd, boolean fields must use yes, no, true, false, 1 or 0.', 'Brevo', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Contact attributes', 'Brevo', 'uncanny-automator' ),
+			'description'       => esc_html_x( '* Date fields must follow year-month-day format yyyy-mm-dd, boolean fields must use yes, no, true, false, 1 or 0.', 'Brevo', 'uncanny-automator' ),
 			'required'          => false,
 			'fields'            => array(
 				array(
 					'option_code'           => 'ATTRIBUTE_NAME',
-					'label'                 => _x( 'Attribute name', 'Brevo', 'uncanny-automator' ),
+					'label'                 => esc_html_x( 'Attribute name', 'Brevo', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'supports_tokens'       => false,
 					'supports_custom_value' => false,
 					'required'              => true,
 					'read_only'             => false,
-					'options'               => $this->helpers->get_contact_attributes(),
+					'options'               => $this->api->get_contact_attributes(),
 				),
-				Automator()->helpers->recipe->field->text_field( 'ATTRIBUTE_VALUE', _x( 'Attribute value', 'Brevo', 'uncanny-automator' ), true, 'text', '', true ),
+				array(
+					'option_code' => 'ATTRIBUTE_VALUE',
+					'label'       => esc_html_x( 'Attribute value', 'Brevo', 'uncanny-automator' ),
+					'input_type'  => 'text',
+					'required'    => true,
+				),
 			),
-			'add_row_button'    => _x( 'Add attribute', 'Brevo', 'uncanny-automator' ),
-			'remove_row_button' => _x( 'Remove attribute', 'Brevo', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add attribute', 'Brevo', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove attribute', 'Brevo', 'uncanny-automator' ),
 			'hide_actions'      => false,
 		);
 
 		$fields[] = array(
 			'option_code' => 'UPDATE_EXISTING_CONTACT',
-			'label'       => _x( 'Update existing contact', 'Brevo', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Update existing contact', 'Brevo', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
 			'required'    => false,
 		);
 
 		$fields[] = array(
 			'option_code' => 'DOUBLE_OPT_IN',
-			'label'       => _x( 'Double-opt-in', 'Brevo', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Double-opt-in', 'Brevo', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
 			'required'    => false,
 		);
 
 		$fields[] = array(
 			'option_code'           => 'DOUBLE_OPT_IN_TEMPLATE',
-			'label'                 => _x( 'Double-opt-in template', 'Brevo', 'uncanny-automator' ),
+			'label'                 => esc_html_x( 'Double-opt-in template', 'Brevo', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => false,
 			'is_ajax'               => true,
 			'endpoint'              => 'automator_brevo_get_templates',
 			'supports_custom_value' => false,
-			'description'           => _x( 'Template is required when using double-opt-in', 'Brevo', 'uncanny-automator' ),
+			'description'           => esc_html_x( 'Template is required when using double-opt-in', 'Brevo', 'uncanny-automator' ),
 		);
 
 		$fields[] = array(
 			'option_code'           => 'DOUBLE_OPT_IN_LIST',
-			'label'                 => _x( 'Double-opt-in list', 'Brevo', 'uncanny-automator' ),
+			'label'                 => esc_html_x( 'Double-opt-in list', 'Brevo', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => false,
 			'is_ajax'               => true,
 			'endpoint'              => 'automator_brevo_get_lists',
 			'supports_custom_value' => false,
-			'description'           => _x( 'Double-opt-in list is required when using double-opt-in', 'Brevo', 'uncanny-automator' ),
+			'description'           => esc_html_x( 'Double-opt-in list is required when using double-opt-in', 'Brevo', 'uncanny-automator' ),
 		);
 
 		$fields[] = array(
 			'option_code' => 'DOUBLE_OPT_IN_REDIRECT_URL',
-			'label'       => _x( 'Double-opt-in redirect URL', 'Brevo', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Double-opt-in redirect URL', 'Brevo', 'uncanny-automator' ),
 			'input_type'  => 'url',
 			'required'    => false,
-			'description' => _x( 'Redirect URL is required when using double-opt-in', 'Brevo', 'uncanny-automator' ),
+			'description' => esc_html_x( 'Redirect URL is required when using double-opt-in', 'Brevo', 'uncanny-automator' ),
 		);
 
 		return $fields;
@@ -203,7 +208,7 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		// Add repeater attributes.
 		$attribute_fields = json_decode( Automator()->parse->text( $action_data['meta']['CONTACT_ATTRIBUTES'], $recipe_id, $user_id, $args ), true );
 		if ( ! empty( $attribute_fields ) ) {
-			$contact_attributes = $this->helpers->get_contact_attributes();
+			$contact_attributes = $this->api->get_contact_attributes();
 
 			foreach ( $attribute_fields as $field ) {
 				$attribute_name  = isset( $field['ATTRIBUTE_NAME'] ) ? sanitize_text_field( $field['ATTRIBUTE_NAME'] ) : '';
@@ -223,9 +228,9 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 					// Log invalid attribute.
 					$this->complete_with_notice_messages[] = sprintf(
-						/* translators: %s: attribute name */
-						_x( 'Invalid value for attribute %s', 'Brevo', 'uncanny-automator' ),
-						$attribute_name
+						// translators: %s: attribute name
+						esc_html_x( 'Invalid value for attribute %s', 'Brevo', 'uncanny-automator' ),
+						esc_html( $attribute_name )
 					);
 
 					continue;
@@ -238,7 +243,7 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		if ( ! $double_optin ) {
 
-			$response = $this->helpers->create_contact( $email, $attributes, $update_existing, $action_data );
+			$response = $this->api->create_contact( $email, $attributes, $update_existing, $action_data );
 
 			if ( ! empty( $this->complete_with_notice_messages ) ) {
 				$this->set_complete_with_notice( true );
@@ -256,25 +261,25 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( ! $template_id || ! $redirect_url || ! $list_id ) {
 			$errors = array();
 			if ( ! $template_id ) {
-				$errors[] = _x( 'Template', 'Brevo', 'uncanny-automator' );
+				$errors[] = esc_html_x( 'Template', 'Brevo', 'uncanny-automator' );
 			}
 			if ( ! $redirect_url ) {
-				$errors[] = _x( 'Redirect URL', 'Brevo', 'uncanny-automator' );
+				$errors[] = esc_html_x( 'Redirect URL', 'Brevo', 'uncanny-automator' );
 			}
 			if ( ! $list_id ) {
-				$errors[] = _x( 'List', 'Brevo', 'uncanny-automator' );
+				$errors[] = esc_html_x( 'List', 'Brevo', 'uncanny-automator' );
 			}
 
 			$error_message = sprintf(
-				/* translators: %s: list of missing required fields */
-				_x( '%s are required fields for double-opt-in', 'Brevo', 'uncanny-automator' ),
+				// translators: %s: list of missing required fields
+				esc_html_x( '%s are required fields for double-opt-in', 'Brevo', 'uncanny-automator' ),
 				implode( ', ', $errors )
 			);
 
 			throw new \Exception( esc_html( $error_message ) );
 		}
 
-		$response = $this->helpers->create_contact_with_double_optin( $email, $attributes, $template_id, $redirect_url, $list_id, $update_existing, $action_data );
+		$response = $this->api->create_contact_with_double_optin( $email, $attributes, $template_id, $redirect_url, $list_id, $update_existing, $action_data );
 
 		if ( ! empty( $this->complete_with_notice_messages ) ) {
 			$this->set_complete_with_notice( true );
@@ -383,9 +388,9 @@ class BREVO_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			if ( $has_invalid && $has_valid ) {
 				// Log invalid values.
 				$this->complete_with_notice_messages[] = sprintf(
-					/* translators: %s: list of invalid values */
-					_x( 'Invalid value(s) for attribute %1$s : %2$s', 'Brevo', 'uncanny-automator' ),
-					$config['text'],
+					// translators: %s: list of invalid values
+					esc_html_x( 'Invalid value(s) for attribute %1$s : %2$s', 'Brevo', 'uncanny-automator' ),
+					esc_html( $config['text'] ),
 					implode( ', ', $invalid )
 				);
 			}

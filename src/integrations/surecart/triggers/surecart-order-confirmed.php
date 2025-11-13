@@ -1,74 +1,86 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\SureCart;
 
-use Uncanny_Automator\Recipe;
+use Uncanny_Automator\Recipe\Trigger;
 
 /**
  * Class SURECART_ORDER_CONFIRMED
  *
  * @package Uncanny_Automator
+ * @method \Uncanny_Automator\Integrations\SureCart\SureCart_Helpers get_item_helpers()
  */
-class SURECART_ORDER_CONFIRMED {
-
-	use Recipe\Triggers;
+class SURECART_ORDER_CONFIRMED extends Trigger {
 
 	/**
-	 * @var SureCart_Tokens
-	 */
-	public $surecart_tokens;
-
-	/**
-	 * @var SureCart_Helpers
-	 */
-	public $helpers;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-
-		$this->helpers         = new SureCart_Helpers();
-		$this->surecart_tokens = new SureCart_Tokens();
-		$this->setup_trigger();
-		//$this->register_trigger();
-
-	}
-
-	/**
-	 * Define and register the trigger by pushing it into the Automator object
-	 */
-	public function setup_trigger() {
-
-		$this->set_integration( 'SURECART' );
-		$this->set_trigger_code( 'ORDER_CONFIRMED' );
-		$this->set_support_link( $this->helpers->support_link( $this->trigger_code ) );
-
-		/* Translators: Product name */
-		$this->set_sentence( "A user's order status is changed to confirmed" );
-
-		$this->set_readable_sentence( "A user's order status is changed to confirmed" );
-
-		$this->add_action( 'surecart/checkout_confirmed' );
-
-		$this->set_action_args_count( 2 );
-
-		if ( method_exists( $this, 'set_tokens' ) ) {
-			$this->set_tokens(
-				$this->surecart_tokens->common_tokens() +
-				$this->surecart_tokens->order_tokens()
-			);
-		}
-	}
-
-	/**
-	 *  Validation function when the trigger action is hit
+	 * Constant TRIGGER_CODE.
 	 *
-	 * @param $data
+	 * @var string
 	 */
-	public function validate_trigger( ...$args ) {
+	const TRIGGER_CODE = 'ORDER_CONFIRMED';
 
-		list( $checkout ) = $args[0];
+	/**
+	 * Constant TRIGGER_META.
+	 *
+	 * @var string
+	 */
+	const TRIGGER_META = 'ORDER_CONFIRMED_META';
+
+	/**
+	 * Setup trigger
+	 *
+	 * @return void
+	 */
+	protected function setup_trigger() {
+		$this->set_integration( 'SURECART' );
+		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_meta( self::TRIGGER_META );
+		$this->set_is_pro( false );
+		$this->set_is_login_required( false );
+		$this->set_trigger_type( 'user' );
+
+		$this->add_action( 'surecart/checkout_confirmed', 10, 2 );
+
+		$this->set_sentence( esc_html_x( "A user's order status is changed to confirmed", 'SureCart', 'uncanny-automator' ) );
+
+		$this->set_readable_sentence(
+			esc_html_x( "A user's order status is changed to confirmed", 'SureCart', 'uncanny-automator' )
+		);
+	}
+
+	/**
+	 * Loads available options for the Trigger.
+	 *
+	 * @return array The available trigger options.
+	 */
+	public function options() {
+		return array();
+	}
+
+	/**
+	 * Validate the trigger.
+	 *
+	 * @param array $trigger The trigger data.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool True if validation was successful.
+	 */
+	public function validate( $trigger, $hook_args ) {
+		list( $checkout ) = $hook_args;
+
+		// Extract user_id from checkout data if available
+		$user_id = null;
+		if ( isset( $checkout->customer_id ) && ! empty( $checkout->customer_id ) ) {
+			$user_id = $this->get_item_helpers()->get_user_id_from_customer( $checkout->customer_id );
+		}
+
+		// Fall back to current user if no user found in hook data
+		if ( empty( $user_id ) ) {
+			$user_id = wp_get_current_user_id();
+		}
+
+		// Set the user_id for the trigger
+		$this->set_user_id( $user_id );
 
 		if ( 'paid' === $checkout->status ) {
 			return true;
@@ -78,27 +90,55 @@ class SURECART_ORDER_CONFIRMED {
 	}
 
 	/**
-	 * Method prepare_to_run
+	 * Hydrate tokens with values.
 	 *
-	 * @param $data
+	 * @param array $trigger The trigger data.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array The token values.
 	 */
-	public function prepare_to_run( $data ) {
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		list( $checkout, $webhook_data ) = $hook_args;
+
+		// Get the checkout with related data
+		/** @var \SureCart\Models\Checkout $checkout_data */
+		$checkout_data = class_exists( 'SureCart\Models\Checkout' ) ? \SureCart\Models\Checkout::with( array( 'purchases', 'purchase.product', 'purchase.line_items' ) )->find( $checkout->id ) : null;
+
+		$tokens = array();
+
+		if ( $checkout_data ) {
+			// Use existing token hydration methods
+			$surecart_tokens = new \Uncanny_Automator\Integrations\SureCart\SureCart_Tokens_New_Framework();
+
+			// Get common tokens
+			$common_tokens = $surecart_tokens->hydrate_common_tokens();
+			$tokens        = array_merge( $tokens, $common_tokens );
+
+			// Get order tokens
+			$order_tokens = $surecart_tokens->hydrate_order_tokens( $checkout_data );
+			$tokens       = array_merge( $tokens, $order_tokens );
+		}
+
+		return $tokens;
 	}
 
-
 	/**
-	 * Method parse_additional_tokens.
+	 * Define tokens.
 	 *
-	 * @param $parsed
-	 * @param $args
-	 * @param $trigger
+	 * @param array $trigger The trigger configuration.
+	 * @param array $tokens The existing tokens.
 	 *
 	 * @return array
 	 */
-	public function parse_additional_tokens( $parsed, $args, $trigger ) {
+	public function define_tokens( $trigger, $tokens ) {
+		// Use existing token definitions
+		$surecart_tokens = new \Uncanny_Automator\Integrations\SureCart\SureCart_Tokens_New_Framework();
 
-		return $this->surecart_tokens->hydrate_order_tokens( $parsed, $args, $trigger );
+		$custom_tokens = array_merge(
+			$surecart_tokens->common_tokens(),
+			$surecart_tokens->order_tokens()
+		);
 
+		return array_merge( $tokens, $custom_tokens );
 	}
-
 }

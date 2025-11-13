@@ -2,7 +2,7 @@
 //phpcs:disable PHPCompatibility.Operators.NewOperators.t_coalesceFound
 namespace Uncanny_Automator\Integrations\Notion\Fields;
 
-use Uncanny_Automator\Integrations\Notion\Notion_Helpers;
+use Uncanny_Automator\Integrations\Notion\Notion_App_Helpers;
 
 /**
  * @package Uncanny_Automator\Integrations\Notion\Fields
@@ -76,7 +76,7 @@ class Mapper {
 	protected function get_option_code() {
 
 		$option_code = strtr(
-			Notion_Helpers::get_option_code_field_string(),
+			Notion_App_Helpers::get_option_code_field_string(),
 			array(
 				'{{ID}}'   => $this->notion_field_property['id'],
 				'{{TYPE}}' => $this->notion_field_property['type'],
@@ -295,7 +295,7 @@ class Mapper {
 			'event'    => 'search_options',
 		);
 
-		$persons_cached = get_transient( Notion_Helpers::PERSONS_TRANSIENT_KEY );
+		$persons_cached = get_transient( Notion_App_Helpers::PERSONS_TRANSIENT_KEY );
 
 		$this->create_field_property( 'input_type', 'select' );
 		$this->create_field_property( 'supports_multiple_values', true );

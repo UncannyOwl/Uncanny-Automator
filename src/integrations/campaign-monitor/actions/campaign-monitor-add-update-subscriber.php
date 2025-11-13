@@ -9,8 +9,11 @@ use Uncanny_Automator\Recipe\Log_Properties;
  * Class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER
  *
  * @package Uncanny_Automator
+ *
+ * @property Campaign_Monitor_App_Helpers $helpers
+ * @property Campaign_Monitor_Api_Caller $api
  */
-class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\Action {
+class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\App_Action {
 
 	use Log_Properties;
 
@@ -42,10 +45,6 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 	 */
 	public function setup_action() {
 
-		/** @var \Uncanny_Automator\Integrations\Campaign_Monitor\Campaign_Monitor_Helpers $helper */
-		$helper        = array_shift( $this->dependencies );
-		$this->helpers = $helper;
-
 		$this->set_integration( 'CAMPAIGN_MONITOR' );
 		$this->set_action_code( $this->prefix . '_CODE' );
 		$this->set_action_meta( $this->prefix . '_META' );
@@ -54,7 +53,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
-			/* translators: %1$s Subscriber Email, %2$s List*/
+				// translators: %1$s Subscriber Email, %2$s List
 				esc_attr_x( 'Add/Update {{a subscriber:%1$s}} to {{a list:%2$s}}', 'Campaign Monitor', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'LIST:' . $this->get_action_meta()
@@ -62,7 +61,6 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Add/Update {{a subscriber}} to {{a list}}', 'Campaign Monitor', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
 	}
 
 	/**
@@ -75,7 +73,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 		$fields = array(
 			array(
 				'option_code' => $this->get_action_meta(),
-				'label'       => _x( 'Email', 'Campaign Monitor', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Email', 'Campaign Monitor', 'uncanny-automator' ),
 				'input_type'  => 'email',
 				'required'    => true,
 			),
@@ -90,11 +88,11 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 		// Allow user to update existing subscriber.
 		$fields[] = array(
 			'option_code' => 'UPDATE_EXISTING_SUBSCRIBER',
-			'label'       => _x( 'Update existing subscriber', 'Campaign Monitor', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Update existing subscriber', 'Campaign Monitor', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
 			'description' => sprintf(
-			/* translators: %1$s: [delete] */
-				_x( 'To exclude fields from being updated, leave them empty. To delete a value from a field, set its value to %1$s, including the square brackets.', 'Campaign Monitor', 'uncanny-automator' ),
+				// translators: %1$s: [delete]
+				esc_html_x( 'To exclude fields from being updated, leave them empty. To delete a value from a field, set its value to %1$s, including the square brackets.', 'Campaign Monitor', 'uncanny-automator' ),
 				self::DELETE_KEY
 			),
 			'is_toggle'   => true,
@@ -103,23 +101,23 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 		// Conditional Fields.
 		$fields[] = array(
 			'option_code' => 'NAME',
-			'label'       => _x( 'Name', 'Campaign Monitor', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Name', 'Campaign Monitor', 'uncanny-automator' ),
 			'input_type'  => 'text',
 		);
 
 		$fields[] = array(
 			'option_code' => 'MOBILE_NUMBER',
-			'label'       => _x( 'Mobile', 'Campaign Monitor', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Mobile', 'Campaign Monitor', 'uncanny-automator' ),
 			'input_type'  => 'text',
-			'description' => _x( 'Numbers must include the + prefix and country code.', 'Campaign Monitor', 'uncanny-automator' ),
+			'description' => esc_html_x( 'Numbers must include the + prefix and country code.', 'Campaign Monitor', 'uncanny-automator' ),
 		);
 
 		$fields[] = array(
 			'option_code'           => 'CONSENT_TO_SEND_SMS',
-			'label'                 => _x( 'Consent to send SMS', 'Campaign Monitor', 'uncanny-automator' ),
+			'label'                 => esc_html_x( 'Consent to send SMS', 'Campaign Monitor', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'options'               => $this->get_consent_options(),
-			'description'           => _x( 'Subscribers will be set as having given consent to receive SMS.', 'Campaign Monitor', 'uncanny-automator' ),
+			'description'           => esc_html_x( 'Subscribers will be set as having given consent to receive SMS.', 'Campaign Monitor', 'uncanny-automator' ),
 			'supports_custom_value' => false,
 		);
 
@@ -128,11 +126,11 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 			'option_code'     => 'CUSTOM_FIELDS',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => _x( 'Custom fields', 'Campaign Monitor', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Custom fields', 'Campaign Monitor', 'uncanny-automator' ),
 			'required'        => false,
 			'description'     => sprintf(
-			/* translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag */
-				_x( "Custom field values must align with how they are defined in your subscriber list. Multiple values may be separated with commas. To delete a value from a field, set its value to %1\$s, including the square brackets. For more details, be sure to check out Campaign Monitor's tutorial on %2\$screating and using custom fields.%3\$s", 'Campaign Monitor', 'uncanny-automator' ),
+				// translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag
+				esc_html_x( "Custom field values must align with how they are defined in your subscriber list. Multiple values may be separated with commas. To delete a value from a field, set its value to %1\$s, including the square brackets. For more details, be sure to check out Campaign Monitor's tutorial on %2\$screating and using custom fields.%3\$s", 'Campaign Monitor', 'uncanny-automator' ),
 				self::DELETE_KEY,
 				'<a href="https://help.campaignmonitor.com/s/article/subscriber-custom-fields" target="_blank">',
 				'</a>'
@@ -148,27 +146,27 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 		// Consent fields.
 		$fields[] = array(
 			'option_code'           => 'CONSENT_TO_TRACK',
-			'label'                 => _x( 'Consent to track', 'Campaign Monitor', 'uncanny-automator' ),
+			'label'                 => esc_html_x( 'Consent to track', 'Campaign Monitor', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'options'               => $this->get_consent_options(),
-			'description'           => _x( 'Subscribers will be set as having given consent to have their email opens and clicks tracked.', 'Campaign Monitor', 'uncanny-automator' ),
+			'description'           => esc_html_x( 'Subscribers will be set as having given consent to have their email opens and clicks tracked.', 'Campaign Monitor', 'uncanny-automator' ),
 			'supports_custom_value' => false,
 		);
 
 		// Resubscribe and restart autoresponders.
 		$fields[] = array(
 			'option_code' => 'RESUBSCRIBE',
-			'label'       => _x( 'Resubscribe', 'Campaign Monitor', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Resubscribe', 'Campaign Monitor', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
-			'description' => _x( 'Subscribers will be re-added to the list even if they are in an inactive state, have previously been unsubscribed, or added to the suppression list.', 'Campaign Monitor', 'uncanny-automator' ),
+			'description' => esc_html_x( 'Subscribers will be re-added to the list even if they are in an inactive state, have previously been unsubscribed, or added to the suppression list.', 'Campaign Monitor', 'uncanny-automator' ),
 			'is_toggle'   => true,
 		);
 
 		$fields[] = array(
 			'option_code'        => 'RESTART_AUTO_RESPONDERS',
-			'label'              => _x( 'Restart autoresponders', 'Campaign Monitor', 'uncanny-automator' ),
+			'label'              => esc_html_x( 'Restart autoresponders', 'Campaign Monitor', 'uncanny-automator' ),
 			'input_type'         => 'checkbox',
-			'description'        => _x( 'Subscribers will re-enter automated workflows. By default resubscribed subscribers will not restart any automated workflows, but they will receive any remaining emails.', 'Campaign Monitor', 'uncanny-automator' ),
+			'description'        => esc_html_x( 'Subscribers will re-enter automated workflows. By default resubscribed subscribers will not restart any automated workflows, but they will receive any remaining emails.', 'Campaign Monitor', 'uncanny-automator' ),
 			'is_toggle'          => true,
 			'dynamic_visibility' => array(
 				'default_state'    => 'hidden',
@@ -214,6 +212,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 
 		// Build request body.
 		$body = array(
+			'action'             => 'add_update_subscriber',
 			'email'              => $email,
 			'list_id'            => $list_id,
 			'update'             => $this->get_bool_value( 'UPDATE_EXISTING_SUBSCRIBER' ),
@@ -222,8 +221,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 		);
 
 		// Send request.
-		$response = $this->helpers->api_request(
-			'add_update_subscriber',
+		$this->api->api_request(
 			$body,
 			$action_data
 		);
@@ -246,15 +244,15 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 	private function get_consent_options() {
 		return array(
 			array(
-				'text'  => _x( 'Unchanged', 'Campaign Monitor', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Unchanged', 'Campaign Monitor', 'uncanny-automator' ),
 				'value' => 'Unchanged',
 			),
 			array(
-				'text'  => _x( 'Yes', 'Campaign Monitor', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Yes', 'Campaign Monitor', 'uncanny-automator' ),
 				'value' => 'Yes',
 			),
 			array(
-				'text'  => _x( 'No', 'Campaign Monitor', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'No', 'Campaign Monitor', 'uncanny-automator' ),
 				'value' => 'No',
 			),
 		);
@@ -310,7 +308,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 				if ( ! $this->validate_is_mobile_E164( $value ) ) {
 					$__value = sprintf(
 						// translators: 1: Mobile number
-						_x( 'Invalid mobile number format: "%s". Please ensure it begins with a plus sign (+), followed by the country code and phone number.', 'Campaign Monitor', 'uncanny-automator' ),
+						esc_html_x( 'Invalid mobile number format: "%s". Please ensure it begins with a plus sign (+), followed by the country code and phone number.', 'Campaign Monitor', 'uncanny-automator' ),
 						$value
 					);
 
@@ -357,7 +355,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 		// Bail if no custom fields config.
 		if ( empty( $config ) || is_wp_error( $config ) ) {
 
-			$this->complete_with_notice_messages[] = _x( 'Unable to validate Custom Field(s).', 'Campaign Monitor', 'uncanny-automator' );
+			$this->complete_with_notice_messages[] = esc_html_x( 'Unable to validate Custom Field(s).', 'Campaign Monitor', 'uncanny-automator' );
 
 			return $data;
 		}
@@ -374,7 +372,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 			if ( ! key_exists( $key, $config ) ) {
 				$errors[] = sprintf(
 				/* translators: %s: custom field key */
-					_x( 'Invalid custom field key: %s', 'Campaign Monitor', 'uncanny-automator' ),
+					esc_html_x( 'Invalid custom field key: %s', 'Campaign Monitor', 'uncanny-automator' ),
 					$key
 				);
 				continue;
@@ -423,7 +421,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 
 		// Log errors.
 		if ( ! empty( $errors ) ) {
-			$this->complete_with_notice_messages[] = _x( 'Invalid Custom Field(s).:', 'Campaign Monitor', 'uncanny-automator' ) . ' ' . implode( ', ', $errors );
+			$this->complete_with_notice_messages[] = esc_html_x( 'Invalid Custom Field(s).:', 'Campaign Monitor', 'uncanny-automator' ) . ' ' . implode( ', ', $errors );
 		}
 
 		return $data;
@@ -491,7 +489,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 			case 'date':
 				// Validate date.
 				$date      = date_create( $value );
-				$error     = ! $date ? _x( 'Invalid date format', 'Campaign Monitor', 'uncanny-automator' ) : false;
+				$error     = ! $date ? esc_html_x( 'Invalid date format', 'Campaign Monitor', 'uncanny-automator' ) : false;
 				$validated = $date ? date_format( $date, 'Y-m-d' ) : '';
 				break;
 			case 'select':
@@ -503,7 +501,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 			default:
 				$error = sprintf(
 				/* translators: %s: custom field type */
-					_x( 'Invalid custom field type: %s', 'Campaign Monitor', 'uncanny-automator' ),
+					esc_html_x( 'Invalid custom field type: %s', 'Campaign Monitor', 'uncanny-automator' ),
 					$type
 				);
 				break;
@@ -541,7 +539,7 @@ class CAMPAIGN_MONITOR_ADD_UPDATE_SUBSCRIBER extends \Uncanny_Automator\Recipe\A
 			} else {
 				$errors[] = sprintf(
 				/* translators: %s: custom field value */
-					_x( 'Invalid custom field value: %s', 'Campaign Monitor', 'uncanny-automator' ),
+					esc_html_x( 'Invalid custom field value: %s', 'Campaign Monitor', 'uncanny-automator' ),
 					$value
 				);
 			}

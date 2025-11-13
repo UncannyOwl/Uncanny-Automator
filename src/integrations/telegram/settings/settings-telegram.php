@@ -60,7 +60,7 @@ class Telegram_Settings extends Settings\Premium_Integration_Settings {
 	public function settings_updated() {
 
 		$alert_type    = 'success';
-		$alert_heading = esc_html__( 'You have successfully connected your Telegram bot', 'uncanny-automator' );
+		$alert_heading = esc_html_x( 'You have successfully connected your Telegram bot', 'Telegram', 'uncanny-automator' );
 
 		try {
 			$this->functions->api->verify_token();
@@ -68,8 +68,8 @@ class Telegram_Settings extends Settings\Premium_Integration_Settings {
 			$alert_type    = 'error';
 			$alert_heading = sprintf(
 				/* translators: %s: Error message */
-				esc_html__( 'Something went wrong: %s', 'uncanny-automator' ),
-				esc_html( $e->getMessage() )
+				esc_html_x( 'Something went wrong: %s', 'Telegram', 'uncanny-automator' ),
+				esc_html_x( $e->getMessage(), 'Telegram', 'uncanny-automator' )
 			);
 		}
 
@@ -79,6 +79,5 @@ class Telegram_Settings extends Settings\Premium_Integration_Settings {
 				'heading' => $alert_heading,
 			)
 		);
-
 	}
 }

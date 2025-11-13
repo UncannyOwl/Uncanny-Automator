@@ -10,10 +10,16 @@
 
 namespace Uncanny_Automator\Integrations\Brevo;
 
+use Uncanny_Automator\Settings\App_Integration_Settings;
+use Exception;
+
 /**
  * Brevo_Settings
+ *
+ * @property Brevo_App_Helpers $helpers
+ * @property Brevo_Api_Caller $api
  */
-class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
+class Brevo_Settings extends App_Integration_Settings {
 
 	/**
 	 * Account Details.
@@ -23,33 +29,25 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 	protected $account;
 
 	/**
-	 * API Key.
+	 * Register the options.
 	 *
-	 * @var string $api_key
+	 * @return void
 	 */
-	protected $api_key;
+	public function register_disconnected_options() {
+		// Existing API key field.
+		$this->register_option( $this->helpers->get_const( 'API_KEY_OPTION' ) );
+	}
 
 	/**
-	 * Is Account Connected.
+	 * Register the hooks.
 	 *
-	 * @var bool $is_account_connected
+	 * @return void
 	 */
-	protected $is_account_connected;
-
-	/**
-	 * Disconnect URL.
-	 *
-	 * @var string $disconnect_url
-	 */
-	protected $disconnect_url;
-
-	/**
-	 * Integration status.
-	 *
-	 * @return string - 'success' or empty string
-	 */
-	public function get_status() {
-		return $this->helpers->integration_status();
+	public function register_hooks() {
+		add_action(
+			'automator_app_settings_brevo_before_disconnected_panel',
+			array( $this, 'maybe_add_api_key_error_alert' )
+		);
 	}
 
 	/**
@@ -58,381 +56,388 @@ class Brevo_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Set
 	 * @return void
 	 */
 	public function set_properties() {
-
-		$this->set_id( 'brevo' );
-		$this->set_icon( 'BREVO' );
-		$this->set_name( 'Brevo' );
-		$this->register_option( $this->helpers->get_const( 'OPTION_KEY' ) );
+		$this->account = $this->helpers->get_saved_account_details();
 	}
 
 	/**
-	 * Save Submitted Settings.
+	 * Called before authorization is attempted
+	 *
+	 * @param array $response The current response array
+	 * @param array $data The posted data
+	 *
+	 * @return array
+	 */
+	protected function before_authorization( $response = array(), $data = array() ) {
+		// Clear any existing account data before attempting to authorize
+		$this->helpers->delete_account_info();
+
+		return $response;
+	}
+
+	/**
+	 * Called after options are saved
+	 *
+	 * @param array $response The current response array
+	 * @param array $options The stored option data
+	 *
+	 * @return array
+	 */
+	protected function authorize_account( $response = array(), $options = array() ) {
+		// Validate the account details.
+		$this->account = $this->helpers->get_saved_account_details();
+
+		return $response;
+	}
+
+	/**
+	 * Called after successful authorization
+	 *
+	 * @param array $options The stored option data
+	 * @param array $response The current response array
+	 *
+	 * @return array
+	 */
+	protected function after_authorization( $response = array(), $options = array() ) {
+		if ( ! empty( $this->account['status'] ) ) {
+			// Set initial transient data
+			foreach ( $this->get_transient_config() as $key => $item ) {
+				$this->api->{ $item['api_method'] }();
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Get formatted account information for connected user info display
+	 *
+	 * @return array Formatted account information for UI display
+	 */
+	protected function get_formatted_account_info() {
+		return array(
+			'main_info'  => $this->account['company'] ?? '',
+			'additional' => ! empty( $this->account['email'] ) ? sprintf(
+				// translators: %1$s Email address
+				esc_html_x( 'Account email: %1$s', 'Brevo', 'uncanny-automator' ),
+				esc_html( $this->account['email'] )
+			) : '',
+		);
+	}
+
+	/**
+	 * Called after disconnecting the integration has been validated.
+	 *
+	 * @param array $response The current response array
+	 * @param array $data The posted data
+	 *
+	 * @return array
+	 */
+	protected function after_disconnect( $response = array(), $data = array() ) {
+		// Clear all transients
+		foreach ( array_keys( $this->get_transient_config() ) as $key ) {
+			delete_transient( "automator_brevo_{$key}" );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Maybe add the API key error alert.
 	 *
 	 * @return void
 	 */
-	public function settings_updated() {
-		// Gets and saves account details if connected.
-		$account = $this->helpers->get_account();
-		if ( ! empty( $account['status'] ) ) {
-			// Set initial transient data.
-			$options = $this->helpers->get_contact_attributes();
-			$options = $this->helpers->get_lists();
-			$options = $this->helpers->get_templates();
+	public function maybe_add_api_key_error_alert() {
+		// No errors to display.
+		if ( empty( $this->account['error'] ?? '' ) ) {
+			return;
 		}
-	}
 
-	/**
-	 * Main panel content.
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_content() {
-
-		$this->api_key              = $this->helpers->get_api_key();
-		$this->account              = $this->helpers->get_saved_account_details();
-		$this->is_account_connected = ! empty( $this->account['status'] );
-		$this->disconnect_url       = $this->helpers->get_disconnect_url();
-
-		// Formatting.
-		$kses_text = array(
-			'strong' => true,
-			'i'      => true,
-		);
-		$kses_link = array(
-			'a'       => array(
-				'href'   => true,
-				'target' => true,
-			),
-			'uo-icon' => array(
-				'id' => true,
-			),
-		);
-
-		?>
-		<?php if ( ! $this->is_account_connected ) { ?>
-
-			<?php
-			// If we have an API Key but unable to connect show error message with disconnect button.
-			if ( ! empty( $this->account['error'] ) ) {
-				if ( 'unauthorized-ip' === $this->account['error'] ) {
-					?>
-					<uo-alert type="error" heading="<?php echo esc_attr_x( 'IP Whitelist Restriction', 'Brevo', 'uncanny-automator' ); ?>">
-						<?php echo esc_html_x( 'Unable to connect your Brevo account due to blocking of unknown IP addresses.', 'Brevo', 'uncanny-automator' ); ?>
-						<br><br>
-						<?php echo esc_html_x( 'To fix this please follow these steps:', 'Brevo', 'uncanny-automator' ); ?>
-						<ol class="uap-spacing-top uap-spacing-top--small">
-							<li>
-								<?php
-								printf(
-									/* translators: %s: Link to Brevo security page */
-									esc_html_x( 'Go to %s in your Brevo account', 'Brevo', 'uncanny-automator' ),
-									wp_kses( $this->helpers->get_authorized_ips_link(), $kses_link )
-								);
-								?>
-							</li>
-							<li>
-								<?php
-								printf(
-									/* translators: %s: Deactivate blocking text */
-									esc_html_x( 'Click %s', 'Brevo', 'uncanny-automator' ),
-									'<strong>' . esc_html_x( 'Deactivate blocking', 'Brevo', 'uncanny-automator' ) . '</strong>'
-								);
-								?>
-							</li>
-							<li><?php echo esc_html_x( 'Once deactivated, please try connecting your account again.', 'Brevo', 'uncanny-automator' ); ?></li>
-						</ol>
-					</uo-alert>
-					<br/>
-					<?php
-				} else {
-					?>
-					<uo-alert type="error" heading="<?php echo esc_attr_x( 'Unable to connect to Brevo', 'Brevo', 'uncanny-automator' ); ?>">
-						<?php echo esc_html( $this->account['error'] ); ?>
-					</uo-alert>
-					<br/>
-					<?php
-				}
-			}
-			?>
-
-			<div class="uap-settings-panel-content-subtitle">
-				<?php echo esc_html_x( 'Connect Uncanny Automator to Brevo', 'Brevo', 'uncanny-automator' ); ?>
-			</div>
-
-			<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-				<?php echo esc_html_x( 'Connect Uncanny Automator to Brevo to connect contact and list management to WordPress activities like submitting forms, making purchases and joining groups.', 'Brevo', 'uncanny-automator' ); ?>
-			</div>
-
-			<p>
-				<strong><?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Brevo', 'uncanny-automator' ); ?></strong>
-			</p>
-
-			<ul>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Brevo', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Create or update a contact', 'Brevo', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Brevo', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Delete a contact', 'Brevo', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Brevo', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add a contact to a list', 'Brevo', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Brevo', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Remove a contact from a list', 'Brevo', 'uncanny-automator' ); ?>
-				</li>
-			</ul>
-
-			<uo-alert heading="<?php echo esc_attr_x( 'Setup instructions', 'Brevo', 'uncanny-automator' ); ?>">
-
-				<?php
-				printf(
-					/* translators: %s: HTML link to Brevo account */
-					esc_html_x(
-						'To obtain your Brevo API Key, follow these steps in your %s account:',
-						'Brevo',
-						'uncanny-automator'
+		// If the error is an unauthorized IP address, display the setup instructions.
+		if ( 'unauthorized-ip' === $this->account['error'] ) {
+			$content  = esc_html_x( 'Unable to connect your Brevo account due to blocking of unknown IP addresses.', 'Brevo', 'uncanny-automator' );
+			$content .= $this->generate_steps_list(
+				array(
+					sprintf(
+						// translators: %s: Link to Brevo security page
+						esc_html_x( 'Go to %s in your Brevo account', 'Brevo', 'uncanny-automator' ),
+						$this->helpers->get_authorized_ips_link()
 					),
 					sprintf(
-						'<a href="https://app.brevo.com/" target="_blank">%s</a>',
-						esc_html_x( 'Brevo', 'Brevo', 'uncanny-automator' )
-					)
-				);
-				?>
+						// translators: %s: Deactivate blocking text
+						esc_html_x( 'Click %s', 'Brevo', 'uncanny-automator' ),
+						'<strong>' . esc_html_x( 'Deactivate blocking', 'Brevo', 'uncanny-automator' ) . '</strong>'
+					),
+					esc_html_x( 'Once deactivated, please try connecting your account again.', 'Brevo', 'uncanny-automator' ),
+				)
+			);
 
-				<ol class="uap-spacing-top uap-spacing-top--small uap-spacing-bottom uap-spacing-bottom--none">
-					<li><?php echo esc_html_x( 'Click your Profile button in the upper right side of the screen to see your profile options.', 'Brevo', 'uncanny-automator' ); ?></li>
-					<li>
-					<?php
-						printf(
-							/* translators: %s: SMTP & API text */
-							esc_html_x( 'Select %s.', 'Brevo', 'uncanny-automator' ),
-							'<strong>' . esc_html_x( 'SMTP & API', 'Brevo', 'uncanny-automator' ) . '</strong>'
-						);
-					?>
-					</li>
-					<li>
-					<?php
-						printf(
-							/* translators: %1$s: SMTP & API text, %2$s: API Keys text */
-							esc_html_x( 'On the %1$s page, click %2$s.', 'Brevo', 'uncanny-automator' ),
-							'<i>' . esc_html_x( 'SMTP & API', 'Brevo', 'uncanny-automator' ) . '</i>',
-							'<strong>' . esc_html_x( 'API Keys', 'Brevo', 'uncanny-automator' ) . '</strong>'
-						);
-					?>
-					</li>
-					<li>
-					<?php
-						printf(
-							/* translators: %s: Generate a new API key text */
-							esc_html_x( 'In the upper right, click %s.', 'Brevo', 'uncanny-automator' ),
-							'<strong>' . esc_html_x( 'Generate a new API key', 'Brevo', 'uncanny-automator' ) . '</strong>'
-						);
-					?>
-					</li>
-					<li>
-					<?php
-						printf(
-							/* translators: %1$s: Name your API key text, %2$s: Generate text */
-							esc_html_x( 'A pop-up window will ask you to %1$s. Enter a name such as "your-website-Automator" and click %2$s.', 'Brevo', 'uncanny-automator' ),
-							'<i>' . esc_html_x( 'Name your API key', 'Brevo', 'uncanny-automator' ) . '</i>',
-							'<strong>' . esc_html_x( 'Generate', 'Brevo', 'uncanny-automator' ) . '</strong>'
-						);
-					?>
-					</li>
-					<li>
-						<?php
-						printf(
-							/* translators: %s: Connect Brevo account text */
-							esc_html_x( 'You will now have an API key to enter in the field below. Once entered, click the %s button to enable your integration with Automator.', 'Brevo', 'uncanny-automator' ),
-							'<strong>' . esc_html_x( 'Connect Brevo account', 'Brevo', 'uncanny-automator' ) . '</strong>'
-						);
-						?>
-						<br>
-						<?php
-						printf(
-							/* translators: %1$s: Note text, %2$s: Save this key text */
-							esc_html_x( '%1$s: %2$s', 'Brevo', 'uncanny-automator' ),
-							'<strong>' . esc_html_x( 'Note', 'Brevo', 'uncanny-automator' ) . '</strong>',
-							'<i>' . esc_html_x( 'Save this key somewhere safe as it will not be accessible again and you will have to generate a new one.', 'Brevo', 'uncanny-automator' ) . '</i>'
-						);
-						?>
-					</li>
-				</ol>
-
-				<div class="uap-spacing-top">
-					<strong><?php echo esc_html_x( 'Important:', 'Brevo', 'uncanny-automator' ); ?></strong>
-					<?php
-					printf(
-						/* translators: %1$s: Link to Brevo security page, %2$s: Deactivate blocking text */
-						esc_html_x( 'To use the Brevo integration with Automator you must %2$s from %1$s', 'Brevo', 'uncanny-automator' ),
-						wp_kses( $this->helpers->get_authorized_ips_link(), $kses_link ),
-						'<strong>' . esc_html_x( 'deactivate unknown IP blocking', 'Brevo', 'uncanny-automator' ) . '</strong>'
-					);
-					?>
-				</div>
-
-			</uo-alert>
-
-			<?php // Show API Key field. ?>
-			<uo-text-field
-				id="automator_brevo_api_key"
-				value="<?php echo esc_attr( $this->api_key ); ?>"
-				label="<?php echo esc_attr_x( 'API key', 'Brevo', 'uncanny-automator' ); ?>"
-				required
-				class="uap-spacing-top"
-			></uo-text-field>
-
-		<?php } else { ?>
-
-			<?php $this->load_js( '/brevo/settings/assets/script.js' ); ?>
-			<?php $this->load_css( '/brevo/settings/assets/style.css' ); ?>
-
-
-			<uo-alert heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Brevo account at a time.', 'Brevo', 'uncanny-automator' ); ?>" class="uap-spacing-bottom">
-			</uo-alert>
-
-			<div class="uap-settings-panel-content-subtitle">
-				<?php echo esc_html_x( 'Brevo Data', 'Brevo', 'uncanny-automator' ); ?>
-			</div>
-
-			<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-				<p><?php echo esc_html_x( 'The following data is available for use in your recipes:', 'Brevo', 'uncanny-automator' ); ?></p>
-			</div>
-
-			<div id="brevo-transient-sync-list">
-				<?php $this->transient_refresh( 'contacts/lists' ); ?>
-				<?php $this->transient_refresh( 'contacts/attributes' ); ?>
-				<?php $this->transient_refresh( 'templates' ); ?>
-			</div>
-
-			<?php
+			$this->add_alert(
+				array(
+					'type'    => 'error',
+					'heading' => esc_attr_x( 'IP Whitelist Restriction', 'Brevo', 'uncanny-automator' ),
+					'content' => $content,
+				)
+			);
+			return;
 		}
+
+		// Show alert for other errors.
+		$this->add_alert(
+			array(
+				'type'    => 'error',
+				'heading' => esc_attr_x( 'Unable to connect to Brevo', 'Brevo', 'uncanny-automator' ),
+				'content' => $this->account['error'],
+			)
+		);
 	}
 
 	/**
-	 * Bottom left panel content.
+	 * Get Brevo transient config for table and refresh actions.
 	 *
-	 * @return string - HTML
+	 * @return array
 	 */
-	public function output_panel_bottom_left() {
-
-		// If the user is not connected, show a field for the API key.
-		if ( ! $this->is_account_connected ) {
-			?>
-			<uo-button type="submit">
-				<?php echo esc_html_x( 'Connect Brevo account', 'Brevo', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
-		} else {
-
-			// Show Account details & connection status
-			?>
-
-			<div class="uap-settings-panel-user">
-
-				<div class="uap-settings-panel-user__avatar">
-					<uo-icon integration="BREVO"></uo-icon>
-				</div>
-
-				<div class="uap-settings-panel-user-info">
-					<div class="uap-settings-panel-user-info__main">
-						<?php echo esc_html( $this->account['company'] ); ?>
-					</div>
-
-					<div class="uap-settings-panel-user-info__additional">
-						<?php
-						printf(
-							/* translators: 1. Email address */
-							esc_html_x( 'Account email: %1$s', 'Brevo', 'uncanny-automator' ),
-							esc_html( $this->account['email'] )
-						);
-						?>
-					</div>
-				</div>
-			</div>
-
-			<?php
-		}
+	protected function get_transient_config() {
+		return array(
+			'contacts/lists'      => array(
+				'icon'       => 'list',
+				'name'       => esc_html_x( 'Contact lists', 'Brevo', 'uncanny-automator' ),
+				'api_method' => 'get_lists',
+			),
+			'contacts/attributes' => array(
+				'icon'       => 'user',
+				'name'       => esc_html_x( 'Custom contact attributes', 'Brevo', 'uncanny-automator' ),
+				'api_method' => 'get_contact_attributes',
+			),
+			'templates'           => array(
+				'icon'       => 'envelope',
+				'name'       => esc_html_x( 'Email templates', 'Brevo', 'uncanny-automator' ),
+				'api_method' => 'get_templates',
+			),
+		);
 	}
 
 	/**
-	 * Bottom right panel content.
+	 * Get the transient refresh table data
 	 *
-	 * @return string - HTML
+	 * @return array
 	 */
-	public function output_panel_bottom_right() {
+	private function get_transient_refresh_table_data() {
+		// 1. Define columns
+		$columns = array(
+			array(
+				'key' => 'icon',
+			),
+			array(
+				'key' => 'title',
+			),
+			array(
+				'key' => 'action',
+			),
+		);
 
-		if ( $this->is_account_connected ) {
-			?>
-			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
-				<uo-icon id="right-from-bracket"></uo-icon>
-				<?php echo esc_html_x( 'Disconnect', 'Brevo', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
+		// 2. Build data array from config
+		$config = $this->get_transient_config();
+		$data   = array();
+		foreach ( $config as $key_part => $item ) {
+			// Check if transient exists.
+			$options = get_transient( "automator_brevo_{$key_part}" );
+			if ( false === $options ) {
+				// If not, get options from API.
+				$options = $this->api->{ $item['api_method'] }();
+			}
+			$count = ! empty( $options ) ? count( $options ) : 0;
+			$desc  = sprintf(
+				// translators: %s Data type
+				esc_html_x(
+					'Use the sync button if %s were updated within the last 24hrs and aren\'t yet showing in your recipes.',
+					'Brevo',
+					'uncanny-automator'
+				),
+				esc_html( strtolower( $item['name'] ) )
+			);
+			$data[] = array(
+				'id'          => $key_part,
+				'columns'     => array(
+					'icon'   => array(
+						'options' => array(
+							array(
+								'type' => 'icon',
+								'data' => array(
+									'id' => $item['icon'],
+								),
+							),
+						),
+					),
+					'title'  => array(
+						'options' => array(
+							array(
+								'type' => 'text',
+								'data' => sprintf( '%s ( %d )', $item['name'], $count ),
+							),
+						),
+					),
+					'action' => array(
+						'options' => array(
+							array(
+								'type' => 'button',
+								'data' => array(
+									'type'           => 'submit',
+									'name'           => 'automator_action',
+									'value'          => 'transient_refresh',
+									'row-submission' => true,
+									'label'          => esc_html_x( 'Refresh', 'Brevo', 'uncanny-automator' ),
+									'color'          => 'secondary',
+									'size'           => 'extra-small',
+									'icon'           => array(
+										'id' => 'rotate',
+									),
+								),
+							),
+						),
+					),
+				),
+				'description' => $desc,
+			);
 		}
+
+		return array(
+			'columns' => $columns,
+			'data'    => $data,
+		);
 	}
 
 	/**
-	 * Refresh transient Details.
+	 * Handle transient refresh action
 	 *
-	 * @param string $key_part - transient key part.
+	 * @param array $response - The current response array
+	 * @param array $data - The data posted to the settings page.
 	 *
-	 * @return string - HTML
+	 * @return array
 	 */
-	public function transient_refresh( $key_part ) {
-
-		$key     = "automator_brevo_{$key_part}";
-		$options = get_transient( $key );
-		$count   = ! empty( $options ) ? count( $options ) : 0;
-
-		switch ( $key_part ) {
-			case 'contacts/lists':
-				$name = esc_html_x( 'Contact lists', 'Brevo', 'uncanny-automator' );
-				$icon = 'list-view';
-				break;
-			case 'contacts/attributes':
-				$name = esc_html_x( 'Custom contact attributes', 'Brevo', 'uncanny-automator' );
-				$icon = 'admin-users';
-				break;
-			case 'templates':
-				$name = esc_html_x( 'Email Templates', 'Brevo', 'uncanny-automator' );
-				$icon = 'email-alt';
-				break;
+	public function handle_transient_refresh( $response = array(), $data = array() ) {
+		$config = $this->get_transient_config();
+		$key    = $this->maybe_get_posted_row_id( $data );
+		if ( ! $key || ! array_key_exists( $key, $config ) ) {
+			$response['alert'] = $this->get_error_alert(
+				esc_attr_x( 'Unable to refresh data', 'Brevo', 'uncanny-automator' ),
+				esc_html_x( 'Invalid key', 'Brevo', 'uncanny-automator' )
+			);
+			return $response;
 		}
-		?>
-		<div class="uap-brevo-transient-sync-wrapper uap-spacing-top">
-			<div class="uap-brevo-transient-sync">
-				<div class="uap-brevo-transient">
-					<div class="uap-brevo-transient-content">
-						<span class="uap-brevo-transient-name-count">
-							<span class="dashicons dashicons-<?php echo $icon; ?>"></span><?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-							<span class="uap-brevo-transient-name">
-								<?php echo esc_html( $name ); ?> ( <span class="uap-brevo-sync-items-count"><?php echo esc_html( $count ); ?></span> )
-							</span>
-						</span>
-					</div>
-					<div class="uap-brevo-transient-actions">
-						<uo-tooltip>
-							<?php echo esc_html_x( 'Refresh', 'Brevo', 'uncanny-automator' ); ?>
-							<uo-button color="secondary" size="extra-small" slot="target" class="uap-brevo-transient-sync-refresh" data-key="<?php echo esc_attr( $key_part ); ?>">
-								<uo-icon id="rotate"></uo-icon>
-							</uo-button>
-						</uo-tooltip>
-					</div>
-				</div>
-				<div class="uap-brevo-last-sync-details">
-					<?php
-						printf(
-							/* translators: %s Data type name */
-							esc_html_x( "Use the sync button if %s were updated within the last 24hrs and aren't yet showing in your recipes.", 'Brevo', 'uncanny-automator' ),
-							esc_html( strtolower( $name ) )
-						);
-					?>
-				</div>
-			</div>
-		</div>
-		<?php
+
+		// Delete existing transient.
+		delete_transient( "automator_brevo_{$key}" );
+
+		// Get selected options.
+		$message = $config[ $key ]['name'];
+		$options = $this->api->{ $config[ $key ]['api_method'] }();
+
+		// If no options are returned, return a warning alert.
+		if ( empty( $options ) ) {
+			$response['alert'] = $this->get_warning_alert(
+				esc_attr_x( 'No data found', 'Brevo', 'uncanny-automator' ),
+				sprintf(
+					// translators: %s Data type
+					esc_html_x( 'No data returned from the API for %s', 'Brevo', 'uncanny-automator' ),
+					esc_html( $message )
+				)
+			);
+			return $response;
+		}
+
+		// Get updated table data.
+		$table_data = $this->get_transient_refresh_table_data();
+
+		// Set the response data.
+		$response['data']  = $table_data['data'];
+		$response['alert'] = $this->get_success_alert(
+			esc_attr_x( 'Data refreshed', 'Brevo', 'uncanny-automator' ),
+			sprintf(
+				// translators: %s Data type
+				esc_html_x( 'Data refreshed successfully for %s', 'Brevo', 'uncanny-automator' ),
+				esc_html( $message )
+			)
+		);
+		return $response;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Templating
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Output main disconnected content.
+	 *
+	 * @return void
+	 */
+	public function output_main_disconnected_content() {
+
+		// Output the standard disconnected integration header with subtitle and description.
+		$this->output_disconnected_header(
+			esc_html_x( 'Connect Uncanny Automator to Brevo to connect contact and list management to WordPress activities like submitting forms, making purchases and joining groups.', 'Brevo', 'uncanny-automator' )
+		);
+
+		// Automatically generated list of available triggers and actions scanned from Premium_Integration_Items trait.
+		$this->output_available_items();
+
+		// Output setup instructions.
+		$this->output_setup_instructions(
+			// Main heading.
+			sprintf(
+				// translators: %s Brevo account URL
+				esc_html_x( 'To obtain your Brevo API Key, follow these steps in your %s account:', 'Brevo', 'uncanny-automator' ),
+				$this->get_escaped_link( 'https://app.brevo.com/', 'Brevo' )
+			),
+			// Array of instruction steps to obtain the API key.
+			array(
+				esc_html_x( 'Click your Profile button in the upper right side of the screen to see your profile options.', 'Brevo', 'uncanny-automator' ),
+				esc_html_x( 'Select SMTP & API.', 'Brevo', 'uncanny-automator' ),
+				esc_html_x( 'On the SMTP & API page, click API Keys.', 'Brevo', 'uncanny-automator' ),
+				esc_html_x( 'In the upper right, click Generate a new API key.', 'Brevo', 'uncanny-automator' ),
+				esc_html_x( 'A pop-up window will ask you to Name your API key. Enter a name such as "your-website-automator" and click Generate.', 'Brevo', 'uncanny-automator' ), // phpcs:ignore Uncanny_Automator.Strings.SentenceCase.IncorrectReservedWordCase
+				esc_html_x( 'You will now have an API key to enter in the field below. Once entered, click the Connect Brevo account button to enable your integration with Automator. Note: Save this key somewhere safe as it will not be accessible again and you will have to generate a new one.', 'Brevo', 'uncanny-automator' ),
+			)
+		);
+
+		// Output security notice as a separate alert.
+		$this->alert_html(
+			array(
+				'type'    => 'info',
+				'heading' => esc_attr_x( 'Important', 'Brevo', 'uncanny-automator' ),
+				'content' => sprintf(
+					/* translators: %1$s: Link to Brevo security page, %2$s: Deactivate blocking text */
+					esc_html_x( 'To use the Brevo integration with Automator you must %2$s from %1$s', 'Brevo', 'uncanny-automator' ),
+					$this->helpers->get_authorized_ips_link(),
+					'<strong>' . esc_html_x( 'deactivate unknown IP blocking', 'Brevo', 'uncanny-automator' ) . '</strong>'
+				),
+			)
+		);
+
+		// Show API Key field
+		$this->text_input_html(
+			array(
+				'id'       => $this->helpers->get_const( 'API_KEY_OPTION' ),
+				'value'    => esc_attr( $this->helpers->get_credentials() ),
+				'label'    => esc_attr_x( 'API key', 'Brevo', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
+	}
+
+	/**
+	 * Output main connected content.
+	 *
+	 * @return void
+	 */
+	public function output_main_connected_content() {
+		$this->output_single_account_message();
+
+		// Output the Brevo transient data manager.
+		$this->output_panel_subtitle( esc_html_x( 'Brevo Data', 'Brevo', 'uncanny-automator' ) );
+		$this->output_subtle_panel_paragraph( esc_html_x( 'The following data is available for use in your recipes:', 'Brevo', 'uncanny-automator' ) );
+
+		$table_data = $this->get_transient_refresh_table_data();
+		$this->output_settings_table( $table_data['columns'], $table_data['data'], 'card', false );
 	}
 }

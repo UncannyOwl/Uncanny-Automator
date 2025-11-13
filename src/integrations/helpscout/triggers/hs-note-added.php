@@ -6,9 +6,12 @@ namespace Uncanny_Automator\Integrations\Helpscout;
  * Class Hs_Note_Added
  *
  * @package Uncanny_Automator
- * @method Helpscout_Helpers get_item_helpers()
+ *
+ * @property Helpscout_App_Helpers $helpers
+ * @property Helpscout_Api_Caller $api
+ * @property Helpscout_Webhooks $webhooks
  */
-class Hs_Note_Added extends \Uncanny_Automator\Recipe\Trigger {
+class Hs_Note_Added extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
 	 * Constant TRIGGER_CODE.
@@ -30,7 +33,7 @@ class Hs_Note_Added extends \Uncanny_Automator\Recipe\Trigger {
 	 * @return bool
 	 */
 	public function requirements_met() {
-		return automator_get_option( 'uap_helpscout_enable_webhook', false );
+		return $this->webhooks->get_webhooks_enabled_status();
 	}
 
 	/**
@@ -52,13 +55,13 @@ class Hs_Note_Added extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_sentence(
 			sprintf(
 				/* translators: %1$s: Conversation */
-				esc_html_x( 'A note is added to {{a conversation:%1$s}}', 'HelpScout', 'uncanny-automator' ),
+				esc_html_x( 'A note is added to {{a conversation:%1$s}}', 'Help Scout', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
-			esc_html_x( 'A note is added to {{a conversation}}', 'HelpScout', 'uncanny-automator' )
+			esc_html_x( 'A note is added to {{a conversation}}', 'Help Scout', 'uncanny-automator' )
 		);
 
 		$this->add_action( 'automator_helpscout_webhook_received', 10, 2 );
@@ -74,25 +77,25 @@ class Hs_Note_Added extends \Uncanny_Automator\Recipe\Trigger {
 		return array(
 			array(
 				'option_code'           => 'MAILBOX',
-				'label'                 => esc_html_x( 'Mailbox', 'HelpScout', 'uncanny-automator' ),
-				'token_name'           => esc_html_x( 'Selected mailbox', 'Help Scout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Mailbox', 'Help Scout', 'uncanny-automator' ),
+				'token_name'            => esc_html_x( 'Selected mailbox', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
-				'options'               => $this->get_item_helpers()->fetch_mailboxes( true ),
+				'options'               => $this->helpers->get_mailboxes( true ),
 				'supports_custom_value' => false,
 				'required'              => true,
 			),
 			array(
 				'option_code'           => self::TRIGGER_META,
-				'label'                 => esc_html_x( 'Conversation', 'HelpScout', 'uncanny-automator' ),
-				'token_name'           => esc_html_x( 'Selected conversation', 'Help Scout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Conversation', 'Help Scout', 'uncanny-automator' ),
+				'token_name'            => esc_html_x( 'Selected conversation', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
 				'options'               => array(),
 				'supports_custom_value' => false,
 				'required'              => true,
 				'ajax'                  => array(
-					'endpoint'       => 'helpscout_fetch_conversations',
-					'event'          => 'parent_fields_change',
-					'listen_fields'  => array( 'MAILBOX' ),
+					'endpoint'      => 'helpscout_fetch_conversations',
+					'event'         => 'parent_fields_change',
+					'listen_fields' => array( 'MAILBOX' ),
 				),
 			),
 		);
@@ -180,7 +183,7 @@ class Hs_Note_Added extends \Uncanny_Automator\Recipe\Trigger {
 		list( $params, $headers ) = $hook_args;
 
 		// Check that this is a note created event
-		if ( ! $this->get_item_helpers()->is_webhook_request_matches_event( $headers, 'convo.note.created' ) ) {
+		if ( ! $this->webhooks->is_webhook_request_matches_event( $headers, 'convo.note.created' ) ) {
 			return false;
 		}
 
@@ -221,19 +224,19 @@ class Hs_Note_Added extends \Uncanny_Automator\Recipe\Trigger {
 		}
 
 		return array(
-			self::TRIGGER_META        => $params['id'], // Parsing auto-generated relevant token.
-			'MAILBOX'                 => $params['mailboxId'], // Parsing auto-generated relevant token.
-			'customer_name'           => ! empty( $customer_name ) ? $customer_name : $params['customer']['email'],
-			'customer_email'          => $params['primaryCustomer']['email'],
-			'conversation_url'        => $conversation_url,
-			'conversation_title'      => $params['subject'],
-			'conversation_status'     => $params['status'],
-			'note'                    => $note['body'],
-			'note_added_by'           => $note_user,
-			'note_assigned_to'        => $note_assignee,
-			'number'                  => isset( $params['number'] ) ? $params['number'] : '',
-			'conversation_id'         => $params['id'],
-			'folderId'                => isset( $params['folderId'] ) ? $params['folderId'] : '',
+			self::TRIGGER_META    => $params['id'], // Parsing auto-generated relevant token.
+			'MAILBOX'             => $params['mailboxId'], // Parsing auto-generated relevant token.
+			'customer_name'       => ! empty( $customer_name ) ? $customer_name : $params['customer']['email'],
+			'customer_email'      => $params['primaryCustomer']['email'],
+			'conversation_url'    => $conversation_url,
+			'conversation_title'  => $params['subject'],
+			'conversation_status' => $params['status'],
+			'note'                => $note['body'],
+			'note_added_by'       => $note_user,
+			'note_assigned_to'    => $note_assignee,
+			'number'              => isset( $params['number'] ) ? $params['number'] : '',
+			'conversation_id'     => $params['id'],
+			'folderId'            => isset( $params['folderId'] ) ? $params['folderId'] : '',
 		);
 	}
 

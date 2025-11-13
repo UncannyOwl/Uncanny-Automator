@@ -6,9 +6,11 @@ namespace Uncanny_Automator\Integrations\Helpscout;
  * Class Helpscout_Conversation_Create
  *
  * @package Uncanny_Automator
- * @method Helpscout_Helpers get_item_helpers()
+ *
+ * @property Helpscout_App_Helpers $helpers
+ * @property Helpscout_Api_Caller $api
  */
-class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\Action {
+class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Setup action.
@@ -25,20 +27,20 @@ class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 
 		/* translators: %1$s: Mailbox */
-		$this->set_sentence( sprintf( esc_html_x( 'Create a conversation in {{a mailbox:%1$s}}', 'HelpScout', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_html_x( 'Create a conversation in {{a mailbox:%1$s}}', 'Help Scout', 'uncanny-automator' ), $this->get_action_meta() ) );
 
-		$this->set_readable_sentence( esc_html_x( 'Create a conversation in {{a mailbox}}', 'HelpScout', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'Create a conversation in {{a mailbox}}', 'Help Scout', 'uncanny-automator' ) );
 
 		$this->set_background_processing( true );
 
 		$this->set_action_tokens(
 			array(
 				'CONVERSATION_ID'  => array(
-					'name' => esc_html_x( 'Conversation ID', 'HelpScout', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Conversation ID', 'Help Scout', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 				'CONVERSATION_URL' => array(
-					'name' => esc_html_x( 'Conversation URL', 'HelpScout', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Conversation URL', 'Help Scout', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),
@@ -56,69 +58,69 @@ class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\Action {
 		return array(
 			array(
 				'option_code'           => $this->get_action_meta(),
-				'label'                 => esc_html_x( 'Mailbox', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Mailbox', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
-				'options'               => $this->get_item_helpers()->fetch_mailboxes(),
+				'options'               => $this->helpers->get_mailboxes(),
 				'supports_custom_value' => false,
 				'required'              => true,
 			),
 			array(
 				'option_code'           => 'CREATED_BY',
-				'label'                 => esc_html_x( 'Created by', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Created by', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
 				'options'               => array(),
 				'supports_custom_value' => false,
 				'required'              => true,
 				'options_show_id'       => false,
 				'ajax'                  => array(
-					'endpoint'       => 'automator_helpscout_fetch_mailbox_users',
-					'event'          => 'parent_fields_change',
-					'listen_fields'  => array( $this->get_action_meta() ),
+					'endpoint'      => 'automator_helpscout_fetch_mailbox_users',
+					'event'         => 'parent_fields_change',
+					'listen_fields' => array( $this->get_action_meta() ),
 				),
 			),
 			array(
 				'option_code'           => 'FIRST_NAME',
-				'label'                 => esc_html_x( 'Customer first name', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Customer first name', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'text',
 				'supports_custom_value' => true,
 			),
 			array(
 				'option_code'           => 'LAST_NAME',
-				'label'                 => esc_html_x( 'Customer last name', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Customer last name', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'text',
 				'supports_custom_value' => true,
 			),
 			array(
 				'option_code'           => 'EMAIL',
-				'label'                 => esc_html_x( 'Customer email', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Customer email', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'email',
 				'supports_custom_value' => true,
 				'required'              => true,
 			),
 			array(
 				'option_code'           => 'SUBJECT',
-				'label'                 => esc_html_x( 'Subject', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Subject', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'text',
 				'supports_custom_value' => true,
 				'required'              => true,
 			),
 			array(
 				'option_code'           => 'BODY',
-				'label'                 => esc_html_x( 'Body', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Body', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'textarea',
 				'supports_custom_value' => true,
 				'required'              => true,
 			),
 			array(
 				'option_code'           => 'TAGS',
-				'label'                 => esc_html_x( 'Tags', 'HelpScout', 'uncanny-automator' ),
-				'description'           => esc_html_x( 'Comma separated list of tags.', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Tags', 'Help Scout', 'uncanny-automator' ),
+				'description'           => esc_html_x( 'Comma separated list of tags.', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'text',
 				'supports_custom_value' => true,
 			),
 			array(
 				'option_code'     => 'STATUS',
-				'label'           => esc_html_x( 'Status', 'HelpScout', 'uncanny-automator' ),
+				'label'           => esc_html_x( 'Status', 'Help Scout', 'uncanny-automator' ),
 				'input_type'      => 'select',
 				'options'         => array(
 					array(
@@ -139,16 +141,16 @@ class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\Action {
 			),
 			array(
 				'option_code'           => 'ASSIGNEE',
-				'label'                 => esc_html_x( 'Assign to', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Assign to', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
 				'options'               => array(),
 				'required'              => true,
 				'supports_custom_value' => false,
 				'options_show_id'       => false,
 				'ajax'                  => array(
-					'endpoint'       => 'automator_helpscout_fetch_mailbox_users',
-					'event'          => 'parent_fields_change',
-					'listen_fields'  => array( 'CREATED_BY' ),
+					'endpoint'      => 'automator_helpscout_fetch_mailbox_users',
+					'event'         => 'parent_fields_change',
+					'listen_fields' => array( 'CREATED_BY' ),
 				),
 			),
 		);
@@ -200,7 +202,7 @@ class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\Action {
 		$body_params['first_name'] = $customer_complete_name['first_name'];
 		$body_params['last_name']  = $customer_complete_name['last_name'];
 
-		$response = $this->get_item_helpers()->api_request( $body_params, $action_data );
+		$response = $this->api->api_request( $body_params, $action_data );
 
 		$this->hydrate_tokens(
 			array(

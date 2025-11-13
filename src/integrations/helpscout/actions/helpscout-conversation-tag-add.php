@@ -6,9 +6,10 @@ namespace Uncanny_Automator\Integrations\Helpscout;
  * Class Helpscout_Conversation_Tag_Add
  *
  * @package Uncanny_Automator
- * @method Helpscout_Helpers get_item_helpers()
+ * @property Helpscout_App_Helpers $helpers
+ * @property Helpscout_Api_Caller $api
  */
-class Helpscout_Conversation_Tag_Add extends \Uncanny_Automator\Recipe\Action {
+class Helpscout_Conversation_Tag_Add extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Setup action.
@@ -27,14 +28,14 @@ class Helpscout_Conversation_Tag_Add extends \Uncanny_Automator\Recipe\Action {
 		$this->set_sentence(
 			sprintf(
 				/* translators: %1$s: Tag, %2$s: Conversation */
-				esc_html_x( 'Add {{a tag:%1$s}} to {{a conversation:%2$s}}', 'HelpScout', 'uncanny-automator' ),
+				esc_html_x( 'Add {{a tag:%1$s}} to {{a conversation:%2$s}}', 'Help Scout', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'CONVERSATION:' . $this->get_action_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
-			esc_html_x( 'Add {{a tag}} to {{a conversation}}', 'HelpScout', 'uncanny-automator' )
+			esc_html_x( 'Add {{a tag}} to {{a conversation}}', 'Help Scout', 'uncanny-automator' )
 		);
 
 		$this->set_background_processing( true );
@@ -50,29 +51,29 @@ class Helpscout_Conversation_Tag_Add extends \Uncanny_Automator\Recipe\Action {
 		return array(
 			array(
 				'option_code'           => $this->get_action_meta(),
-				'label'                 => esc_html_x( 'Tag', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Tag', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'text',
 				'supports_custom_value' => true,
 				'required'              => true,
 			),
 			array(
 				'option_code'           => 'MAILBOX',
-				'label'                 => esc_html_x( 'Mailbox', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Mailbox', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
-				'options'               => $this->get_item_helpers()->fetch_mailboxes(),
+				'options'               => $this->helpers->get_mailboxes(),
 				'supports_custom_value' => true,
 				'required'              => true,
 			),
 			array(
 				'option_code'           => 'CONVERSATION',
-				'label'                 => esc_html_x( 'Conversation', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Conversation', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
 				'supports_custom_value' => false,
 				'required'              => true,
 				'ajax'                  => array(
-					'endpoint'       => 'helpscout_fetch_conversations',
-					'event'          => 'parent_fields_change',
-					'listen_fields'  => array( 'MAILBOX' ),
+					'endpoint'      => 'helpscout_fetch_conversations',
+					'event'         => 'parent_fields_change',
+					'listen_fields' => array( 'MAILBOX' ),
 				),
 			),
 		);
@@ -95,7 +96,7 @@ class Helpscout_Conversation_Tag_Add extends \Uncanny_Automator\Recipe\Action {
 		$tags            = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
 		$conversation_id = isset( $parsed['CONVERSATION'] ) ? sanitize_text_field( $parsed['CONVERSATION'] ) : 0;
 
-		$this->get_item_helpers()->api_request(
+		$this->api->api_request(
 			array(
 				'conversation_id' => $conversation_id,
 				'tags'            => $tags,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\Integrations\Mistral\Actions;
 
-use Uncanny_Automator\Recipe\Action;
+use Uncanny_Automator\Recipe\App_Action;
 use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_AI_Provider_Trait;
 use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_Payload_Message_Array_Builder_Trait;
 use Uncanny_Automator\Core\Lib\AI\Http\Response;
@@ -18,7 +18,7 @@ use Uncanny_Automator\Core\Lib\AI\Http\Response;
  * @package Uncanny_Automator\Integrations\Mistral\Actions
  * @since 5.6
  */
-class Mistral_Chat_Generate extends Action {
+class Mistral_Chat_Generate extends App_Action {
 
 	use Base_AI_Provider_Trait;
 	use Base_Payload_Message_Array_Builder_Trait;
@@ -222,11 +222,11 @@ class Mistral_Chat_Generate extends Action {
 
 		try {
 			// Extract parameters using get_parsed_meta_value like Claude action
-			$temperature    = $this->get_parsed_meta_value( 'TEMPERATURE' ) ?? '0.7';
-			$max_tokens     = $this->get_parsed_meta_value( 'MAX_TOKENS' ) ?? '2048';
-			$model          = $this->get_parsed_meta_value( 'MODEL' ) ?? 'mixtral-8x7b-instruct-v0.1';
-			$system_content = $this->get_parsed_meta_value( 'SYSTEM_CONTENT' ) ?? '';
-			$prompt         = $this->get_parsed_meta_value( $this->get_action_meta() ) ?? '';
+			$temperature    = $this->get_parsed_meta_value( 'TEMPERATURE', '0.7' );
+			$max_tokens     = $this->get_parsed_meta_value( 'MAX_TOKENS', '2048' );
+			$model          = $this->get_parsed_meta_value( 'MODEL', 'mixtral-8x7b-instruct-v0.1' );
+			$system_content = $this->get_parsed_meta_value( 'SYSTEM_CONTENT', '' );
+			$prompt         = $this->get_parsed_meta_value( $this->get_action_meta(), '' );
 
 			if ( empty( $temperature ) ) {
 				$temperature = '0.7';

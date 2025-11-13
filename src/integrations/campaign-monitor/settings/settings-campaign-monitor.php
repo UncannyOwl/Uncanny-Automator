@@ -7,267 +7,145 @@
 
 namespace Uncanny_Automator\Integrations\Campaign_Monitor;
 
+use Uncanny_Automator\Settings\App_Integration_Settings;
 use Exception;
 
 /**
  * Campaign_Monitor_Settings
+ *
+ * @property Campaign_Monitor_App_Helpers $helpers
+ * @property Campaign_Monitor_Api_Caller $api
  */
-class Campaign_Monitor_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
-
+class Campaign_Monitor_Settings extends App_Integration_Settings {
 
 	/**
-	 * Is Account Connected.
-	 *
-	 * @var bool $is_account_connected
+	 * Use OAuth trait for OAuth functionality.
 	 */
-	protected $is_account_connected;
+	use \Uncanny_Automator\Settings\OAuth_App_Integration;
+
 
 	/**
-	 * Disconnect URL.
-	 *
-	 * @var string $disconnect_url
-	 */
-	protected $disconnect_url;
-
-	/**
-	 * Account details.
-	 *
-	 * @var array $account
-	 */
-	protected $account;
-
-	/**
-	 * Integration status.
-	 *
-	 * @return string - 'success' or empty string
-	 */
-	public function get_status() {
-
-		return $this->helpers->integration_status();
-	}
-
-	/**
-	 * Sets up the properties of the settings page
+	 * Sets up the properties of the settings page.
 	 *
 	 * @return void
 	 */
 	public function set_properties() {
+		// Set the OAuth action for Campaign Monitor.
+		// The API server expects 'authorize' for OAuth flow.
+		$this->oauth_action = 'authorize';
 
-		$this->set_id( 'campaignmonitor' );
-		$this->set_icon( 'CAMPAIGN_MONITOR' );
-		$this->set_name( 'Campaign Monitor' );
+		// Campaign Monitor API expects 'user_url' instead of 'redirect_url'.
+		$this->redirect_param = 'user_url';
 
-		// Check for errors.
-		add_action( 'init', array( $this, 'capture_errors' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
+		// Error parameter name.
+		$this->error_param = 'error';
 	}
 
 	/**
-	 * Capture errors.
+	 * Get formatted account info.
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public function capture_errors() {
-		// Ensure this is the settings page.
-		if ( ! $this->is_current_page_settings() ) {
-			return;
+	protected function get_formatted_account_info() {
+		$account = $this->helpers->get_account_details();
+
+		if ( is_wp_error( $account ) ) {
+			return array();
 		}
 
-		if ( automator_filter_has_var( 'error_message' ) ) {
-			$this->display_errors( urldecode( automator_filter_input( 'error_message' ) ) );
-		}
-	}
+		$user_info = sprintf(
+			/* translators: 1. Primary Contact email */
+			esc_html_x( 'Primary Contact: %1$s', 'Campaign Monitor', 'uncanny-automator' ),
+			esc_html( $account['email'] )
+		);
 
-	/**
-	 * Display error messages.
-	 *
-	 * @param string $error_message - Error message.
-	 *
-	 * @return void
-	 */
-	public function display_errors( $error_message ) {
-		$this->add_alert(
-			array(
-				'type'    => 'error',
-				'heading' => esc_html_x( 'An error has occured', 'Campaign Monitor', 'uncanny-automator' ),
-				'content' => $error_message,
-			)
+		$additional_info = '';
+
+		if ( 'client' === $account['type'] ) {
+			// Format additional info as HTML with line breaks for multiple items.
+			$additional_info = sprintf(
+				'%s<br>%s',
+				$user_info,
+				sprintf(
+					// translators: 1. Client ID
+					esc_html_x( 'Client ID: %1$s', 'Campaign Monitor', 'uncanny-automator' ),
+					esc_html( $account['client']['value'] )
+				)
+			);
+
+			// Set Client name as main info.
+			$user_info = $account['client']['text'];
+		}
+
+		return array(
+			'avatar_type'    => 'icon',
+			'avatar_value'   => $this->get_icon(),
+			'main_info'      => $user_info,
+			'main_info_icon' => false,
+			'additional'     => $additional_info,
 		);
 	}
 
 	/**
-	 * Display Settings panel.
+	 * Output main connected content.
 	 *
 	 * @return void
+	 */
+	public function output_main_connected_content() {
+		$this->output_single_account_message(
+			esc_html_x( 'Agency accounts with multiple clients may select their specific client within actions.', 'Campaign Monitor', 'uncanny-automator' )
+		);
+	}
+
+	/**
+	 * Validate integration credentials.
+	 *
+	 * @param array $credentials
+	 * @return array
+	 * @throws \Exception
+	 */
+	protected function validate_integration_credentials( $credentials ) {
+		// Campaign Monitor doesn't have vault_signature like other integrations.
+		if ( empty( $credentials['access_token'] ) ) {
+			throw new Exception(
+				esc_html_x( 'Missing access token in credentials', 'Campaign Monitor', 'uncanny-automator' )
+			);
+		}
+		return $credentials;
+	}
+
+	/**
+	 * Authorize account.
+	 *
+	 * @param array $response
+	 * @param mixed $credentials
+	 * @return array
 	 * @throws Exception
 	 */
-	public function output_panel() {
-		// Account connected.
-		$this->is_account_connected = ! empty( Campaign_Monitor_Helpers::get_credentials() );
-		// Account details.
-		if ( $this->is_account_connected ) {
-			$this->account = $this->helpers->get_account_details();
-			if ( is_wp_error( $this->account ) ) {
-				$this->display_errors( $this->account->get_error_message() );
-				$this->is_account_connected = false;
-				$this->helpers->remove_credentials();
-			}
+	protected function authorize_account( $response, $credentials ) {
+		// Validate and fetch account info.
+		$account_info = $this->helpers->get_account_details();
+
+		if ( is_wp_error( $account_info ) ) {
+			throw new Exception( esc_html( $account_info->get_error_message() ) );
 		}
 
-		// Disconnect URL.
-		$this->disconnect_url = $this->is_account_connected ? Campaign_Monitor_Helpers::get_disconnect_url() : '';
-		?>
-		<div class="uap-settings-panel">
-			<div class="uap-settings-panel-top">
-				<?php $this->output_panel_top(); ?>
-				<?php $this->display_alerts(); ?>
-				<div class="uap-settings-panel-content">
-					<?php $this->output_panel_content(); ?>
-				</div>
-			</div>
-			<div class="uap-settings-panel-bottom" <?php echo esc_attr( ! $this->is_account_connected ? 'has-arrow' : '' ); ?>>
-				<?php $this->output_panel_bottom(); ?>
-			</div>
-		</div>
-		<?php
+		// Return response unchanged for OAuth flow.
+		return $response;
 	}
 
 	/**
-	 * Main panel content.
+	 * Before disconnect.
 	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_content() {
-		?>
-		<?php if ( ! $this->is_account_connected ) { ?>
-
-			<div class="uap-settings-panel-content-subtitle">
-				<?php echo esc_html_x( 'Connect Uncanny Automator to Campaign Monitor', 'Campaign Monitor', 'uncanny-automator' ); ?>
-			</div>
-
-			<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-				<?php echo esc_html_x( 'Connect Uncanny Automator to Campaign Monitor to streamline automations that incorporate list management, email marketing, customer profile, and activity on your WordPress site.', 'Campaign Monitor', 'uncanny-automator' ); ?>
-			</div>
-
-			<p>
-				<strong>
-					<?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Campaign Monitor', 'uncanny-automator' ); ?>
-				</strong>
-			</p>
-
-			<ul>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php echo esc_html_x( 'Action:', 'Campaign Monitor', 'uncanny-automator' ); ?></strong> 
-						<?php echo esc_html_x( 'Add or update a subscriber to a list', 'Campaign Monitor', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php echo esc_html_x( 'Action:', 'Campaign Monitor', 'uncanny-automator' ); ?></strong> 
-						<?php echo esc_html_x( 'Remove a subscriber from a list', 'Campaign Monitor', 'uncanny-automator' ); ?>
-				</li>
-			</ul>
-
-		<?php } else { ?>
-
-			<uo-alert heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Campaign Monitor account at a time although Agency accounts with multiple clients may select their specific client within actions.', 'Campaign Monitor', 'uncanny-automator' ); ?>" class="uap-spacing-bottom"></uo-alert> <?php // phpcs:ignore Uncanny_Automator.Strings.SentenceCase.PotentialCaseIssue ?>
-
-			<?php
-		}
-	}
-
-	/**
-	 * Bottom left panel content.
+	 * @param array $response The current response array
+	 * @param array $data The posted data
 	 *
-	 * @return string - HTML
+	 * @return array
 	 */
-	public function output_panel_bottom_left() {
+	protected function before_disconnect( $response = array(), $data = array() ) {
+		// Clear transients.
+		$this->helpers->clear_transients();
 
-		// Show the connect message if not connected.
-		if ( ! $this->is_account_connected ) {
-			?>
-			<uo-button 
-				href="<?php echo esc_url( Campaign_Monitor_Helpers::get_authorization_url() ); ?>" 
-				type="button"
-				target="_self"
-				unsafe-force-target
-			>
-				<?php echo esc_html_x( 'Connect Campaign Monitor account', 'Campaign Monitor', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
-		} else {
-
-			// Show the connected account details.
-			$user_info = sprintf(
-				/* translators: 1. Primary Contact email */
-				esc_html_x( 'Primary Contact: %1$s', 'Campaign Monitor', 'uncanny-automator' ),
-				esc_html( $this->account['email'] )
-			);
-
-			$additional_info = false;
-
-			if ( 'client' === $this->account['type'] ) {
-
-				// Add email and Client ID to additional info.
-				$additional_info = array(
-					$user_info,
-					sprintf(
-						/* translators: 1. Client ID */
-						esc_html_x( 'Client ID: %1$s', 'Campaign Monitor', 'uncanny-automator' ),
-						esc_html( $this->account['client']['value'] )
-					),
-				);
-
-				// Set Client name.
-				$user_info = $this->account['client']['text'];
-			}
-			?>
-
-			<div class="uap-settings-panel-user">
-
-				<div class="uap-settings-panel-user__avatar">
-					<uo-icon integration="CAMPAIGN_MONITOR"></uo-icon>
-				</div>
-
-				<div class="uap-settings-panel-user-info">
-					<div class="uap-settings-panel-user-info__main">
-						<?php echo esc_html( $user_info ); ?>
-					</div>
-
-				<?php
-				// Additional info for client accounts.
-				if ( $additional_info ) {
-					foreach ( $additional_info as $info ) {
-						?>
-						<div class="uap-settings-panel-user-info__additional">
-							<?php echo esc_html( $info ); ?>
-						</div>
-						<?php
-					}
-				}
-				?>
-				</div>
-			</div>
-
-			<?php
-		}
-	}
-
-	/**
-	 * Bottom right panel content.
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_bottom_right() {
-
-		if ( $this->is_account_connected ) {
-			?>
-			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
-				<uo-icon id="right-from-bracket"></uo-icon>
-				<?php echo esc_html_x( 'Disconnect', 'Campaign Monitor', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
-		}
+		return $response;
 	}
 }

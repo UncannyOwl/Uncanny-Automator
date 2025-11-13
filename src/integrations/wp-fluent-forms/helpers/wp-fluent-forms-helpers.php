@@ -30,7 +30,6 @@ class Wp_Fluent_Forms_Helpers {
 	 * Wp_Fluent_Forms_Helpers constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -62,7 +61,7 @@ class Wp_Fluent_Forms_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr_x( 'Form', 'Wp Fluent Forms', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -98,13 +97,12 @@ class Wp_Fluent_Forms_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => esc_attr__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_attr__( 'Form ID', 'uncanny-automator' ),
+				$option_code         => esc_attr_x( 'Form title', 'Wp Fluent Forms', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_attr_x( 'Form ID', 'Wp Fluent Forms', 'uncanny-automator' ),
 			),
 		);
 
 		return apply_filters( 'uap_option_list_wp_fluent_forms', $option );
-
 	}
 
 	/**
@@ -155,6 +153,34 @@ class Wp_Fluent_Forms_Helpers {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Save WP Fluent Form entry data.
+	 *
+	 * @param array $insert_data insert data.
+	 * @param array $wp_ff_args wp ff args.
+	 */
+	public function save_wp_fluent_form_entry_data( $insert_data, $wp_ff_args, $meta_key, $meta_value ) {
+		$wp_ff_args['meta_key']   = $meta_key;
+		$wp_ff_args['meta_value'] = $meta_value;
+		Automator()->insert_trigger_meta( $wp_ff_args );
+
+		$wp_ff_args['meta_key']   = 'WPFFENTRYID';
+		$wp_ff_args['meta_value'] = $insert_data['serial_number'];
+		Automator()->insert_trigger_meta( $wp_ff_args );
+
+		$wp_ff_args['meta_key']   = 'WPFFENTRYIP';
+		$wp_ff_args['meta_value'] = $insert_data['ip'];
+		Automator()->insert_trigger_meta( $wp_ff_args );
+
+		$wp_ff_args['meta_key']   = 'WPFFENTRYSOURCEURL';
+		$wp_ff_args['meta_value'] = $insert_data['source_url'];
+		Automator()->insert_trigger_meta( $wp_ff_args );
+
+		$wp_ff_args['meta_key']   = 'WPFFENTRYDATE';
+		$wp_ff_args['meta_value'] = maybe_serialize( wp_date( 'Y-m-d H:i:s', strtotime( $insert_data['created_at'] ) ) );
+		Automator()->insert_trigger_meta( $wp_ff_args );
 	}
 
 	/**

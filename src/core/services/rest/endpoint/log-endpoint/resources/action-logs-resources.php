@@ -431,23 +431,24 @@ class Action_Logs_Resources {
 		$is_schedule = $this->maybe_action_is_scheduled( $action_log['action_completed'], $action_log['action_log_id'] );
 
 		$item = array(
-			'type'             => 'action',
-			'id'               => $action_id,
-			'integration_code' => $action_meta['integration'],
-			'code'             => $action_meta['code'],
-			'status_id'        => $status_id,
-			'is_deleted'       => isset( $action_meta['is_deleted'] ),
-			'title_html'       => htmlspecialchars( $action_sentence_html, ENT_QUOTES ),
-			'can_rerun'        => $can_rerun,
-			'can_run_now'      => $is_schedule,
-			'can_cancel'       => $is_schedule,
-			'item_log_id'      => $action_log['action_log_id'],
-			'fields'           => $this->get_fields_values( $params, $action_id, $action_log['action_log_id'] ),
-			'start_date'       => $start_date,
-			'end_date'         => $end_date, // Defaults to null.
-			'date_elapsed'     => $utils::get_date_elapsed( $start_date, $end_date ),
-			'_timestamp'       => $_ts,
-			'runs'             => $action_runs,
+			'type'              => 'action',
+			'id'                => $action_id,
+			'integration_code'  => $action_meta['integration'],
+			'code'              => $action_meta['code'],
+			'status_id'         => $status_id,
+			'is_deleted'        => isset( $action_meta['is_deleted'] ),
+			'title_html'        => htmlspecialchars( $action_sentence_html, ENT_QUOTES ),
+			'title_custom_name' => sanitize_text_field( $action_meta[ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '' ),
+			'can_rerun'         => $can_rerun,
+			'can_run_now'       => $is_schedule,
+			'can_cancel'        => $is_schedule,
+			'item_log_id'       => $action_log['action_log_id'],
+			'fields'            => $this->get_fields_values( $params, $action_id, $action_log['action_log_id'] ),
+			'start_date'        => $start_date,
+			'end_date'          => $end_date, // Defaults to null.
+			'date_elapsed'      => $utils::get_date_elapsed( $start_date, $end_date ),
+			'_timestamp'        => $_ts,
+			'runs'              => $action_runs,
 		);
 
 		if ( isset( $action_runs[ count( $action_runs ) - 1 ] ) ) {
@@ -479,7 +480,7 @@ class Action_Logs_Resources {
 	 * @return bool
 	 */
 	public function maybe_action_is_scheduled( $status_id, $action_log_id ) {
-		// If the action is not in progress, then it can't be scheduled.
+		// If the action is not in progress, then it can't be scheduled .
 		if ( absint( $status_id ) !== (int) \Uncanny_Automator\Automator_Status::IN_PROGRESS ) {
 			return false;
 		}

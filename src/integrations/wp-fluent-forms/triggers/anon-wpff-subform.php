@@ -45,9 +45,9 @@ class ANON_WPFF_SUBFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Anonymous trigger - Fluent Forms */
-			'sentence'            => sprintf( esc_html__( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_html_x( '{{A form:%1$s}} is submitted', 'Wp Fluent Forms', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Anonymous trigger - Fluent Forms */
-			'select_option_name'  => esc_html__( '{{A form}} is submitted', 'uncanny-automator' ),
+			'select_option_name'  => esc_html_x( '{{A form}} is submitted', 'Wp Fluent Forms', 'uncanny-automator' ),
 			'action'              => 'fluentform_before_insert_submission',
 			'type'                => 'anonymous',
 			'priority'            => 20,
@@ -126,31 +126,7 @@ class ANON_WPFF_SUBFORM {
 
 							$wp_ff_args['meta_key'] = $this->trigger_meta;
 							Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $entry_data, $form, $wp_ff_args );
-
-							$wp_ff_args['meta_key']   = $this->trigger_meta . '_ID';
-							$wp_ff_args['meta_value'] = absint( $form->id );
-							Automator()->insert_trigger_meta( $wp_ff_args );
-
-							$wp_ff_args['meta_key']   = 'WPFFENTRYID';
-							$wp_ff_args['meta_value'] = $insert_data['serial_number'];
-							Automator()->insert_trigger_meta( $wp_ff_args );
-
-							$wp_ff_args['meta_key']   = 'WPFFENTRYIP';
-							$wp_ff_args['meta_value'] = $insert_data['ip'];
-							Automator()->insert_trigger_meta( $wp_ff_args );
-
-							$wp_ff_args['meta_key']   = 'WPFFENTRYSOURCEURL';
-							$wp_ff_args['meta_value'] = $insert_data['source_url'];
-							Automator()->insert_trigger_meta( $wp_ff_args );
-
-							$wp_ff_args['meta_key']   = 'WPFFENTRYDATE';
-							$wp_ff_args['meta_value'] = maybe_serialize(
-								wp_date(
-									'Y-m-d H:i:s',
-									strtotime( $insert_data['created_at'] )
-								)
-							);
-							Automator()->insert_trigger_meta( $wp_ff_args );
+							Automator()->helpers->recipe->wp_fluent_forms->save_wp_fluent_form_entry_data( $insert_data, $wp_ff_args, $this->trigger_meta . '_ID', $form->id );
 
 							Automator()->process->user->maybe_trigger_complete( $r['args'] );
 						}
@@ -199,5 +175,4 @@ class ANON_WPFF_SUBFORM {
 
 		return false;
 	}
-
 }

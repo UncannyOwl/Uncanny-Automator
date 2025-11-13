@@ -4,9 +4,12 @@ namespace Uncanny_Automator\Integrations\Google_Contacts;
 use Exception;
 
 /**
+ * @property Google_Contacts_Helpers $helpers
+ * @property Google_Contacts_Api_Caller $api
+ *
  * @since 5.2
  */
-class CONTACT_GROUP_CREATE extends \Uncanny_Automator\Recipe\Action {
+class CONTACT_GROUP_CREATE extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Setups the action.
@@ -32,7 +35,6 @@ class CONTACT_GROUP_CREATE extends \Uncanny_Automator\Recipe\Action {
 			)
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Create {{a label}}', 'Google Contacts', 'uncanny-automator' ) );
-
 	}
 
 	/**
@@ -45,12 +47,11 @@ class CONTACT_GROUP_CREATE extends \Uncanny_Automator\Recipe\Action {
 		$label = array(
 			'option_code' => $this->get_action_meta(),
 			'input_type'  => 'text',
-			'label'       => _x( 'Label', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Label', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => true,
 		);
 
 		return array( $label );
-
 	}
 
 	/**
@@ -70,15 +71,13 @@ class CONTACT_GROUP_CREATE extends \Uncanny_Automator\Recipe\Action {
 
 		try {
 
-			$helper = new Google_Contacts_Helpers();
-
 			$body = array(
-				'action'       => 'label_create',
-				'access_token' => $helper->get_client(),
-				'label'        => $parsed[ $this->get_action_meta() ], // No need to sanitize as Google handles special characters well.
+				'action' => 'label_create',
+				'label'  => $parsed[ $this->get_action_meta() ], // No need to sanitize as Google handles special characters well.
 			);
 
-			$helper->api_call( $body, $action_data );
+			// Use injected API instance
+			$this->api->api_request( $body, $action_data );
 
 		} catch ( \Exception $e ) {
 
@@ -87,8 +86,7 @@ class CONTACT_GROUP_CREATE extends \Uncanny_Automator\Recipe\Action {
 			return false;
 
 		}
+
+		return true;
 	}
-
-
-
 }

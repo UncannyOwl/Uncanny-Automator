@@ -85,11 +85,14 @@ abstract class App_Helpers {
 		$this->set_api_endpoint( $config['api_endpoint'] ?? '' );
 		$this->set_settings_id( $config['settings_id'] ?? '' );
 
+		// Normalize settings ID for option names (convert dashes to underscores).
+		$normalized_settings_id = str_replace( '-', '_', $this->get_settings_id() );
+
 		// Set a generated credentials option name.
-		$this->set_credentials_option_name( sprintf( 'automator_%s_credentials', $this->get_settings_id() ) );
+		$this->set_credentials_option_name( sprintf( 'automator_%s_credentials', $normalized_settings_id ) );
 
 		// Set a generated account option name.
-		$this->set_account_option_name( sprintf( 'automator_%s_account', $this->get_settings_id() ) );
+		$this->set_account_option_name( sprintf( 'automator_%s_account', $normalized_settings_id ) );
 
 		// Optional method to set additional properties.
 		$this->set_properties();

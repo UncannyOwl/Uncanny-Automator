@@ -1,9 +1,11 @@
 <?php
 
-
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Presto;
 
 use Uncanny_Automator_Pro\Presto_Pro_Helpers;
+
+// Backwards compatibility aliases for Pro integration
+class_alias( 'Uncanny_Automator\Integrations\Presto\Presto_Helpers', 'Uncanny_Automator\Presto_Helpers' );
 
 /**
  * Class Presto_Helpers
@@ -31,21 +33,72 @@ class Presto_Helpers {
 	 * Presto_Helpers constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
-	 * @param Presto_Helpers $options
+	 * Get all Presto videos in new framework format
+	 *
+	 * @param bool $include_any Whether to include "Any video" option
+	 * @return array Array of video options in value/text format
 	 */
-	public function setOptions( Presto_Helpers $options ) {
-		$this->options = $options;
-	}
+	public function get_all_presto_videos( $include_any = true ) {
+		$options = array();
 
-	/**
-	 * @param Presto_Pro_Helpers $pro
-	 */
-	public function setPro( Presto_Pro_Helpers $pro ) {
-		$this->pro = $pro;
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => -1,
+				'text'  => esc_html_x( 'Any video', 'Presto', 'uncanny-automator' ),
+			);
+		}
+
+		if ( Automator()->helpers->recipe->load_helpers ) {
+			// Add videos.
+			$videos = ( new \PrestoPlayer\Models\Video() )->all();
+			if ( $videos ) {
+				foreach ( $videos as $video ) {
+					$options[] = array(
+						'value' => $video->__get( 'id' ),
+						'text'  => $video->__get( 'title' ),
+					);
+				}
+			}
+
+			// Check for hub videos.
+			$hubs = ( new \PrestoPlayer\Models\ReusableVideo() )->all();
+			if ( $hubs ) {
+				foreach ( $hubs as $hub ) {
+					// Get the actual video from hub embed.
+					$video = $this->normalize_video_data( $hub->ID );
+					if ( ! $video ) {
+						continue;
+					}
+					// Check if video already exists to avoid duplicates
+					$exists = false;
+					foreach ( $options as $option ) {
+						if ( $option['value'] === $video->id ) {
+							$exists = true;
+							break;
+						}
+					}
+					if ( ! $exists ) {
+						$options[] = array(
+							'value' => $video->id,
+							'text'  => $video->title,
+						);
+					}
+				}
+			}
+		}
+
+		// Sort by text (title) alphabetically
+		usort(
+			$options,
+			function ( $a, $b ) {
+				return strcasecmp( $a['text'], $b['text'] );
+			}
+		);
+
+		return $options;
 	}
 
 	/**
@@ -62,7 +115,7 @@ class Presto_Helpers {
 		}
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Video', 'uncanny-automator' );
+			$label = esc_html_x( 'Video', 'Presto', 'uncanny-automator' );
 		}
 
 		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -70,36 +123,7 @@ class Presto_Helpers {
 		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
 		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
 
-		$options = array();
-
-		if ( Automator()->helpers->recipe->load_helpers ) {
-			// Add videos.
-			$videos = ( new \PrestoPlayer\Models\Video() )->all();
-			if ( $videos ) {
-				foreach ( $videos as $video ) {
-					$options[ $video->__get( 'id' ) ] = $video->__get( 'title' );
-				}
-			}
-
-			// Check for hub videos.
-			$hubs = ( new \PrestoPlayer\Models\ReusableVideo() )->all();
-			if ( $hubs ) {
-				foreach ( $hubs as $hub ) {
-					// Get the actual video from hub embed.
-					$video = $this->normalize_video_data( $hub->ID );
-					if ( ! $video ) {
-						continue;
-					}
-					if ( ! isset( $options[ $video->id ] ) ) {
-						$options[ $video->id ] = $video->title;
-					}
-				}
-			}
-		}
-
-		natcasesort( $options );
-
-		$options = array( '-1' => esc_html__( 'Any video', 'uncanny-automator' ) ) + $options;
+		$options = $this->get_all_presto_videos( true );
 
 		$option = array(
 			'option_code'     => $option_code,
@@ -112,9 +136,9 @@ class Presto_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code                 => esc_attr__( 'Video title', 'uncanny-automator' ),
-				$option_code . '_ID'         => esc_attr__( 'Video ID', 'uncanny-automator' ),
-				$option_code . '_POST_TITLE' => esc_attr__( 'Media hub title', 'uncanny-automator' ),
+				$option_code                 => esc_html_x( 'Video title', 'Presto', 'uncanny-automator' ),
+				$option_code . '_ID'         => esc_html_x( 'Video ID', 'Presto', 'uncanny-automator' ),
+				$option_code . '_POST_TITLE' => esc_html_x( 'Media hub title', 'Presto', 'uncanny-automator' ),
 			),
 		);
 
@@ -165,5 +189,4 @@ class Presto_Helpers {
 		$video = $this->normalize_video_data( $video_id );
 		return $video ? $video->id : false;
 	}
-
 }

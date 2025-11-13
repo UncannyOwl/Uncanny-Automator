@@ -1,321 +1,416 @@
 <?php
 /**
- * Creates the settings page
+ * Creates the settings page for Sendy
  *
- * @since   4.15.1.1
- * @version 4.15.1.1
  * @package Uncanny_Automator
- * @author  Huma Irfan.
  */
 
 namespace Uncanny_Automator\Integrations\Sendy;
 
+use Uncanny_Automator\Settings\App_Integration_Settings;
+use Exception;
+
 /**
- * Sendy_Settings
+ * Sendy_App_Settings
+ *
+ * @property Sendy_App_Helpers $helpers
+ * @property Sendy_Api_Caller $api
  */
-class Sendy_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
+class Sendy_Settings extends App_Integration_Settings {
 
 	/**
-	 * Sendy URL.
+	 * Temporary option key for saving API Key on settings submit.
 	 *
-	 * @var string $sendy_url - Sendy URL.
+	 * @var string
 	 */
-	protected $sendy_url;
+	const API_KEY_OPTION = 'automator_sendy_api_key';
 
 	/**
-	 * API Key.
+	 * Temporary option key for saving Sendy Installation URL on settings submit.
 	 *
-	 * @var string $api_key - API Key.
+	 * @var string
 	 */
-	protected $api_key;
+	const URL_OPTION_KEY = 'automator_sendy_url';
+
+	////////////////////////////////////////////////////////////
+	// Required abstract method
+	////////////////////////////////////////////////////////////
 
 	/**
-	 * Is Connected.
+	 * Get formatted account information for connected user info display
 	 *
-	 * @var bool $is_connected
+	 * @return array Formatted account information for UI display
 	 */
-	protected $is_connected;
-
-	/**
-	 * Disconnect URL.
-	 *
-	 * @var string $disconnect_url
-	 */
-	protected $disconnect_url;
-
-	/**
-	 * Integration status.
-	 *
-	 * @return string - 'success' or empty string
-	 */
-	public function get_status() {
-		return $this->helpers->integration_status();
+	protected function get_formatted_account_info() {
+		$account = $this->helpers->get_account_info();
+		return array(
+			'avatar_type' => 'icon',
+			'main_info'   => sprintf(
+				// translators: %1$s Sendy URL
+				esc_html_x( 'Connected to: %1$s', 'Sendy', 'uncanny-automator' ),
+				esc_html( $account['url'] )
+			),
+		);
 	}
 
+	////////////////////////////////////////////////////////////
+	// Override framework methods (following golden standards)
+	////////////////////////////////////////////////////////////
+
 	/**
-	 * Sets up the properties of the settings page
+	 * Register disconnected options.
 	 *
 	 * @return void
 	 */
-	public function set_properties() {
-
-		$this->set_id( 'sendy' );
-		$this->set_icon( 'SENDY' );
-		$this->set_name( 'Sendy' );
-		$this->register_option( $this->helpers->get_const( 'KEY_OPTION_KEY' ) );
-		$this->register_option( $this->helpers->get_const( 'URL_OPTION_KEY' ) );
+	public function register_disconnected_options() {
+		$this->register_option( self::API_KEY_OPTION );
+		$this->register_option( self::URL_OPTION_KEY );
 	}
 
 	/**
-	 * Save Submitted Settings.
+	 * Register hooks
 	 *
 	 * @return void
 	 */
-	public function settings_updated() {
-		$this->helpers->verify_sendy_settings();
+	public function register_hooks() {
+		add_action(
+			'automator_app_settings_sendy_before_disconnected_panel',
+			array( $this, 'maybe_add_api_key_error_alert' )
+		);
 	}
 
 	/**
-	 * Main panel content.
+	 * Authorize account
 	 *
-	 * @return string - HTML
+	 * @param array $response The current response array
+	 * @param array $options The stored option data
+	 *
+	 * @return array
 	 */
-	public function output_panel_content() {
+	protected function authorize_account( $response = array(), $options = array() ) {
+		// Set reload to true by default.
+		$response['reload'] = true;
 
-		$this->api_key        = $this->helpers->get_api_key();
-		$this->sendy_url      = $this->helpers->get_sendy_url();
-		$this->is_connected   = ! empty( $this->get_status() );
-		$this->disconnect_url = $this->helpers->get_disconnect_url();
+		// Get user submitted credentials.
+		$key = $options[ self::API_KEY_OPTION ] ?? '';
+		$url = $options[ self::URL_OPTION_KEY ] ?? '';
 
-		// Formatting.
-		$kses_text = array(
-			'strong' => true,
-			'i'      => true,
-			'span'   => array(
-				'class' => true,
+		// Clean up temporary options.
+		automator_delete_option( self::API_KEY_OPTION );
+		automator_delete_option( self::URL_OPTION_KEY );
+
+		// Set credentials object.
+		$credentials = array(
+			'api_key' => $key,
+			'url'     => esc_url( rtrim( $url, '/' ) ),
+			'status'  => false,
+			'error'   => '',
+		);
+
+		if ( empty( $key ) || empty( $url ) ) {
+			$credentials['error'] = esc_html_x( 'Please enter a valid Sendy installation URL and API key.', 'Sendy', 'uncanny-automator' );
+		}
+
+		// Store credentials.
+		$this->helpers->store_credentials( $credentials );
+
+		// If there is an error, return the response.
+		if ( ! empty( $credentials['error'] ) ) {
+			return $response;
+		}
+
+		// Validate API connection.
+		try {
+			$this->api->get_lists( true );
+
+			// Update credential flags.
+			$credentials['status'] = true;
+			$credentials['error']  = '';
+
+			// Add a success alert.
+			$this->register_alert(
+				array(
+					'type'    => 'success',
+					'heading' => esc_html_x( 'Sendy account connected', 'Sendy', 'uncanny-automator' ),
+					'content' => esc_html_x( 'Your Sendy account has been connected successfully.', 'Sendy', 'uncanny-automator' ),
+				)
+			);
+
+		} catch ( Exception $e ) {
+			// Add error to credentials.
+			$credentials['error'] = esc_html( $e->getMessage() );
+		}
+
+		// Store credentials.
+		$this->helpers->store_credentials( $credentials );
+
+		return $response;
+	}
+
+	/**
+	 * Called after disconnecting the integration has been validated.
+	 *
+	 * @param array $response The current response array
+	 * @param array $data The posted data
+	 *
+	 * @return array
+	 */
+	protected function after_disconnect( $response = array(), $data = array() ) {
+		// Clear lists transient
+		delete_transient( $this->helpers->get_const( 'LIST_TRANSIENT_KEY' ) );
+
+		return $response;
+	}
+
+	/**
+	 * Maybe add the API key error alert.
+	 *
+	 * @return void
+	 */
+	public function maybe_add_api_key_error_alert() {
+		$error = $this->helpers->get_sendy_setting( 'error' );
+
+		// No errors to display.
+		if ( empty( $error ) ) {
+			return;
+		}
+
+		// Show alert for errors.
+		$this->add_alert(
+			array(
+				'type'    => 'error',
+				'heading' => esc_attr_x( 'Unable to connect to Sendy', 'Sendy', 'uncanny-automator' ),
+				'content' => esc_html( $error ),
+			)
+		);
+	}
+
+	////////////////////////////////////////////////////////////
+	// Abstract content output methods (following golden standards)
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Output main disconnected content.
+	 *
+	 * @return void - Outputs the generated HTML.
+	 */
+	public function output_main_disconnected_content() {
+		// Output the standard disconnected header with description
+		$this->output_disconnected_header(
+			esc_html_x( 'Connect Uncanny Automator to Sendy to link contact and list management to WordPress activities like submitting forms, making purchases and joining groups.', 'Sendy', 'uncanny-automator' )
+		);
+
+		// Output available recipe items.
+		$this->output_available_items();
+
+		// Output setup instructions.
+		$this->output_setup_instructions(
+			esc_html_x( 'To obtain your Sendy API Key, follow these steps in your Sendy installation:', 'Sendy', 'uncanny-automator' ),
+			array(
+				sprintf(
+					// translators: %1$s Opening strong tag, %2$s Closing strong tag
+					esc_html_x( 'Log in to Sendy as the %1$sMain user%2$s with the email/password you set when you first set up Sendy.', 'Sendy', 'uncanny-automator' ),
+					'<strong>',
+					'</strong>'
+				),
+				sprintf(
+					// translators: %1$s Opening strong tag with icon, %2$s Closing strong tag
+					esc_html_x( 'On the upper right hand corner of the page, click the button that says %1$sSendy%2$s.', 'Sendy', 'uncanny-automator' ),
+					'<span class="dashicons dashicons-admin-users"></span><strong>',
+					'</strong>'
+				),
+				sprintf(
+					// translators: %1$s Opening strong tag, %2$s Closing strong tag
+					esc_html_x( 'Select %1$sSettings%2$s.', 'Sendy', 'uncanny-automator' ),
+					'<strong>',
+					'</strong>'
+				),
+				sprintf(
+					// translators: %1$s Opening italic tag, %2$s Closing italic tag, %3$s Opening strong tag, %4$s Closing strong tag
+					esc_html_x( 'On the %1$sSettings%2$s page you will see your API Key on the right under the title %3$sYour API key%4$s.', 'Sendy', 'uncanny-automator' ),
+					'<i>',
+					'</i>',
+					'<strong>',
+					'</strong>'
+				),
+				sprintf(
+					// translators: %1$s Opening strong tag, %2$s Closing strong tag
+					esc_html_x( 'Please enter the API key and your Sendy installation URL in the fields below. Once entered, click the %1$sConnect Sendy account%2$s button to enable your integration with Automator.', 'Sendy', 'uncanny-automator' ),
+					'<strong>',
+					'</strong>'
+				),
+			)
+		);
+
+		// Output Sendy URL field.
+		$this->text_input_html(
+			array(
+				'id'       => self::URL_OPTION_KEY,
+				'value'    => esc_attr( $this->helpers->get_sendy_setting( 'url' ) ),
+				'label'    => esc_html_x( 'Sendy installation URL', 'Sendy', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
+
+		// Output API Key field.
+		$this->text_input_html(
+			array(
+				'id'       => self::API_KEY_OPTION,
+				'value'    => esc_attr( $this->helpers->get_sendy_setting( 'api_key' ) ),
+				'label'    => esc_html_x( 'API key', 'Sendy', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
+	}
+
+	/**
+	 * Output main connected content.
+	 *
+	 * @return void
+	 */
+	public function output_main_connected_content() {
+		$this->output_single_account_message();
+
+		// Output the Sendy transient data manager.
+		$this->output_panel_subtitle( esc_html_x( 'Sendy Data', 'Sendy', 'uncanny-automator' ) );
+		$this->output_subtle_panel_paragraph( esc_html_x( 'The following data is available for use in your recipes:', 'Sendy', 'uncanny-automator' ) );
+
+		$table_data = $this->get_transient_refresh_table_data();
+		$this->output_settings_table( $table_data['columns'], $table_data['data'], 'card', false );
+	}
+
+	/**
+	 * Get the transient refresh table data
+	 *
+	 * @return array
+	 */
+	private function get_transient_refresh_table_data() {
+		// 1. Define columns
+		$columns = array(
+			array(
+				'key' => 'icon',
+			),
+			array(
+				'key' => 'title',
+			),
+			array(
+				'key' => 'action',
 			),
 		);
-		$kses_link = array(
-			'a' => array(
-				'href'   => true,
-				'target' => true,
+
+		// 2. Build data array
+		$key     = 'lists';
+		$options = get_transient( "automator_sendy_{$key}" );
+		if ( false === $options ) {
+			// If not, get options from API.
+			$options = $this->api->get_lists();
+		}
+		$count = ! empty( $options ) ? count( $options ) : 0;
+		$name  = esc_html_x( 'Contact lists', 'Sendy', 'uncanny-automator' );
+		$desc  = sprintf(
+			// translators: %s Data type
+			esc_html_x(
+				'Use the sync button if %s were updated within the last 24hrs and aren\'t yet showing in your recipes.',
+				'Sendy',
+				'uncanny-automator'
+			),
+			esc_html( strtolower( $name ) )
+		);
+
+		$data = array(
+			array(
+				'id'          => $key,
+				'columns'     => array(
+					'icon'   => array(
+						'options' => array(
+							array(
+								'type' => 'icon',
+								'data' => array(
+									'id' => 'list',
+								),
+							),
+						),
+					),
+					'title'  => array(
+						'options' => array(
+							array(
+								'type' => 'text',
+								'data' => sprintf( '%s ( %d )', $name, $count ),
+							),
+						),
+					),
+					'action' => array(
+						'options' => array(
+							array(
+								'type' => 'button',
+								'data' => array(
+									'type'           => 'submit',
+									'name'           => 'automator_action',
+									'value'          => 'transient_refresh',
+									'row-submission' => true,
+									'label'          => esc_html_x( 'Refresh', 'Sendy', 'uncanny-automator' ),
+									'color'          => 'secondary',
+									'size'           => 'extra-small',
+									'icon'           => array(
+										'id' => 'rotate',
+									),
+								),
+							),
+						),
+					),
+				),
+				'description' => $desc,
 			),
 		);
 
-		?>
-		<?php if ( ! $this->is_connected ) { ?>
-
-			<?php
-			// If we have an error show error message with disconnect button.
-			$api_error = $this->helpers->get_sendy_settings( 'error' );
-			if ( ! empty( $api_error ) ) {
-				?>
-				<uo-alert type="error" 
-					heading="<?php echo esc_attr_x( 'Unable to connect to Sendy', 'Sendy', 'uncanny-automator' ); ?>">
-					<?php echo esc_html( $api_error ); ?>
-				</uo-alert>
-				<br/>
-				<?php
-			}
-			?>
-
-			<div class="uap-settings-panel-content-subtitle">
-				<?php echo esc_html_x( 'Connect Uncanny Automator to Sendy', 'Sendy', 'uncanny-automator' ); ?>
-			</div>
-
-			<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-				<?php echo esc_html_x( 'Connect Uncanny Automator to Sendy to link contact and list management to WordPress activities like submitting forms, making purchases and joining groups.', 'Sendy', 'uncanny-automator' ); ?>
-			</div>
-
-			<p>
-				<strong><?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Sendy', 'uncanny-automator' ); ?></strong>
-			</p>
-
-			<ul>
-				<li>
-					<uo-icon id="bolt"></uo-icon>
-					<strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Add a contact to a list and update contact details within a list', 'Sendy', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon>
-					<strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Delete a contact from a list', 'Sendy', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon>
-					<strong><?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Unsubscribe a contact from a list', 'Sendy', 'uncanny-automator' ); ?>
-				</li>
-			</ul>
-
-			<uo-alert heading="<?php echo esc_attr_x( 'Setup instructions', 'Sendy', 'uncanny-automator' ); ?>">
-				<?php esc_html_x( 'To obtain your Sendy API Key, follow these steps in your Sendy installtion', 'Sendy', 'uncanny-automator' ); ?>
-
-				<ol class="uap-spacing-top uap-spacing-top--small uap-spacing-bottom uap-spacing-bottom--none">
-					<li><?php echo wp_kses( _x( 'Log in to Sendy as the <strong>Main user</strong> with the email/password you set when you first set up Sendy.', 'Sendy', 'uncanny-automator' ), $kses_text ); ?></li>
-					<li><?php echo wp_kses( _x( 'On the upper right hand corner of the page, click the button that says <span class="dashicons dashicons-admin-users"></span><strong>Sendy</strong>.', 'Sendy', 'uncanny-automator' ), $kses_text ); ?></li>
-					<li><?php echo wp_kses( _x( 'Select <strong>Settings</strong>.', 'Sendy', 'uncanny-automator' ), $kses_text ); ?></li>
-					<li><?php echo wp_kses( _x( 'On the <i>Settings</i> page you will see your API Key on the right under the title <strong>Your API key</strong>.', 'Sendy', 'uncanny-automator' ), $kses_text ); ?></li>
-					<li><?php echo wp_kses( _x( 'Please enter the API key and your Sendy installation URL in the fields below. Once entered, click the <strong>Connect Sendy account</strong> button to enable your integration with Automator.', 'Sendy', 'uncanny-automator' ), $kses_text ); ?></li>
-				</ol>
-
-			</uo-alert>
-
-			<?php // Show Sendy URL field. ?>
-			<uo-text-field
-				id="<?php echo esc_attr( $this->helpers->get_const( 'URL_OPTION_KEY' ) ); ?>"
-				value="<?php echo esc_attr( $this->sendy_url ); ?>"
-				label="<?php echo esc_attr_x( 'Sendy installation URL', 'Sendy', 'uncanny-automator' ); ?>"
-				name="automator_sendy_api[url]"
-				required
-				class="uap-spacing-top"
-			></uo-text-field>
-
-			<?php // Show API Key field. ?>
-			<uo-text-field
-				id="<?php echo esc_attr( $this->helpers->get_const( 'KEY_OPTION_KEY' ) ); ?>"
-				value="<?php echo esc_attr( $this->api_key ); ?>"
-				label="<?php echo esc_attr_x( 'API key', 'Sendy', 'uncanny-automator' ); ?>"
-				required
-				class="uap-spacing-top"
-			></uo-text-field>
-
-		<?php } else { ?>
-
-			<?php $this->load_js( '/sendy/settings/assets/script.js' ); ?>
-			<?php $this->load_css( '/sendy/settings/assets/style.css' ); ?>
-
-
-			<uo-alert
-				heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Sendy account at a time.', 'Sendy', 'uncanny-automator' ); ?>"
-				class="uap-spacing-bottom">
-			</uo-alert>
-
-			<div class="uap-settings-panel-content-subtitle">
-				<?php echo esc_html_x( 'Sendy Data', 'Sendy', 'uncanny-automator' ); ?>
-			</div>
-
-			<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-				<p><?php echo esc_html_x( 'The following data is available for use in your recipes:', 'Sendy', 'uncanny-automator' ); ?></p>
-			</div>
-
-			<div id="sendy-transient-sync-list">
-				<?php $this->transient_refresh( 'lists' ); ?>
-			</div>
-
-			<?php
-		}
-
+		return array(
+			'columns' => $columns,
+			'data'    => $data,
+		);
 	}
 
 	/**
-	 * Bottom left panel content.
+	 * Handle transient refresh action
 	 *
-	 * @return string - HTML
+	 * @param array $response - The current response array
+	 * @param array $data - The data posted to the settings page.
+	 *
+	 * @return array
 	 */
-	public function output_panel_bottom_left() {
-
-		// If the user is not connected, show a field for the API key.
-		if ( ! $this->is_connected ) {
-			?>
-			<uo-button type="submit">
-				<?php echo esc_html_x( 'Connect Sendy account', 'Sendy', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
-		} else {
-
-			// Show Connected Sendy URL.
-			?>
-
-			<div class="uap-settings-panel-user">
-
-				<div class="uap-settings-panel-user__avatar">
-					<uo-icon integration="SENDY"></uo-icon>
-				</div>
-
-				<div class="uap-settings-panel-user-info">
-					<div class="uap-settings-panel-user-info__main">
-						<?php echo esc_html( $this->sendy_url ); ?>
-					</div>
-				</div>
-			</div>
-
-			<?php
+	public function handle_transient_refresh( $response = array(), $data = array() ) {
+		$key = $this->maybe_get_posted_row_id( $data );
+		if ( 'lists' !== $key ) {
+			$response['alert'] = $this->get_error_alert(
+				esc_attr_x( 'Unable to refresh data', 'Sendy', 'uncanny-automator' ),
+				esc_html_x( 'Invalid key', 'Sendy', 'uncanny-automator' )
+			);
+			return $response;
 		}
-	}
 
-	/**
-	 * Bottom right panel content.
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_bottom_right() {
+		// Get updated lists.
+		$refresh = true;
+		$options = $this->api->get_lists( $refresh );
 
-		if ( $this->is_connected ) {
-			?>
-			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
-				<uo-icon id="right-from-bracket"></uo-icon>
-				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
+		// If no options are returned, return a warning alert.
+		if ( empty( $options ) ) {
+			$response['alert'] = $this->get_warning_alert(
+				esc_attr_x( 'No data found', 'Sendy', 'uncanny-automator' ),
+				esc_html_x( 'No lists returned from the API', 'Sendy', 'uncanny-automator' )
+			);
+			return $response;
 		}
+
+		// Get updated table data.
+		$table_data = $this->get_transient_refresh_table_data();
+
+		// Set the response data.
+		$response['data']  = $table_data['data'];
+		$response['alert'] = $this->get_success_alert(
+			esc_attr_x( 'Data refreshed', 'Sendy', 'uncanny-automator' ),
+			esc_html_x( 'Lists refreshed successfully', 'Sendy', 'uncanny-automator' )
+		);
+		return $response;
 	}
-
-	/**
-	 * Refresh transient Details.
-	 *
-	 * @param string $key_part - transient key part.
-	 *
-	 * @return string - HTML
-	 */
-	public function transient_refresh( $key_part ) {
-		$key     = "automator_sendy_{$key_part}";
-		$options = get_transient( $key );
-		$count   = ! empty( $options ) ? count( $options ) : 0;
-
-		switch ( $key_part ) {
-			case 'lists':
-				$name = esc_html_x( 'Contact lists', 'Sendy', 'uncanny-automator' );
-				$icon = 'list-view';
-				break;
-		}
-		?>
-		<div class="uap-sendy-transient-sync-wrapper uap-spacing-top">
-			<div class="uap-sendy-transient-sync">
-				<div class="uap-sendy-transient">
-					<div class="uap-sendy-transient-content">
-						<span class="uap-sendy-transient-name-count">
-							<span
-								class="dashicons dashicons-<?php echo $icon; ?>"></span><?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-							<span class="uap-sendy-transient-name">
-								<?php echo esc_html( $name ); ?> ( <span
-									class="uap-sendy-sync-items-count"><?php echo esc_html( $count ); ?></span> )
-							</span>
-						</span>
-					</div>
-					<div class="uap-sendy-transient-actions">
-						<uo-tooltip>
-							<?php echo esc_html_x( 'Refresh', 'Sendy', 'uncanny-automator' ); ?>
-							<uo-button color="secondary" size="extra-small" slot="target"
-								class="uap-sendy-transient-sync-refresh"
-								data-key="<?php echo esc_attr( $key_part ); ?>">
-								<uo-icon id="rotate"></uo-icon>
-							</uo-button>
-						</uo-tooltip>
-					</div>
-				</div>
-				<div class="uap-sendy-last-sync-details">
-					<?php
-					printf(
-						/* translators: %s Data type name */
-						esc_html_x( "Use the sync button if %s were updated in the last 24hrs and aren't yet showing in your recipes.", 'Sendy', 'uncanny-automator' ),
-						esc_html( strtolower( $name ) )
-					);
-					?>
-				</div>
-			</div>
-		</div>
-		<?php
-	}
-
 }

@@ -6,11 +6,6 @@ namespace Uncanny_Automator;
  * Auto-prune logs (tease)
  * Settings > General > Logs > Auto-prune logs
  *
- * @since   3.7
- * @version 3.7
- * @package Uncanny_Automator
- * @author  Daniela R. & Agustin B.
- *
  * Variables:
  * $upgrade_to_pro_url URL to upgrade to Automator Pro
  */
@@ -23,23 +18,11 @@ namespace Uncanny_Automator;
 	<?php esc_html_e( 'Auto-prune activity logs', 'uncanny-automator' ); ?><uo-pro-tag></uo-pro-tag>
 </div>
 
-<div class="uap-field uap-spacing-top--small">
-
-	<label class="uap-field-switch">
-		<input type="checkbox" disabled>
-
-		<span class="uap-field-switch__handle"></span>
-
-		<span class="uap-field-switch__label uap-field-switch__label--on">
-			<?php esc_html_e( 'Enabled', 'uncanny-automator' ); ?>
-		</span>
-
-		<span class="uap-field-switch__label uap-field-switch__label--off">
-			<?php esc_html_e( 'Disabled', 'uncanny-automator' ); ?>
-		</span>
-	</label>
-
-</div>
+<uo-switch 
+	disabled
+	status-label="<?php esc_attr_e( 'Enabled', 'uncanny-automator' ); ?>,<?php esc_attr_e( 'Disabled', 'uncanny-automator' ); ?>" 
+	class="uap-spacing-top"
+></uo-switch>
 
 <p>
 	<uo-icon id="lock"></uo-icon>

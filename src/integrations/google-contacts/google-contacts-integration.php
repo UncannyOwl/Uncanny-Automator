@@ -2,103 +2,85 @@
 
 namespace Uncanny_Automator\Integrations\Google_Contacts;
 
-use Uncanny_Automator\Integration;
+use Uncanny_Automator\App_Integrations\App_Integration;
 
 /**
  * @package Uncanny_Automator\Integrations\Google_Contacts
  */
-class Google_Contacts_Integration extends Integration {
+class Google_Contacts_Integration extends App_Integration {
 
 	/**
-	 * @var Google_Contacts_Helpers
+	 * Define configuration.
+	 *
+	 * @return array
 	 */
-	protected $helpers;
+	public static function get_config() {
+		return array(
+			'integration'  => 'GOOGLE_CONTACTS',
+			'name'         => 'Google Contacts',
+			'api_endpoint' => 'v2/google-contacts',
+			'settings_id'  => 'google-contacts',
+		);
+	}
 
 	/**
+	 * Setup the integration.
+	 *
 	 * @return void
 	 */
 	protected function setup() {
+		$config = self::get_config();
 
-		// Overwrite the parent's helper property with our helper.
-		$this->helpers = new Google_Contacts_Helpers();
+		// Create helpers with config
+		$this->helpers = new Google_Contacts_Helpers( $config );
 
-		$this->load_hooks();
-
-		$connected = false;
-
-		if ( false !== $this->get_google_client() ) {
-			$connected = true;
-		}
-
-		$this->set_integration( 'GOOGLE_CONTACTS' );
-		$this->set_name( 'Google Contacts' );
-		$this->set_connected( $connected );
+		// Set icon URL.
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/google-contacts-icon.svg' );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'google-contacts' ) );
 
+		// Setup app integration with same config.
+		$this->setup_app_integration( $config );
 	}
 
 	/**
-	 * @return void
-	 */
-	protected function load_hooks() {
-
-		// Contact fields.
-		add_action(
-			'wp_ajax_automator_google_contacts_render_contact_fields',
-			array(
-				$this->helpers,
-				'render_contact_fields',
-			)
-		);
-
-		// Process code callback.
-		add_action(
-			'wp_ajax_automator_google_contacts_process_code_callback',
-			array(
-				$this->helpers,
-				'automator_google_contacts_process_code_callback',
-			)
-		);
-
-		// Disconnect.
-		add_action( 'wp_ajax_automator_google_contacts_disconnect', array( $this->helpers, 'disconnect' ) );
-
-		// Disconnect.
-		add_action( 'wp_ajax_automator_google_contacts_fetch_labels', array( $this->helpers, 'fetch_labels' ) );
-
-	}
-
-	/**
+	 * Load the integration.
+	 *
 	 * @return void
 	 */
 	public function load() {
-
-		// Helpers.
-		new Google_Contacts_Settings( $this->helpers );
+		// Settings page.
+		new Google_Contacts_Settings( $this->dependencies, $this->get_settings_config() );
 
 		// Actions.
-		new CREATE( $this->helpers );
+		new CREATE( $this->dependencies );
 
 		// Contact group add.
-		new CONTACT_GROUP_ADD_TO( $this->helpers );
+		new CONTACT_GROUP_ADD_TO( $this->dependencies );
 
 		// Contact create.
-		new CONTACT_GROUP_CREATE( $this->helpers );
-
+		new CONTACT_GROUP_CREATE( $this->dependencies );
 	}
 
 	/**
-	 * @return false|mixed
+	 * Register hooks.
+	 *
+	 * @return void
 	 */
-	public function get_google_client() {
+	public function register_hooks() {
+		// Fetch labels.
+		add_action( 'wp_ajax_automator_google_contacts_fetch_labels', array( $this->helpers, 'ajax_fetch_labels' ) );
+	}
 
-		$access_token = automator_get_option( 'automator_google_contacts_credentials', array() );
-
-		if ( empty( $access_token ) || ! isset( $access_token['access_token'] ) ) {
+	/**
+	 * Check if the app is connected
+	 *
+	 * @return bool
+	 */
+	protected function is_app_connected() {
+		$credentials = $this->helpers->get_credentials();
+		if ( ! is_array( $credentials ) || ! isset( $credentials['access_token'] ) ) {
 			return false;
 		}
 
-		return $access_token;
+		return true;
 	}
 }

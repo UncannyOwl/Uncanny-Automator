@@ -32,9 +32,9 @@ class FCRM_ADD_CONTACT {
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
 		/* translators: Action - FluentCRM */
-		$this->set_sentence( sprintf( esc_attr_x( 'Add/Update {{a contact:%1$s}}', 'FluentCRM', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_html_x( 'Add/Update {{a contact:%1$s}}', 'FluentCRM', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - FluentCRM */
-		$this->set_readable_sentence( esc_attr_x( 'Add/Update {{a contact}}', 'FluentCRM', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'Add/Update {{a contact}}', 'FluentCRM', 'uncanny-automator' ) );
 		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->register_action();
 	}

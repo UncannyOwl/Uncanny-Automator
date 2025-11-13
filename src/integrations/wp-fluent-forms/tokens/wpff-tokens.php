@@ -235,7 +235,6 @@ class Wpff_Tokens {
 			'tokenType'       => $type,
 			'tokenIdentifier' => $trigger_meta,
 		);
-
 	}
 
 	/**
@@ -258,10 +257,10 @@ class Wpff_Tokens {
 
 		if ( in_array( 'WPFFFORMS', $pieces, true ) || in_array( 'ANONWPFFFORMS', $pieces, true ) ) {
 			global $wpdb;
-			$trigger_id     = $pieces[0];
 			$trigger_meta   = $pieces[1];
 			$field          = $pieces[2];
 			$trigger_log_id = isset( $replace_args['trigger_log_id'] ) ? absint( $replace_args['trigger_log_id'] ) : 0;
+			$trigger_id     = $pieces[0];
 
 			$entry = $wpdb->get_var(
 				$wpdb->prepare(
@@ -311,25 +310,25 @@ class Wpff_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'WPFFENTRYID',
-				'tokenName'       => esc_html__( 'Entry ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry ID', 'Wp Fluent Forms', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'WPFFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'WPFFENTRYIP',
-				'tokenName'       => esc_html__( 'User IP', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'User IP', 'Wp Fluent Forms', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPFFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'WPFFENTRYSOURCEURL',
-				'tokenName'       => esc_html__( 'Entry source URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry source URL', 'Wp Fluent Forms', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPFFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'WPFFENTRYDATE',
-				'tokenName'       => esc_html__( 'Entry submission date', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry submission date', 'Wp Fluent Forms', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'WPFFENTRYTOKENS',
 			),
@@ -350,7 +349,7 @@ class Wpff_Tokens {
 	 * @return string|null
 	 */
 	public function wpff_entry_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		if ( in_array( 'WPFFENTRYTOKENS', $pieces ) ) {
+		if ( in_array( 'WPFFENTRYTOKENS', $pieces, true ) ) {
 			if ( $trigger_data ) {
 				foreach ( $trigger_data as $trigger ) {
 					$trigger_id     = $trigger['ID'];

@@ -37,6 +37,20 @@ if ( ! defined( 'AUTOMATOR_CONFIGURATION_PRIORITY' ) ) {
 	define( 'AUTOMATOR_CONFIGURATION_PRIORITY', 10 );
 }
 
+if ( ! defined( 'AUTOMATOR_CONFIGURATION_PRIORITY_TRIGGER_ENGINE' ) ) {
+	/**
+	 * Automator Configuration priority
+	 */
+	define( 'AUTOMATOR_CONFIGURATION_PRIORITY_TRIGGER_ENGINE', 1 );
+}
+
+if ( ! defined( 'AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE' ) ) {
+	/**
+	 * Automator Configuration priority
+	 */
+	define( 'AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE', 30 );
+}
+
 if ( ! defined( 'AUTOMATOR_LOAD_INTEGRATIONS_PRIORITY' ) ) {
 	/**
 	 * Automator trigger load priority

@@ -189,15 +189,16 @@ trait Premium_Integration_Templating_Helpers {
 	 */
 	public function text_input_html( $input ) {
 		$default = array(
-			'id'          => '',
-			'value'       => '',
-			'label'       => '',
-			'required'    => '',
-			'class'       => '',
-			'hidden'      => '',
-			'disabled'    => '',
-			'placeholder' => '',
-			'helper'      => '',
+			'id'                => '',
+			'value'             => '',
+			'label'             => '',
+			'required'          => '',
+			'class'             => '',
+			'hidden'            => '',
+			'disabled'          => '',
+			'placeholder'       => '',
+			'helper'            => '',
+			'copy-to-clipboard' => false,
 		);
 
 		$input = wp_parse_args( $input, $default );
@@ -212,6 +213,7 @@ trait Premium_Integration_Templating_Helpers {
 			<?php echo ! empty( $input['disabled'] ) ? 'disabled' : ''; ?>
 			<?php echo ! empty( $input['placeholder'] ) ? 'placeholder="' . esc_attr( $input['placeholder'] ) . '"' : ''; ?>
 			<?php echo ! empty( $input['helper'] ) ? 'helper="' . esc_attr( $input['helper'] ) . '"' : ''; ?>
+			<?php echo ! empty( $input['copy-to-clipboard'] ) ? 'copy-to-clipboard' : ''; ?>
 		></uo-text-field>
 		<?php
 	}

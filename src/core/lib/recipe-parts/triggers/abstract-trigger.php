@@ -171,7 +171,7 @@ abstract class Trigger {
 	 *
 	 * @var mixed
 	 */
-	protected $is_login_required = true;
+	protected $is_login_required = false;
 
 	/**
 	 * __construct

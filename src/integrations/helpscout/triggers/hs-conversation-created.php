@@ -6,9 +6,12 @@ namespace Uncanny_Automator\Integrations\Helpscout;
  * Class Hs_Conversation_Created
  *
  * @package Uncanny_Automator
- * @method Helpscout_Helpers get_item_helpers()
+ *
+ * @property Helpscout_App_Helpers $helpers
+ * @property Helpscout_Api_Caller $api
+ * @property Helpscout_Webhooks $webhooks
  */
-class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\Trigger {
+class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
 	 * Constant TRIGGER_CODE.
@@ -30,7 +33,7 @@ class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\Trigger {
 	 * @return bool
 	 */
 	public function requirements_met() {
-		return automator_get_option( 'uap_helpscout_enable_webhook', false );
+		return $this->webhooks->get_webhooks_enabled_status();
 	}
 
 	/**
@@ -70,14 +73,13 @@ class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\Trigger {
 	 * @return array
 	 */
 	public function options() {
-
 		return array(
 			array(
 				'option_code'           => 'MAILBOX',
 				'label'                 => esc_html_x( 'Mailbox', 'Help Scout', 'uncanny-automator' ),
-				'token_name'           => esc_html_x( 'Selected mailbox', 'Help Scout', 'uncanny-automator' ),
+				'token_name'            => esc_html_x( 'Selected mailbox', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
-				'options'               => $this->get_item_helpers()->fetch_mailboxes( true ),
+				'options'               => $this->helpers->get_mailboxes( true ),
 				'supports_custom_value' => false,
 				'required'              => true,
 			),
@@ -186,7 +188,7 @@ class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\Trigger {
 		list( $params, $headers ) = $hook_args;
 
 		// Check that this is a conversation created event
-		if ( ! $this->get_item_helpers()->is_webhook_request_matches_event( $headers, 'convo.created' ) ) {
+		if ( ! $this->webhooks->is_webhook_request_matches_event( $headers, 'convo.created' ) ) {
 			return false;
 		}
 
@@ -215,7 +217,7 @@ class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\Trigger {
 			if ( isset( $params['primaryCustomer']['first'], $params['primaryCustomer']['last'] ) ) {
 				$customer_name = implode( ' ', array( $params['primaryCustomer']['first'], $params['primaryCustomer']['last'] ) );
 			}
-			
+
 			if ( empty( trim( $customer_name ) ) && isset( $params['primaryCustomer']['email'] ) ) {
 				$customer_name = $params['primaryCustomer']['email'];
 			}
@@ -225,10 +227,10 @@ class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\Trigger {
 		$assign_to = '';
 		if ( isset( $params['assignee'] ) && is_array( $params['assignee'] ) ) {
 			$assignee = $params['assignee'];
-			
+
 			if ( isset( $assignee['first'], $assignee['last'], $assignee['email'], $assignee['id'] ) ) {
 				$assign_to = implode( ' ', array( $assignee['first'], $assignee['last'] ) ) . ' (' . $assignee['email'] . ')';
-				
+
 				if ( 1 === $assignee['id'] ) {
 					$assign_to = 'Anyone'; // Helpscout `anyone` assignee has id value of 1.
 				}
@@ -238,18 +240,18 @@ class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\Trigger {
 		$conversation_created = '';
 
 		if ( isset( $params['createdAt'] ) ) {
-			$conversation_created = $this->get_item_helpers()->format_date_timestamp( strtotime( $params['createdAt'] ) );
+			$conversation_created = $this->helpers->format_date_timestamp( strtotime( $params['createdAt'] ) );
 		}
 
 		$customer_waiting_since = '';
 
 		if ( isset( $params['customerWaitingSince']['time'] ) ) {
-			$customer_waiting_since = $this->get_item_helpers()->format_date_timestamp( strtotime( $params['customerWaitingSince']['time'] ) );
+			$customer_waiting_since = $this->helpers->format_date_timestamp( strtotime( $params['customerWaitingSince']['time'] ) );
 		}
 
 		// Get first message from conversation threads (the initial customer message)
 		$first_message = '';
-		$thread_count = 0;
+		$thread_count  = 0;
 		if ( isset( $params['_embedded']['threads'] ) && is_array( $params['_embedded']['threads'] ) ) {
 			$thread_count = count( $params['_embedded']['threads'] );
 			if ( ! empty( $params['_embedded']['threads'] ) ) {
@@ -269,22 +271,22 @@ class Hs_Conversation_Created extends \Uncanny_Automator\Recipe\Trigger {
 		}
 
 		return array(
-			'MAILBOX'                 => $params['mailboxId'], // Parsing auto-generated relevant token.
-			'number'                  => isset( $params['number'] ) ? $params['number'] : '',
-			'conversation_id'         => isset( $params['id'] ) ? $params['id'] : '',
-			'folderId'                => isset( $params['folderId'] ) ? $params['folderId'] : '',
-			'mailbox_id'              => isset( $params['mailboxId'] ) ? $params['mailboxId'] : '',
-			'conversation_url'        => $conversation_url,
-			'conversation_title'      => isset( $params['subject'] ) ? $params['subject'] : esc_html_x( 'No subject', 'Helpscout', 'uncanny-automator' ),
-			'conversation_status'     => isset( $params['status'] ) ? $params['status'] : esc_html_x( 'No status', 'Helpscout', 'uncanny-automator' ),
-			'conversation_created'    => $conversation_created,
-			'customer_name'           => $customer_name,
-			'customer_email'          => isset( $params['primaryCustomer']['email'] ) ? $params['primaryCustomer']['email'] : '',
-			'customer_waiting_since'  => $customer_waiting_since,
-			'assigned_to'             => $assign_to,
-			'tags'                    => isset( $params['tags'] ) && is_array( $params['tags'] ) ? implode( ', ', array_column( $params['tags'], 'tag' ) ) : '',
-			'message'                 => $first_message,
-			'thread_count'            => $thread_count,
+			'MAILBOX'                => $params['mailboxId'], // Parsing auto-generated relevant token.
+			'number'                 => $params['number'] ?? '',
+			'conversation_id'        => $params['id'] ?? '',
+			'folderId'               => $params['folderId'] ?? '',
+			'mailbox_id'             => $params['mailboxId'] ?? '',
+			'conversation_url'       => $conversation_url,
+			'conversation_title'     => $params['subject'] ?? esc_html_x( 'No subject', 'Helpscout', 'uncanny-automator' ),
+			'conversation_status'    => $params['status'] ?? esc_html_x( 'No status', 'Helpscout', 'uncanny-automator' ),
+			'conversation_created'   => $conversation_created,
+			'customer_name'          => $customer_name,
+			'customer_email'         => $params['primaryCustomer']['email'] ?? '',
+			'customer_waiting_since' => $customer_waiting_since,
+			'assigned_to'            => $assign_to,
+			'tags'                   => $params['tags'] && is_array( $params['tags'] ) ? implode( ', ', array_column( $params['tags'], 'tag' ) ) : '',
+			'message'                => $first_message,
+			'thread_count'           => $thread_count,
 		);
 	}
 }

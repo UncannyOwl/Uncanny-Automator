@@ -2,17 +2,28 @@
 
 namespace Uncanny_Automator\Integrations\Threads;
 
+use Exception;
+
 /**
  * Class Threads_Integration
  *
  * @package Uncanny_Automator
  */
-class Threads_Integration extends \Uncanny_Automator\Integration {
+class Threads_Integration extends \Uncanny_Automator\App_Integrations\App_Integration {
 
 	/**
-	 * @var Threads_Helpers
+	 * Get configuration array for this integration.
+	 *
+	 * @return array
 	 */
-	protected $helpers;
+	public static function get_config() {
+		return array(
+			'integration'  => 'THREADS',
+			'name'         => 'Threads',
+			'api_endpoint' => 'v2/threads',
+			'settings_id'  => 'threads',
+		);
+	}
 
 	/**
 	 * Spins up new integration.
@@ -21,16 +32,9 @@ class Threads_Integration extends \Uncanny_Automator\Integration {
 	 */
 	protected function setup() {
 
-		$this->helpers = new Threads_Helpers();
-
-		$this->set_integration( 'THREADS' );
-		$this->set_name( 'Threads' );
+		$this->helpers = new Threads_App_Helpers( self::get_config() );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/threads-icon.svg' );
-		$this->set_connected( $this->helpers->integration_status() );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'threads' ) );
-		// Register wp-ajax callbacks.
-		$this->register_hooks();
-
+		$this->setup_app_integration( self::get_config() );
 	}
 
 	/**
@@ -39,28 +43,21 @@ class Threads_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function load() {
-		new Threads_Settings( $this->helpers );
-		new THREADS_CREATE_POST( $this->helpers );
+		new Threads_Settings( $this->dependencies, $this->get_settings_config() );
+		new THREADS_CREATE_POST( $this->dependencies );
 	}
 
 	/**
-	 * Register hooks.
+	 * Check if the app is connected.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function register_hooks() {
-
-		// Authorization handler.
-		add_action( 'wp_ajax_automator_threads_authorization', array( $this->helpers, 'authenticate' ) );
-		// Disconnect handler.
-		add_action( 'wp_ajax_automator_threads_disconnect_account', array( $this->helpers, 'disconnect' ) );
-		// List of accounts.
-		add_action( 'wp_ajax_automator_threads_accounts_fetch', array( $this->helpers, 'accounts_fetch' ) );
-		// List all 'Lists'.
-		add_action( 'wp_ajax_automator_threads_list_fetch', array( $this->helpers, 'lists_fetch' ) );
-		// Fetch custom fields.
-		add_action( 'wp_ajax_automator_threads_custom_fields_fetch', array( $this->helpers, 'custom_fields_fetch' ) );
-
+	protected function is_app_connected() {
+		try {
+			$this->helpers->get_credentials();
+			return true;
+		} catch ( Exception $e ) {
+			return false;
+		}
 	}
-
 }

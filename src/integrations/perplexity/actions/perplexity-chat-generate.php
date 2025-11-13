@@ -1,7 +1,7 @@
 <?php
 namespace Uncanny_Automator\Integrations\Perplexity\Actions;
 
-use Uncanny_Automator\Recipe\Action;
+use Uncanny_Automator\Recipe\App_Action;
 use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_AI_Provider_Trait;
 use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_Payload_Message_Array_Builder_Trait;
 use Uncanny_Automator\Core\Lib\AI\Http\Response;
@@ -15,7 +15,7 @@ use Uncanny_Automator\Core\Lib\AI\Http\Response;
  * @package Uncanny_Automator\Integrations\Perplexity\Actions
  * @since 5.7
  */
-class Perplexity_Chat_Generate extends Action {
+class Perplexity_Chat_Generate extends App_Action {
 
 	use Base_AI_Provider_Trait;
 	use Base_Payload_Message_Array_Builder_Trait;
@@ -239,13 +239,13 @@ class Perplexity_Chat_Generate extends Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$temperature              = $this->get_parsed_meta_value( 'TEMPERATURE' ?? 0.2 );
-		$max_tokens               = $this->get_parsed_meta_value( 'MAX_TOKEN' ?? '1024' );
-		$model                    = $this->get_parsed_meta_value( 'MODEL' ?? '' );
-		$system_content           = $this->get_parsed_meta_value( 'SYSTEM_CONTENT' ?? '' );
-		$prompt                   = $this->get_parsed_meta_value( $this->get_action_meta() ?? '' );
-		$search_domain_filter     = $this->get_parsed_meta_value( 'SEARCH_DOMAIN_FILTER' ?? '' );
-		$return_related_questions = $this->get_parsed_meta_value( 'RETURN_RELATED_QUESTIONS' ?? 'false' );
+		$temperature              = $this->get_parsed_meta_value( 'TEMPERATURE', 0.2 );
+		$max_tokens               = $this->get_parsed_meta_value( 'MAX_TOKEN', '1024' );
+		$model                    = $this->get_parsed_meta_value( 'MODEL', '' );
+		$system_content           = $this->get_parsed_meta_value( 'SYSTEM_CONTENT', '' );
+		$prompt                   = $this->get_parsed_meta_value( $this->get_action_meta(), '' );
+		$search_domain_filter     = $this->get_parsed_meta_value( 'SEARCH_DOMAIN_FILTER', '' );
+		$return_related_questions = $this->get_parsed_meta_value( 'RETURN_RELATED_QUESTIONS', 'false' );
 
 		if ( ! empty( $search_domain_filter ) ) {
 			$search_domain_filter = array_map( 'trim', explode( ',', $search_domain_filter ) );

@@ -9,9 +9,16 @@ use Exception;
  * Class THREADS_CREATE_POST
  *
  * @package Uncanny_Automator
+ * @property Threads_App_Helpers $helpers
+ * @property Threads_Api_Caller $api
  */
-class THREADS_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
+class THREADS_CREATE_POST extends \Uncanny_Automator\Recipe\App_Action {
 
+	/**
+	 * Action meta key prefix.
+	 *
+	 * @var string
+	 */
 	public $prefix = 'THREADS_SUBSCRIBER_ADD';
 
 	/**
@@ -20,8 +27,6 @@ class THREADS_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
 
 		$this->set_integration( 'THREADS' );
 		$this->set_action_code( $this->prefix . '_CODE' );
@@ -47,18 +52,17 @@ class THREADS_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	public function options() {
-
 		return array(
 			array(
 				'option_code' => $this->get_action_meta(),
-				'label'       => _x( 'Content', 'Threads', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Content', 'Threads', 'uncanny-automator' ),
 				'input_type'  => 'textarea',
 				'required'    => true,
 			),
 			array(
 				'option_code' => 'IMAGE_URL',
-				'label'       => _x( 'Image URL or Media library ID', 'Threads', 'uncanny-automator' ),
-				'description' => _x( 'Enter the URL or the Media library ID of the image you wish to share. The image must be publicly accessible.', 'Threads', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Image URL or Media library ID', 'Threads', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter the URL or the Media library ID of the image you wish to share. The image must be publicly accessible.', 'Threads', 'uncanny-automator' ),
 				'input_type'  => 'text',
 				'required'    => false,
 			),
@@ -73,47 +77,54 @@ class THREADS_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
 	 * @param array $parsed      Parsed data needed for action execution.
 	 *
 	 * @return bool Returns true on successful action processing.
-	 *
-	 * @throws \Exception If credentials are invalid or an API request fails.
-	 *
-	 * @package YourPackageName
+	 * @throws Exception If credentials are invalid or an API request fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		$message = $args['action_meta']['THREADS_SUBSCRIBER_ADD_META'] ?? '';
 		$image   = $parsed['IMAGE_URL'] ?? '';
 
-		try {
+		$body = array(
+			'action'    => 'create_thread',
+			'user_id'   => $this->api->get_credential_user_id(),
+			'image_url' => $this->get_media_url( $image ),
+			'message'   => Automator()->parse->text( $message, $recipe_id, $user_id, $args ),
+		);
 
-			$credentials  = $this->helpers->get_credentials();
-			$access_token = $credentials['access_token'] ?? '';
-			$user_id      = $credentials['user_id'] ?? '';
+		$this->api->api_request( $body, $action_data );
 
-			if ( empty( $access_token ) || empty( $user_id ) ) {
-				throw new \Exception( 'Failed to authenticate: Missing or invalid credentials. Please reconnect your account through the settings page to continue.' );
-			}
+		return true;
+	}
 
-			$body = array(
-				'action'      => 'create_thread',
-				'user_id'     => $user_id,
-				'credentials' => wp_json_encode( $credentials ),
-				'image_url'   => Threads_Helpers::get_media_url( $image ),
-				'message'     => Automator()->parse->text( $message, $recipe_id, $user_id, $args ),
-			);
+	/**
+	 * Get the media URL from either a URL or a media library ID.
+	 *
+	 * If the input is a valid URL, it will return the URL. If the input is numeric,
+	 * it will fetch the media URL using the attachment ID from the WordPress media library.
+	 *
+	 * @param string|int $input The input, either a URL or a numeric media library ID.
+	 *
+	 * @return string The media URL, or an empty string if no valid media is found.
+	 */
+	private function get_media_url( $input ) {
 
-			$response = $this->helpers->api_request( $body, $action_data );
-
-			return true;
-
-		} catch ( \Exception $e ) {
-
-			throw new \Exception(
-				sprintf(
-				/* translators: %s: Error message */
-					esc_html__( 'Error processing action: %s', 'uncanny-automator' ),
-					esc_html( $e->getMessage() )
-				)
-			);
+		// Check if the input is a valid URL
+		if ( filter_var( $input, FILTER_VALIDATE_URL ) ) {
+			return $input;
 		}
+
+		// Check if the input is numeric (assumed to be a media ID)
+		if ( is_numeric( $input ) ) {
+			// Get the URL of the media item using the media ID
+			$media_url = wp_get_attachment_url( intval( $input ) );
+
+			// Return the media URL if it exists
+			if ( $media_url ) {
+				return $media_url;
+			}
+		}
+
+		// Return an empty string if the input is invalid or no URL was found
+		return '';
 	}
 }

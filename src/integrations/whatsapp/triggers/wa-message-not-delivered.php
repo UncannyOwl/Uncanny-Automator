@@ -57,17 +57,9 @@ class WA_MESSAGE_NOT_DELIVERED {
 		// The number of arguments that the action hook accepts.
 		$this->set_action_args_count( 1 );
 
-		$this->set_sentence(
-			sprintf(
-				/* Translators: Trigger sentence */
-				esc_html__( 'A message to a recipient was not delivered', 'uncanny-automator' )
-			)
-		);
-
-		$this->set_readable_sentence(
-			/* Translators: Trigger sentence */
-			esc_html__( 'A message to a recipient was not delivered', 'uncanny-automator' )
-		);
+		// translators: Trigger sentence
+		$this->set_sentence( sprintf( esc_html_x( 'A message to a recipient was not delivered', 'WhatsApp', 'uncanny-automator' ) ) );
+		$this->set_readable_sentence( esc_html_x( 'A message to a recipient was not delivered', 'WhatsApp', 'uncanny-automator' ) );
 
 		// Register the trigger.
 		$this->register_trigger();

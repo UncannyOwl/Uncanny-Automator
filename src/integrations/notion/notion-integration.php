@@ -6,16 +6,32 @@
  */
 namespace Uncanny_Automator\Integrations\Notion;
 
+use Uncanny_Automator\App_Integrations\App_Integration;
 use Uncanny_Automator\Integrations\Notion\Actions\Add_Row;
 use Uncanny_Automator\Integrations\Notion\Actions\Update_Row;
 use Uncanny_Automator\Integrations\Notion\Actions\Create_Page;
+use Exception;
 
 /**
  * @package Uncanny_Automator\Notion\Integration
  *
  * @version 1.0.0
  */
-class Notion_Integration extends \Uncanny_Automator\Integration {
+class Notion_Integration extends App_Integration {
+
+	/**
+	 * Get the integration configuration
+	 *
+	 * @return array
+	 */
+	public static function get_config() {
+		return array(
+			'integration'  => 'NOTION',    // Integration code.
+			'name'         => 'Notion',    // Integration name.
+			'api_endpoint' => 'v2/notion', // Automator API server endpoint.
+			'settings_id'  => 'notion',    // Settings ID ( Settings url / tab id ).
+		);
+	}
 
 	/**
 	 * Setups the Integration.
@@ -23,45 +39,55 @@ class Notion_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	protected function setup() {
+		// Define helpers with common config values.
+		$this->helpers = new Notion_App_Helpers( self::get_config() );
 
-		$this->helpers = new Notion_Helpers();
-
-		$this->load_hooks( $this->helpers );
-
-		$this->set_integration( 'NOTION' );
-		$this->set_name( 'Notion' );
+		// Set the icon URL.
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/notion-icon.svg' );
 
-		$this->set_connected( ! empty( $this->helpers->get_credentials() ) );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'notion' ) );
-
+		// Finalize setup via the parent class with the common config.
+		$this->setup_app_integration( self::get_config() );
 	}
 
 	/**
-	 * @param Notion_Helpers $helper
-	 * @return void
-	 */
-	public function load_hooks( Notion_Helpers $helper ) {
-		add_action( 'wp_ajax_notion_authorization', array( $helper, 'authorize_handler' ) );
-		add_action( 'wp_ajax_notion_disconnect', array( $helper, 'disconnect_handler' ) );
-		add_action( 'wp_ajax_automator_notion_list_pages', array( $helper, 'automator_notion_list_pages_handler' ) );
-		add_action( 'wp_ajax_automator_notion_list_databases', array( $helper, 'automator_notion_list_databases_handler' ) );
-		add_action( 'wp_ajax_automator_notion_get_database', array( $helper, 'automator_notion_get_database_handler' ) );
-		add_action( 'wp_ajax_automator_notion_get_database_columns', array( $helper, 'automator_notion_get_database_columns_handler' ) );
-		add_action( 'wp_ajax_automator_notion_list_users', array( $helper, 'automator_notion_list_users' ) );
-	}
-
-	/**
-	 * Loads actions and settings.
+	 * Load integration-specific classes.
 	 *
 	 * @return void
 	 */
-	public function load() {
-		new Add_Row( $this->helpers );
-		new Update_Row( $this->helpers );
-		new Create_Page( $this->helpers );
-		new Settings( $this->helpers );
+	protected function load() {
+		// Load actions.
+		new Add_Row( $this->dependencies );
+		new Update_Row( $this->dependencies );
+		new Create_Page( $this->dependencies );
+
+		// Load the settings page.
+		new Notion_Settings( $this->dependencies, $this->get_settings_config() );
 	}
 
+	/**
+	 * Check if app is connected.
+	 *
+	 * @return bool
+	 */
+	protected function is_app_connected() {
+		try {
+			$creds = $this->helpers->get_credentials();
+			return ! empty( $creds );
+		} catch ( Exception $e ) {
+			return false;
+		}
+	}
 
+	/**
+	 * Register hooks.
+	 *
+	 * @return void
+	 */
+	protected function register_hooks() {
+		add_action( 'wp_ajax_automator_notion_list_pages', array( $this->helpers, 'automator_notion_list_pages_handler' ) );
+		add_action( 'wp_ajax_automator_notion_list_databases', array( $this->helpers, 'automator_notion_list_databases_handler' ) );
+		add_action( 'wp_ajax_automator_notion_get_database', array( $this->helpers, 'automator_notion_get_database_handler' ) );
+		add_action( 'wp_ajax_automator_notion_get_database_columns', array( $this->helpers, 'automator_notion_get_database_columns_handler' ) );
+		add_action( 'wp_ajax_automator_notion_list_users', array( $this->helpers, 'automator_notion_list_users' ) );
+	}
 }
