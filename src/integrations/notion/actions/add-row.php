@@ -3,19 +3,14 @@
 namespace Uncanny_Automator\Integrations\Notion\Actions;
 
 use Exception;
-use Uncanny_Automator\Integrations\Notion\Notion_Helpers;
 
 /**
  * @package Uncanny_Automator\Integrations\Notion\Actions
+ *
+ * @property Notion_App_Helpers $helpers
+ * @property Notion_API_Caller $api
  */
-class Add_Row extends \Uncanny_Automator\Recipe\Action {
-
-	/**
-	 * IDE Support.
-	 *
-	 * @var \Uncanny_Automator\Integrations\Notion\Notion_Helpers
-	 */
-	protected $helper = null;
+class Add_Row extends \Uncanny_Automator\Recipe\App_Action {
 
 	const INTEGRATION = 'NOTION';
 	const ACTION_CODE = 'NOTION_ADD_ROW';
@@ -27,9 +22,6 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	protected function setup_action() {
-
-		$this->helper = array_shift( $this->dependencies );
-
 		$this->set_integration( self::INTEGRATION );
 		$this->set_action_code( self::ACTION_CODE );
 		$this->set_action_meta( self::ACTION_META );
@@ -132,7 +124,7 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 		$column_value = $action_data['meta']['FIELD_COLUMN_VALUE'] ?? '';
 
 		// Create the payload for the fields.
-		$field_data = $this->helper->make_fields_payload( $recipe_id, $args, $parsed, $column_value );
+		$field_data = $this->helpers->make_fields_payload( $user_id, $recipe_id, $args, $column_value );
 
 		// Get the database ID from the parsed variables. The $parsed is fine because this is not a repeater field.
 		$db_id = $parsed[ $this->get_action_meta() ] ?? '';
@@ -145,7 +137,7 @@ class Add_Row extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		// Send the API request.
-		$response = $this->helper->api_request( $body, $action_data );
+		$response = $this->api->api_request( $body, $action_data );
 
 		$at_key_values = array(
 			'DB_NAME'    => $action_data['meta'][ $this->get_action_meta() . '_readable' ] ?? '',

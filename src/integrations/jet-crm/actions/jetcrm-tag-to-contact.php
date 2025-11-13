@@ -29,10 +29,9 @@ class JETCRM_TAG_TO_CONTACT {
 		$this->set_action_code( 'JETCRM_CONTACT_TAG' );
 		$this->set_action_meta( 'JETCRM_TAG' );
 		$this->set_requires_user( false );
-		/* translators: Action - JetPack CRM */
-		$this->set_sentence( sprintf( esc_attr__( 'Add {{a tag:%1$s}} to a contact', 'uncanny-automator' ), $this->get_action_meta() ) );
-		/* translators: Action - JetPack CRM */
-		$this->set_readable_sentence( esc_attr__( 'Add {{a tag}} to a contact', 'uncanny-automator' ) );
+		// translators: Action - JetPack CRM
+		$this->set_sentence( sprintf( esc_html_x( 'Add {{a tag:%1$s}} to a contact', 'JetPack CRM', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Add {{a tag}} to a contact', 'JetPack CRM', 'uncanny-automator' ) );
 		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->register_action();
 	}

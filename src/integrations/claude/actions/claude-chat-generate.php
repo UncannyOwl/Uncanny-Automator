@@ -4,7 +4,7 @@ namespace Uncanny_Automator\Integrations\Claude\Actions;
 use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_AI_Provider_Trait;
 use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_Payload_Message_Array_Builder_Trait;
 use Uncanny_Automator\Core\Lib\AI\Http\Response;
-use Uncanny_Automator\Recipe\Action;
+use Uncanny_Automator\Recipe\App_Action;
 
 /**
  * Anthropic Claude chat generation action.
@@ -15,7 +15,7 @@ use Uncanny_Automator\Recipe\Action;
  * @package Uncanny_Automator\Integrations\Claude\Actions
  * @since 5.6
  */
-class Claude_Chat_Generate extends Action {
+class Claude_Chat_Generate extends App_Action {
 
 	use Base_AI_Provider_Trait;
 	use Base_Payload_Message_Array_Builder_Trait;
@@ -181,11 +181,11 @@ class Claude_Chat_Generate extends Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$temperature    = $this->get_parsed_meta_value( 'TEMPERATURE' ) ?? 1;
-		$max_tokens     = $this->get_parsed_meta_value( 'MAX_LEN' ) ?? 2048;
-		$model          = $this->get_parsed_meta_value( 'MODEL' ) ?? '';
-		$system_content = $this->get_parsed_meta_value( 'SYSTEM_CONTENT' ) ?? '';
-		$prompt         = $this->get_parsed_meta_value( $this->get_action_meta() ) ?? '';
+		$temperature    = $this->get_parsed_meta_value( 'TEMPERATURE', 1 );
+		$max_tokens     = $this->get_parsed_meta_value( 'MAX_TOKENS', 2048 );
+		$model          = $this->get_parsed_meta_value( 'MODEL', '' );
+		$system_content = $this->get_parsed_meta_value( 'SYSTEM_CONTENT', '' );
+		$prompt         = $this->get_parsed_meta_value( $this->get_action_meta(), '' );
 
 		if ( empty( $max_tokens ) ) {
 			$max_tokens = 2048;

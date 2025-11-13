@@ -3,13 +3,18 @@
 namespace Uncanny_Automator\Integrations\Get_Response;
 
 use Uncanny_Automator\Recipe\Log_Properties;
+use Exception;
+use WP_Error;
 
 /**
  * Class GET_RESPONSE_ADD_UPDATE_CONTACT
  *
  * @package Uncanny_Automator
+ *
+ * @property Get_Response_App_Helpers $helpers
+ * @property Get_Response_Api_Caller $api
  */
-class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
+class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 
 	use Log_Properties;
 
@@ -20,16 +25,19 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 */
 	public function setup_action() {
 
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'GETRESPONSE' );
 		$this->set_action_code( 'GR_ADD_UPDATE_CONTACT_CODE' );
 		$this->set_action_meta( 'CONTACT_EMAIL' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/getresponse/' ) );
 		$this->set_requires_user( false );
-		/* translators: Contact Email */
-		$this->set_sentence( sprintf( esc_attr_x( 'Create or update {{a contact:%1$s}}', 'GetResponse', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: Contact Email
+				esc_attr_x( 'Create or update {{a contact:%1$s}}', 'GetResponse', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
+		);
 		$this->set_readable_sentence( esc_attr_x( 'Create or update {{a contact}}', 'GetResponse', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
 	}
@@ -45,44 +53,46 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		$fields[] = array(
 			'option_code' => 'LIST_ID',
-			'label'       => _x( 'List', 'GetResponse', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'List', 'GetResponse', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'required'    => true,
-			'is_ajax'     => true,
-			'endpoint'    => 'automator_getresponse_get_lists',
+			'ajax'        => array(
+				'endpoint' => 'automator_getresponse_get_lists',
+				'event'    => 'on_load',
+			),
 		);
 
 		$fields[] = array(
-			'option_code' => $this->action_meta,
-			'label'       => _x( 'Email', 'GetResponse', 'uncanny-automator' ),
+			'option_code' => $this->get_action_meta(),
+			'label'       => esc_html_x( 'Email', 'GetResponse', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
 		);
 
 		$fields[] = array(
 			'option_code' => 'UPDATE_EXISTING_CONTACT',
-			'label'       => _x( 'Update existing contact', 'GetResponse', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Update existing contact', 'GetResponse', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
 			'required'    => false,
-			'description' => _x( 'To exclude fields from being updated, leave them empty. To delete a value from a field, set its value to [delete], including the square brackets.', 'GetResponse', 'uncanny-automator' ),
+			'description' => esc_html_x( 'To exclude fields from being updated, leave them empty. To delete a value from a field, set its value to [delete], including the square brackets.', 'GetResponse', 'uncanny-automator' ),
 		);
 
 		$fields[] = array(
 			'option_code' => 'NAME',
-			'label'       => _x( 'Name', 'GetResponse', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Name', 'GetResponse', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
 		);
 
 		$fields[] = array(
 			'option_code' => 'SCORING',
-			'label'       => _x( 'Scoring', 'GetResponse', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Scoring', 'GetResponse', 'uncanny-automator' ),
 			'input_type'  => 'int',
 			'max_number'  => 99999999,
 			'required'    => false,
 			'description' => sprintf(
-				/* translators: %1$s: opening anchor tag, %2$s: closing anchor tag */
-				_x( '%1$sScoring%2$s helps you track and rate customer actions.', 'GetResponse', 'uncanny-automator' ),
+				// translators: %1$s: opening anchor tag, %2$s: closing anchor tag
+				esc_html_x( '%1$sScoring%2$s helps you track and rate customer actions.', 'GetResponse', 'uncanny-automator' ),
 				'<a href="https://www.getresponse.com/help/how-do-i-use-scoring.html" target="_blank">',
 				'</a>'
 			),
@@ -90,13 +100,13 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		$fields[] = array(
 			'option_code' => 'DAY_OF_CYCLE',
-			'label'       => _x( 'Day of cycle', 'GetResponse', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Day of cycle', 'GetResponse', 'uncanny-automator' ),
 			'input_type'  => 'int',
 			'max_number'  => 9999,
 			'required'    => false,
 			'description' => sprintf(
-				/* translators: %1$s: opening anchor tag, %2$s: closing anchor tag */
-				_x( 'The day on which the contact is added to the %1$sAutoresponder cycle.%2$s', 'GetResponse', 'uncanny-automator' ),
+				// translators: %1$s: opening anchor tag, %2$s: closing anchor tag
+				esc_html_x( 'The day on which the contact is added to the %1$sAutoresponder cycle.%2$s', 'GetResponse', 'uncanny-automator' ),
 				'<a href="https://www.getresponse.com/help/how-do-i-create-an-autoresponder.html" target="_blank">',
 				'</a>'
 			),
@@ -106,10 +116,10 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			'option_code'       => 'CUSTOM_FIELDS',
 			'input_type'        => 'repeater',
 			'relevant_tokens'   => array(),
-			'label'             => _x( 'Custom fields', 'GetResponse', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Custom fields', 'GetResponse', 'uncanny-automator' ),
 			'description'       => sprintf(
-				/* translators: %1$s: opening anchor tag, %2$s: closing anchor tag */
-				_x( "Custom field values must align with how they are defined in GetResponse. Multiple values may be separated with commas. For more details, be sure to check out GetResponse's tutorial on %1\$screating and using custom fields.%2\$s", 'GetResponse', 'uncanny-automator' ),
+				// translators: %1$s: opening anchor tag, %2$s: closing anchor tag
+				esc_html_x( "Custom field values must align with how they are defined in GetResponse. Multiple values may be separated with commas. For more details, be sure to check out GetResponse's tutorial on %1\$screating and using custom fields.%2\$s", 'GetResponse', 'uncanny-automator' ),
 				'<a href="https://www.getresponse.com/help/how-do-i-create-and-use-custom-fields.html" target="_blank">',
 				'</a>'
 			),
@@ -117,20 +127,23 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			'fields'            => array(
 				array(
 					'option_code'           => 'CUSTOM_FIELD',
-					'label'                 => _x( 'Custom field', 'GetResponse', 'uncanny-automator' ),
+					'label'                 => esc_html_x( 'Custom field', 'GetResponse', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'supports_tokens'       => false,
 					'supports_custom_value' => false,
 					'required'              => true,
 					'read_only'             => false,
-					'options'               => $this->helpers->get_custom_field_options(),
+					'options'               => $this->get_custom_field_options(),
 				),
-				// TODO REVIEW - Curt - what about a new field called Dynamic Field Type
-				// It would get generated with a callback on the custom field select field
-				Automator()->helpers->recipe->field->text_field( 'CUSTOM_FIELD_VALUE', _x( 'Custom field value', 'GetResponse', 'uncanny-automator' ), true, 'text', '', true ),
+				array(
+					'option_code' => 'CUSTOM_FIELD_VALUE',
+					'label'       => esc_html_x( 'Custom field value', 'GetResponse', 'uncanny-automator' ),
+					'input_type'  => 'text',
+					'required'    => true,
+				),
 			),
-			'add_row_button'    => _x( 'Add custom field', 'GetResponse', 'uncanny-automator' ),
-			'remove_row_button' => _x( 'Remove custom field', 'GetResponse', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add custom field', 'GetResponse', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove custom field', 'GetResponse', 'uncanny-automator' ),
 			'hide_actions'      => false,
 		);
 
@@ -151,8 +164,12 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		// Required fields - throws error if not set and valid.
-		$list_id = $this->helpers->get_list_id_from_parsed( $parsed, 'LIST_ID' );
 		$email   = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
+		$list_id = sanitize_text_field( $this->get_parsed_meta_value( 'LIST_ID', '' ) );
+
+		if ( empty( $list_id ) ) {
+			throw new Exception( esc_html_x( 'List ID is required', 'GetResponse', 'uncanny-automator' ) );
+		}
 
 		// Optional fields.
 		$is_update     = $this->get_parsed_meta_value( 'UPDATE_EXISTING_CONTACT', false );
@@ -167,9 +184,9 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		// Send request.
-		$response = $this->helpers->api_request(
-			'create_update_contact',
+		$this->api->api_request(
 			array(
+				'action'  => 'create_update_contact',
 				'email'   => $email,
 				'list'    => $list_id,
 				'contact' => wp_json_encode( $contact ),
@@ -179,6 +196,32 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		return true;
+	}
+
+	/**
+	 * Get custom field options.
+	 *
+	 * @return array
+	 */
+	private function get_custom_field_options() {
+		try {
+			$fields = $this->helpers->get_contact_fields();
+		} catch ( Exception $e ) {
+			// Return empty options if API fails
+			return array();
+		}
+
+		$options = array();
+		if ( ! empty( $fields ) ) {
+			foreach ( $fields as $field_id => $field ) {
+				$options[] = array(
+					'value' => $field_id,
+					'text'  => $field['name'],
+				);
+			}
+		}
+
+		return $options;
 	}
 
 	/**
@@ -211,11 +254,11 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 					break;
 				case 'SCORING':
 					// Set to null or enforce max value.
-					$contact['scoring'] = empty( $value ) || $value == 0 ? null : min( 99999999, (int) $value );
+					$contact['scoring'] = empty( $value ) ? null : min( 99999999, (int) $value );
 					break;
 				case 'DAY_OF_CYCLE':
 					// Set to null or enforce min/max value and cast to string.
-					$contact['dayOfCycle'] = empty( $value ) || $value == 0 ? null : (string) min( 9999, max( 0, (int) $value ) );
+					$contact['dayOfCycle'] = empty( $value ) ? null : (string) min( 9999, max( 0, (int) $value ) );
 					break;
 			}
 		}
@@ -240,7 +283,13 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			return $custom_fields;
 		}
 
-		$config = $this->helpers->get_contact_fields();
+		try {
+			$config = $this->helpers->get_contact_fields();
+		} catch ( Exception $e ) {
+			// Return empty array if API fails
+			return $custom_fields;
+		}
+
 		foreach ( $repeater as $field ) {
 			$field_id    = isset( $field['CUSTOM_FIELD'] ) ? sanitize_text_field( $field['CUSTOM_FIELD'] ) : '';
 			$field_value = isset( $field['CUSTOM_FIELD_VALUE'] ) ? sanitize_text_field( trim( $field['CUSTOM_FIELD_VALUE'] ) ) : '';
@@ -276,7 +325,7 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			$this->set_log_properties(
 				array(
 					'type'       => 'string',
-					'label'      => _x( 'Invalid Custom Field(s)', 'WordPress', 'uncanny-automator' ),
+					'label'      => esc_html_x( 'Invalid Custom Field(s)', 'WordPress', 'uncanny-automator' ),
 					'value'      => implode( ', ', $errors ),
 					'attributes' => array(),
 				)
@@ -302,11 +351,11 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		// Field not found.
 		if ( empty( $field_config ) ) {
-			return new \WP_Error(
+			return new WP_Error(
 				'invalid_field_id',
 				sprintf(
-					/* translators: %s: field ID */
-					_x( 'Invalid field ID (%1$s)', 'GetResponse', 'uncanny-automator' ),
+					// translators: %s: field ID
+					esc_html_x( 'Invalid field ID (%1$s)', 'GetResponse', 'uncanny-automator' ),
 					$field_id
 				)
 			);
@@ -327,13 +376,13 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			case 'date':
 				// Enforce yyyy-mm-dd format.
 				$date      = date_create( $value );
-				$error     = ! $date ? _x( 'Invalid date format', 'GetResponse', 'uncanny-automator' ) : false;
+				$error     = ! $date ? esc_html_x( 'Invalid date format', 'GetResponse', 'uncanny-automator' ) : false;
 				$validated = $date ? date_format( $date, 'Y-m-d' ) : '';
 				break;
 			case 'datetime':
 				// Enforce yyyy-mm-dd hh:mm:ss format.
 				$date      = date_create( $value );
-				$error     = ! $date ? _x( 'Invalid datetime format', 'GetResponse', 'uncanny-automator' ) : false;
+				$error     = ! $date ? esc_html_x( 'Invalid datetime format', 'GetResponse', 'uncanny-automator' ) : false;
 				$validated = $date ? date_format( $date, 'Y-m-d H:i:s' ) : '';
 				break;
 			case 'number':
@@ -350,13 +399,13 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 					$is_valid  = ! empty( $validated );
 				}
 				if ( ! $is_valid ) {
-					$error = _x( 'Invalid phone number format', 'GetResponse', 'uncanny-automator' );
+					$error = esc_html_x( 'Invalid phone number format', 'GetResponse', 'uncanny-automator' );
 				}
 				break;
 			case 'url':
 				// Validate URL.
 				$validated = filter_var( $value, FILTER_VALIDATE_URL );
-				$error     = empty( $validated ) ? _x( 'Invalid URL format', 'GetResponse', 'uncanny-automator' ) : false;
+				$error     = empty( $validated ) ? esc_html_x( 'Invalid URL format', 'GetResponse', 'uncanny-automator' ) : false;
 				break;
 			default:
 				$validated = $value;
@@ -365,14 +414,43 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		// Allow filtering of error values.
 		if ( $error ) {
-			/* translators: %1$s: field key, %2$s invalid value passed */
-			$error = new \WP_Error( 'invalid_field_' . $original_type, sprintf( $error . ' key %1$s ( %2$s )', $field_config['name'], $value ) );
+			// translators: %1$s: field key, %2$s invalid value passed
+			$error = new WP_Error( 'invalid_field_' . $original_type, sprintf( $error . ' key %1$s ( %2$s )', $field_config['name'], $value ) );
+
+			/**
+			 * Filter the error value.
+			 *
+			 * @param WP_Error $error
+			 * @param string $field_id
+			 * @param mixed $value
+			 * @param array $field_config
+			 *
+			 * @example
+			 * add_filter( 'automator_getresponse_custom_field_value', function( $error, $field_id, $value, $field_config ) {
+			 *     if ( $field_id === 'custom_field_id' ) {
+			 *         return // non WP_Error value to validate.
+			 *     }
+			 *     return $error;
+			 * }, 10, 4 );
+			 *
+			 * @return WP_Error
+			 */
 			$value = apply_filters( 'automator_getresponse_custom_field_value', $error, $field_id, $value, $field_config );
 			if ( is_wp_error( $value ) ) {
 				return $value;
 			}
 		}
 
+		/**
+		 * Filter the validated value.
+		 *
+		 * @param mixed $validated
+		 * @param string $field_id
+		 * @param mixed $value
+		 * @param array $field_config
+		 *
+		 * @return mixed
+		 */
 		$value = apply_filters( 'automator_getresponse_custom_field_value', $validated, $field_id, $value, $field_config );
 
 		// Return validated value as array of string for API.
@@ -408,29 +486,54 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		// Allow filtering of error values.
 		if ( ! empty( $invalid ) ) {
-			$error = new \WP_Error(
+			$error = new WP_Error(
 				'invalid_field_select',
 				sprintf(
-					/* translators: %1$s: field key, %2$s invalid field(s) value passed */
-					_x( 'Invalid select value(s) key %1$s : %2$s', 'GetResponse', 'uncanny-automator' ),
+					// translators: %1$s: field key, %2$s invalid field(s) value passed
+					esc_html_x( 'Invalid select value(s) key %1$s : %2$s', 'GetResponse', 'uncanny-automator' ),
 					$field_config['name'],
 					implode( ', ', $invalid )
 				)
 			);
+			/**
+			 * Filter the error value.
+			 *
+			 * @param WP_Error $error
+			 * @param string $field_id
+			 * @param mixed $value
+			 * @param array $field_config
+			 *
+			 * @return WP_Error
+			 */
 			$value = apply_filters( 'automator_getresponse_custom_field_value', $error, $field_config['id'], $value, $field_config );
 			if ( is_wp_error( $value ) ) {
 				return $value;
 			}
 		}
 
+		/**
+		 * Filter the validated value.
+		 *
+		 * @param array $validated
+		 * @param string $field_id
+		 * @param mixed $value
+		 * @param array $field_config
+		 *
+		 * @return array
+		 *
+		 * @example
+		 * add_filter( 'automator_getresponse_custom_field_value', function( $validated, $field_id, $value, $field_config ) {
+		 *     return $validated;
+		 * }, 10, 4 );
+		 */
 		$validated = apply_filters( 'automator_getresponse_custom_field_value', $validated, $field_config['id'], $value, $field_config );
 
 		if ( empty( $validated ) ) {
-			return new \WP_Error(
+			return new WP_Error(
 				'invalid_field_select',
 				sprintf(
-					/* translators: %s: field key */
-					_x( 'No select value(s) key %s', 'GetResponse', 'uncanny-automator' ),
+					// translators: %s: field key
+					esc_html_x( 'No select value(s) key %s', 'GetResponse', 'uncanny-automator' ),
 					$field_config['name'],
 				)
 			);
@@ -442,5 +545,4 @@ class GET_RESPONSE_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		return $validated;
 	}
-
 }

@@ -1,26 +1,22 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
-
-use Uncanny_Automator\Recipe\Actions;
+namespace Uncanny_Automator\Integrations\Active_Campaign;
 
 /**
  * Class AC_USER_LIST_ADD
  *
  * @package Uncanny_Automator
+ *
+ * @property Active_Campaign_App_Helpers $helpers
+ * @property Active_Campaign_Api_Caller $api
  */
-class AC_USER_LIST_ADD {
+class AC_USER_LIST_ADD extends \Uncanny_Automator\Recipe\App_Action {
 
-	use Actions;
-
-	public $prefix = 'AC_USER_LIST_ADD';
-
-	protected $ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
-
-	public function __construct() {
-
-		$this->setup_action();
-
-	}
+	/**
+	 * Meta key prefix.
+	 *
+	 * @var string
+	 */
+	protected $prefix = 'AC_USER_LIST_ADD';
 
 	/**
 	 * Setup Action.
@@ -28,84 +24,51 @@ class AC_USER_LIST_ADD {
 	 * @return void.
 	 */
 	protected function setup_action() {
-
 		$this->set_integration( 'ACTIVE_CAMPAIGN' );
 		$this->set_action_code( $this->prefix . '_CODE' );
 		$this->set_action_meta( $this->prefix . '_META' );
 		$this->set_is_pro( false );
 		$this->set_requires_user( true );
-
-		/* translators: Action - WordPress */
-		$this->set_sentence( sprintf( esc_attr__( 'Add the user to {{a list:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
-
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Add the user to {{a list}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		$this->set_background_processing( true );
-
-		$this->register_action();
-
-	}
-
-	public function load_options() {
-
-		$options_group = array(
-			$this->get_action_meta() => array(
-				array(
-					'option_code'              => $this->get_action_meta(),
-					/* translators: Email field */
-					'label'                    => esc_attr__( 'List', 'uncanny-automator' ),
-					'input_type'               => 'select',
-					'supports_custom_value'    => true,
-					'required'                 => true,
-					'is_ajax'                  => true,
-					'endpoint'                 => 'active-campaign-list-retrieve',
-					'fill_values_in'           => $this->get_action_meta(),
-					'custom_value_description' => _x( 'List ID', 'ActiveCampaign', 'uncanny-automator' ),
-				),
-			),
-		);
-
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options_group' => $options_group,
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s: List ID
+				esc_attr_x( 'Add the user to {{a list:%1$s}}', 'ActiveCampaign', 'uncanny-automator' ),
+				$this->get_action_meta()
 			)
 		);
-
+		$this->set_readable_sentence( esc_attr_x( 'Add the user to {{a list}}', 'ActiveCampaign', 'uncanny-automator' ) );
+		$this->set_background_processing( true );
 	}
 
 	/**
+	 * Define the options for the action.
+	 *
+	 * @return array
+	 */
+	public function options() {
+		return array(
+			$this->helpers->get_list_select_config( $this->get_action_meta() ),
+		);
+	}
+
+	/**
+	 * Process the action.
+	 *
 	 * @param int $user_id
 	 * @param array $action_data
 	 * @param int $recipe_id
 	 * @param array $args
-	 * @param $parsed
+	 * @param array $parsed
 	 *
-	 * @return void.
+	 * @return bool
+	 * @throws Exception
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$list_id = sanitize_text_field( $parsed[ $this->get_action_meta() ] ?? 0 );
+		$user    = get_user_by( 'ID', $user_id );
 
-		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
-		$list_id   = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
-		$user      = get_user_by( 'ID', $user_id );
+		$this->api->add_contact_to_list( $user->data->user_email, $list_id, $action_data );
 
-		try {
-
-			$contact_id = $ac_helper->get_email_id( $user->data->user_email );
-
-			$body = array(
-				'action'    => 'list_update_contact',
-				'listId'    => $list_id,
-				'contactId' => $contact_id,
-				'status'    => 1,
-			);
-
-			$response = $ac_helper->api_request( $body, $action_data );
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-		} catch ( \Exception $e ) {
-			$ac_helper->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
-		}
+		return true;
 	}
 }

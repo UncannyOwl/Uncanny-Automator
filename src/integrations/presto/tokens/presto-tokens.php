@@ -1,7 +1,8 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Presto;
 
+class_alias( 'Uncanny_Automator\Integrations\Presto\Presto_Tokens', 'Uncanny_Automator\Presto_Tokens' );
 /**
  * Class Presto_Tokens
  *
@@ -16,9 +17,12 @@ class Presto_Tokens {
 	 */
 	public static $integration = 'PRESTO';
 
+	/**
+	 * Presto_Tokens constructor.
+	 */
 	public function __construct() {
 
-		add_filter( 'automator_maybe_parse_token', array( $this, 'presto_token' ), 20, 6 );
+		//add_filter( 'automator_maybe_parse_token', array( $this, 'presto_token' ), 20, 6 );
 	}
 
 	/**
@@ -95,5 +99,4 @@ class Presto_Tokens {
 
 		return $value;
 	}
-
 }

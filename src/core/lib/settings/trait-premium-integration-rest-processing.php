@@ -176,14 +176,8 @@ trait Premium_Integration_Rest_Processing {
 		 */
 		$response = apply_filters( 'automator_before_disconnect_' . $this->get_id(), $response, $data, $this );
 
-		// Get all possible options that could have been registered
-		$all_options = $this->get_all_registered_options();
-		if ( ! empty( $all_options ) ) {
-			// Clear all registered options
-			foreach ( $all_options as $option_name => $args ) {
-				automator_delete_option( $option_name );
-			}
-		}
+		// Delete all registered options.
+		$this->delete_all_registered_options();
 
 		// Check if the helper class has delete_credentials method
 		if ( method_exists( $this->helpers, 'delete_credentials' ) ) {
@@ -247,6 +241,20 @@ trait Premium_Integration_Rest_Processing {
 	protected function after_disconnect( $response = array(), $data = array() ) {
 		// Default implementation returns response unchanged
 		return $response;
+	}
+
+	/**
+	 * Delete all registered options
+	 *
+	 * @return void
+	 */
+	protected function delete_all_registered_options() {
+		$all_options = $this->get_all_registered_options();
+		if ( ! empty( $all_options ) ) {
+			foreach ( $all_options as $option_name => $args ) {
+				automator_delete_option( $option_name );
+			}
+		}
 	}
 
 	/**

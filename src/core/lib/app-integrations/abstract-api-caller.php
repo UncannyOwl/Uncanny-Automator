@@ -174,29 +174,33 @@ abstract class Api_Caller {
 			)
 		);
 
-		// If credentials are not excluded, include them in the request.
-		if ( ! wp_validate_boolean( $args['exclude_credentials'] ) ) {
-			$body[ $this->get_credential_request_key() ] = $this->get_api_request_credentials( $args );
-		}
+		// Set args to variables.
+		$check_errors        = ! wp_validate_boolean( $args['exclude_error_check'] );
+		$include_timeout     = ! is_null( $args['include_timeout'] ) && 0 < absint( $args['include_timeout'] );
+		$include_credentials = ! wp_validate_boolean( $args['exclude_credentials'] );
 
-		// Build the request parameters.
-		$params = array(
-			'endpoint' => $this->api_endpoint,
-			'body'     => $body,
-			'action'   => $action_data,
-		);
-
-		// If a timeout is included, set it.
-		if ( ! is_null( $args['include_timeout'] ) && 0 < absint( $args['include_timeout'] ) ) {
-			$params['timeout'] = absint( $args['include_timeout'] );
-		}
-
-		$check_errors = ! wp_validate_boolean( $args['exclude_error_check'] );
-
-		// Make the API request.
 		try {
+			// If credentials are not excluded, include them in the request.
+			if ( $include_credentials ) {
+				$body[ $this->get_credential_request_key() ] = $this->get_api_request_credentials( $args );
+			}
+
+			// Build the request parameters.
+			$params = array(
+				'endpoint' => $this->api_endpoint,
+				'body'     => $body,
+				'action'   => $action_data,
+			);
+
+			// If a timeout is included, set it.
+			if ( $include_timeout ) {
+				$params['timeout'] = absint( $args['include_timeout'] );
+			}
+
+			// Make the API request.
 			$response = Api_Server::api_call( $params );
-		} catch ( \Exception $e ) {
+
+		} catch ( Exception $e ) {
 			// If errors are not specifically skipped, check for them.
 			if ( $check_errors ) {
 				$this->check_for_errors(
@@ -207,7 +211,7 @@ abstract class Api_Caller {
 					$args
 				);
 			}
-			// Re-throw the original exception
+			// Re-throw the original exception.
 			throw $e;
 		}
 

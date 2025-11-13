@@ -6,19 +6,14 @@
 namespace Uncanny_Automator\Integrations\Notion\Actions;
 
 use Exception;
-use Uncanny_Automator\Integrations\Notion\Notion_Helpers;
 
 /**
  * @package Uncanny_Automator\Integrations\Notion\Actions
+ *
+ * @property Notion_App_Helpers $helpers
+ * @property Notion_API_Caller $api
  */
-class Update_Row extends \Uncanny_Automator\Recipe\Action {
-
-	/**
-	 * IDE Support.
-	 *
-	 * @var \Uncanny_Automator\Integrations\Notion\Notion_Helpers
-	 */
-	protected $helper = null;
+class Update_Row extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Setups the action basic properties like Integration, Sentence, etc.
@@ -26,8 +21,6 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	protected function setup_action() {
-
-		$this->helper = array_shift( $this->dependencies );
 
 		$this->set_integration( 'NOTION' );
 		$this->set_action_code( 'NOTION_UPDATE_ROW' );
@@ -162,7 +155,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		$property_type = $column_extracted['type'];
 
 		// Create the payload for the fields.
-		$field_data = $this->helper->make_fields_payload( $recipe_id, $args, $parsed, $field_column_value );
+		$field_data = $this->helpers->make_fields_payload( $user_id, $recipe_id, $args, $field_column_value );
 
 		// Get the database ID from the parsed variables.
 		$db_id = $parsed[ $this->get_action_meta() ] ?? '';
@@ -179,7 +172,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		// Send the API request.
-		$response = $this->helper->api_request( $body, $action_data );
+		$response = $this->api->api_request( $body, $action_data );
 
 		$at_key_values = array(
 			'DB_NAME'    => $action_data['meta'][ $this->get_action_meta() . '_readable' ] ?? '',
@@ -221,7 +214,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 	 */
 	private function extract_column_name( $column_name ) {
 
-		$parts = Notion_Helpers::extract_field_parameters_columns( $column_name );
+		$parts = $this->helpers->extract_field_parameters_columns( $column_name );
 
 		if ( count( $parts ) !== 5 ) {
 			throw new Exception(
@@ -253,8 +246,8 @@ class Update_Row extends \Uncanny_Automator\Recipe\Action {
 	private function compat_match_value( $date_string ) {
 
 		// Check if the date is valid and convert it to ISO 8601 format.
-		if ( $this->helper->is_valid_date( $date_string ) ) {
-			return $this->helper->convert_to_iso_8601( $date_string );
+		if ( $this->helpers->is_valid_date( $date_string ) ) {
+			return $this->helpers->convert_to_iso_8601( $date_string );
 		}
 
 		return $date_string;

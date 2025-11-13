@@ -483,7 +483,11 @@ class Recipe_Post_Rest_Api {
 		$default_meta     = $request->has_param( 'default_meta' ) ? $request->get_param( 'default_meta' ) : array();
 		$default_meta     = ! empty( $default_meta ) && is_array( $default_meta ) ? (array) Automator()->utilities->automator_sanitize( $default_meta, 'mixed' ) : false;
 		$integration_code = '';
-		if ( isset( $default_meta['integration'] ) ) {
+		
+		// Check for direct integration parameter first
+		if ( $request->has_param( 'integration' ) && ! empty( $request->get_param( 'integration' ) ) ) {
+			$integration_code = sanitize_text_field( $request->get_param( 'integration' ) );
+		} elseif ( isset( $default_meta['integration'] ) ) {
 			$integration_code = $default_meta['integration'];
 			unset( $default_meta['integration'] );
 		}

@@ -4,15 +4,11 @@ namespace Uncanny_Automator\Integrations\Bluesky;
 
 /**
  * Bluesky - Create Post
+ *
+ * @property Bluesky_App_Helpers $helpers
+ * @property Bluesky_Api_Caller $api
  */
-class BLUESKY_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
-
-	/**
-	 * Helpers
-	 *
-	 * @var Bluesky_Helpers
-	 */
-	protected $helpers;
+class BLUESKY_CREATE_POST extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Prefix
@@ -27,9 +23,6 @@ class BLUESKY_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	protected function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'BLUESKY' );
 		$this->set_action_code( $this->prefix . '_CODE' );
 		$this->set_action_meta( $this->prefix . '_META' );
@@ -202,13 +195,13 @@ class BLUESKY_CREATE_POST extends \Uncanny_Automator\Recipe\Action {
 
 		// Format the post text and any selected media into a record for the Bluesky API.
 		$record = $this->helpers->get_formatted_post_record( $text, $media );
-		$args   = array(
+		$body   = array(
 			'action' => 'create_post',
 			'record' => wp_json_encode( $record ),
 		);
 
 		// Create the post.
-		$response = $this->helpers->api()->api_request( $args, $action_data );
+		$response = $this->api->api_request( $body, $action_data );
 		$data     = isset( $response['data'] ) ? $response['data'] : array();
 		$url      = isset( $data['uri'] ) ? $data['uri'] : '';
 		$status   = isset( $data['validationStatus'] ) ? $data['validationStatus'] : ''; // valid, unknown

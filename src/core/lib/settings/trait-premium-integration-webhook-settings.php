@@ -6,49 +6,26 @@ namespace Uncanny_Automator\Settings;
  * Intended to be used in the settings view of premium integrations.
  *
  * @package Uncanny_Automator\Settings
+ *
+ * @property App_Webhooks $webhooks - Extended App_Webhooks class for integration specific webhook settings
  */
 trait Premium_Integration_Webhook_Settings {
 
 	/**
-	 * Webhook option name.
+	 * Register webhook options.
 	 *
-	 * @var string
-	 */
-	protected $webhook_option_name = '';
-
-	/**
-	 * Set the webhook option name.
-	 *
-	 * @param string $option_name The option name.
+	 * @param bool $enabled Whether to register the enabled option.
+	 * @param bool $key Whether to register the key option.
 	 *
 	 * @return void
 	 */
-	protected function set_webhook_option_name( $option_name = '' ) {
-		$this->webhook_option_name = empty( sanitize_key( $option_name ) )
-			? $this->generate_webhook_option_name()
-			: sanitize_key( $option_name );
-	}
-
-	/**
-	 * Get the webhook option name.
-	 *
-	 * @return string
-	 */
-	public function get_webhook_option_name() {
-		if ( empty( $this->webhook_option_name ) ) {
-			$this->set_webhook_option_name( $this->generate_webhook_option_name() );
+	public function register_webhook_options( $enabled = true, $key = true ) {
+		if ( $enabled ) {
+			$this->register_option( $this->webhooks->get_webhooks_enabled_option_name() );
 		}
-		return $this->webhook_option_name;
-	}
-
-	/**
-	 * Generate the default webhook option name for an integration.
-	 * Converts dashes to underscores for proper formatting.
-	 *
-	 * @return string The formatted webhook option name (e.g., 'enable_active_campaign_webhooks').
-	 */
-	protected function generate_webhook_option_name() {
-		return sprintf( 'enable_%s_webhooks', sanitize_key( $this->get_id() ) );
+		if ( $key ) {
+			$this->register_option( $this->webhooks->get_webhook_key_option_name() );
+		}
 	}
 
 	/**
@@ -58,7 +35,7 @@ trait Premium_Integration_Webhook_Settings {
 	 */
 	public function output_enable_webhook_switch( $label = '', $id = '' ) {
 		$label   = $label ? $label : esc_attr_x( 'Enable triggers', 'Integration settings', 'uncanny-automator' );
-		$id      = $id ? $id : $this->get_webhook_option_name();
+		$id      = $id ? $id : $this->webhooks->get_webhooks_enabled_option_name();
 		$checked = automator_get_option( $id, false );
 
 		// Output the enable webhook switch.
@@ -152,7 +129,7 @@ trait Premium_Integration_Webhook_Settings {
 	 *  @property string label Custom button label
 	 *  @property string confirm_heading Custom confirmation heading
 	 *  @property string confirm_content Custom confirmation message
-	 *  @property string action Custom action name (defaults to 'webhook_url_regeneration')
+	 *  @property string action Custom action label (defaults to 'webhook_url_regeneration')
 	 *  @property array args Additional button arguments
 	 *  @property string integration_id Integration ID override for the button
 	 *
@@ -239,7 +216,7 @@ trait Premium_Integration_Webhook_Settings {
 		// Output the section with the captured content
 		$this->output_app_integration_section(
 			array(
-				'id'           => $this->get_webhook_option_name() . '-details-section',
+				'id'           => $this->webhooks->get_webhooks_enabled_option_name() . '-details-section',
 				'section-type' => 'webhook-details',
 				'state'        => 'webhook-enabled',
 				'show-when'    => '1',
@@ -289,6 +266,78 @@ trait Premium_Integration_Webhook_Settings {
 	}
 
 	/**
+	 * Handle webhook URL regeneration
+	 * Common implementation for regenerating webhook keys
+	 *
+	 * @param array $response Current response
+	 * @param array $data Posted data
+	 *
+	 * @return array
+	 */
+	protected function handle_webhook_url_regeneration( $response = array(), $data = array() ) {
+		$this->webhooks->regenerate_webhook_key();
+		$this->register_success_alert(
+			sprintf(
+				// translators: %s is the integration name
+				esc_html_x( 'Webhook URL regenerated successfully for %s.', 'Integration settings', 'uncanny-automator' ),
+				esc_html( $this->get_name() )
+			)
+		);
+		$response['reload'] = true;
+		return $response;
+	}
+
+	/**
+	 * Handle webhook status changes before save
+	 * Common implementation for webhook enable/disable status changes
+	 *
+	 * @param array $response Current response
+	 * @param array $data Posted data
+	 *
+	 * @return array
+	 */
+	protected function handle_webhook_status_before_save( $response = array(), $data = array() ) {
+		// Get current and posted values
+		$current_webhook_enabled = (bool) $this->webhooks->get_webhooks_enabled_status();
+		$posted_webhook_enabled  = (bool) $this->get_data_option( $this->webhooks->get_webhooks_enabled_option_name(), $data );
+
+		// Case 1: First time enabling webhooks.
+		if ( empty( $current_webhook_enabled ) && ! empty( $posted_webhook_enabled ) ) {
+			$response['alert'] = $this->get_success_alert(
+				sprintf(
+					// translators: %s is the integration name
+					esc_html_x( '%s triggers are now enabled.', 'Integration settings', 'uncanny-automator' ),
+					esc_html( $this->get_name() )
+				)
+			);
+		}
+
+		// Case 2: Webhook enabled, but now disabled
+		if ( ! empty( $current_webhook_enabled ) && ! $posted_webhook_enabled ) {
+			$response['alert'] = $this->get_warning_alert(
+				sprintf(
+					// translators: %s is the integration name
+					esc_html_x( '%s triggers are now disabled.', 'Integration settings', 'uncanny-automator' ),
+					esc_html( $this->get_name() )
+				)
+			);
+		}
+
+		// Case 3: No change
+		if ( $current_webhook_enabled === $posted_webhook_enabled ) {
+			$response['alert'] = $this->get_info_alert(
+				sprintf(
+					// translators: %s is the integration name
+					esc_html_x( 'No changes were made to the %s triggers settings.', 'Integration settings', 'uncanny-automator' ),
+					esc_html( $this->get_name() )
+				)
+			);
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Register webhook options for automatic cleanup on disconnection
 	 *
 	 * @param array $response The current response array
@@ -298,11 +347,11 @@ trait Premium_Integration_Webhook_Settings {
 	 * @return array Modified response array
 	 */
 	public function after_disconnect_webhook_cleanup( $response, $data, $base_settings_object ) {
-		// Collect all webhook options.
+		// Collect all webhook options using webhook abstract getters.
 		$webhook_options = array_filter(
 			array(
-				$this->get_webhook_option_name(),
-				$this->get_webhook_key_option_name(),
+				$this->webhooks->get_webhooks_enabled_option_name(),
+				$this->webhooks->get_webhook_key_option_name(),
 			)
 		);
 

@@ -1,170 +1,107 @@
 <?php
 namespace Uncanny_Automator\Integrations\Constant_Contact;
 
+use Uncanny_Automator\Settings\OAuth_App_Integration;
+use Uncanny_Automator\Settings\App_Integration_Settings;
+use Exception;
+
 /**
  * Class Constant_Contact_Settings
  *
  * @package Uncanny_Automator
+ *
+ * @property Constant_Contact_App_Helpers $helpers
  */
-class Constant_Contact_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
+class Constant_Contact_Settings extends App_Integration_Settings {
 
 	/**
-	 * Account Details.
-	 *
-	 * @var mixed $account - false if not connected or array of account details
+	 * Use OAuth trait for OAuth functionality.
 	 */
-	protected $account;
+	use OAuth_App_Integration;
 
 	/**
-	 * API Key.
-	 *
-	 * @var string $api_key
-	 */
-	protected $api_key;
-
-	/**
-	 * Is Account Connected.
-	 *
-	 * @var bool $is_account_connected
-	 */
-	protected $is_account_connected;
-
-	/**
-	 * Disconnect URL.
-	 *
-	 * @var string $disconnect_url
-	 */
-	protected $disconnect_url;
-
-	/**
-	 * Integration status.
-	 *
-	 * @return string - 'success' or empty string
-	 */
-	public function get_status() {
-		return $this->helpers->integration_status();
-	}
-
-	/**
-	 * Sets up the properties of the settings page
+	 * Sets up the properties of the settings page.
 	 *
 	 * @return void
 	 */
 	public function set_properties() {
+		// OAuth action name - using 'authorization' as per current implementation.
+		$this->oauth_action = 'authorization';
 
-		$this->set_id( 'constant-contact' );
-		$this->set_icon( 'CONSTANT_CONTACT' );
-		$this->set_name( 'Constant Contact' );
-
+		// Redirect parameter name - using 'wp_site' to preserve current behavior.
+		$this->redirect_param = 'wp_site';
 	}
 
 	/**
-	 * Main panel content.
+	 * Get formatted account info.
 	 *
-	 * @return string - HTML
+	 * @return array
 	 */
-	public function output_panel_content() {
+	protected function get_formatted_account_info() {
+		$account_info = $this->helpers->get_account_info();
 
-		do_action( 'automator_constant_contact_settings_before' );
-
-		$this->is_account_connected = ! empty( $this->get_status() );
-		$this->account              = ! empty( $this->is_account_connected ) ? $this->helpers->get_credentials() : false;
-		$this->disconnect_url       = $this->helpers->get_disconnect_url();
-
-		$just_connected = ( 'yes' === automator_filter_input( 'success' ) );
-
-		if ( ! $this->is_account_connected ) {
-			include trailingslashit( __DIR__ ) . '/view-not-connected.php';
-		} else {
-			include trailingslashit( __DIR__ ) . '/view-connected.php';
+		if ( empty( $account_info ) ) {
+			return array();
 		}
 
-	}
+		$first_name = $account_info['first_name'] ?? '';
+		$last_name  = $account_info['last_name'] ?? '';
+		$name       = trim( $first_name . ' ' . $last_name );
 
-	public function output_panel() {
-		?>
-		<div class="uap-settings-panel">
-			<div class="uap-settings-panel-top">
-				<?php $this->output_panel_top(); ?>
-				<?php $this->display_alerts(); ?>
-				<div class="uap-settings-panel-content">
-					<?php $this->output_panel_content(); ?>
-				</div>
-			</div>
-			<div class="uap-settings-panel-bottom" <?php echo $this->is_account_connected ? '' : 'has-arrow'; ?> >
-				<?php $this->output_panel_bottom(); ?>
-			</div>
-		</div>
-		<?php
+		return array(
+			'main_info'  => ! empty( $name ) ? $name : $account_info['contact_email'],
+			'additional' => ! empty( $name ) ? $account_info['contact_email'] : '',
+		);
 	}
 
 	/**
-	 * Bottom left panel content.
+	 * Validate integration credentials.
 	 *
-	 * @return string - HTML
+	 * @param array $credentials
+	 * @return array
+	 * @throws Exception
 	 */
-	public function output_panel_bottom_left() {
-
-		$account_info = get_transient( Constant_Contact_Helpers::TRANSIENT_ACCOUNT_INFO );
-
-		// If the user is not connected, show a field for the API key.
-		if ( ! $this->is_account_connected ) {
-			?>
-			<uo-button type="button" href="<?php echo esc_url( Constant_Contact_Helpers::get_authorization_url() ); ?>" target="_self" unsafe-force-target>
-				<?php echo esc_html_x( 'Connect Constant Contact account', 'Constant Contact', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
-		} else {
-
-			// Show Account details & connection status
-			?>
-
-			<div class="uap-settings-panel-user">
-
-			<?php if ( is_array( $account_info ) && ! empty( $account_info ) ) { ?>
-
-				<div class="uap-settings-panel-user__avatar">
-					<uo-icon integration="CONSTANT_CONTACT"></uo-icon>
-				</div>
-
-				<div class="uap-settings-panel-user-info">
-
-					<div class="uap-settings-panel-user-info__main">
-						<?php echo esc_html( $account_info['first_name'] ); ?>
-						<?php echo esc_html( $account_info['last_name'] ); ?>
-					</div>
-
-					<div class="uap-settings-panel-user-info__additional">
-						<?php echo esc_html( $account_info['contact_email'] ); ?>
-					</div>
-				</div>
-
-				<?php } ?>
-
-			</div>
-
-			<?php
+	protected function validate_integration_credentials( $credentials ) {
+		// Constant Contact doesn't have vault_signature like other integrations.
+		if ( empty( $credentials['access_token'] ) ) {
+			throw new Exception(
+				esc_html_x( 'Missing access token in credentials', 'Constant Contact', 'uncanny-automator' )
+			);
 		}
+		return $credentials;
 	}
 
 	/**
-	 * Bottom right panel content.
+	 * Authorize account.
 	 *
-	 * @return string - HTML
+	 * @param array $response
+	 * @param mixed $credentials
+	 * @return array
+	 * @throws Exception
 	 */
-	public function output_panel_bottom_right() {
+	protected function authorize_account( $response, $credentials ) {
+		// Fetch and store account info.
+		$account_info = $this->helpers->get_account_info();
 
-		if ( $this->is_account_connected ) {
-			?>
-			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
-				<uo-icon id="right-from-bracket"></uo-icon>
-				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
+		if ( empty( $account_info ) ) {
+			throw new Exception( esc_html_x( 'Unable to fetch account information.', 'Constant Contact', 'uncanny-automator' ) );
 		}
 
+		// Return response unchanged for OAuth flow.
+		return $response;
 	}
 
-
+	/**
+	 * Remove cached option data during disconnect.
+	 *
+	 * @param array $response The current response array
+	 * @param array $data The posted data
+	 *
+	 * @return array Modified response array
+	 * @throws Exception If cleanup fails
+	 */
+	protected function before_disconnect( $response = array(), $data = array() ) {
+		automator_delete_option( $this->helpers->get_const( 'OPTION_CUSTOM_FIELDS_REPEATER' ) );
+		return $response;
+	}
 }

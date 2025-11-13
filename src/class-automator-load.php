@@ -77,7 +77,7 @@ class Automator_Load {
 
 		self::$is_admin_sect = is_admin();
 
-		// Check if any recipes are active;
+		// Check if any recipes are active (kept for analytics/backwards compatibility)
 		self::$any_recipes_active = $this->any_active_recipe();
 
 		// Load both admin & non-admin files.
@@ -91,9 +91,6 @@ class Automator_Load {
 
 		// Load Gutenberg Block files.
 		add_filter( 'automator_core_files', array( $this, 'gutenberg_block_classes' ) );
-
-		// Load non-admin files.
-		add_filter( 'automator_core_files', array( $this, 'front_only_classes' ) );
 
 		// Add the pro links utm_r attributes.
 		add_action( 'admin_footer', array( $this, 'global_utm_r_links' ) );
@@ -681,10 +678,6 @@ class Automator_Load {
 	 */
 	public function custom_post_types_classes( $classes = array() ) {
 
-		if ( ! self::$any_recipes_active && ! self::$is_admin_sect && ! Automator()->helpers->recipe->is_automator_ajax() ) {
-			return $classes;
-		}
-
 		do_action( 'automator_before_automator_post_types_init' );
 
 		$classes['Recipe_Post_Type']      = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-type.php';
@@ -732,17 +725,6 @@ class Automator_Load {
 		return $classes;
 	}
 
-	/**
-	 * @param array $classes
-	 *
-	 * @return array|mixed
-	 */
-	public function front_only_classes( $classes = array() ) {
-
-		$classes['Actionify_Triggers'] = UA_ABSPATH . 'src/core/classes/class-actionify-triggers.php';
-
-		return $classes;
-	}
 
 	/**
 	 * @param array $classes
@@ -790,33 +772,8 @@ class Automator_Load {
 		// Check if running unit-tests
 		$unit_tests = is_automator_running_unit_tests();
 
-		// check if it's REST endpoint call or running unit tests
-		if ( ! Automator()->helpers->recipe->is_automator_ajax() && ! $unit_tests ) {
-
-			$classes['Usage_Reports'] = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
-
-			// If there are no active recipes && is not an admin page -- bail
-			if ( ! self::$is_admin_sect && ! self::$any_recipes_active ) {
-				return $classes;
-			}
-
-			global $pagenow;
-
-			$load_on_pages = array(
-				'post.php',
-				'edit.php',
-				'options.php',
-			);
-
-			if ( 'edit.php' === $pagenow && ( ! automator_filter_has_var( 'post_type' ) || 'uo-recipe' !== automator_filter_input( 'post_type' ) ) && ! self::$any_recipes_active ) {
-				return $classes;
-			}
-
-			// if current page is not an edit screen, and none of the recipes are published, return
-			if ( ! self::$any_recipes_active && ! in_array( $pagenow, $load_on_pages, true ) ) {
-				return $classes;
-			}
-		}
+		// Always load Usage_Reports for analytics
+		$classes['Usage_Reports'] = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 
 		$classes['Set_Up_Automator']     = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
 		$classes['Initialize_Automator'] = UA_ABSPATH . 'src/core/classes/class-initialize-automator.php';
@@ -830,6 +787,11 @@ class Automator_Load {
 	}
 
 	/**
+	 * Check if any recipes are active (published status).
+	 *
+	 * Note: This method is kept for analytics and backwards compatibility.
+	 * It no longer affects class loading decisions - all classes load regardless.
+	 *
 	 * @return bool
 	 */
 	public function any_active_recipe() {
@@ -943,6 +905,9 @@ class Automator_Load {
 		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/abstract-integration.php';
 		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/actions/abstract-action.php';
 		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/abstract-trigger.php';
+
+		// Load global custom name field for all recipe parts
+		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/global-custom-name-field.php';
 
 		do_action( 'automator_after_traits' );
 	}

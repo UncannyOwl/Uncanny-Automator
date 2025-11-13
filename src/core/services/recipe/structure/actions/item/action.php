@@ -31,6 +31,12 @@ final class Action implements \JsonSerializable {
 
 	private static $recipe = null;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param mixed[] $recipe The recipe.
+	 * @return void
+	 */
 	public function __construct( $recipe ) {
 		self::$recipe = $recipe;
 	}
@@ -58,8 +64,10 @@ final class Action implements \JsonSerializable {
 			$misc->delay_schedule = $this->restructure_delay_schedule( $action_meta );
 		}
 
-		return $misc;
+		// Add custom name field
+		$misc->custom_name = $action_meta[ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '';
 
+		return $misc;
 	}
 
 	/**
@@ -86,7 +94,6 @@ final class Action implements \JsonSerializable {
 		$backup->sentence_html    = $sentence_html;
 
 		return $backup;
-
 	}
 
 	/**
@@ -187,9 +194,5 @@ final class Action implements \JsonSerializable {
 		}
 
 		return 0;
-
 	}
-
 }
-
-

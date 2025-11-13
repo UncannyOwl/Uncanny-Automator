@@ -20,7 +20,7 @@ class Recipe_Post_Type {
 
 		add_action( 'admin_head', array( $this, 'all_recipes_css' ) );
 
-		add_action( 'admin_init', array( $this, 'uo_recipe_check_conditions_for_notice' ) );
+		//add_action( 'admin_init', array( $this, 'uo_recipe_check_conditions_for_notice' ) );
 	}
 
 	/**

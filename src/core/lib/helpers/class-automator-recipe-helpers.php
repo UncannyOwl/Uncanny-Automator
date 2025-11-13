@@ -447,35 +447,77 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	}
 
 	/**
-	 * Checks if the current request is a WP REST API request.
+	 * Check if the current request is a REST API request.
 	 *
-	 * Case #1: After WP_REST_Request initialisation
-	 * Case #2: Support "plain" permalink settings
-	 * Case #3: It can happen that WP_Rewrite is not yet initialized,
-	 *          so do this (wp-settings.php)
-	 * Case #4: URL Path begins with wp-json/ (your REST prefix)
-	 *          Also supports WP installations in subfolders
+	 * Detects REST API requests for both plain and pretty permalink structures.
+	 * Supports WordPress core endpoints and Automator custom namespaces.
 	 *
-	 * @returns boolean
-	 * @author matzeeable
+	 * @return bool True if this is a REST API request, false otherwise.
 	 */
 	public function is_rest() {
-		$prefix = rest_get_url_prefix();
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST || automator_filter_has_var( 'rest_route' ) && 0 === strpos( trim( automator_filter_input( 'rest_route' ), '\\/' ), $prefix, 0 ) ) { // phpcs:ignore Generic.CodeAnalysis.RequireExplicitBooleanOperatorPrecedence.MissingParentheses
+		// Check if WordPress has already identified this as a REST request
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
 			return true;
 		}
-		// (#3)
-		//global $wp_rewrite;
-		//if ( null === $wp_rewrite ) {
-		//$wp_rewrite = new \WP_Rewrite(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		//}
 
-		// (#4)
+		// Check for plain permalink structure: ?rest_route=/namespace/endpoint
+		if ( $this->is_rest_route_parameter() ) {
+			return true;
+		}
+
+		// Check for pretty permalink structure: /wp-json/namespace/endpoint
+		return $this->is_rest_url_path();
+	}
+
+	/**
+	 * Check if the rest_route parameter indicates a REST request.
+	 *
+	 * @return bool
+	 */
+	private function is_rest_route_parameter() {
+		if ( ! automator_filter_has_var( 'rest_route' ) ) {
+			return false;
+		}
+
+		$route = trim( automator_filter_input( 'rest_route' ), '\\/' );
+
+		$valid_prefixes = array(
+			rest_get_url_prefix(),          // wp-json
+			AUTOMATOR_REST_API_END_POINT,   // uap/v2
+			'automator/v1',                 // automator/v1
+		);
+
+		foreach ( $valid_prefixes as $prefix ) {
+			if ( 0 === strpos( $route, $prefix ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if the current URL path indicates a REST request.
+	 *
+	 * @return bool
+	 */
+	private function is_rest_url_path() {
 		$current_url = wp_parse_url( add_query_arg( array() ) );
-		$regex       = '/\/' . $prefix . '\/(' . str_replace( '/', '\/', AUTOMATOR_REST_API_END_POINT ) . '.+)/';
-		$match       = isset( $current_url['path'] ) ? $current_url['path'] : '';
+		$path        = isset( $current_url['path'] ) ? $current_url['path'] : '';
 
-		return preg_match( $regex, $match );
+		if ( empty( $path ) ) {
+			return false;
+		}
+
+		$rest_prefix          = rest_get_url_prefix(); // wp-json
+		$automator_namespaces = array(
+			str_replace( '/', '\/', AUTOMATOR_REST_API_END_POINT ), // uap\/v2
+			'automator\/v1',
+		);
+
+		$pattern = '/\/' . $rest_prefix . '\/(' . implode( '|', $automator_namespaces ) . ').+/';
+
+		return (bool) preg_match( $pattern, $path );
 	}
 
 	/**
@@ -542,30 +584,30 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 		if ( empty( $message ) || empty( $secret ) ) {
 			return false;
 		}
-		
+
 		// Decode the base64-encoded message
 		$message = base64_decode( $message ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
-		
+
 		// Specify the encryption algorithm (AES-128)
 		$method = 'AES128';
-		
+
 		// Extract the Initialization Vector (IV) from the first 16 bytes of the message
 		$iv = substr( $message, 0, 16 );
-		
+
 		// Extract the actual encrypted content (everything after the IV)
 		$encrypted_message = substr( $message, 16 );
-		
+
 		// Decrypt the message using the provided secret as the key
 		$tokens = openssl_decrypt( $encrypted_message, $method, $secret, 0, $iv );
-		
+
 		// Convert the JSON string result to an associative array
 		$tokens = json_decode( $tokens, true );
-		
+
 		// If JSON decoding failed, return false
 		if ( null === $tokens || JSON_ERROR_NONE !== json_last_error() ) {
 			return false;
 		}
-		
+
 		return $tokens;
 	}
 

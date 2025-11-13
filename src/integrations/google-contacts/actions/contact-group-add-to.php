@@ -4,9 +4,12 @@ namespace Uncanny_Automator\Integrations\Google_Contacts;
 use Exception;
 
 /**
+ * @property Google_Contacts_Helpers $helpers
+ * @property Google_Contacts_Api_Caller $api
+ *
  * @since 5.2
  */
-class CONTACT_GROUP_ADD_TO extends \Uncanny_Automator\Recipe\Action {
+class CONTACT_GROUP_ADD_TO extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Setups the action.
@@ -32,7 +35,6 @@ class CONTACT_GROUP_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 			)
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Add {{a label}} to {{a contact}}', 'Google Contacts', 'uncanny-automator' ) );
-
 	}
 
 	/**
@@ -45,14 +47,14 @@ class CONTACT_GROUP_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 		$email = array(
 			'option_code' => $this->get_action_meta(),
 			'input_type'  => 'email',
-			'label'       => _x( 'Email', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Email', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => true,
 		);
 
 		$label = array(
 			'option_code' => 'GROUP',
 			'input_type'  => 'select',
-			'label'       => _x( 'Label', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Label', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => true,
 			'ajax'        => array(
 				'endpoint' => 'automator_google_contacts_fetch_labels',
@@ -61,7 +63,6 @@ class CONTACT_GROUP_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		return array( $email, $label );
-
 	}
 
 	/**
@@ -81,16 +82,14 @@ class CONTACT_GROUP_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 
 		try {
 
-			$helper = new Google_Contacts_Helpers();
-
 			$body = array(
-				'action'       => 'contact_label_add',
-				'access_token' => $helper->get_client(),
-				'email'        => $parsed[ $this->get_action_meta() ],
-				'group_id'     => $parsed['GROUP'],
+				'action'   => 'contact_label_add',
+				'email'    => $parsed[ $this->get_action_meta() ],
+				'group_id' => $parsed['GROUP'],
 			);
 
-			$helper->api_call( $body, $action_data );
+			// Use injected API instance
+			$this->api->api_request( $body, $action_data );
 
 		} catch ( \Exception $e ) {
 
@@ -101,9 +100,5 @@ class CONTACT_GROUP_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		return true;
-
 	}
-
-
-
 }

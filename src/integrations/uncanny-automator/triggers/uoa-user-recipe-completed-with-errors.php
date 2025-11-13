@@ -26,15 +26,10 @@ class UOA_USER_RECIPE_COMPLETED_WITH_ERRORS extends \Uncanny_Automator\Recipe\Tr
 
 		$this->set_trigger_type( 'user' );
 
-		$this->set_sentence(
-			/* translators: Trigger sentence */
-			esc_attr__( 'A user completes a recipe with errors', 'uncanny-automator' )
-		);
+		// translators: Trigger sentence - Uncanny Automator
+		$this->set_sentence( esc_html_x( 'A user completes a recipe with errors', 'Uncanny Automator', 'uncanny-automator' ) );
 
-		$this->set_readable_sentence(
-		/* translators: Trigger sentence */
-			esc_attr__( 'A user completes a recipe with errors', 'uncanny-automator' )
-		);
+		$this->set_readable_sentence( esc_html_x( 'A user completes a recipe with errors', 'Uncanny Automator', 'uncanny-automator' ) );
 
 		// The action hook to listen into. Automator invokes 'automator_recipe_completed' when a recipe is completed.
 		$this->add_action( 'automator_recipe_completed_with_errors', 99, 4 );

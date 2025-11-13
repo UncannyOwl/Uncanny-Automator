@@ -8,9 +8,10 @@ use Exception;
  * Class Helpscout_Customer_Properties_Update
  *
  * @package Uncanny_Automator
- * @method Helpscout_Helpers get_item_helpers()
+ * @property Helpscout_App_Helpers $helpers
+ * @property Helpscout_Api_Caller $api
  */
-class Helpscout_Customer_Properties_Update extends \Uncanny_Automator\Recipe\Action {
+class Helpscout_Customer_Properties_Update extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Setup action.
@@ -29,14 +30,14 @@ class Helpscout_Customer_Properties_Update extends \Uncanny_Automator\Recipe\Act
 		$this->set_sentence(
 			sprintf(
 				/* translators: %1$s: Customer, %2$s: Properties */
-				esc_html_x( 'Update {{the properties:%2$s}} of {{a customer:%1$s}}', 'HelpScout', 'uncanny-automator' ),
+				esc_html_x( 'Update {{the properties:%2$s}} of {{a customer:%1$s}}', 'Help Scout', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'FIELDS_NON_EXISTENT:' . $this->get_action_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
-			esc_html_x( 'Update {{the properties}} of {{a customer}}', 'HelpScout', 'uncanny-automator' )
+			esc_html_x( 'Update {{the properties}} of {{a customer}}', 'Help Scout', 'uncanny-automator' )
 		);
 
 		$this->set_background_processing( true );
@@ -52,14 +53,14 @@ class Helpscout_Customer_Properties_Update extends \Uncanny_Automator\Recipe\Act
 		return array(
 			array(
 				'option_code'           => $this->get_action_meta(),
-				'label'                 => esc_html_x( 'Email', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Email', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'email',
 				'supports_custom_value' => true,
 				'required'              => true,
 			),
 			array(
 				'option_code'           => 'FIELDS',
-				'label'                 => esc_html_x( 'Property', 'HelpScout', 'uncanny-automator' ),
+				'label'                 => esc_html_x( 'Property', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'repeater',
 				'relevant_tokens'       => array(),
 				'supports_custom_value' => true,
@@ -67,19 +68,19 @@ class Helpscout_Customer_Properties_Update extends \Uncanny_Automator\Recipe\Act
 				'fields'                => array(
 					array(
 						'option_code' => 'PROPERTY_SLUG',
-						'label'       => esc_html_x( 'Property ID', 'HelpScout', 'uncanny-automator' ),
+						'label'       => esc_html_x( 'Property ID', 'Help Scout', 'uncanny-automator' ),
 						'input_type'  => 'text',
 						'read_only'   => true,
 					),
 					array(
 						'option_code' => 'PROPERTY_NAME',
-						'label'       => esc_html_x( 'Name', 'HelpScout', 'uncanny-automator' ),
+						'label'       => esc_html_x( 'Name', 'Help Scout', 'uncanny-automator' ),
 						'input_type'  => 'text',
 						'read_only'   => true,
 					),
 					array(
 						'option_code' => 'PROPERTY_VALUE',
-						'label'       => esc_html_x( 'Value', 'HelpScout', 'uncanny-automator' ),
+						'label'       => esc_html_x( 'Value', 'Help Scout', 'uncanny-automator' ),
 						'input_type'  => 'text',
 						'required'    => false,
 					),
@@ -132,7 +133,7 @@ class Helpscout_Customer_Properties_Update extends \Uncanny_Automator\Recipe\Act
 			return false;
 		}
 
-		$this->get_item_helpers()->api_request(
+		$this->api->api_request(
 			array(
 				'action'         => 'update_customer_properties',
 				'customer_email' => $customer_email,

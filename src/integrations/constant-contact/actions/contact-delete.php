@@ -8,18 +8,18 @@ use Exception;
  * Class Uncanny_Automator\Integrations\Constant_Contact\CONTACT_DELETE
  *
  * @package Uncanny_Automator
+ *
+ * @property Constant_Contact_App_Helpers $helpers
+ * @property Constant_Contact_Api_Caller $api
  */
-class CONTACT_DELETE extends \Uncanny_Automator\Recipe\Action {
+class CONTACT_DELETE extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Define and register the action by pushing it into the Automator object.
 	 *
 	 * @return void
 	 */
-	public function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
-
+	protected function setup_action() {
 		$this->set_integration( 'CONSTANT_CONTACT' );
 		$this->set_action_code( 'CONTACT_DELETE' );
 		$this->set_action_meta( 'CONTACT_DELETE_META' );
@@ -28,16 +28,11 @@ class CONTACT_DELETE extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
-			/* translators: Action sentence */
-				esc_attr_x(
-					'Delete {{a contact:%1$s}}',
-					'Constant Contact',
-					'uncanny-automator'
-				),
+				// translators: %1$s: Contact
+				esc_attr_x( 'Delete {{a contact:%1$s}}', 'Constant Contact', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
 		);
-
 		$this->set_readable_sentence( esc_attr_x( 'Delete {{a contact}}', 'Constant Contact', 'uncanny-automator' ) );
 	}
 
@@ -47,14 +42,8 @@ class CONTACT_DELETE extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	public function options() {
-
 		return array(
-			array(
-				'option_code' => $this->get_action_meta(),
-				'label'       => _x( 'Email', 'Constant Contact', 'uncanny-automator' ),
-				'input_type'  => 'email',
-				'required'    => true,
-			),
+			$this->helpers->get_email_config( $this->get_action_meta() ),
 		);
 	}
 
@@ -70,29 +59,10 @@ class CONTACT_DELETE extends \Uncanny_Automator\Recipe\Action {
 	 * @return bool
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		// Get the email from the parsed data - throws an exception if invalid.
+		$email = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
 
-		$helpers     = $this->helpers;
-		$credentials = $helpers->get_credentials();
-		$email       = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
-		$list        = isset( $parsed['LIST'] ) ? sanitize_text_field( $parsed['LIST'] ) : '';
-
-		if ( false === filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception(
-				sprintf(
-				/* translators: %s: Email address */
-					esc_html__( 'Invalid email address: %s', 'uncanny-automator' ),
-					esc_html( $email )
-				),
-				400
-			);
-		}
-
-		$body = array(
-			'action'        => 'contact_delete',
-			'access_token'  => $credentials['access_token'],
-			'email_address' => $email,
-		);
-
-		$helpers->api_request( $body, $action_data );
+		// Delete the contact.
+		$this->api->contact_delete( $email, $action_data );
 	}
 }

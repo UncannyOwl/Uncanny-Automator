@@ -8,17 +8,18 @@ use Exception;
  * Class Uncanny_Automator\Integrations\Constant_Contact\CONTACT_TAG_ADD_TO
  *
  * @package Uncanny_Automator
+ *
+ * @property Constant_Contact_App_Helpers $helpers
+ * @property Constant_Contact_Api_Caller $api
  */
-class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
+class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Define and register the action by pushing it into the Automator object.
 	 *
 	 * @return void
 	 */
-	public function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
+	protected function setup_action() {
 
 		$this->set_integration( 'CONSTANT_CONTACT' );
 		$this->set_action_code( 'CONTACT_TAG_ADD_TO' );
@@ -29,7 +30,7 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 
 		$this->set_sentence(
 			sprintf(
-			/* translators: Action sentence */
+				// translators: %1$s: Tag, %2$s: Contact
 				esc_attr_x(
 					'Add {{a tag:%1$s}} to {{a contact:%2$s}}',
 					'Constant Contact',
@@ -49,17 +50,11 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	public function options() {
-
 		return array(
-			array(
-				'option_code' => $this->get_action_meta(),
-				'label'       => _x( 'Email', 'Constant Contact', 'uncanny-automator' ),
-				'input_type'  => 'email',
-				'required'    => true,
-			),
+			$this->helpers->get_email_config( $this->get_action_meta() ),
 			array(
 				'option_code' => 'TAG',
-				'label'       => _x( 'Tag', 'Constant Contact', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Tag', 'Constant Contact', 'uncanny-automator' ),
 				'input_type'  => 'select',
 				'options'     => array(),
 				'required'    => true,
@@ -83,30 +78,18 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\Action {
 	 * @return bool
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		// Get the email from the parsed data - throws an exception if invalid.
+		$email = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
 
-		$helpers     = $this->helpers;
-		$credentials = $helpers->get_credentials();
-		$email       = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
-		$tag         = isset( $parsed['TAG'] ) ? sanitize_text_field( $parsed['TAG'] ) : '';
-
-		if ( false === filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception(
-				sprintf(
-				/* translators: %s: Email address */
-					esc_html__( 'Invalid email address: %s', 'uncanny-automator' ),
-					esc_html( $email )
-				),
-				400
+		// Get / validate the tag.
+		$tag = sanitize_text_field( $parsed['TAG'] ?? '' );
+		if ( empty( $tag ) ) {
+			throw new Exception(
+				esc_html_x( 'Tag is required', 'Constant Contact', 'uncanny-automator' )
 			);
 		}
 
-		$body = array(
-			'action'        => 'contact_tag_add_to',
-			'access_token'  => $credentials['access_token'],
-			'email_address' => $email,
-			'tag'           => $tag,
-		);
-
-		$helpers->api_request( $body, $action_data );
+		// Add tag to contact.
+		$this->api->contact_tag_add_to( $email, $tag, $action_data );
 	}
 }

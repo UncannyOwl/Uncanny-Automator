@@ -4,9 +4,12 @@ namespace Uncanny_Automator\Integrations\Google_Contacts;
 use Exception;
 
 /**
+ * @property Google_Contacts_Helpers $helpers
+ * @property Google_Contacts_Api_Caller $api
+ *
  * @since 5.2
  */
-class CREATE extends \Uncanny_Automator\Recipe\Action {
+class CREATE extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * @return void
@@ -29,7 +32,6 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			)
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Create {{a contact}}', 'Google Contacts', 'uncanny-automator' ) );
-
 	}
 
 	/**
@@ -41,26 +43,26 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			'option_code'     => 'EMAIL_ADDRESS',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => _x( 'Email', 'Google Contacts', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Email', 'Google Contacts', 'uncanny-automator' ),
 			'required'        => true,
 			'fields'          => array(
 				array(
 					'option_code' => 'EMAIL',
 					'input_type'  => 'email',
-					'label'       => _x( 'Email', 'Google Contacts', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Email', 'Google Contacts', 'uncanny-automator' ),
 				),
 				array(
 					'option_code'     => 'EMAIL_LABEL',
 					'input_type'      => 'select',
-					'label'           => _x( 'Label', 'Google Contacts', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Label', 'Google Contacts', 'uncanny-automator' ),
 					'options'         => array(
 						array(
-							'value' => _x( 'Home', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Home', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Home', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Home', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Work', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Work', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Work', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Work', 'Google Contacts', 'uncanny-automator' ),
 						),
 					),
 					'options_show_id' => false,
@@ -71,35 +73,35 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 		$first_name = array(
 			'option_code' => 'FIRST_NAME',
 			'input_type'  => 'text',
-			'label'       => _x( 'First name', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'First name', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$last_name = array(
 			'option_code' => 'LAST_NAME',
 			'input_type'  => 'text',
-			'label'       => _x( 'Last name', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Last name', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$org_name = array(
 			'option_code' => 'ORG_NAME',
 			'input_type'  => 'text',
-			'label'       => _x( 'Company', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Company', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$org_title = array(
 			'option_code' => 'ORG_TITLE',
 			'input_type'  => 'text',
-			'label'       => _x( 'Job title', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Job title', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$org_department = array(
 			'option_code' => 'ORG_DEPARTMENT',
 			'input_type'  => 'text',
-			'label'       => _x( 'Department', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Department', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
@@ -107,50 +109,50 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			'option_code'     => 'PHONE_NUMBER',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => _x( 'Phone', 'Google Contacts', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Phone', 'Google Contacts', 'uncanny-automator' ),
 			'required'        => false,
 			'fields'          => array(
 				array(
 					'option_code' => 'PHONE',
 					'input_type'  => 'text',
-					'label'       => _x( 'Phone', 'Google Contacts', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Phone', 'Google Contacts', 'uncanny-automator' ),
 				),
 				array(
 					'option_code'     => 'PHONE_LABEL',
 					'input_type'      => 'select',
-					'label'           => _x( 'Label', 'Google Contacts', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Label', 'Google Contacts', 'uncanny-automator' ),
 					'options'         => array(
 						array(
-							'value' => _x( 'Home', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Home', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Home', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Home', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Work', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Work', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Work', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Work', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Mobile', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Mobile', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Mobile', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Mobile', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Main', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Main', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Main', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Main', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Home fax', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Home fax', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Home fax', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Home fax', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Work fax', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Work fax', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Work fax', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Work fax', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Google voice', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Google voice', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Google voice', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Google voice', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Pager', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Pager', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Pager', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Pager', 'Google Contacts', 'uncanny-automator' ),
 						),
 					),
 					'options_show_id' => false,
@@ -161,70 +163,70 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 		$birthday = array(
 			'option_code' => 'BIRTHDAY',
 			'input_type'  => 'text',
-			'label'       => _x( 'Birthday', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Birthday', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$notes = array(
 			'option_code' => 'NOTES',
 			'input_type'  => 'textarea',
-			'label'       => _x( 'Notes', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Notes', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$addr_country = array(
 			'option_code' => 'ADDR_COUNTRY',
 			'input_type'  => 'text',
-			'label'       => _x( 'Country / Region', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Country / Region', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$addr_str1 = array(
 			'option_code' => 'ADDR_STRT1',
 			'input_type'  => 'text',
-			'label'       => _x( 'Street address', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Street address', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$addr_str2 = array(
 			'option_code' => 'ADDR_STRT2',
 			'input_type'  => 'text',
-			'label'       => _x( 'Street address line 2', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Street address line 2', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$addr_city = array(
 			'option_code' => 'ADDR_CITY',
 			'input_type'  => 'text',
-			'label'       => _x( 'City', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'City', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$addr_postal_code = array(
 			'option_code' => 'ADDR_POSTAL_CODE',
 			'input_type'  => 'text',
-			'label'       => _x( 'Postal code', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Postal code', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$addr_province = array(
 			'option_code' => 'ADDR_PROVINCE',
 			'input_type'  => 'text',
-			'label'       => _x( 'Province', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Province', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$addr_po_box = array(
 			'option_code' => 'ADDR_PO_BOX',
 			'input_type'  => 'text',
-			'label'       => _x( 'PO box', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'PO box', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
 		$addr_label = array(
 			'option_code' => 'ADDR_LABEL',
 			'input_type'  => 'text',
-			'label'       => _x( 'Address label', 'Google Contacts', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Address label', 'Google Contacts', 'uncanny-automator' ),
 			'required'    => false,
 		);
 
@@ -232,34 +234,34 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			'option_code'     => 'WEBSITE_URL',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => _x( 'Website', 'Google Contacts', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Website', 'Google Contacts', 'uncanny-automator' ),
 			'required'        => false,
 			'fields'          => array(
 				array(
 					'option_code' => 'WEBSITE_URL',
 					'input_type'  => 'url',
-					'label'       => _x( 'Website', 'Google Contacts', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Website', 'Google Contacts', 'uncanny-automator' ),
 				),
 				array(
 					'option_code'     => 'WEBSITE_URL_LABEL',
 					'input_type'      => 'select',
-					'label'           => _x( 'Label', 'Google Contacts', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Label', 'Google Contacts', 'uncanny-automator' ),
 					'options'         => array(
 						array(
-							'value' => _x( 'Profile', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Profile', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Profile', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Profile', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Blog', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Blog', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Blog', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Blog', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Home page', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Home page', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Home page', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Home page', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Work', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Work', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Work', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Work', 'Google Contacts', 'uncanny-automator' ),
 						),
 					),
 					'options_show_id' => false,
@@ -271,74 +273,74 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			'option_code'     => 'RELATED_PERSON',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => _x( 'Related person', 'Google Contacts', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Related person', 'Google Contacts', 'uncanny-automator' ),
 			'required'        => false,
 			'fields'          => array(
 				array(
 					'option_code' => 'RELATED_PERSON',
 					'input_type'  => 'text',
-					'label'       => _x( 'Related person', 'Google Contacts', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Related person', 'Google Contacts', 'uncanny-automator' ),
 				),
 				array(
 					'option_code'     => 'RELATED_PERSON_LABEL',
 					'input_type'      => 'select',
-					'label'           => _x( 'Label', 'Google Contacts', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Label', 'Google Contacts', 'uncanny-automator' ),
 					'options'         => array(
 						array(
-							'value' => _x( 'Spouse', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Spouse', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Spouse', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Spouse', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Child', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Child', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Child', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Child', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Mother', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Mother', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Mother', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Mother', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Father', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Father', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Father', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Father', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Parent', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Parent', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Parent', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Parent', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Brother', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Brother', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Brother', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Brother', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Sister', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Sister', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Sister', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Sister', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Friend', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Friend', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Friend', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Friend', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Relative', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Relative', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Relative', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Relative', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Manager', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Manager', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Manager', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Manager', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Assistant', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Assistant', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Assistant', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Assistant', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Reference', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Reference', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Reference', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Reference', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Partner', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Partner', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Partner', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Partner', 'Google Contacts', 'uncanny-automator' ),
 						),
 						array(
-							'value' => _x( 'Domestic partner', 'Google Contacts', 'uncanny-automator' ),
-							'text'  => _x( 'Domestic partner', 'Google Contacts', 'uncanny-automator' ),
+							'value' => esc_html_x( 'Domestic partner', 'Google Contacts', 'uncanny-automator' ),
+							'text'  => esc_html_x( 'Domestic partner', 'Google Contacts', 'uncanny-automator' ),
 						),
 					),
 					'options_show_id' => false,
@@ -350,18 +352,18 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			'option_code'     => 'CUSTOM_FIELD',
 			'input_type'      => 'repeater',
 			'relevant_tokens' => array(),
-			'label'           => _x( 'Custom field', 'Google Contacts', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Custom field', 'Google Contacts', 'uncanny-automator' ),
 			'required'        => false,
 			'fields'          => array(
 				array(
 					'option_code' => 'CUSTOM_FIELD',
 					'input_type'  => 'text',
-					'label'       => _x( 'Custom field', 'Google Contacts', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Custom field', 'Google Contacts', 'uncanny-automator' ),
 				),
 				array(
 					'option_code' => 'CUSTOM_FIELD_LABEL',
 					'input_type'  => 'text',
-					'label'       => _x( 'Label', 'Google Contacts', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Label', 'Google Contacts', 'uncanny-automator' ),
 				),
 			),
 		);
@@ -388,7 +390,6 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 			$person_related,
 			$custom_field,
 		);
-
 	}
 
 	/**
@@ -406,11 +407,8 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 
 		try {
 
-			$helper = new Google_Contacts_Helpers();
-
 			$body = array(
-				'action'       => 'create',
-				'access_token' => $helper->get_client(),
+				'action' => 'create',
 			);
 
 			$fields = array();
@@ -423,7 +421,8 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 
 			$payload = array_merge( $fields, $body );
 
-			$helper->api_call( $payload, $action_data );
+			// Use injected API instance
+			$this->api->api_request( $payload, $action_data );
 
 		} catch ( \Exception $e ) {
 
@@ -434,7 +433,6 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -460,7 +458,5 @@ class CREATE extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		return $fields;
-
 	}
-
 }

@@ -351,8 +351,6 @@ class Edd_Helpers {
 		die();
 	}
 
-
-
 	/**
 	 * Get the licenses of the order.
 	 *

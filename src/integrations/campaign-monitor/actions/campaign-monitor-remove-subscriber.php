@@ -8,8 +8,11 @@ use Exception;
  * Class CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER
  *
  * @package Uncanny_Automator
+ *
+ * @property Campaign_Monitor_App_Helpers $helpers
+ * @property Campaign_Monitor_Api_Caller $api
  */
-class CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER extends \Uncanny_Automator\Recipe\Action {
+class CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Prefix for action code / meta.
@@ -24,8 +27,6 @@ class CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER extends \Uncanny_Automator\Recipe\Actio
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
 
 		$this->set_integration( 'CAMPAIGN_MONITOR' );
 		$this->set_action_code( $this->prefix . '_CODE' );
@@ -43,7 +44,6 @@ class CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER extends \Uncanny_Automator\Recipe\Actio
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Remove {{a subscriber}} from {{a list}}', 'Campaign Monitor', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
 	}
 
 	/**
@@ -56,7 +56,7 @@ class CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER extends \Uncanny_Automator\Recipe\Actio
 		$fields = array(
 			array(
 				'option_code' => $this->get_action_meta(),
-				'label'       => _x( 'Email', 'Campaign Monitor', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Email', 'Campaign Monitor', 'uncanny-automator' ),
 				'input_type'  => 'email',
 				'required'    => true,
 			),
@@ -90,9 +90,9 @@ class CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER extends \Uncanny_Automator\Recipe\Actio
 		$email   = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
 
 		// Send request.
-		$response = $this->helpers->api_request(
-			'remove_subscriber',
+		$this->api->api_request(
 			array(
+				'action'  => 'remove_subscriber',
 				'email'   => $email,
 				'list_id' => $list_id,
 			),

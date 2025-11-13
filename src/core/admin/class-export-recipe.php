@@ -27,7 +27,6 @@ class Export_Recipe {
 		add_filter( 'post_row_actions', array( $this, 'add_export_action_rows' ), 10, 2 );
 		add_filter( 'bulk_actions-edit-uo-recipe', array( $this, 'add_bulk_export_action' ) );
 		add_filter( 'handle_bulk_actions-edit-uo-recipe', array( $this, 'handle_bulk_export_action' ), 10, 3 );
-
 	}
 
 	/**
@@ -80,7 +79,7 @@ class Export_Recipe {
 	 */
 	public function handle_bulk_export_action( $redirect_to, $doaction, $post_ids ) {
 
-		if ( $doaction !== 'export_recipes' ) {
+		if ( 'export_recipes' !== $doaction ) {
 			return $redirect_to;
 		}
 
@@ -154,7 +153,7 @@ class Export_Recipe {
 	 * @return array
 	 */
 	public function add_bulk_export_action( $actions ) {
-		$actions['export_recipes'] = esc_html__( 'Export', 'uncanny-automator' );
+		$actions['export_recipes'] = esc_html_x( 'Export', 'Uncanny Automator', 'uncanny-automator' );
 		return $actions;
 	}
 
@@ -183,8 +182,8 @@ class Export_Recipe {
 					)
 				)
 			),
-			esc_attr( esc_html__( 'Export this recipe', 'uncanny-automator' ) ),
-			esc_html( esc_html__( 'Export', 'uncanny-automator' ) )
+			esc_html_x( 'Export this recipe', 'Uncanny Automator', 'uncanny-automator' ),
+			esc_html_x( 'Export', 'Uncanny Automator', 'uncanny-automator' )
 		);
 
 		return $actions;
@@ -365,5 +364,4 @@ class Export_Recipe {
 			)
 		);
 	}
-
 }

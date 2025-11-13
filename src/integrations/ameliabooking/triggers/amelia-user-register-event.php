@@ -51,10 +51,10 @@ class AMELIA_USER_REGISTER_EVENT {
 		$this->set_action_args_count( 2 );
 
 		/* Translators: Trigger sentence */
-		$this->set_sentence( sprintf( esc_html__( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->get_trigger_meta() ) );
-
+		$this->set_sentence( sprintf( esc_html_x( 'A user registers for {{an event:%1$s}}', 'Amelia Booking', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		
 		/* Translators: Trigger sentence */
-		$this->set_readable_sentence( esc_html__( 'A user registers for {{an event}}', 'uncanny-automator' ) ); // Non-active state sentence to show
+		$this->set_readable_sentence( esc_html_x( 'A user registers for {{an event}}', 'Amelia Booking', 'uncanny-automator' ) ); // Non-active state sentence to show
 
 		$this->add_action( 'AmeliaBookingAddedBeforeNotify' );
 

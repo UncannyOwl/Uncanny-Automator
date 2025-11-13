@@ -1,24 +1,22 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Active_Campaign;
 
 /**
  * Class AC_USER_ADD
  *
  * @package Uncanny_Automator
+ *
+ * @property Active_Campaign_App_Helpers $helpers
+ * @property Active_Campaign_Api_Caller $api
  */
-class AC_USER_ADD {
+class AC_USER_ADD extends \Uncanny_Automator\Recipe\App_Action {
 
-	use Recipe\Actions;
-
-	public $prefix = 'AC_USER_ADD';
-
-	protected $ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
-
-	public function __construct() {
-
-		$this->setup_action();
-
-	}
+	/**
+	 * Meta key prefix.
+	 *
+	 * @var string
+	 */
+	protected $prefix = 'AC_USER_ADD';
 
 	/**
 	 * Setup Action.
@@ -26,128 +24,86 @@ class AC_USER_ADD {
 	 * @return void.
 	 */
 	protected function setup_action() {
-
 		$this->set_integration( 'ACTIVE_CAMPAIGN' );
 		$this->set_action_code( $this->prefix . '_CODE' );
 		$this->set_action_meta( $this->prefix . '_META' );
 		$this->set_is_pro( false );
 		$this->set_requires_user( true );
-
-		/* translators: Action - WordPress */
-		$this->set_sentence( sprintf( esc_attr__( 'Add {{the user:%1$s}} to ActiveCampaign', 'uncanny-automator' ), $this->get_action_meta() ) );
-
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Add {{the user}} to ActiveCampaign', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		$this->set_background_processing( true );
-
-		$this->register_action();
-
-	}
-
-	public function load_options() {
-
-		$options_group = array( $this->get_action_meta() => $this->get_field() );
-
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options_group' => $options_group,
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s: User phone number
+				esc_attr_x( 'Add {{the user:%1$s}} to ActiveCampaign', 'ActiveCampaign', 'uncanny-automator' ),
+				$this->get_action_meta()
 			)
 		);
-
+		$this->set_readable_sentence( esc_attr_x( 'Add {{the user}} to ActiveCampaign', 'ActiveCampaign', 'uncanny-automator' ) );
+		$this->set_background_processing( true );
 	}
-
 
 	/**
-	 * Process our action.
+	 * Define the options.
 	 *
-	 * @param int $user_id
-	 * @param array $action_data
-	 * @param int $recipe_id
-	 * @param array $args
-	 * @param $parsed
-	 *
-	 * @return void.
+	 * @return array
 	 */
-	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-
-		$user = get_user_by( 'ID', $user_id );
-
-		$phone = isset( $parsed[ $this->prefix . '_PHONE_NUMBER' ] ) ? sanitize_text_field( $parsed[ $this->prefix . '_PHONE_NUMBER' ] ) : 0;
-
-		$email     = isset( $user->data->user_email ) ? $user->data->user_email : '';
-		$firstname = isset( $user->first_name ) ? $user->first_name : '';
-		$lastname  = isset( $user->last_name ) ? $user->last_name : '';
-		$is_update = isset( $parsed[ $this->prefix . '_UPDATE_IF_CONTACT_EXISTS' ] ) ? $parsed[ $this->prefix . '_UPDATE_IF_CONTACT_EXISTS' ] : 'false';
-		$is_update = trim( wp_strip_all_tags( $is_update ) );
-
-		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
-
-		$custom_fields = $ac_helper->get_registered_fields( $parsed, $this->prefix );
-
-		$body = array(
-			'action'         => 'add_contact',
-			'email'          => $email,
-			'firstName'      => $firstname,
-			'lastName'       => $lastname,
-			'phone'          => $phone,
-			'updateIfExists' => $is_update, // String.
-			'fields'         => $custom_fields,
-		);
-
-		$body = $ac_helper->filter_add_contact_api_body(
-			$body,
-			array(
-				'user_id'     => $user_id,
-				'action_data' => $action_data,
-				'parsed'      => $parsed,
-				'args'        => $args,
-				'recipe_id'   => $recipe_id,
-			)
-		);
-
-		try {
-			$response = $ac_helper->api_request( $body, $action_data );
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-		} catch ( \Exception $e ) {
-			$ac_helper->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
-		}
-	}
-
-	public function get_field() {
-
-		$custom_fields = get_transient( 'ua_ac_contact_fields_list' );
-
-		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
-
-		if ( false === $custom_fields ) {
-			$ac_helper->sync_contact_fields( false );
-		}
-
-		$fields = array(
+	public function options() {
+		$options = array(
 			array(
 				'option_code' => $this->prefix . '_PHONE_NUMBER',
-				'label'       => esc_attr__( 'Phone number', 'uncanny-automator' ),
-				'placeholder' => esc_attr__( '(+00) 987 123 4567', 'uncanny-automator' ),
+				'label'       => esc_attr_x( 'Phone number', 'ActiveCampaign', 'uncanny-automator' ),
+				'placeholder' => esc_attr_x( '(+00) 987 123 4567', 'ActiveCampaign', 'uncanny-automator' ),
 				'input_type'  => 'text',
 				'required'    => false,
 			),
 		);
 
-		// Add the custom fields options.
-		$fields = array_merge( $fields, $ac_helper->get_custom_fields( $this->prefix ) );
+		$custom_fields = $this->helpers->get_custom_fields( $this->prefix );
+		$options       = array_merge( $options, $custom_fields );
 
-		// Add the checkbox.
-		$fields[] = array(
+		$options[] = array(
 			'option_code' => $this->prefix . '_UPDATE_IF_CONTACT_EXISTS',
-			'label'       => esc_attr__( 'If the contact already exists, update their info.', 'uncanny-automator' ),
+			'label'       => esc_attr_x( 'If the contact already exists, update their info.', 'ActiveCampaign', 'uncanny-automator' ),
 			'input_type'  => 'checkbox',
-			'description' => esc_html__( 'To delete a value from a field, set its value to [delete], including the square brackets.', 'uncanny-automator' ),
+			'description' => esc_html_x( 'To delete a value from a field, set its value to [delete], including the square brackets.', 'ActiveCampaign', 'uncanny-automator' ),
 		);
 
-		return $fields;
+		return $options;
+	}
 
+	/**
+	 * Process the action.
+	 *
+	 * @param int $user_id
+	 * @param array $action_data
+	 * @param int $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$user          = get_user_by( 'ID', $user_id );
+		$phone         = sanitize_text_field( $parsed[ $this->prefix . '_PHONE_NUMBER' ] ?? '' );
+		$email         = $user->data->user_email ?? '';
+		$first_name    = $user->first_name ?? '';
+		$last_name     = $user->last_name ?? '';
+		$is_update     = sanitize_text_field( wp_strip_all_tags( $parsed[ $this->prefix . '_UPDATE_IF_CONTACT_EXISTS' ] ?? 'false' ) );
+		$custom_fields = $this->helpers->get_registered_fields( $parsed, $this->prefix );
+
+		$body = array(
+			'action'         => 'add_contact',
+			'email'          => $email,
+			'firstName'      => $first_name,
+			'lastName'       => $last_name,
+			'phone'          => $phone,
+			'updateIfExists' => $is_update,
+			'fields'         => $custom_fields,
+		);
+
+		$body = $this->helpers->filter_add_contact_api_body( $body, compact( 'user_id', 'action_data', 'parsed', 'args', 'recipe_id' ) );
+
+		$this->api->active_campaign_request( $body, $action_data );
+
+		return true;
 	}
 }

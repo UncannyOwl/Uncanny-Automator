@@ -1,103 +1,120 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Thrive_Leads;
+
+use Uncanny_Automator\Recipe\Trigger;
 
 /**
  * Class TL_FORM_SUBMITTED
  *
  * @package Uncanny_Automator
+ * @method \Uncanny_Automator\Integrations\Thrive_Leads\Thrive_Leads_Helpers get_item_helpers()
  */
-class TL_FORM_SUBMITTED {
+class TL_FORM_SUBMITTED extends Trigger {
 
-	use Recipe\Triggers;
+	const TRIGGER_CODE = 'TL_USER_SUBMIT_FORM';
+	const TRIGGER_META = 'TL_FORMS';
 
 	/**
 	 * Set up Automator trigger constructor.
 	 */
-	public function __construct() {
-		$this->setup_trigger();
-	}
-
-	/**
-	 * Define and register the trigger by pushing it into the Automator object
-	 */
 	public function setup_trigger() {
-		$this->set_helper( new Thrive_Leads_Helpers() );
 		$this->set_integration( 'THRIVELEADS' );
-		$this->set_trigger_code( 'TL_USER_SUBMIT_FORM' );
-		$this->set_trigger_meta( 'TL_FORMS' );
+		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_meta( self::TRIGGER_META );
 		$this->set_is_login_required( true );
 
 		/* Translators: Trigger sentence - Thrive leads */
-		$this->set_sentence( sprintf( esc_html__( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		$this->set_sentence( sprintf( 
+			// translators: %1$s: Form name
+			esc_html_x( 'A user submits {{a form:%1$s}}', 'Thrive Leads', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 
 		/* Translators: Trigger sentence - Thrive leads */
-		$this->set_readable_sentence( esc_html__( 'A user submits {{a form}}', 'uncanny-automator' ) ); // Non-active state sentence to show
+		$this->set_readable_sentence( esc_html_x( 'A user submits {{a form}}', 'Thrive Leads', 'uncanny-automator' ) ); // Non-active state sentence to show
 
-		$this->set_action_hook( 'tcb_api_form_submit' );
-		$this->set_options_callback( array( $this, 'load_options' ) );
-		$this->register_trigger();
+		$this->add_action( 'tcb_api_form_submit', 20, 1 );
 	}
 
 	/**
-	 * @return array
+	 * Loads available options for the Trigger.
+	 *
+	 * @return array The available trigger options.
 	 */
-	public function load_options() {
-
-		return Automator()->utilities->keep_order_of_options(
+	public function options() {
+		$helper = new Thrive_Leads_Helpers( false );
+		return array(
 			array(
-				'options' => array(
-					$this->get_helper()->get_all_thrive_lead_forms(
-						array(
-							'option_code' => $this->get_trigger_meta(),
-							'is_any'      => true,
-						)
-					),
+				'option_code'     => $this->get_trigger_meta(),
+				'required'        => true,
+				'label'           => esc_html_x( 'Form', 'Thrive Leads', 'uncanny-automator' ),
+				'input_type'      => 'select',
+				'options'         => $helper->get_all_thrive_lead_forms( true, true ),
+				'relevant_tokens' => array(
+					$this->get_trigger_meta() => esc_html_x( 'Form', 'Thrive Leads', 'uncanny-automator' ),
 				),
-			)
+			),
 		);
-
 	}
 
 	/**
-	 * @param ...$args
+	 * @param $trigger
+	 * @param $hook_args
 	 *
 	 * @return bool
 	 */
-	public function validate_trigger( ...$args ) {
+	public function validate( $trigger, $hook_args ) {
 
-		list( $submit_data ) = $args[0];
-		$is_valid            = false;
-		if ( isset( $submit_data ) ) {
-			$is_valid = true;
+		$submit_data = $hook_args[0] ?? array();
+		
+		$form_id          = isset( $submit_data['thrive_leads']['tl_data']['form_type_id'] ) ? $submit_data['thrive_leads']['tl_data']['form_type_id'] : '';
+		$selected_form_id = intval( $trigger['meta'][ $this->get_trigger_meta() ] );
+
+		return intval( '-1' ) === $selected_form_id || $selected_form_id === intval( $form_id );
+	}
+
+
+	/**
+	 * Hydrate tokens with form data.
+	 *
+	 * @param $trigger
+	 * @param $hook_args
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		$submit_data = $hook_args[0] ?? array();
+
+		$form_id    = isset( $submit_data['thrive_leads']['tl_data']['form_type_id'] ) ? $submit_data['thrive_leads']['tl_data']['form_type_id'] : '';
+		$form_name  = isset( $submit_data['thrive_leads']['tl_data']['form_name'] ) ? $submit_data['thrive_leads']['tl_data']['form_name'] : '';
+		$group_id   = isset( $submit_data['thrive_leads']['tl_data']['main_group_id'] ) ? $submit_data['thrive_leads']['tl_data']['main_group_id'] : '';
+		$group_name = isset( $submit_data['thrive_leads']['tl_data']['main_group_name'] ) ? $submit_data['thrive_leads']['tl_data']['main_group_name'] : '';
+
+		$field_tokens = $this->get_item_helpers()->get_form_fields_by_form_id( $form_id );
+		$parse_field_tokens = array();
+		foreach ( $field_tokens as $id => $input ) {
+			$parse_field_tokens['FORM_FIELD|' . $id] = $submit_data[$id];
 		}
 
-		return $is_valid;
-
+		$parse_common_tokens = array(
+			'FORM_ID' => $form_id,
+			'FORM_NAME' => $form_name,
+			'GROUP_ID' => $group_id,
+			'GROUP_NAME' => $group_name,
+			'TL_FORMS' => $form_name,
+		);
+		return array_merge( $parse_common_tokens, $parse_field_tokens );
 	}
 
 	/**
-	 * @param $data
+	 * Define tokens for this trigger.
 	 *
-	 * @return void
-	 */
-	public function prepare_to_run( $data ) {
-		$this->set_conditional_trigger( true );
-	}
-
-	/**
-	 * Check form_id against the trigger meta
+	 * @param $trigger
+	 * @param $tokens
 	 *
-	 * @param $args
+	 * @return array
 	 */
-	public function validate_conditions( ...$args ) {
-		list ( $submit_data ) = $args[0];
-
-		// Find form ID
-		return $this->find_all( $this->trigger_recipes() )
-					->where( array( $this->get_trigger_meta() ) )
-					->match( array( $submit_data['thrive_leads']['tl_data']['form_type_id'] ) )
-					->format( array( 'intval' ) )
-					->get();
+	public function define_tokens( $trigger, $tokens ) {
+		$form_id = isset( $trigger['meta'][ $this->get_trigger_meta() ] ) ? $trigger['meta'][ $this->get_trigger_meta() ] : '';
+		return array_merge( $tokens, $this->get_item_helpers()->get_common_tokens(), $this->get_item_helpers()->get_form_field_tokens( $form_id ) );
 	}
 }

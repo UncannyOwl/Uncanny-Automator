@@ -69,6 +69,11 @@ class Wc_Bookings_Helpers {
 				'tokenType' => 'int',
 			),
 			array(
+				'tokenId'   => 'WCB_BOOKING_ORDER_ITEM_ID',
+				'tokenName' => esc_html_x( 'Booking order item ID', 'Woocommerce Bookings', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
 				'tokenId'   => 'WCB_PRODUCT_URL',
 				'tokenName' => esc_html_x( 'Booking product URL', 'Woocommerce Bookings', 'uncanny-automator' ),
 				'tokenType' => 'url',

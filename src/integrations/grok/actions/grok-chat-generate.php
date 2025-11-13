@@ -1,7 +1,7 @@
 <?php
 namespace Uncanny_Automator\Integrations\Grok\Actions;
 
-use Uncanny_Automator\Recipe\Action;
+use Uncanny_Automator\Recipe\App_Action;
 use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_AI_Provider_Trait;
 use Uncanny_Automator\Core\Lib\AI\Core\Traits\Base_Payload_Message_Array_Builder_Trait;
 use Uncanny_Automator\Core\Lib\AI\Http\Response;
@@ -15,7 +15,7 @@ use Uncanny_Automator\Core\Lib\AI\Http\Response;
  * @package Uncanny_Automator\Integrations\Grok\Actions
  * @since 5.6
  */
-class Grok_Chat_Generate extends Action {
+class Grok_Chat_Generate extends App_Action {
 
 	use Base_AI_Provider_Trait;
 	use Base_Payload_Message_Array_Builder_Trait;

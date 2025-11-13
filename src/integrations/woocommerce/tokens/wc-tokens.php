@@ -972,6 +972,23 @@ class Wc_Tokens {
 	}
 
 	/**
+	 * Builds the order summary HTML with customizable styling and container options.
+	 * 
+	 * Available filters for customization:
+	 * - automator_woocommerce_order_summary_max_width: Set max width (default: '640px')
+	 * - automator_woocommerce_order_summary_container_class: Container CSS class (default: 'automator-order-summary-container')
+	 * - automator_woocommerce_order_summary_container_id: Container ID (default: 'automator-order-summary-{order_id}')
+	 * - automator_woocommerce_order_summary_table_class: Table CSS class (default: 'automator-order-summary-table')
+	 * 
+	 * Example usage:
+	 * add_filter( 'automator_woocommerce_order_summary_max_width', function( $width, $order ) {
+	 *     return '800px';
+	 * }, 10, 2 );
+	 * 
+	 * add_filter( 'automator_woocommerce_order_summary_container_class', function( $class, $order ) {
+	 *     return 'my-custom-order-summary';
+	 * }, 10, 2 );
+	 *
 	 * @param $order
 	 *
 	 * @return string
@@ -985,10 +1002,24 @@ class Wc_Tokens {
 		$tr_text_colour   = apply_filters( 'automator_woocommerce_order_summary_tr_text_color', '#636363', $order );
 		$td_border_colour = apply_filters( 'automator_woocommerce_order_summary_td_border_color', '#e5e5e5', $order );
 		$td_text_colour   = apply_filters( 'automator_woocommerce_order_summary_td_text_color', '#636363', $order );
+		
+		// Add filters for container styling
+		$max_width        = apply_filters( 'automator_woocommerce_order_summary_max_width', '640px', $order );
+		$container_class  = apply_filters( 'automator_woocommerce_order_summary_container_class', 'automator-order-summary-container', $order );
+		$container_id     = apply_filters( 'automator_woocommerce_order_summary_container_id', 'automator-order-summary-' . $order->get_id(), $order );
+		$table_class      = apply_filters( 'automator_woocommerce_order_summary_table_class', 'automator-order-summary-table', $order );
 
 		$html   = array();
 		$html[] = sprintf(
-			'<table class="td" cellspacing="0" cellpadding="6" border="1" style="color:%s; border: 1px solid %s; vertical-align: middle; width: 100%%; font-family: %s;%s">',
+			'<div id="%s" class="%s" style="max-width: %s; width: 100%%;">',
+			esc_attr( $container_id ),
+			esc_attr( $container_class ),
+			esc_attr( $max_width )
+		);
+		$html[] = sprintf(
+			'<table id="automator-order-summary-table-%s" class="%s" cellspacing="0" cellpadding="6" border="1" style="color:%s; border: 1px solid %s; vertical-align: middle; width: 100%%; font-family: %s;%s">',
+			$order->get_id(),
+			esc_attr( $table_class ),
 			$font_colour,
 			$border_colour,
 			$font_family,
@@ -1092,6 +1123,7 @@ class Wc_Tokens {
 			$html[] = '</tr>';
 		}
 		$html[] = '</table>';
+		$html[] = '</div>';
 		$html   = apply_filters( 'automator_order_summary_html_raw', $html, $order );
 
 		return implode( PHP_EOL, $html );

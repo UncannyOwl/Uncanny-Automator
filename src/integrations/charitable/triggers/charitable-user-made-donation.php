@@ -26,8 +26,9 @@ class CHARITABLE_USER_MADE_DONATION extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_integration( 'CHARITABLE' );
 		$this->set_trigger_code( 'USER_MADE_DONATION' );
 		$this->set_trigger_meta( 'POST' );
-		$this->set_sentence( esc_attr__( 'A user makes a donation', 'uncanny-automator' ) );
-		$this->set_readable_sentence( esc_attr__( 'A user makes a donation', 'uncanny-automator' ) );
+		// translators: Trigger sentence - Charitable
+		$this->set_sentence( esc_html_x( 'A user makes a donation', 'Charitable', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'A user makes a donation', 'Charitable', 'uncanny-automator' ) );
 		$this->add_action( 'automator_charitable_donation_made', 10, 1 );
 
 	}

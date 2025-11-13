@@ -6,9 +6,11 @@ namespace Uncanny_Automator\Integrations\Helpscout;
  * Class Hs_Rating_Received
  *
  * @package Uncanny_Automator
- * @method Helpscout_Helpers get_item_helpers()
+ * @property Helpscout_App_Helpers $helpers
+ * @property Helpscout_Api_Caller $api
+ * @property Helpscout_Webhooks $webhooks
  */
-class Hs_Rating_Received extends \Uncanny_Automator\Recipe\Trigger {
+class Hs_Rating_Received extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
 	 * Constant TRIGGER_CODE.
@@ -30,7 +32,7 @@ class Hs_Rating_Received extends \Uncanny_Automator\Recipe\Trigger {
 	 * @return bool
 	 */
 	public function requirements_met() {
-		return automator_get_option( 'uap_helpscout_enable_webhook', false );
+		return $this->webhooks->get_webhooks_enabled_status();
 	}
 
 	/**
@@ -52,13 +54,13 @@ class Hs_Rating_Received extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_sentence(
 			sprintf(
 				/* translators: %1$s: Rating */
-				esc_html_x( 'A conversation receives {{a specific rating:%1$s}}', 'HelpScout', 'uncanny-automator' ),
+				esc_html_x( 'A conversation receives {{a specific rating:%1$s}}', 'Help Scout', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
 		);
 
 		$this->set_readable_sentence(
-			esc_html_x( 'A conversation receives {{a specific rating}}', 'HelpScout', 'uncanny-automator' )
+			esc_html_x( 'A conversation receives {{a specific rating}}', 'Help Scout', 'uncanny-automator' )
 		);
 
 		$this->add_action( 'automator_helpscout_webhook_received', 10, 2 );
@@ -75,7 +77,7 @@ class Hs_Rating_Received extends \Uncanny_Automator\Recipe\Trigger {
 			array(
 				'option_code'           => self::TRIGGER_META,
 				'label'                 => esc_html_x( 'Rating', 'Help Scout', 'uncanny-automator' ),
-				'token_name'           => esc_html_x( 'Selected rating', 'Help Scout', 'uncanny-automator' ),
+				'token_name'            => esc_html_x( 'Selected rating', 'Help Scout', 'uncanny-automator' ),
 				'input_type'            => 'select',
 				'options'               => array(
 					array(
@@ -199,7 +201,7 @@ class Hs_Rating_Received extends \Uncanny_Automator\Recipe\Trigger {
 		list( $params, $headers ) = $hook_args;
 
 		// Check that this is a satisfaction rating event
-		if ( ! $this->get_item_helpers()->is_webhook_request_matches_event( $headers, 'satisfaction.ratings' ) ) {
+		if ( ! $this->webhooks->is_webhook_request_matches_event( $headers, 'satisfaction.ratings' ) ) {
 			return false;
 		}
 
@@ -238,8 +240,8 @@ class Hs_Rating_Received extends \Uncanny_Automator\Recipe\Trigger {
 			'customer_email'   => $params['customer']['email'],
 			'conversation_id'  => $params['conversationId'],
 			'conversation_url' => $conversation_url,
-			'date_created'     => $this->get_item_helpers()->format_date_timestamp( strtotime( $params['createdAt'] ) ),
-			'date_modified'    => $this->get_item_helpers()->format_date_timestamp( strtotime( $params['modifiedAt'] ) ),
+			'date_created'     => $this->helpers->format_date_timestamp( strtotime( $params['createdAt'] ) ),
+			'date_modified'    => $this->helpers->format_date_timestamp( strtotime( $params['modifiedAt'] ) ),
 			'user_id'          => $params['user']['id'],
 			'user_email'       => $params['user']['email'],
 			'user_firstName'   => $params['user']['firstName'],

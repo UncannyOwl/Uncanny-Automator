@@ -22,18 +22,29 @@ class Trigger_Logs_Resources {
 	 */
 	protected $utils = null;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param Trigger_Logs_Queries $trigger_logs_queries
+	 * @param Formatters_Utils $utils
+	 * @param Automator_Factory $automator_factory
+	 * @return void
+	 */
 	public function __construct(
 		Trigger_Logs_Queries $trigger_logs_queries,
 		Formatters_Utils $utils,
 		Automator_Factory $automator_factory
-		) {
+	) {
 
 		$this->utils                = $utils;
 		$this->trigger_logs_queries = $trigger_logs_queries;
 		$this->automator_factory    = $automator_factory;
-
 	}
-
+	/**
+	 * Get utils.
+	 *
+	 * @return mixed
+	 */
 	public function get_utils() {
 		return $this->utils;
 	}
@@ -57,7 +68,6 @@ class Trigger_Logs_Resources {
 		}
 
 		return $logic;
-
 	}
 
 	/**
@@ -193,18 +203,19 @@ class Trigger_Logs_Resources {
 			}
 
 			$trigger_item = array(
-				'type'             => 'trigger',
-				'id'               => $trigger_id,
-				'integration_code' => $trigger_meta['integration'],
-				'is_deleted'       => $is_deleted,
-				'status_id'        => $status_id,
-				'start_date'       => $start_date,
-				'end_date'         => $end_date,
-				'date_elapsed'     => $utils::get_date_elapsed( $start_date, $end_date ),
-				'code'             => $trigger_meta['code'],
-				'title_html'       => htmlspecialchars( $this->resolve_trigger_title( $trigger_meta ), ENT_QUOTES ),
-				'fields'           => $fields,
-				'runs'             => $trigger_runs,
+				'type'              => 'trigger',
+				'id'                => $trigger_id,
+				'integration_code'  => $trigger_meta['integration'],
+				'is_deleted'        => $is_deleted,
+				'status_id'         => $status_id,
+				'start_date'        => $start_date,
+				'end_date'          => $end_date,
+				'date_elapsed'      => $utils::get_date_elapsed( $start_date, $end_date ),
+				'code'              => $trigger_meta['code'],
+				'title_html'        => htmlspecialchars( $this->resolve_trigger_title( $trigger_meta ), ENT_QUOTES ),
+				'title_custom_name' => sanitize_text_field( $trigger_meta[ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '' ),
+				'fields'            => $fields,
+				'runs'              => $trigger_runs,
 			);
 
 			// No recorded triggers means its from the legacy log.
@@ -222,7 +233,6 @@ class Trigger_Logs_Resources {
 		}
 
 		return $results_formatted;
-
 	}
 
 	/**
@@ -247,7 +257,6 @@ class Trigger_Logs_Resources {
 		}
 
 		return sprintf( 'ID: %d (not found)', $trigger_id );
-
 	}
 
 	/**
@@ -294,7 +303,5 @@ class Trigger_Logs_Resources {
 		}
 
 		return $results_formatted;
-
 	}
-
 }

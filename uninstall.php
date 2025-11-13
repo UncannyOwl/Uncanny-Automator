@@ -104,6 +104,11 @@ try {
 	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%_transient_%automator%'" );
 	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%_transient_%uap%'" );
 
+	// Delete webhook sample options (new naming convention)
+	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%webhook_sample_uap%'" );
+	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%webhook_expiry_uap%'" );
+	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%webhook_data_type_uap%'" );
+
 	// Delete options containing 'automator' or 'uap' etc
 	// Patterns to match in option names
 	$like_patterns = array(

@@ -132,14 +132,14 @@ class Api_Server {
 	/**
 	 * default_api_timeout
 	 *
-	 * @param mixed $timeout
-	 * @param mixed $request_url
+	 * @param int $timeout
+	 * @param string $request_url
 	 *
 	 * @return int
 	 */
-	public function default_api_timeout( $timeout, $request_url ) {
+	public function default_api_timeout( $timeout, $request_url = '' ) {
 
-		if ( ! $this->is_api_url( $request_url ) ) {
+		if ( empty( $request_url ) || ! $this->is_api_url( $request_url ) ) {
 			return $timeout;
 		}
 
@@ -208,23 +208,24 @@ class Api_Server {
 		if ( self::has_license_plan_property( $license ) ) {
 			return $license['license_plan'];
 		}
-		
+
 		// If license exists but missing license_plan, try to refresh.
 		if ( $license && ! self::has_license_plan_property( $license ) ) {
 			$license = self::is_automator_connected( true );
 		}
-		
+
 		// If license_plan exists, return it
 		if ( self::has_license_plan_property( $license ) ) {
 			return $license['license_plan'];
 		}
-		
+
 		// Fallback to basic/lite based on license type
 		$license_type = self::get_license_type();
 		if ( ! $license_type ) {
 			return '';
 		}
-		return $license_type === 'pro' ? 'basic' : 'lite';
+
+		return 'pro' === $license_type ? 'basic' : 'lite';
 	}
 
 	/**

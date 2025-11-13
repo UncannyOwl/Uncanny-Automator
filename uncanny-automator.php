@@ -9,11 +9,12 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             6.9.0.2
+ * Version:             6.10.0
  * Requires at least:   5.6
  * Requires PHP:        7.3
  */
 
+use Uncanny_Automator\Actionify_Triggers;
 use Uncanny_Automator\Automator_Functions;
 use Uncanny_Automator\Automator_Load;
 use Uncanny_Automator\DB_Tables;
@@ -22,7 +23,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '6.9.0.2' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '6.10.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -142,3 +143,6 @@ if ( ! class_exists( 'Automator_Load', false ) ) {
 }
 
 Automator_Load::get_instance();
+
+$actionify = new Actionify_Triggers\Trigger_Engine();
+$actionify->init();

@@ -29,9 +29,9 @@ class JETCRM_CREATE_CONTACT {
 		$this->set_action_meta( 'JETCRM_CONTACT' );
 		$this->set_requires_user( false );
 		/* translators: Action - JetPack CRM */
-		$this->set_sentence( sprintf( esc_attr__( 'Create {{a contact:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_html_x( 'Create {{a contact:%1$s}}', 'JetPack CRM', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - JetPack CRM */
-		$this->set_readable_sentence( esc_attr__( 'Create {{a contact}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'Create {{a contact}}', 'JetPack CRM', 'uncanny-automator' ) );
 		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->set_action_tokens(
 			array(

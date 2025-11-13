@@ -1,29 +1,22 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
-
-use Uncanny_Automator\Recipe\Actions;
+namespace Uncanny_Automator\Integrations\Active_Campaign;
 
 /**
  * Class AC_ANNON_ADDTAG
  *
  * @package Uncanny_Automator
+ *
+ * @property Active_Campaign_App_Helpers $helpers
+ * @property Active_Campaign_Api_Caller $api
  */
-class AC_ANNON_ADDTAG {
-
-	use Actions;
-
-	public $prefix = 'AC_ANNON_ADDTAG';
-
-	protected $ac_endpoint_uri = AUTOMATOR_API_URL . 'v2/active-campaign';
+class AC_ANNON_ADDTAG extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * Constructor.
+	 * Meta key prefix.
 	 *
-	 * @return void.
+	 * @var string
 	 */
-	public function __construct() {
-		$this->setup_action();
-	}
+	protected $prefix = 'AC_ANNON_ADDTAG';
 
 	/**
 	 * Setup Action.
@@ -48,85 +41,39 @@ class AC_ANNON_ADDTAG {
 		);
 
 		$this->set_readable_sentence( esc_attr_x( 'Add {{a tag}} to {{a contact}}', 'ActiveCampaign', 'uncanny-automator' ) );
-		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->set_background_processing( true );
-		$this->register_action();
 	}
 
 	/**
-	 * Load options.
+	 * Define the options.
 	 *
-	 * @return array.
+	 * @return array
 	 */
-	public function load_options() {
-
-		$options_group = array(
-			$this->get_action_meta() => array(
-				array(
-					'option_code'              => $this->get_action_meta(),
-					'label'                    => esc_attr_x( 'Tag', 'ActiveCampaign', 'uncanny-automator' ),
-					'input_type'               => 'select',
-					'supports_custom_value'    => true,
-					'required'                 => true,
-					'is_ajax'                  => true,
-					'endpoint'                 => 'active-campaign-list-tags',
-					'fill_values_in'           => $this->get_action_meta(),
-					'custom_value_description' => esc_html_x(
-						"Tag ID or name. If you enter a name that doesn't already exist, the tag will be created automatically.",
-						'ActiveCampaign',
-						'uncanny-automator'
-					),
-				),
-				array(
-					'option_code' => $this->prefix . '_CONTACT_ID',
-					'label'       => esc_attr_x( 'Email', 'ActiveCampaign', 'uncanny-automator' ),
-					'placeholder' => esc_attr_x( 'me@domain.com', 'ActiveCampaign', 'uncanny-automator' ),
-					'input_type'  => 'email',
-					'required'    => true,
-				),
-			),
-		);
-
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options_group' => $options_group,
-			)
+	public function options() {
+		return array(
+			$this->helpers->get_tag_select_config( $this->get_action_meta(), true ),
+			$this->helpers->get_email_field_config( $this->prefix . '_CONTACT_ID' ),
 		);
 	}
 
-
 	/**
-	 * @param int $user_id
-	 * @param array $action_data
-	 * @param int $recipe_id
-	 * @param array $args
-	 * @param $parsed
+	 * Process the action.
 	 *
-	 * @return void.
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool
+	 * @throws Exception
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$tag_id        = sanitize_text_field( $parsed[ $this->get_action_meta() ] ?? 0 );
+		$contact_email = sanitize_text_field( $parsed[ $this->prefix . '_CONTACT_ID' ] ?? 0 );
 
-		$ac_helper = Automator()->helpers->recipe->active_campaign->options;
+		$this->api->add_tag( $contact_email, $tag_id, $action_data );
 
-		$tag_id        = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
-		$contact_email = isset( $parsed[ $this->prefix . '_CONTACT_ID' ] ) ? sanitize_text_field( $parsed[ $this->prefix . '_CONTACT_ID' ] ) : 0;
-
-		try {
-
-			$contact_id = $ac_helper->get_email_id( $contact_email );
-
-			$body = array(
-				'action'    => 'add_tag',
-				'tagId'     => $tag_id,
-				'contactId' => $contact_id,
-			);
-
-			$response = $ac_helper->api_request( $body, $action_data );
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-			$ac_helper->complete_with_errors( $user_id, $action_data, $recipe_id, $e->getMessage() );
-		}
+		return true;
 	}
 }

@@ -314,9 +314,17 @@ class Automator_Functions {
 
 		// Load Webhook files
 		require_once __DIR__ . '/webhooks/class-automator-send-webhook.php';
-		$this->send_webhook = Automator_Send_Webhook::get_instance();
 
-		add_filter( 'plugins_loaded', array( $this, 'filter_recipe_parts' ), AUTOMATOR_LOAD_INTEGRATIONS_PRIORITY );
+		add_action( 'init', array( $this, 'register_webhook_from_init' ), AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE - 10 );
+		add_action( 'init', array( $this, 'filter_recipe_parts' ), AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE + 10 );
+	}
+
+	/**
+	 * From init callback.
+	 */
+	public function register_webhook_from_init() {
+		// Load Webhook files.
+		$this->send_webhook = Automator_Send_Webhook::get_instance();
 	}
 
 	/**
