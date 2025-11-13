@@ -5,7 +5,7 @@
 **Requires at least:** 5.6 \
 **Tested up to:** 6.8.3 \
 **Requires PHP:** 7.3 \
-**Stable tag:** 6.9.0.1 \
+**Stable tag:** 6.10.0 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -430,119 +430,87 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
-### 6.9.0.1 [2025-10-06]
+### 6.10.0 [2025-11-13]
 
-**New Tokens:**
+**New Feature:**
 
-* EDD - Software Licensing - Price option ID and Price option name #6250
-
-**Fixed:**
-
-* BuddyBoss - Squashed a rare PHP warning about undefined array keys #6186
-* Slack - Slack actions got a little too honest and started showing raw HTML. We've taught it some markdown manners #6264
-
-**Under the hood:**
-
-* App Integration framework - We gave the params a quick spa day to normalize things—now everyone's playing by the same rules #6220
-* Added a tagging system so third-party integrations can finally feel seen #6253
-* Companion code for Loops table in Automator Pro - Packed a little helper kit to support Loops in Pro—teamwork makes the tables work #6074
-
-### 6.9.0 [2025-09-18]
-
-**New App Integrations:**
-
-* [Asana](https://automatorplugin.com/integration/asana/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6079
-* [GitHub](https://automatorplugin.com/integration/github/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #4351
-
-**New Trigger:**
-
-* EDD - A user purchases a price option of a download #6094
+* Recipe UI - *Custom x label* field to triggers and actions - Now you can label your triggers/actions like a proud parent. #6259
 
 **New Actions:**
 
-* Asana - Add a comment to a task in a specific project #6081
-* Asana - Add a tag to a task in a specific project #6082
-* Asana - Create a task in a specific project #6080
-* Asana - Get details from a task #6091
-* Asana - Remove a tag from a task in a specific project #6083
-* Asana - Update a specific task in a specific project #6100
-* GitHub - Add a comment to an issue or pull request in a repository #6070
-* GitHub - Add a label to an issue or pull request in a repository #6072
-* GitHub - Add a release tag to a branch #6071
-* GitHub - Remove a label from an issue or pull request in a repository #6073
-* Slack - Add users to a channel #6188
-* Zoom - Create a meeting #6157
-* Zoom - Create a recurring meeting #6175
-* Zoom Webinars - Create a webinar #6158
+* ActiveCampaign - Delete a contact that matches an email #3478
+* Help Scout - Add a note to a conversation #6362
 
-**New Tokens:**
+**New Token:**
 
-* Date time - Current month (with leading zero) #6204
-
-* EDD - Universal new tokens #6105  
-  * User orders. (loopable type)  
-  * User spent  
-  * User address line 1  
-  * User address line 2  
-  * User city  
-  * User state/province  
-  * User country
-
-* GamiPress - Add new Balance Points Token for related Triggers #6132  
-  * Points  
-  * Points after change
-
-* Google Calendar - Add an event to a Google Calendar - Several new Action tokens #6160  
-  * Event ID  
-  * Event link  
-  * Event start time  
-  * Event end time  
-  * Calendar ID  
-  * Add to Google Calendar URL  
-  * Add to Google Calendar anchor link  
-  * Add to Apple Calendar URL  
-  * Add to Apple Calendar anchor link  
-  * Add to Outlook URL  
-  * Add to Outlook anchor link  
-  * All calendar platform links
-
-* Woo Bookings - Several tokens for all triggers #6159  
-  * Booking product ID  
-  * Booking duration type  
-  * Booking duration  
-  * Booking duration unit  
-  * Booking duration (in minutes)  
-  * Booking timezone  
-  * Booking start date  
-  * Booking start time  
-  * Booking end date  
-  * Booking end time  
-  * Booking product tags  
-  * Booking product categories
-
-* WordPress - Post triggers #6143  
-  * Post published date  
-  * Post published date (GMT)  
-  * Post modified date  
-  * Post modified date (GMT)
+* Woo Bookings - Booking order item ID #6394
 
 **Updated:**
 
-* Google Calendar - Add an event to a Google Calendar - Added timezone field - Google Calendar events now know what time it is and where they are. #6161
+* Constant Contact - Create or update a contact - Rebuilt this action from the studs up, now with smarter address handling and custom fields that actually listen. #6287
+* Woo - Order Summary Token - You can now tweak the width and colours like it's your personal style guide. #6276
 
 **Fixed:**
 
-* Discord - Universal tokens were freeloading without a connection. We've kicked them out until Discord signs in. #6136
-* Recipe UI - Conditions Dialog - Mutliselect text margin fixed – That multiselect margin finally got a makeover. No more squished text awkwardness. #6162
-* WordPress - Create a post - UI Issue for Taxonomy and Term fields showing custom token instead of the actual taxonomy and term selected. #6152
+* Event Manager - Fixed a rogue namespace issue for the `Em_Tokens` class—it now knows where it belongs. #6331
+* Fluent Forms - `Form ID` token was showing up empty-handed—we've filled its pockets. #6240
+* Fluent Forms AI - `default_api_timeout()` was feeling shy with its arguments. We gave it what it needed. #6345
+* Notion - Add / Update Database - Our date token was having an existential crisis. Now it knows what time it is. #6347
+* Notion - `str_contains` error when attempting to parse text on array values - It tried to read too much into arrays—now it's been taught better boundaries. #6261
+* Populate from Query - JS Error - `getintegrationCode` has now been defined and won't ghost us anymore. #6385
+* SureCart - A user purchases a product - This trigger was overexcited and firing twice. It's calmed down now. #6141
+* Slack - Cleanse text content of HTML before posting - Slack messages got a digital spa treatment—now scrubbed clean of unwanted HTML. #6257
+* WordPress 6.7+ translation warnings - Translation warnings were getting loud. We've hushed them up for WordPress 6.7+. #5783
+
+**Security Fix:**
+
+* Notion - Tightened security for `wp_ajax_automator_notion_list_users` endpoint due to missing nonce check. #6383
 
 **Under the hood:**
 
-* ARMember icon makeover. #6199
-* App integration settings framework - Added a standardized backend with PHP classes and traits, plus slick Lit components for managing settings in style – Because app settings deserve to be handled with class... and traits. #6066
-* Integration framework upgrades: Bit.ly, Discord, EDD Software Licensing, Slack, Zoom Meetings, Zoom Webinars #6164, #6174, #6127, #6166, #6178, #6179
-* Recipe UI - Improved support for 3rd Party connection settings in recipe UI – Third-party settings now feel right at home in the recipe UI. #6147
-* Fixed options memory leak - Options have finally stopped repeating themselves. We told them once is enough. #5789
+* App Integration OAuth Callback race condition resolved in a rare situation - We caught and calmed down a rare race condition so OAuth doesn't run off without you. #6379
+* Consolidate Copy to clipboard functionality - All clipboard functions are now singing from the same playbook—click, copy, done. #6236
+* EDD-Recurring Payment items moved from EDD to their own integration - Recurring Payments packed their bags and moved out—independent and loving it. #6370
+* Inconsistent `esc_html` usage in core - Some parts of the code weren't playing by the HTML-escaping rules. We've brought them in line—safely sanitized and secure. #6334
+* Replace Duplicator icon - Gave Duplicator a fresh new icon because even integrations like a glow-up. #6275
+* Trigger Engine - More robust trigger engine - Beefed it up so it won't flinch, even under pressure. #6376
+* TinyMCE configuration options at the field level - Editors now get more say in their setup. #6354
+* Triggers - Setting default value of `is_login_required` to `false` - We're assuming users don't need to be logged in—unless told otherwise. #6393
+* UI doesn't render — `t.trim is not a function` in a rare situation - Squashed this rare bug before it could confuse more letters with undefined functions. #6358
+* Plain permalink REST endpoints are now supported - No pretty permalinks? No problem. REST endpoints now work even when things get... plain. #6398
+* Automator now loads even on minimalist, plugin-bare sites—because everyone deserves a little automation magic. #6399
+* Integration framework upgrades:
+  * ActiveCampaign #6241
+  * Bluesky #6169
+  * Brevo #6170
+  * Campaign Monitor #6217
+  * Claude, Cohere, DeepSeek, Gemini, Grok, Mistral, and Perplexity #6252
+  * Constant Contact #6267
+  * EDD - Recurring Payments #6370
+  * GetResponse #6232
+  * Google Calendar #6244
+  * Google Contacts #6233
+  * Help Scout #6218
+  * Notion #6165
+  * Presto #6189
+  * Sendy #6327
+  * SureCart #6141
+  * Threads #6249
+  * Thrive Leads #5951
+  * Twilio #6219
+  * Twitter #6167
+
+**Developers:**
+
+* Available filters for Woo Order Summary customization - You're now the fashion designer of Woo Order Summary emails. Pick the colours, tailor the widths, and strut your styles down the inbox runway:
+  * `automator_woocommerce_order_summary_max_width` — Set max width (default: `'640px'`)
+  * `automator_woocommerce_order_summary_container_class` — Container CSS class (default: `'automator-order-summary-container'`)
+  * `automator_woocommerce_order_summary_container_id` — Container ID (default: `'automator-order-summary-{order_id}'`)
+  * `automator_woocommerce_order_summary_table_class` — Table CSS class (default: `'automator-order-summary-table'`)
+  * `automator_woocommerce_order_summary_tr_text_color` — Table row text color (default: `'#636363'`)
+  * `automator_woocommerce_order_summary_td_border_color` — Table cell border color (default: `'#e5e5e5'`)
+  * `automator_woocommerce_order_summary_td_text_color` — Table cell text color (default: `'#636363'`)
+  * `automator_order_summary_html_raw` — Filter the raw HTML array before output (receives `$html` and `$order`)
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 
