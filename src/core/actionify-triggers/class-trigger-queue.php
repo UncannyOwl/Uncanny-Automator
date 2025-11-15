@@ -228,17 +228,8 @@ class Trigger_Queue {
 		}
 
 		$args = (array) ( $item['args'] ?? array() );
-		$num  = count( $args );
 
-		add_action( $hook, $method, self::ONE_OFF_PRIORITY, $num );
-
-		try {
-			do_action_ref_array( $hook, $args );
-		} catch ( \Throwable $e ) {
-			$this->log( $e->getMessage() );
-		}
-
-		remove_action( $hook, $method, self::ONE_OFF_PRIORITY );
+		$this->call_with_filter_context( $hook, $method, $args );
 	}
 
 	/**
@@ -293,16 +284,44 @@ class Trigger_Queue {
 		}
 
 		$trigger_code = $package['args']['trigger_code'] ?? '';
+		$action_hook  = $package['args']['action_hook'] ?? '';
 		$trigger_obj  = Automator()->get_trigger( $trigger_code );
 
 		if ( ! $trigger_obj ) {
 			wp_die();
 		}
 
-		// Call the trigger function directly in safe mode.
-		call_user_func_array( $trigger_obj['validation_function'], $package['args']['args'] );
+		$this->call_with_filter_context( $action_hook, $trigger_obj['validation_function'], $package['args']['args'] );
 
 		wp_die();
+	}
+
+	/**
+	 * Call a function with filter context set for current_action().
+	 *
+	 * Sets the WordPress filter context so triggers can use current_action()
+	 * to normalize parameters or run conditional checks. WordPress clears
+	 * the filter stack at request end, so no cleanup is needed.
+	 *
+	 * @param string   $hook The WordPress hook name.
+	 * @param callable $callback The function to call.
+	 * @param array    $args Arguments to pass to the callback.
+	 *
+	 * @return void
+	 */
+	private function call_with_filter_context( $hook, $callback, $args ) {
+		if ( empty( $hook ) || ! is_callable( $callback ) ) {
+			return;
+		}
+
+		global $wp_current_filter;
+		$wp_current_filter[] = $hook; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+
+		try {
+			call_user_func_array( $callback, $args );
+		} catch ( \Throwable $e ) {
+			$this->log( $e->getMessage() );
+		}
 	}
 
 	/**

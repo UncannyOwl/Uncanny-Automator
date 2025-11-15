@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.3
 Requires PHP: 7.3
-Stable tag: 6.10.0
+Stable tag: 6.10.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -404,6 +404,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.10.0.1 [2025-11-15] =
+
+**Fixed:**
+
+* Fixed a rare issue where some recipes could run more than once unexpectedly #6405
 
 = 6.10.0 [2025-11-13] =
 
