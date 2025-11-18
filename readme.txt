@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.6
 Tested up to: 6.8.3
 Requires PHP: 7.3
-Stable tag: 6.10.0.1
+Stable tag: 6.10.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -404,6 +404,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 6.10.0.2 [2025-11-18] =
+
+**Fixed:**
+
+* X/Twitter – Post {{a tweet}} to X/Twitter – Fixed an issue where the existing action wasn't initialized, causing it to disappear and break older recipes; it has now been restored and deprecated for backwards compatibility. #6427
 
 = 6.10.0.1 [2025-11-15] =
 

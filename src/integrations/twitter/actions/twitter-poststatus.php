@@ -3,7 +3,7 @@
 namespace Uncanny_Automator\Integrations\Twitter;
 
 /**
- * Class TWITTER_POSTSTATUS
+ * Class TWITTER_POSTSTATUS ( deprecated )
  *
  * @package Uncanny_Automator
  *
@@ -33,6 +33,7 @@ class TWITTER_POSTSTATUS extends \Uncanny_Automator\Recipe\App_Action {
 		);
 		$this->set_readable_sentence( esc_attr_x( 'Post {{a tweet}} to X/Twitter', 'Twitter', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
+		$this->set_is_deprecated( true );
 	}
 
 	/**

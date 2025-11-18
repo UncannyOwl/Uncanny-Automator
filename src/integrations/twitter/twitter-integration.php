@@ -51,13 +51,10 @@ class Twitter_Integration extends App_Integration {
 		// Load settings page
 		new Twitter_Settings( $this->dependencies, $this->get_settings_config() );
 
-		// Load the action if the user app is connected.
-		if ( $this->helpers->is_user_app_connected() ) {
-			new TWITTER_POSTSTATUS_2( $this->dependencies );
-			return;
-		}
+		// Load actions.
+		new TWITTER_POSTSTATUS_2( $this->dependencies );
 
-		// Default to the old action if the user app is not connected.
+		// Load the deprecated action for legacy support ( will be removed in the future ).
 		new TWITTER_POSTSTATUS( $this->dependencies );
 	}
 
