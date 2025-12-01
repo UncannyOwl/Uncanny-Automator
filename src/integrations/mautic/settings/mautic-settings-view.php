@@ -76,7 +76,7 @@ let automatorMauticFieldResolver = () => {
 
 					<div class="uap-settings-panel-content-separator"></div>
 
-					<uo-alert heading="<?php esc_html_x( 'Setup instructions', 'Mautic', 'uncanny-automator' ); ?>">
+					<uo-alert heading="<?php echo esc_html_x( 'Setup instructions', 'Mautic', 'uncanny-automator' ); ?>">
 						<?php echo esc_html_x( 'Uncanny Automator uses basic authentication to connect with your Mautic website. Your credentials will be stored in the wp_options table and can be removed at anytime.', 'Mautic', 'uncanny-automator' ); ?>
 					</uo-alert>
 
