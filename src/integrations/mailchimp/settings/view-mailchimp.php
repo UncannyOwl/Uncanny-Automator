@@ -61,7 +61,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 					<div id="uap-mailchimp-webhook" style="display:none;">
 						<uo-alert
-							heading="<?php esc_attr_x( 'Setup instructions', 'MailChimp', 'uncanny-automator' ); ?>"
+							heading="<?php echo esc_attr_x( 'Setup instructions', 'MailChimp', 'uncanny-automator' ); ?>"
 							class="uap-spacing-top"
 						>
 
