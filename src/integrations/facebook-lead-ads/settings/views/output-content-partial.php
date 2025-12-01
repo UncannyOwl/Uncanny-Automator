@@ -40,7 +40,7 @@ function automator_fbla_content_partial_no_connection() {
 	<ul>
 		<li>
 			<uo-icon id="bolt"></uo-icon>
-			<strong><?php esc_html_x( 'Trigger:', 'Facebook Lead Ads', 'uncanny-automator' ); ?></strong>
+			<strong><?php echo esc_html_x( 'Trigger:', 'Facebook Lead Ads', 'uncanny-automator' ); ?></strong>
 			<?php echo esc_html_x( 'A lead is created', 'Facebook Lead Ads', 'uncanny-automator' ); ?>
 		</li>
 	</ul>
@@ -57,10 +57,10 @@ function automator_fbla_content_partial_connected_pages_table( $pages_access_tok
 	<table id="fblaPagesTable" class="uap-fbla-settings-page-table">
 		<thead>
 			<tr>
-				<th style="width:15%;"><?php esc_html_x( 'Name', 'Facebook Lead Ads', 'uncanny-automator' ); ?></th>
-				<th style="width:25%;"><?php esc_html_x( 'ID', 'Facebook Lead Ads', 'uncanny-automator' ); ?></th>
-				<th style="width:35%;"><?php esc_html_x( 'Status', 'Facebook Lead Ads', 'uncanny-automator' ); ?></th>
-				<th style="width:10%; text-align:center;"><?php esc_html_x( 'Actions', 'Facebook Lead Ads', 'uncanny-automator' ); ?></th>
+				<th style="width:15%;"><?php echo esc_html_x( 'Name', 'Facebook Lead Ads', 'uncanny-automator' ); ?></th>
+				<th style="width:25%;"><?php echo esc_html_x( 'ID', 'Facebook Lead Ads', 'uncanny-automator' ); ?></th>
+				<th style="width:35%;"><?php echo esc_html_x( 'Status', 'Facebook Lead Ads', 'uncanny-automator' ); ?></th>
+				<th style="width:10%; text-align:center;"><?php echo esc_html_x( 'Actions', 'Facebook Lead Ads', 'uncanny-automator' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -71,7 +71,7 @@ function automator_fbla_content_partial_connected_pages_table( $pages_access_tok
 					<td>
 						<div id="status-<?php echo esc_attr( $page['id'] ); ?>">
 							<span class="status loading"></span>
-							<?php esc_html_x( 'Verifying...', 'Facebook Lead Ads', 'uncanny-automator' ); ?>
+							<?php echo esc_html_x( 'Verifying...', 'Facebook Lead Ads', 'uncanny-automator' ); ?>
 						</div>
 					</td>
 					<td style="text-align: center;">
@@ -127,7 +127,7 @@ automator_fbla_content_partial_render( $vars );
 
 ?>
 
-<h5 class="uap-spacing-top"><?php esc_html_x( 'Test your webhook connection', 'Facebook Lead Ads', 'uncanny-automator' ); ?></h5>
+<h5 class="uap-spacing-top"><?php echo esc_html_x( 'Test your webhook connection', 'Facebook Lead Ads', 'uncanny-automator' ); ?></h5>
 
 <p>
 	<?php
