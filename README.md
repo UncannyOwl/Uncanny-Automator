@@ -454,7 +454,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Breaking:**
 
-* Gravity Forms - Major refactor, trigger improvement and additional token support #5908 IMPORTANT: Update both Uncanny Automator and Uncanny Automator Pro to > v7.0 to avoid disruption to Gravity Forms recipes.
+* Gravity Forms - Major refactor, trigger improvement and additional token support #5908 *IMPORTANT: Update both Uncanny Automator and Uncanny Automator Pro to > v7.0 to avoid disruption to Gravity Forms recipes.*
 
 **Updated:**
 
@@ -462,6 +462,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Bluesky - Now supports multiple line breaks when posting. Your poems and rants are safe #6525
 * DeepSeek - Retired gracefully and removed from the codebase
 * FluentCRM - Add/Update a contact - A warm welcome to the new, more powerful and flexible action (re-add the action to your recipe to use it!) #6436
+* Google Sheets - Removed deprecated actions #6245
 * Telegram - Send a message - Now with WYSIWYG-powered HTML message support. Fancy formatting? Yes, please #6286
 * X - Multiple line breaks are now welcome in your posts to X. We get it, sometimes you need the dramatic effect #6525
 
@@ -469,16 +470,16 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * ActiveCampaign - Settings page - Now gracefully handles transient data errors #6534
 * Amelia - An appointment is booked or A user books an appointment - Trigger now fires when appointments are added by admin from the backend. Admins want automation love too! #6439
-* Closure - Redirect URL encoding - Gave encoding a proper lesson in behavior. Your URLs won’t misbehave anymore #6471 #6441
+* Closure - Redirect URL encoding - Gave encoding a proper lesson in behavior. Your URLs won't misbehave anymore #6471 #6441
 * Custom trigger/action label - Was playing hide-and-seek on some triggers/actions. We've taught it to show up properly now #6431
 * Custom trigger/action label - Now parses with default values like a responsible piece of code #6433
 * Discord - User verification shortcode XSS vulnerability fixed - Kicked the security bug out the door #6542
 * Paid Memberships Pro - Unexpected membership cancellation trigger firing during Woo Subscriptions renewal - This over-eager trigger is now chilling out #6558
-* Recipe Logs - Adjusted status detection so “Completed with errors” only shows when there are actual errors—less false alarm, more accuracy #6540
+* Recipe Logs - Adjusted status detection so "Completed with errors" only shows when there are actual errors—less false alarm, more accuracy #6540
 * Settings - Background actions - Setting was being a bit forgetful, but we've helped it to remember to save on all sites now #6528
-* Stripe - Create a payment link for a product - Metadata fields were causing "invalid value" errors. We’ve cleaned up the mess #6562
-* Stripe - Create a payment link for a product - Custom token/values now play nicely in the product dropdown. Everyone’s invited to the party #6537
-* Thrive Apprentice - A user receives access to a product - Now fires even when triggered by a webhook or other userless trigger. It’s now on duty full-time #6519
+* Stripe - Create a payment link for a product - Metadata fields were causing "invalid value" errors. We've cleaned up the mess #6562
+* Stripe - Create a payment link for a product - Custom token/values now play nicely in the product dropdown. Everyone's invited to the party #6537
+* Thrive Apprentice - A user receives access to a product - Now fires even when triggered by a webhook or other userless trigger. It's now on duty full-time #6519
 * Twitter/X - Post a tweet to X/Twitter - The deprecated action has returned from retirement to keep legacy recipes humming along #6427
 * Uncanny Codes - Add a number of codes to a batch - Now respects your chosen prefix, suffix, and code length like it should have all along #6520
 * Uninstall script - Improved the data removal process #6527
@@ -492,10 +493,11 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Core API - Introduced RESTful endpoints for recipe item CRUD—future-proofing your recipe game one endpoint at a time
 * Updated deprecated capability filters to align with the new centralized capability system - Everything now reports to the same boss #6374
 * Fixed inconsistencies in _recipe object - Got everyone on the same page—literally #6458
-* Some App integrations not appearing connected - Connections now show up like they’re supposed to. No more silent treatment #6555
+* Some App integrations not appearing connected - Connections now show up like they're supposed to. No more silent treatment #6555
 * LearnPress icon updated - Because a good-looking icon is half the battle #6473
 * Recipe UI - Fixed listen_fields errors in Action Conditions by ditching legacy field handling in favor of a modern Lit-based component. Out with the old, in with the Lit #5227
 * Integration framework upgrades:
+  * Google Sheets #6245
   * Stripe #6168
   * Telegram #6269
   * WP Job Manager #6532
