@@ -267,7 +267,7 @@ class Google_Sheet_Helpers extends App_Helpers {
 			wp_send_json(
 				array(
 					'success' => false,
-					'error'   => esc_html_x( 'Error: Unable to read the selected Sheet. Please make sure that you have selected a valid Sheet.', 'Google Sheets', 'uncanny-automator' ),
+					'error'   => esc_html_x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' ),
 				)
 			);
 		}
@@ -276,7 +276,7 @@ class Google_Sheet_Helpers extends App_Helpers {
 			wp_send_json(
 				array(
 					'success' => false,
-					'error'   => esc_html_x( 'Error: Unable to find Worksheet ID. Please make sure that you have selected a valid Worksheet.', 'Google Sheets', 'uncanny-automator' ),
+					'error'   => esc_html_x( 'Please select a worksheet', 'Google Sheets', 'uncanny-automator' ),
 				)
 			);
 		}
