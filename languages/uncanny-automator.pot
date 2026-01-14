@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-14T12:18:20+00:00\n"
+"POT-Creation-Date: 2026-01-14T13:01:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -23547,21 +23547,13 @@ msgstr ""
 
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:194
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:238
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:270
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:332
 msgctxt "Google Sheets"
 msgid "Please select a spreadsheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:270
-msgctxt "Google Sheets"
-msgid "Error: Unable to read the selected Sheet. Please make sure that you have selected a valid Sheet."
-msgstr ""
-
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:279
-msgctxt "Google Sheets"
-msgid "Error: Unable to find Worksheet ID. Please make sure that you have selected a valid Worksheet."
-msgstr ""
-
 #: src/integrations/google-sheet/helpers/google-sheet-helpers.php:333
 msgctxt "Google Sheets"
 msgid "Please select a worksheet"
