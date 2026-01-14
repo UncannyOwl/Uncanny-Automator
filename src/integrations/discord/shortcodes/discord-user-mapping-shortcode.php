@@ -125,7 +125,7 @@ class Discord_User_Mapping_Shortcode {
 		if ( $this->helpers->get_mapped_wp_user_discord_id( $current_user->ID ) ) {
 			return sprintf(
 				'<div class="uap-discord-connected">%s</div>',
-				$atts['verified_message']
+				esc_html( $atts['verified_message'] )
 			);
 		}
 

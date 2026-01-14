@@ -33,26 +33,26 @@ class Addons {
 	 */
 	public function addons_menu() {
 		$parent_slug = 'edit.php?post_type=uo-recipe';
-		$page_title = esc_attr__( 'Addons', 'uncanny-automator' );
-		
+		$page_title  = esc_attr__( 'Addons', 'uncanny-automator' );
+
 		// Check if 'automator' is in the page parameter or post_type is 'uo-recipe'
 		$current_page = automator_filter_input( 'page' );
-		$post_type = automator_filter_input( 'post_type' );
-		$menu_title = esc_attr__( 'Addons', 'uncanny-automator' );
-		
+		$post_type    = automator_filter_input( 'post_type' );
+		$menu_title   = esc_attr__( 'Addons', 'uncanny-automator' );
+
 		// Add the chip if 'automator' is in the page parameter or post_type is 'uo-recipe'
-		if ( (null !== $current_page && false !== strpos( $current_page, 'automator' )) || 'uo-recipe' === $post_type ) {
+		if ( ( null !== $current_page && false !== strpos( $current_page, 'automator' ) ) || 'uo-recipe' === $post_type ) {
 			$menu_title = sprintf(
 				'%s<uo-chip color="error" size="xsmall" filled style="margin-left: 3px">%s</uo-chip>',
 				$menu_title,
-				esc_html( __( 'New', 'uncanny-automator' ) )
+				esc_html_x( 'New', 'Label for new menu items', 'uncanny-automator' )
 			);
 		}
-		
-		$capability = 'manage_options';
-		$menu_slug = 'uncanny-automator-' . $this->page_id;
-		$function = array( $this, 'addons_view' );
-		$position = 9;
+
+		$capability = automator_get_capability();
+		$menu_slug  = 'uncanny-automator-' . $this->page_id;
+		$function   = array( $this, 'addons_view' );
+		$position   = 9;
 
 		add_submenu_page(
 			$parent_slug,

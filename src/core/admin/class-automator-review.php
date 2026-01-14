@@ -237,7 +237,7 @@ class Automator_Review {
 	 * @return bool
 	 */
 	public function rest_permissions() {
-		return is_user_logged_in() && current_user_can( 'manage_options' );
+		return is_user_logged_in() && current_user_can( automator_get_capability() );
 	}
 
 	/**

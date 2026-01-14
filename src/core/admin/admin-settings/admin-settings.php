@@ -17,7 +17,6 @@ class Admin_Settings {
 	public function __construct() {
 
 		add_action( 'admin_menu', array( $this, 'submenu_page' ) );
-
 	}
 
 	/**
@@ -31,7 +30,7 @@ class Admin_Settings {
 			/* translators: 1. Trademarked term */
 			sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' ),
 			esc_attr__( 'Settings', 'uncanny-automator' ),
-			'manage_options',
+			automator_get_admin_capability(),
 			'uncanny-automator-config',
 			array( $this, 'submenu_page_output' )
 		);

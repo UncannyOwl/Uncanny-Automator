@@ -64,7 +64,6 @@ class AMELIABOOKING_TOKENS {
 
 		// Parse reservation tokens.
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_tokens_reservation' ), 20, 6 );
-
 	}
 
 	/**
@@ -109,9 +108,14 @@ class AMELIABOOKING_TOKENS {
 		}
 
 		return $tokens;
-
 	}
-
+	/**
+	 * Register reservation tokens.
+	 *
+	 * @param mixed $tokens The destination.
+	 * @param mixed $args The arguments.
+	 * @return mixed
+	 */
 	public function register_reservation_tokens( $tokens = array(), $args = array() ) {
 
 		if ( ! automator_do_identify_tokens() ) {
@@ -145,7 +149,6 @@ class AMELIABOOKING_TOKENS {
 		}
 
 		return $tokens;
-
 	}
 
 	/**
@@ -167,13 +170,22 @@ class AMELIABOOKING_TOKENS {
 
 			$helper = Automator()->helpers->recipe->ameliabooking->options;
 
-			$booking_data_arr = array_shift( $args['trigger_args'] );
+			$normalized_data = array_shift( $args['trigger_args'] );
+
+			// Handle normalized data structure - ensure we have the expected data format
+			$booking_data_arr = $normalized_data;
+
+			// Validate that we have the required data structure
+			if ( ! isset( $booking_data_arr['appointment'] ) || ! isset( $booking_data_arr['booking'] ) || ! isset( $booking_data_arr['customer'] ) ) {
+				return;
+			}
 
 			// Add the category name.
-			$booking_data_arr['category']['name'] = $this->fetch_category_name( absint( $booking_data_arr['appointment']['serviceId'] ) );
+			$service_id                           = isset( $booking_data_arr['appointment']['serviceId'] ) ? absint( $booking_data_arr['appointment']['serviceId'] ) : 0;
+			$booking_data_arr['category']['name'] = $this->fetch_category_name( $service_id );
 
 			// Add the service name.
-			$booking_data_arr['service']['name'] = $this->fetch_service_name( absint( $booking_data_arr['appointment']['serviceId'] ) );
+			$booking_data_arr['service']['name'] = $this->fetch_service_name( $service_id );
 
 			// Add the customer WordPress user id.
 			$booking_data_arr['customer']['wpUserId'] = 0;
@@ -200,7 +212,6 @@ class AMELIABOOKING_TOKENS {
 			Automator()->db->token->save( 'AMELIA_BOOKING_DATA', $booking_data, $args['trigger_entry'] );
 
 		}
-
 	}
 
 	/**
@@ -242,7 +253,6 @@ class AMELIABOOKING_TOKENS {
 			Automator()->db->token->save( 'AMELIA_RESERVATION_DATA', wp_json_encode( $reservation ), $args['trigger_entry'] );
 
 		}
-
 	}
 
 	/**
@@ -296,7 +306,6 @@ class AMELIABOOKING_TOKENS {
 		}
 
 		return $value;
-
 	}
 
 	/**
@@ -392,7 +401,6 @@ class AMELIABOOKING_TOKENS {
 		}
 
 		return $value;
-
 	}
 
 	/**
@@ -426,7 +434,6 @@ class AMELIABOOKING_TOKENS {
 		}
 
 		return $category_name;
-
 	}
 
 	/**
@@ -454,7 +461,6 @@ class AMELIABOOKING_TOKENS {
 		}
 
 		return $service_name;
-
 	}
 
 	/**
@@ -465,23 +471,23 @@ class AMELIABOOKING_TOKENS {
 	public function get_appointment_tokens() {
 		return array(
 			array(
-				'name' => esc_html__( 'Appointment ID', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Appointment ID', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'appointment_id',
 			),
 			array(
-				'name' => esc_html__( 'Appointment booking start', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Appointment booking start', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'appointment_bookingStart',
 			),
 			array(
-				'name' => esc_html__( 'Appointment booking end', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Appointment booking end', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'appointment_bookingEnd',
 			),
 			array(
-				'name' => esc_html__( 'Appointment provider ID', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Appointment provider ID', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'appointment_providerId',
 			),
 			array(
-				'name' => esc_html__( 'Appointment status', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Appointment status', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'appointment_status',
 			),
 		);
@@ -496,43 +502,42 @@ class AMELIABOOKING_TOKENS {
 
 		return array(
 			array(
-				'name' => esc_html__( 'Coupon code', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon code', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_code',
 			),
 			array(
-				'name' => esc_html__( 'Coupon service name', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon service name', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_services',
 			),
 			array(
-				'name' => esc_html__( 'Coupon time used', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon time used', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_usageCount',
 			),
 			array(
-				'name' => esc_html__( 'Coupon usage limit', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon usage limit', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_limit',
 			),
 			array(
-				'name' => esc_html__( 'Coupon expiration date', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon expiration date', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_expirationDate',
 			),
 			array(
-				'name' => esc_html__( 'Coupon event name', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon event name', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_events',
 			),
 			array(
-				'name' => esc_html__( 'Coupon deduction', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon deduction', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_deduction',
 			),
 			array(
-				'name' => esc_html__( 'Coupon discount', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon discount', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_discount',
 			),
 			array(
-				'name' => esc_html__( 'Coupon ID', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Coupon ID', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'coupon_id',
 			),
 		);
-
 	}
 
 	/**
@@ -543,24 +548,24 @@ class AMELIABOOKING_TOKENS {
 	public function get_booking_tokens() {
 		return array(
 			array(
-				'name' => esc_html__( 'Booking ID', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Booking ID', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'booking_id',
 			),
 
 			array(
-				'name' => esc_html__( 'Booking status', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Booking status', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'booking_status',
 			),
 			array(
-				'name' => esc_html__( 'Booking appointment ID', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Booking appointment ID', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'booking_appointmentId',
 			),
 			array(
-				'name' => esc_html__( 'Booking number of persons', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Booking number of persons', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'booking_persons',
 			),
 			array(
-				'name' => esc_html__( 'Booking price', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Booking price', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'booking_price',
 			),
 		);
@@ -577,31 +582,31 @@ class AMELIABOOKING_TOKENS {
 		return array(
 
 			array(
-				'name' => esc_html__( 'Customer first name', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Customer first name', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'customer_firstName',
 			),
 			array(
-				'name' => esc_html__( 'Customer last name', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Customer last name', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'customer_lastName',
 			),
 			array(
-				'name' => esc_html__( 'Customer ID', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Customer ID', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'customer_wpUserId',
 			),
 			array(
-				'name' => esc_html__( 'Customer email', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Customer email', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'customer_email',
 			),
 			array(
-				'name' => esc_html__( 'Customer phone', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Customer phone', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'customer_phone',
 			),
 			array(
-				'name' => esc_html__( 'Customer locale', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Customer locale', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'customer_locale',
 			),
 			array(
-				'name' => esc_html__( 'Customer timezone', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Customer timezone', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'customer_timeZone',
 			),
 		);
@@ -616,43 +621,42 @@ class AMELIABOOKING_TOKENS {
 
 		return array(
 			array(
-				'name' => esc_html__( 'Event address', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event address', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_customLocation',
 			),
 			array(
-				'name' => esc_html__( 'Event date', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event date', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_date',
 			),
 			array(
-				'name' => esc_html__( 'Event start time', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event start time', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_periods_periodStart',
 			),
 			array(
-				'name' => esc_html__( 'Event end time', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event end time', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_periods_periodEnd',
 			),
 			array(
-				'name' => esc_html__( 'Event name', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event name', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_name',
 			),
 			array(
-				'name' => esc_html__( 'Event price', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event price', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_price',
 			),
 			array(
-				'name' => esc_html__( 'Event ID', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event ID', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_id',
 			),
 			array(
-				'name' => esc_html__( 'Event description', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event description', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_description',
 			),
 			array(
-				'name' => esc_html__( 'Event staff', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Event staff', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'event_staff',
 			),
 		);
-
 	}
 
 	/**
@@ -668,11 +672,11 @@ class AMELIABOOKING_TOKENS {
 
 			return array(
 				array(
-					'name' => esc_html__( 'Event organizer', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Event organizer', 'Ameliabooking', 'uncanny-automator' ),
 					'id'   => 'event_organizer',
 				),
 				array(
-					'name' => esc_html__( 'Event tags', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Event tags', 'Ameliabooking', 'uncanny-automator' ),
 					'id'   => 'event_tags',
 				),
 			);
@@ -680,7 +684,6 @@ class AMELIABOOKING_TOKENS {
 		}
 
 		return array();
-
 	}
 
 
@@ -692,14 +695,13 @@ class AMELIABOOKING_TOKENS {
 	public function get_additional_tokens() {
 		return array(
 			array(
-				'name' => esc_html__( 'Service name', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Service name', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'service_name',
 			),
 			array(
-				'name' => esc_html__( 'Category name', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Category name', 'Ameliabooking', 'uncanny-automator' ),
 				'id'   => 'category_name',
 			),
 		);
 	}
-
 }

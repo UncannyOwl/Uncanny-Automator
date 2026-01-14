@@ -5,10 +5,11 @@ namespace Uncanny_Automator\Integrations\Stripe;
  * Class Product_Refunded
  *
  * @package Uncanny_Automator
+ *
+ * @property Stripe_App_Helpers $helpers
+ * @property Stripe_Api_Caller $api
  */
-class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
-
-	protected $helpers;
+class Product_Refunded extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
 	 * Trigger code.
@@ -23,8 +24,6 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 
 	public function setup_trigger() {
 
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'STRIPE' );
 
 		$this->set_trigger_code( self::TRIGGER_CODE );
@@ -37,20 +36,15 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
 
-		$this->set_sentence(
-			sprintf(
-				// translators: %s Stripe product name
-				esc_attr_x( 'A payment for {{a product:%1$s}} is refunded', 'Stripe', 'uncanny-automator' ),
-				$this->get_trigger_meta()
-			)
-		);
+		// translators: %1$s is the Stripe product name
+		$this->set_sentence( sprintf( esc_html_x( 'A payment for {{a product:%1$s}} is refunded', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 
 		// Non-active state sentence to show
 
-		$this->set_readable_sentence( esc_attr_x( 'A payment for {{a product}} is refunded', 'Stripe', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'A payment for {{a product}} is refunded', 'Stripe', 'uncanny-automator' ) );
 
 		// Which do_action() fires this trigger.
-		$this->add_action( Stripe_Webhook::LINE_ITEM_REFUNDED_ACTION );
+		$this->add_action( Stripe_Webhooks::LINE_ITEM_REFUNDED_ACTION );
 
 		$this->set_action_args_count( 3 );
 	}
@@ -61,7 +55,7 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function options() {
 
-		$prices = $this->helpers->api->get_prices_options( 'one_time' );
+		$prices = $this->api->get_prices_options( 'one_time' );
 
 		array_unshift(
 			$prices,
@@ -83,14 +77,14 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 		$metadata = array(
 			'input_type'        => 'repeater',
 			'option_code'       => 'METADATA',
-			'label'             => esc_attr_x( 'Extract checkout metadata', 'Stripe', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Extract checkout metadata', 'Stripe', 'uncanny-automator' ),
 			'relevant_tokens'   => array(),
 			'required'          => false,
 			'fields'            => array(
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'KEY',
-					'label'           => esc_attr_x( 'Metadata key', 'Stripe', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Metadata key', 'Stripe', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
 					'placeholder'     => esc_html_x( 'product', 'Stripe', 'uncanny-automator' ),
@@ -98,31 +92,31 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 				),
 			),
 			/* translators: Non-personal infinitive verb */
-			'add_row_button'    => esc_attr_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
 			/* translators: Non-personal infinitive verb */
-			'remove_row_button' => esc_attr_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
 		);
 
 		$custom_fields = array(
 			'input_type'        => 'repeater',
 			'option_code'       => 'CUSTOM_FIELDS',
-			'label'             => esc_attr_x( 'Extract checkout custom fields', 'Stripe', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Extract checkout custom fields', 'Stripe', 'uncanny-automator' ),
 			'required'          => false,
 			'relevant_tokens'   => array(),
 			'fields'            => array(
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'KEY',
-					'label'           => esc_attr_x( 'Custom field key', 'Stripe', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Custom field key', 'Stripe', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
 					'placeholder'     => esc_html_x( 'product', 'Stripe', 'uncanny-automator' ),
 				),
 			),
 			/* translators: Non-personal infinitive verb */
-			'add_row_button'    => esc_attr_x( 'Add a field', 'Stripe', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add a field', 'Stripe', 'uncanny-automator' ),
 			/* translators: Non-personal infinitive verb */
-			'remove_row_button' => esc_attr_x( 'Remove field', 'Stripe', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove field', 'Stripe', 'uncanny-automator' ),
 		);
 
 		return array(
@@ -219,14 +213,12 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\Trigger {
 		$charge_tokens = $this->helpers->tokens->hydrate_charge_tokens( $charge );
 
 		$price   = $line_item['price'];
+		$product = $price['product'];
 		$invoice = $session['invoice'];
-
-		$product_tokens = array(
-			'PRODUCT_ID' => empty( $price['product'] ) ? '' : $price['product'],
-		);
 
 		$list_item_tokens = $this->helpers->tokens->hydrate_line_item_tokens( $line_item );
 		$price_tokens     = $this->helpers->tokens->hydrate_price_tokens( $price );
+		$product_tokens   = $this->helpers->tokens->hydrate_product_tokens( $product );
 
 		$invoice_tokens = $this->helpers->tokens->hydrate_invoice_tokens( $invoice );
 

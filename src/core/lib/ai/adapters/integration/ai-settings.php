@@ -163,7 +163,7 @@ final class AI_Settings implements Settings_Interface {
 		}
 
 		// Check if the user has the necessary permissions.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( esc_html_x( 'You do not have permission to save settings.', 'AI', 'uncanny-automator' ) );
 		}
 
@@ -251,7 +251,7 @@ final class AI_Settings implements Settings_Interface {
 		}
 
 		// Check if the user has the necessary permissions.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( esc_html_x( 'You do not have permission to disconnect the AI provider.', 'AI', 'uncanny-automator' ) );
 		}
 

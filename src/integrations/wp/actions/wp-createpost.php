@@ -438,10 +438,10 @@ class WP_CREATEPOST {
 		$post_args                   = array();
 		$post_args['post_title']     = sanitize_text_field( $post_title );
 		$post_args['post_name']      = sanitize_title( $post_slug );
-		$post_args['post_content']   = $post_content;
-		$post_args['post_excerpt']   = $post_excerpt;
-		$post_args['post_type']      = $post_type;
-		$post_args['post_status']    = $post_status;
+		$post_args['post_content']   = $post_content ?? '';
+		$post_args['post_excerpt']   = $post_excerpt ?? '';
+		$post_args['post_type']      = $post_type ?? '';
+		$post_args['post_status']    = $post_status ?? '';
 		$post_args['post_author']    = 0;
 		$post_args['post_parent']    = $post_parent;
 		$post_args['comment_status'] = ( 'true' === $post_open_comments ) ? 'open' : 'closed';

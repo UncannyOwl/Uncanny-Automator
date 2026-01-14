@@ -46,7 +46,6 @@ class Automator_Notifications {
 		}
 
 		$this->init();
-
 	}
 
 	/**
@@ -57,7 +56,6 @@ class Automator_Notifications {
 	public function init() {
 
 		$this->hooks();
-
 	}
 
 	/**
@@ -78,7 +76,7 @@ class Automator_Notifications {
 		if ( 'uo-recipe' === automator_filter_input( 'post_type' ) ) {
 			add_action(
 				'current_screen',
-				function() {
+				function () {
 					$screen = get_current_screen();
 					if ( 'edit-uo-recipe' === $screen->id ) {
 						add_action( 'automator_show_internal_admin_notice', array( $this, 'show_notifications' ) );
@@ -100,7 +98,7 @@ class Automator_Notifications {
 
 		$access = false;
 
-		if ( current_user_can( 'manage_options' ) ) {
+		if ( current_user_can( automator_get_capability() ) ) {
 			$access = true;
 		}
 
@@ -155,7 +153,6 @@ class Automator_Notifications {
 		}
 
 		return $this->verify( json_decode( $body, true ) );
-
 	}
 
 	/**
@@ -339,8 +336,8 @@ class Automator_Notifications {
 			}
 
 			$modified_start_time = sprintf(
-				// Translators: Readable time to display
-				__( '%1$s ago', 'uncanny-automator' ),
+				/* translators: %1$s: Human-readable time difference */
+				esc_html_x( '%1$s ago', 'Notification time display', 'uncanny-automator' ),
 				human_time_diff( strtotime( $notification['start'] ), current_time( 'timestamp' ) ) // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp.Requested
 			);
 			$notifications[ $key ]['start'] = $modified_start_time;
@@ -521,7 +518,6 @@ class Automator_Notifications {
 		}
 
 		return '';
-
 	}
 
 	/**
@@ -550,7 +546,6 @@ class Automator_Notifications {
 		}
 
 		return $url;
-
 	}
 
 	/**
@@ -588,7 +583,6 @@ class Automator_Notifications {
 		automator_delete_option( 'automator_notices' );
 
 		automator_notification_event_runner()->delete_data();
-
 	}
 
 	/**
@@ -610,7 +604,6 @@ class Automator_Notifications {
 		);
 
 		require_once UA_ABSPATH . 'src/core/admin/notifications/views/banner.php';
-
 	}
 
 	/**
@@ -619,7 +612,6 @@ class Automator_Notifications {
 	public function get_license_type() {
 
 		return Api_Server::get_license_type();
-
 	}
 
 
@@ -646,7 +638,5 @@ class Automator_Notifications {
 			),
 			$url
 		);
-
 	}
-
 }

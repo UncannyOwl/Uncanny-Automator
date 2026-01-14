@@ -276,7 +276,7 @@ class Facebook_Groups_Helpers {
 	 */
 	public function verify_install() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Unauthorized', 401 );
 		}
 
@@ -314,7 +314,7 @@ class Facebook_Groups_Helpers {
 	 */
 	public function automator_integration_facebook_group_capture_token() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 
 			wp_safe_redirect( $this->get_settings_page_url() . '&status=error' );
 
@@ -377,7 +377,7 @@ class Facebook_Groups_Helpers {
 			wp_die( esc_html_x( 'Nonce Verification Failed', 'Facebook Groups', 'uncanny-automator' ) );
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( esc_html_x( 'Unauthorized', 'Facebook Groups', 'uncanny-automator' ) );
 		}
 
@@ -411,7 +411,6 @@ class Facebook_Groups_Helpers {
 		}
 
 		exit;
-
 	}
 
 	/**

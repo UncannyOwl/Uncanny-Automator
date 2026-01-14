@@ -1,10 +1,10 @@
 === Uncanny Automator - Easy Automation, Integration, Webhooks & Workflow Builder Plugin ===
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
-Requires at least: 5.6
-Tested up to: 6.8.3
-Requires PHP: 7.3
-Stable tag: 6.10.0.2
+Requires at least: 5.8
+Tested up to: 6.9
+Requires PHP: 7.4
+Stable tag: 7.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -71,7 +71,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Cohere](https://automatorplugin.com/integration/cohere/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Deprecated)
 - [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -257,6 +257,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Bitly](https://automatorplugin.com/integration/wp-bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro) (Deprecated)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -405,100 +406,78 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 6.10.0.2 [2025-11-18] =
+= 7.0.0 [2026-01-14] =
 
-**Fixed:**
+**New Plugin Integration:**
 
-* X/Twitter – Post {{a tweet}} to X/Twitter – Fixed an issue where the existing action wasn't initialized, causing it to disappear and break older recipes; it has now been restored and deprecated for backwards compatibility. #6427
+* WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5408
 
-= 6.10.0.1 [2025-11-15] =
+**New Trigger:**
 
-**Fixed:**
-
-* Fixed a rare issue where some recipes could run more than once unexpectedly #6405
-
-= 6.10.0 [2025-11-13] =
-
-**New Feature:**
-
-* Recipe UI - *Custom x label* field to triggers and actions - Now you can label your triggers/actions like a proud parent. #6259
+* WP Event Manager - An attendee is registered for an event #5409
 
 **New Actions:**
 
-* ActiveCampaign - Delete a contact that matches an email #3478
-* Help Scout - Add a note to a conversation #6362
+* FluentCRM - Add or Update a contact #6434
+* Groundhogg - Add a tag to a contact #6140
+* Groundhogg - Remove a tag from a contact #6140
+* WP Event Manager - Register an attendee for an event #5410
 
 **New Token:**
 
-* Woo Bookings - Booking order item ID #6394
+* WP Job Manager - Job URL #6010
+
+**Breaking:**
+
+* Gravity Forms - Major refactor, trigger improvement and additional token support #5908 IMPORTANT: Update both Uncanny Automator and Uncanny Automator Pro to > v7.0 to avoid disruption to Gravity Forms recipes.
 
 **Updated:**
 
-* Constant Contact - Create or update a contact - Rebuilt this action from the studs up, now with smarter address handling and custom fields that actually listen. #6287
-* Woo - Order Summary Token - You can now tweak the width and colours like it's your personal style guide. #6276
+* Automator Core - Replaced hardcoded manage_options checks with shiny new filterable functions—because flexibility is the spice of admin life #6374
+* Bluesky - Now supports multiple line breaks when posting. Your poems and rants are safe #6525
+* DeepSeek - Retired gracefully and removed from the codebase
+* FluentCRM - Add/Update a contact - A warm welcome to the new, more powerful and flexible action (re-add the action to your recipe to use it!) #6436
+* Telegram - Send a message - Now with WYSIWYG-powered HTML message support. Fancy formatting? Yes, please #6286
+* X - Multiple line breaks are now welcome in your posts to X. We get it, sometimes you need the dramatic effect #6525
 
 **Fixed:**
 
-* Event Manager - Fixed a rogue namespace issue for the `Em_Tokens` class—it now knows where it belongs. #6331
-* Fluent Forms - `Form ID` token was showing up empty-handed—we've filled its pockets. #6240
-* Fluent Forms AI - `default_api_timeout()` was feeling shy with its arguments. We gave it what it needed. #6345
-* Notion - Add / Update Database - Our date token was having an existential crisis. Now it knows what time it is. #6347
-* Notion - `str_contains` error when attempting to parse text on array values - It tried to read too much into arrays—now it's been taught better boundaries. #6261
-* Populate from Query - JS Error - `getintegrationCode` has now been defined and won't ghost us anymore. #6385
-* SureCart - A user purchases a product - This trigger was overexcited and firing twice. It's calmed down now. #6141
-* Slack - Cleanse text content of HTML before posting - Slack messages got a digital spa treatment—now scrubbed clean of unwanted HTML. #6257
-* WordPress 6.7+ translation warnings - Translation warnings were getting loud. We've hushed them up for WordPress 6.7+. #5783
-
-**Security Fix:**
-
-* Notion - Tightened security for `wp_ajax_automator_notion_list_users` endpoint due to missing nonce check. #6383
+* ActiveCampaign - Settings page - Now gracefully handles transient data errors #6534
+* Amelia - An appointment is booked or A user books an appointment - Trigger now fires when appointments are added by admin from the backend. Admins want automation love too! #6439
+* Closure - Redirect URL encoding - Gave encoding a proper lesson in behavior. Your URLs won’t misbehave anymore #6471 #6441
+* Custom trigger/action label - Was playing hide-and-seek on some triggers/actions. We've taught it to show up properly now #6431
+* Custom trigger/action label - Now parses with default values like a responsible piece of code #6433
+* Discord - User verification shortcode XSS vulnerability fixed - Kicked the security bug out the door #6542
+* Paid Memberships Pro - Unexpected membership cancellation trigger firing during Woo Subscriptions renewal - This over-eager trigger is now chilling out #6558
+* Recipe Logs - Adjusted status detection so “Completed with errors” only shows when there are actual errors—less false alarm, more accuracy #6540
+* Settings - Background actions - Setting was being a bit forgetful, but we've helped it to remember to save on all sites now #6528
+* Stripe - Create a payment link for a product - Metadata fields were causing "invalid value" errors. We’ve cleaned up the mess #6562
+* Stripe - Create a payment link for a product - Custom token/values now play nicely in the product dropdown. Everyone’s invited to the party #6537
+* Thrive Apprentice - A user receives access to a product - Now fires even when triggered by a webhook or other userless trigger. It’s now on duty full-time #6519
+* Twitter/X - Post a tweet to X/Twitter - The deprecated action has returned from retirement to keep legacy recipes humming along #6427
+* Uncanny Codes - Add a number of codes to a batch - Now respects your chosen prefix, suffix, and code length like it should have all along #6520
+* Uninstall script - Improved the data removal process #6527
+* WordPress Core - A specific role is added to the user - Now only fires when the role is actually added. No more déjà vu triggers #6516
 
 **Under the hood:**
 
-* App Integration OAuth Callback race condition resolved in a rare situation - We caught and calmed down a rare race condition so OAuth doesn't run off without you. #6379
-* Consolidate Copy to clipboard functionality - All clipboard functions are now singing from the same playbook—click, copy, done. #6236
-* EDD-Recurring Payment items moved from EDD to their own integration - Recurring Payments packed their bags and moved out—independent and loving it. #6370
-* Inconsistent `esc_html` usage in core - Some parts of the code weren't playing by the HTML-escaping rules. We've brought them in line—safely sanitized and secure. #6334
-* Replace Duplicator icon - Gave Duplicator a fresh new icon because even integrations like a glow-up. #6275
-* Trigger Engine - More robust trigger engine - Beefed it up so it won't flinch, even under pressure. #6376
-* TinyMCE configuration options at the field level - Editors now get more say in their setup. #6354
-* Triggers - Setting default value of `is_login_required` to `false` - We're assuming users don't need to be logged in—unless told otherwise. #6393
-* UI doesn't render — `t.trim is not a function` in a rare situation - Squashed this rare bug before it could confuse more letters with undefined functions. #6358
-* Plain permalink REST endpoints are now supported - No pretty permalinks? No problem. REST endpoints now work even when things get... plain. #6398
-* Automator now loads even on minimalist, plugin-bare sites—because everyone deserves a little automation magic. #6399
+* Added hooks to enable deleting scheduled actions when logs are deleted for Automator Pro - Because nobody likes leftover cron crumbs #6544
+* Model Context Protocol (MCP) for Uncanny Agent (beta) - The robots are learning... but in a totally cool and helpful way #6413
+* Automator Core API - Polished and primed for more integrations and dev wizardry #6412
+* Core API - Introduced RESTful endpoints for recipe item CRUD—future-proofing your recipe game one endpoint at a time
+* Updated deprecated capability filters to align with the new centralized capability system - Everything now reports to the same boss #6374
+* Fixed inconsistencies in _recipe object - Got everyone on the same page—literally #6458
+* Some App integrations not appearing connected - Connections now show up like they’re supposed to. No more silent treatment #6555
+* LearnPress icon updated - Because a good-looking icon is half the battle #6473
+* Recipe UI - Fixed listen_fields errors in Action Conditions by ditching legacy field handling in favor of a modern Lit-based component. Out with the old, in with the Lit #5227
 * Integration framework upgrades:
-  * ActiveCampaign #6241
-  * Bluesky #6169
-  * Brevo #6170
-  * Campaign Monitor #6217
-  * Claude, Cohere, DeepSeek, Gemini, Grok, Mistral, and Perplexity #6252
-  * Constant Contact #6267
-  * EDD - Recurring Payments #6370
-  * GetResponse #6232
-  * Google Calendar #6244
-  * Google Contacts #6233
-  * Help Scout #6218
-  * Notion #6165
-  * Presto #6189
-  * Sendy #6327
-  * SureCart #6141
-  * Threads #6249
-  * Thrive Leads #5951
-  * Twilio #6219
-  * Twitter #6167
-
-**Developers:**
-
-* Available filters for Woo Order Summary customization - You're now the fashion designer of Woo Order Summary emails. Pick the colours, tailor the widths, and strut your styles down the inbox runway:
-  * `automator_woocommerce_order_summary_max_width` — Set max width (default: `'640px'`)
-  * `automator_woocommerce_order_summary_container_class` — Container CSS class (default: `'automator-order-summary-container'`)
-  * `automator_woocommerce_order_summary_container_id` — Container ID (default: `'automator-order-summary-{order_id}'`)
-  * `automator_woocommerce_order_summary_table_class` — Table CSS class (default: `'automator-order-summary-table'`)
-  * `automator_woocommerce_order_summary_tr_text_color` — Table row text color (default: `'#636363'`)
-  * `automator_woocommerce_order_summary_td_border_color` — Table cell border color (default: `'#e5e5e5'`)
-  * `automator_woocommerce_order_summary_td_text_color` — Table cell text color (default: `'#636363'`)
-  * `automator_order_summary_html_raw` — Filter the raw HTML array before output (receives `$html` and `$order`)
+  * Stripe #6168
+  * Telegram #6269
+  * WP Job Manager #6532
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 
 == Upgrade Notice ==
+
+= 7.0 =
+Includes major integration refactors and updates. If you have both Uncanny Automator and Uncanny Automator Pro installed, please upgrade both to version 7.0 or higher to avoid recipe issues.

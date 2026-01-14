@@ -263,7 +263,7 @@ class Pro_Auto_Install {
 	 * @return void
 	 */
 	private function validate_user_capabilities() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			throw new Exception( esc_html( self::PERMISSIONS_INSUFFICIENT ) );
 		}
 	}

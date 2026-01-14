@@ -5,10 +5,10 @@ namespace Uncanny_Automator\Integrations\Stripe;
  * Class Customer_Created
  *
  * @package Uncanny_Automator
+ *
+ * @property Stripe_App_Helpers $helpers
  */
-class Customer_Created extends \Uncanny_Automator\Recipe\Trigger {
-
-	protected $helpers;
+class Customer_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
 	 * Trigger code.
@@ -21,27 +21,18 @@ class Customer_Created extends \Uncanny_Automator\Recipe\Trigger {
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function setup_trigger() {
-
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'STRIPE' );
 		$this->set_trigger_code( self::TRIGGER_CODE );
 		$this->set_is_login_required( false );
 		$this->set_trigger_type( 'anonymous' );
 		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
-		$this->set_sentence(
-			sprintf(
-			/* Translators: Trigger sentence */
-				esc_attr__( 'A customer is created', 'uncanny-automator' ),
-				$this->get_trigger_meta()
-			)
-		);
+		$this->set_sentence( esc_html_x( 'A customer is created', 'Stripe', 'uncanny-automator' ) );
 
 		// Non-active state sentence to show
-		$this->set_readable_sentence( esc_attr__( 'A customer is created', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'A customer is created', 'Stripe', 'uncanny-automator' ) );
 
 		// Which do_action() fires this trigger.
-		$this->add_action( Stripe_Webhook::INCOMING_WEBHOOK_ACTION );
+		$this->add_action( Stripe_Webhooks::INCOMING_WEBHOOK_ACTION );
 		$this->set_action_args_count( 1 );
 	}
 

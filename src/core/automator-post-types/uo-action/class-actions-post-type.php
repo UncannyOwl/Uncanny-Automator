@@ -72,14 +72,14 @@ class Actions_Post_Type {
 			'exclude_from_search' => true,
 			'publicly_queryable'  => false,
 			'capabilities'        => array(
-				'publish_posts'       => 'manage_options',
-				'edit_posts'          => 'manage_options',
-				'edit_others_posts'   => 'manage_options',
-				'delete_posts'        => 'manage_options',
-				'delete_others_posts' => 'manage_options',
-				'read_private_posts'  => 'manage_options',
-				'edit_post'           => 'manage_options',
-				'delete_post'         => 'manage_options',
+				'publish_posts'       => automator_get_capability(),
+				'edit_posts'          => automator_get_capability(),
+				'edit_others_posts'   => automator_get_capability(),
+				'delete_posts'        => automator_get_capability(),
+				'delete_others_posts' => automator_get_capability(),
+				'read_private_posts'  => automator_get_capability(),
+				'edit_post'           => automator_get_capability(),
+				'delete_post'         => automator_get_capability(),
 			),
 		);
 

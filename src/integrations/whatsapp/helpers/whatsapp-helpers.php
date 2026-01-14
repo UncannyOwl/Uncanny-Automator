@@ -686,7 +686,7 @@ class WhatsApp_Helpers {
 		}
 
 		// Current user check.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( esc_html_x( 'Unauthorized', 'WhatsApp', 'uncanny-automator' ) );
 		}
 
@@ -751,7 +751,7 @@ class WhatsApp_Helpers {
 			throw new \Exception(
 				sprintf(
 				/* translators: %s: Error message */
-					esc_html__( 'Meta OAuthException: %s', 'uncanny-automator' ),
+					esc_html_x( 'Meta OAuthException: %s', 'Whatsapp', 'uncanny-automator' ),
 					esc_html( $data['error']['message'] )
 				),
 				403
@@ -762,7 +762,7 @@ class WhatsApp_Helpers {
 		// Check for missing scopes.
 		if ( $this->has_missing_scopes( $data['data'] ) ) {
 			throw new \Exception(
-				esc_html__( 'The provided access token contains missing permissions. Make sure both whatsapp_business_management and whatsapp_business_messaging permissions are included.', 'uncanny-automator' ),
+				esc_html_x( 'The provided access token contains missing permissions. Make sure both whatsapp_business_management and whatsapp_business_messaging permissions are included.', 'Whatsapp', 'uncanny-automator' ),
 				400
 			);
 		}
@@ -908,7 +908,7 @@ class WhatsApp_Helpers {
 
 			wp_send_json_error(
 				array(
-					'message' => esc_html__( 'Cannot find the structure for the selected template. Please refresh the page and try again later.', 'uncanny-automator' ),
+					'message' => esc_html_x( 'Cannot find the structure for the selected template. Please refresh the page and try again later.', 'Whatsapp', 'uncanny-automator' ),
 				),
 				400
 			);
@@ -918,7 +918,7 @@ class WhatsApp_Helpers {
 			wp_send_json_error(
 				array(
 					'message' => strtr(
-						esc_html__( 'An unexpected error has with status code [{{status_code}}] has occured. Message: {{error_message}}', 'uncanny-automator' ),
+						esc_html_x( 'An unexpected error has with status code [{{status_code}}] has occured. Message: {{error_message}}', 'Whatsapp', 'uncanny-automator' ),
 						array(
 							'{{status_code}}'   => $e->getCode(),
 							'{{error_message}}' => $e->getMessage(),
@@ -983,7 +983,7 @@ class WhatsApp_Helpers {
 			throw new \Exception(
 				sprintf(
 				/* translators: %s: API endpoint */
-					esc_html__( '%s failed', 'uncanny-automator' ),
+					esc_html_x( '%s failed', 'Whatsapp', 'uncanny-automator' ),
 					esc_html( $params['endpoint'] )
 				)
 			);

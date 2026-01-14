@@ -31,6 +31,7 @@ class FCRM_ADD_CONTACT {
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'integration/fluentcrm/' ) );
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
+		$this->set_is_deprecated( true );
 		/* translators: Action - FluentCRM */
 		$this->set_sentence( sprintf( esc_html_x( 'Add/Update {{a contact:%1$s}}', 'FluentCRM', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - FluentCRM */

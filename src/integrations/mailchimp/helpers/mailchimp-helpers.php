@@ -784,7 +784,7 @@ class Mailchimp_Helpers {
 
 		if ( ! empty( $api_message ) && 'mailchimp_api' === $integration ) {
 
-			if ( ! current_user_can( 'manage_options' ) ) {
+			if ( ! current_user_can( automator_get_admin_capability() ) ) {
 				return;
 			}
 
@@ -847,7 +847,7 @@ class Mailchimp_Helpers {
 	 */
 	public function uo_mailchimp_disconnect() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			$this->redirect_to_settings();
 		}
 

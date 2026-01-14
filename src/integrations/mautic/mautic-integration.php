@@ -9,11 +9,6 @@ use Uncanny_Automator\Integration;
 class Mautic_Integration extends Integration {
 
 	/**
-	 * @var Mautic_Helpers
-	 */
-	protected $helpers = null;
-
-	/**
 	 * @var string
 	 */
 	const ID = 'MAUTIC';
@@ -35,7 +30,6 @@ class Mautic_Integration extends Integration {
 		$this->set_connected( $connected );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/mautic-icon.svg' );
 		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'mautic' ) );
-
 	}
 
 	/**
@@ -54,7 +48,6 @@ class Mautic_Integration extends Integration {
 
 		// Fetch the segments.
 		add_action( 'wp_ajax_automator_mautic_segment_fetch', array( $this->helpers, 'segments_fetch' ) );
-
 	}
 
 	/**
@@ -69,6 +62,5 @@ class Mautic_Integration extends Integration {
 		new SEGMENT_CREATE();
 		new SEGMENT_CONTACT_ADD();
 		new SEGMENT_CONTACT_REMOVE();
-
 	}
 }

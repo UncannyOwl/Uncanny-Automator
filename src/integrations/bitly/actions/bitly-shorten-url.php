@@ -16,11 +16,6 @@ class BITLY_SHORTEN_URL extends \Uncanny_Automator\Recipe\App_Action {
 	use Log_Properties;
 
 	/**
-	 * @var string
-	 */
-	public $prefix = 'BITLY_SHORTEN_URL';
-
-	/**
 	 * Spins up new action inside "Bitly" integration.
 	 *
 	 * @return void

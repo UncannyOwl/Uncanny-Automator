@@ -47,7 +47,6 @@ class Log_Endpoint {
 
 		$this->logs_factory      = $logs_factory;
 		$this->automator_factory = $automator_factory;
-
 	}
 
 	/**
@@ -67,7 +66,11 @@ class Log_Endpoint {
 
 		return $this;
 	}
-
+	/**
+	 * Get formatter.
+	 *
+	 * @return mixed
+	 */
 	public function get_formatter() {
 		return $this->formatter;
 	}
@@ -126,7 +129,6 @@ class Log_Endpoint {
 		}
 
 		return $data;
-
 	}
 
 	/**
@@ -135,7 +137,6 @@ class Log_Endpoint {
 	 * @return mixed[]
 	 */
 	public function build_response(
-
 		$params = array(
 			'recipe_id'     => 0,
 			'recipe_log_id' => 0,
@@ -163,7 +164,6 @@ class Log_Endpoint {
 		$actions_items = $this->logs_factory->action()->get_log( $params );
 
 		return $this->serve_json( (array) $recipe, (array) $triggers_items, (array) $actions_items );
-
 	}
 
 	/**
@@ -223,7 +223,6 @@ class Log_Endpoint {
 		);
 
 		return apply_filters( 'uncanny_automator_log_serve_json', $json, $recipe, $triggers_items, $flow_items );
-
 	}
 
 	/**
@@ -243,7 +242,6 @@ class Log_Endpoint {
 		$status = $formatter::status_class_name( $status, intval( $recipe_status ) );
 
 		return apply_filters( 'automator_logs_recipe_status', $status, $flow_items );
-
 	}
 
 	/**
@@ -263,7 +261,6 @@ class Log_Endpoint {
 		}
 
 		return $flow_items_rearranged_by_date;
-
 	}
 
 	/**
@@ -291,7 +288,6 @@ class Log_Endpoint {
 		} catch ( \Exception $e ) {
 			return 'Cannot identify date from the given timestamp.';
 		}
-
 	}
 
 	/**
@@ -313,7 +309,6 @@ class Log_Endpoint {
 		}
 
 		return 0;
-
 	}
 
 	/**
@@ -321,7 +316,7 @@ class Log_Endpoint {
 	 */
 	public function get_delete_url() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			return '';
 		}
 
@@ -337,7 +332,6 @@ class Log_Endpoint {
 		);
 
 		return apply_filters( 'uncanny_automator_log_get_delete_url', $delete_url, $this->params );
-
 	}
 
 	/**
@@ -345,7 +339,7 @@ class Log_Endpoint {
 	 */
 	public function get_download_url() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_capability() ) ) {
 			return '';
 		}
 
@@ -366,7 +360,5 @@ class Log_Endpoint {
 		);
 
 		return apply_filters( 'uncanny_automator_log_get_download_url', $download_url, $this->params );
-
 	}
-
 }

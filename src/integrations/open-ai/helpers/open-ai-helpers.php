@@ -168,7 +168,7 @@ class Open_AI_Helpers {
 	 */
 	public function verify_access( $nonce = '', $action = '' ) {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Unauthorized', 403 );
 		}
 
@@ -184,7 +184,7 @@ class Open_AI_Helpers {
 	 */
 	public function get_models() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Insufficient privilege', 403 );
 		}
 
@@ -261,7 +261,7 @@ class Open_AI_Helpers {
 			wp_die( 'Invalid nonce', 401 );
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Insufficient privilege', 403 );
 		}
 
@@ -438,7 +438,7 @@ class Open_AI_Helpers {
 
 		Automator()->utilities->verify_nonce();
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_send_json(
 				array(
 					'success' => false,

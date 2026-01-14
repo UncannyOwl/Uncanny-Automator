@@ -8,6 +8,13 @@ namespace Uncanny_Automator;
 
 class Admin_Tools {
 
+	/**
+	 * Constructor.
+	 *
+	 * Initializes the Admin Tools by registering the submenu page and loading tabs.
+	 *
+	 * @since 4.5
+	 */
 	public function __construct() {
 
 		// Register the options menu
@@ -15,7 +22,6 @@ class Admin_Tools {
 
 		// Load tabs
 		$this->load_tabs();
-
 	}
 
 	/**
@@ -25,18 +31,17 @@ class Admin_Tools {
 
 		add_action(
 			'admin_menu',
-			function() {
+			function () {
 				add_submenu_page(
 					'edit.php?post_type=uo-recipe',
 					esc_attr__( 'Status', 'uncanny-automator' ),
 					esc_attr__( 'Status', 'uncanny-automator' ),
-					'manage_options',
+					automator_get_capability(),
 					'uncanny-automator-admin-tools',
 					array( $this, 'submenu_page_output' )
 				);
 			}
 		);
-
 	}
 
 	/**
@@ -49,7 +54,6 @@ class Admin_Tools {
 		$this->load_tab( 'tools' );
 
 		$this->load_tab( 'debug' );
-
 	}
 
 	/**
@@ -60,7 +64,6 @@ class Admin_Tools {
 	private function load_tab( $tab_key ) {
 
 		include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/' . sanitize_file_name( $tab_key ) . '.php';
-
 	}
 
 	/**
@@ -92,7 +95,6 @@ class Admin_Tools {
 
 		// Load the view.
 		include Utilities::automator_get_view( 'admin-tools/admin-tools.php' );
-
 	}
 
 	/**
@@ -101,7 +103,6 @@ class Admin_Tools {
 	public function get_top_level_tabs() {
 
 		return apply_filters( 'automator_admin_tools_tabs', array() );
-
 	}
 
 	/**
@@ -129,6 +130,5 @@ class Admin_Tools {
 			$url_parameters,
 			admin_url( 'edit.php' )
 		);
-
 	}
 }

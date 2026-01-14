@@ -50,6 +50,10 @@ class Fluent_Crm_Helpers {
 		foreach ( $fluent_crm_targetted_actions as $status_action ) {
 			add_action( $status_action, array( $this, 'do_fluent_crm_actions' ), 2, 99 );
 		}
+
+		// Register AJAX endpoints for fetching fields
+		add_action( 'wp_ajax_automator_fetch_fluentcrm_fields', array( $this, 'fetch_fluentcrm_fields_ajax' ) );
+		add_action( 'wp_ajax_automator_fetch_fluentcrm_custom_fields', array( $this, 'fetch_fluentcrm_custom_fields_ajax' ) );
 	}
 
 	/**
@@ -321,7 +325,7 @@ class Fluent_Crm_Helpers {
 			return $user_id;
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			if ( get_current_user_id() !== $user_id ) {
 				// The user is not an admin and subscriber added to a list is not the current user
 				return 0;
@@ -600,6 +604,110 @@ class Fluent_Crm_Helpers {
 			'required'    => true,
 			'tokens'      => true,
 			'default'     => '',
+		);
+	}
+
+	/**
+	 * Fetch FluentCRM standard fields for the repeater AJAX functionality.
+	 * Returns only standard fields that can be updated.
+	 *
+	 * @return void
+	 */
+	public function fetch_fluentcrm_fields_ajax() {
+		Automator()->utilities->ajax_auth_check();
+
+		$fields = array();
+
+		// Standard fields that can be updated
+		$fields = array(
+			array(
+				'FCRM_COLUMN_NAME'  => 'first_name - ' . esc_html_x( 'First name', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'last_name - ' . esc_html_x( 'Last name', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'phone - ' . esc_html_x( 'Phone', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'date_of_birth - ' . esc_html_x( 'Date of birth', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'address_line_1 - ' . esc_html_x( 'Address line 1', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'address_line_2 - ' . esc_html_x( 'Address line 2', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'city - ' . esc_html_x( 'City', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'state - ' . esc_html_x( 'State', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'postal_code - ' . esc_html_x( 'Postal code', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+			array(
+				'FCRM_COLUMN_NAME'  => 'country - ' . esc_html_x( 'Country', 'FluentCRM', 'uncanny-automator' ),
+				'FCRM_COLUMN_VALUE' => '',
+			),
+		);
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'rows'    => $fields,
+			)
+		);
+	}
+
+	/**
+	 * Fetch FluentCRM custom fields for the repeater AJAX functionality.
+	 * Returns only custom fields that can be updated.
+	 *
+	 * @return void
+	 */
+	public function fetch_fluentcrm_custom_fields_ajax() {
+		Automator()->utilities->ajax_auth_check();
+
+		$fields = array();
+
+		// Get custom fields
+		$custom_fields = fluentcrm_get_custom_contact_fields();
+		if ( ! empty( $custom_fields ) && is_array( $custom_fields ) ) {
+			foreach ( $custom_fields as $custom_field ) {
+				if ( apply_filters( "automator_fluentcrm_omit_custom_field-{$custom_field['slug']}", false, $custom_field ) ) { // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+					continue;
+				}
+
+				// Skip checkbox fields as they need special handling (multiple checkboxes per field)
+				// Users can add them manually if needed
+				if ( 'checkbox' === $custom_field['type'] ) {
+					continue;
+				}
+
+				$field_label = ! empty( $custom_field['label'] ) ? $custom_field['label'] : $custom_field['slug'];
+				$fields[]    = array(
+					'FCRM_CUSTOM_COLUMN_NAME'  => $custom_field['slug'] . ' - ' . esc_html( $field_label ),
+					'FCRM_CUSTOM_COLUMN_VALUE' => '',
+				);
+			}
+		}
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'rows'    => $fields,
+			)
 		);
 	}
 }

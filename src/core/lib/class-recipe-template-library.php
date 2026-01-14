@@ -334,7 +334,7 @@ class Recipe_Template_Library {
 		}
 
 		// Check if user has manage options capability.
-		return current_user_can( 'manage_options' );
+		return current_user_can( automator_get_capability() );
 	}
 
 	/**

@@ -265,9 +265,10 @@ class Automator_Utilities {
 
 		}
 
-		$capability = 'manage_options';
-		$capability = apply_filters_deprecated( 'modify_recipe', array( $capability ), '3.0', 'automator_capability_required' );
-		$capability = apply_filters( 'automator_capability_required', $capability, $post );
+		$capability = automator_get_capability();
+		// Backward compatibility - allow old filters to override
+		$capability = apply_filters_deprecated( 'modify_recipe', array( $capability ), '3.0', 'automator_capability' );
+		$capability = apply_filters_deprecated( 'automator_capability_required', array( $capability, $post ), '7.0', 'automator_capability' );
 
 		// Check if the current user is capable of calling this auth.
 		if ( ! current_user_can( $capability ) ) {

@@ -40,7 +40,7 @@ class Admin_Tools_Tab_Debug {
 	 */
 	public function delete_log() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Insufficient permission.', 401 );
 		}
 

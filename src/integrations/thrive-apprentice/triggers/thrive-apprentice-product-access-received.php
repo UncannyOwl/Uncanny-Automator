@@ -44,7 +44,7 @@ class THRIVE_APPRENTICE_USER_PRODUCT_ACCESS_RECEIVED extends Trigger {
 
 		$this->set_is_pro( false );
 
-		$this->set_is_login_required( true );
+		$this->set_is_login_required( false );
 
 		// The action hook to attach this trigger into.
 		$this->add_action( 'tva_user_receives_product_access' );

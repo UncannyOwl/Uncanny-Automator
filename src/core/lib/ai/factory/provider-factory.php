@@ -43,7 +43,6 @@ use Uncanny_Automator\Core\Lib\AI\Core\Interfaces\Config_Interface;
  * SUPPORTED PROVIDERS:
  * - OPENAI: OpenAI GPT models (GPT-4, GPT-3.5)
  * - CLAUDE: Anthropic Claude models (Opus, Sonnet, Haiku)
- * - DEEPSEEK: DeepSeek reasoning models
  * - PERPLEXITY: Perplexity search-augmented models
  * - GROK: xAI Grok models with X/Twitter data access
  * - GEMINI: Google Gemini models with multimodal capabilities

@@ -77,6 +77,15 @@ class Api_Server {
 	}
 
 	/**
+	 * Reset the license cache.
+	 *
+	 * @return void
+	 */
+	public static function reset_license_cache() {
+		self::$license = null;
+	}
+
+	/**
 	 * get_instance
 	 *
 	 * @return Api_server
@@ -246,7 +255,42 @@ class Api_Server {
 	 * @return string
 	 */
 	public static function get_site_name() {
-		return preg_replace( '(^https?://)', '', get_home_url() );
+		return preg_replace( '#^https?://#', '', get_home_url() );
+	}
+
+	/**
+	 * Get formatted license renewal/expiry date for MCP payload.
+	 *
+	 * @return string Formatted date like "January 1, 2026" or empty string if lifetime/unavailable.
+	 */
+	public static function get_renewal_date_formatted(): string {
+		$license_type = self::get_license_type();
+
+		if ( ! $license_type ) {
+			return '';
+		}
+
+		$expiry = automator_get_option( 'uap_automator_' . $license_type . '_license_expiry', '' );
+
+		if ( empty( $expiry ) || 'lifetime' === $expiry ) {
+			return '';
+		}
+
+		try {
+			$date = new \DateTime( $expiry, wp_timezone() );
+			return $date->format( 'F j, Y' );
+		} catch ( \Exception $e ) {
+			return '';
+		}
+	}
+
+	/**
+	 * Get URL for purchasing additional credits.
+	 *
+	 * @return string URL to credits/pricing page.
+	 */
+	public static function get_url_get_credits(): string {
+		return AUTOMATOR_LLM_CREDITS_URL;
 	}
 
 	/**

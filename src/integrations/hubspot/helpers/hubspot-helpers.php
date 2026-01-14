@@ -121,7 +121,7 @@ class Hubspot_Helpers {
 			return;
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			return;
 		}
 
@@ -148,7 +148,7 @@ class Hubspot_Helpers {
 	 */
 	public function disconnect() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			return;
 		}
 

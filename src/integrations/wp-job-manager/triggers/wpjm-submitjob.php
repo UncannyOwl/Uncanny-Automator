@@ -1,192 +1,144 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Wpjm;
+
+use Uncanny_Automator\Integrations\WpJobManager\Tokens\WPJM_Legacy_Tokens;
 
 /**
- * Class WPJM_SUBMITJOB
+ * Class Wpjm_Submitjob
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Wpjm
  */
-class WPJM_SUBMITJOB {
+class Wpjm_Submitjob extends \Uncanny_Automator\Recipe\Trigger {
+
+	const TRIGGER_CODE = 'WPJMSUBMITJOB';
+	const TRIGGER_META = 'WPJMJOBTYPE';
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
+	 * @method \Uncanny_Automator\Integrations\Wpjm\Wpjm_Helpers get_item_helpers()
 	 */
-	public static $integration = 'WPJM';
-
-	private $trigger_code;
-	private $trigger_meta;
 
 	/**
-	 * Set up Automator trigger constructor.
+	 * Setup trigger
 	 */
-	public function __construct() {
-		$this->trigger_code = 'WPJMSUBMITJOB';
-		$this->trigger_meta = 'WPJMJOBTYPE';
-		$this->define_trigger();
+	protected function setup_trigger() {
+		$this->set_integration( 'WPJM' );
+		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_meta( self::TRIGGER_META );
+		$this->set_is_pro( false );
+		$this->set_is_login_required( true );
+		$this->set_trigger_type( 'user' );
+		$this->set_uses_api( false );
+
+		$this->add_action( 'transition_post_status' );
+		$this->set_action_args_count( 3 );
+
+		// translators: %1$s is the job type
+		$this->set_sentence( sprintf( esc_html_x( 'A user submits a {{specific type of:%1$s}} job', 'WP Job Manager', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+
+		$this->set_readable_sentence( esc_html_x( 'A user submits a {{specific type of}} job', 'WP Job Manager', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Define trigger options
 	 */
-	public function define_trigger() {
-
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-job-manager/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WP Job Manager */
-			'sentence'            => sprintf( esc_html_x( 'A user submits a {{specific type of:%1$s}} job', 'WP Job Manager', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - WP Job Manager */
-			'select_option_name'  => esc_html_x( 'A user submits a {{specific type of}} job', 'WP Job Manager', 'uncanny-automator' ),
-			'action'              => 'transition_post_status',
-			'priority'            => 20,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'job_manager_job_submitted' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
-
-		Automator()->register->trigger( $trigger );
-	}
-
-	/**
-	 * @return array[]
-	 */
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
+	public function options() {
+		return array(
 			array(
-				'options' => array(
-					Automator()->helpers->recipe->wp_job_manager->options->list_wpjm_job_types(),
-				),
-			)
+				'option_code' => $this->get_trigger_meta(),
+				'label' => esc_html_x( 'Job type', 'WP Job Manager', 'uncanny-automator' ),
+				'input_type' => 'select',
+				'required' => true,
+				'options' => $this->get_item_helpers()->list_wpjm_job_types(),
+				'relevant_tokens' => array(),
+			),
 		);
 	}
 
 	/**
-	 *
+	 * Validate trigger
 	 */
-	public function plugins_loaded() {
-		$this->define_trigger();
-	}
-
-	/**
-	 * @param $job_id
-	 * @param $post
-	 * @param $update
-	 */
-	public function job_manager_job_submitted( $new_status, $old_status, $post ) {
+	public function validate( $trigger, $hook_args ) {
+		list( $new_status, $old_status, $post ) = $hook_args;
 
 		if ( $new_status === $old_status ) {
-			return;
+			return false;
 		}
 
 		if ( empty( $post ) ) {
-			return;
+			return false;
 		}
 
 		if ( ! $post instanceof \WP_Post ) {
-			return;
+			return false;
 		}
 
 		$job_id = $post->ID;
 
 		if ( 'job_listing' !== $post->post_type ) {
-			return;
+			return false;
 		}
 
 		if ( ! $this->is_valid_job_status( $post->post_status ) ) {
-			return;
-		}
-
-		$job_terms = wpjm_get_the_job_types( $job_id );
-
-		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-		$conditions = $this->match_condition( $job_terms, $recipes, $this->trigger_meta, $this->trigger_code );
-
-		if ( empty( $conditions ) ) {
-			return;
-		}
-
-		$user_id = $post->post_author;
-
-		foreach ( $conditions['recipe_ids'] as $recipe_id ) {
-			if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-				$trigger_args = array(
-					'code'            => $this->trigger_code,
-					'meta'            => $this->trigger_meta,
-					'recipe_to_match' => $recipe_id,
-					'ignore_post_id'  => true,
-					'user_id'         => $user_id,
-				);
-
-				$args = Automator()->maybe_add_trigger_entry( $trigger_args, false );
-
-				if ( $args ) {
-					foreach ( $args as $result ) {
-						if ( true === $result['result'] ) {
-							$trigger_meta = array(
-								'user_id'        => $user_id,
-								'trigger_id'     => $result['args']['trigger_id'],
-								'trigger_log_id' => $result['args']['get_trigger_id'],
-								'run_number'     => $result['args']['run_number'],
-							);
-
-							$trigger_meta['meta_key']   = $this->trigger_code;
-							$trigger_meta['meta_value'] = $job_id;
-							Automator()->insert_trigger_meta( $trigger_meta );
-							Automator()->maybe_trigger_complete( $result['args'] );
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * @param      $terms
-	 * @param null $recipes
-	 * @param null $trigger_meta
-	 * @param null $trigger_code
-	 *
-	 * @return array|bool
-	 */
-	public function match_condition( $terms, $recipes = null, $trigger_meta = null, $trigger_code = null ) {
-
-		if ( null === $recipes ) {
 			return false;
 		}
 
-		$recipe_ids     = array();
-		$entry_to_match = array();
-		if ( empty( $terms ) ) {
-			return false;
-		}
-		foreach ( $terms as $term ) {
-			$entry_to_match[] = $term->term_id;
+		$job_terms         = wpjm_get_the_job_types( $job_id );
+		$selected_job_type = $trigger['meta'][ self::TRIGGER_META ];
+
+		// Check if any job type matches or if "Any type" is selected
+		if ( '-1' === $selected_job_type ) {
+			return true;
 		}
 
-		foreach ( $recipes as $recipe ) {
-			foreach ( $recipe['triggers'] as $trigger ) {
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( in_array( (int) $trigger['meta'][ $trigger_meta ], $entry_to_match, true ) || intval( '-1' ) === intval( $trigger['meta'][ $trigger_meta ] ) ) ) {
-					$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
-					break;
+		if ( ! empty( $job_terms ) ) {
+			foreach ( $job_terms as $term ) {
+				if ( (int) $term->term_id === (int) $selected_job_type ) {
+					return true;
 				}
 			}
-		}
-
-		if ( ! empty( $recipe_ids ) ) {
-			return array(
-				'recipe_ids' => $recipe_ids,
-				'result'     => true,
-			);
 		}
 
 		return false;
 	}
+
+	/**
+	 * Hydrate tokens
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		list( $new_status, $old_status, $post ) = $hook_args;
+		$job_id                                 = $post->ID;
+
+		$tokens        = array();
+		$common_tokens = Wpjm_Token_Manager::get_job_tokens( self::TRIGGER_CODE, true );
+
+		// Parse common tokens.
+		foreach ( $common_tokens as $token ) {
+			$token_id = $token['tokenId'] ?? null;
+			if ( null !== $token_id ) {
+				$tokens[ $token_id ] = Wpjm_Token_Manager::hydrate_job_tokens( $job_id, $token_id );
+			}
+		}
+
+		// Fill Legacy Tokens for backwards compatibility.
+		$tokens['WPJMJOBID']    = $job_id;
+		$tokens['WPJMJOBTITLE'] = wpjm_get_the_job_title( $job_id );
+		$tokens['WPJMJOBURL']   = get_permalink( $job_id );
+
+		return $tokens;
+	}
+
+	/**
+	 * Define tokens
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+		// Use centralized token definitions
+		$custom_tokens = Wpjm_Token_Manager::get_job_tokens( self::TRIGGER_CODE, true );
+
+		return array_merge( $tokens, $custom_tokens );
+	}
+
+
 
 	/**
 	 * Validates if the job status is appropriate based on approval requirements.
@@ -196,11 +148,11 @@ class WPJM_SUBMITJOB {
 	 */
 	private function is_valid_job_status( $post_status ) {
 		$requires_approval = get_option( 'job_manager_submission_requires_approval', false );
-		
+
 		if ( $requires_approval ) {
 			return 'pending' === $post_status;
 		}
-		
+
 		return 'publish' === $post_status;
 	}
 }
