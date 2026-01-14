@@ -13,7 +13,7 @@ class Mautic_Helpers {
 	public function __construct() {
 
 		// The `current_screen` is not available in the options.php so we check if its a settings page submissions.
-		if ( ! empty( filter_input( INPUT_POST, 'automator_mautic_credentials' ) ) && is_admin() && current_user_can( 'manage_options' ) ) {
+		if ( ! empty( filter_input( INPUT_POST, 'automator_mautic_credentials' ) ) && is_admin() && current_user_can( automator_get_admin_capability() ) ) {
 			$this->create_settings();
 		}
 	}
@@ -187,7 +187,7 @@ class Mautic_Helpers {
 			wp_die( 'Access forbidden. Invalid nonce', 403 );
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Insufficient access.', 401 );
 		}
 

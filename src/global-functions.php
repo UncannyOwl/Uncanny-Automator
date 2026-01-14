@@ -511,6 +511,19 @@ function automator_pro_older_than( $version ) {
  * @return void
  */
 function clear_recipe_logs( $recipe_id ) {
+
+	/**
+	 * Fires before all logs for a recipe are cleared.
+	 *
+	 * This hook allows extensions (like Pro) to perform cleanup before the log data
+	 * is removed, such as cancelling scheduled actions in Action Scheduler.
+	 *
+	 * @since 6.9
+	 *
+	 * @param int $recipe_id The recipe ID whose logs are being cleared.
+	 */
+	do_action( 'automator_before_recipe_logs_cleared', $recipe_id );
+
 	Automator()->db->recipe->clear_activity_log_by_recipe_id( $recipe_id );
 }
 
@@ -520,6 +533,11 @@ function clear_recipe_logs( $recipe_id ) {
  * @return bool
  */
 function automator_do_identify_tokens() {
+
+	// Allow override via constant
+	if ( defined( 'AUTOMATOR_FORCE_EDIT_PAGE' ) && AUTOMATOR_FORCE_EDIT_PAGE ) {
+		return true;
+	}
 	// If it's cron, do not identify tokens
 	if ( defined( 'DOING_CRON' ) ) {
 		return false;
@@ -1053,4 +1071,45 @@ function is_automator_running_unit_tests() {
  */
 function get_automator_tables() {
 	return DB_Tables::get_automator_tables();
+}
+
+/**
+ * Get the required capability for core Automator operations.
+ *
+ * This capability is used for general operations like viewing/editing recipes,
+ * accessing admin pages, viewing logs, and basic recipe management.
+ *
+ * Example usage:
+ * - Admin menu access
+ * - Recipe post type capabilities
+ * - Viewing logs
+ * - Basic REST endpoints
+ * - Recipe builder operations
+ *
+ * @since 6.9
+ * @return string The capability required. Defaults to 'manage_options'.
+ */
+function automator_get_capability() {
+	return apply_filters( 'automator_capability', 'manage_options' );
+}
+
+/**
+ * Get the required capability for sensitive administrative operations.
+ *
+ * This capability is used for sensitive operations that require higher privileges,
+ * such as plugin settings, integration credentials, import/export, and system tools.
+ *
+ * Example usage:
+ * - Plugin settings and configuration
+ * - Integration OAuth/API credentials
+ * - Import/Export recipes
+ * - Debug tools and system information
+ * - License management
+ * - Database cleanup operations
+ *
+ * @since 6.9
+ * @return string The capability required. Defaults to 'manage_options'.
+ */
+function automator_get_admin_capability() {
+	return apply_filters( 'automator_admin_capability', 'manage_options' );
 }

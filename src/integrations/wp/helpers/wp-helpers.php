@@ -59,6 +59,9 @@ class Wp_Helpers {
 		);
 		add_action( 'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE', array( $this, 'select_posts_by_post_type_legacy' ) );
 		add_action( 'wp_ajax_select_posts_by_post_type', array( $this, 'select_posts_by_post_type' ) );
+
+		// Centralized role change handler for compatibility with User Role Editor and other plugins
+		$this->setup_role_change_handlers();
 	}
 
 	/**
@@ -1083,5 +1086,92 @@ class Wp_Helpers {
 
 		// Default: do not skip
 		return false;
+	}
+
+	/**
+	 * Setup role change handlers to support User Role Editor and other plugins
+	 *
+	 * This method registers hooks for both WordPress core role change methods:
+	 * - set_user_role: Fired when WP_User::set_role() is called (replaces all roles)
+	 * - add_user_role: Fired when WP_User::add_role() is called (adds a single role)
+	 *
+	 * Both hooks are normalized and fire a single internal hook 'automator_user_role_changed'
+	 * that triggers can register against for consistent behavior.
+	 *
+	 * @return void
+	 */
+	public function setup_role_change_handlers() {
+		// WordPress core set_role() - replaces all roles
+		add_action( 'set_user_role', array( $this, 'handle_set_user_role' ), 10, 3 );
+
+		// WordPress core add_role() - adds a single role (used by User Role Editor)
+		add_action( 'add_user_role', array( $this, 'handle_add_user_role' ), 10, 2 );
+	}
+
+	/**
+	 * Handle set_user_role hook (WordPress core WP_User::set_role method)
+	 *
+	 * This hook fires when a user's role is SET (replacing all existing roles).
+	 * This is used by WordPress core, profile update screens, and some plugins.
+	 *
+	 * @param int    $user_id   The user ID.
+	 * @param string $role      The new role being set.
+	 * @param array  $old_roles Array of the user's previous roles.
+	 *
+	 * @return void
+	 */
+	public function handle_set_user_role( $user_id, $role, $old_roles ) {
+		/**
+		 * Fires when a user's role is changed via any WordPress method.
+		 *
+		 * This internal hook normalizes both set_user_role and add_user_role
+		 * into a single consistent hook for Automator triggers.
+		 *
+		 * @param int    $user_id   The user ID.
+		 * @param string $role      The role that was set or added.
+		 * @param array  $old_roles Array of the user's roles before this change.
+		 */
+		do_action( 'automator_user_role_changed', $user_id, $role, $old_roles );
+	}
+
+	/**
+	 * Handle add_user_role hook (WordPress core WP_User::add_role method)
+	 *
+	 * This hook fires when a role is ADDED to a user (keeping existing roles).
+	 * This is used by User Role Editor plugin and other role management tools.
+	 *
+	 * Note: This hook fires AFTER the role has been added to the user.
+	 * We reconstruct old_roles by removing the newly added role from current roles.
+	 *
+	 * @param int    $user_id The user ID.
+	 * @param string $role    The role being added.
+	 *
+	 * @return void
+	 */
+	public function handle_add_user_role( $user_id, $role ) {
+		// Get the user object
+		$user = get_user_by( 'ID', $user_id );
+		if ( ! $user ) {
+			return;
+		}
+
+		// Get current roles (after the role was added)
+		$current_roles = $user->roles;
+
+		// Reconstruct old_roles by removing the newly added role
+		// This works because the add_user_role hook fires AFTER the role is added
+		$old_roles = array_diff( $current_roles, array( $role ) );
+
+		/**
+		 * Fires when a user's role is changed via any WordPress method.
+		 *
+		 * This internal hook normalizes both set_user_role and add_user_role
+		 * into a single consistent hook for Automator triggers.
+		 *
+		 * @param int    $user_id   The user ID.
+		 * @param string $role      The role that was set or added.
+		 * @param array  $old_roles Array of the user's roles before this change.
+		 */
+		do_action( 'automator_user_role_changed', $user_id, $role, $old_roles );
 	}
 }

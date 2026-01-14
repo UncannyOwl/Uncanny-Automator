@@ -160,7 +160,7 @@ class Drip_Functions {
 			return;
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			return;
 		}
 
@@ -248,19 +248,19 @@ class Drip_Functions {
 	 */
 	public function disconnect() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			$this->redirect_to_settings_page();
 		}
 
 		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW ), self::NONCE ) ) {
-			$this->redirect_to_settings_page();		
+			$this->redirect_to_settings_page();
 		}
 
 		automator_delete_option( self::TOKEN_OPTION );
 		delete_transient( self::ACCOUNT_TRANSIENT );
 		$this->redirect_to_settings_page();
 	}
-	
+
 	/**
 	 * redirect_toSettings_page
 	 *

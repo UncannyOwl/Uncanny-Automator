@@ -44,7 +44,6 @@ class Setup_Wizard {
 			add_action( 'admin_init', array( $this, 'redirect_if_from_recipe_builder' ) );
 
 		}
-
 	}
 
 	/**
@@ -81,7 +80,6 @@ class Setup_Wizard {
 		);
 
 		die;
-
 	}
 
 	/**
@@ -99,7 +97,7 @@ class Setup_Wizard {
 				'edit.php?post_type=uo-recipe',
 				esc_attr__( 'Uncanny Automator Setup Wizard', 'uncanny-automator' ),
 				esc_attr__( 'Setup wizard', 'uncanny-automator' ),
-				'manage_options',
+				automator_get_capability(),
 				'uncanny-automator-setup-wizard',
 				array(
 					$this,
@@ -147,7 +145,6 @@ class Setup_Wizard {
 			);
 
 		}
-
 	}
 
 	/**
@@ -164,7 +161,6 @@ class Setup_Wizard {
 		}
 
 		return sprintf( 'step-%d', $step );
-
 	}
 
 	/**
@@ -194,7 +190,6 @@ class Setup_Wizard {
 			),
 			$this->connect_url . $this->connect_page
 		);
-
 	}
 
 	/**
@@ -232,7 +227,6 @@ class Setup_Wizard {
 	public function get_checkout_uri() {
 
 		return 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=setup_wizard&utm_content=upgrade_to_pro_btn';
-
 	}
 
 	/**
@@ -253,7 +247,6 @@ class Setup_Wizard {
 
 		// Otherwise pull data from local db to avoid multiple calls.
 		return ! empty( Api_Server::get_license_key() );
-
 	}
 
 	/**
@@ -287,7 +280,7 @@ class Setup_Wizard {
 			$current_step = 1;
 		}
 
-		for ( $i = 1; $i <= $number_of_steps; $i ++ ) {
+		for ( $i = 1; $i <= $number_of_steps; $i++ ) {
 			$steps[ $i ] = array(
 				'label'   => esc_html( $i ),
 				'classes' => array( sprintf( $i ) ),
@@ -298,7 +291,6 @@ class Setup_Wizard {
 		}
 
 		return (array) $steps;
-
 	}
 
 	/**
@@ -356,7 +348,6 @@ class Setup_Wizard {
 	public static function has_tried_connecting() {
 
 		return automator_get_option( 'uoa_setup_wiz_has_connected', false );
-
 	}
 
 	/**

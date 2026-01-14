@@ -85,7 +85,7 @@ class ConvertKit_Helpers {
 				throw new \Exception(
 					sprintf(
 					/* translators: %s: ConvertKit API error message */
-						esc_html__( 'ConvertKit API has responded with an error message: %s', 'uncanny-automator' ),
+						esc_html_x( 'ConvertKit API has responded with an error message: %s', 'Convertkit', 'uncanny-automator' ),
 						esc_html( implode( ' - ', array_values( $response['data'] ) ) )
 					),
 					absint( $response['statusCode'] )
@@ -96,7 +96,7 @@ class ConvertKit_Helpers {
 			throw new \Exception(
 				sprintf(
 				/* translators: %s: ConvertKit API response data in JSON format */
-					esc_html__( 'ConvertKit API has responded with an unknown error. Result: %s', 'uncanny-automator' ),
+					esc_html_x( 'ConvertKit API has responded with an unknown error. Result: %s', 'Convertkit', 'uncanny-automator' ),
 					esc_html( wp_json_encode( $response['data'] ) )
 				),
 				absint( $response['statusCode'] )
@@ -316,7 +316,7 @@ class ConvertKit_Helpers {
 			wp_die( 'Invalid nonce.', 403 );
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Forbidden.', 403 );
 		}
 

@@ -263,9 +263,7 @@ class Set_Up_Automator {
 					$i->add_integration_func();
 				}
 
-				if ( ! in_array( $integration_code, self::$active_integrations_code, true ) ) {
-					self::$active_integrations_code[] = $integration_code;
-				}
+				self::set_active_integration_code( $integration_code );
 
 				$this->active_directories[ $dir_name ] = $i;
 				if ( method_exists( $i, 'add_integration_directory_func' ) ) {
@@ -435,6 +433,28 @@ class Set_Up_Automator {
 		}
 
 		return apply_filters( 'automator_recipes_class_name', $class_name, $file, $file_name );
+	}
+
+	/**
+	 * Set an integration code as active.
+	 *
+	 * Centralized method for adding integration codes to the active integrations list.
+	 * Used by both legacy (add-*-integration.php) and modern (abstract Integration class) integrations.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @param string $integration_code The integration code to set as active (e.g., 'WC', 'GITHUB').
+	 *
+	 * @return bool True if added, false if already exists.
+	 */
+	public static function set_active_integration_code( $integration_code ) {
+		if ( in_array( $integration_code, self::$active_integrations_code, true ) ) {
+			return false;
+		}
+
+		self::$active_integrations_code[] = $integration_code;
+
+		return true;
 	}
 
 	/**

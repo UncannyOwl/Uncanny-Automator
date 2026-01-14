@@ -3,6 +3,7 @@
 namespace Uncanny_Automator\Settings;
 
 use Exception;
+use Uncanny_Automator\Api_Server;
 
 /**
  * Trait OAuth_App_Integration
@@ -62,6 +63,7 @@ trait OAuth_App_Integration {
 			'action'              => $this->oauth_action,
 			'nonce'               => $manager->get_oauth_key( $this->get_id() ),
 			'plugin_ver'          => AUTOMATOR_PLUGIN_VERSION,
+			'license'             => Api_Server::get_license_key(),
 			$this->redirect_param => rawurlencode( $callback_url ),
 		);
 

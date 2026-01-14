@@ -65,7 +65,7 @@ trait Automator_Tooltip_Trait {
 		}
 
 		// Check if the current user can manage options
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_capability() ) ) {
 			return false;
 		}
 

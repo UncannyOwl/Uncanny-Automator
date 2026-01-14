@@ -25,7 +25,6 @@ class Automator_Taxonomies {
 
 		// Add the data to custom columns
 		add_action( 'manage_uo-recipe_posts_custom_column', array( $this, 'add_custom_column_data' ), 10, 2 );
-
 	}
 
 	/**
@@ -53,10 +52,10 @@ class Automator_Taxonomies {
 				),
 				'show_in_nav_menus'  => false,
 				'capabilities'       => array(
-					'manage_terms' => 'manage_options',
-					'edit_terms'   => 'manage_options',
-					'delete_terms' => 'manage_options',
-					'assign_terms' => 'manage_options',
+					'manage_terms' => automator_get_capability(),
+					'edit_terms'   => automator_get_capability(),
+					'delete_terms' => automator_get_capability(),
+					'assign_terms' => automator_get_capability(),
 				),
 			)
 		);
@@ -81,10 +80,10 @@ class Automator_Taxonomies {
 				),
 				'show_in_nav_menus'  => false,
 				'capabilities'       => array(
-					'manage_terms' => 'manage_options',
-					'edit_terms'   => 'manage_options',
-					'delete_terms' => 'manage_options',
-					'assign_terms' => 'manage_options',
+					'manage_terms' => automator_get_capability(),
+					'edit_terms'   => automator_get_capability(),
+					'delete_terms' => automator_get_capability(),
+					'assign_terms' => automator_get_capability(),
 				),
 			)
 		);
@@ -121,7 +120,6 @@ class Automator_Taxonomies {
 				)
 			);
 		}
-
 	}
 
 	/**

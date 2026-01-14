@@ -29,7 +29,6 @@ use Uncanny_Automator\Core\Lib\AI\Http\Response;
  * CONCRETE IMPLEMENTATIONS:
  * - OpenAI_Provider (OpenAI GPT models)
  * - Claude_Provider (Anthropic Claude models)
- * - Deepseek_Provider (DeepSeek models)
  * - Perplexity_Provider (Perplexity AI models)
  * - Grok_Provider (xAI Grok models)
  * - Gemini_Provider (Google Gemini models)

@@ -32,20 +32,22 @@ class WP_USERROLEADDED {
 		$this->trigger_code = 'USERROLEADDED';
 		$this->trigger_meta = 'WPROLE';
 
+		// Migration v2: Update old triggers using 'set_user_role' hook to use the new internal hook
 		add_action(
 			'admin_init',
 			function () {
-				if ( 'yes' === automator_get_option( 'USERROLEADDED_migrated', 'no' ) ) {
+				if ( 'yes' === automator_get_option( 'USERROLEADDED_migrated_v3', 'no' ) ) {
 					return;
 				}
 				global $wpdb;
 				$results = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s", 'code', $this->trigger_code ) );
 				if ( ! empty( $results ) ) {
 					foreach ( $results as $post_id ) {
-						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id = %d AND meta_key LIKE %s", 'add_user_role', $post_id, 'add_action' ) );
+						// Update hook name to new internal hook
+						$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->postmeta SET meta_value = %s WHERE post_id = %d AND meta_key = %s", 'automator_user_role_changed', $post_id, 'add_action' ) );
 					}
 				}
-				automator_update_option( 'USERROLEADDED_migrated', 'yes' );
+				automator_update_option( 'USERROLEADDED_migrated_v3', 'yes' );
 			},
 			99
 		);
@@ -68,9 +70,9 @@ class WP_USERROLEADDED {
 			'sentence'            => sprintf( esc_html__( '{{A specific:%1$s}} role is added to the user', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - WordPress Core */
 			'select_option_name'  => esc_html__( '{{A specific}} role is added to the user', 'uncanny-automator' ),
-			'action'              => 'add_user_role',
+			'action'              => 'automator_user_role_changed',
 			'priority'            => 90,
-			'accepted_args'       => 2,
+			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'add_user_role' ),
 			'options_callback'    => array( $this, 'load_options' ),
 		);
@@ -103,7 +105,12 @@ class WP_USERROLEADDED {
 	 * @param $role
 	 * @param $old_roles
 	 */
-	public function add_user_role( $user_id, $role ) {
+	public function add_user_role( $user_id, $role, $old_roles ) {
+
+		// Bail if the role already existed - only fire when role is truly added
+		if ( in_array( $role, $old_roles, true ) ) {
+			return;
+		}
 
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_user_role = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
@@ -142,6 +149,23 @@ class WP_USERROLEADDED {
 
 		if ( ! empty( $matched_recipe_ids ) ) {
 			foreach ( $matched_recipe_ids as $matched_recipe_id ) {
+				// Check if this exact trigger has already been processed recently (deduplication)
+				$transient_key = sprintf(
+					'automator_role_add_%d_%d_%d_%s',
+					$matched_recipe_id['trigger_id'],
+					$matched_recipe_id['recipe_id'],
+					$user_obj->ID,
+					$role
+				);
+
+				if ( get_transient( $transient_key ) ) {
+					// Already processed within the last 10 seconds, skip
+					continue;
+				}
+
+				// Set transient immediately to prevent race conditions
+				set_transient( $transient_key, true, 10 );
+
 				$pass_args = array(
 					'code'             => $this->trigger_code,
 					'meta'             => $this->trigger_meta,

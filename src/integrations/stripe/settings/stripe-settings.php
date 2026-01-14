@@ -1,19 +1,20 @@
 <?php
 namespace Uncanny_Automator\Integrations\Stripe;
 
-use Uncanny_Automator\Api_Server;
+use Uncanny_Automator\Settings\App_Integration_Settings;
+use Uncanny_Automator\Settings\OAuth_App_Integration;
+use Exception;
+
 /**
  * Stripe Integration Settings
+ *
+ * @property Stripe_App_Helpers $helpers
+ * @property Stripe_Api_Caller $api
+ * @property Stripe_Webhooks $webhooks
  */
-class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
+class Stripe_Settings extends App_Integration_Settings {
 
-
-	/**
-	 * The helpers class
-	 *
-	 * @var Stripe_Helpers
-	 */
-	public $helpers;
+	use OAuth_App_Integration;
 
 	/**
 	 * Live or test mode
@@ -23,91 +24,65 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 	private $mode;
 
 	/**
-	 * The connected status
-	 *
-	 * @var bool
-	 */
-	private $is_connected;
-
-	/**
-	 * The nonce key
-	 *
-	 * @var string
-	 */
-	const NONCE_KEY = 'automator_stripe';
-
-	/**
 	 * The option where we store the connection mode
 	 *
 	 * @var string
 	 */
 	const CONNECTION_MODE_OPTION = 'automator_stripe_mode';
 
+	////////////////////////////////////////////////////////////
+	// Required abstract method
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Get formatted account information for connected user info display
+	 *
+	 * @return array
+	 */
+	protected function get_formatted_account_info() {
+		// Get the user details.
+		$user_details = $this->api->get_user_details();
+
+		// Maybe prefix the name with test mode.
+		$name        = $user_details['settings']['dashboard']['display_name'];
+		$mode_prefix = 'test' === $this->mode
+			? esc_html_x( '(Test mode)', 'Stripe', 'uncanny-automator' ) . ' '
+			: '';
+
+		return array(
+			'avatar_type'  => 'text',
+			'avatar_value' => esc_html( strtoupper( $name[0] ) ),
+			'main_info'    => esc_html( $mode_prefix . $name ),
+			'additional'   => sprintf(
+				// translators: %s. Account ID.
+				esc_html_x( 'Account ID: %s', 'Stripe', 'uncanny-automator' ),
+				esc_html( $user_details['id'] )
+			),
+		);
+	}
+
+	////////////////////////////////////////////////////////////
+	// Override framework methods.
+	////////////////////////////////////////////////////////////
+
 	/**
 	 * Set the properties of the class and the integration
 	 */
 	public function set_properties() {
-
-		// The unique page ID that will be added to the URL
-		$this->set_id( 'stripe' );
-
-		// The integration icon will be used for the settings page, so set this option to the integration ID
-		$this->set_icon( 'STRIPE' );
-
-		// The name of the settings tab
+		// Always set the name w/o Test mode for settings page.
 		$this->set_name( 'Stripe' );
-
-		$this->helpers = new Stripe_Helpers();
-
+		// Set Live vs Test mode.
 		$this->mode = $this->helpers->get_mode();
-
-		$this->is_connected = $this->helpers->is_connected();
-
-		$this->register_option( $this->helpers->webhook->get_option_name() );
-		$this->register_option( self::CONNECTION_MODE_OPTION );
-
-		$this->check_for_errors();
-
-		$this->set_css( '/stripe/settings/assets/style.css' );
-		$this->set_js( '/stripe/settings/assets/script.js' );
-
-		// Handle the disconnect button action
-		add_action( 'init', array( $this, 'disconnect' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
-		add_action( 'init', array( $this, 'capture_oauth_tokens' ), AUTOMATOR_APP_INTEGRATIONS_PRIORITY );
 	}
 
 	/**
-	 * check_for_errors
+	 * Set connected properties.
 	 *
 	 * @return void
 	 */
-	public function check_for_errors() {
-
-		$connection_result = automator_filter_input( 'connect' );
-
-		if ( '1' === $connection_result ) {
-			$this->add_alert(
-				array(
-					'type'    => 'success',
-					'heading' => esc_html_x( 'Connected', 'Stripe', 'uncanny-automator' ),
-					'content' => esc_html_x( 'The integration has been connected successfully.', 'Stripe', 'uncanny-automator' ),
-				)
-			);
-		}
-
-		$error = automator_filter_input( 'error' );
-
-		if ( '' !== $error ) {
-			$this->add_alert(
-				array(
-					'type'    => 'error',
-					'heading' => esc_html_x( 'Something went wrong', 'Stripe', 'uncanny-automator' ),
-					'content' => $error,
-				)
-			);
-		}
-
-		if ( 'test' === $this->helpers->get_mode() ) {
+	public function set_connected_properties() {
+		// Add warning if connected in test mode.
+		if ( 'test' === $this->mode ) {
 			$this->add_alert(
 				array(
 					'type'    => 'error',
@@ -118,397 +93,224 @@ class Stripe_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Se
 		}
 	}
 
-
 	/**
-	 * Display an error message
-	 *
-	 * @param string $error_message The error message to display
-	 */
-	public function display_errors( $error_message ) {
-		$this->add_alert(
-			array(
-				'type'    => 'error',
-				'heading' => esc_html_x( 'Something went wrong', 'Stripe', 'uncanny-automator' ),
-				'content' => $error_message,
-			)
-		);
-	}
-
-	/**
-	 * Get the connected status
-	 *
-	 * @return string
-	 */
-	public function get_status() {
-
-		return $this->helpers->integration_status();
-	}
-
-	/**
-	 * output_form
-	 *
-	 * We are overriding this method to disable unsaved form warnings when we are not connected
-	 * The test mode switch was causing the warning to appear when it shouldn't
+	 * Register disconnected options.
 	 *
 	 * @return void
 	 */
-	public function output_form() {
-
-		$warn = '';
-
-		// Only warn about unsaved changes if we are connected
-		if ( $this->is_connected ) {
-			$warn = 'warn-unsaved';
-		}
-
-		?>
-
-			<form method="POST" action="options.php" <?php esc_attr( $warn ); ?>>
-				<?php settings_fields( $this->get_settings_id() ); ?>
-				<?php $this->output_panel(); ?>
-			</form>
-			<?php
+	protected function register_disconnected_options() {
+		$this->register_option( self::CONNECTION_MODE_OPTION );
 	}
 
 	/**
-	 * Creates the output of the settings page
-	 */
-	public function output_panel_content() {
-
-		$webhook_endpoint = $this->helpers->webhook->get_url( $this->mode );
-		$webhook_secret   = $this->helpers->webhook->get_secret( $this->mode );
-
-		?>
-		<?php if ( ! $this->is_connected ) { ?>
-
-			<div class="uap-settings-panel-content-subtitle">
-			<?php echo esc_html_x( 'Connect Uncanny Automator to Stripe', 'Stripe', 'uncanny-automator' ); ?>
-			</div>
-
-			<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-			<?php echo esc_html_x( 'Connect Uncanny Automator to Stripe to process and manage customer payments via WordPress.', 'Stripe', 'uncanny-automator' ); ?>
-			</div>
-
-			<p>
-				<strong>
-			<?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Stripe', 'uncanny-automator' ); ?>
-				</strong>
-			</p>
-
-			<ul>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Action:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'Create a customer', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Action:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'Delete a customer', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Action:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'Create a payment link for a product', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A subscription is cancelled', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A subscription is paid', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A subscription payment fails', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A subscription is created', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A payment for a product is refunded', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'A customer is created', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-					<?php echo esc_html_x( 'Trigger:', 'Stripe', 'uncanny-automator' ); ?></strong>
-					<?php echo esc_html_x( 'One-time payment for a product is completed', 'Stripe', 'uncanny-automator' ); ?>
-				</li>
-			</ul>
-
-			<?php } else { ?>
-
-			<uo-alert heading="<?php echo esc_attr_x( 'Continue the setup by enabling Stripe triggers', 'Stripe', 'uncanny-automator' ); ?>">
-
-			<?php echo esc_attr_x( 'To enable Stripe triggers please configure webhooks in your Stripe account:', 'Stripe', 'uncanny-automator' ); ?>
-
-			<ol class="uap-spacing-top uap-spacing-top--small uap-spacing-bottom uap-spacing-bottom--none">
-				<li><?php echo esc_html_x( 'Go to your', 'Stripe', 'uncanny-automator' ); ?> <a target="_blank" href="https://dashboard.stripe.com/webhooks"><?php echo esc_html_x( 'Stripe Dashboard', 'Stripe', 'uncanny-automator' ); ?></a></li>
-				<li><?php echo esc_html_x( 'Click the "Add endpoint" button', 'Stripe', 'uncanny-automator' ); ?></li>
-				<li><?php echo esc_html_x( "You'll be asked to enter a webhook URL. Please use this value:", 'Stripe', 'uncanny-automator' ); ?>
-				<uo-text-field
-					value="<?php echo esc_url( $webhook_endpoint ); ?>"
-					disabled
-				></uo-text-field></li>
-				<li><?php echo esc_html_x( 'Once the webhook is created, copy its signing secret, and paste it here:', 'Stripe', 'uncanny-automator' ); ?>
-					<uo-text-field
-					id="<?php echo esc_attr( $this->helpers->webhook->get_option_name() ); ?>"
-					name="stripe-webhook-secret"
-					value="<?php echo esc_attr( $webhook_secret ); ?>"
-				></uo-text-field>
-
-				</li>
-				<li><?php echo esc_html_x( 'Click the "Save settings" below.', 'Stripe', 'uncanny-automator' ); ?></li>
-			</ol>
-
-			</uo-alert>
-
-			<?php
-			}
-	}
-
-	/**
-	 * Generates the OAuth2 URL.
+	 * Register connected options.
 	 *
-	 * @return string The OAuth URL.
+	 * @return void
 	 */
-	public function get_oauth_url( $mode = 'live' ) {
-
-		$nonce = wp_create_nonce( self::NONCE_KEY );
-
-		return add_query_arg(
-			array(
-				'action'       => 'authorization_request',
-				'nonce'        => $nonce,
-				'redirect_url' => rawurlencode( $this->get_settings_page_url() ),
-				'mode'         => $mode,
-				'plugin_ver'   => AUTOMATOR_PLUGIN_VERSION,
-			),
-			AUTOMATOR_API_URL . $this->helpers::API_ENDPOINT
-		);
+	protected function register_connected_options() {
+		$this->register_option( $this->webhooks->get_option_name() );
 	}
 
 	/**
-	 * Outputs the bottom right panel content
+	 * Maybe filter the OAuth args to add the mode ( live or test ).
+	 *
+	 * @param array $args
+	 *
+	 * @return array
 	 */
-	public function output_panel_bottom_right() {
-
-		if ( ! $this->is_connected ) {
-			return;
+	protected function maybe_filter_oauth_args( $args, $data = array() ) {
+		// Check if the mode has been posted and add it to the args.
+		$mode = (string) $this->get_data_option( self::CONNECTION_MODE_OPTION, $data );
+		if ( isset( $mode ) ) {
+			// Convert '1' to 'test', empty to 'live'
+			$args['mode'] = '1' === $mode ? 'test' : 'live';
 		}
 
-		$link = $this->get_settings_page_url() . '&disconnect=1';
+		return $args;
+	}
 
+	/**
+	 * Validate integration credentials after OAuth flow.
+	 *
+	 * @param array $credentials
+	 *
+	 * @return array
+	 */
+	public function validate_integration_credentials( $credentials ) {
+
+		try {
+			// Common check for stripe ID and vault signature.
+			$this->helpers->validate_credentials( $credentials );
+		} catch ( Exception $e ) {
+			throw new Exception(
+				esc_html_x( 'Missing credentials', 'Stripe', 'uncanny-automator' )
+			);
+		}
+
+		// Delete any existing user details to be refreshed on reload.
+		$this->helpers->delete_account_info();
+
+		return $credentials;
+	}
+
+	/**
+	 * Before save settings - Provide feedback on signing secret changes.
+	 *
+	 * @param array $response - The current response array
+	 * @param array $data - The data posted to the settings page.
+	 *
+	 * @return array
+	 */
+	protected function before_save_settings( $response = array(), $data = array() ) {
+		// Get current and posted values
+		$current_secret = (string) $this->webhooks->get_webhook_key();
+		$posted_secret  = (string) $this->get_data_option( $this->webhooks->get_option_name(), $data );
+
+		// Case 1: First time setting the secret (current empty, posted not empty)
+		if ( empty( $current_secret ) && ! empty( $posted_secret ) ) {
+			$response['alert'] = $this->get_success_alert(
+				esc_html_x( 'Webhook configured', 'Stripe', 'uncanny-automator' ),
+				esc_html_x( 'Webhook signing secret has been saved. Stripe triggers are now enabled.', 'Stripe', 'uncanny-automator' )
+			);
+			return $response;
+		}
+
+		// Case 2: Secret is empty
+		if ( empty( $posted_secret ) ) {
+			$response['alert'] = $this->get_error_alert(
+				esc_html_x( 'Missing webhook secret', 'Stripe', 'uncanny-automator' ),
+				esc_html_x( 'Webhook signing secret is required for Stripe triggers to work. Please enter a valid signing secret.', 'Stripe', 'uncanny-automator' )
+			);
+			return $response;
+		}
+
+		// Case 3: Handling existing secret (both not empty)
+		if ( ! empty( $current_secret ) && ! empty( $posted_secret ) ) {
+			if ( $current_secret !== $posted_secret ) {
+				// Secret was updated
+				$response['alert'] = $this->get_success_alert(
+					esc_html_x( 'Webhook updated', 'Stripe', 'uncanny-automator' ),
+					esc_html_x( 'Webhook signing secret has been updated. Stripe triggers will continue to work with the new secret.', 'Stripe', 'uncanny-automator' )
+				);
+				return $response;
+			}
+
+			// No change to secret
+			$response['alert'] = $this->get_info_alert(
+				esc_html_x( 'No changes were made to the webhook signing secret.', 'Stripe', 'uncanny-automator' )
+			);
+		}
+
+		return $response;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Content output methods.
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Display - Main panel disconnected content.
+	 *
+	 * @return string - HTML
+	 */
+	public function output_main_disconnected_content() {
+		// Output the standard disconnected integration header with description.
+		$this->output_disconnected_header(
+			esc_html_x( 'Connect Uncanny Automator to Stripe to process and manage customer payments via WordPress.', 'Stripe', 'uncanny-automator' )
+		);
+
+		// Automatically generated list of available triggers and actions.
+		$this->output_available_items();
+	}
+
+	/**
+	 * Display - Bottom left disconnected content.
+	 *
+	 * @return void - Outputs HTML directly
+	 */
+	public function output_bottom_left_disconnected_content() {
 		?>
-		<uo-button color="danger" href="<?php echo esc_url( $link ); ?>">
-			<uo-icon id="right-from-bracket"></uo-icon>
-			<?php echo esc_html_x( 'Disconnect', 'Stripe', 'uncanny-automator' ); ?>
-		</uo-button>
+		<div class="uap-settings-panel-flex-centered">
+			<uap-app-integration-settings-section 
+				id="stripe-live-connect-section"
+				section-type="live-connect"
+				state="connection-method"
+				show-when="0"
+			>
+				<?php
+				$this->output_action_button(
+					'oauth_init',
+					esc_html_x( 'Connect Stripe', 'Stripe', 'uncanny-automator' )
+				);
+				?>
+			</uap-app-integration-settings-section>
+			<uap-app-integration-settings-section 
+				id="stripe-test-connect-section"
+				section-type="test-connect"
+				state="connection-method"
+				show-when="1"
+			>
+				<?php
+				$this->output_action_button(
+					'oauth_init',
+					esc_html_x( 'Connect Stripe in test mode', 'Stripe', 'uncanny-automator' ),
+					array(
+						'color' => 'danger',
+					)
+				);
+				?>
+			</uap-app-integration-settings-section>
 
-		<uo-button type="submit">
-			<?php echo esc_html_x( 'Save settings', 'Stripe', 'uncanny-automator' ); ?>
-		</uo-button>
-
+			<!-- Live / test toggle. -->
+			<uo-field-input-switch 
+				id="<?php echo esc_attr( self::CONNECTION_MODE_OPTION ); ?>"
+				name="<?php echo esc_attr( self::CONNECTION_MODE_OPTION ); ?>"
+				label-on="<?php echo esc_attr_x( 'Disable test mode', 'Stripe', 'uncanny-automator' ); ?>"
+				label-off="<?php echo esc_attr_x( 'Enable test mode', 'Stripe', 'uncanny-automator' ); ?>"
+				data-state-control="connection-method"
+			></uo-field-input-switch>
+		</div>
 		<?php
 	}
 
 	/**
-	 * Outputs the bottom left panel content
-	 */
-	public function output_panel_bottom_left() {
-
-		if ( ! $this->is_connected ) {
-
-			?>
-			<div class="uap-stripe-connect-button-wrapper">
-			<?php
-
-				$link = $this->get_oauth_url( 'live' );
-
-				$button_label = esc_html_x( 'Connect Stripe', 'Stripe', 'uncanny-automator' );
-
-			?>
-
-				<div id="uap-stripe-connect-live-button">
-					<?php $this->redirect_button( $button_label, $link ); ?>
-				</div>
-
-				<?php
-
-				$link = $this->get_oauth_url( 'test' );
-
-				$button_label = esc_html_x( 'Connect Stripe in test mode', 'Stripe', 'uncanny-automator' );
-
-				?>
-
-				<div id="uap-stripe-connect-test-button">
-					<?php $this->redirect_button( $button_label, $link, 'danger' ); ?>
-				</div>
-
-				<uo-switch id="uap_stripe_mode" status-label="<?php echo esc_attr_x( 'Enable test mode', 'Stripe', 'uncanny-automator' ); ?>"></uo-switch>
-
-			</div>
-
-			<?php
-
-		} else {
-
-			$user_details = $this->helpers->api->get_user_details();
-			$name         = $user_details['settings']['dashboard']['display_name'];
-			$mode_prefix  = '';
-
-			if ( 'test' === $this->mode ) {
-				$mode_prefix = esc_html_x( '(Test mode)', 'Stripe', 'uncanny-automator' ) . ' ';
-			}
-
-			if ( empty( $user_details ) ) {
-				return;
-			}
-			?>
-			<div class="uap-settings-panel-user">
-
-				<div class="uap-settings-panel-user__avatar">
-			<?php echo esc_html( strtoupper( $name[0] ) ); ?>
-				</div>
-
-				<div class="uap-settings-panel-user-info">
-					<div class="uap-settings-panel-user-info__main">
-
-			<?php echo esc_html( $mode_prefix . $name ); ?>
-						<uo-icon integration="STRIPE"></uo-icon>
-					</div>
-
-					<div class="uap-settings-panel-user-info__additional">
-			<?php
-			printf(
-			/* translators: 1. Email address */
-				esc_html_x( 'Account ID: %1$s', 'Stripe', 'uncanny-automator' ),
-				esc_html( $user_details['id'] )
-			);
-
-			?>
-					</div>
-				</div>
-				</div>
-			<?php
-		}
-	}
-
-	/**
-	 * Disconnect the integration
-	 */
-	public function disconnect() {
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		// Make sure this settings page is the one that is active
-		if ( ! $this->is_current_page_settings() ) {
-			return;
-		}
-
-		// Check that the URL has our custom disconnect flag
-		if ( '1' !== automator_filter_input( 'disconnect' ) ) {
-			return;
-		}
-
-		$this->helpers->disconnect();
-
-		// Redirect back to the settings page
-		wp_safe_redirect( $this->get_settings_page_url() );
-
-		exit;
-	}
-
-	/**
-	 * capture_oauth_tokens
+	 * Display - Main panel connected content.
 	 *
-	 * @return void
+	 * @return void - Outputs HTML directly
 	 */
-	public function capture_oauth_tokens() {
+	public function output_main_connected_content() {
 
-		if ( ! $this->is_current_settings_tab() ) {
-			return;
-		}
-
-		$automator_message = automator_filter_input( 'automator_api_message' );
-
-		if ( empty( $automator_message ) ) {
-			return;
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		$token = (array) \Uncanny_Automator\Automator_Helpers_Recipe::automator_api_decode_message( $automator_message, wp_create_nonce( self::NONCE_KEY ) );
-
-		if ( empty( $token['stripe_user_id'] ) || empty( $token['vault_signature'] ) ) {
-			wp_safe_redirect(
-				add_query_arg(
-					array(
-						'error' => esc_html_x( 'Missing credentials', 'Stripe', 'uncanny-automator' ),
-					),
-					$this->get_settings_page_url()
-				)
-			);
-			die;
-		}
-
-		$connect = $this->helpers->store_token( $token );
-
-		// Refresh user details
-		automator_delete_option( $this->helpers::USER_OPTION );
-		$this->helpers->api->get_user_details();
-
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'connect' => $connect,
+		$this->output_setup_instructions(
+			// Additional text to display before the steps.
+			esc_html_x( 'To enable Stripe triggers please configure webhooks in your Stripe account:', 'Stripe', 'uncanny-automator' ),
+			// Steps to complete the setup.
+			array(
+				sprintf(
+					// translators: 1. Link to Stripe Dashboard.
+					esc_html_x( 'Go to your %s', 'Stripe', 'uncanny-automator' ),
+					$this->get_escaped_link(
+						'https://dashboard.stripe.com/webhooks',
+						esc_html_x( 'Stripe Dashboard', 'Stripe', 'uncanny-automator' ),
+						array(
+							'title' => esc_html_x( 'Visit Stripe Dashboard', 'Stripe', 'uncanny-automator' ),
+						)
+					)
 				),
-				$this->get_settings_page_url()
-			)
+				esc_html_x( 'Click the "Add endpoint" button', 'Stripe', 'uncanny-automator' ),
+				sprintf(
+					// translators: 1. Webhook URL input field.
+					esc_html_x( "You'll be asked to enter a webhook URL. Please use this value: %s", 'Stripe', 'uncanny-automator' ),
+					'<uo-text-field value="' . esc_url( $this->webhooks->get_webhook_url() ) . '" copy-to-clipboard="true" disabled></uo-text-field>'
+				),
+				sprintf(
+					// translators: 1. Webhook secret input field.
+					esc_html_x( 'Once the webhook is created, copy its signing secret, and paste it here: %s', 'Stripe', 'uncanny-automator' ),
+					'<uo-text-field id="' . esc_attr( $this->webhooks->get_option_name() ) . '" name="stripe-webhook-secret" value="' . esc_attr( $this->webhooks->get_webhook_key( false ) ) . '" type="password"></uo-text-field>'
+				),
+				esc_html_x( 'Click the "Save settings" below.', 'Stripe', 'uncanny-automator' ),
+			),
+			// Heading for the steps.
+			esc_html_x( 'Continue the setup by enabling Stripe triggers', 'Stripe', 'uncanny-automator' )
 		);
-
-		die;
-	}
-
-	/**
-	 * is_current_settings_tab
-	 *
-	 * @return boolean
-	 */
-	public function is_current_settings_tab() {
-
-		if ( 'uo-recipe' !== automator_filter_input( 'post_type' ) ) {
-			return false;
-		}
-
-		if ( 'uncanny-automator-config' !== automator_filter_input( 'page' ) ) {
-			return false;
-		}
-
-		if ( 'premium-integrations' !== automator_filter_input( 'tab' ) ) {
-			return false;
-		}
-
-		if ( automator_filter_input( 'integration' ) !== $this->id ) {
-			return false;
-		}
-
-		return true;
 	}
 }

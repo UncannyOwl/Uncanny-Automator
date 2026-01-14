@@ -40,7 +40,7 @@ class Api_Log {
 			$parent_slug,
 			$title,
 			$title,
-			'manage_options',
+			automator_get_capability(),
 			'uncanny-automator-api-log',
 			$function,
 			9

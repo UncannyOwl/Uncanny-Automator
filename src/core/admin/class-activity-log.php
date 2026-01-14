@@ -84,6 +84,20 @@ class Activity_Log {
 		$run_number    = (int) automator_filter_input( 'run_number' );
 		$page          = (string) automator_filter_input( 'page' );
 
+		/**
+		 * Fires before a specific recipe run log is deleted.
+		 *
+		 * This hook allows extensions (like Pro) to perform cleanup before the log data
+		 * is removed, such as cancelling scheduled actions in Action Scheduler.
+		 *
+		 * @since 6.9
+		 *
+		 * @param int $recipe_id     The recipe ID.
+		 * @param int $recipe_log_id The recipe log ID being deleted.
+		 * @param int $run_number    The run number being deleted.
+		 */
+		do_action( 'automator_before_recipe_log_deleted', $recipe_id, $recipe_log_id, $run_number );
+
 		// Delete api logs
 		automator_purge_api_logs( $recipe_id, $recipe_log_id );
 
@@ -190,7 +204,7 @@ class Activity_Log {
 			return $actions;
 		}
 		$delete_url                         = sprintf( '%s?post_type=%s&recipe_id=%d&clear_recipe_activity=1&wpnonce=%s', admin_url( 'edit.php' ), 'uo-recipe', $post->ID, wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ) );
-		$actions['clear_recipe_runs trash'] = sprintf( '<a href="%s" class="submitdelete" onclick="javascript: return confirm(\'%s\')">%s</a>', $delete_url, esc_attr__( 'Are you sure you want to delete all run data associated with this recipe? This will reset recipe runs to zero for all users. This action is irreversible.', 'uncanny-automator' ), esc_attr__( 'Clear activity logs', 'uncanny-automator' ) );
+		$actions['clear_recipe_runs trash'] = sprintf( '<a href="%s" class="submitdelete" onclick="javascript: return confirm(\'%s\')">%s</a>', $delete_url, esc_attr__( 'Are you sure you want to delete all run data associated with this recipe? This will reset recipe runs to zero for all users, cancel any scheduled actions, and is irreversible.', 'uncanny-automator' ), esc_attr__( 'Clear activity logs', 'uncanny-automator' ) );
 
 		return $actions;
 	}
@@ -295,7 +309,6 @@ class Activity_Log {
 			}
 		</style>
 		<?php
-
 	}
 
 	/**

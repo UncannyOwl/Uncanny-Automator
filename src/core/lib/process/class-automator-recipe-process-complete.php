@@ -533,6 +533,14 @@ class Automator_Recipe_Process_Complete {
 			$user_id = get_current_user_id();
 		}
 
+		// LLM/Agent mode - skip recipe logging, just capture error.
+		if ( ! empty( $action_data['from_llm'] ) ) {
+			if ( ! empty( $error_message ) ) {
+				do_action( 'automator_llm_action_error', $error_message, $action_data, $user_id );
+			}
+			return ! empty( $error_message ) ? false : true;
+		}
+
 		$action_id = (int) $action_data['ID'];
 
 		if ( null === $action_id || ! is_numeric( $action_id ) ) {
@@ -942,63 +950,25 @@ class Automator_Recipe_Process_Complete {
 
 		}
 
-		// If actions error occurred, change the recipe status to 2
-		$maybe_error = Automator()->db->action->get_error_message( $recipe_log_id );
+		// Check all actions for errors that should update the recipe status.
+		$actionable_error = self::find_actionable_error( $recipe_log_id );
 
-		if ( ! empty( $maybe_error ) ) {
+		if ( null !== $actionable_error ) {
+			// Determine the completion status to use.
+			$comp = Automator_Status::DID_NOTHING === absint( $completed ) ? Automator_Status::DID_NOTHING : $actionable_error->completed;
 
-			$skip     = false;
-			$message  = $maybe_error->error_message;
-			$complete = $maybe_error->completed;
-
-			// Determine whether the error message is coming from the user selector.
-			$is_user_selector_matching_message = self::is_user_selector_matching_message( $message );
-
-			// Determine whether the user selector has created or has failed creating a new user.
-			$is_user_selector_user_creation_message = self::is_user_selector_user_creation_message( $message );
-
-			// Determine whether the error message is from failed condition block.
-			$is_condition_block_failed_message = self::is_condition_block_failed_message( $message );
-
-			// @^todo: The following if-then-else logic could be wrapped in a method with a filter, and the user-selector logic could be moved to pro that applies the filter to invoke its logic.
-			if ( $is_user_selector_matching_message || $is_user_selector_user_creation_message || $is_condition_block_failed_message ) {
-				$skip = true;
-			} elseif ( Automator_Status::DID_NOTHING === (int) $complete ) {
-				$skip = true;
-			} elseif ( Automator_Status::SKIPPED === (int) $complete ) {
-				$skip = true;
-			} elseif ( Automator_Status::COMPLETED_WITH_NOTICE === (int) $complete ) {
-				$skip = true;
+			// Handle IN_PROGRESS_WITH_ERROR case: If there are scheduled actions still pending.
+			if ( $scheduled_actions_count > 0 ) {
+				$comp = Automator_Status::IN_PROGRESS_WITH_ERROR;
 			}
 
-			if ( ! $skip ) {
+			Automator()->db->recipe->mark_complete_with_error( $recipe_id, $recipe_log_id, $comp );
 
-				$comp = Automator_Status::DID_NOTHING === absint( $completed ) ? Automator_Status::DID_NOTHING : $complete;
+			$args['message']   = $actionable_error->error_message;
+			$args['completed'] = $actionable_error->completed;
 
-				Automator()->db->recipe->mark_complete_with_error( $recipe_id, $recipe_log_id, $comp );
-
-				$args['message']   = $message;
-				$args['completed'] = $complete;
-
-				if ( Automator_Status::COMPLETED_WITH_ERRORS === absint( $comp ) ) {
-					do_action( 'automator_recipe_completed_with_errors', $recipe_id, $user_id, $recipe_log_id, $args );
-				}
-			}
-
-			// Determine whether there are any user selector notices.
-			$contains_user_selector_notice = $is_user_selector_matching_message || $is_user_selector_user_creation_message;
-
-			/**
-			 * If there are any actions that has completed with errors already
-			 * and the recipe contains atleast one action that is in-progress,
-			 * Complete the recipe with 'In progress with errors'.
-			 *
-			 * @^todo - Conflicting logic with user-selector: See task for reference #https://app.clickup.com/t/8688p3bxk
-			 *
-			 * @since 5.8.0.3 - Added condition to handle user selector notice.
-			 */
-			if ( $scheduled_actions_count > 0 && ! $contains_user_selector_notice && ! $is_condition_block_failed_message ) {
-				Automator()->db->recipe->mark_complete_with_error( $recipe_id, $recipe_log_id, Automator_Status::IN_PROGRESS_WITH_ERROR );
+			if ( Automator_Status::COMPLETED_WITH_ERRORS === absint( $comp ) ) {
+				do_action( 'automator_recipe_completed_with_errors', $recipe_id, $user_id, $recipe_log_id, $args );
 			}
 		}
 
@@ -1015,6 +985,77 @@ class Automator_Recipe_Process_Complete {
 		);
 
 		do_action( 'automator_recipe_completed', $recipe_id, $user_id, $recipe_log_id, $args );
+
+		return true;
+	}
+
+	/**
+	 * Find the first actionable error from all actions in a recipe.
+	 *
+	 * This method checks ALL actions with errors (not just the first one returned by the DB)
+	 * to find any error that should update the recipe status. This fixes a bug where
+	 * SKIPPED actions with "Failed condition" messages could mask actual COMPLETED_WITH_ERRORS actions.
+	 *
+	 * @since 6.10.0.3
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return object|null Object with error_message and completed properties, or null if no actionable error found.
+	 */
+	public static function find_actionable_error( $recipe_log_id ) {
+		$all_action_errors = Automator()->db->action->get_error_messages( $recipe_log_id );
+
+		// Return early if no errors found or query failed.
+		if ( empty( $all_action_errors ) ) {
+			return null;
+		}
+
+		foreach ( $all_action_errors as $action_error ) {
+			if ( self::is_actionable_error( $action_error ) ) {
+				return $action_error;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Determine whether an action error should update the recipe status.
+	 *
+	 * Errors from certain statuses (SKIPPED, DID_NOTHING, etc.) or with certain messages
+	 * (condition block failures, user selector notices) should not mark the recipe as having errors.
+	 *
+	 * @since 6.10.0.3
+	 *
+	 * @param object $action_error Object with error_message and completed properties.
+	 *
+	 * @return bool True if this error should update the recipe status, false if it should be skipped.
+	 */
+	public static function is_actionable_error( $action_error ) {
+		$message  = isset( $action_error->error_message ) ? $action_error->error_message : '';
+		$complete = isset( $action_error->completed ) ? (int) $action_error->completed : 0;
+
+		// Check if this error message type should be skipped.
+		$is_user_selector_matching_message      = self::is_user_selector_matching_message( $message );
+		$is_user_selector_user_creation_message = self::is_user_selector_user_creation_message( $message );
+		$is_condition_block_failed_message      = self::is_condition_block_failed_message( $message );
+
+		if ( $is_user_selector_matching_message || $is_user_selector_user_creation_message || $is_condition_block_failed_message ) {
+			return false;
+		}
+
+		// Check if this completion status should be skipped.
+		if ( Automator_Status::DID_NOTHING === $complete ) {
+			return false;
+		}
+
+		if ( Automator_Status::SKIPPED === $complete ) {
+			return false;
+		}
+
+		if ( Automator_Status::COMPLETED_WITH_NOTICE === $complete ) {
+			return false;
+		}
 
 		return true;
 	}
@@ -1089,7 +1130,6 @@ class Automator_Recipe_Process_Complete {
 		// If we reach here, none of the substrings were found.
 		return false;
 	}
-
 
 	/**
 	 * Complete all closures in recipe

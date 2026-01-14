@@ -27,7 +27,6 @@ use Uncanny_Automator\Core\Lib\AI\Http\Payload;
  * USED BY ACTION CLASSES:
  * - OpenAI_Chat_Generate (OpenAI GPT actions)
  * - Claude_Chat_Generate (Anthropic Claude actions)
- * - Deepseek_Chat_Generate (DeepSeek reasoning actions)
  * - Perplexity_Chat_Generate (Perplexity search actions)
  * - Grok_Chat_Generate (xAI Grok actions)
  * - Gemini_Chat_Generate (Google Gemini actions)
@@ -212,7 +211,6 @@ trait Base_AI_Provider_Trait {
 	 * Standard codes registered in load.php:
 	 * - 'OPENAI': OpenAI GPT models
 	 * - 'CLAUDE': Anthropic Claude models
-	 * - 'DEEPSEEK': DeepSeek reasoning models
 	 * - 'PERPLEXITY': Perplexity search models
 	 * - 'GROK': xAI Grok models
 	 * - 'GEMINI': Google Gemini models

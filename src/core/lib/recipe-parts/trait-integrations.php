@@ -22,6 +22,7 @@ use Uncanny_Automator\Utilities;
  * @package Uncanny_Automator
  */
 trait Integrations {
+
 	/**
 	 * @var
 	 */
@@ -39,10 +40,7 @@ trait Integrations {
 	 * @var
 	 */
 	protected $integration;
-	/**
-	 * @var
-	 */
-	protected $plugin_file_path;
+
 	/**
 	 * @var
 	 */
@@ -57,6 +55,11 @@ trait Integrations {
 	 * @var string
 	 */
 	protected $settings_url = '';
+
+	/**
+	 * @var string
+	 */
+	protected $plugin_file_path = '';
 
 	/**
 	 * Loopable tokens.
@@ -178,20 +181,6 @@ trait Integrations {
 	}
 
 	/**
-	 * @param $path
-	 */
-	protected function plugin_path( $path ) {
-		$this->plugin_file_path = $path;
-	}
-
-	/**
-	 * @param $path
-	 */
-	protected function get_plugin_file_path() {
-		return $this->plugin_file_path;
-	}
-
-	/**
 	 * @param $icon
 	 */
 	protected function icon( $icon ) {
@@ -223,15 +212,25 @@ trait Integrations {
 	 * @param $path
 	 */
 	public function add_integration() {
+		$registration_data = array(
+			'name'             => $this->get_name(),
+			'icon_svg'         => $this->get_icon_url(),
+			'connected'        => apply_filters( 'automator_integration_connected', $this->get_connected(), $this->integration, $this ),
+			'settings_url'     => $this->get_settings_url(),
+			'loopable_tokens'  => $this->get_loopable_tokens(),
+			'plugin_file_path' => $this->get_plugin_file_path(),
+		);
+
+		// If uses manifest trait, extract manifest data
+		if ( $this->uses_manifest_trait() && is_callable( array( $this, 'extract_manifest_data' ) ) ) {
+			/** @var array $manifest */
+			$manifest                      = call_user_func( array( $this, 'extract_manifest_data' ) );
+			$registration_data['manifest'] = $manifest;
+		}
+
 		Automator()->register->integration(
 			$this->integration,
-			array(
-				'name'            => $this->get_name(),
-				'icon_svg'        => $this->get_icon_url(),
-				'connected'       => apply_filters( 'automator_integration_connected', $this->get_connected(), $this->integration, $this ),
-				'settings_url'    => $this->get_settings_url(),
-				'loopable_tokens' => $this->get_loopable_tokens(),
-			)
+			$registration_data
 		);
 	}
 
@@ -266,13 +265,6 @@ trait Integrations {
 	}
 
 	/**
-	 * @param mixed $plugin_file_path
-	 */
-	protected function set_plugin_file_path( $plugin_file_path ) {
-		$this->plugin_file_path = $plugin_file_path;
-	}
-
-	/**
 	 * @param mixed $icon
 	 */
 	protected function set_icon( $icon ) {
@@ -302,5 +294,40 @@ trait Integrations {
 		$directory[] = dirname( $path ) . '/img';
 
 		return $directory;
+	}
+
+	/**
+	 * Get plugin file path.
+	 *
+	 * Returns plugin_file_path property. If Integration_Manifest trait is used,
+	 * the trait's method will override this one.
+	 *
+	 * @return string Plugin file path
+	 */
+	public function get_plugin_file_path() {
+		return isset( $this->plugin_file_path ) ? $this->plugin_file_path : '';
+	}
+
+	/**
+	 * Set plugin file path.
+	 *
+	 * Sets the plugin_file_path property. If Integration_Manifest trait is used,
+	 * the trait's method will override this one.
+	 *
+	 * @param string $file_path Plugin file path
+	 * @return void
+	 */
+	public function set_plugin_file_path( $file_path ) {
+		$this->plugin_file_path = (string) $file_path;
+	}
+
+	/**
+	 * Check if integration uses Integration_Manifest trait.
+	 *
+	 * @return bool True if trait is used
+	 */
+	private function uses_manifest_trait() {
+		$traits = class_uses( get_class( $this ) );
+		return in_array( 'Uncanny_Automator\Integration_Manifest', $traits, true );
 	}
 }

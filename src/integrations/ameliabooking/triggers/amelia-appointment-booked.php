@@ -50,27 +50,53 @@ class AMELIA_APPOINTMENT_BOOKED {
 		/* Translators: Trigger sentence */
 		$this->set_readable_sentence( esc_html_x( 'An appointment is booked', 'Amelia Booking', 'uncanny-automator' ) ); // Non-active state sentence to show
 
-		$this->add_action( 'AmeliaBookingAddedBeforeNotify' ); // which do_action() fires this trigger
+		$this->add_action( 'automator_amelia_appointment_booked' ); // which do_action() fires this trigger
 
 		$this->register_trigger(); // Registering this trigger
-
 	}
-
+	/**
+	 * Validate trigger.
+	 *
+	 * @param mixed $args The arguments.
+	 * @return mixed
+	 */
 	public function validate_trigger( ...$args ) {
 
-		return Automator()->helpers->recipe->ameliabooking->options->validate_trigger( $args );
+		// Bailout if args is empty.
+		if ( empty( $args ) ) {
+			return false;
+		}
 
+		$booking = array_shift( $args[0] );
+
+		if ( empty( $booking['type'] ) ) {
+			return false;
+		}
+
+		// Only run for appointments. Dont run for events.
+		if ( 'appointment' === $booking['type'] ) {
+			return true;
+		}
+
+		return false;
 	}
-
+	/**
+	 * Prepare to run.
+	 *
+	 * @param mixed $data The data.
+	 */
 	public function prepare_to_run( $data ) {
 
-		$appointment = $data[0];
+		$normalized_data = $data[0];
 	}
-
+	/**
+	 * Do continue anon trigger.
+	 *
+	 * @param mixed $args The arguments.
+	 * @return mixed
+	 */
 	public function do_continue_anon_trigger( ...$args ) {
 
 		return true;
-
 	}
-
 }

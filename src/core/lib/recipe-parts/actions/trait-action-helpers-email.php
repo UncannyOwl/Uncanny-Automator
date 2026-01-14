@@ -165,7 +165,6 @@ trait Action_Helpers_Email {
 		}
 
 		$this->set_actions_data( $data, $user_id, $recipe_id, $args );
-
 	}
 
 	/**
@@ -436,6 +435,16 @@ trait Action_Helpers_Email {
 	}
 
 	/**
+	 * Set the error message.
+	 *
+	 * @param string $error_message The error message.
+	 * @return void
+	 */
+	public function set_error_message( $error_message ) {
+		$this->error_message = $error_message;
+	}
+
+	/**
 	 * Processes the attachment.
 	 *
 	 * @param mixed $attachment_url
@@ -461,7 +470,6 @@ trait Action_Helpers_Email {
 		}
 
 		return $attachment_path;
-
 	}
 
 	/**
@@ -475,5 +483,4 @@ trait Action_Helpers_Email {
 			$this->attachment_handler->cleanup();
 		}
 	}
-
 }

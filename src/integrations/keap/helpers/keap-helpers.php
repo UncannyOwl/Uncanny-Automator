@@ -571,7 +571,7 @@ class Keap_Helpers {
 	 */
 	private function validate_user_capabilities() {
 
-		if ( current_user_can( 'manage_options' ) ) {
+		if ( current_user_can( automator_get_admin_capability() ) ) {
 			return;
 		}
 

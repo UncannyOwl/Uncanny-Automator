@@ -184,7 +184,7 @@ class Facebook_Helpers {
 	 */
 	public function automator_integration_facebook_capture_token() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 
 			wp_safe_redirect( $this->get_settings_page_uri() . '&status=error' );
 
@@ -253,7 +253,7 @@ class Facebook_Helpers {
 		}
 
 		// Current user check.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( esc_html_x( 'Unauthorized', 'Facebook', 'uncanny-automator' ) );
 		}
 
@@ -262,7 +262,6 @@ class Facebook_Helpers {
 		wp_safe_redirect( $this->get_settings_page_uri() );
 
 		exit;
-
 	}
 
 	/**

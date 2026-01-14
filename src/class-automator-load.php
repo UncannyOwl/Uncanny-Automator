@@ -773,8 +773,7 @@ class Automator_Load {
 		$unit_tests = is_automator_running_unit_tests();
 
 		// Always load Usage_Reports for analytics
-		$classes['Usage_Reports'] = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
-
+		$classes['Usage_Reports']        = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 		$classes['Set_Up_Automator']     = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
 		$classes['Initialize_Automator'] = UA_ABSPATH . 'src/core/classes/class-initialize-automator.php';
 

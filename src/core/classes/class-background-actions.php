@@ -358,6 +358,7 @@ class Background_Actions {
 	public function test_endpoint( $value ) {
 
 		if ( empty( $value ) ) {
+			automator_update_option( self::OPTION_NAME, '0' );
 			return '0';
 		}
 
@@ -377,6 +378,7 @@ class Background_Actions {
 		$error = $this->rest_api_error();
 
 		if ( null === $error || empty( $error ) ) {
+			automator_update_option( self::OPTION_NAME, '1' );
 			return '1';
 		}
 
@@ -384,6 +386,7 @@ class Background_Actions {
 			add_settings_error( self::OPTION_NAME, self::OPTION_NAME, $error, 'error' );
 		}
 
+		automator_update_option( self::OPTION_NAME, '0' );
 		return '0';
 	}
 

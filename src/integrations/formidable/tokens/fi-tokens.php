@@ -36,6 +36,10 @@ class Fi_Tokens {
 			return $tokens;
 		}
 
+		if ( ! class_exists( 'FrmSubmitHelper', false ) ) {
+			return $tokens;
+		}
+
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];
@@ -124,7 +128,7 @@ class Fi_Tokens {
 	 * Parse the token.
 	 *
 	 * @param string $value .
-	 * @param array $pieces .
+	 * @param array  $pieces .
 	 * @param string $recipe_id .
 	 *
 	 * @return null|string

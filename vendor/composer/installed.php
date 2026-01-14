@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'uncanny-owl/uncanny-automator',
-        'pretty_version' => '6.4.1',
-        'version' => '6.4.1.0',
+        'pretty_version' => '7.0.0',
+        'version' => '7.0.0.0',
         'reference' => null,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -20,8 +20,8 @@
             'dev_requirement' => false,
         ),
         'uncanny-owl/uncanny-automator' => array(
-            'pretty_version' => '6.4.1',
-            'version' => '6.4.1.0',
+            'pretty_version' => '7.0.0',
+            'version' => '7.0.0.0',
             'reference' => null,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',

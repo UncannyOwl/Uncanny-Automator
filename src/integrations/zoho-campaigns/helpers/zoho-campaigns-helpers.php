@@ -12,6 +12,13 @@ class Zoho_Campaigns_Helpers {
 
 	const NONCE_KEY = 'automator_zoho_agent';
 
+	/**
+	 * Constructor.
+	 *
+	 * Initializes the Zoho Campaigns helper and registers hooks if enabled.
+	 *
+	 * @param bool $load_hooks Optional. Whether to load action hooks. Default true.
+	 */
 	public function __construct( $load_hooks = true ) {
 
 		if ( true === $load_hooks ) {
@@ -34,7 +41,6 @@ class Zoho_Campaigns_Helpers {
 			add_action( 'wp_ajax_automator-zoho-campaigns-fetch-fields', array( $this, 'fetch_fields' ), 10 );
 
 		}
-
 	}
 
 	/**
@@ -59,7 +65,6 @@ class Zoho_Campaigns_Helpers {
 		$zoho_campaigns->set_agent( new Zoho_Campaigns_Client() );
 
 		return $zoho_campaigns;
-
 	}
 
 	/**
@@ -77,7 +82,7 @@ class Zoho_Campaigns_Helpers {
 
 		return ( new Zoho_Campaigns_Client_Auth() )
 			->disconnect_agent(
-				function() {
+				function () {
 					// Disconnect callback. Invoked after the user credentials was destroyed.
 					$this->redirect_to_settings( null, null );
 				}
@@ -100,16 +105,15 @@ class Zoho_Campaigns_Helpers {
 		return ( new Zoho_Campaigns_Client_Auth() )
 			->auth_from_http_query()
 			->update_agent(
-				function() {
+				function () {
 					// Success callback. Flag with success http query.
 					$this->redirect_to_settings( null, 'yes' );
 				},
-				function( $error_message ) {
+				function ( $error_message ) {
 					// Error callback. Redirect with error message.
 					$this->redirect_to_settings( $error_message );
 				}
 			);
-
 	}
 
 	/**
@@ -142,7 +146,6 @@ class Zoho_Campaigns_Helpers {
 		wp_safe_redirect( add_query_arg( $params, admin_url( 'edit.php' ) ) );
 
 		exit;
-
 	}
 
 	/**
@@ -178,7 +181,6 @@ class Zoho_Campaigns_Helpers {
 			wp_send_json( $actions->wp_ajax_handler_lists_fetch() );
 
 		}
-
 	}
 
 	/**
@@ -214,7 +216,6 @@ class Zoho_Campaigns_Helpers {
 			wp_send_json( $actions->wp_ajax_handler_topics_fetch() );
 
 		}
-
 	}
 
 	/**
@@ -247,7 +248,6 @@ class Zoho_Campaigns_Helpers {
 			wp_send_json( $actions->wp_ajax_handler_fields_fetch() );
 
 		}
-
 	}
 
 	/**
@@ -262,7 +262,6 @@ class Zoho_Campaigns_Helpers {
 	public function require_dependency( $path ) {
 
 		return require_once trailingslashit( dirname( __DIR__ ) ) . $path . '.php';
-
 	}
 
 	/**
@@ -274,12 +273,10 @@ class Zoho_Campaigns_Helpers {
 	 */
 	private function verify_credentials() {
 
-		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE_KEY ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE_KEY ) ) {
 
 			wp_die( 'Insufficient privilege or nonce is invalid.', 403 );
 
 		}
-
 	}
-
 }

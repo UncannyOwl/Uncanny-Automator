@@ -38,6 +38,16 @@ class Recipe_Post_Rest_Api {
 
 		register_rest_route(
 			AUTOMATOR_REST_API_END_POINT,
+			'/get_recipe/',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_recipe' ),
+				'permission_callback' => array( $this, 'save_settings_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			AUTOMATOR_REST_API_END_POINT,
 			'/create/',
 			array(
 				'methods'             => 'POST',
@@ -306,12 +316,13 @@ class Recipe_Post_Rest_Api {
 			return false;
 		}
 
-		$capability = 'manage_options';
-		$capability = apply_filters_deprecated( 'uap_roles_modify_recipe', array( $capability ), '3.0', 'automator_capability_required' );
-		$capability = apply_filters( 'automator_capability_required', $capability );
+		$capability = automator_get_capability();
+		// Backward compatibility - allow old filters to override
+		$capability = apply_filters_deprecated( 'uap_roles_modify_recipe', array( $capability ), '3.0', 'automator_capability' );
+		$capability = apply_filters_deprecated( 'automator_capability_required', array( $capability ), '7.0', 'automator_capability' );
 
 		// Restrict endpoint to only users who have the edit_posts capability.
-		if ( ! current_user_can( $capability ) ) {
+		if ( ! current_user_can( $capability ) ) {  // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Dynamic capability from filter.
 			return new WP_Error( 'rest_forbidden', 'You do not have the capability to save module settings.', array( 'status' => 403 ) );
 		}
 
@@ -483,7 +494,7 @@ class Recipe_Post_Rest_Api {
 		$default_meta     = $request->has_param( 'default_meta' ) ? $request->get_param( 'default_meta' ) : array();
 		$default_meta     = ! empty( $default_meta ) && is_array( $default_meta ) ? (array) Automator()->utilities->automator_sanitize( $default_meta, 'mixed' ) : false;
 		$integration_code = '';
-		
+
 		// Check for direct integration parameter first
 		if ( $request->has_param( 'integration' ) && ! empty( $request->get_param( 'integration' ) ) ) {
 			$integration_code = sanitize_text_field( $request->get_param( 'integration' ) );
@@ -1068,6 +1079,38 @@ class Recipe_Post_Rest_Api {
 		$return['action']  = 'show_error';
 
 		return new WP_REST_Response( $return, 200 );
+	}
+
+	/**
+	 * Get recipe
+	 * @param $request
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_recipe( WP_REST_Request $request ) {
+		$post_id = $request->has_param( 'recipe_id' ) ? absint( $request->get_param( 'recipe_id' ) ) : 0;
+
+		if ( empty( $post_id ) ) {
+			return new WP_REST_Response(
+				array(
+					'message' => 'Failed to get recipe',
+					'success' => false,
+					'action'  => 'get_recipe',
+				),
+				200
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'message'        => 'Recipe fetched successfully',
+				'success'        => true,
+				'action'         => 'get_recipe',
+				'recipes_object' => Automator()->get_recipes_data( true, $post_id ),
+				'_recipe'        => Automator()->get_recipe_object( $post_id ),
+			),
+			200
+		);
 	}
 
 	/**
@@ -1738,11 +1781,11 @@ class Recipe_Post_Rest_Api {
 	protected function replay_as_webhook( $api_request ) {
 
 		$success = true;
-		$message = _x( 'The request has been successfully resent', 'Webhooks', 'uncanny-automator' );
+		$message = esc_html_x( 'The request has been successfully resent', 'Webhooks', 'uncanny-automator' );
 
 		if ( ! isset( $api_request->request ) || ! isset( $api_request->params ) ) {
 			$success = false;
-			$message = _x( 'Invalid data. Property "request" or "params" is missing.', 'Webhooks', 'uncanny-automator' );
+			$message = esc_html_x( 'Invalid data. Property "request" or "params" is missing.', 'Webhooks', 'uncanny-automator' );
 		}
 
 		$params  = (array) maybe_unserialize( $api_request->params );

@@ -32,6 +32,9 @@ class PMP_MEMBERSHIPCANCEL {
 		$this->trigger_code = 'PMPMEMBERSHIPCANCEL';
 		$this->trigger_meta = 'PMPMEMBERSHIP';
 		$this->define_trigger();
+
+		// Hook to process delayed cancellation verification
+		add_action( 'automator_pmpro_process_cancellation', array( $this, 'process_cancellation' ), 10, 4 );
 	}
 
 	/**
@@ -53,7 +56,7 @@ class PMP_MEMBERSHIPCANCEL {
 			'accepted_args'       => 4,
 			'validation_function' => array(
 				$this,
-				'pmpro_subscription_cancelled',
+				'validate_cancellation',
 			),
 			'options_callback'    => array( $this, 'load_options' ),
 		);
@@ -80,19 +83,48 @@ class PMP_MEMBERSHIPCANCEL {
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Validate cancellation - entry point from PMPro hook.
 	 *
-	 * @param $level_id
-	 * @param $user_id
-	 * @param $cancel_level
+	 * Handles scheduling logic for WooCommerce Subscriptions integration.
+	 * Schedules delayed verification if WCS is active, otherwise processes immediately.
+	 *
+	 * @since 6.8.1
+	 *
+	 * @param int   $level_id The level ID (0 for cancellation)
+	 * @param int   $user_id User ID
+	 * @param array $old_levels User's old membership levels
+	 * @param int   $cancel_level The level being cancelled
 	 */
-	public function pmpro_subscription_cancelled( $level_id, $user_id, $old_levels, $cancel_level ) {
+	public function validate_cancellation( $level_id, $user_id, $old_levels, $cancel_level ) {
 
-		if ( 0 !== absint( $level_id ) ) {
+		if ( 0 !== absint( $level_id ) || ! is_numeric( $cancel_level ) ) {
 			return;
 		}
 
-		if ( 0 === absint( $level_id ) && is_numeric( $cancel_level ) ) {
+		// Check if WooCommerce Subscriptions is active
+		// If yes, delay processing to verify this is actual cancellation not renewal
+		if ( class_exists( 'WC_Subscriptions' ) ) {
+			// Check if event already scheduled for this user/level combo
+			$args = array( $level_id, $user_id, $old_levels, $cancel_level );
+			if ( ! wp_next_scheduled( 'automator_pmpro_process_cancellation', $args ) ) {
+				wp_schedule_single_event( time() + 60, 'automator_pmpro_process_cancellation', $args );
+			}
+			return;
+		}
+
+		// No WooCommerce Subscriptions, process immediately
+		$this->pmpro_subscription_cancelled( $user_id, $cancel_level );
+	}
+
+	/**
+	 * Process the cancellation trigger.
+	 *
+	 * @since 6.8.1
+	 *
+	 * @param int $user_id User ID
+	 * @param int $cancel_level The level being cancelled
+	 */
+	private function pmpro_subscription_cancelled( $user_id, $cancel_level ) {
 			$recipes             = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 			$required_memerbship = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 			$matched_recipe_ids  = array();
@@ -147,9 +179,31 @@ class PMP_MEMBERSHIPCANCEL {
 					}
 				}
 			}
+	}
+
+	/**
+	 * Process delayed cancellation verification.
+	 *
+	 * Called 60 seconds after initial cancellation. Verifies if level is still
+	 * cancelled, then processes the trigger.
+	 *
+	 * @since 6.8.1
+	 *
+	 * @param int   $level_id The level ID (0 for cancellation)
+	 * @param int   $user_id User ID
+	 * @param array $old_levels User's old membership levels
+	 * @param int   $cancel_level The level being cancelled
+	 */
+	public function process_cancellation( $level_id, $user_id, $old_levels, $cancel_level ) {
+
+		// Verify user still does NOT have this membership level
+		if ( function_exists( 'pmpro_hasMembershipLevel' ) && pmpro_hasMembershipLevel( $cancel_level, $user_id ) ) {
+			// User has the level again - was temporary (renewal)
+			return;
 		}
 
-		return;
+		// Still cancelled - process the trigger
+		$this->pmpro_subscription_cancelled( $user_id, $cancel_level );
 	}
 
 }

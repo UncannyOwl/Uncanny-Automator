@@ -35,7 +35,6 @@ class Migrate_Triggers {
 		$this->fill_missing_hook_name_records();
 
 		automator_update_option( self::MIGRATED_FLAG, time(), true );
-
 	}
 
 	/**
@@ -61,7 +60,6 @@ class Migrate_Triggers {
 		$trigger = is_array( $trigger ) && ! empty( $trigger ) ? end( $trigger ) : array();
 
 		return $trigger;
-
 	}
 
 	/**
@@ -90,7 +88,6 @@ class Migrate_Triggers {
 			),
 			ARRAY_A
 		);
-
 	}
 
 	/**
@@ -119,9 +116,7 @@ class Migrate_Triggers {
 		}
 
 		return true;
-
 	}
-
 }
 
 // Used `admin_init` to make sure migration happens after Automator has fully loaded.
@@ -138,7 +133,6 @@ add_action(
 
 		// Otherwise, migrate.
 		$migrate->migrate();
-
 	}
 );
 
@@ -148,7 +142,7 @@ add_action(
 	'wp',
 	function () {
 		// Only let admin invoke this behaviour.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			return;
 		}
 
@@ -182,5 +176,3 @@ add_action(
 		( new Migrate_Triggers() )->migrate();
 	}
 );
-
-

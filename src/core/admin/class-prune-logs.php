@@ -54,7 +54,6 @@ class Prune_Logs {
 
 		// Update failed recipes. This hook also needs to be registered unconditionally.
 		add_action( 'automator_daily_healthcheck', array( $this, 'update_failed_recipes' ) );
-
 	}
 
 	/**
@@ -112,7 +111,6 @@ class Prune_Logs {
 
 		// Register settings.
 		$this->register_settings();
-
 	}
 
 	/**
@@ -122,7 +120,7 @@ class Prune_Logs {
 	 */
 	public function dismiss_log_notification() {
 
-		if ( ! current_user_can( 'manage_options' ) || wp_verify_nonce( 'dismiss_log_notification', 'dismiss_log_notification' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) || wp_verify_nonce( 'dismiss_log_notification', 'dismiss_log_notification' ) ) {
 			wp_die( 'Unauthorized.' );
 		}
 
@@ -131,7 +129,6 @@ class Prune_Logs {
 		wp_safe_redirect( wp_get_referer() );
 
 		die;
-
 	}
 
 	/**
@@ -181,14 +178,14 @@ class Prune_Logs {
 	public static function format_number_in_kb_mb_gb( $number ) {
 
 		if ( $number < 1024 ) {
-			/* translators: 1. Number */
+			/* translators: %d: Number of megabytes */
 			return sprintf( esc_html__( '%d MB', 'uncanny-automator' ), $number );
 		}
 
 		// Convert in to GB
 		$number = round( ( $number / 1024 ), 0 );
 
-		/* translators: 1. Number */
+		/* translators: %d: Number of gigabytes */
 		return sprintf( esc_html__( '%d GB', 'uncanny-automator' ), $number );
 	}
 
@@ -228,7 +225,6 @@ class Prune_Logs {
 				continue;
 			}
 		}
-
 	}
 
 	/**
@@ -518,7 +514,6 @@ class Prune_Logs {
 			),
 			ARRAY_A
 		);
-
 	}
 
 	/**
@@ -536,7 +531,6 @@ class Prune_Logs {
 			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}uap_recipe_log WHERE user_id=%d", $user_id ),
 			ARRAY_A
 		);
-
 	}
 
 	/**
@@ -572,7 +566,6 @@ class Prune_Logs {
 		}
 
 		return true;
-
 	}
 
 	/**

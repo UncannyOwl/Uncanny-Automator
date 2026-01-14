@@ -99,8 +99,8 @@ class Learndash_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param bool $any_option
-	 * @param bool $include_relevant_tokens
+	 * @param bool   $any_option
+	 * @param bool   $include_relevant_tokens
 	 *
 	 * @return mixed
 	 */
@@ -154,7 +154,7 @@ class Learndash_Helpers {
 	/**
 	 * @param string $label
 	 * @param string $option_code
-	 * @param bool $any_option
+	 * @param bool   $any_option
 	 *
 	 * @return mixed
 	 */
@@ -210,8 +210,8 @@ class Learndash_Helpers {
 	/**
 	 * Hydrate the relevant course tokens for the action.
 	 *
-	 * @param int $course_id - the course ID
-	 * @param int $user_id - the option code for the action
+	 * @param int    $course_id - the course ID
+	 * @param int    $user_id - the option code for the action
 	 * @param string $action_meta - the meta key
 	 *
 	 * @return array
@@ -329,8 +329,8 @@ class Learndash_Helpers {
 	/**
 	 * Hydrate the relevant lesson tokens for the action.
 	 *
-	 * @param int $lesson_id - the lesson ID
-	 * @param int $user_id - the option code for the action
+	 * @param int    $lesson_id - the lesson ID
+	 * @param int    $user_id - the option code for the action
 	 * @param string $action_meta - the meta key
 	 *
 	 * @return array
@@ -441,8 +441,8 @@ class Learndash_Helpers {
 	/**
 	 * Hydrate the relevant topic tokens for the action.
 	 *
-	 * @param int $topic_id - the topic ID
-	 * @param int $user_id - user ID
+	 * @param int    $topic_id - the topic ID
+	 * @param int    $user_id - user ID
 	 * @param string $action_meta - the meta key
 	 *
 	 * @return array
@@ -571,8 +571,8 @@ class Learndash_Helpers {
 	/**
 	 * Hydrate the relevant group tokens for the action.
 	 *
-	 * @param int $group_id - the group ID
-	 * @param int $user_id - user ID
+	 * @param int    $group_id - the group ID
+	 * @param int    $user_id - user ID
 	 * @param string $action_meta - the meta key
 	 *
 	 * @return array
@@ -615,7 +615,6 @@ class Learndash_Helpers {
 	 */
 	public function all_ld_quiz( $label = null, $option_code = 'LDQUIZ', $any_option = true ) {
 		if ( ! $this->load_options ) {
-
 			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
 		}
 
@@ -707,8 +706,8 @@ class Learndash_Helpers {
 	/**
 	 * Hydrate the relevant quiz tokens for the action.
 	 *
-	 * @param int $quiz_id - the quiz ID
-	 * @param int $user_id - user ID
+	 * @param int    $quiz_id - the quiz ID
+	 * @param int    $user_id - user ID
 	 * @param string $action_meta - the meta key
 	 *
 	 * @return array
@@ -929,12 +928,10 @@ class Learndash_Helpers {
 			$lesson = null;
 			echo wp_json_encode( $fields );
 			die();
-		} else {
-			if ( 'automator_custom_value' === $post_value ) {
+		} elseif ( 'automator_custom_value' === $post_value ) {
 				$lesson = isset( $post_values['LDLESSON_custom'] ) ? absint( $post_values['LDLESSON_custom'] ) : 0;
-			} else {
-				$lesson = absint( automator_filter_input( 'value', INPUT_POST ) );
-			}
+		} else {
+			$lesson = absint( automator_filter_input( 'value', INPUT_POST ) );
 		}
 
 		$topics = learndash_get_topic_list( $lesson, absint( $course_id ) );
@@ -981,9 +978,9 @@ class Learndash_Helpers {
 		}
 		$user_id         = absint( $args['user_id'] );
 		$user            = get_user_by( 'ID', $user_id );
-		$post_id         = absint( $args['post_id'] ); //Course, lesson or topic ID
+		$post_id         = absint( $args['post_id'] ); // Course, lesson or topic ID
 		$course_id       = absint( $args['course_id'] ); // Linked Course ID
-		$activity_type   = $args['activity_type']; //course, lesson or topic
+		$activity_type   = $args['activity_type']; // course, lesson or topic
 		$course_progress = get_user_meta( $user_id, '_sfwd-course_progress', true ); // course progress
 		// Activity type is lesson, fire do_action
 		if ( 'lesson' === $activity_type ) {
@@ -1079,7 +1076,7 @@ class Learndash_Helpers {
 	 * Graded Essay - Quiz passed check.
 	 *
 	 * @param array $essay - essay post object.
-	 * @param int $pro_quiz_id - quiz ID.
+	 * @param int   $pro_quiz_id - quiz ID.
 	 *
 	 * @return mixed - WP_Error || true if passed, false otherwise.
 	 */

@@ -29,6 +29,7 @@ class BLUESKY_CREATE_POST extends \Uncanny_Automator\Recipe\App_Action {
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/bluesky/' ) );
 		$this->set_requires_user( false );
+		$this->set_wpautop( false );
 		$this->set_sentence(
 			sprintf(
 				// translators: the text "a post" placeholder.
@@ -48,16 +49,17 @@ class BLUESKY_CREATE_POST extends \Uncanny_Automator\Recipe\App_Action {
 
 		// Main post.
 		$post_field = array(
-			'option_code'     => $this->get_action_meta(),
-			'label'           => esc_html_x( 'Post', 'Bluesky', 'uncanny-automator' ),
-			'input_type'      => 'textarea',
-			'required'        => true,
-			'description'     => esc_html_x(
+			'option_code'       => $this->get_action_meta(),
+			'label'             => esc_html_x( 'Post', 'Bluesky', 'uncanny-automator' ),
+			'input_type'        => 'textarea',
+			'supports_markdown' => true,
+			'required'          => true,
+			'description'       => esc_html_x(
 				'Messages posted to Bluesky have a 300 character limit. URLs count as 20 characters regardless of length, and URL protocols (http://, https://) are not counted. You may use links (e.g. https://example.com), mentions (e.g. @user.bsky.social), and hashtags (e.g. #WordPress). HTML is not supported.',
 				'Bluesky',
 				'uncanny-automator'
 			),
-			'relevant_tokens' => array(),
+			'relevant_tokens'   => array(),
 		);
 
 		// Media embed options.

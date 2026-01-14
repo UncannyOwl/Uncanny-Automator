@@ -358,7 +358,7 @@ final class Action_Manager {
 	 * @return bool
 	 */
 	private function check_user_capabilities() {
-		return current_user_can( 'manage_options' );
+		return current_user_can( automator_get_capability() );
 	}
 
 	/**

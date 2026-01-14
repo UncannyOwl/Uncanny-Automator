@@ -613,7 +613,7 @@ class Automator_Functions {
 	 * @return void
 	 */
 	public function set_loop_filters() {
-		if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) {
+		if ( function_exists( 'automator_pro_loop_filters' ) ) {
 			$this->loop_filters = automator_pro_loop_filters()->get_filters();
 		}
 	}
@@ -1046,7 +1046,7 @@ class Automator_Functions {
 
 		// Validate that the provided callback is indeed callable.
 		if ( ! is_callable( $callback ) ) {
-			doing_it_wrong( __FUNCTION__, 'The $callback parameter must be a valid callable.', '5.9.0' );
+			_doing_it_wrong( __FUNCTION__, 'The $callback parameter must be a valid callable.', '5.9.0' );
 			return array();
 		}
 
@@ -1058,9 +1058,13 @@ class Automator_Functions {
 		// Set up the instance with the provided type and item code, then execute the callback to get the options.
 		try {
 			$options = $fields->with_parameters( $type, $item_code )->get_callable( $callback );
+		} catch ( \Error $e ) {
+			// Trigger a notice and return an empty array.
+			automator_log( $e->getMessage(), 'Fields_Shared_Callable::get_options' );
+			return array();
 		} catch ( Exception $e ) {
 			// Trigger a notice and return an empty array.
-			doing_it_wrong( __FUNCTION__, 'Exception: ' . $e->getMessage(), '5.9.0' );
+			_doing_it_wrong( __FUNCTION__, 'Exception: ' . $e->getMessage(), '5.9.0' );  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Internal exception message for _doing_it_wrong().
 			return array();
 		}
 

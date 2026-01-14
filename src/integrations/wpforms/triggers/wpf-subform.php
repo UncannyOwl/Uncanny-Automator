@@ -57,14 +57,15 @@ class WPF_SUBFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - WP Forms */
-			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr_x( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'Wpforms', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - WP Forms */
-			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr_x( 'A user submits {{a form}}', 'Wpforms', 'uncanny-automator' ),
 			'action'              => 'wpforms_process_complete',
 			'priority'            => 20,
 			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'wpform_submit' ),
 			'options_callback'    => array( $this, 'load_options' ),
+			'agent_class'         => 'Uncanny_Automator\WPF_SubForm_Agent',
 		);
 
 		Automator()->register->trigger( $trigger );
@@ -85,7 +86,6 @@ class WPF_SUBFORM {
 		$options = Automator()->utilities->keep_order_of_options( $options );
 
 		return $options;
-
 	}
 
 	/**
@@ -115,7 +115,7 @@ class WPF_SUBFORM {
 
 		$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 
-		//Adding an action to save form submission in trigger meta
+		// Adding an action to save form submission in trigger meta
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		do_action( 'automator_save_wp_form', $fields, $form_data, $recipes, $args );
 
@@ -123,7 +123,7 @@ class WPF_SUBFORM {
 			foreach ( $args as $r ) {
 				if ( true === $r['result'] ) {
 					if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
-						//Saving form values in trigger log meta for token parsing!
+						// Saving form values in trigger log meta for token parsing!
 						$wpf_args   = array(
 							'trigger_id'     => (int) $r['args']['trigger_id'],
 							'user_id'        => $user_id,

@@ -95,7 +95,7 @@ class Facebook_Lead_Ads_Helpers {
 		$nonce = automator_filter_input( 'nonce' );
 		$data  = automator_filter_input( 'automator_api_message' );
 
-		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( $nonce, self::CONNECTION_NONCE ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) || ! wp_verify_nonce( $nonce, self::CONNECTION_NONCE ) ) {
 			wp_die( 'You are not authorized to access this page.' );
 		}
 
@@ -264,7 +264,7 @@ class Facebook_Lead_Ads_Helpers {
 	 */
 	public static function disconnect_handler() {
 
-		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_facebook_lead_ads_disconnect_nonce' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_facebook_lead_ads_disconnect_nonce' ) ) {
 			wp_die( 'You are not authorized to access this page.' );
 		}
 
@@ -401,7 +401,7 @@ class Facebook_Lead_Ads_Helpers {
 	 */
 	public static function check_page_connection_handler() {
 
-		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'fbLeadsNonce' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'fbLeadsNonce' ) ) {
 			wp_die( 'You are not authorized to access this page.' );
 		}
 

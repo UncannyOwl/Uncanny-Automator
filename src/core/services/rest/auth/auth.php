@@ -13,7 +13,6 @@ class Auth {
 	 * @return bool True if nonce is verified. Otherwise, false.
 	 */
 	public static function verify_permission( WP_REST_Request $request ) {
-		return current_user_can( 'manage_options' );
+		return current_user_can( automator_get_capability() );
 	}
-
 }

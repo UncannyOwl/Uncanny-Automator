@@ -35,14 +35,6 @@ class Add_Facebook_Integration {
 	public $connected = false;
 
 	/**
-	 * Constructs the class.
-	 *
-	 * @since 2.4.0
-	 */
-	public function __construct() {
-	}
-
-	/**
 	 * Registers Integration.
 	 *
 	 * @since 2.4.0
@@ -60,13 +52,12 @@ class Add_Facebook_Integration {
 		$integration_config = array(
 			'name'         => 'Facebook Pages',
 			'icon_svg'     => Utilities::automator_get_integration_icon( __DIR__ . '/img/facebook-icon.svg' ),
-			'connected'    => $this->connected, //
+			'connected'    => $this->connected,
 			'settings_url' => automator_get_premium_integrations_settings_url( 'facebook-pages' ),
 		);
 
 		// register integration into automator.
 		Automator()->register->integration( self::$integration, $integration_config );
-
 	}
 
 	/**
@@ -78,8 +69,8 @@ class Add_Facebook_Integration {
 	 */
 	public function add_integration_directory_func( $directory ) {
 
-		$directory[] = dirname( __FILE__ ) . '/helpers';
-		$directory[] = dirname( __FILE__ ) . '/actions';
+		$directory[] = __DIR__ . '/helpers';
+		$directory[] = __DIR__ . '/actions';
 
 		return $directory;
 	}
@@ -96,5 +87,4 @@ class Add_Facebook_Integration {
 	public function plugin_active( $status, $code ) {
 		return true;
 	}
-
 }
