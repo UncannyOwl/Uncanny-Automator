@@ -274,6 +274,48 @@ class Field_Label_Resolver {
 	}
 
 	/**
+	 * Ensure HTML format for fields that support fullpage editing (TinyMCE).
+	 *
+	 * Converts plain text with newlines to HTML paragraphs using wpautop().
+	 * This ensures AI-generated content matches the format expected by TinyMCE
+	 * fields in the Automator UI.
+	 *
+	 * @param array $config               The configuration values (e.g., ['EMAILBODY' => "line1\nline2"]).
+	 * @param array $configuration_fields The field definitions from get_configuration_fields().
+	 *
+	 * @return array Configuration with HTML-formatted values for TinyMCE fields.
+	 */
+	public function ensure_html_format( array $config, array $configuration_fields ): array {
+		foreach ( $config as $key => $value ) {
+			// Skip non-string values.
+			if ( ! is_string( $value ) || empty( $value ) ) {
+				continue;
+			}
+
+			// Skip _readable suffix keys.
+			if ( str_ends_with( $key, '_readable' ) ) {
+				continue;
+			}
+
+			// Find the field definition.
+			$field_def = $this->find_field_definition( $configuration_fields, $key );
+			if ( empty( $field_def ) ) {
+				continue;
+			}
+
+			// Check if field supports fullpage editing (TinyMCE).
+			if ( empty( $field_def['supports_fullpage_editing'] ) ) {
+				continue;
+			}
+
+			// Convert plain text to HTML paragraphs.
+			$config[ $key ] = wpautop( $value );
+		}
+
+		return $config;
+	}
+
+	/**
 	 * Resolve token name from a value that may contain a token pattern.
 	 *
 	 * If the value is a token like {{2152:WPFFORMS:1820|3}}, this method will

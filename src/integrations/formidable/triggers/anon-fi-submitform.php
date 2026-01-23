@@ -63,10 +63,11 @@ class ANON_FI_SUBMITFORM {
 	 * @return array[]
 	 */
 	public function load_options() {
+		$helper = new Formidable_Helpers();
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->formidable->options->all_formidable_forms( null, $this->trigger_meta ),
+					$helper->all_formidable_forms( null, $this->trigger_meta ),
 				),
 			)
 		);
@@ -104,7 +105,8 @@ class ANON_FI_SUBMITFORM {
 							'run_number'     => $r['args']['run_number'],
 						);
 
-						Automator()->helpers->recipe->formidable->extract_save_fi_fields( $entry_id, $form_id, $fi_args );
+						$helper = new Formidable_Helpers();
+						$helper->extract_save_fi_fields( $entry_id, $form_id, $fi_args );
 
 						$fi_args['meta_key']   = 'FIENTRYID';
 						$fi_args['meta_value'] = $entry_id;

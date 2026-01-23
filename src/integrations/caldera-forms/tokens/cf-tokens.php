@@ -37,10 +37,6 @@ class Cf_Tokens {
 			return $tokens;
 		}
 
-		if ( ! class_exists( 'Caldera_Forms_Forms', false ) ) {
-			return $tokens;
-		}
-
 		$form = Caldera_Forms_Forms::get_form( $form_id );
 
 		if ( ! empty( $form['fields'] ) ) {

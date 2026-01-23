@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 7.0.0
+Stable tag: 7.0.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -406,11 +406,21 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 7.0.0 [2026-01-14] =
+= 7.0.0.1 [2026-01-23] =
+
+**Fixed:**
+
+* Emails - Apostrophes in site names are now displayed properly in the "From" field #6570
+* FluentCRM - Tokens now show up properly—no more hiding behind `class_exists` checks #6591
+* Formidable Forms - Same token issue as FluentCRM, same fix—now playing nicely #6591
+* JS error - Squashed a `TypeError` caused by missing `recipe_type`. No more JS drama #6584
+* Uncanny Agent - Now populates TinyMCE fields with proper HTML formatting #6578
+
+= 7.0.0 [2026-01-15] =
 
 **New Plugin Integration:**
 
-* WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5408
+* [WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #5408
 
 **New Trigger:**
 
@@ -448,7 +458,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Closure - Redirect URL encoding - Gave encoding a proper lesson in behavior. Your URLs won't misbehave anymore #6471 #6441
 * Custom trigger/action label - Was playing hide-and-seek on some triggers/actions. We've taught it to show up properly now #6431
 * Custom trigger/action label - Now parses with default values like a responsible piece of code #6433
-* Discord - User verification shortcode XSS vulnerability fixed - Kicked the security bug out the door #6542
+* Discord - User verification shortcode XSS vulnerability fixed - Kicked the security bug out the door (CVE-2025-15522) #6542 
 * Paid Memberships Pro - Unexpected membership cancellation trigger firing during Woo Subscriptions renewal - This over-eager trigger is now chilling out #6558
 * Recipe Logs - Adjusted status detection so "Completed with errors" only shows when there are actual errors—less false alarm, more accuracy #6540
 * Settings - Background actions - Setting was being a bit forgetful, but we've helped it to remember to save on all sites now #6528
@@ -483,3 +493,4 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 = 7.0 =
 Includes major integration refactors and updates. If you have both Uncanny Automator and Uncanny Automator Pro installed, please upgrade both to version 7.0 or higher to avoid recipe issues.
+

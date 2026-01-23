@@ -102,6 +102,9 @@ class Action_Builder {
 			$configuration_fields = $this->label_resolver->get_configuration_fields( $action_code, 'actions' );
 			$field_labels         = $this->label_resolver->extract_field_labels( $configuration_fields );
 
+			// Ensure HTML format for TinyMCE fields (converts plain text newlines to <p> tags).
+			$config = $this->label_resolver->ensure_html_format( $config, $configuration_fields );
+
 			// JSON-encode array values (repeater fields) - Automator expects JSON strings, not PHP arrays.
 			$config = $this->encode_array_fields( $config );
 
@@ -199,6 +202,9 @@ class Action_Builder {
 		$action_code          = $existing_action->get_action_code()->get_value();
 		$configuration_fields = $this->label_resolver->get_configuration_fields( $action_code, 'actions' );
 		$field_labels         = $this->label_resolver->extract_field_labels( $configuration_fields );
+
+		// Ensure HTML format for TinyMCE fields (converts plain text newlines to <p> tags).
+		$new_config = $this->label_resolver->ensure_html_format( $new_config, $configuration_fields );
 
 		// JSON-encode array values (repeater fields) - Automator expects JSON strings, not PHP arrays.
 		$new_config = $this->encode_array_fields( $new_config );

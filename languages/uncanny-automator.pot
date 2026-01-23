@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.0.0\n"
+"Project-Id-Version: Uncanny Automator 7.0.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-14T13:01:13+00:00\n"
+"POT-Creation-Date: 2026-01-23T18:31:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -2614,28 +2614,28 @@ msgid "Could not generate the encrypted payload."
 msgstr ""
 
 #. translators: %s: Action code
-#: src/api/application/sub_tooling/class-action-executor.php:152
+#: src/api/application/sub_tooling/class-action-executor.php:158
 #, php-format
 msgctxt "Error message when action has no execution method"
 msgid "Action '%s' has no executable method"
 msgstr ""
 
 #. translators: %s: Action code
-#: src/api/application/sub_tooling/class-action-executor.php:322
+#: src/api/application/sub_tooling/class-action-executor.php:328
 #, php-format
 msgctxt "Error message when action is not found"
 msgid "Action '%s' not found in registry"
 msgstr ""
 
 #. translators: %s: Action code
-#: src/api/application/sub_tooling/class-action-executor.php:332
+#: src/api/application/sub_tooling/class-action-executor.php:338
 #, php-format
 msgctxt "Error message when action has invalid execution function"
 msgid "Action '%s' has invalid execution_function"
 msgstr ""
 
 #. translators: %s: Action code
-#: src/api/application/sub_tooling/class-action-executor.php:343
+#: src/api/application/sub_tooling/class-action-executor.php:349
 #, php-format
 msgctxt "Error message when action instance is invalid"
 msgid "Action '%s' instance is not an object"
@@ -3408,7 +3408,7 @@ msgid "Integration code is required."
 msgstr ""
 
 #. translators: %s Error message.
-#: src/api/services/action/utilities/class-action-builder.php:150
+#: src/api/services/action/utilities/class-action-builder.php:153
 #, php-format
 msgctxt "Action builder error"
 msgid "Failed to create action instance: %s"
@@ -15679,12 +15679,12 @@ msgstr ""
 msgid "Form"
 msgstr ""
 
-#: src/integrations/caldera-forms/tokens/cf-tokens.php:121
+#: src/integrations/caldera-forms/tokens/cf-tokens.php:117
 msgctxt "Caldera Forms"
 msgid "Entry ID"
 msgstr ""
 
-#: src/integrations/caldera-forms/tokens/cf-tokens.php:127
+#: src/integrations/caldera-forms/tokens/cf-tokens.php:123
 msgctxt "Caldera Forms"
 msgid "Entry submission date"
 msgstr ""
@@ -21581,7 +21581,7 @@ msgctxt "Fluent Crm"
 msgid "Contact ID"
 msgstr ""
 
-#: src/integrations/fluent-crm/tokens/fcrm-tokens.php:82
+#: src/integrations/fluent-crm/tokens/fcrm-tokens.php:78
 msgctxt "Fluent Crm"
 msgid "Primary Company Name"
 msgstr ""
@@ -21796,22 +21796,22 @@ msgstr ""
 msgid "A ticket receives a reply from a customer"
 msgstr ""
 
-#: src/integrations/formidable/tokens/fi-tokens.php:282
+#: src/integrations/formidable/tokens/fi-tokens.php:278
 msgctxt "Formidable"
 msgid "Entry ID"
 msgstr ""
 
-#: src/integrations/formidable/tokens/fi-tokens.php:288
+#: src/integrations/formidable/tokens/fi-tokens.php:284
 msgctxt "Formidable"
 msgid "User IP"
 msgstr ""
 
-#: src/integrations/formidable/tokens/fi-tokens.php:294
+#: src/integrations/formidable/tokens/fi-tokens.php:290
 msgctxt "Formidable"
 msgid "Entry submission date"
 msgstr ""
 
-#: src/integrations/formidable/tokens/fi-tokens.php:300
+#: src/integrations/formidable/tokens/fi-tokens.php:296
 msgctxt "Formidable"
 msgid "Entry source URL"
 msgstr ""
@@ -29638,12 +29638,12 @@ msgstr ""
 msgid "Any recurring subscription product"
 msgstr ""
 
-#: src/integrations/memberpress/tokens/mp-tokens.php:74
+#: src/integrations/memberpress/tokens/mp-tokens.php:72
 msgctxt "Memberpress"
 msgid "First name"
 msgstr ""
 
-#: src/integrations/memberpress/tokens/mp-tokens.php:80
+#: src/integrations/memberpress/tokens/mp-tokens.php:78
 msgctxt "Memberpress"
 msgid "Last name"
 msgstr ""
@@ -41691,73 +41691,73 @@ msgstr ""
 msgid "All snippets"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:107
+#: src/integrations/wpforms/tokens/wpf-tokens.php:103
 msgctxt "WPForms"
 msgid "No name"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:109
+#: src/integrations/wpforms/tokens/wpf-tokens.php:105
 msgctxt "WPForms"
 msgid "Address (full)"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:142
+#: src/integrations/wpforms/tokens/wpf-tokens.php:138
 msgctxt "WPForms"
 msgid "Address - Line 1"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:148
+#: src/integrations/wpforms/tokens/wpf-tokens.php:144
 msgctxt "WPForms"
 msgid "Address - Line 2"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:154
+#: src/integrations/wpforms/tokens/wpf-tokens.php:150
 msgctxt "WPForms"
 msgid "Address - City"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:160
+#: src/integrations/wpforms/tokens/wpf-tokens.php:156
 msgctxt "WPForms"
 msgid "Address - State/Province/Region"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:166
+#: src/integrations/wpforms/tokens/wpf-tokens.php:162
 msgctxt "WPForms"
 msgid "Address - Zip/Postal code"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:172
+#: src/integrations/wpforms/tokens/wpf-tokens.php:168
 msgctxt "WPForms"
 msgid "Address - Country"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:182
+#: src/integrations/wpforms/tokens/wpf-tokens.php:178
 msgctxt "WPForms"
 msgid "(label)"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:192
+#: src/integrations/wpforms/tokens/wpf-tokens.php:188
 msgctxt "WPForms"
 msgid "(quantity)"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:312
-#: src/integrations/wpforms/tokens/wpf-tokens.php:565
+#: src/integrations/wpforms/tokens/wpf-tokens.php:308
+#: src/integrations/wpforms/tokens/wpf-tokens.php:561
 msgctxt "WPForms"
 msgid "This token requires WPForms Pro"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:522
+#: src/integrations/wpforms/tokens/wpf-tokens.php:518
 msgctxt "WPForms"
 msgid "Entry ID"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:528
+#: src/integrations/wpforms/tokens/wpf-tokens.php:524
 msgctxt "WPForms"
 msgid "User IP"
 msgstr ""
 
-#: src/integrations/wpforms/tokens/wpf-tokens.php:534
+#: src/integrations/wpforms/tokens/wpf-tokens.php:530
 msgctxt "WPForms"
 msgid "Entry submission date"
 msgstr ""

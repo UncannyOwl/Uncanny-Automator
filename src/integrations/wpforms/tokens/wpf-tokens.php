@@ -46,10 +46,6 @@ class Wpf_Tokens {
 			return $tokens;
 		}
 
-		if ( ! class_exists( 'WPForms_Form_Handler', false ) ) {
-			return $tokens;
-		}
-
 		$form_id      = $args['value'];
 		$trigger_meta = $args['meta'];
 		$form_ids     = array();

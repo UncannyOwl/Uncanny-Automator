@@ -62,10 +62,6 @@ class Fcrm_Tokens {
 			);
 		}
 
-		if ( ! class_exists( 'Subscriber', false ) ) {
-			return $tokens;
-		}
-
 		// All subscriber fields.
 		foreach ( Subscriber::mappables() as $key => $label ) {
 			$tokens[] = array(

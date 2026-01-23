@@ -181,10 +181,6 @@ class Wpum_Tokens {
 		}
 		$trigger_meta = $args['meta'];
 
-		if ( ! class_exists( 'WPUM_Fields', false ) ) {
-			return $tokens;
-		}
-
 		$all_fields = WPUM()->fields->get_fields(
 			array(
 				'group_id' => false,

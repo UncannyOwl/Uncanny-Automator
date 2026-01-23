@@ -58,9 +58,7 @@ class Wpwh_Tokens {
 		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
-		if ( ! class_exists( 'WPWHPRO', false ) ) {
-			return $tokens;
-		}
+		
 		if ( 'WPWHTRIGGER' === $args['meta'] ) {
 			$trigger_meta = $args['meta'];
 			$triggers     = WPWHPRO()->webhook->get_triggers();

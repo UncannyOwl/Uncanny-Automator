@@ -63,9 +63,7 @@ class Mp_Tokens {
 			return $tokens;
 		}
 		$trigger_meta = $args['meta'];
-		if ( ! class_exists( 'MeprOptions', false ) ) {
-			return $tokens;
-		}
+		
 		$mepr_options = MeprOptions::fetch();
 		$fields       = array();
 		if ( $mepr_options->show_fname_lname ) {

@@ -36,10 +36,6 @@ class Fi_Tokens {
 			return $tokens;
 		}
 
-		if ( ! class_exists( 'FrmSubmitHelper', false ) ) {
-			return $tokens;
-		}
-
 		$form_id             = $args['value'];
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['meta'];

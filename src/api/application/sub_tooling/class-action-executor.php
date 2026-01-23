@@ -18,6 +18,7 @@
 namespace Uncanny_Automator\Api\Application\Sub_Tooling;
 
 use Uncanny_Automator\Api\Components\Action\Value_Objects\Action_Code;
+use Uncanny_Automator\Api\Components\Shared\Sentence_Html\Field_Label_Resolver;
 use Uncanny_Automator\Api\Services\Action\Utilities\Action_Validator;
 use WP_Error;
 
@@ -113,6 +114,11 @@ class Action_Executor {
 			$this->log( 'error', 'Field validation failed: ' . $field_validation->get_error_message() );
 			return $field_validation;
 		}
+
+		// Ensure HTML format for TinyMCE fields (converts plain text newlines to <p> tags).
+		$label_resolver       = new Field_Label_Resolver();
+		$configuration_fields = $label_resolver->get_configuration_fields( $this->action_code->get_value(), 'actions' );
+		$fields               = $label_resolver->ensure_html_format( $fields, $configuration_fields );
 
 		// Normalize fields AFTER validation (JSON-encode arrays for repeater/multi-select fields).
 		$fields = $this->normalize_fields( $fields );
