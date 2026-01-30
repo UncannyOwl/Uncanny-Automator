@@ -7,9 +7,9 @@ namespace Composer\Autoload;
 class ComposerStaticInitef9c8a16a5cfc09c774f6f239c46cef5
 {
     public static $prefixesPsr0 = array (
-        'C' => 
+        'C' =>
         array (
-            'ChrisKonnertz\\StringCalc' => 
+            'ChrisKonnertz\\StringCalc' =>
             array (
                 0 => __DIR__ . '/..' . '/chriskonnertz/string-calc/src',
             ),
@@ -760,7 +760,6 @@ class ComposerStaticInitef9c8a16a5cfc09c774f6f239c46cef5
         'Uncanny_Automator\\Ec_Tokens' => __DIR__ . '/../..' . '/src/integrations/event-tickets/tokens/ec-tokens.php',
         'Uncanny_Automator\\Elem_Tokens' => __DIR__ . '/../..' . '/src/integrations/elementor/tokens/elem-tokens.php',
         'Uncanny_Automator\\Elementor_Helpers' => __DIR__ . '/../..' . '/src/integrations/elementor/helpers/elementor-helpers.php',
-        'Uncanny_Automator\\Em_Tokens' => __DIR__ . '/../..' . '/src/integrations/events-manager/tokens/em-tokens.php',
         'Uncanny_Automator\\Emails_Helpers' => __DIR__ . '/../..' . '/src/integrations/emails/helpers/emails-helpers.php',
         'Uncanny_Automator\\Esaf_Tokens' => __DIR__ . '/../..' . '/src/integrations/easy-affiliate/tokens/esaf-tokens.php',
         'Uncanny_Automator\\Event_Tickets_Helpers' => __DIR__ . '/../..' . '/src/integrations/event-tickets/helpers/event-tickets-helpers.php',
@@ -1026,6 +1025,7 @@ class ComposerStaticInitef9c8a16a5cfc09c774f6f239c46cef5
         'Uncanny_Automator\\Integrations\\Events_Manager\\EM_BOOKING_APPROVED' => __DIR__ . '/../..' . '/src/integrations/events-manager/triggers/em-booking-approved.php',
         'Uncanny_Automator\\Integrations\\Events_Manager\\EM_EVENT_PUBLISHED' => __DIR__ . '/../..' . '/src/integrations/events-manager/triggers/em-event-published.php',
         'Uncanny_Automator\\Integrations\\Events_Manager\\EM_REGISTER' => __DIR__ . '/../..' . '/src/integrations/events-manager/triggers/em-register.php',
+        'Uncanny_Automator\\Integrations\\Events_Manager\\Em_Tokens' => __DIR__ . '/../..' . '/src/integrations/events-manager/tokens/em-tokens.php',
         'Uncanny_Automator\\Integrations\\Events_Manager\\Events_Manager_Integration' => __DIR__ . '/../..' . '/src/integrations/events-manager/events-manger-integration.php',
         'Uncanny_Automator\\Integrations\\Everest_Forms\\ANON_FORM_SUBMITTED' => __DIR__ . '/../..' . '/src/integrations/everest-froms/triggers/anon-form-submitted.php',
         'Uncanny_Automator\\Integrations\\Everest_Forms\\Everest_Forms_Helpers' => __DIR__ . '/../..' . '/src/integrations/everest-froms/helpers/everest-forms-helpers.php',

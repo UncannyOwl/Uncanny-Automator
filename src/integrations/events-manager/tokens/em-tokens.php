@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Events_Manager;
 
 use EM_Booking;
 use EM_Event;
@@ -40,6 +40,11 @@ class Em_Tokens {
 		}
 		$trigger_meta    = $args['meta'];
 		$possible_tokens = array(
+			$trigger_meta                => esc_attr_x( 'Event title', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_ID'        => esc_attr_x( 'Event ID', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_URL'       => esc_attr_x( 'Event URL', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_THUMB_ID'  => esc_attr_x( 'Event featured image ID', 'Events Manager', 'uncanny-automator' ),
+			$trigger_meta . '_THUMB_URL' => esc_attr_x( 'Event featured image URL', 'Events Manager', 'uncanny-automator' ),
 			$trigger_meta . '_ATTENDEE_NAME'       => esc_attr_x( 'Attendee - Name', 'Events Manager', 'uncanny-automator' ),
 			$trigger_meta . '_ATTENDEE_EMAIL'      => esc_attr_x( 'Attendee - Email', 'Events Manager', 'uncanny-automator' ),
 			$trigger_meta . '_ATTENDEE_PHONE'      => esc_attr_x( 'Attendee - Phone', 'Events Manager', 'uncanny-automator' ),

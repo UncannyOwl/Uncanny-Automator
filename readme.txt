@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 7.0.0.1
+Stable tag: 7.0.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -406,6 +406,17 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 7.0.0.2 [2026-01-30] =
+
+**Update:**
+
+* Uncanny Agent - Now supports universal tokens and calculations—smarter than ever. #6610
+
+**Fixed:**
+
+* Core API - Actions created via MCP no longer missing meta data. #6598
+* Events Manager - Attendee tokens are back and reporting for all events. #6579
+
 = 7.0.0.1 [2026-01-23] =
 
 **Fixed:**
@@ -493,4 +504,3 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 = 7.0 =
 Includes major integration refactors and updates. If you have both Uncanny Automator and Uncanny Automator Pro installed, please upgrade both to version 7.0 or higher to avoid recipe issues.
-

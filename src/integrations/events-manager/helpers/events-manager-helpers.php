@@ -30,7 +30,6 @@ class Events_Manager_Helpers {
 	 * Event_Tickets_Helpers constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -56,7 +55,7 @@ class Events_Manager_Helpers {
 	 */
 	public function all_em_events( $label = null, $option_code = 'EMALLEVENTS', $args = array() ) {
 		if ( ! $label ) {
-			$label = esc_attr__( 'Event', 'uncanny-automator' );
+			$label = esc_attr_x( 'Event', 'Events Manager', 'uncanny-automator' );
 		}
 
 		$token           = key_exists( 'token', $args ) ? $args['token'] : false;
@@ -67,17 +66,11 @@ class Events_Manager_Helpers {
 		$relevant_tokens = key_exists( 'relevant_tokens', $args ) ? $args['relevant_tokens'] : '';
 		$options         = array();
 
-		if ( isset( $any_option ) && $any_option == true ) {
-			$options['-1'] = esc_attr__( 'Any event', 'uncanny-automator' );
+		if ( isset( $any_option ) && true == $any_option ) {
+			$options['-1'] = esc_attr_x( 'Any event', 'Events Manager', 'uncanny-automator' );
 		}
 
-		$default_tokens = array(
-			$option_code                => esc_attr__( 'Event title', 'uncanny-automator' ),
-			$option_code . '_ID'        => esc_attr__( 'Event ID', 'uncanny-automator' ),
-			$option_code . '_URL'       => esc_attr__( 'Event URL', 'uncanny-automator' ),
-			$option_code . '_THUMB_ID'  => esc_attr__( 'Event featured image ID', 'uncanny-automator' ),
-			$option_code . '_THUMB_URL' => esc_attr__( 'Event featured image URL', 'uncanny-automator' ),
-		);
+		$default_tokens = array();
 
 		global $wpdb;
 
@@ -92,7 +85,7 @@ class Events_Manager_Helpers {
 			$title = $event->event_name;
 			if ( empty( $title ) ) {
 				// translators: 1: Event ID
-				$title = sprintf( esc_attr__( 'ID: %s (no title)', 'uncanny-automator' ), $event->event_id );
+				$title = sprintf( esc_attr_x( 'ID: %s (no title)', 'Events Manager', 'uncanny-automator' ), $event->event_id );
 			}
 			$options[ $event->event_id ] = $title;
 		}
@@ -116,5 +109,4 @@ class Events_Manager_Helpers {
 
 		return apply_filters( 'uap_option_all_em_events', $option );
 	}
-
 }

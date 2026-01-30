@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.0.0.1\n"
+"Project-Id-Version: Uncanny Automator 7.0.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-23T18:31:22+00:00\n"
+"POT-Creation-Date: 2026-01-30T20:13:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -9915,13 +9915,11 @@ msgstr ""
 #. translators: 1. The recipe ID
 #. translators: 1: Recipe ID
 #. translators: 1: Referral type ID
-#. translators: 1: Event ID
 #. translators: 1: Poll ID
 #. translators: 1: Form ID
 #: src/core/lib/utilities/class-automator-get-data.php:1528
 #: src/core/services/dashboard/recipe-using-credits-utils.php:199
 #: src/integrations/affiliate-wp/helpers/affwp-helpers.php:77
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:95
 #: src/integrations/wp-polls/triggers/wpp-pollsubmit.php:79
 #: src/integrations/ws-form-lite/helpers/ws-form-lite-helpers.php:52
 #, php-format
@@ -19836,45 +19834,38 @@ msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:65
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:117
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:59
 #: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:47
 #: src/integrations/modern-events-calendar/helpers/mec-helpers.php:186
 msgid "Event"
 msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:80
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:71
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:104
 msgid "Any event"
 msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:93
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:156
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:75
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:92
 msgid "Event title"
 msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:94
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:157
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:76
 msgid "Event ID"
 msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:95
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:158
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:77
 msgid "Event URL"
 msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:96
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:78
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:98
 msgid "Event featured image ID"
 msgstr ""
 
 #: src/integrations/event-tickets/helpers/event-tickets-helpers.php:97
-#: src/integrations/events-manager/helpers/events-manager-helpers.php:79
 #: src/integrations/modern-events-calendar/triggers/mec-user-booking-completed.php:99
 msgid "Event featured image URL"
 msgstr ""
@@ -19900,112 +19891,158 @@ msgstr ""
 msgid "A user registers for {{an event}}"
 msgstr ""
 
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:58
+msgctxt "Events Manager"
+msgid "Event"
+msgstr ""
+
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:70
+msgctxt "Events Manager"
+msgid "Any event"
+msgstr ""
+
+#. translators: 1: Event ID
+#: src/integrations/events-manager/helpers/events-manager-helpers.php:88
+#, php-format
+msgctxt "Events Manager"
+msgid "ID: %s (no title)"
+msgstr ""
+
 #: src/integrations/events-manager/tokens/em-tokens.php:43
 msgctxt "Events Manager"
-msgid "Attendee - Name"
+msgid "Event title"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:44
+#: src/integrations/events-manager/triggers/em-event-published.php:112
+#: src/integrations/events-manager/triggers/em-event-published.php:115
 msgctxt "Events Manager"
-msgid "Attendee - Email"
+msgid "Event ID"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:45
+#: src/integrations/events-manager/triggers/em-event-published.php:118
+#: src/integrations/events-manager/triggers/em-event-published.php:121
 msgctxt "Events Manager"
-msgid "Attendee - Phone"
+msgid "Event URL"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:46
 msgctxt "Events Manager"
-msgid "Booking - Spaces booked"
+msgid "Event featured image ID"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:47
 msgctxt "Events Manager"
-msgid "Booking - Attendee comments"
+msgid "Event featured image URL"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:48
 msgctxt "Events Manager"
-msgid "Booking - Price paid"
+msgid "Attendee - Name"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:49
 msgctxt "Events Manager"
-msgid "Event - Start date"
+msgid "Attendee - Email"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:50
 msgctxt "Events Manager"
-msgid "Event - End date"
+msgid "Attendee - Phone"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:51
 msgctxt "Events Manager"
-msgid "Event - Total spaces"
+msgid "Booking - Spaces booked"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:52
 msgctxt "Events Manager"
-msgid "Event - Maximum spaces per booking"
+msgid "Booking - Attendee comments"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:53
 msgctxt "Events Manager"
-msgid "Event - Confirmed spaces"
+msgid "Booking - Price paid"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:54
 msgctxt "Events Manager"
-msgid "Event - Pending spaces"
+msgid "Event - Start date"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:55
 msgctxt "Events Manager"
-msgid "Event - Available spaces"
+msgid "Event - End date"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:56
 msgctxt "Events Manager"
-msgid "Location - Name"
+msgid "Event - Total spaces"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:57
 msgctxt "Events Manager"
-msgid "Location - Address"
+msgid "Event - Maximum spaces per booking"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:58
 msgctxt "Events Manager"
-msgid "Location - Town"
+msgid "Event - Confirmed spaces"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:59
 msgctxt "Events Manager"
-msgid "Location - State"
+msgid "Event - Pending spaces"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:60
 msgctxt "Events Manager"
-msgid "Location - Postcode"
+msgid "Event - Available spaces"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:61
 msgctxt "Events Manager"
-msgid "Location - Region"
+msgid "Location - Name"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:62
 msgctxt "Events Manager"
-msgid "Location - Country"
+msgid "Location - Address"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:63
 msgctxt "Events Manager"
-msgid "Location - URL"
+msgid "Location - Town"
 msgstr ""
 
 #: src/integrations/events-manager/tokens/em-tokens.php:64
+msgctxt "Events Manager"
+msgid "Location - State"
+msgstr ""
+
+#: src/integrations/events-manager/tokens/em-tokens.php:65
+msgctxt "Events Manager"
+msgid "Location - Postcode"
+msgstr ""
+
+#: src/integrations/events-manager/tokens/em-tokens.php:66
+msgctxt "Events Manager"
+msgid "Location - Region"
+msgstr ""
+
+#: src/integrations/events-manager/tokens/em-tokens.php:67
+msgctxt "Events Manager"
+msgid "Location - Country"
+msgstr ""
+
+#: src/integrations/events-manager/tokens/em-tokens.php:68
+msgctxt "Events Manager"
+msgid "Location - URL"
+msgstr ""
+
+#: src/integrations/events-manager/tokens/em-tokens.php:69
 msgctxt "Events Manager"
 msgid "Location - Link text"
 msgstr ""
@@ -20047,18 +20084,6 @@ msgstr ""
 #: src/integrations/events-manager/triggers/em-event-published.php:109
 msgctxt "Events Manager"
 msgid "Event name"
-msgstr ""
-
-#: src/integrations/events-manager/triggers/em-event-published.php:112
-#: src/integrations/events-manager/triggers/em-event-published.php:115
-msgctxt "Events Manager"
-msgid "Event ID"
-msgstr ""
-
-#: src/integrations/events-manager/triggers/em-event-published.php:118
-#: src/integrations/events-manager/triggers/em-event-published.php:121
-msgctxt "Events Manager"
-msgid "Event URL"
 msgstr ""
 
 #: src/integrations/events-manager/triggers/em-event-published.php:124
@@ -20152,14 +20177,14 @@ msgid "Event image URL"
 msgstr ""
 
 #. translators: Logged-in trigger - The Events Manager
-#: src/integrations/events-manager/triggers/em-register.php:45
+#: src/integrations/events-manager/triggers/em-register.php:44
 #, php-format
 msgctxt "Events Manager"
 msgid "A user registers for {{an event:%1$s}}"
 msgstr ""
 
 #. translators: Logged-in trigger - The Events Manager
-#: src/integrations/events-manager/triggers/em-register.php:47
+#: src/integrations/events-manager/triggers/em-register.php:46
 msgctxt "Events Manager"
 msgid "A user registers for {{an event}}"
 msgstr ""

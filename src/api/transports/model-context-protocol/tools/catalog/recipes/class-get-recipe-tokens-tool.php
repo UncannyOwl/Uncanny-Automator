@@ -12,6 +12,7 @@ namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
+use Uncanny_Automator\Api\Components\Token\Integration\Registry\WP_Integration_Token_Registry;
 
 /**
  * MCP Tool for retrieving available tokens from an Automator recipe.
@@ -102,7 +103,7 @@ class Get_Recipe_Tokens_Tool extends Abstract_MCP_Tool {
 	private function initialize_token_categories() {
 		return array(
 			'advanced'       => array(
-				'description' => 'User-defined custom tokens (always available)',
+				'description' => 'Universal Tokens for accessing meta fields, calculations, and integration-specific data. These are template-based tokens - use the idTemplate and fields to construct valid tokens by replacing placeholders with actual values.',
 				'tokens'      => $this->get_advanced_tokens(),
 			),
 			'common'         => array(
@@ -255,13 +256,148 @@ class Get_Recipe_Tokens_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
-	 * Get advanced/custom tokens (currently empty, reserved for future use).
+	 * Get Universal Tokens available on this site.
+	 *
+	 * Uses the integration token registry to enumerate all registered
+	 * Universal Tokens with their template metadata for AI construction.
 	 *
 	 * @since 7.0.0
-	 * @return array Array of advanced token definitions.
+	 * @return array Array of Universal Token definitions.
 	 */
 	private function get_advanced_tokens() {
-		return array();
+		$universal_tokens = array();
+
+		try {
+			$registry   = new WP_Integration_Token_Registry();
+			$all_tokens = $registry->get_available_tokens();
+
+			foreach ( $all_tokens as $token_id => $token ) {
+				// Only include Universal Tokens (ID starts with 'UT:')
+				if ( strpos( $token_id, 'UT:' ) !== 0 ) {
+					continue;
+				}
+
+				$universal_tokens[] = $this->format_universal_token( $token );
+			}
+		} catch ( \Exception $e ) {
+			// Fail gracefully - return empty array if registry fails
+			return array();
+		}
+
+		return $universal_tokens;
+	}
+
+	/**
+	 * Format a Universal Token for AI consumption.
+	 *
+	 * @since 7.0.0
+	 * @param array $token The raw token data from registry.
+	 * @return array Formatted token for MCP response.
+	 */
+	private function format_universal_token( $token ) {
+		$has_template = ! empty( $token['idTemplate'] );
+
+		// Build usage pattern showing the template
+		$base_id = $token['id'] ?? '';
+		$usage   = '{{' . $base_id . '}}';
+
+		if ( $has_template ) {
+			$usage = '{{' . $base_id . ':' . $token['idTemplate'] . '}}';
+		}
+
+		$result = array(
+			'name'         => $token['name'] ?? '',
+			'usage'        => $usage,
+			'description'  => $this->build_universal_token_description( $token ),
+			'requiresUser' => $token['requiresUser'] ?? false,
+		);
+
+		// Add template metadata if this is a parameterized token
+		if ( $has_template ) {
+			$result['idTemplate']   = $token['idTemplate'];
+			$result['nameTemplate'] = $token['nameTemplate'] ?? '';
+			$result['fields']       = $this->format_fields_for_ai( $token['fields'] ?? array() );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Build a comprehensive description for Universal Token.
+	 *
+	 * @since 7.0.0
+	 * @param array $token Token data.
+	 * @return string Description for AI guidance.
+	 */
+	private function build_universal_token_description( $token ) {
+		$has_template = ! empty( $token['idTemplate'] );
+		$desc         = 'Universal Token. ';
+
+		if ( $has_template ) {
+			// Explain parameterized usage
+			$params     = explode( ':', $token['idTemplate'] );
+			$param_list = implode( ', ', array_map( 'strtolower', $params ) );
+
+			$desc .= sprintf(
+				'Construct by replacing %s in the usage pattern with actual values. ',
+				$param_list
+			);
+
+			// Add field-specific guidance
+			$fields = $token['fields'] ?? array();
+			foreach ( $fields as $field ) {
+				$field_code = $field['option_code'] ?? '';
+				$field_desc = $field['description'] ?? $field['label'] ?? 'Required parameter';
+				// Truncate long descriptions
+				if ( strlen( $field_desc ) > 100 ) {
+					$field_desc = substr( $field_desc, 0, 100 ) . '...';
+				}
+				$desc .= sprintf( '%s: %s ', $field_code, $field_desc );
+			}
+		} else {
+			$desc .= 'Use as-is without additional parameters.';
+		}
+
+		if ( ! empty( $token['requiresUser'] ) ) {
+			$desc .= 'Requires user context.';
+		}
+
+		return trim( $desc );
+	}
+
+	/**
+	 * Format fields array for AI consumption.
+	 *
+	 * Simplifies field definitions to essential information for AI.
+	 *
+	 * @since 7.0.0
+	 * @param array $fields Raw fields from token.
+	 * @return array Simplified fields for AI.
+	 */
+	private function format_fields_for_ai( $fields ) {
+		$formatted = array();
+
+		foreach ( $fields as $field ) {
+			$field_data = array(
+				'code'        => $field['option_code'] ?? '',
+				'label'       => $field['label'] ?? '',
+				'required'    => $field['required'] ?? true,
+			);
+
+			// Include description if available
+			if ( ! empty( $field['description'] ) ) {
+				$field_data['description'] = $field['description'];
+			}
+
+			// Indicate if tokens can be nested in this field
+			if ( ! empty( $field['supports_tokens'] ) ) {
+				$field_data['supportsTokens'] = true;
+			}
+
+			$formatted[] = $field_data;
+		}
+
+		return $formatted;
 	}
 
 	/**
