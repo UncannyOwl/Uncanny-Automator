@@ -133,6 +133,9 @@ trait Premium_Integration_Templating_Helpers {
 			if ( ! empty( $args['confirm']['button'] ) ) {
 				$attrs['confirmation-button-label'] = $args['confirm']['button'];
 			}
+			if ( ! empty( $args['confirm']['fields'] ) ) {
+				$attrs['confirmation-fields'] = wp_json_encode( $args['confirm']['fields'] );
+			}
 		}
 
 		// Output the button

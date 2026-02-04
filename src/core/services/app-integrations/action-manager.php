@@ -139,7 +139,7 @@ final class Action_Manager {
 	 */
 	private function register_webhook_route( $endpoint, $is_filtered = false ) {
 		$args = array(
-			'methods'             => WP_REST_Server::CREATABLE,
+			'methods'             => array( WP_REST_Server::CREATABLE, WP_REST_Server::READABLE ),
 			'callback'            => array( $this, 'handle_webhook_request' ),
 			'permission_callback' => '__return_true',
 		);
@@ -358,7 +358,7 @@ final class Action_Manager {
 	 * @return bool
 	 */
 	private function check_user_capabilities() {
-		return current_user_can( automator_get_capability() );
+		return current_user_can( automator_get_capability() ); // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 	}
 
 	/**

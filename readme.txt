@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 7.0.0.2
+Stable tag: 7.0.0.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -405,6 +405,22 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 7.0.0.3 [2026-02-04] =
+
+**Update:**
+
+Instagram - Media ID is not available - If Instagram media registration fails, we'll retry up to 10 times before giving up. #6614
+
+**Fixed:**
+
+* Automator Licensing - Squashed a rare PHP exception showing up on some sites. #6633
+* Bitly - Stopped bugging the API with bad credentials—no more pointless calls. #6639
+* Formidable Forms – Simplified helper calls for cleaner, happier code #6591
+
+**Under the hood:**
+
+* App Integration framework webhook handling and option data helpers #6602
 
 = 7.0.0.2 [2026-01-30] =
 

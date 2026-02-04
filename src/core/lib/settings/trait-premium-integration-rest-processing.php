@@ -323,4 +323,37 @@ trait Premium_Integration_Rest_Processing {
 		// Default implementation returns response unchanged
 		return $response;
 	}
+
+	/**
+	 * Delete all option data matching the given prefix.
+	 *
+	 * Performs a bulk DELETE on the uap_options table for all option names
+	 * matching the supplied prefix (e.g. 'automator_mailchimp_%').
+	 *
+	 * This will remove all options under the prefix, including credentials and account data.
+	 * Use in after_disconnect() to ensure credentials remain available for any API cleanup
+	 * operations that run during the disconnect flow (e.g. external vault disconnection).
+	 *
+	 * Example usage:
+	 * ```php
+	 * protected function after_disconnect( $response = array(), $data = array() ) {
+	 *     $this->delete_option_data( $this->helpers->get_option_prefix() );
+	 *     return $response;
+	 * }
+	 * ```
+	 *
+	 * @param string $prefix The option name prefix to match (e.g. 'automator_mailchimp_').
+	 *
+	 * @return int|false The number of rows deleted, or false on error.
+	 */
+	protected function delete_option_data( $prefix ) {
+		global $wpdb;
+
+		return $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->prefix}uap_options WHERE option_name LIKE %s",
+				$wpdb->esc_like( $prefix ) . '%'
+			)
+		);
+	}
 }
