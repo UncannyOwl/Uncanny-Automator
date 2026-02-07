@@ -37,7 +37,7 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_html_
 
 				<uo-icon integration="TELEGRAM"></uo-icon>
 
-				<?php echo esc_html_x( 'Telegram', 'Telegram', 'uncanny-automator' ); ?>
+				<?php esc_html_x( 'Telegram', 'Telegram', 'uncanny-automator' ); ?>
 
 			</div>
 
@@ -48,23 +48,23 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_html_
 				<?php if ( ! $is_connected ) { ?>
 
 					<div class="uap-settings-panel-content-subtitle">
-						<?php echo esc_html_x( 'Connect Uncanny Automator to Telegram', 'Telegram', 'uncanny-automator' ); ?>
+						<?php esc_html_x( 'Connect Uncanny Automator to Telegram', 'Telegram', 'uncanny-automator' ); ?>
 					</div>
 
 					<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-						<?php echo esc_html_x( 'Connect your WordPress site to Telegram to run automations when messages are received and send Telegram messages in your recipes.', 'Telegram', 'uncanny-automator' ); ?>
+						<?php esc_html_x( 'Connect your WordPress site to Telegram to run automations when messages are received and send Telegram messages in your recipes.', 'Telegram', 'uncanny-automator' ); ?>
 					</div>
 
 					<p>
-						<strong><?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Telegram', 'uncanny-automator' ); ?></strong>
+						<strong><?php esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Telegram', 'uncanny-automator' ); ?></strong>
 					</p>
 
 					<ul>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Trigger:', 'Telegram', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Receive a Telegram message', 'Telegram', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_x( 'Trigger:', 'Telegram', 'uncanny-automator' ); ?></strong> <?php esc_html_x( 'Receive a Telegram message', 'Telegram', 'uncanny-automator' ); ?>
 						</li>
 						<li>
-							<uo-icon id="bolt"></uo-icon> <strong><?php echo esc_html_x( 'Action:', 'Telegram', 'uncanny-automator' ); ?></strong> <?php echo esc_html_x( 'Send a Telegram message', 'Telegram', 'uncanny-automator' ); ?>
+							<uo-icon id="bolt"></uo-icon> <strong><?php esc_html_x( 'Action:', 'Telegram', 'uncanny-automator' ); ?></strong> <?php esc_html_x( 'Send a Telegram message', 'Telegram', 'uncanny-automator' ); ?>
 						</li>
 					</ul>
 
@@ -98,7 +98,7 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_html_
 					?>
 
 					<uo-alert heading="<?php echo esc_attr( sprintf( esc_html_x( 'Uncanny Automator only supports connecting to one Telegram account at a time.', 'Telegram', 'uncanny-automator' ) ) ); ?>" class="uap-spacing-bottom">
-						<?php echo esc_html_x( 'You can only connect to a Telegram bot for which you have read and write access.', 'Telegram', 'uncanny-automator' ); ?>
+						<?php esc_html_x( 'You can only connect to a Telegram bot for which you have read and write access.', 'Telegram', 'uncanny-automator' ); ?>
 					</uo-alert>
 
 				<?php } ?>
@@ -114,7 +114,7 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_html_
 					<div class="uap-settings-panel-bottom-left">
 
 						<uo-button class="uap-settings-button-telegram" type="submit">
-							<?php echo esc_html_x( 'Connect Telegram account', 'Telegram', 'uncanny-automator' ); ?>
+							<?php esc_html_x( 'Connect Telegram account', 'Telegram', 'uncanny-automator' ); ?>
 						</uo-button>
 
 					</div> <!--.uap-settings-panel-bottom-left -->
@@ -162,7 +162,7 @@ $kb_link = sprintf( '<a href="%s" target="_blank">%s %s</a>', $kb_url, esc_html_
 					<div class="uap-settings-panel-bottom-right">
 						<uo-button color="danger" href="<?php echo esc_url( $disconnect_url ); ?>">
 							<uo-icon id="right-from-bracket"></uo-icon>
-						<?php echo esc_html_x( 'Disconnect', 'Telegram', 'uncanny-automator' ); ?>
+						<?php esc_html_x( 'Disconnect', 'Telegram', 'uncanny-automator' ); ?>
 						</uo-button>
 					</div>
 
