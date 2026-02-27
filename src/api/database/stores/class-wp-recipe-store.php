@@ -987,10 +987,10 @@ class WP_Recipe_Store implements Recipe_Store {
 
 			$legacy_format[] = array(
 				'id'         => $group->get_group_id()->get_value(),
-				'priority'   => 20, // Use fixed priority as requested
+				'priority'   => $group->get_priority(),
 				'actions'    => $group->get_action_ids(), // Already an array of integers
 				'mode'       => $group->get_mode()->get_value(),
-				'parent_id'  => $recipe_id,
+				'parent_id'  => $group->get_parent_id()->get_value() ?? $recipe_id,
 				'conditions' => $conditions_array,
 			);
 		}
@@ -1057,13 +1057,18 @@ class WP_Recipe_Store implements Recipe_Store {
 		$group_id_obj          = $this->parse_group_id( $group_data );
 		$priority              = $this->parse_priority( $group_data );
 
+		// Use the group's own parent_id from storage; fall back to recipe_id for legacy data.
+		$parent_id = isset( $group_data['parent_id'] ) && (int) $group_data['parent_id'] > 0
+			? (int) $group_data['parent_id']
+			: $recipe_id;
+
 		try {
 			return new Condition_Group(
 				$group_id_obj,
 				$priority,
 				$action_ids,
 				$mode,
-				new Recipe_Id( $recipe_id ),
+				new Recipe_Id( $parent_id ),
 				$individual_conditions
 			);
 		} catch ( \Throwable $exception ) {
@@ -1141,11 +1146,11 @@ class WP_Recipe_Store implements Recipe_Store {
 	 */
 	private function build_single_condition( array $condition_data ): ?Individual_Condition {
 		try {
-			$backup_info_data = $condition_data['backup_info'] ?? array();
+			$backup_info_data = $condition_data['backup_info'] ?? ( $condition_data['backup'] ?? array() );
 			$backup_info      = new Condition_Backup_Info(
-				$backup_info_data['sentence'] ?? '',
-				$backup_info_data['title_html'] ?? '',
-				$backup_info_data['integration_name'] ?? ''
+				$backup_info_data['nameDynamic'] ?? ( $backup_info_data['name_dynamic'] ?? ( $backup_info_data['sentence'] ?? '' ) ),
+				$backup_info_data['titleHTML'] ?? ( $backup_info_data['title_html'] ?? '' ),
+				$backup_info_data['integrationName'] ?? ( $backup_info_data['integration_name'] ?? '' )
 			);
 
 			$condition_fields = new Condition_Fields( $condition_data['fields'] ?? array() );

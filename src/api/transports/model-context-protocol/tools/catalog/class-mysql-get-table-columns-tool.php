@@ -36,7 +36,7 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 	 * @return string
 	 */
 	public function get_description() {
-		return 'Get column schema for a database table. Use after mysql_get_tables to understand table structure. Returns column names, types, keys, and defaults. Essential for building correct SELECT queries.';
+		return 'Get column schema for one or more database tables in a single call. Accepts comma-separated table names for bulk introspection. Returns column names, types, keys, and defaults grouped by table. Essential for understanding table structure before building SELECT or JOIN queries.';
 	}
 
 	/**
@@ -48,12 +48,12 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				'table' => array(
+				'tables' => array(
 					'type'        => 'string',
-					'description' => 'Full table name (e.g., wp_posts, wp_usermeta). Use mysql_get_tables to discover table names.',
+					'description' => 'Comma-separated table names (e.g., "wp_posts, wp_postmeta, wp_users"). Accepts one or many tables for bulk schema introspection in a single call.',
 				),
 			),
-			'required'   => array( 'table' ),
+			'required'   => array( 'tables' ),
 		);
 	}
 
@@ -67,37 +67,59 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 	protected function execute_tool( User_Context $user_context, array $params ) {
 		global $wpdb;
 
-		$table = $params['table'] ?? '';
+		$tables_input = $params['tables'] ?? '';
 
-		if ( empty( $table ) ) {
-			return Json_Rpc_Response::create_error_response( 'Table name is required.' );
+		if ( empty( $tables_input ) ) {
+			return Json_Rpc_Response::create_error_response( 'At least one table name is required.' );
 		}
 
-		// Sanitize table name - allow only alphanumeric, underscore.
-		$table = preg_replace( '/[^a-zA-Z0-9_]/', '', $table );
-
-		// Verify table exists in current database.
-		$exists = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s",
-				DB_NAME,
-				$table
+		// Parse and sanitize table names.
+		$table_names = array_filter(
+			array_map(
+				function ( $t ) {
+					return preg_replace( '/[^a-zA-Z0-9_]/', '', trim( $t ) );
+				},
+				explode( ',', $tables_input )
 			)
 		);
 
-		if ( ! $exists ) {
-			return Json_Rpc_Response::create_error_response( sprintf( 'Table "%s" does not exist.', $table ) );
+		if ( empty( $table_names ) ) {
+			return Json_Rpc_Response::create_error_response( 'No valid table names provided.' );
 		}
 
-		// Get column information.
+		// Cap at 20 tables to prevent abuse.
+		if ( count( $table_names ) > 20 ) {
+			return Json_Rpc_Response::create_error_response( 'Maximum 20 tables per request.' );
+		}
+
+		// Verify all tables exist in one query.
+		$placeholders = implode( ', ', array_fill( 0, count( $table_names ), '%s' ) );
+
+		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+		$existing_tables = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				array_merge( array( DB_NAME ), $table_names )
+			)
+		);
+
+		$missing = array_diff( $table_names, $existing_tables );
+
+		if ( ! empty( $missing ) ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf( 'Tables not found: %s', implode( ', ', $missing ) )
+			);
+		}
+
+		// Get column information for all tables in one query.
+		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 		$columns = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA
+				"SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA
 				 FROM information_schema.COLUMNS
-				 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s
-				 ORDER BY ORDINAL_POSITION",
-				DB_NAME,
-				$table
+				 WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({$placeholders})
+				 ORDER BY TABLE_NAME, ORDINAL_POSITION", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				array_merge( array( DB_NAME ), $table_names )
 			)
 		);
 
@@ -105,43 +127,49 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'Failed to retrieve columns: ' . $wpdb->last_error );
 		}
 
-		$items = array_map(
-			function ( $col ) {
-				return array(
-					'name'      => $col->COLUMN_NAME, // phpcs:ignore
-					'type'      => $col->DATA_TYPE, // phpcs:ignore
-					'full_type' => $col->COLUMN_TYPE, // phpcs:ignore
-					'nullable'  => 'YES' === $col->IS_NULLABLE, // phpcs:ignore
-					'key'       => $col->COLUMN_KEY, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- PRI, UNI, MUL, or empty.
-					'default'   => $col->COLUMN_DEFAULT, // phpcs:ignore
-					'extra'     => $col->EXTRA, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- e.g., auto_increment.
-				);
-			},
-			$columns
-		);
+		// Group columns by table.
+		$tables = array();
 
-		// Get primary key columns.
-		$primary_keys = array_values(
-			array_filter(
-				array_column( $items, 'name' ),
-				function ( $name ) use ( $items ) {
-					foreach ( $items as $item ) {
-						if ( $item['name'] === $name && 'PRI' === $item['key'] ) {
-							return true;
-						}
-					}
-					return false;
-				}
-			)
-		);
+		foreach ( $columns as $col ) {
+			$tbl = $col->TABLE_NAME; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+			if ( ! isset( $tables[ $tbl ] ) ) {
+				$tables[ $tbl ] = array(
+					'columns'      => array(),
+					'primary_keys' => array(),
+				);
+			}
+
+			$item = array(
+				'name'      => $col->COLUMN_NAME, // phpcs:ignore
+				'type'      => $col->DATA_TYPE, // phpcs:ignore
+				'full_type' => $col->COLUMN_TYPE, // phpcs:ignore
+				'nullable'  => 'YES' === $col->IS_NULLABLE, // phpcs:ignore
+				'key'       => $col->COLUMN_KEY, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				'default'   => $col->COLUMN_DEFAULT, // phpcs:ignore
+				'extra'     => $col->EXTRA, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			);
+
+			$tables[ $tbl ]['columns'][] = $item;
+
+			if ( 'PRI' === $col->COLUMN_KEY ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				$tables[ $tbl ]['primary_keys'][] = $col->COLUMN_NAME; // phpcs:ignore
+			}
+		}
+
+		// Add column counts.
+		foreach ( $tables as $tbl => &$data ) {
+			$data['column_count'] = count( $data['columns'] );
+		}
+		unset( $data );
+
+		$table_count  = count( $tables );
+		$column_count = count( $columns );
 
 		return Json_Rpc_Response::create_success_response(
-			sprintf( 'Table %s has %d columns', $table, count( $items ) ),
+			sprintf( '%d table(s), %d columns total', $table_count, $column_count ),
 			array(
-				'table'        => $table,
-				'columns'      => $items,
-				'primary_keys' => $primary_keys,
-				'column_count' => count( $items ),
+				'tables' => $tables,
 			)
 		);
 	}

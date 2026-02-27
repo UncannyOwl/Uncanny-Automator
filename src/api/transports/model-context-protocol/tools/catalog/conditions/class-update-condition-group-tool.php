@@ -43,7 +43,7 @@ class Update_Condition_Group_Tool extends Abstract_MCP_Tool {
 	 * @return string Tool description.
 	 */
 	public function get_description() {
-		return 'Update a condition group. Change evaluation mode or priority.';
+		return 'Update a condition group settings. Change evaluation mode ("any" = OR, "all" = AND) or execution priority. Get group_id from list_conditions.';
 	}
 
 	/**

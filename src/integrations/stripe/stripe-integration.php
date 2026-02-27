@@ -64,6 +64,7 @@ class Stripe_Integration extends App_Integration {
 		new Create_Payment_Link( $this->dependencies );
 		new Create_Customer( $this->dependencies );
 		new Delete_Customer( $this->dependencies );
+		new Create_Send_Invoice( $this->dependencies );
 
 		// Triggers
 		new Customer_Created( $this->dependencies );

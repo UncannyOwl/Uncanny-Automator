@@ -128,6 +128,40 @@ class Give_Tokens {
 		}
 		$form_id = absint( $args['value'] );
 
+		$trigger_meta   = $args['meta'];
+		$trigger_code   = $args['triggers_meta']['code'];
+		$default_tokens = array(
+			array(
+				'tokenId'         => $trigger_meta . '_ID',
+				'tokenName'       => esc_attr_x( 'Form ID', 'Give', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => $trigger_meta,
+				'tokenName'       => esc_attr_x( 'Form title', 'Give', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'ACTUALDONATEDAMOUNT',
+				'tokenName'       => esc_attr_x( 'Donated amount', 'Give', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'DONATION_ID',
+				'tokenName'       => esc_attr_x( 'Donation ID', 'Give', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'PAYMENT_ID',
+				'tokenName'       => esc_attr_x( 'Payment ID', 'Give', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_code,
+			),
+		);
 		if ( empty( $form_id ) ) {
 			return $tokens;
 		}
@@ -159,9 +193,9 @@ class Give_Tokens {
 			}
 		}
 
-		$tokens = array_merge( $tokens, $fields );
+		$tokens = array_merge( $default_tokens, $fields, $tokens );
+		$tokens = Automator()->utilities->remove_duplicate_token_ids( $tokens );
 
 		return $tokens;
 	}
-
 }

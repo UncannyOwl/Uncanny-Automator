@@ -3,6 +3,7 @@
 namespace Uncanny_Automator\Integrations\Helpscout;
 
 use Uncanny_Automator\App_Integrations\Api_Caller;
+use Uncanny_Automator\App_Integrations\Token_Refresh_Lock;
 use Exception;
 
 /**
@@ -14,19 +15,23 @@ use Exception;
  */
 class Helpscout_Api_Caller extends Api_Caller {
 
-	/**
-	 * The key for the token refresh lock.
-	 *
-	 * @var string
-	 */
-	const TOKEN_REFRESH_LOCK_KEY = 'helpscout_token_refresh_lock';
+	use Token_Refresh_Lock;
+
+	////////////////////////////////////////////////////////////
+	// Abstract methods
+	////////////////////////////////////////////////////////////
 
 	/**
 	 * Set custom properties.
+	 *
+	 * @return void
 	 */
 	public function set_properties() {
 		// Set the legacy credential request key.
 		$this->set_credential_request_key( 'access_token' );
+
+		// HelpScout uses a 2-hour buffer before token expiry.
+		$this->set_token_refresh_buffer_seconds( 7200 );
 	}
 
 	/**
@@ -36,124 +41,40 @@ class Helpscout_Api_Caller extends Api_Caller {
 	 * @param array $args        Additional arguments that may be needed for preparation.
 	 *
 	 * @return string Valid access token.
-	 * @throws Exception if access token is missing / invalid.
+	 * @throws Exception If access token is missing or invalid.
 	 */
 	public function prepare_request_credentials( $credentials, $args ) {
-		$token = $this->validate_access_token( $credentials );
-		return $token;
-	}
 
-	/**
-	 * Validate access token.
-	 *
-	 * @param array $credentials The credentials to validate.
-	 *
-	 * @return string
-	 * @throws Exception invalid credentials which will be mapped to formatted error message
-	 */
-	private function validate_access_token( $credentials ) {
-
-		// Get the access token.
 		$token = $credentials['access_token'] ?? null;
+
 		if ( empty( $token ) ) {
 			throw new Exception( 'invalid credentials', 400 );
 		}
 
-		// Get the expiration date.
+		// HelpScout uses expires_on (timestamp when token expires).
 		$expires_on = absint( $credentials['expires_on'] ?? 0 );
-		if ( empty( $expires_on ) ) {
-			throw new Exception( 'invalid credentials', 400 );
-		}
 
-		// Check if token needs refresh (with 2 hour buffer).
-		if ( time() >= $expires_on - 7200 ) {
-			$token = $this->handle_token_refresh( $credentials );
-		}
+		// Check if token is expired or about to expire.
+		if ( $this->is_token_expiring( $expires_on ) ) {
+			$credentials = $this->handle_token_refresh_with_lock( $credentials, array( $this, 'refresh_and_store_token' ) );
+			$token       = $credentials['access_token'] ?? null;
 
-		return $token;
-	}
-
-	/**
-	 * Handle token refresh with locking to prevent concurrent refreshes.
-	 * TODO: Remove this when migrating to vault-based token management (Phase 2).
-	 *
-	 * @param array $credentials The credentials to refresh.
-	 *
-	 * @return string The refreshed access token.
-	 * @throws Exception if token refresh fails.
-	 */
-	private function handle_token_refresh( $credentials ) {
-		if ( get_transient( self::TOKEN_REFRESH_LOCK_KEY ) ) {
-			// Another request is refreshing - wait for it to complete.
-			sleep( 4 );
-		} else {
-			// We're the first request - perform the refresh.
-			$this->refresh_access_token( $credentials );
-		}
-
-		// Fetch the latest credentials (either refreshed by us or by the other request).
-		$credentials = $this->helpers->get_credentials();
-		$token       = $credentials['access_token'] ?? null;
-
-		if ( empty( $token ) ) {
-			throw new Exception( 'invalid credentials', 400 );
-		}
-
-		return $token;
-	}
-
-	/**
-	 * Refresh access token with lock to prevent concurrent refreshes.
-	 *
-	 * @param array $credentials The credentials to refresh.
-	 *
-	 * @return void
-	 */
-	private function refresh_access_token( $credentials ) {
-
-		// Check if another request is already refreshing - if so, bail out.
-		if ( get_transient( self::TOKEN_REFRESH_LOCK_KEY ) ) {
-			return;
-		}
-
-		// Set lock for 15 seconds.
-		set_transient( self::TOKEN_REFRESH_LOCK_KEY, true, 15 );
-
-		try {
-			// Exclude credentials and error check.
-			$args = array(
-				'include_timeout'     => 15,
-				'exclude_error_check' => true,
-				'exclude_credentials' => true,
-			);
-
-			$response = $this->api_request( 'refresh_access_token', null, $args );
-			if ( 200 === $response['statusCode'] && ! empty( $response['data'] ) ) {
-				// Add existing user info to credentials.
-				// REVIEW - this should be migrated and seperated to account_info option.
-				$response['data']['user'] = $credentials['user'];
-				$this->helpers->store_credentials( $response['data'] );
+			if ( empty( $token ) ) {
+				throw new Exception( 'invalid credentials', 400 );
 			}
-		} catch ( Exception $e ) {
-			// Disconnect the integration completely to prevent further invalid requests.
-			$this->helpers->delete_credentials();
-
-			// Throw invalid credentials error to inform user they need to reconnect.
-			throw new Exception( 'invalid credentials', 400 );
-		} finally {
-			// Always release the lock.
-			delete_transient( self::TOKEN_REFRESH_LOCK_KEY );
 		}
+
+		return $token;
 	}
 
 	/**
-	 * Check for errors in API response
+	 * Check for errors in API response.
 	 *
-	 * @param array $response
-	 * @param array $args
+	 * @param array $response The response.
+	 * @param array $args     The arguments.
 	 *
 	 * @return void
-	 * @throws Exception
+	 * @throws Exception If an error occurs.
 	 */
 	public function check_for_errors( $response, $args = array() ) {
 
@@ -214,11 +135,61 @@ class Helpscout_Api_Caller extends Api_Caller {
 		}
 	}
 
+	////////////////////////////////////////////////////////////
+	// OAuth methods
+	////////////////////////////////////////////////////////////
+
 	/**
-	 * Get tags from HelpScout
+	 * Refresh access token and store updated credentials.
+	 *
+	 * Used as callback for handle_token_refresh_with_lock().
+	 *
+	 * @param array $credentials Current credentials with refresh_token.
+	 *
+	 * @return array Updated credentials.
+	 * @throws Exception If refresh fails.
+	 */
+	protected function refresh_and_store_token( $credentials ) {
+
+		try {
+			// Exclude credentials and error check for refresh request.
+			$args = array(
+				'include_timeout'     => 15,
+				'exclude_error_check' => true,
+				'exclude_credentials' => true,
+			);
+
+			$response = $this->api_request( 'refresh_access_token', null, $args );
+
+			if ( 200 === $response['statusCode'] && ! empty( $response['data'] ) ) {
+				// Add existing user info to credentials.
+				// REVIEW - this should be migrated and separated to account_info option.
+				$response['data']['user'] = $credentials['user'];
+				$this->helpers->store_credentials( $response['data'] );
+
+				return $this->helpers->get_credentials();
+			}
+
+			throw new Exception( 'Token refresh failed', 400 );
+
+		} catch ( Exception $e ) {
+			// Disconnect the integration to prevent further invalid requests.
+			$this->helpers->delete_credentials();
+
+			// Throw invalid credentials error to inform user they need to reconnect.
+			throw new Exception( 'invalid credentials', 400 );
+		}
+	}
+
+	////////////////////////////////////////////////////////////
+	// API methods
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Get tags from HelpScout.
 	 *
 	 * @return array
-	 * @throws Exception
+	 * @throws Exception If request fails.
 	 */
 	public function get_tags() {
 		$response = $this->api_request( 'get_tags' );
@@ -227,10 +198,10 @@ class Helpscout_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Get mailboxes from HelpScout
+	 * Get mailboxes from HelpScout.
 	 *
 	 * @return array
-	 * @throws Exception
+	 * @throws Exception If request fails.
 	 */
 	public function get_mailboxes() {
 		$response = $this->api_request( 'get_mailboxes' );
@@ -239,12 +210,12 @@ class Helpscout_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Get conversations from a mailbox
+	 * Get conversations from a mailbox.
 	 *
-	 * @param int $mailbox_id
+	 * @param int $mailbox_id The mailbox ID.
 	 *
 	 * @return array
-	 * @throws Exception
+	 * @throws Exception If request fails.
 	 */
 	public function get_conversations( $mailbox_id ) {
 		$body = array(
@@ -258,11 +229,12 @@ class Helpscout_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Get mailbox users
+	 * Get mailbox users.
 	 *
-	 * @param int $mailbox_id
+	 * @param int $mailbox_id The mailbox ID.
+	 *
 	 * @return array
-	 * @throws Exception
+	 * @throws Exception If request fails.
 	 */
 	public function get_mailbox_users( $mailbox_id ) {
 		$response = $this->api_request(
@@ -276,13 +248,14 @@ class Helpscout_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Get customer properties
+	 * Get customer properties.
 	 *
 	 * @return array
-	 * @throws Exception
+	 * @throws Exception If request fails.
 	 */
 	public function get_properties() {
 		$response = $this->api_request( 'get_properties' );
+
 		return $response['data']['_embedded']['customer-properties'] ?? array();
 	}
 }

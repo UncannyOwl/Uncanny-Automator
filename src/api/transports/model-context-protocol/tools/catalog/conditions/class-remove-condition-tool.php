@@ -89,7 +89,7 @@ class Remove_Condition_Tool extends Abstract_MCP_Tool {
 	 * @return string Tool description.
 	 */
 	public function get_description() {
-		return 'Remove a condition from a group. Get condition_id from list_conditions.';
+		return 'Remove a single condition rule from a condition group. Does not delete the group itself. Get condition_id and group_id from list_conditions.';
 	}
 
 	/**

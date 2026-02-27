@@ -161,13 +161,14 @@ class Recipe_Condition_Service {
 	/**
 	 * Add empty condition group.
 	 *
-	 * @param int $recipe_id The ID.
-	 * @param string $mode The mode.
-	 * @param int $priority The priority.
+	 * @param int      $recipe_id The recipe ID.
+	 * @param string   $mode      The mode (any or all).
+	 * @param int      $priority  The priority.
+	 * @param int|null $parent_id The parent ID (recipe or loop). Defaults to recipe_id.
 	 * @return mixed
 	 */
-	public function add_empty_condition_group( int $recipe_id, string $mode = 'any', int $priority = 20 ) {
-		return $this->group_service->add_empty_condition_group( $recipe_id, $mode, $priority );
+	public function add_empty_condition_group( int $recipe_id, string $mode = 'any', int $priority = 20, ?int $parent_id = null ) {
+		return $this->group_service->add_empty_condition_group( $recipe_id, $mode, $priority, $parent_id );
 	}
 	/**
 	 * Add actions to condition group.

@@ -30,12 +30,6 @@ class Wp_Helpers {
 	public $load_options = true;
 
 	/**
-	 * @var int
-	 */
-	private static $internal_post_id = 288662867; // Automator in numbers
-
-
-	/**
 	 * __construct.
 	 */
 	public function __construct() {
@@ -940,114 +934,6 @@ class Wp_Helpers {
 			'WP_POST_CATEGORIES' => Post_Categories::class,
 			'WP_POST_TAGS'       => Post_Tags::class,
 		);
-	}
-
-	/**
-	 * @param $post_id
-	 * @param $action_hook
-	 *
-	 * @return void
-	 */
-	public static function add_pending_post( $post_id, $action_hook ) {
-		// Add the post ID to the post meta table.
-		global $wpdb;
-		$wpdb->insert(
-			$wpdb->postmeta,
-			array(
-				'post_id'    => absint( self::$internal_post_id ),
-				'meta_key'   => $action_hook,
-				'meta_value' => absint( $post_id ),
-			),
-			array(
-				'%d',
-				'%s',
-				'%d',
-			)
-		);
-	}
-
-	/**
-	 * @param $action_hook
-	 *
-	 * @return array|object|\stdClass[]|null
-	 */
-	public static function get_pending_posts( $action_hook ) {
-		// Retrieve the accumulated post IDs from the postmeta table
-		global $wpdb;
-
-		return $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT *
-				FROM $wpdb->postmeta
-				WHERE meta_key = %s
-				AND post_id = %d",
-				$action_hook,
-				self::$internal_post_id
-			)
-		);
-	}
-
-	/**
-	 * @param $post_meta
-	 *
-	 * @return bool|int|\mysqli_result|null
-	 */
-	public static function delete_post_after_trigger( $post_meta ) {
-		global $wpdb;
-		// Delete the post meta
-		return $wpdb->delete(
-			$wpdb->postmeta,
-			array(
-				'post_id'    => absint( $post_meta->post_id ),
-				'meta_key'   => $post_meta->meta_key,
-				'meta_value' => absint( $post_meta->meta_value ),
-			),
-			array(
-				'%d',
-				'%s',
-				'%d',
-			)
-		);
-	}
-
-	/**
-	 * @param $post_id
-	 * @param $hook
-	 *
-	 * @return bool
-	 */
-	public static function maybe_post_postponed( $post_id, $hook ) {
-
-		// Retrieve the accumulated post IDs from the post meta table.
-		$post_metas = self::get_pending_posts( $hook );
-
-		if ( empty( $post_metas ) ) {
-			return false;
-		}
-
-		$post_ids = array_column( $post_metas, 'meta_value' );
-		$post_ids = array_unique( $post_ids );
-
-		// Remove duplicates and convert to integers.
-		$post_ids = array_map( 'absint', array_unique( $post_ids ) );
-
-		return in_array( absint( $post_id ), $post_ids, true );
-	}
-
-	/**
-	 * Requeue the post if it was not processed.
-	 *
-	 * @param $post_id
-	 * @param $action_hook
-	 *
-	 * @return void
-	 */
-	public static function requeue_post( $post_id, $action_hook ) {
-		// Let's try queueing the post only once to see if the terms are populated in the next run.
-		if ( empty( get_post_meta( $post_id, $action_hook, true ) ) ) {
-			self::add_pending_post( $post_id, $action_hook );
-			add_post_meta( $post_id, $action_hook, wp_date( 'c' ) );
-		}
 	}
 
 	/**

@@ -124,9 +124,27 @@ class WP_Action_Store implements Action_Store {
 			'order'          => 'ASC',
 		);
 
-		// Only add post_parent if recipe_id is actually provided
+		// Include actions that are direct children of the recipe AND children of loops inside the recipe.
 		if ( ! empty( $filters['recipe_id'] ) ) {
-			$args['post_parent'] = absint( $filters['recipe_id'] );
+			$recipe_id  = absint( $filters['recipe_id'] );
+			$parent_ids = array( $recipe_id );
+
+			// Find loops belonging to this recipe — actions inside loops have post_parent = loop_id.
+			$loop_posts = get_posts(
+				array(
+					'post_type'      => 'uo-loop',
+					'post_parent'    => $recipe_id,
+					'post_status'    => 'any',
+					'posts_per_page' => 100,
+					'fields'         => 'ids',
+				)
+			);
+
+			if ( ! empty( $loop_posts ) ) {
+				$parent_ids = array_merge( $parent_ids, array_map( 'absint', $loop_posts ) );
+			}
+
+			$args['post_parent__in'] = $parent_ids;
 		}
 
 		// Add meta queries for filters

@@ -72,6 +72,22 @@ class Condition_Action_Service {
 				return $target_group;
 			}
 
+			// Reparent actions to match the condition group's parent.
+			// Gated actions must share the same parent as their condition group.
+			$group_parent_id = $target_group->get_parent_id()->get_value() ?? $recipe_id;
+
+			foreach ( $action_ids as $aid ) {
+				$current_parent = (int) get_post_field( 'post_parent', $aid );
+				if ( $current_parent !== $group_parent_id ) {
+					wp_update_post(
+						array(
+							'ID'          => $aid,
+							'post_parent' => $group_parent_id,
+						)
+					);
+				}
+			}
+
 			$current_action_ids = $target_group->get_action_ids();
 			$merged_action_ids  = array_values( array_unique( array_merge( $current_action_ids, $action_ids ) ) );
 

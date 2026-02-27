@@ -477,8 +477,12 @@ class WP_CREATEPOST {
 				$this->set_taxonomy_terms( $post_id, json_decode( $post_terms ) );
 			}
 
+			$featured_image_error = '';
 			if ( ! empty( $post_fimage ) ) {
-				$this->add_featured_image( $post_fimage, $post_id );
+				$featured_image_result = $this->add_featured_image( $post_fimage, $post_id );
+				if ( is_wp_error( $featured_image_result ) ) {
+					$featured_image_error = $featured_image_result->get_error_message();
+				}
 			}
 
 			$meta_pairs = json_decode( $action_data['meta']['CPMETA_PAIRS'], true );
@@ -520,6 +524,12 @@ class WP_CREATEPOST {
 				),
 			)
 		);
+
+		if ( ! empty( $featured_image_error ) ) {
+			$action_data['complete_with_notice'] = true;
+			Automator()->complete_action( $user_id, $action_data, $recipe_id, $featured_image_error );
+			return;
+		}
 
 		Automator()->complete_action( $user_id, $action_data, $recipe_id );
 	}
@@ -622,6 +632,12 @@ class WP_CREATEPOST {
 		if ( is_numeric( $image_url ) ) {
 			// The $image_url is numeric.
 			return set_post_thumbnail( $post_id, $image_url );
+		}
+
+		// Block requests to private/reserved IP ranges before sideloading.
+		if ( automator_resolves_to_private_ip( $image_url ) ) {
+			automator_log( sprintf( 'Blocked featured image sideload — URL resolves to a private IP: %s', esc_url( $image_url ) ), self::class . '->add_featured_image', true, 'wp-createpost' );
+			return new \WP_Error( 'ssrf_blocked', 'The featured image URL resolves to a private or reserved IP address and cannot be used.' );
 		}
 
 		// Otherwise, download and store the image as attachment.

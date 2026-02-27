@@ -14,8 +14,6 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\Api\Database\Stores\WP_Recipe_Trigger_Store;
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
-use Uncanny_Automator\Api\Components\Security\Security;
-
 class Run_Recipe_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Get name.
@@ -61,30 +59,12 @@ class Run_Recipe_Tool extends Abstract_MCP_Tool {
 	 * @return array
 	 */
 	protected function execute_tool( User_Context $user_context, array $params ): array {
-		// Require authenticated executor for manual workflow execution
+		// Require authenticated executor for manual workflow execution.
 		$this->require_authenticated_executor( $user_context );
 
-		// Basic structure validation
-		$schema = array(
-			'recipe_id' => array(
-				'type'     => 'integer',
-				'required' => true,
-			),
-		);
+		$recipe_id = (int) ( $params['recipe_id'] ?? 0 );
 
-		if ( ! Security::validate_schema( $params, $schema ) ) {
-			return Json_Rpc_Response::create_error_response( 'Invalid parameters' );
-		}
-
-		// Sanitize parameters with minimal processing
-		$sanitized = Security::sanitize( $params, Security::PRESERVE_RAW );
-		$recipe_id = intval( $sanitized['recipe_id'] ?? 0 );
-
-		if ( ! $recipe_id ) {
-			return Json_Rpc_Response::create_error_response( 'Recipe ID is required' );
-		}
-
-		// For workflow execution, the executee is typically the executor
+		// For workflow execution, the executee is typically the executor.
 		$executee     = $user_context->get_executor();
 		$tool_context = new User_Context( $user_context->get_executor(), $executee );
 
@@ -102,7 +82,7 @@ class Run_Recipe_Tool extends Abstract_MCP_Tool {
 		$has_manual_trigger = $trigger_store->recipe_has_manual_trigger( $recipe_id_vo );
 		if ( ! $has_manual_trigger ) {
 			return Json_Rpc_Response::create_error_response(
-				'Recipe does not have a manual trigger. The recipe must contain either "RECIPE_MANUAL_TRIGGER_ANON" or "RECIPE_MANUAL_TRIGGER" (Recipe manual Trigger - Run now) to be executed manually.'
+				'Recipe cannot be run because it lacks a manual trigger. Add a trigger using add_trigger with trigger_code "RECIPE_MANUAL_TRIGGER" (for user recipes) or "RECIPE_MANUAL_TRIGGER_ANON" (for anonymous recipes).'
 			);
 		}
 

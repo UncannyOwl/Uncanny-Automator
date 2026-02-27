@@ -41,7 +41,7 @@ class Get_Recipe_Tokens_Tool extends Abstract_MCP_Tool {
 	 * @return string Detailed description explaining tool purpose and token categories.
 	 */
 	public function get_description() {
-		return 'List tokens available in a recipe. Returns grouped tokens (user, trigger, system) for populating action fields with dynamic data.';
+		return 'List tokens available in a recipe for use in action fields. Returns: (1) advanced - universal tokens like user meta, post meta, calculations, (2) common - site/user tokens, (3) date-and-time - current date/time, (4) trigger-tokens - from triggers, (5) action-tokens - from prior actions. IMPORTANT: Call again after adding triggers to get their tokens. For loop tokens, use loop_get_tokens with the specific loop_id.';
 	}
 
 	/**
@@ -135,7 +135,7 @@ class Get_Recipe_Tokens_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
-	 * Add dynamic tokens from triggers and actions to the token categories.
+	 * Add dynamic tokens from triggers, actions, and loops to the token categories.
 	 *
 	 * @since 7.0.0
 	 * @param array $token_categories The current token categories array.
@@ -203,6 +203,10 @@ class Get_Recipe_Tokens_Tool extends Abstract_MCP_Tool {
 		);
 
 		foreach ( $actions as $action ) {
+			// Skip loops - they're processed separately.
+			if ( ( $action['type'] ?? '' ) === 'loop' ) {
+				continue;
+			}
 			$tokens = $this->extract_tokens_from_item( $action, 'action' );
 			if ( ! empty( $tokens ) ) {
 				$processed_tokens = array_merge( $processed_tokens, $tokens );

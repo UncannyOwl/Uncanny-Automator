@@ -211,24 +211,28 @@ class Api_Server {
 	 * @return string
 	 */
 	public static function get_license_plan() {
-		// Get the license.
-		$license = self::get_license();
-		// Check if we have the license_plan property.
-		if ( self::has_license_plan_property( $license ) ) {
-			return $license['license_plan'];
+
+		try {
+			$license = self::get_license();
+
+			// Check if we have the license_plan property.
+			if ( self::has_license_plan_property( $license ) ) {
+				return $license['license_plan'];
+			}
+
+			// If license exists but missing license_plan, try to refresh.
+			if ( $license ) {
+				$license = self::is_automator_connected( true );
+				if ( self::has_license_plan_property( $license ) ) {
+					return $license['license_plan'];
+				}
+			}
+		} catch ( Exception $e ) {
+			// Fall through to fallback logic.
+			unset( $e );
 		}
 
-		// If license exists but missing license_plan, try to refresh.
-		if ( $license && ! self::has_license_plan_property( $license ) ) {
-			$license = self::is_automator_connected( true );
-		}
-
-		// If license_plan exists, return it
-		if ( self::has_license_plan_property( $license ) ) {
-			return $license['license_plan'];
-		}
-
-		// Fallback to basic/lite based on license type
+		// Fallback to basic/lite based on license type.
 		$license_type = self::get_license_type();
 		if ( ! $license_type ) {
 			return '';
@@ -279,7 +283,7 @@ class Api_Server {
 		try {
 			$date = new \DateTime( $expiry, wp_timezone() );
 			return $date->format( 'F j, Y' );
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			return '';
 		}
 	}
@@ -355,11 +359,11 @@ class Api_Server {
 		}
 
 		if ( empty( $params['endpoint'] ) ) {
-			throw new \Exception( 'Endpoint is required', 500 );
+			throw new Exception( 'Endpoint is required', 500 );
 		}
 
 		if ( empty( $params['body'] ) ) {
-			throw new \Exception( 'Request body is required', 500 );
+			throw new Exception( 'Request body is required', 500 );
 		}
 
 		$params = $api->add_endpoint_parts( $params );
@@ -378,7 +382,7 @@ class Api_Server {
 		$api->maybe_throw_exception( $response_body, $code );
 
 		if ( ! isset( $response_body['statusCode'] ) ) {
-			throw new \Exception( 'Unrecognized API response', 500 );
+			throw new Exception( 'Unrecognized API response', 500 );
 		}
 
 		return $response_body;
@@ -397,23 +401,23 @@ class Api_Server {
 
 		if ( ! is_array( $response_body ) ) {
 			automator_log( var_export( $response_body, true ), 'Invalid API response: ' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export
-			throw new \Exception( 'Invalid API response', 500 );
+			throw new Exception( 'Invalid API response', 500 );
 		}
 
 		// Handle zero credits from client with upgrade to link.
 		if ( 402 === $code && false !== strpos( $response_body['error']['description'], 'Upgrade to Uncanny Automator Pro' ) ) {
-			throw new \Exception( 'Credit required for action/trigger. Current credits: 0. {{automator_upgrade_link}}.', 402 );
+			throw new Exception( 'Credit required for action/trigger. Current credits: 0. {{automator_upgrade_link}}.', 402 );
 		}
 
 		if ( isset( $response_body['error'] ) && isset( $response_body['error']['description'] ) ) {
 			$error = $response_body['error']['description'];
 			automator_log( $error, 'api_call returned an error: ' );
-			throw new \Exception( esc_html( $error ), absint( $response_body['statusCode'] ) );
+			throw new Exception( esc_html( $error ), absint( $response_body['statusCode'] ) );
 		}
 
 		// Handle response body that has [data][error][message] (e.g. Instagram user media publish limit exceeded).
 		if ( isset( $response_body['data']['error'] ) && isset( $response_body['data']['error']['message'] ) ) {
-			throw new \Exception( 'API has responded with an error message: ' . esc_html( $response_body['data']['error']['message'] ), absint( $response_body['statusCode'] ) );
+			throw new Exception( 'API has responded with an error message: ' . esc_html( $response_body['data']['error']['message'] ), absint( $response_body['statusCode'] ) );
 		}
 	}
 
@@ -432,11 +436,11 @@ class Api_Server {
 		$api = self::get_instance();
 
 		if ( empty( $params['method'] ) ) {
-			throw new \Exception( 'Request method is required', 500 );
+			throw new Exception( 'Request method is required', 500 );
 		}
 
 		if ( empty( $params['url'] ) ) {
-			throw new \Exception( 'URL is required', 500 );
+			throw new Exception( 'URL is required', 500 );
 		}
 
 		$request = array();
@@ -463,7 +467,7 @@ class Api_Server {
 		$api_log_id = $api->maybe_log_action( $params, $request, self::$last_response );
 
 		if ( is_wp_error( self::$last_response ) ) {
-			throw new \Exception( esc_html( 'WordPress was not able to make a request: ' . self::$last_response->get_error_message() ), 500 );
+			throw new Exception( esc_html( 'WordPress was not able to make a request: ' . self::$last_response->get_error_message() ), 500 );
 		}
 
 		self::$last_response['api_log_id'] = $api_log_id;
@@ -539,6 +543,13 @@ class Api_Server {
 
 		try {
 
+			// Fail early with a clear message if no license key is configured.
+			// Without this check, the API call proceeds without auth headers
+			// and returns a cryptic "missing required headers" error.
+			if ( ! self::get_license_key() ) {
+				throw new Exception( 'Invalid license key.' );
+			}
+
 			$response = self::api_call( $params );
 
 			$license = $response['data'];
@@ -555,13 +566,13 @@ class Api_Server {
 
 			return $license;
 
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 
 			$error_message = 'Unable to fetch the license: ' . $e->getMessage();
 
 			set_transient( self::TRANSIENT_LICENSE_CHECK_FAILED, $error_message );
 
-			throw new \Exception( esc_html( $error_message ) );
+			throw new Exception( esc_html( $error_message ) );
 
 		}
 	}
@@ -576,7 +587,7 @@ class Api_Server {
 		$license = self::get_license();
 
 		if ( ! isset( $license['license'] ) || 'valid' !== $license['license'] ) {
-			throw new \Exception( esc_html__( 'License is not valid', 'uncanny-automator' ) );
+			throw new Exception( esc_html__( 'License is not valid', 'uncanny-automator' ) );
 		}
 
 		return $license;
@@ -596,7 +607,7 @@ class Api_Server {
 		}
 
 		if ( intval( $license['paid_usage_count'] ) >= intval( $license['usage_limit'] ) ) {
-			throw new \Exception( esc_html__( 'Not enough credits', 'uncanny-automator' ) );
+			throw new Exception( esc_html__( 'Not enough credits', 'uncanny-automator' ) );
 		}
 
 		return true;
@@ -767,7 +778,7 @@ class Api_Server {
 			$credits        = $api_response['credits'];
 			$log['balance'] = isset( $credits['balance'] ) ? $credits['balance'] : null;
 			$log['price']   = isset( $credits['price'] ) ? $credits['price'] : null;
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			$log['response'] = $e->getMessage();
 			$process_further = false;
 		}
@@ -830,7 +841,7 @@ class Api_Server {
 
 		try {
 			return self::get_license();
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			automator_log( $e->getMessage() );
 			self::set_connection_error_message( 'API error exception: ' . $e->getCode() . ' ' . $e->getMessage() );
 

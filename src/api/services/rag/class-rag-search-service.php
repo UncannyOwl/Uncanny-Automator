@@ -103,6 +103,7 @@ class Rag_Search_Service {
 		$rag_url     = Mcp_Client::get_inference_url() . '/api/rag/search';
 		$request_url = add_query_arg( $params, $rag_url );
 
+
 		$response = wp_remote_get(
 			$request_url,
 			array(

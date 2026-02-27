@@ -27,92 +27,94 @@ class Studiocart_Tokens {
 			return $tokens;
 		}
 
-		$trigger_meta = $args['meta'];
+		$triggers_meta = isset( $args['triggers_meta'] ) ? $args['triggers_meta'] : array();
 
-		if ( 'STUDIOCARTORDER' === $trigger_meta ) {
-			$fields = array();
-
-			$fields[] = array(
-				'tokenId'         => 'product_title',
-				'tokenName'       => esc_html__( 'Product title', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'product_id',
-				'tokenName'       => esc_html__( 'Product ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'product_url',
-				'tokenName'       => esc_html__( 'Product URL', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'billing_address',
-				'tokenName'       => esc_html__( 'Billing address', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'billing_city',
-				'tokenName'       => esc_html__( 'Billing city', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'billing_state',
-				'tokenName'       => esc_html__( 'Billing state', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'billing_postcode',
-				'tokenName'       => esc_html__( 'Billing postcode', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'billing_phone',
-				'tokenName'       => esc_html__( 'Billing phone', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'order_id',
-				'tokenName'       => esc_html__( 'Order ID', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'order_amount',
-				'tokenName'       => esc_html__( 'Order amount', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			$fields[] = array(
-				'tokenId'         => 'payment_option_label',
-				'tokenName'       => esc_html__( 'Payment option label', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_meta,
-			);
-
-			if ( ! empty( $fields ) ) {
-				$tokens = array_merge( $tokens, $fields );
-			}
+		// Check $args['meta'] first, fall back to checking if the key exists in the full triggers_meta array.
+		if ( 'STUDIOCARTORDER' !== $args['meta'] && ! isset( $triggers_meta['STUDIOCARTORDER'] ) ) {
+			return $tokens;
 		}
+
+		$token_identifier = 'STUDIOCARTORDER';
+		$fields           = array();
+
+		$fields[] = array(
+			'tokenId'         => 'product_title',
+			'tokenName'       => esc_html__( 'Product title', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'product_id',
+			'tokenName'       => esc_html__( 'Product ID', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'product_url',
+			'tokenName'       => esc_html__( 'Product URL', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'billing_address',
+			'tokenName'       => esc_html__( 'Billing address', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'billing_city',
+			'tokenName'       => esc_html__( 'Billing city', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'billing_state',
+			'tokenName'       => esc_html__( 'Billing state', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'billing_postcode',
+			'tokenName'       => esc_html__( 'Billing postcode', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'billing_phone',
+			'tokenName'       => esc_html__( 'Billing phone', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'order_id',
+			'tokenName'       => esc_html__( 'Order ID', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'order_amount',
+			'tokenName'       => esc_html__( 'Order amount', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$fields[] = array(
+			'tokenId'         => 'payment_option_label',
+			'tokenName'       => esc_html__( 'Payment option label', 'uncanny-automator' ),
+			'tokenType'       => 'text',
+			'tokenIdentifier' => $token_identifier,
+		);
+
+		$tokens = array_merge( $tokens, $fields );
 
 		return $tokens;
 	}

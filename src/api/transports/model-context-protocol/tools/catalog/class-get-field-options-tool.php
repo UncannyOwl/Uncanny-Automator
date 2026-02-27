@@ -125,15 +125,10 @@ class Get_Field_Options_Tool extends Abstract_MCP_Tool {
 		// Instantiate agent.
 		$agent_class = $action['agent_class'] ?? null;
 		if ( empty( $agent_class ) || ! class_exists( $agent_class ) ) {
-			return Json_Rpc_Response::create_success_response(
-				'Field options not available - use get_posts or get_taxonomies',
-				array(
-					'component_type'        => self::TYPE_ACTION,
-					'action_code'           => $action_code,
-					'option_code'           => $option_code,
-					'options_available'     => false,
-					'supports_custom_value' => true,
-					'message'               => 'This action is not yet agentified. Use get_posts tool (for products, subscriptions, courses, memberships, etc.) or get_taxonomies tool (for categories, tags, terms) to fetch available options. If those tools return nothing relevant, ask the user to provide the specific value (name, ID, or slug).',
+			return Json_Rpc_Response::create_error_response(
+				sprintf(
+					'No options handler for action "%s". Try get_posts (for content entities), get_terms (for taxonomies), list_users (for users), or list_roles (for roles). If none apply, ask the user for the value.',
+					$action_code
 				)
 			);
 		}
@@ -188,15 +183,10 @@ class Get_Field_Options_Tool extends Abstract_MCP_Tool {
 		// Instantiate agent.
 		$agent_class = $trigger['agent_class'] ?? null;
 		if ( empty( $agent_class ) || ! class_exists( $agent_class ) ) {
-			return Json_Rpc_Response::create_success_response(
-				'Field options not available - use get_posts or get_taxonomies',
-				array(
-					'component_type'        => self::TYPE_TRIGGER,
-					'trigger_code'          => $trigger_code,
-					'option_code'           => $option_code,
-					'options_available'     => false,
-					'supports_custom_value' => true,
-					'message'               => 'This trigger is not yet agentified. Use get_posts tool (for products, subscriptions, courses, memberships, etc.) or get_taxonomies tool (for categories, tags, terms) to fetch available options. If those tools return nothing relevant, ask the user to provide the specific value (name, ID, or slug).',
+			return Json_Rpc_Response::create_error_response(
+				sprintf(
+					'No options handler for trigger "%s". Try get_posts (for content entities), get_terms (for taxonomies), list_users (for users), or list_roles (for roles). If none apply, ask the user for the value.',
+					$trigger_code
 				)
 			);
 		}

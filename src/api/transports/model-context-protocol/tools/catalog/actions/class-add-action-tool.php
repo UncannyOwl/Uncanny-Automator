@@ -12,6 +12,7 @@ namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\Api\Services\Action\Services\Action_CRUD_Service;
+use Uncanny_Automator\Api\Services\Token\Validation\Token_Validator;
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
 
 /**
@@ -26,6 +27,8 @@ use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
  * @since 7.0.0
  */
 class Add_Action_Tool extends Abstract_MCP_Tool {
+
+	use HasValidParent;
 
 	/**
 	 * Action service.
@@ -60,7 +63,7 @@ class Add_Action_Tool extends Abstract_MCP_Tool {
 	 * @return string Tool description.
 	 */
 	public function get_description() {
-		return 'Add a new action to a recipe. Get schema with get_component_schema first, build fields payload, then call with recipe_id. Returns saved action record. CRITICAL: For dropdown fields, always pass BOTH the value AND the _readable suffix (e.g., "SLACKCHANNEL": "C123", "SLACKCHANNEL_readable": "#general") so the UI displays names instead of IDs. IMPORTANT: If recipe has condition groups, you MUST call add_action_to_condition_group after adding the action to link it to the group - otherwise the action runs unconditionally.';
+		return 'Add a new action to a recipe or loop. Specify parent_type (recipe or loop) and parent_id to control where the action is placed. Actions in loops execute for each iteration. Get schema with get_component_schema first, build fields payload. CRITICAL: For dropdown fields, always pass BOTH the value AND the _readable suffix (e.g., "SLACKCHANNEL": "C123", "SLACKCHANNEL_readable": "#general"). IMPORTANT: If using condition groups, call add_action_to_condition_group after to link the action.';
 	}
 
 	/**
@@ -76,7 +79,17 @@ class Add_Action_Tool extends Abstract_MCP_Tool {
 			'properties' => array(
 				'recipe_id'   => array(
 					'type'        => 'integer',
-					'description' => 'Target recipe ID where the action will be added. Must be an existing recipe in the system. Use get_recipes or find_recipes to discover available recipe IDs.',
+					'description' => 'Recipe ID that contains this action. Required for context.',
+					'minimum'     => 1,
+				),
+				'parent_type' => array(
+					'type'        => 'string',
+					'enum'        => array( 'recipe', 'loop' ),
+					'description' => 'Where to place the action. "recipe" = direct child of recipe (runs once). "loop" = inside a loop (runs for each iteration).',
+				),
+				'parent_id'   => array(
+					'type'        => 'integer',
+					'description' => 'The parent ID matching parent_type. If parent_type=recipe, this should be the recipe_id. If parent_type=loop, this should be a loop_id.',
 					'minimum'     => 1,
 				),
 				'action_code' => array(
@@ -130,7 +143,7 @@ class Add_Action_Tool extends Abstract_MCP_Tool {
 					),
 				),
 			),
-			'required'   => array( 'recipe_id', 'action_code' ),
+			'required'   => array( 'recipe_id', 'parent_type', 'parent_id', 'action_code' ),
 		);
 	}
 
@@ -160,39 +173,66 @@ class Add_Action_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'Missing required parameter: action_code' );
 		}
 
+		$recipe_id   = (int) $params['recipe_id'];
+		$parent_type = $params['parent_type'] ?? null;
+		$parent_id   = isset( $params['parent_id'] ) ? (int) $params['parent_id'] : 0;
+
+		// Validate required parent parameters.
+		if ( empty( $parent_type ) ) {
+			return Json_Rpc_Response::create_error_response( 'parent_type is required. Use "recipe" for recipe-level actions or "loop" for loop actions.' );
+		}
+
+		if ( $parent_id <= 0 ) {
+			return Json_Rpc_Response::create_error_response( 'parent_id is required. Must match parent_type (recipe_id or loop_id).' );
+		}
+
+		// Validate parent_type and parent_id match.
+		$validation_error = $this->validate_parent( $parent_type, $parent_id, $recipe_id );
+		if ( null !== $validation_error ) {
+			return $validation_error;
+		}
+
 		// Handle fields payload - some MCP clients send it as a JSON string.
 		$fields       = $this->parse_fields( $fields );
 		$async_config = $this->parse_fields( $async_config );
+
+		// Validate tokens in fields before proceeding.
+		$validation = Token_Validator::validate( $recipe_id, $fields );
+		if ( ! $validation['valid'] ) {
+			return Json_Rpc_Response::create_error_response( $validation['message'] );
+		}
 
 		// Add custom label to fields if provided.
 		if ( ! empty( $custom_label ) ) {
 			$fields['_automator_custom_item_name_'] = sanitize_text_field( $custom_label );
 		}
 
-		// Use Action Service for business logic
+		// Use Action Service for business logic.
+		// Pass parent_id to place action in recipe or loop.
 		$result = $this->action_service->add_to_recipe(
-			$params['recipe_id'],
+			$recipe_id,
 			$params['action_code'],
 			$fields,
-			$async_config
+			$async_config,
+			$parent_id
 		);
 
 		// Transform service result to MCP response
 		if ( is_wp_error( $result ) ) {
 			return Json_Rpc_Response::create_error_response(
-				$result->get_error_message()
+				$result->get_error_message() . ' Use search_components to find valid action codes, or get_component_schema to verify field requirements.'
 			);
 		}
 
 		$action_data = $result['action'] ?? array();
-		$action_id   = isset( $action_data['action_id'] ) ? (int) $action_data['action_id'] : 0;
-		$recipe_id   = isset( $params['recipe_id'] ) ? (int) $params['recipe_id'] : (int) ( $action_data['recipe_id'] ?? 0 );
 
 		$payload = array(
-			'recipe_id'  => $recipe_id,
-			'action'     => $action_data,
-			'links'      => $this->build_recipe_links( $recipe_id ),
-			'next_steps' => $this->build_recipe_next_steps( $recipe_id ),
+			'recipe_id'   => $recipe_id,
+			'parent_type' => $parent_type,
+			'parent_id'   => $parent_id,
+			'action'      => $action_data,
+			'links'       => $this->build_recipe_links( $recipe_id ),
+			'next_steps'  => $this->build_recipe_next_steps( $recipe_id ),
 		);
 
 		if ( isset( $result['message'] ) && '' !== $result['message'] ) {

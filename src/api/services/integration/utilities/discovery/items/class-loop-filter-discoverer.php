@@ -10,7 +10,7 @@
 
 namespace Uncanny_Automator\Api\Services\Integration\Utilities\Discovery\Items;
 
-use Uncanny_Automator\Api\Services\Loop_Filter\Services\Loop_Filter_Registry_Service;
+use Uncanny_Automator\Api\Services\Loop\Filter\Services\Filter_Registry_Service;
 
 /**
  * Discovers loop filters for an integration.
@@ -22,17 +22,17 @@ class Loop_Filter_Discoverer extends Integration_Item_Discoverer {
 	/**
 	 * Loop filter registry service.
 	 *
-	 * @var Loop_Filter_Registry_Service
+	 * @var Filter_Registry_Service
 	 */
 	private $loop_filter_registry;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Loop_Filter_Registry_Service|null $loop_filter_registry Optional registry for DI/testing.
+	 * @param Filter_Registry_Service|null $loop_filter_registry Optional registry for DI/testing.
 	 */
-	public function __construct( ?Loop_Filter_Registry_Service $loop_filter_registry = null ) {
-		$this->loop_filter_registry = $loop_filter_registry ?? Loop_Filter_Registry_Service::get_instance();
+	public function __construct( ?Filter_Registry_Service $loop_filter_registry = null ) {
+		$this->loop_filter_registry = $loop_filter_registry ?? Filter_Registry_Service::instance();
 	}
 
 	/**
@@ -47,7 +47,7 @@ class Loop_Filter_Discoverer extends Integration_Item_Discoverer {
 		$this->current_integration_code = $code;
 		$this->current_integration_name = $name;
 
-		$integration_filters = $this->loop_filter_registry->get_loop_filters_by_integration( $code );
+		$integration_filters = $this->loop_filter_registry->get_filters_by_integration( $code );
 
 		$discovered = array();
 

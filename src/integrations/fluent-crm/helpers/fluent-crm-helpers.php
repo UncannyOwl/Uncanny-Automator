@@ -487,7 +487,7 @@ class Fluent_Crm_Helpers {
 			'first_name' => isset( $user->first_name ) ? sanitize_text_field( $user->first_name ) : '',
 			'last_name'  => isset( $user->last_name ) ? sanitize_text_field( $user->last_name ) : '',
 			'email'      => $user->user_email,
-			'status'     => 'subscribe',
+			'status'     => 'subscribed',
 		);
 
 		// Update the tags if argument is supplied.

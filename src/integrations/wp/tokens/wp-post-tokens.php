@@ -82,6 +82,8 @@ class Wp_Post_Tokens {
 			list( $post_id, $wp_post, $update, $wp_post_before ) = $wp_post_data;
 			if ( isset( $post_id ) && ! empty( $post_id ) ) {
 				Automator()->db->token->save( 'post_id', $post_id, $args['trigger_entry'] );
+				// Save taxonomy and term tokens.
+				$this->save_taxonomy_tokens( $post_id, $args['trigger_entry'] );
 			}
 		}
 
@@ -97,7 +99,74 @@ class Wp_Post_Tokens {
 			list( $post_id, $wp_post_after, $wp_post_before ) = $wp_post_data;
 			if ( isset( $post_id ) && ! empty( $post_id ) ) {
 				Automator()->db->token->save( 'post_id', $post_id, $args['trigger_entry'] );
+				// Save taxonomy and term tokens.
+				$this->save_taxonomy_tokens( $post_id, $args['trigger_entry'] );
 			}
+		}
+	}
+
+	/**
+	 * Save taxonomy and term tokens for a post.
+	 *
+	 * @param int   $post_id       The post ID.
+	 * @param array $trigger_entry The trigger entry data.
+	 *
+	 * @return void
+	 */
+	private function save_taxonomy_tokens( $post_id, $trigger_entry ) {
+		$post = get_post( $post_id );
+		if ( ! $post instanceof WP_Post ) {
+			return;
+		}
+
+		$taxonomies   = array();
+		$terms        = array();
+		$categories   = array();
+		$tags         = array();
+		$taxonomy_objects = get_object_taxonomies( $post->post_type, 'objects' );
+
+		if ( empty( $taxonomy_objects ) ) {
+			return;
+		}
+
+		foreach ( $taxonomy_objects as $taxonomy ) {
+			$post_terms = wp_get_post_terms( $post_id, $taxonomy->name );
+			if ( empty( $post_terms ) || is_wp_error( $post_terms ) ) {
+				continue;
+			}
+
+			$taxonomies[ $taxonomy->name ] = $taxonomy->labels->singular_name;
+
+			foreach ( $post_terms as $term ) {
+				$terms[ $term->term_id ] = $term->name;
+
+				// Separate categories and tags.
+				if ( 'category' === $taxonomy->name ) {
+					$categories[ $term->term_id ] = $term->name;
+				} elseif ( 'post_tag' === $taxonomy->name ) {
+					$tags[ $term->term_id ] = $term->name;
+				}
+			}
+		}
+
+		// Save categories token.
+		if ( ! empty( $categories ) ) {
+			Automator()->db->token->save( 'POSTCATEGORIES', implode( ', ', $categories ), $trigger_entry );
+		}
+
+		// Save tags token.
+		if ( ! empty( $tags ) ) {
+			Automator()->db->token->save( 'POSTTAGS', implode( ', ', $tags ), $trigger_entry );
+		}
+
+		// Save all taxonomies token.
+		if ( ! empty( $taxonomies ) ) {
+			Automator()->db->token->save( 'WPTAXONOMIES', implode( ', ', $taxonomies ), $trigger_entry );
+		}
+
+		// Save all terms token.
+		if ( ! empty( $terms ) ) {
+			Automator()->db->token->save( 'WPTAXONOMYTERM', implode( ', ', $terms ), $trigger_entry );
 		}
 	}
 
@@ -249,6 +318,30 @@ class Wp_Post_Tokens {
 			array(
 				'tokenId'         => 'POSTMODIFIED_GMT',
 				'tokenName'       => esc_html_x( 'Post modified date (GMT)', 'Wp', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'POSTCATEGORIES',
+				'tokenName'       => esc_html_x( 'Post categories', 'Wp', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'POSTTAGS',
+				'tokenName'       => esc_html_x( 'Post tags', 'Wp', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'WPTAXONOMIES',
+				'tokenName'       => esc_html_x( 'Post taxonomies', 'Wp', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_code,
+			),
+			array(
+				'tokenId'         => 'WPTAXONOMYTERM',
+				'tokenName'       => esc_html_x( 'All post taxonomy terms', 'Wp', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_code,
 			),
@@ -712,6 +805,14 @@ class Wp_Post_Tokens {
 			case 'WPPAGE_ID':
 			case 'WPCUSTOMPOST_ID':
 				$value = $post->ID;
+				break;
+			case 'POSTCATEGORIES':
+				$value = Automator()->db->token->get( 'POSTCATEGORIES', $replace_args );
+				$value = maybe_unserialize( $value );
+				break;
+			case 'POSTTAGS':
+				$value = Automator()->db->token->get( 'POSTTAGS', $replace_args );
+				$value = maybe_unserialize( $value );
 				break;
 			case 'WPTAXONOMYTERM':
 				$value = Automator()->db->token->get( 'WPTAXONOMYTERM', $replace_args );

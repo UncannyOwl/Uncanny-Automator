@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             7.0.0.3
+ * Version:             7.1.0
  * Requires at least:   5.8
  * Requires PHP:        7.4
  */
@@ -24,7 +24,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '7.0.0.3' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '7.1.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -48,7 +48,7 @@ if ( ! defined( 'UNCANNY_AUTOMATOR_ASSETS_URL' ) ) {
 	define( 'UNCANNY_AUTOMATOR_ASSETS_URL', plugin_dir_url( __FILE__ ) . 'src/assets/' );
 }
 
-if ( version_compare( PHP_VERSION, '7.3', '<' ) ) {
+if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 	add_action( 'admin_notices', 'automator_version_check_admin_notice', - 99999 );
 	// Function to display admin notice
 	/**
@@ -61,7 +61,7 @@ if ( version_compare( PHP_VERSION, '7.3', '<' ) ) {
 			<p>
 			<?php
 				// translators: %s: The version number of Uncanny Automator.
-				printf( esc_html__( 'Notice: Uncanny Automator v%s requires PHP 7.3 or higher to run properly. Your current PHP version is below this requirement, so the plugin has been deactivated and all automations have stopped. Please upgrade your PHP version to ensure that your automations and other plugin features work correctly.', 'uncanny-automator' ), esc_html( AUTOMATOR_PLUGIN_VERSION ) );
+				printf( esc_html__( 'Notice: Uncanny Automator v%s requires PHP 7.4 or higher to run properly. Your current PHP version is below this requirement, so the plugin has been deactivated and all automations have stopped. Please upgrade your PHP version to ensure that your automations and other plugin features work correctly.', 'uncanny-automator' ), esc_html( AUTOMATOR_PLUGIN_VERSION ) );
 			?>
 				</p>
 		</div>

@@ -109,6 +109,8 @@ class Automator_Load {
 
 		add_action( 'admin_init', array( $this, 'automator_schedule_healthchecks' ) );
 
+		add_action( 'admin_init', array( $this, 'maybe_cleanup_legacy_crons' ) );
+
 		add_action( 'admin_notices', array( $this, 'check_runtime_environment' ) );
 
 		$this->load_automator();
@@ -211,9 +213,9 @@ class Automator_Load {
 			if ( $plugin_path !== $specific_plugin_path ) {
 				continue;
 			}
-			// Update an option with the current time for the specific plugin
+			// Update an option with the current time for the specific plugin.
 			automator_update_option( 'automator_last_updated', current_time( 'mysql' ) );
-			break; // No need to continue the loop
+			break; // No need to continue the loop.
 		}
 	}
 
@@ -532,8 +534,8 @@ class Automator_Load {
 		register_activation_hook(
 			AUTOMATOR_BASE_FILE,
 			array(
-				Automator_DB::class,
-				'activation',
+				$this,
+				'plugin_activated',
 			)
 		);
 
@@ -547,6 +549,20 @@ class Automator_Load {
 		if ( (string) AUTOMATOR_DATABASE_VIEWS_VERSION !== (string) automator_get_option( 'uap_database_views_version', 0 ) ) {
 			$config_instance->automator_generate_views();
 		}
+	}
+
+	/**
+	 * Fires when the plugin is activated
+	 *
+	 * @return void
+	 */
+	public function plugin_activated(){
+
+		// Clean up legacy cron hooks (v7.0+).
+		// These crons were replaced by the new Trigger Engine using wp_after_insert_post.
+		self::cleanup_legacy_cron_hooks();
+
+		Automator_DB::activation();
 	}
 
 	/**
@@ -773,7 +789,8 @@ class Automator_Load {
 		$unit_tests = is_automator_running_unit_tests();
 
 		// Always load Usage_Reports for analytics
-		$classes['Usage_Reports']        = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
+		$classes['Usage_Reports']              = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
+		$classes['Upload_Directory_Sanitizer'] = UA_ABSPATH . 'src/core/services/email/attachment/class-upload-directory-sanitizer.php';
 		$classes['Set_Up_Automator']     = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
 		$classes['Initialize_Automator'] = UA_ABSPATH . 'src/core/classes/class-initialize-automator.php';
 
@@ -1054,5 +1071,48 @@ class Automator_Load {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Runs once per plugin version to clean up legacy cron hooks.
+	 *
+	 * Fires on admin_init so it catches every install path: WP admin updater,
+	 * upload-replace, WP-CLI, and manual file replacement.
+	 *
+	 * @since 7.0
+	 * @return void
+	 */
+	public function maybe_cleanup_legacy_crons() {
+		$cleaned_version = automator_get_option( 'automator_legacy_crons_cleaned_version', '' );
+
+		if ( $cleaned_version === AUTOMATOR_PLUGIN_VERSION ) {
+			return;
+		}
+
+		self::cleanup_legacy_cron_hooks();
+
+		automator_update_option( 'automator_legacy_crons_cleaned_version', AUTOMATOR_PLUGIN_VERSION );
+	}
+
+	/**
+	 * Cleanup legacy cron hooks that were replaced by the new Trigger Engine.
+	 *
+	 * Prior to v7.0, post taxonomy triggers used a cron-based system because the
+	 * save_post hook fired before taxonomy assignment. The new Trigger Engine uses
+	 * wp_after_insert_post (WordPress 5.6+) which fires AFTER taxonomy assignment,
+	 * making the cron system redundant.
+	 *
+	 * @since 7.0
+	 * @return void
+	 */
+	public static function cleanup_legacy_cron_hooks() {
+		$legacy_cron_hooks = array(
+			'automator_wp_post_published_in_taxonomy_posts_published',
+			'automator_userspost_posts_published',
+		);
+
+		foreach ( $legacy_cron_hooks as $cron_hook ) {
+			wp_unschedule_hook( $cron_hook );
+		}
 	}
 }

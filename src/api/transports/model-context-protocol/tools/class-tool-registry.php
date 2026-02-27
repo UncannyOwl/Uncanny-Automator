@@ -6,6 +6,7 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Recipe
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Recipes\List_Recipes_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Recipes\Run_Recipe_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Recipes\Save_Recipe_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Recipes\Delete_Recipe_Component_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Search_Components_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Get_Component_Schema_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Get_Field_Options_Tool;
@@ -41,8 +42,29 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Condit
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Logs\Get_Log_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Logs\Get_Recipe_Logs_Tool;
 
+// Loop catalog tools.
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Add_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_List_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Get_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Update_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Delete_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Filter_Add_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Filter_List_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Filter_Get_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Filter_Update_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Filter_Delete_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Filter_Delete_All_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Get_Tokens_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Get_Loopable_Tokens_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Loops\Loop_Filter_List_Available_Tool;
+
 // Enum tools.
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Recipes\Get_Recipe_Tokens_Tool;
+
+// User selector catalog tools.
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\User_Selector\Save_User_Selector_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\User_Selector\Get_User_Selector_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\User_Selector\Delete_User_Selector_Tool;
 
 // Use User_Context and WP_Error.
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
@@ -230,7 +252,7 @@ class Tool_Registry {
 	/**
 	 * Auto-register all tools from the tools directory.
 	 *
-	 * Limit the number of tools to 30. LLM drifts when there are too many tools.
+	 * Keep the tool count lean. LLM accuracy drifts when there are too many tools.
 	 *
 	 * @since 7.0.0
 	 *
@@ -244,6 +266,7 @@ class Tool_Registry {
 		$this->register_tool( new Run_Recipe_Tool() );
 		$this->register_tool( new Save_Recipe_Tool() );
 		$this->register_tool( new Get_Recipe_Tokens_Tool() );
+		$this->register_tool( new Delete_Recipe_Component_Tool() );
 
 		// Discovery tools.
 		$this->register_tool(
@@ -289,6 +312,29 @@ class Tool_Registry {
 		// Log catalog tools.
 		$this->register_tool( new Get_Log_Tool() );
 		$this->register_tool( new Get_Recipe_Logs_Tool() );
+
+		// Loop catalog tools.
+		$this->register_tool( new Loop_Add_Tool() );
+		$this->register_tool( new Loop_List_Tool() );
+		$this->register_tool( new Loop_Get_Tool() );
+		$this->register_tool( new Loop_Update_Tool() );
+		$this->register_tool( new Loop_Delete_Tool() );
+		$this->register_tool( new Loop_Get_Tokens_Tool() );
+		$this->register_tool( new Loop_Get_Loopable_Tokens_Tool() );
+
+		// Loop filter catalog tools.
+		$this->register_tool( new Loop_Filter_Add_Tool() );
+		$this->register_tool( new Loop_Filter_List_Tool() );
+		$this->register_tool( new Loop_Filter_Get_Tool() );
+		$this->register_tool( new Loop_Filter_Update_Tool() );
+		$this->register_tool( new Loop_Filter_Delete_Tool() );
+		$this->register_tool( new Loop_Filter_Delete_All_Tool() );
+		$this->register_tool( new Loop_Filter_List_Available_Tool() );
+
+		// User selector catalog tools.
+		$this->register_tool( new Save_User_Selector_Tool() );
+		$this->register_tool( new Get_User_Selector_Tool() );
+		$this->register_tool( new Delete_User_Selector_Tool() );
 
 		do_action( 'uncanny_automator_mcp_tool_registry_register', $this );
 	}

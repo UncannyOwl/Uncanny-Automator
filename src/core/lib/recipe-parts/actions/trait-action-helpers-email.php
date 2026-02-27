@@ -76,9 +76,9 @@ trait Action_Helpers_Email {
 	private $actions_data = array();
 
 	/**
-	 * @var Handler
+	 * @var Handler[]
 	 */
-	protected $attachment_handler = null;
+	protected $attachment_handlers = array();
 
 	/**
 	 * @return array
@@ -453,9 +453,10 @@ trait Action_Helpers_Email {
 	 */
 	public function process_attachment( $attachment_url ) {
 
-		$this->attachment_handler = new Handler( $attachment_url );
+		$handler                     = new Handler( $attachment_url );
+		$this->attachment_handlers[] = $handler;
 
-		$attachment_path = $this->attachment_handler->process_attachment();
+		$attachment_path = $handler->process_attachment();
 
 		// Use pathinfo to get the extension.
 		$path_info = pathinfo( wp_parse_url( $attachment_url, PHP_URL_PATH ) );
@@ -479,8 +480,10 @@ trait Action_Helpers_Email {
 	 */
 	public function __destruct() {
 
-		if ( $this->attachment_handler && $this->attachment_handler instanceof Handler ) {
-			$this->attachment_handler->cleanup();
+		foreach ( $this->attachment_handlers as $handler ) {
+			if ( $handler instanceof Handler ) {
+				$handler->cleanup();
+			}
 		}
 	}
 }

@@ -18,7 +18,7 @@ use Uncanny_Automator\Api\Components\Action\Action_Config;
 use Uncanny_Automator\Api\Components\Action\Action;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\Api\Components\Shared\Sentence_Html\Field_Label_Resolver;
-use Uncanny_Automator\Api\Services\Sentence_Html\Sentence_Output_Builder;
+use Uncanny_Automator\Api\Presentation\Sentence\Item_Sentence_Composer;
 use WP_Error;
 
 /**
@@ -26,6 +26,9 @@ use WP_Error;
  *
  * Responsible for creating new Action instances and updating existing ones
  * with new configuration data.
+ *
+ * Sentence and sentence HTML composition is owned by presentation layer
+ * (`Item_Sentence_Composer`).
  */
 class Action_Builder {
 
@@ -44,27 +47,27 @@ class Action_Builder {
 	private $label_resolver;
 
 	/**
-	 * Sentence output builder dependency.
+	 * Sentence output composer dependency.
 	 *
-	 * @var Sentence_Output_Builder
+	 * @var Item_Sentence_Composer
 	 */
-	private $sentence_builder;
+	private $sentence_composer;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Async_Config_Converter      $async_converter   Async config converter.
-	 * @param Field_Label_Resolver|null   $label_resolver    Optional label resolver (for testing).
-	 * @param Sentence_Output_Builder|null $sentence_builder Optional sentence builder (for testing).
+	 * @param Async_Config_Converter     $async_converter   Async config converter.
+	 * @param Field_Label_Resolver|null  $label_resolver    Optional label resolver (for testing).
+	 * @param Item_Sentence_Composer|null $sentence_composer Optional sentence composer (for testing).
 	 */
 	public function __construct(
 		Async_Config_Converter $async_converter,
 		?Field_Label_Resolver $label_resolver = null,
-		?Sentence_Output_Builder $sentence_builder = null
+		?Item_Sentence_Composer $sentence_composer = null
 	) {
 		$this->async_converter  = $async_converter;
 		$this->label_resolver   = $label_resolver ?? new Field_Label_Resolver();
-		$this->sentence_builder = $sentence_builder ?? new Sentence_Output_Builder();
+		$this->sentence_composer = $sentence_composer ?? new Item_Sentence_Composer();
 	}
 
 	/**
@@ -104,6 +107,7 @@ class Action_Builder {
 
 			// Ensure HTML format for TinyMCE fields (converts plain text newlines to <p> tags).
 			$config = $this->label_resolver->ensure_html_format( $config, $configuration_fields );
+			$config = $this->strip_sentence_artifacts( $config );
 
 			// JSON-encode array values (repeater fields) - Automator expects JSON strings, not PHP arrays.
 			$config = $this->encode_array_fields( $config );
@@ -167,6 +171,8 @@ class Action_Builder {
 	 * @return Action Updated action instance.
 	 */
 	public function update( Action $existing_action, array $new_config, array $async_config = array(), ?string $status = null ): Action {
+
+		$new_config = $this->strip_sentence_artifacts( $new_config );
 
 		// Get current meta and merge with new config
 		$current_meta = $existing_action->get_action_meta()->to_array();
@@ -266,7 +272,7 @@ class Action_Builder {
 	}
 
 	/**
-	 * Build sentence outputs using the Sentence_Output_Builder.
+	 * Build sentence outputs using the presentation composer.
 	 *
 	 * Delegates to the shared Sentence_Output_Builder to convert raw configuration
 	 * arrays into domain objects and generate both bracket-wrapped and HTML sentence formats.
@@ -278,6 +284,25 @@ class Action_Builder {
 	 * @return array{brackets: string, html: string} Sentence outputs.
 	 */
 	private function build_sentence_outputs( string $sentence_template, array $configuration, array $field_labels ): array {
-		return $this->sentence_builder->build( $sentence_template, $configuration, $field_labels );
+		return $this->sentence_composer->compose( $sentence_template, $configuration, $field_labels );
+	}
+
+	/**
+	 * Remove client-provided sentence artifacts from incoming config.
+	 *
+	 * Sentence outputs are server-owned and regenerated on every write.
+	 *
+	 * @param array $config Incoming config.
+	 *
+	 * @return array
+	 */
+	private function strip_sentence_artifacts( array $config ): array {
+		unset(
+			$config['sentence'],
+			$config['sentence_human_readable'],
+			$config['sentence_human_readable_html']
+		);
+
+		return $config;
 	}
 }

@@ -24,7 +24,7 @@ class Search_Components_Tool extends Abstract_MCP_Tool {
 
 	private const RESPONSE_LIMIT    = 7;
 	private const INTEGRATION_LIMIT = 50;
-	private const SUPPORTED_TYPES   = array( 'trigger', 'action', 'condition', 'all' );
+	private const SUPPORTED_TYPES   = array( 'trigger', 'action', 'condition', 'loop_filter', 'all' );
 
 	/**
 	 * Automator explorer factory.
@@ -53,7 +53,7 @@ class Search_Components_Tool extends Abstract_MCP_Tool {
 	 * {@inheritDoc}
 	 */
 	public function get_description() {
-		return 'Search for triggers, actions, or conditions. SEMANTIC mode: use query alone to find by meaning (top 7 matches). LIST mode: use integration alone to get all components (up to 50). Do NOT combine query with integration. After finding a component, call get_component_schema then get_field_options.';
+		return 'Search for triggers, actions, conditions, or loop_filters. SEMANTIC mode: use query alone to find by meaning (top 7 matches). LIST mode: use integration alone to get all components (up to 50). WARNING: If both query and integration are provided, only integration list mode runs and query is ignored. After finding a component, call get_component_schema then get_field_options.';
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Search_Components_Tool extends Abstract_MCP_Tool {
 				),
 				'type'      => array(
 					'type'        => 'string',
-					'enum'        => array( 'trigger', 'action', 'condition', 'all' ),
+					'enum'        => array( 'trigger', 'action', 'condition', 'loop_filter', 'all' ),
 					'description' => 'Optional component filter. Defaults to all.',
 					'default'     => 'all',
 				),
@@ -120,6 +120,11 @@ class Search_Components_Tool extends Abstract_MCP_Tool {
 		// If integration is provided for action search, use direct listing
 		if ( $integration && 'action' === $type ) {
 			return $this->list_actions_by_integration( $integration );
+		}
+
+		// If integration is provided for loop_filter search, use direct listing
+		if ( $integration && 'loop_filter' === $type ) {
+			return $this->list_loop_filters_by_integration( $integration );
 		}
 
 		$collection = $this->collect_results( $query, $type, $user_type );
@@ -179,7 +184,7 @@ class Search_Components_Tool extends Abstract_MCP_Tool {
 	 * Collect search results from registry services.
 	 *
 	 * @param string      $query     Search term.
-	 * @param string      $type      Component filter ('trigger', 'action', 'condition', 'all').
+	 * @param string      $type      Component filter ('trigger', 'action', 'condition', 'loop_filter', 'all').
 	 * @param string|null $user_type User type filter for recipe compatibility ('user', 'anonymous', or null).
 	 * @return array
 	 */
@@ -206,6 +211,11 @@ class Search_Components_Tool extends Abstract_MCP_Tool {
 
 		if ( 'all' === $type || 'condition' === $type ) {
 			$collection = $this->factory->get_condition_collector()->collect_conditions( $query );
+			$items      = array_merge( $items, $collection->to_array() );
+		}
+
+		if ( 'all' === $type || 'loop_filter' === $type ) {
+			$collection = $this->factory->get_loop_filter_collector()->collect_loop_filters( $query );
 			$items      = array_merge( $items, $collection->to_array() );
 		}
 
@@ -296,6 +306,44 @@ class Search_Components_Tool extends Abstract_MCP_Tool {
 				'integration' => $integration,
 				'user_type'   => $user_type,
 				'type'        => 'trigger',
+				'results'     => $items,
+			)
+		);
+	}
+
+	/**
+	 * List all loop filters for a specific integration.
+	 *
+	 * Bypasses semantic search and returns up to INTEGRATION_LIMIT loop filters
+	 * directly from the registry.
+	 *
+	 * @param string $integration Integration ID (e.g., "WP", "LD").
+	 * @return array JSON-RPC response.
+	 */
+	private function list_loop_filters_by_integration( string $integration ): array {
+		$collection = $this->factory->get_loop_filter_collector()->collect_loop_filters_by_integration(
+			$integration,
+			self::INTEGRATION_LIMIT
+		);
+
+		if ( $collection->is_empty() ) {
+			return Json_Rpc_Response::create_success_response(
+				sprintf( "No loop filters found for integration '%s'", $integration ),
+				array(
+					'integration' => $integration,
+					'type'        => 'loop_filter',
+					'results'     => array(),
+				)
+			);
+		}
+
+		$items = $collection->to_array();
+
+		return Json_Rpc_Response::create_success_response(
+			sprintf( "Found %d loop filters for '%s'", count( $items ), $integration ),
+			array(
+				'integration' => $integration,
+				'type'        => 'loop_filter',
 				'results'     => $items,
 			)
 		);

@@ -14,6 +14,7 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
 use Uncanny_Automator\Api\Services\Condition\Utilities\Condition_Factory;
 use Uncanny_Automator\Api\Services\Condition\Utilities\Condition_Locator;
+use Uncanny_Automator\Api\Services\Token\Validation\Token_Validator;
 use Uncanny_Automator\Api\Database\Stores\WP_Recipe_Store;
 use Uncanny_Automator\Api\Components\Recipe\Recipe;
 
@@ -211,6 +212,12 @@ class Update_Condition_Tool extends Abstract_MCP_Tool {
 			// Merge fields
 			$existing_fields = $condition->get_fields()->get_all();
 			$merged_fields   = array_merge( $existing_fields, $validated['fields'] );
+
+			// Validate tokens in merged fields before proceeding.
+			$token_validation = Token_Validator::validate( $validated['recipe_id'], $merged_fields );
+			if ( ! $token_validation['valid'] ) {
+				return Json_Rpc_Response::create_error_response( $token_validation['message'] );
+			}
 
 			// Refresh condition with new fields (using Condition_Factory service)
 			$updated_condition = $this->get_factory()->refresh_condition_with_id( $condition, $merged_fields );
