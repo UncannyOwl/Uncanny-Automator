@@ -16,6 +16,7 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
 use Uncanny_Automator\Api\Services\Recipe\Recipe_Condition_Service;
+use Uncanny_Automator\Api\Services\Token\Validation\Token_Validator;
 
 /**
  * Add Condition to Group MCP Tool.
@@ -204,6 +205,12 @@ class Add_Condition_Tool extends Abstract_MCP_Tool {
 		}
 
 		$validated_params = $validation['params'];
+
+		// Validate tokens in fields before proceeding.
+		$token_validation = Token_Validator::validate( $validated_params['recipe_id'], $validated_params['fields'] );
+		if ( ! $token_validation['valid'] ) {
+			return Json_Rpc_Response::create_error_response( $token_validation['message'] );
+		}
 
 		try {
 			$result = $this->execute_service_add(

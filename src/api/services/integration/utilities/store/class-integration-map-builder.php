@@ -13,7 +13,7 @@ namespace Uncanny_Automator\Api\Services\Integration\Utilities\Store;
 use Uncanny_Automator\Api\Components\Trigger\Registry\WP_Trigger_Registry;
 use Uncanny_Automator\Api\Components\Action\Registry\WP_Action_Registry;
 use Uncanny_Automator\Api\Services\Condition\Services\Condition_Registry_Service;
-use Uncanny_Automator\Api\Services\Loop_Filter\Services\Loop_Filter_Registry_Service;
+use Uncanny_Automator\Api\Services\Loop\Filter\Services\Filter_Registry_Service;
 use Uncanny_Automator\Api\Services\Integration\Integration_Registry_Service;
 use Uncanny_Automator\Api\Components\Integration\Enums\Integration_Item_Types;
 
@@ -77,7 +77,7 @@ class Integration_Map_Builder {
 		$trigger_registry    = new WP_Trigger_Registry();
 		$action_registry     = new WP_Action_Registry();
 		$condition_service   = Condition_Registry_Service::get_instance();
-		$loop_filter_service = Loop_Filter_Registry_Service::get_instance();
+		$loop_filter_service = Filter_Registry_Service::instance();
 		$all_integrations    = $registry->get_all_integrations();
 		$map                 = array();
 
@@ -164,11 +164,11 @@ class Integration_Map_Builder {
 	 * Fast extraction - no full discovery.
 	 *
 	 * @param string $integration_code Integration code
-	 * @param Loop_Filter_Registry_Service $service Loop filter registry service
+	 * @param Filter_Registry_Service $service Loop filter registry service
 	 * @return array Array of loop filter codes
 	 */
 	private function extract_loop_filter_codes( string $integration_code, $service ) {
-		$loop_filters = $service->get_loop_filters_by_integration( $integration_code );
+		$loop_filters = $service->get_filters_by_integration( $integration_code );
 		return array_keys( $loop_filters );
 	}
 }

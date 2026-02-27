@@ -43,6 +43,12 @@ class Admin_Settings {
 		// Load the files
 		$this->load_tab( 'general' );
 		$this->load_tab( 'premium-integrations' );
+
+		// Only load for Pro users.
+		if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) && AUTOMATOR_PRO_PLUGIN_VERSION ) {
+			$this->load_tab( 'uncanny-agent' );
+		}
+
 		$this->load_tab( 'advanced' );
 		$this->load_tab( 'addons' );
 	}

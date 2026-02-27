@@ -64,10 +64,6 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 					'type'        => 'integer',
 					'description' => 'Existing recipe ID to update. Omit to create a new recipe.',
 				),
-				'id'             => array(
-					'type'        => 'integer',
-					'description' => 'Alias for recipe_id (legacy support).',
-				),
 				'title'          => array(
 					'type'        => 'string',
 					'description' => 'Recipe title.',
@@ -169,6 +165,14 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 		$categories = $params['categories'] ?? null;
 		$tags       = $params['tags'] ?? null;
 		unset( $params['categories'], $params['tags'] );
+
+		// Validate redirect_url scheme if provided.
+		if ( ! empty( $params['redirect_url'] ) ) {
+			$parsed = wp_parse_url( $params['redirect_url'] );
+			if ( ! isset( $parsed['scheme'] ) || ! in_array( $parsed['scheme'], array( 'http', 'https' ), true ) ) {
+				return Json_Rpc_Response::create_error_response( 'redirect_url must use http:// or https:// scheme.' );
+			}
+		}
 
 		$service = Recipe_Service::instance();
 

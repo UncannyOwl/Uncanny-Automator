@@ -11,14 +11,16 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\Api\Application\Mcp;
 
+use Uncanny_Automator\Api\Application\Mcp\Agent\Agent_Context;
+use Uncanny_Automator\Api\Application\Mcp\Agent\Url_Agent_Context;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Client\Client_Context_Service;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Client\Client_Payload_Service;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Client\Client_Public_Key_Manager;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Client\Client_Token_Service;
+use Uncanny_Automator\Admin_Settings_Uncanny_Agent_General;
 use Uncanny_Automator\Api_Server;
 use Uncanny_Automator\Traits\Singleton;
 use WP_Error;
-use WP_Post;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -46,6 +48,13 @@ class Mcp_Client {
 	 * Default SDK CSS URL for chat components.
 	 */
 	const SDK_CSS_URL = 'https://llm.automatorplugin.com/sdk.css';
+
+	/**
+	 * Agent context builder.
+	 *
+	 * @var Agent_Context
+	 */
+	private Agent_Context $agent_context;
 
 	/**
 	 * Context helper.
@@ -78,17 +87,20 @@ class Mcp_Client {
 	/**
 	 * Constructor.
 	 *
+	 * @param Agent_Context|null             $agent_context Optional agent context builder.
 	 * @param Client_Context_Service|null    $context_service Optional context helper.
 	 * @param Client_Public_Key_Manager|null $public_key_manager Optional public key helper.
 	 * @param Client_Token_Service|null      $token_service Optional token helper.
 	 * @param Client_Payload_Service|null    $payload_service Optional payload helper.
 	 */
 	public function __construct(
+		?Agent_Context $agent_context = null,
 		?Client_Context_Service $context_service = null,
 		?Client_Public_Key_Manager $public_key_manager = null,
 		?Client_Token_Service $token_service = null,
 		?Client_Payload_Service $payload_service = null
 	) {
+		$this->agent_context      = $agent_context ? $agent_context : new Agent_Context();
 		$this->context_service    = $context_service ? $context_service : new Client_Context_Service();
 		$this->public_key_manager = $public_key_manager ? $public_key_manager : new Client_Public_Key_Manager();
 		$this->token_service      = $token_service ? $token_service : new Client_Token_Service();
@@ -101,13 +113,22 @@ class Mcp_Client {
 	}
 
 	/**
+	 * Check whether the Uncanny Agent feature is enabled.
+	 *
+	 * @return bool
+	 */
+	private static function get_uncanny_agent_settings(): bool {
+		return (bool) Admin_Settings_Uncanny_Agent_General::get_setting( Admin_Settings_Uncanny_Agent_General::ENABLED_KEY );
+	}
+
+	/**
 	 * Register WordPress hooks.
 	 *
 	 * @return void
 	 */
 	private function register_hooks(): void {
-		add_action( 'admin_footer', array( $this, 'load_chat_sdk' ) );
-		add_action( 'edit_form_after_title', array( $this, 'render_launcher' ) );
+		add_action( 'admin_footer', array( $this, 'load_chat_sdk' ), 10, 1 );
+		add_action( 'admin_footer', array( $this, 'render_launcher' ), 20, 1 );
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 	}
 
@@ -216,11 +237,7 @@ class Mcp_Client {
 	 * @return void
 	 */
 	public function load_chat_sdk(): void {
-		if ( ! $this->context_service->can_access_client() ) {
-			return;
-		}
-
-		if ( ! $this->context_service->is_recipe_screen() ) {
+		if ( ! self::get_uncanny_agent_settings() || ! $this->context_service->can_access_client() ) {
 			return;
 		}
 
@@ -240,16 +257,68 @@ class Mcp_Client {
 	/**
 	 * Render the chat launcher button.
 	 *
-	 * @param WP_Post|null $post Current post.
+	 * @param mixed $post - WordPress' passed parameter.
 	 * @return void
 	 */
-	public function render_launcher( ?WP_Post $post ): void {
+	public function render_launcher( $post ): void {
+
+		if ( ! self::get_uncanny_agent_settings() ) {
+			return;
+		}
+
+		// if ( ! $this->in_allowed_pages() ) {
+		// 	return;
+		// }
+
 		if ( ! $this->context_service->should_render_button( $post ) ) {
 			return;
 		}
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Output is escaped in generate_launcher_html.
-		echo $this->generate_launcher_html( $post->ID );
+		echo $this->generate_launcher_html();
+	}
+
+	/**
+	 * Check if the current admin page is one where the chat launcher should be rendered.
+	 *
+	 * Returns true for any page under the Automator menu: the uo-recipe post type
+	 * screens (list, edit, add new, taxonomies) and all registered submenu pages.
+	 *
+	 * @return bool
+	 */
+	private function in_allowed_pages(): bool {
+		$current_screen = get_current_screen();
+
+		if ( ! $current_screen ) {
+			return false;
+		}
+
+		// Post type screens: All recipes, Add new, single recipe editor.
+		if ( 'uo-recipe' === $current_screen->post_type ) {
+			return true;
+		}
+
+		// Taxonomy screens: Categories (recipe_category), Tags (recipe_tag).
+		if ( in_array( $current_screen->taxonomy, array( 'recipe_category', 'recipe_tag' ), true ) ) {
+			return true;
+		}
+
+		// Custom submenu pages all follow the pattern "uo-recipe_page_*".
+		if ( 0 === strpos( $current_screen->id, 'uo-recipe_page_' ) ) {
+			return true;
+		}
+
+		// Hidden pages (e.g. recipe activity details) use "admin_page_uncanny-automator-*".
+		if ( 0 === strpos( $current_screen->id, 'admin_page_uncanny-automator-' ) ) {
+			return true;
+		}
+
+		// WordPress dashboard (/wp-admin/index.php).
+		if ( 'dashboard' === $current_screen->id ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -260,325 +329,42 @@ class Mcp_Client {
 	 * @param int $recipe_id Recipe post ID.
 	 * @return string The CSS and launcher HTML, or empty string on failure.
 	 */
-	private function generate_launcher_html( int $recipe_id ): string {
-
-		// Ensure the post is a valid recipe.
-		if ( 'uo-recipe' !== get_post_type( $recipe_id ) ) {
-			return '';
-		}
-
-		// Overwrite with the recipe edit page if the recipe ID is available.
-		if ( ! empty( $recipe_id ) ) {
-			$overrides = array(
-				'page_url' => wp_make_link_relative( get_edit_post_link( $recipe_id ) ),
-			);
-		}
-
-		$payload = $this->payload_service->generate_encrypted_payload( $overrides );
+	private function generate_launcher_html(): string {
+		$payload = $this->payload_service->generate_encrypted_payload( array() );
 
 		if ( '' === $payload ) {
 			return '';
 		}
 
-		$recipe = Automator()->get_recipe_object( $recipe_id, ARRAY_A );
+		// Check if we can dock the widget to the right
+		$can_dock_to_right = $this->in_allowed_pages();
 
-		if ( empty( $recipe ) || ! is_array( $recipe ) ) {
-			return '';
-		}
-
-		// Skip if recipe type is not set yet - button will be loaded via AJAX after user selects type.
-		if ( empty( $recipe['recipe_type'] ) ) {
-			return '';
-		}
-
-		$context = array(
-			'current_mode'      => array( 'recipe building', 'running action' ),
-			'current_user'      => array(
-				'firstname' => $this->context_service->get_current_user_display_name() ?? '',
-			),
-			'current_recipe'    => $this->transform_recipe_to_context( $recipe ),
-			'current_user_plan' => array(
-				'id'                        => $this->context_service->get_current_user_plan(),
-				'name'                      => $this->context_service->get_current_user_plan_name(),
-				'can_add_scheduled_actions' => 'lite' !== $this->context_service->get_current_user_plan(),
-				'can_run_loops'             => 'lite' !== $this->context_service->get_current_user_plan(),
-				'can_add_action_conditions' => 'lite' !== $this->context_service->get_current_user_plan(),
-			),
-			'metadata'          => $this->get_metadata(),
-		);
-
-		$css = '<style>
-			#poststuff {
-				container-type: inline-size;
-				container-name: recipe-container;
-				min-width: auto !important;
-			}
-
-			@container recipe-container (max-width: 800px) {
-				#post-body {
-					display: flex;
-					flex-direction: column;
-					align-items: flex-start;
-					margin-right: 0 !important;
-				}
-
-				#post-body,
-				#postbox-container-1,
-				#postbox-container-2,
-				#side-sortables {
-					margin-right: 0 !important;
-					width: 100% !important;
-				}
-			}
-
-			ua-chat-launcher {
-				--ua-mpc-chat-launcher-z-index: 159900;
-			}
-		</style>';
+		// Infer view mode based on the can dock to right flag
+		$view_mode = $can_dock_to_right ? 'fab' : 'bottom-dock';
 
 		$launcher = sprintf(
-			'<ua-chat-launcher server-url="%s" payload="%s" initial-context=\'%s\' parent-selector="#wpbody" consumer-server-url="%s" consumer-nonce="%s"></ua-chat-launcher>',
+			'<ua-chat-launcher 
+				server-url="%s" 
+				payload="%s" 
+				parent-selector="#wpbody" 
+				consumer-server-url="%s" 
+				consumer-nonce="%s"
+				bundle-url="%s"
+				bundle-css-url="%s"
+				view-mode="%s"
+				%s
+			></ua-chat-launcher>',
 			esc_attr( self::get_inference_url() ),
 			esc_attr( $payload ),
-			esc_attr( base64_encode( wp_json_encode( $context ) ) ),
 			esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ),
-			esc_attr( wp_create_nonce( 'wp_rest' ) )
+			esc_attr( wp_create_nonce( 'wp_rest' ) ),
+			esc_url( $this->get_sdk_url() ),
+			esc_url( $this->get_sdk_css_url() ),
+			esc_attr( $view_mode ),
+			( $can_dock_to_right ? 'can-dock-to-right' : '' )
 		);
 
-		return $css . $launcher;
-	}
-
-	/**
-	 * Transform recipe data structure to match the expected context schema.
-	 *
-	 * This method maps the recipe data from Automator()->get_recipe_object()
-	 * to the structure expected by the MCP chat client (validated by Zod/Pydantic).
-	 *
-	 * @param array $recipe Recipe data from Automator()->get_recipe_object().
-	 * @return array Transformed recipe context with keys: id, title, triggers, actions, conditions_group.
-	 */
-	private function transform_recipe_to_context( array $recipe ): array {
-
-		// Initialize context with safe defaults.
-		$context = array(
-			'id'               => 0,
-			'title'            => '',
-			'recipe_type'      => '',
-			'triggers'         => array(),
-			'actions'          => array(),
-			'conditions_group' => array(),
-		);
-
-		// Extract and validate recipe ID.
-		if ( isset( $recipe['recipe_id'] ) ) {
-			$context['id'] = absint( $recipe['recipe_id'] );
-		}
-
-		// Extract and sanitize recipe title.
-		if ( isset( $recipe['title'] ) && is_string( $recipe['title'] ) ) {
-			$context['title'] = sanitize_text_field( $recipe['title'] );
-		}
-
-		// Extract recipe user type ('user' or 'anonymous').
-		if ( isset( $recipe['recipe_type'] ) && is_string( $recipe['recipe_type'] ) ) {
-			$context['recipe_type'] = sanitize_text_field( $recipe['recipe_type'] );
-		}
-
-		// Transform triggers.
-		$context['triggers'] = $this->extract_triggers( $recipe );
-
-		// Transform actions and condition groups.
-		$actions_data = $this->extract_actions_and_conditions( $recipe );
-
-		$context['actions']          = $actions_data['actions'] ?? array();
-		$context['conditions_group'] = $actions_data['conditions_group'] ?? array();
-
-		/**
-		 * Filter the transformed recipe context before it is sent to the MCP client.
-		 *
-		 * @param array $context Transformed recipe context.
-		 * @param array $recipe  Original recipe data.
-		 */
-		return apply_filters( 'automator_mcp_transform_recipe_context', $context, $recipe );
-	}
-
-	/**
-	 * Extract triggers from recipe data.
-	 *
-	 * @param array $recipe Recipe data.
-	 * @return array Array of trigger objects with id and sentence.
-	 */
-	private function extract_triggers( array $recipe ): array {
-
-		$triggers = array();
-
-		if ( ! isset( $recipe['triggers']['items'] ) || ! is_array( $recipe['triggers']['items'] ) ) {
-			return $triggers;
-		}
-
-		foreach ( $recipe['triggers']['items'] as $trigger ) {
-
-			if ( ! is_array( $trigger ) ) {
-				continue;
-			}
-
-			// Validate required fields.
-			if ( ! isset( $trigger['id'] ) || ! isset( $trigger['backup']['sentence'] ) ) {
-				continue;
-			}
-
-			// Skip if sentence is empty.
-			if ( empty( $trigger['backup']['sentence'] ) || ! is_string( $trigger['backup']['sentence'] ) ) {
-				continue;
-			}
-
-			$triggers[] = array(
-				'id'       => absint( $trigger['id'] ),
-				'sentence' => sanitize_text_field( $trigger['backup']['sentence'] ),
-			);
-
-		}
-
-		return $triggers;
-	}
-
-	/**
-	 * Extract actions and condition groups from recipe data.
-	 *
-	 * @param array $recipe Recipe data.
-	 * @return array Array with 'actions' and 'conditions_group' keys.
-	 */
-	private function extract_actions_and_conditions( array $recipe ): array {
-
-		$actions          = array();
-		$conditions_group = array();
-
-		if ( ! isset( $recipe['actions']['items'] ) || ! is_array( $recipe['actions']['items'] ) ) {
-			return array(
-				'actions'          => $actions,
-				'conditions_group' => $conditions_group,
-			);
-		}
-
-		foreach ( $recipe['actions']['items'] as $item ) {
-
-			if ( ! is_array( $item ) ) {
-				continue;
-			}
-
-			$item_type = $item['type'] ?? '';
-
-			// Handle root-level actions.
-			if ( 'action' === $item_type ) {
-				$action = $this->extract_single_action( $item );
-				if ( ! empty( $action ) ) {
-					$actions[] = $action;
-				}
-			}
-
-			// Handle condition groups (filters).
-			if ( 'filter' === $item_type ) {
-				$group = $this->extract_condition_group( $item );
-				// Only add non-empty groups.
-				if ( ! empty( $group['conditions'] ) || ! empty( $group['actions'] ) ) {
-					$conditions_group[] = $group;
-				}
-			}
-		}
-
-		return array(
-			'actions'          => $actions,
-			'conditions_group' => $conditions_group,
-		);
-	}
-
-	/**
-	 * Extract a single action from item data.
-	 *
-	 * @param array $item Action item data.
-	 * @return array Action object with id and sentence, or empty array if invalid.
-	 */
-	private function extract_single_action( array $item ): array {
-
-		// Validate required fields.
-		if ( ! isset( $item['id'] ) || ! isset( $item['backup']['sentence'] ) ) {
-			return array();
-		}
-
-		// Skip if sentence is empty.
-		if ( empty( $item['backup']['sentence'] ) || ! is_string( $item['backup']['sentence'] ) ) {
-			return array();
-		}
-
-		return array(
-			'id'       => absint( $item['id'] ),
-			'sentence' => sanitize_text_field( $item['backup']['sentence'] ),
-		);
-	}
-
-	/**
-	 * Extract a condition group (filter) from item data.
-	 *
-	 * @param array $item Filter item data.
-	 * @return array Group object with conditions and actions arrays.
-	 */
-	private function extract_condition_group( array $item ): array {
-
-		$group = array(
-			'conditions' => array(),
-			'actions'    => array(),
-		);
-
-		// Extract conditions.
-		if ( isset( $item['conditions'] ) && is_array( $item['conditions'] ) ) {
-
-			foreach ( $item['conditions'] as $condition ) {
-
-				if ( ! is_array( $condition ) ) {
-					continue;
-				}
-
-				// Validate required fields.
-				if ( ! isset( $condition['id'] ) || ! isset( $condition['backup']['sentence'] ) ) {
-					continue;
-				}
-
-				// Skip if sentence is empty.
-				if ( empty( $condition['backup']['sentence'] ) || ! is_string( $condition['backup']['sentence'] ) ) {
-					continue;
-				}
-
-				$group['conditions'][] = array(
-					'id'       => sanitize_text_field( $condition['id'] ),
-					'sentence' => sanitize_text_field( $condition['backup']['sentence'] ),
-				);
-
-			}
-		}
-
-		// Extract actions within the filter.
-		if ( isset( $item['items'] ) && is_array( $item['items'] ) ) {
-
-			foreach ( $item['items'] as $filter_action ) {
-
-				if ( ! is_array( $filter_action ) ) {
-					continue;
-				}
-
-				// Only process action types.
-				if ( 'action' !== ( $filter_action['type'] ?? '' ) ) {
-					continue;
-				}
-
-				$action = $this->extract_single_action( $filter_action );
-
-				if ( ! empty( $action ) ) {
-					$group['actions'][] = $action;
-				}
-			}
-		}
-
-		return $group;
+		return $this->get_inline_css() . $launcher;
 	}
 
 	/**
@@ -587,9 +373,10 @@ class Mcp_Client {
 	 * @return string
 	 */
 	public static function get_inference_url(): string {
-		$url = defined( 'AUTOMATOR_MCP_CLIENT_INFERENCE_URL' ) && AUTOMATOR_MCP_CLIENT_INFERENCE_URL
-			? AUTOMATOR_MCP_CLIENT_INFERENCE_URL
-			: self::INFERENCE_URL;
+		$url = defined( 'AUTOMATOR_MCP_CLIENT_INFERENCE_URL' )
+			&& AUTOMATOR_MCP_CLIENT_INFERENCE_URL
+				? AUTOMATOR_MCP_CLIENT_INFERENCE_URL
+				: self::INFERENCE_URL;
 
 		return apply_filters( 'automator_mcp_client_inference_url', $url );
 	}
@@ -639,11 +426,93 @@ class Mcp_Client {
 			);
 		}
 
+		$context = $this->build_context_for_refresh( $page_url );
+
+		// Push updated context to the inference server so the AI agent
+		// picks it up on the next turn without waiting for a new message.
+		$this->send_context_to_inference_server( $payload, $context );
+
 		return rest_ensure_response(
 			array(
 				'encrypted_payload' => $payload,
+				'context'           => $context,
 			)
 		);
+	}
+
+	/**
+	 * Build agent context for the refresh endpoint.
+	 *
+	 * When a page_url is provided (detached window mode), derives context from
+	 * the URL instead of relying on WordPress globals.
+	 *
+	 * @param string|null $page_url Optional page URL from the request.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function build_context_for_refresh( ?string $page_url ): array {
+
+		if ( is_string( $page_url ) && '' !== $page_url ) {
+			return $this->create_url_agent_context( $page_url )->build();
+		}
+
+		return $this->agent_context->build();
+	}
+
+	/**
+	 * Push updated context to the inference server.
+	 *
+	 * Fire-and-forget: a short timeout prevents blocking the REST response.
+	 * Failures are silently ignored — the AI will still work with stale context
+	 * until the next successful push.
+	 *
+	 * @param string              $encrypted_payload The freshly encrypted payload (used for auth on the inference side).
+	 * @param array<string,mixed> $context           The ModelContext array.
+	 *
+	 * @return void
+	 */
+	private function send_context_to_inference_server( string $encrypted_payload, array $context ): void {
+
+		$url = self::get_inference_url();
+
+		if ( '' === $url ) {
+			return;
+		}
+
+		$body = wp_json_encode(
+			array(
+				'encrypted_payload' => $encrypted_payload,
+				'context'           => $context,
+			)
+		);
+
+		if ( false === $body ) {
+			return;
+		}
+
+		wp_remote_post(
+			trailingslashit( $url ) . 'api/context/update',
+			array(
+				'headers'   => array( 'Content-Type' => 'application/json' ),
+				'body'      => $body,
+				'timeout'   => 30,
+				'blocking'  => false,
+				'sslverify' => true,
+			)
+		);
+	}
+
+	/**
+	 * Create an Agent_Context that derives data from a URL.
+	 *
+	 * Extracted as a protected method so tests can substitute a stub.
+	 *
+	 * @param string $page_url The admin page URL.
+	 *
+	 * @return Agent_Context
+	 */
+	protected function create_url_agent_context( string $page_url ): Agent_Context {
+		return new Url_Agent_Context( $page_url );
 	}
 
 	/**
@@ -719,27 +588,38 @@ class Mcp_Client {
 	}
 
 	/**
-	 * Get metadata to send to the MCP client.
+	 * Returns the inline CSS styles for the chat launcher and its container.
 	 *
 	 * @return string
 	 */
-	private function get_metadata(): string {
+	private function get_inline_css(): string {
+		return '<style>
+			#poststuff {
+				container-type: inline-size;
+				container-name: recipe-container;
+				min-width: auto !important;
+			}
 
-		global $wp;
+			@container recipe-container (max-width: 800px) {
+				#post-body {
+					display: flex;
+					flex-direction: column;
+					align-items: flex-start;
+					margin-right: 0 !important;
+				}
 
-		$current_url = home_url( add_query_arg( $_GET, $wp->request ) );
+				#post-body,
+				#postbox-container-1,
+				#postbox-container-2,
+				#side-sortables {
+					margin-right: 0 !important;
+					width: 100% !important;
+				}
+			}
 
-		$server_software = sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification -- No sensitive data.
-
-		$metadata = array(
-			'plugin_version'  => AUTOMATOR_PLUGIN_VERSION,
-			'current_url'     => $current_url,
-			'php_version'     => PHP_VERSION,
-			'wp_version'      => get_bloginfo( 'version' ),
-			'server_software' => ! empty( $server_software ) ? $server_software : 'unknown',
-		);
-
-		// Safe to ignore false return - array is well-formed. Using base64 to safely encode JSON for payload.
-		return base64_encode( wp_json_encode( $metadata ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- No sensitive data. 
+			ua-chat-launcher {
+				--ua-mpc-chat-launcher-z-index: 159900;
+			}
+		</style>';
 	}
 }

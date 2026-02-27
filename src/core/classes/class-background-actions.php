@@ -54,7 +54,7 @@ class Background_Actions {
 		add_action( 'automator_settings_advanced_tab_view', array( $this, 'settings_output' ), 0 );
 
 		add_action( 'automator_activation_before', array( $this, 'add_option' ) );
-		add_action( 'automator_daily_healthcheck', array( $this, 'add_option' ) );
+		//add_action( 'automator_daily_healthcheck', array( $this, 'add_option' ) );
 		add_action( 'automator_daily_healthcheck', array( self::class, 'renew_license_check' ) );
 
 		add_filter( 'perfmatters_rest_api_exceptions', array( $this, 'add_rest_api_exception' ) );
@@ -103,7 +103,7 @@ class Background_Actions {
 	public function add_option() {
 
 		$current_option  = automator_get_option( self::OPTION_NAME, 'option_does_not_exist' );
-		$bg_actions_work = $this->test_endpoint( '1' );
+		$bg_actions_work = $this->test_endpoint();
 
 		if ( 'option_does_not_exist' === $current_option ) {
 			automator_add_option( self::OPTION_NAME, $bg_actions_work );
@@ -351,16 +351,11 @@ class Background_Actions {
 	/**
 	 * test_endpoint
 	 *
-	 * Disable background actions if the endpoint is not reachable.
+	 * Test if the endpoint for background action is reachable.
 	 *
 	 * @return string
 	 */
-	public function test_endpoint( $value ) {
-
-		if ( empty( $value ) ) {
-			automator_update_option( self::OPTION_NAME, '0' );
-			return '0';
-		}
+	public function test_endpoint() {
 
 		$this->action = array(
 			'process_further' => false,
@@ -378,7 +373,6 @@ class Background_Actions {
 		$error = $this->rest_api_error();
 
 		if ( null === $error || empty( $error ) ) {
-			automator_update_option( self::OPTION_NAME, '1' );
 			return '1';
 		}
 
@@ -386,7 +380,6 @@ class Background_Actions {
 			add_settings_error( self::OPTION_NAME, self::OPTION_NAME, $error, 'error' );
 		}
 
-		automator_update_option( self::OPTION_NAME, '0' );
 		return '0';
 	}
 
@@ -538,6 +531,20 @@ class Background_Actions {
 	}
 
 	/**
+	 * sanitize_background_actions_setting
+	 *
+	 * @param mixed $value
+	 *
+	 * @return string
+	 */
+	public function sanitize_background_actions_setting( $value ) {
+		$sanitized = ( '1' === $value || 1 === $value || true === $value ) ? '1' : '0';
+		automator_update_option( self::OPTION_NAME, $sanitized );
+
+		return $sanitized;
+	}
+
+	/**
 	 * register_setting
 	 *
 	 * @return void
@@ -546,7 +553,7 @@ class Background_Actions {
 
 		$args = array(
 			'type'              => 'boolean',
-			'sanitize_callback' => array( $this, 'test_endpoint' ),
+			'sanitize_callback' => array( $this, 'sanitize_background_actions_setting' ),
 		);
 
 		register_setting( 'uncanny_automator_advanced', self::OPTION_NAME, $args );

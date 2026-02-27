@@ -41,13 +41,11 @@ class Client_Context_Service {
 	/**
 	 * Decide whether to render the chat trigger button.
 	 *
-	 * @param WP_Post|null $post Current post.
+	 * @param $post WordPress' mixed typed parameter.
 	 * @return bool
 	 */
-	public function should_render_button( ?WP_Post $post ): bool {
-		return $this->can_access_client()
-			&& $post instanceof WP_Post
-			&& 'uo-recipe' === $post->post_type;
+	public function should_render_button( $post ): bool {
+		return true;
 	}
 
 	/**

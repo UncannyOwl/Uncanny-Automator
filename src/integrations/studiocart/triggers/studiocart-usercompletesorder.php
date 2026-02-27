@@ -96,7 +96,7 @@ class STUDIOCART_USERCOMPLETESORDER {
 			return;
 		}
 
-		if ( 'main' !== (string) $order_type || ! in_array( $order_data['status'], array( \ScrtOrder::$completed_str ), true ) ) {
+		if ( 'main' !== (string) $order_type || ! in_array( $order_data['status'], array( \ScrtOrder::$paid_str, \ScrtOrder::$completed_str ), true ) ) {
 			return;
 		}
 

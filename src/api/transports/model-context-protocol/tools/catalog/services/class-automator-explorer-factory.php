@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Services;
 
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Services\Trigger_Collector;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Services\Loop_Filter_Collector;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Services\Loopable_Token_Collector;
 use Uncanny_Automator\Api\Services\Plan\Plan_Service;
 
 /**
@@ -75,5 +77,31 @@ class Automator_Explorer_Factory {
 		}
 
 		return $this->services['condition_collector'];
+	}
+
+	/**
+	 * Get loop filter collector service.
+	 *
+	 * @return Loop_Filter_Collector
+	 */
+	public function get_loop_filter_collector(): Loop_Filter_Collector {
+		if ( ! isset( $this->services['loop_filter_collector'] ) ) {
+			$this->services['loop_filter_collector'] = new Loop_Filter_Collector();
+		}
+
+		return $this->services['loop_filter_collector'];
+	}
+
+	/**
+	 * Get loopable token collector service.
+	 *
+	 * @return Loopable_Token_Collector
+	 */
+	public function get_loopable_token_collector(): Loopable_Token_Collector {
+		if ( ! isset( $this->services['loopable_token_collector'] ) ) {
+			$this->services['loopable_token_collector'] = new Loopable_Token_Collector();
+		}
+
+		return $this->services['loopable_token_collector'];
 	}
 }

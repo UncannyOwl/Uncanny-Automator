@@ -2,10 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use TEC\Tickets\Commerce\Module;
-use TEC\Tickets\Commerce\Order;
-use WP_Post;
-
 /**
  * Class EC_REGISTER
  *
@@ -33,7 +29,10 @@ class EC_REGISTER {
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Define and register the trigger by pushing it into the Automator object.
+	 *
+	 * Listens to the normalized internal action fired by Event_Tickets_Helpers
+	 * which bridges all ticket providers (RSVP, WooCommerce, PayPal, Tickets Commerce).
 	 */
 	public function define_trigger() {
 
@@ -46,13 +45,9 @@ class EC_REGISTER {
 			'sentence'            => sprintf( esc_attr__( 'A user registers for {{an event:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - The Events Calendar */
 			'select_option_name'  => esc_attr__( 'A user registers for {{an event}}', 'uncanny-automator' ),
-			'action'              => array(
-				'event_tickets_rsvp_tickets_generated_for_product',
-				'event_tickets_woocommerce_tickets_generated_for_product',
-				'event_tickets_tpp_tickets_generated_for_product',
-			),
+			'action'              => Event_Tickets_Helpers::USER_REGISTERED_ACTION,
 			'priority'            => 10,
-			'accepted_args'       => 3,
+			'accepted_args'       => 4,
 			'validation_function' => array( $this, 'user_registered' ),
 			'options_callback'    => array( $this, 'load_options' ),
 		);
@@ -74,25 +69,24 @@ class EC_REGISTER {
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Validation function when the normalized trigger action is hit.
 	 *
-	 * @param $order_id
+	 * @param int        $event_id   The event post ID.
+	 * @param int        $product_id The ticket product ID.
+	 * @param int|string $order_id   The order ID.
+	 * @param int        $user_id    The user ID.
 	 */
-	public function user_registered( $product_id, $order_id, $qty ) {
+	public function user_registered( $event_id, $product_id, $order_id, $user_id ) {
 
 		if ( ! $order_id ) {
 			return;
 		}
 
-		$event    = tribe_events_get_ticket_event( $product_id );
-		$event_id = ( $event instanceof WP_Post ) ? $event->ID : false;
-		$user_id  = get_current_user_id();
-
 		$pass_args = array(
 			'code'    => $this->trigger_code,
 			'meta'    => $this->trigger_meta,
-			'post_id' => $event_id,
-			'user_id' => $user_id,
+			'post_id' => absint( $event_id ),
+			'user_id' => absint( $user_id ),
 		);
 
 		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
@@ -102,7 +96,7 @@ class EC_REGISTER {
 				if ( true === $result['result'] ) {
 
 					$trigger_meta = array(
-						'user_id'        => $user_id,
+						'user_id'        => absint( $user_id ),
 						'trigger_id'     => $result['args']['trigger_id'],
 						'trigger_log_id' => $result['args']['get_trigger_id'],
 						'run_number'     => $result['args']['run_number'],

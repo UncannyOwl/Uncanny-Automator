@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Recipes;
 
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
-use Uncanny_Automator\Api\Services\Recipe\Recipe_Service;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 
@@ -23,28 +22,6 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  */
 class Get_Recipe_Tool extends Abstract_MCP_Tool {
 
-	/**
-	 * Use the recipe object instead of the recipe array.
-	 *
-	 * @var bool
-	 */
-	const USE_RECIPE_OBJECT = true;
-
-	/**
-	 * Recipe service.
-	 *
-	 * @var Recipe_Service
-	 */
-	private $recipe_service;
-
-	/**
-	 * Constructor.
-	 *
-	 * Allows for dependency injection of the recipe service.
-	 */
-	public function __construct( ?Recipe_Service $recipe_service = null ) {
-		$this->recipe_service = $recipe_service ?? Recipe_Service::instance();
-	}
 
 	/**
 	 * Get the name of the tool.
@@ -93,30 +70,16 @@ class Get_Recipe_Tool extends Abstract_MCP_Tool {
 		$recipe_id = isset( $params['recipe_id'] ) ? (int) $params['recipe_id'] : 0;
 
 		if ( $recipe_id <= 0 ) {
-			return Json_Rpc_Response::create_error_response( 'Parameter recipe_id must be a positive integer.' );
+			return Json_Rpc_Response::create_error_response( 'Parameter recipe_id must be a positive integer. Use list_recipes to find recipe IDs.' );
 		}
 
-		if ( self::USE_RECIPE_OBJECT ) {
-			try {
-				$result = Automator()->get_recipe_object( $recipe_id, ARRAY_A );
-				return Json_Rpc_Response::create_success_response( 'Recipe retrieved successfully', $result );
-			} catch ( \Uncanny_Automator\Automator_Exception $e ) {
-				return Json_Rpc_Response::create_error_response( $e->getMessage() );
-			} catch ( \Exception $e ) {
-				return Json_Rpc_Response::create_error_response( 'Failed to retrieve recipe: ' . $e->getMessage() );
-			}
+		try {
+			$result = Automator()->get_recipe_object( $recipe_id, ARRAY_A );
+			return Json_Rpc_Response::create_success_response( 'Recipe retrieved successfully', $result );
+		} catch ( \Uncanny_Automator\Automator_Exception $e ) {
+			return Json_Rpc_Response::create_error_response( $e->getMessage() );
+		} catch ( \Exception $e ) {
+			return Json_Rpc_Response::create_error_response( 'Failed to retrieve recipe: ' . $e->getMessage() );
 		}
-
-		$result = $this->recipe_service->get_recipe( $recipe_id );
-
-		if ( is_wp_error( $result ) ) {
-			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
-		}
-
-		if ( empty( $result['recipe'] ) || ! is_array( $result['recipe'] ) ) {
-			return Json_Rpc_Response::create_error_response( 'Recipe not found.' );
-		}
-
-		return Json_Rpc_Response::create_success_response( 'Recipe retrieved successfully', $result['recipe'] );
 	}
 }

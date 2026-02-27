@@ -17,18 +17,15 @@ use Uncanny_Automator\Api\Components\Trigger\Trigger;
 use Uncanny_Automator\Api\Components\Trigger\Trigger_Config;
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
 use Uncanny_Automator\Api\Components\Security\Security;
-use Uncanny_Automator\Api\Services\Sentence_Html\Sentence_Human_Readable_Service;
-use Uncanny_Automator\Api\Components\Shared\Sentence_Html\Value_Objects\Sentence_Template;
-use Uncanny_Automator\Api\Components\Shared\Sentence_Html\Value_Objects\Sentence_Field_Value_Text;
-use Uncanny_Automator\Api\Components\Shared\Sentence_Html\Value_Objects\Sentence_Field_Label;
-use Uncanny_Automator\Api\Components\Shared\Sentence_Html\Collections\Sentence_Field_Value_Text_Collection;
-use Uncanny_Automator\Api\Components\Shared\Sentence_Html\Collections\Sentence_Field_Label_Collection;
+use Uncanny_Automator\Api\Presentation\Sentence\Item_Sentence_Composer;
 use Uncanny_Automator\Api\Services\Trigger\Utilities\Trigger_Validator;
 use Uncanny_Automator\Services\Integrations\Fields;
 use WP_Error;
 
 /**
  * Add Trigger Tool.
+ *
+ * Sentence and sentence HTML composition is delegated to presentation layer.
  *
  * @since 7.0.0
  */
@@ -56,6 +53,13 @@ class Add_Trigger_Tool extends Abstract_MCP_Tool {
 	private $trigger_validator;
 
 	/**
+	 * Sentence composer.
+	 *
+	 * @var Item_Sentence_Composer
+	 */
+	private $sentence_composer;
+
+	/**
 	 * Constructor.
 	 *
 	 * Allows for dependency injection of services for testing.
@@ -63,11 +67,13 @@ class Add_Trigger_Tool extends Abstract_MCP_Tool {
 	public function __construct(
 		?Trigger_CRUD_Service $trigger_service = null,
 		?Trigger_Registry_Service $trigger_registry_service = null,
-		?Trigger_Validator $trigger_validator = null
+		?Trigger_Validator $trigger_validator = null,
+		?Item_Sentence_Composer $sentence_composer = null
 	) {
 		$this->trigger_service          = $trigger_service ?? Trigger_CRUD_Service::instance();
 		$this->trigger_registry_service = $trigger_registry_service ?? Trigger_Registry_Service::get_instance();
 		$this->trigger_validator        = $trigger_validator ?? new Trigger_Validator();
+		$this->sentence_composer        = $sentence_composer ?? new Item_Sentence_Composer();
 	}
 
 	/**
@@ -331,7 +337,7 @@ class Add_Trigger_Tool extends Abstract_MCP_Tool {
 		$tokens      = $trigger_definition['tokens'] ?? array();
 
 		// Configuration data.
-		$configuration = $processed_params['fields'] ?? array();
+		$configuration = $this->strip_sentence_artifacts( $processed_params['fields'] ?? array() );
 
 		// Process the readable fields because Automator saves the text label in the database instead of mapping it.
 		// Skip field processing if trigger definition indicates no fields to process (for testing)
@@ -579,7 +585,7 @@ class Add_Trigger_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
-	 * Build sentence outputs using the Sentence_Human_Readable_Service.
+	 * Build sentence outputs using the presentation composer.
 	 *
 	 * Converts raw configuration arrays into domain objects and generates
 	 * both bracket-wrapped and HTML sentence formats.
@@ -591,65 +597,23 @@ class Add_Trigger_Tool extends Abstract_MCP_Tool {
 	 * @return array{brackets: string, html: string} Sentence outputs.
 	 */
 	private function build_sentence_outputs( string $sentence_template, array $configuration, array $field_labels ): array {
+		return $this->sentence_composer->compose( $sentence_template, $configuration, $field_labels );
+	}
 
-		$template = new Sentence_Template( $sentence_template );
-
-		// Build field value collection from configuration.
-		$field_value_collection = new Sentence_Field_Value_Text_Collection();
-
-		// Iterate over the field labels and build the field value collection.
-		foreach ( $field_labels as $code => $label ) {
-
-			// Skip if no value exists for this code.
-			if ( ! isset( $configuration[ $code ] ) ) {
-				continue;
-			}
-
-			$raw_value = $configuration[ $code ];
-
-			// In case the model sends an object but was converted to an array, we need to encode it to a JSON string.
-			if ( ! is_string( $raw_value ) && is_array( $raw_value ) ) {
-				$raw_value = wp_json_encode( $raw_value );
-			}
-
-			$text = $configuration[ $code . '_readable' ] ?? (string) $raw_value;
-
-			// Determine is_filled: has value and it's not empty/placeholder.
-			// -1 typically means "Any X" selection → not filled.
-			$is_filled = ! empty( $text ) && '-1' !== (string) $raw_value && -1 !== $raw_value;
-
-			// Ensure text is a string for the Sentence_Field_Value_Text constructor.
-			if ( ! is_scalar( $text ) ) {
-				$text = wp_json_encode( $text );
-			}
-
-			// Cast to string if not already.
-			if ( ! is_string( $text ) ) {
-				$text = (string) $text;
-			}
-
-			$field_value_collection->add(
-				new Sentence_Field_Value_Text( $code, $raw_value, $text, $is_filled )
-			);
-
-		}
-
-		// Build field label collection.
-		$field_label_collection = new Sentence_Field_Label_Collection();
-		foreach ( $field_labels as $code => $label ) {
-			$field_label_collection->add(
-				new Sentence_Field_Label( $code, $label )
-			);
-		}
-
-		// Generate outputs using the service.
-		$service  = new Sentence_Human_Readable_Service();
-		$brackets = $service->build( $template, $field_value_collection, $field_label_collection );
-		$html     = $service->build_html( $template, $field_value_collection, $field_label_collection );
-
-		return array(
-			'brackets' => $brackets,
-			'html'     => $html,
+	/**
+	 * Strip client-provided sentence artifacts from incoming fields.
+	 *
+	 * @param array $fields Incoming fields.
+	 *
+	 * @return array
+	 */
+	private function strip_sentence_artifacts( array $fields ): array {
+		unset(
+			$fields['sentence'],
+			$fields['sentence_human_readable'],
+			$fields['sentence_human_readable_html']
 		);
+
+		return $fields;
 	}
 }

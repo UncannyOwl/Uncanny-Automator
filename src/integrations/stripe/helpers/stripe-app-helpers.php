@@ -187,12 +187,31 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
+	 * is_zero_decimal_currency
+	 *
+	 * @param  string $currency ISO 4217 currency code.
+	 * @return bool
+	 */
+	public function is_zero_decimal_currency( $currency ) {
+		// Zero-decimal currencies per https://docs.stripe.com/currencies#zero-decimal
+		$zero_decimal = array( 'bif', 'clp', 'djf', 'gnf', 'jpy', 'kmf', 'krw', 'mga', 'pyg', 'rwf', 'ugx', 'vnd', 'vuv', 'xaf', 'xof', 'xpf' );
+
+		return ! empty( $currency ) && in_array( strtolower( $currency ), $zero_decimal, true );
+	}
+
+	/**
 	 * format_amount
 	 *
-	 * @param  int $cents
+	 * @param  int    $cents
+	 * @param  string $currency ISO 4217 currency code (e.g. 'usd', 'jpy').
 	 * @return string
 	 */
-	public function format_amount( $cents ) {
+	public function format_amount( $cents, $currency = '' ) {
+
+		if ( $this->is_zero_decimal_currency( $currency ) ) {
+			return number_format( $cents, 0 );
+		}
+
 		return number_format( $cents / 100, 2 );
 	}
 

@@ -55,6 +55,14 @@ function automator_pro_items_list() {
 			'elite_only' => 'no',
 			'triggers'   => array(
 				array(
+					'name' => esc_html_x( '{{A sub field}} in {{a group field}} is updated', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( '{{A sub field}} in {{a group field}} is updated to {{a specific value}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
 					'name' => esc_html_x( 'A user updates {{a field}} on {{a post}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -174,19 +182,24 @@ function automator_pro_items_list() {
 			'elite_only' => 'no',
 			'triggers'   => array(
 				array(
-					'name' => esc_html_x( 'A comment is added to a task in a specific project', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A comment is added to {{a task}} in {{a specific project}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A custom field of a task is set to a specific value', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A task is created in {{a specific project}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'An approval task is set to a status', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( '{{A task}} is updated in {{a specific project}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A task is created in a specific project', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( "A tasks's {{custom field}} is set to {{a specific value}}", 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A task is updated in a specific project', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( '{{An approval task}} is set to {{a status}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 			),
 			'actions'    => array(),
@@ -760,6 +773,29 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(),
 		),
+		'DYNAMIC_CONTENT' => array(
+			'name'       => 'Dynamic Content',
+			'pro_only'   => 'no',
+			'elite_only' => 'yes',
+			'triggers'   => array(),
+			'actions'    => array(
+				array(
+					'name' => esc_html_x( 'Clear {{a dynamic content block}} for {{a specific user}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Clear {{a dynamic content block}} for the user', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Update {{a dynamic content block}} for {{a specific user}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Update {{a global dynamic content block}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Update {{a dynamic content block}} for the user', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+		),
 		'ESAF' => array(
 			'name'       => 'Easy Affiliate',
 			'pro_only'   => 'no',
@@ -780,12 +816,12 @@ function automator_pro_items_list() {
 			),
 		),
 		'EDD' => array(
-			'name'       => 'EDD – Recurring Payments',
+			'name'       => 'Easy Digital Downloads',
 			'pro_only'   => 'no',
 			'elite_only' => 'no',
 			'triggers'   => array(
 				array(
-					'name' => esc_html_x( 'A customer makes a payment and their lifetime value is {{greater than, less than, or equal to}} {{a specific amount}}', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'User completes {{an order}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
 				array(
@@ -800,26 +836,6 @@ function automator_pro_items_list() {
 					'name' => esc_html_x( '{{A file}} is downloaded', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
-				array(
-					'name' => esc_html_x( 'A user cancels their subscription to a price option of a download', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					'name' => esc_html_x( 'A user receives a Stripe refund for their subscription to a price option of a download', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					'name' => esc_html_x( 'A user subscribes to a price option of a download', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					'name' => esc_html_x( 'A user cancels a subscription to {{a download}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					'name' => esc_html_x( "A user's subscription to {{a download}} expires", 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
 			),
 			'actions'    => array(
 				array(
@@ -831,6 +847,43 @@ function automator_pro_items_list() {
 				array(
 					'name' => esc_html_x( 'Generate a discount code', 'Automator Pro item', 'uncanny-automator' ),
 				),
+			),
+		),
+		'EDD_RECURRING' => array(
+			'name'       => 'EDD – Recurring Payments',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'A user cancels a subscription to {{a download}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( 'A user cancels their subscription to {{a price option}} of {{a download}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( 'A user receives a Stripe refund for their subscription to {{a price option}} of {{a download}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( 'A user subscribes to {{a price option}} of {{a download}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( "A user's subscription to {{a download}} expires", 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( "A user's subscription to {{a price option}} of {{a download}} expires", 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( "A user's subscription to {{a price option}} of {{a download}} is renewed", 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+			),
+			'actions'    => array(
 				array(
 					'name' => esc_html_x( "Cancel the user's subscription matching a {{subscription ID}}", 'Automator Pro item', 'uncanny-automator' ),
 				),
@@ -838,6 +891,18 @@ function automator_pro_items_list() {
 					'name' => esc_html_x( 'Set {{a subscription download}} to expire on {{a specific date}} for the user', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
+		),
+		'EDD_SL' => array(
+			'name'       => 'EDD – Software Licensing',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( "A user's license for {{a download}} is disabled", 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+			),
+			'actions'    => array(),
 		),
 		'ELEM' => array(
 			'name'       => 'Elementor Pro',
@@ -882,6 +947,22 @@ function automator_pro_items_list() {
 					'name' => esc_html_x( 'Unregister the user from {{an event}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
+		),
+		'EVEREST_FORMS' => array(
+			'name'       => 'Everest Forms',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'A form is submitted with a specific value in a specific field', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					'name' => esc_html_x( 'A user submits a form with a specific value in a specific field', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+			),
+			'actions'    => array(),
 		),
 		'WPFF' => array(
 			'name'       => 'Fluent Forms',
@@ -1094,6 +1175,9 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(
 				array(
+					'name' => esc_html_x( 'Create an entry for {{a form}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
 					'name' => esc_html_x( 'Register a new user', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
@@ -1224,22 +1308,28 @@ function automator_pro_items_list() {
 			'elite_only' => 'no',
 			'triggers'   => array(
 				array(
-					'name' => esc_html_x( 'A pull request is merged in a repository', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A pull request is merged in {{a repository}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A pull request is opened in a repository', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A pull request is opened in {{a repository}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A push is made to a repository', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A push is made to {{a repository}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'A release is published in a repository', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'A release is published in {{a repository}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'An event occurs in a repository', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( '{{An event}} occurs in {{a repository}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 				array(
-					'name' => esc_html_x( 'An issue is created in a repository', 'Automator Pro item', 'uncanny-automator' ),
+					'name' => esc_html_x( 'An issue is created in {{a repository}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
 				),
 			),
 			'actions'    => array(),
@@ -1317,6 +1407,10 @@ function automator_pro_items_list() {
 					'type' => 'logged-in',
 				),
 				array(
+					'name' => esc_html_x( '{{A form}} entry is updated to {{a status}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
 					'name' => esc_html_x( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'anonymous',
 				),
@@ -1349,6 +1443,9 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name' => esc_html_x( 'Submit an entry for {{a form}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
+					'name' => esc_html_x( 'Update {{an entry}} of {{a form}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 				array(
 					'name' => esc_html_x( 'Register a new user', 'Automator Pro item', 'uncanny-automator' ),
@@ -1818,6 +1915,17 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name' => esc_html_x( "Reset the user's attempts for {{a quiz}}", 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+		),
+		'LOOP' => array(
+			'name'       => 'Loop',
+			'pro_only'   => 'yes',
+			'elite_only' => 'no',
+			'triggers'   => array(),
+			'actions'    => array(
+				array(
+					'name' => esc_html_x( 'End Loop', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
 		),
@@ -2397,7 +2505,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'Run_Now' => array(
+		'RUN_NOW' => array(
 			'name'       => 'Run now',
 			'pro_only'   => 'yes',
 			'elite_only' => 'no',
@@ -2473,6 +2581,26 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'    => array(),
+		),
+		'SUGAR_CALENDAR' => array(
+			'name'       => 'Sugar Calendar Lite',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( 'An event is updated in {{a calendar}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+				array(
+					'name' => esc_html_x( 'An RSVP is submitted for {{an event}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'anonymous',
+				),
+			),
+			'actions'    => array(
+				array(
+					'name' => esc_html_x( 'Update {{an event}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
 		),
 		'SURECART' => array(
 			'name'       => 'SureCart',
@@ -2660,7 +2788,7 @@ function automator_pro_items_list() {
 				),
 			),
 		),
-		'UPSELL' => array(
+		'UPSELLPLUGIN' => array(
 			'name'       => 'Upsell Plugin',
 			'pro_only'   => 'no',
 			'elite_only' => 'no',
@@ -2926,18 +3054,6 @@ function automator_pro_items_list() {
 					'type' => 'anonymous',
 				),
 				array(
-					'name' => esc_html_x( "A user's access to {{a membership plan}} is cancelled", 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					'name' => esc_html_x( "A user's access to {{a membership plan}} expires", 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
-					'name' => esc_html_x( "A user's access to {{a membership plan}} is changed to {{a status}}", 'Automator Pro item', 'uncanny-automator' ),
-					'type' => 'logged-in',
-				),
-				array(
 					'name' => esc_html_x( 'An order with {{a specific product}} is shipped', 'Automator Pro item', 'uncanny-automator' ),
 					'type' => 'logged-in',
 				),
@@ -2957,6 +3073,9 @@ function automator_pro_items_list() {
 					'name' => esc_html_x( 'Change the price of {{a specific product}} to {{a new price}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 				array(
+					'name' => esc_html_x( 'Create {{a simple product}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
 					'name' => esc_html_x( 'Create an order with {{a product}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 				array(
@@ -2973,9 +3092,6 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name' => esc_html_x( 'Generate a coupon code', 'Automator Pro item', 'uncanny-automator' ),
-				),
-				array(
-					'name' => esc_html_x( 'Remove the user from {{a membership plan}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
 		),
@@ -2999,6 +3115,30 @@ function automator_pro_items_list() {
 				),
 				array(
 					'name' => esc_html_x( 'Create a booking', 'Automator Pro item', 'uncanny-automator' ),
+				),
+			),
+		),
+		'WCMEMBERSHIPS' => array(
+			'name'       => 'Woo Memberships',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name' => esc_html_x( "A user's access to {{a membership plan}} is cancelled", 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( "A user's access to {{a membership plan}} expires", 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+				array(
+					'name' => esc_html_x( "A user's access to {{a membership plan}} is changed to {{a status}}", 'Automator Pro item', 'uncanny-automator' ),
+					'type' => 'logged-in',
+				),
+			),
+			'actions'    => array(
+				array(
+					'name' => esc_html_x( 'Remove the user from {{a membership plan}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 			),
 		),
@@ -3284,6 +3424,9 @@ function automator_pro_items_list() {
 					'name' => esc_html_x( 'Update the content of {{a post}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 				array(
+					'name' => esc_html_x( 'Update the published date of {{a post}}', 'Automator Pro item', 'uncanny-automator' ),
+				),
+				array(
 					'name' => esc_html_x( 'Update the slug of {{a post}}', 'Automator Pro item', 'uncanny-automator' ),
 				),
 				array(
@@ -3559,7 +3702,7 @@ function automator_pro_items_list() {
 			),
 			'actions'    => array(),
 		),
-		'WPPOLLS' => array(
+		'WPP' => array(
 			'name'       => 'WP-Polls',
 			'pro_only'   => 'no',
 			'elite_only' => 'no',

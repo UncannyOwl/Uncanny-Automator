@@ -7,7 +7,7 @@ use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Triggers;
 use Uncanny_Automator\Api\Components\Shared\Enums\User_Type;
 use Uncanny_Automator\Api\Components\Shared\Sentence_Html\Field_Label_Resolver;
-use Uncanny_Automator\Api\Services\Sentence_Html\Sentence_Output_Builder;
+use Uncanny_Automator\Api\Presentation\Sentence\Item_Sentence_Composer;
 use Uncanny_Automator\Api\Components\Trigger\Trigger;
 use Uncanny_Automator\Api\Components\Trigger\Trigger_Config;
 use Uncanny_Automator\Api\Components\Trigger\Value_Objects\Trigger_Id;
@@ -23,6 +23,8 @@ use WP_Error;
  * WordPress-aware service layer that delegates business logic
  * to pure operations layer and handles WordPress-specific concerns.
  * Acts as adapter between pure business logic and WordPress infrastructure.
+ * Sentence and sentence HTML composition is owned by presentation layer
+ * (`Item_Sentence_Composer`).
  *
  * @since 7.0.0
  */
@@ -57,11 +59,11 @@ class Trigger_CRUD_Service {
 	private $label_resolver;
 
 	/**
-	 * Sentence output builder.
+	 * Sentence output composer.
 	 *
-	 * @var Sentence_Output_Builder
+	 * @var Item_Sentence_Composer
 	 */
-	private $sentence_builder;
+	private $sentence_composer;
 
 	/**
 	 * Constructor.
@@ -69,22 +71,22 @@ class Trigger_CRUD_Service {
 	 * Allows dependency injection for testing. Production code can use instance()
 	 * for backward compatibility with singleton pattern.
 	 *
-	 * @param WP_Recipe_Store|null           $recipe_store     Optional recipe store instance.
-	 * @param WP_Recipe_Trigger_Store|null   $trigger_store    Optional trigger store instance.
-	 * @param Field_Label_Resolver|null      $label_resolver   Optional label resolver instance.
-	 * @param Sentence_Output_Builder|null   $sentence_builder Optional sentence builder instance.
+	 * @param WP_Recipe_Store|null           $recipe_store      Optional recipe store instance.
+	 * @param WP_Recipe_Trigger_Store|null   $trigger_store     Optional trigger store instance.
+	 * @param Field_Label_Resolver|null      $label_resolver    Optional label resolver instance.
+	 * @param Item_Sentence_Composer|null    $sentence_composer Optional sentence composer instance.
 	 */
 	public function __construct(
 		?WP_Recipe_Store $recipe_store = null,
 		?WP_Recipe_Trigger_Store $trigger_store = null,
 		?Field_Label_Resolver $label_resolver = null,
-		?Sentence_Output_Builder $sentence_builder = null
+		?Item_Sentence_Composer $sentence_composer = null
 	) {
 		global $wpdb;
 		$this->recipe_store     = $recipe_store ?? new WP_Recipe_Store();
 		$this->trigger_store    = $trigger_store ?? new WP_Recipe_Trigger_Store( $wpdb );
 		$this->label_resolver   = $label_resolver ?? new Field_Label_Resolver();
-		$this->sentence_builder = $sentence_builder ?? new Sentence_Output_Builder();
+		$this->sentence_composer = $sentence_composer ?? new Item_Sentence_Composer();
 	}
 
 	/**
@@ -148,6 +150,7 @@ class Trigger_CRUD_Service {
 
 		// JSON-encode array values (repeater fields) - Automator expects JSON strings, not PHP arrays.
 		$configuration = $config['configuration'] ?? array();
+		$configuration = $this->strip_sentence_artifacts( $configuration );
 		$configuration = $this->encode_array_fields( $configuration );
 
 		// Enrich configuration with readable labels.
@@ -622,6 +625,7 @@ class Trigger_CRUD_Service {
 	private function update_trigger_instance( Trigger $existing_trigger, array $new_config ): Trigger {
 		// Get current configuration and merge with new config.
 		$current_config = $existing_trigger->get_trigger_configuration()->get_value();
+		$new_config     = $this->strip_sentence_artifacts( $new_config );
 
 		// JSON-encode array values (repeater fields) - Automator expects JSON strings, not PHP arrays.
 		$new_config = $this->encode_array_fields( $new_config );
@@ -1008,7 +1012,7 @@ class Trigger_CRUD_Service {
 	}
 
 	/**
-	 * Build sentence outputs using the Sentence_Output_Builder.
+	 * Build sentence outputs using the presentation composer.
 	 *
 	 * Delegates to the shared Sentence_Output_Builder to convert raw configuration
 	 * arrays into domain objects and generate both bracket-wrapped and HTML sentence formats.
@@ -1020,6 +1024,23 @@ class Trigger_CRUD_Service {
 	 * @return array{brackets: string, html: string} Sentence outputs.
 	 */
 	private function build_sentence_outputs( string $sentence_template, array $configuration, array $field_labels ): array {
-		return $this->sentence_builder->build( $sentence_template, $configuration, $field_labels );
+		return $this->sentence_composer->compose( $sentence_template, $configuration, $field_labels );
+	}
+
+	/**
+	 * Remove client-provided sentence artifacts from trigger configuration.
+	 *
+	 * @param array $config Incoming trigger configuration.
+	 *
+	 * @return array
+	 */
+	private function strip_sentence_artifacts( array $config ): array {
+		unset(
+			$config['sentence'],
+			$config['sentence_human_readable'],
+			$config['sentence_human_readable_html']
+		);
+
+		return $config;
 	}
 }

@@ -245,15 +245,16 @@ class Fields_Conditions_Resolver {
 						? $recipe_actions_condition['backup']['nameDynamic'] :
 						''; // Defaults to empty string.
 
-			$has_title_html = isset( $recipe_actions_condition['backup']['titleHTML'] );
+			$title_html_backup = isset( $recipe_actions_condition['backup']['titleHTML'] ) ? (string) $recipe_actions_condition['backup']['titleHTML'] : '';
+			$has_title_html    = '' !== trim( wp_strip_all_tags( html_entity_decode( $title_html_backup, ENT_QUOTES, 'UTF-8' ) ) );
 
 			/**
 			 * @todo Move as separate func.
 			 */
 			if ( ! $has_title_html ) {
-				$title_html = $this->parse_condition_sentence( $name_dynamic, $recipe_actions_condition, $conditions_fields );
+				$title_html = $this->parse_condition_sentence( $name_dynamic, $recipe_actions_condition, $conditions_fields, $interpolated );
 			} else {
-				$title_html = $recipe_actions_condition['backup']['titleHTML'];
+				$title_html = $title_html_backup;
 			}
 
 			$items[] = array(
@@ -290,10 +291,23 @@ class Fields_Conditions_Resolver {
 	 * @param string $name_dynamic
 	 * @param mixed[] $recipe_actions_condition
 	 * @param mixed[] $conditions_fields
+	 * @param mixed[] $interpolated
 	 *
 	 * @return string
 	 */
-	protected function parse_condition_sentence( $name_dynamic, $recipe_actions_condition, $conditions_fields ) {
+	protected function parse_condition_sentence( $name_dynamic, $recipe_actions_condition, $conditions_fields, $interpolated = array() ) {
+		$name_dynamic = is_string( $name_dynamic ) ? $name_dynamic : '';
+		if ( '' === trim( $name_dynamic ) ) {
+			$name_dynamic = $this->resolve_condition_dynamic_name_from_registry( (array) $recipe_actions_condition );
+		}
+
+		if ( '' === trim( $name_dynamic ) ) {
+			$name_dynamic = $this->build_fallback_dynamic_name( (array) $recipe_actions_condition['fields'] );
+		}
+
+		if ( '' === trim( $name_dynamic ) ) {
+			$name_dynamic = esc_html_x( 'Condition', 'Condition fallback sentence', 'uncanny-automator' );
+		}
 
 		$normalized_condition_field = array();
 		// Put condition ID as an index of the conditions fields.
@@ -304,19 +318,40 @@ class Fields_Conditions_Resolver {
 			$normalized_condition_field[ $condition_field['option_code'] ] = $condition_field;
 		}
 		preg_match_all( '/{{\s*(.*?)\s*}}/', $name_dynamic, $arr );
-		if ( empty( $arr ) ) {
+		if ( empty( $arr[0] ) ) {
 			return str_replace( array( '{{', '}}' ), '', $name_dynamic );
 		}
 		$matches               = $arr[1];
 		$interpolated_internal = array();
 		foreach ( $matches as $i => $match ) {
 			$replaceable                      = '';
-			list( $sentence_a, $option_code ) = explode( ':', $match );
-			$show_label                       = isset( $normalized_condition_field[ $option_code ]['show_label_in_sentence'] )
-				? $normalized_condition_field[ $option_code ]['show_label_in_sentence'] :
-				true;
-			if ( 'select' !== $normalized_condition_field[ $option_code ]['input_type'] ) {
-				$replaceable = strtr( $match, $recipe_actions_condition['fields'] );
+			$parts                             = explode( ':', $match, 2 );
+			$sentence_a                        = isset( $parts[0] ) ? trim( $parts[0] ) : '';
+			$option_code                       = isset( $parts[1] ) ? trim( $parts[1] ) : '';
+			$condition_field                   = $normalized_condition_field[ $option_code ] ?? array();
+			$show_label                        = isset( $condition_field['show_label_in_sentence'] ) ? $condition_field['show_label_in_sentence'] : true;
+			$input_type                        = isset( $condition_field['input_type'] ) ? $condition_field['input_type'] : 'text';
+
+			if ( 'select' !== $input_type ) {
+				$replaceable = isset( $recipe_actions_condition['fields'][ $option_code . '_readable' ] )
+					? $recipe_actions_condition['fields'][ $option_code . '_readable' ]
+					: ( $recipe_actions_condition['fields'][ $option_code ] ?? $sentence_a );
+
+				if ( is_array( $replaceable ) || is_object( $replaceable ) ) {
+					$replaceable = $sentence_a;
+				}
+
+				$replaceable = (string) $replaceable;
+				$parsed      = Automator()->parsed_token_records()->interpolate( $replaceable, $interpolated );
+
+				if ( is_string( $parsed ) && '' !== trim( $parsed ) ) {
+					$replaceable = $parsed;
+				}
+
+				// Prevent unresolved token IDs from leaking to logs.
+				if ( preg_match( '/^\{\{(.+)\}\}$/', trim( $replaceable ) ) ) {
+					$replaceable = $sentence_a;
+				}
 			} else {
 				$label = '';
 				if ( isset( $recipe_actions_condition['fields'][ $option_code . '_label' ] ) ) {
@@ -358,10 +393,106 @@ class Fields_Conditions_Resolver {
 			str_replace(
 				array( '{{', '}}' ),
 				'',
-				strtr( $title_html, $_tokens_interpolates )
+			strtr( $title_html, $_tokens_interpolates )
 			),
 			ENT_QUOTES
 		);
+	}
+
+	/**
+	 * Resolve condition dynamic sentence template from registry.
+	 *
+	 * This keeps logs aligned with builder sentences when older recipes have empty
+	 * backup metadata (`nameDynamic`/`titleHTML`).
+	 *
+	 * @param array<string,mixed> $recipe_actions_condition Condition payload.
+	 *
+	 * @return string
+	 */
+	protected function resolve_condition_dynamic_name_from_registry( array $recipe_actions_condition ) {
+		$integration_code = isset( $recipe_actions_condition['integration'] ) ? (string) $recipe_actions_condition['integration'] : '';
+		$condition_code   = isset( $recipe_actions_condition['condition'] ) ? (string) $recipe_actions_condition['condition'] : '';
+
+		if ( '' === $integration_code || '' === $condition_code ) {
+			return '';
+		}
+
+		$conditions = (array) apply_filters( 'automator_pro_actions_conditions_list', array() );
+		$condition  = $conditions[ $integration_code ][ $condition_code ] ?? null;
+
+		if ( ! is_array( $condition ) ) {
+			return '';
+		}
+
+		$candidates = array(
+			$condition['dynamic_name'] ?? '',
+			$condition['name_dynamic'] ?? '',
+			$condition['name'] ?? '',
+		);
+
+		foreach ( $candidates as $candidate ) {
+			if ( ! is_string( $candidate ) ) {
+				continue;
+			}
+
+			$candidate = trim( $candidate );
+			if ( '' !== $candidate ) {
+				return $candidate;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Build fallback dynamic name from saved field labels/readable values.
+	 *
+	 * @param array<string,mixed> $fields Condition fields.
+	 *
+	 * @return string
+	 */
+	protected function build_fallback_dynamic_name( array $fields ) {
+		$segments = array();
+		$codes    = array();
+
+		foreach ( array_keys( $fields ) as $key ) {
+			if ( ! is_string( $key ) ) {
+				continue;
+			}
+
+			if ( str_ends_with( $key, '_label' ) ) {
+				$codes[] = substr( $key, 0, -6 );
+				continue;
+			}
+
+			if ( str_ends_with( $key, '_readable' ) ) {
+				$codes[] = substr( $key, 0, -9 );
+				continue;
+			}
+
+			$codes[] = $key;
+		}
+
+		foreach ( array_unique( $codes ) as $code ) {
+			$value = $fields[ $code . '_readable' ] ?? ( $fields[ $code ] ?? '' );
+			if ( is_array( $value ) || is_object( $value ) ) {
+				continue;
+			}
+
+			$value = trim( (string) $value );
+			if ( '' === $value ) {
+				continue;
+			}
+
+			$label = $fields[ $code . '_label' ] ?? $code;
+			if ( is_array( $label ) || is_object( $label ) ) {
+				$label = $code;
+			}
+
+			$segments[] = sprintf( '{{%s:%s}}', trim( (string) $label ), $code );
+		}
+
+		return implode( ' ', $segments );
 	}
 
 }

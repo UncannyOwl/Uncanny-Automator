@@ -194,14 +194,15 @@ class Condition_Group_Service {
 	}
 
 	/**
-	 * Add an empty condition group to a recipe.
+	 * Add an empty condition group to a recipe or loop.
 	 *
-	 * @param int    $recipe_id Recipe ID.
-	 * @param string $mode      Evaluation mode ('any' or 'all').
-	 * @param int    $priority  Group priority.
+	 * @param int      $recipe_id Recipe ID.
+	 * @param string   $mode      Evaluation mode ('any' or 'all').
+	 * @param int      $priority  Group priority.
+	 * @param int|null $parent_id Parent ID (recipe or loop). Defaults to recipe_id.
 	 * @return array|\WP_Error Result data or error.
 	 */
-	public function add_empty_condition_group( int $recipe_id, string $mode = 'any', int $priority = 20 ) {
+	public function add_empty_condition_group( int $recipe_id, string $mode = 'any', int $priority = 20, ?int $parent_id = null ) {
 		try {
 			$recipe = $this->repository->get_recipe( $recipe_id );
 
@@ -209,15 +210,18 @@ class Condition_Group_Service {
 				return $this->error_response( 'condition_recipe_not_found', 'Recipe not found' );
 			}
 
+			// Default parent_id to recipe_id if not provided.
+			$effective_parent_id = $parent_id ?? $recipe_id;
+
 			$group_id        = Condition_Group_Id::generate();
 			$group_mode      = new Condition_Group_Mode( $mode );
-			$parent_id       = new Recipe_Id( $recipe_id );
+			$parent_id_vo    = new Recipe_Id( $effective_parent_id );
 			$condition_group = new Condition_Group(
 				$group_id,
 				$priority,
 				array(),
 				$group_mode,
-				$parent_id,
+				$parent_id_vo,
 				array()
 			);
 
@@ -233,6 +237,7 @@ class Condition_Group_Service {
 				'message'   => 'Empty condition group created successfully',
 				'group_id'  => $group_id->get_value(),
 				'recipe_id' => $recipe_id,
+				'parent_id' => $effective_parent_id,
 				'mode'      => $mode,
 				'priority'  => $priority,
 			);

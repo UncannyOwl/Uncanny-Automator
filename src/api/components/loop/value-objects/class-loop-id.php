@@ -15,7 +15,12 @@ use Uncanny_Automator\Api\Components\Interfaces\Parent_Id;
  */
 class Loop_Id implements Parent_Id {
 
-	private int $value;
+	/**
+	 * The loop ID value.
+	 *
+	 * @var int|null
+	 */
+	private $value;
 
 	/**
 	 * Constructor.
@@ -40,5 +45,14 @@ class Loop_Id implements Parent_Id {
 	 */
 	public function get_value(): ?int {
 		return $this->value;
+	}
+
+	/**
+	 * Check if the loop ID is null (unsaved loop).
+	 *
+	 * @return bool True if null, false otherwise.
+	 */
+	public function is_null(): bool {
+		return null === $this->value;
 	}
 }

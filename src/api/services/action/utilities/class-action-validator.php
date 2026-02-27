@@ -257,7 +257,7 @@ class Action_Validator {
 		if ( in_array( $input_type, array( 'text', 'textarea' ), true ) ) {
 			if ( ! empty( $value ) ) {
 				$max_length = 'text' === $input_type ? 255 : 8000; // Reasonable defaults
-				if ( strlen( $value ) > $max_length ) {
+				if ( is_string( $value ) && strlen( $value ) > $max_length ) {
 					$errors[] = sprintf( '"%s" must not exceed %d characters', $field_label, $max_length );
 				}
 			}

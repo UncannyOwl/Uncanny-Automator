@@ -942,6 +942,54 @@ function automator_get_allowed_attachment_ext() {
 }
 
 /**
+ * Checks whether a URL resolves to a private or reserved IP address.
+ *
+ * Blocks RFC1918 private ranges, loopback, link-local (e.g. 169.254.169.254),
+ * and reserved ranges to prevent SSRF attacks.
+ *
+ * Known limitation — DNS rebinding / TOCTOU race:
+ * The hostname is resolved once here via gethostbyname(). The actual HTTP
+ * request happens later and uses the OS resolver again, so a low-TTL DNS
+ * record could change between check and request (DNS rebinding). This is a
+ * fundamental limitation of PHP-level SSRF protection without a custom DNS
+ * resolver. Mitigations already in place that reduce the practical window:
+ *  - 'redirection' => 0 on every outbound request prevents redirect-chain bypass.
+ *  - The REST endpoint requires manage_options (Administrator), narrowing who
+ *    can trigger the race.
+ * Full protection would require resolving the IP once and connecting by IP,
+ * which is not supported by the WordPress HTTP API.
+ *
+ * @param string $url
+ *
+ * @return bool True if private/reserved (block it), false if safe to request.
+ */
+function automator_resolves_to_private_ip( $url ) {
+
+	$host = wp_parse_url( $url, PHP_URL_HOST );
+
+	if ( empty( $host ) ) {
+		return true;
+	}
+
+	// Strip brackets from IPv6 literals e.g. [::1].
+	$host = trim( $host, '[]' );
+
+	if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
+		// Host is already a bare IP address — validate it directly.
+		$ip = $host;
+	} else {
+		$ip = gethostbyname( $host );
+		// gethostbyname() returns the original string when resolution fails.
+		if ( $ip === $host ) {
+			return true;
+		}
+	}
+
+	// Block private (RFC1918) and reserved ranges (loopback, link-local, etc.).
+	return false === filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+}
+
+/**
  * @param $input
  *
  * @return array

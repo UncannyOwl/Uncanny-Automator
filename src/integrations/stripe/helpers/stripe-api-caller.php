@@ -251,4 +251,21 @@ class Stripe_Api_Caller extends Api_Caller {
 
 		return $this->api_request( $body );
 	}
+
+	/**
+	 * Create and send invoice.
+	 *
+	 * @param array $invoice_data Invoice data including customer, line items, etc.
+	 * @param array $action_data  Action data for the request.
+	 * @return array
+	 */
+	public function create_invoice( $invoice_data, $action_data ) {
+
+		$body = array(
+			'action'  => 'create_invoice',
+			'invoice' => wp_json_encode( $invoice_data ),
+		);
+
+		return $this->api_request( $body, $action_data );
+	}
 }

@@ -41,7 +41,7 @@ class List_Conditions_Tool extends Abstract_MCP_Tool {
 	 * @return string Tool description.
 	 */
 	public function get_description() {
-		return 'List condition groups in a recipe. Returns groups, rules, and gated actions. Optionally filter by action_id.';
+		return 'List all condition groups in a recipe. Returns each group with its mode (any/all), priority, condition rules, and gated action IDs. Optionally filter by action_id to see only groups affecting that action.';
 	}
 
 	/**

@@ -53,7 +53,12 @@ class Plan_Factory {
 			return array();
 		}
 
-		$license = Api_Server::get_license();
+		try {
+			$license = Api_Server::get_license();
+		} catch ( \Exception $e ) {
+			unset( $e );
+			return array();
+		}
 
 		// Api_Server::get_license() can return false when not connected.
 		if ( false === $license || ! is_array( $license ) ) {

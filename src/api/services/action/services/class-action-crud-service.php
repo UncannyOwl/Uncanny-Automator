@@ -405,9 +405,10 @@ class Action_CRUD_Service {
 	 * @param array       $config New configuration values to merge.
 	 * @param array       $async_config Async configuration.
 	 * @param string|null $status Optional status to set ('draft' or 'publish').
+	 * @param int|null    $parent_id Optional new parent ID (recipe or loop) to move action to.
 	 * @return array|\WP_Error Updated action data or error.
 	 */
-	public function update_action( $action_id, array $config = array(), array $async_config = array(), ?string $status = null ) {
+	public function update_action( $action_id, array $config = array(), array $async_config = array(), ?string $status = null, ?int $parent_id = null ) {
 		// Get existing action instance
 		$existing_action = $this->action_store->get( $this->coerce_action_id( $action_id ) );
 		if ( ! $existing_action ) {
@@ -424,6 +425,11 @@ class Action_CRUD_Service {
 		try {
 			// Update action with new configuration
 			$updated_action = $this->instance_builder->update( $existing_action, $config, $async_config, $status );
+
+			// Update parent if provided (move action to different recipe/loop).
+			if ( null !== $parent_id ) {
+				$updated_action = $updated_action->with_parent_id( $parent_id );
+			}
 
 			// Save updated action and get the persisted version
 			$saved_action = $this->action_store->save( $updated_action );

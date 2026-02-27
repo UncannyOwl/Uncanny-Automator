@@ -165,6 +165,34 @@ class Action {
 	}
 
 	/**
+	 * Create a new Action with a different parent ID.
+	 *
+	 * Returns a new immutable Action instance with the updated parent.
+	 * Used when moving an action between recipe and loop.
+	 *
+	 * @param int $new_parent_id New parent ID (recipe or loop).
+	 * @return Action New Action instance with updated parent.
+	 */
+	public function with_parent_id( int $new_parent_id ): Action {
+		$config = ( new Action_Config() )
+			->id( $this->action_id->get_value() )
+			->integration_code( $this->action_integration_code->get_value() )
+			->code( $this->action_code->get_value() )
+			->meta_code( $this->action_meta_code->get_value() )
+			->user_type( $this->action_type->get_value() )
+			->recipe_id( $this->action_recipe_id->get_value() )
+			->meta( $this->action_meta->to_array() )
+			->is_deprecated( $this->deprecated->get_value() )
+			->parent_id( new \Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Id( $new_parent_id ) );
+
+		if ( null !== $this->status ) {
+			$config->status( $this->status->get_value() );
+		}
+
+		return new Action( $config );
+	}
+
+	/**
 	 * Convert to array.
 	 *
 	 * @return array Action data as array.

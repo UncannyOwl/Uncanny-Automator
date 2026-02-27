@@ -72,7 +72,7 @@ class Condition_Factory {
 		try {
 			$integration_code = $config['integration_code'] ?? '';
 			$condition_code   = $config['condition_code'] ?? '';
-			$fields           = $config['fields'] ?? array();
+			$fields           = $this->strip_presentation_artifacts( $config['fields'] ?? array() );
 
 			$validation_result = $this->validation->ensure_condition_exists( $integration_code, $condition_code );
 			if ( is_wp_error( $validation_result ) ) {
@@ -115,6 +115,7 @@ class Condition_Factory {
 		try {
 			$integration_code = $condition->get_integration();
 			$condition_code   = $condition->get_condition_code();
+			$fields           = $this->strip_presentation_artifacts( $fields );
 
 			$condition_fields = new Condition_Fields( $fields );
 			$backup_info      = $this->validation->create_backup_info( $integration_code, $condition_code, $fields );
@@ -140,5 +141,28 @@ class Condition_Factory {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Remove presentation artifacts from incoming condition fields.
+	 *
+	 * Condition backup metadata is server-owned and always regenerated.
+	 *
+	 * @param array $fields Incoming fields.
+	 *
+	 * @return array
+	 */
+	private function strip_presentation_artifacts( array $fields ): array {
+		unset(
+			$fields['nameDynamic'],
+			$fields['titleHTML'],
+			$fields['integrationName'],
+			$fields['sentence'],
+			$fields['sentence_html'],
+			$fields['backup'],
+			$fields['backup_info']
+		);
+
+		return $fields;
 	}
 }

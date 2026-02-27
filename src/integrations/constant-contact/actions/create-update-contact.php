@@ -337,10 +337,15 @@ class CREATE_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 
 			$value = trim( $address[ $field ] );
 
-			// If [DELETE] or empty, send empty string (will clear on API side).
-			if ( Constant_Contact_Custom_Fields::is_delete_value( $value ) || empty( $value ) ) {
+			// If [DELETE], send empty string to actively clear on API side.
+			if ( Constant_Contact_Custom_Fields::is_delete_value( $value ) ) {
 				$built_address[ $field ] = '';
 				$has_data                = true;
+				continue;
+			}
+
+			// If empty, skip (will keep existing value on update).
+			if ( empty( $value ) ) {
 				continue;
 			}
 
