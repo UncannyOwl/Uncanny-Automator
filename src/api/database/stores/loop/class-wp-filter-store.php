@@ -224,7 +224,11 @@ class WP_Filter_Store implements Filter_Store {
 			throw new Exception( 'Failed to create filter' );
 		}
 
-		return $this->get( $post_id ) ?? throw new Exception( 'Failed to reload filter after creation' );
+		$filter = $this->get( $post_id );
+		if ( null === $filter ) {
+			throw new Exception( 'Failed to reload filter after creation' );
+		}
+		return $filter;
 	}
 	/**
 	 * Update filter.
@@ -253,7 +257,11 @@ class WP_Filter_Store implements Filter_Store {
 			update_post_meta( $filter_id, $key, $value );
 		}
 
-		return $this->get( $filter_id ) ?? throw new Exception( 'Failed to reload filter after update' );
+		$filter = $this->get( $filter_id );
+		if ( null === $filter ) {
+			throw new Exception( 'Failed to reload filter after update' );
+		}
+		return $filter;
 	}
 	/**
 	 * Build meta.
