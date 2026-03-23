@@ -33,7 +33,6 @@ class Admin_Tools_Tabs_Tools {
 				$this->empty_api_logs_tables();
 			}
 		);
-
 	}
 
 	/**
@@ -84,7 +83,6 @@ class Admin_Tools_Tabs_Tools {
 		wp_safe_redirect( add_query_arg( $query_params, admin_url( 'edit.php' ) ) );
 
 		exit;
-
 	}
 
 	/**
@@ -114,7 +112,6 @@ class Admin_Tools_Tabs_Tools {
 		wp_safe_redirect( add_query_arg( $query_params, admin_url( 'edit.php' ) ) );
 
 		die;
-
 	}
 
 	/**
@@ -122,14 +119,13 @@ class Admin_Tools_Tabs_Tools {
 	 */
 	private function validate_request() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Insufficient permission.' );
 		}
 
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_db_tools' ) ) {
 			wp_die( 'Invalid nonce.' );
 		}
-
 	}
 
 	/**
@@ -162,7 +158,6 @@ class Admin_Tools_Tabs_Tools {
 		// Load the view.
 		include Utilities::automator_get_view( 'admin-tools/tab/tools/tools.php' );
 	}
-
 }
 
 new Admin_Tools_Tabs_Tools();

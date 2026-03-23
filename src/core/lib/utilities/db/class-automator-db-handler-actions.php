@@ -421,6 +421,25 @@ class Automator_DB_Handler_Actions {
 	}
 
 	/**
+	 * Get ALL actions with error messages for a recipe log.
+	 *
+	 * This returns all rows (not just the first) to ensure we don't miss
+	 * COMPLETED_WITH_ERRORS actions when SKIPPED actions appear first in results.
+	 *
+	 * @since 6.10.0.3
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return array Array of objects with error_message and completed properties.
+	 */
+	public function get_error_messages( $recipe_log_id ) {
+		global $wpdb;
+		$tbl = Automator()->db->tables->action;
+
+		return $wpdb->get_results( $wpdb->prepare( "SELECT error_message, completed FROM {$wpdb->prefix}{$tbl} WHERE error_message != '' AND automator_recipe_log_id = %d ORDER BY ID ASC", $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	}
+
+	/**
 	 * @param $action_id
 	 */
 	public function delete( $action_id ) {

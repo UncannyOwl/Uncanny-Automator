@@ -542,11 +542,17 @@ class Logs_List_Table extends WP_List_Table {
 						<uo-icon id="trash"></uo-icon>
 					</uo-button>';
 
+				// Show different message for in-progress recipes with scheduled actions.
+				$confirmation_content = esc_attr__( 'Are you sure you want to delete this run?', 'uncanny-automator' );
+				if ( Automator_Status::IN_PROGRESS === absint( $recipe->recipe_completed ) ) {
+					$confirmation_content .= ' ' . esc_attr__( 'Any scheduled actions will be cancelled.', 'uncanny-automator' );
+				}
+
 				$actions['delete'] = sprintf(
 					$delete_btn,
 					esc_url( $delete_url ),
 					esc_attr__( 'This action is irreversible', 'uncanny-automator' ),
-					esc_attr__( 'Are you sure you want to delete this run?', 'uncanny-automator' ),
+					$confirmation_content,
 					esc_attr__( 'Confirm', 'uncanny-automator' )
 				);
 

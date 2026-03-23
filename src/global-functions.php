@@ -511,6 +511,19 @@ function automator_pro_older_than( $version ) {
  * @return void
  */
 function clear_recipe_logs( $recipe_id ) {
+
+	/**
+	 * Fires before all logs for a recipe are cleared.
+	 *
+	 * This hook allows extensions (like Pro) to perform cleanup before the log data
+	 * is removed, such as cancelling scheduled actions in Action Scheduler.
+	 *
+	 * @since 6.9
+	 *
+	 * @param int $recipe_id The recipe ID whose logs are being cleared.
+	 */
+	do_action( 'automator_before_recipe_logs_cleared', $recipe_id );
+
 	Automator()->db->recipe->clear_activity_log_by_recipe_id( $recipe_id );
 }
 
@@ -520,6 +533,11 @@ function clear_recipe_logs( $recipe_id ) {
  * @return bool
  */
 function automator_do_identify_tokens() {
+
+	// Allow override via constant
+	if ( defined( 'AUTOMATOR_FORCE_EDIT_PAGE' ) && AUTOMATOR_FORCE_EDIT_PAGE ) {
+		return true;
+	}
 	// If it's cron, do not identify tokens
 	if ( defined( 'DOING_CRON' ) ) {
 		return false;
@@ -924,6 +942,54 @@ function automator_get_allowed_attachment_ext() {
 }
 
 /**
+ * Checks whether a URL resolves to a private or reserved IP address.
+ *
+ * Blocks RFC1918 private ranges, loopback, link-local (e.g. 169.254.169.254),
+ * and reserved ranges to prevent SSRF attacks.
+ *
+ * Known limitation — DNS rebinding / TOCTOU race:
+ * The hostname is resolved once here via gethostbyname(). The actual HTTP
+ * request happens later and uses the OS resolver again, so a low-TTL DNS
+ * record could change between check and request (DNS rebinding). This is a
+ * fundamental limitation of PHP-level SSRF protection without a custom DNS
+ * resolver. Mitigations already in place that reduce the practical window:
+ *  - 'redirection' => 0 on every outbound request prevents redirect-chain bypass.
+ *  - The REST endpoint requires manage_options (Administrator), narrowing who
+ *    can trigger the race.
+ * Full protection would require resolving the IP once and connecting by IP,
+ * which is not supported by the WordPress HTTP API.
+ *
+ * @param string $url
+ *
+ * @return bool True if private/reserved (block it), false if safe to request.
+ */
+function automator_resolves_to_private_ip( $url ) {
+
+	$host = wp_parse_url( $url, PHP_URL_HOST );
+
+	if ( empty( $host ) ) {
+		return true;
+	}
+
+	// Strip brackets from IPv6 literals e.g. [::1].
+	$host = trim( $host, '[]' );
+
+	if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
+		// Host is already a bare IP address — validate it directly.
+		$ip = $host;
+	} else {
+		$ip = gethostbyname( $host );
+		// gethostbyname() returns the original string when resolution fails.
+		if ( $ip === $host ) {
+			return true;
+		}
+	}
+
+	// Block private (RFC1918) and reserved ranges (loopback, link-local, etc.).
+	return false === filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+}
+
+/**
  * @param $input
  *
  * @return array
@@ -1053,4 +1119,45 @@ function is_automator_running_unit_tests() {
  */
 function get_automator_tables() {
 	return DB_Tables::get_automator_tables();
+}
+
+/**
+ * Get the required capability for core Automator operations.
+ *
+ * This capability is used for general operations like viewing/editing recipes,
+ * accessing admin pages, viewing logs, and basic recipe management.
+ *
+ * Example usage:
+ * - Admin menu access
+ * - Recipe post type capabilities
+ * - Viewing logs
+ * - Basic REST endpoints
+ * - Recipe builder operations
+ *
+ * @since 6.9
+ * @return string The capability required. Defaults to 'manage_options'.
+ */
+function automator_get_capability() {
+	return apply_filters( 'automator_capability', 'manage_options' );
+}
+
+/**
+ * Get the required capability for sensitive administrative operations.
+ *
+ * This capability is used for sensitive operations that require higher privileges,
+ * such as plugin settings, integration credentials, import/export, and system tools.
+ *
+ * Example usage:
+ * - Plugin settings and configuration
+ * - Integration OAuth/API credentials
+ * - Import/Export recipes
+ * - Debug tools and system information
+ * - License management
+ * - Database cleanup operations
+ *
+ * @since 6.9
+ * @return string The capability required. Defaults to 'manage_options'.
+ */
+function automator_get_admin_capability() {
+	return apply_filters( 'automator_admin_capability', 'manage_options' );
 }

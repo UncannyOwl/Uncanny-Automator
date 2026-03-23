@@ -39,7 +39,7 @@ class Automator_Tooltip_Notification {
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'tooltip_notification_endpoint' ),
 				'permission_callback' => function () {
-					return is_user_logged_in() && current_user_can( 'manage_options' );
+					return is_user_logged_in() && current_user_can( automator_get_capability() );
 				},
 			)
 		);
@@ -127,8 +127,8 @@ class Automator_Tooltip_Notification {
 			'tooltip-notification',
 			array(
 				'localize' => array(
-					'UncannyAutomatorTooltipNotification' => $this->assets_tooltip_notification_js_object()
-				)
+					'UncannyAutomatorTooltipNotification' => $this->assets_tooltip_notification_js_object(),
+				),
 			)
 		);
 	}

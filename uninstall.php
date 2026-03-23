@@ -6,24 +6,29 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 // Check if the 'automator_delete_data_on_uninstall' setting is enabled
-if ( false === get_option( 'automator_delete_data_on_uninstall', false ) ) {
-	// Check if the 'automator_delete_data_on_uninstall' setting is enabled in custom table
-	global $wpdb;
-	$setting = $wpdb->get_var( "SELECT option_value FROM {$wpdb->prefix}uap_options WHERE option_name = 'automator_delete_data_on_uninstall'" );
+// Check both wp_options and uap_options tables in a single query
+global $wpdb;
+$setting = $wpdb->get_var(
+	$wpdb->prepare(
+		"SELECT COALESCE(
+			(SELECT option_value FROM {$wpdb->options} WHERE option_name = %s),
+			(SELECT option_value FROM {$wpdb->prefix}uap_options WHERE option_name = %s)
+		) as setting_value",
+		'automator_delete_data_on_uninstall',
+		'automator_delete_data_on_uninstall'
+	)
+);
 
-	if ( false === $setting ) {
-		// The setting is not enabled, so bail out
-		return;
-	}
-
-	// The setting is not enabled, so bail out
+// Only proceed if setting is explicitly enabled ('1' or 'yes')
+// This prevents uninstall when setting is '0', '', or doesn't exist (NULL)
+if ( '1' !== $setting && 'yes' !== $setting ) {
 	return;
 }
 
 /**
- * Function to log errors
+ * Function to log errors during uninstall
  *
- * @param $message
+ * @param string $message The error message to log.
  *
  * @return void
  */
@@ -59,7 +64,10 @@ try {
 
 	// Remove the tables
 	foreach ( $tables_to_remove as $table ) {
-		$wpdb->query( "DROP TABLE IF EXISTS $table" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result = $wpdb->query( "DROP TABLE IF EXISTS $table" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( false === $result && ! empty( $wpdb->last_error ) ) {
+			log_uninstall_error( "Failed to drop table {$table}: " . $wpdb->last_error );
+		}
 	}
 
 	// Database views to be removed
@@ -72,7 +80,10 @@ try {
 
 	// Remove the views
 	foreach ( $views_to_remove as $view ) {
-		$wpdb->query( "DROP VIEW IF EXISTS $view" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$result = $wpdb->query( "DROP VIEW IF EXISTS $view" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		if ( false === $result && ! empty( $wpdb->last_error ) ) {
+			log_uninstall_error( "Failed to drop view {$view}: " . $wpdb->last_error );
+		}
 	}
 
 	// Custom post types to be removed
@@ -91,7 +102,8 @@ try {
 		$_posts = get_posts(
 			array(
 				'post_type'      => $p_type,
-				'posts_per_page' => 9999999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'posts_per_page' => -1,
+				'no_found_rows'  => true,
 			)
 		);
 
@@ -100,14 +112,48 @@ try {
 		}
 	}
 
+	// Delete custom taxonomy terms
+	$taxonomies_to_remove = array( 'recipe_category', 'recipe_tag' );
+	foreach ( $taxonomies_to_remove as $taxonomy ) {
+		$terms = get_terms(
+			array(
+				'taxonomy'   => $taxonomy,
+				'hide_empty' => false,
+			)
+		);
+		if ( ! is_wp_error( $terms ) && is_array( $terms ) ) {
+			foreach ( $terms as $term ) {
+				wp_delete_term( $term->term_id, $taxonomy );
+			}
+		}
+	}
+
 	// Delete transients containing 'automator'
-	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%_transient_%automator%'" );
-	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%_transient_%uap%'" );
+	$result = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", '%_transient_%automator%' ) );
+	if ( false === $result && ! empty( $wpdb->last_error ) ) {
+		log_uninstall_error( 'Failed to delete automator transients: ' . $wpdb->last_error );
+	}
+
+	$result = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", '%_transient_%uap%' ) );
+	if ( false === $result && ! empty( $wpdb->last_error ) ) {
+		log_uninstall_error( 'Failed to delete UAP transients: ' . $wpdb->last_error );
+	}
 
 	// Delete webhook sample options (new naming convention)
-	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%webhook_sample_uap%'" );
-	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%webhook_expiry_uap%'" );
-	$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '%webhook_data_type_uap%'" );
+	$result = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", '%webhook_sample_uap%' ) );
+	if ( false === $result && ! empty( $wpdb->last_error ) ) {
+		log_uninstall_error( 'Failed to delete webhook sample options: ' . $wpdb->last_error );
+	}
+
+	$result = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", '%webhook_expiry_uap%' ) );
+	if ( false === $result && ! empty( $wpdb->last_error ) ) {
+		log_uninstall_error( 'Failed to delete webhook expiry options: ' . $wpdb->last_error );
+	}
+
+	$result = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", '%webhook_data_type_uap%' ) );
+	if ( false === $result && ! empty( $wpdb->last_error ) ) {
+		log_uninstall_error( 'Failed to delete webhook data type options: ' . $wpdb->last_error );
+	}
 
 	// Delete options containing 'automator' or 'uap' etc
 	// Patterns to match in option names
@@ -129,22 +175,13 @@ try {
 		'_uncannyowl_gtt%',
 	);
 
-	// Building the query dynamically
-	$like_conditions = array_map(
-		function ( $pattern ) use ( $wpdb ) {
-			return $wpdb->prepare( 'option_name LIKE %s', $pattern );
-		},
-		$like_patterns
-	);
-
-	// Combine the conditions with OR
-	$conditions_query = implode( ' OR ', $like_conditions );
-
-	// Final SQL query
-	$sql_query = "DELETE FROM $wpdb->options WHERE $conditions_query";
-
-	// Execute the query
-	$wpdb->query( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	// Execute each deletion separately for clarity and safety
+	foreach ( $like_patterns as $pattern ) {
+		$result = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->options WHERE option_name LIKE %s", $pattern ) );
+		if ( false === $result && ! empty( $wpdb->last_error ) ) {
+			log_uninstall_error( "Failed to delete options matching pattern '{$pattern}': " . $wpdb->last_error );
+		}
+	}
 
 	$cron_jobs_to_unhook = array(
 		'automator_weekly_healthcheck',
@@ -157,14 +194,32 @@ try {
 		wp_clear_scheduled_hook( $cron_job );
 	}
 
+	// Delete user meta created by Automator and integrations
+	$user_meta_patterns = array(
+		'_uncannyowl_gtt_training_%',
+		'_uncannyowl_gtw_webinar_%',
+		'_twilio_sms_',
+		'display_pop_up_%',
+		'automator_tooltips_visibility',
+	);
+
+	foreach ( $user_meta_patterns as $pattern ) {
+		$result = $wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $pattern ) );
+		if ( false === $result && ! empty( $wpdb->last_error ) ) {
+			log_uninstall_error( "Failed to delete user meta matching pattern '{$pattern}': " . $wpdb->last_error );
+		}
+	}
+
 	// Remove custom translations for 'uncanny-automator'
 	$translations_dir               = WP_CONTENT_DIR . '/languages/plugins';
 	$uncanny_automator_translations = glob( $translations_dir . '/uncanny-automator-*' );
 
-	foreach ( $uncanny_automator_translations as $file ) {
-		// Check if file exists and is writable
-		if ( file_exists( $file ) && wp_is_writable( $file ) ) {
-			wp_delete_file( $file ); // Delete the file
+	if ( false !== $uncanny_automator_translations && is_array( $uncanny_automator_translations ) ) {
+		foreach ( $uncanny_automator_translations as $file ) {
+			// Check if file exists and is writable
+			if ( file_exists( $file ) && wp_is_writable( $file ) ) {
+				wp_delete_file( $file ); // Delete the file
+			}
 		}
 	}
 

@@ -245,6 +245,80 @@ class GCALENDAR_ADDEVENT extends \Uncanny_Automator\Recipe\App_Action {
 				'default_value' => 15,
 				'input_type'    => 'text',
 			),
+			// Visibility.
+			array(
+				'option_code'   => "{$this->prefix}_visibility",
+				'input_type'    => 'select',
+				'label'         => esc_attr_x( 'Visibility', 'Google Calendar', 'uncanny-automator' ),
+				'description'   => esc_attr_x( 'Controls who can see the event details on shared calendars', 'Google Calendar', 'uncanny-automator' ),
+				'required'      => false,
+				'default_value' => 'default',
+				'options'       => array(
+					array(
+						'value' => 'default',
+						'text'  => esc_attr_x( 'Default (use calendar settings)', 'Google Calendar', 'uncanny-automator' ),
+					),
+					array(
+						'value' => 'public',
+						'text'  => esc_attr_x( 'Public', 'Google Calendar', 'uncanny-automator' ),
+					),
+					array(
+						'value' => 'private',
+						'text'  => esc_attr_x( 'Private', 'Google Calendar', 'uncanny-automator' ),
+					),
+					array(
+						'value' => 'confidential',
+						'text'  => esc_attr_x( 'Confidential', 'Google Calendar', 'uncanny-automator' ),
+					),
+				),
+			),
+			// Transparency (Show as).
+			array(
+				'option_code'   => "{$this->prefix}_transparency",
+				'input_type'    => 'select',
+				'label'         => esc_attr_x( 'Show as', 'Google Calendar', 'uncanny-automator' ),
+				'description'   => esc_attr_x( 'Whether the event blocks time on the calendar', 'Google Calendar', 'uncanny-automator' ),
+				'required'      => false,
+				'default_value' => 'opaque',
+				'options'       => array(
+					array(
+						'value' => 'opaque',
+						'text'  => esc_attr_x( 'Busy', 'Google Calendar', 'uncanny-automator' ),
+					),
+					array(
+						'value' => 'transparent',
+						'text'  => esc_attr_x( 'Free / Available', 'Google Calendar', 'uncanny-automator' ),
+					),
+				),
+			),
+			// Guest permissions.
+			array(
+				'option_code'   => "{$this->prefix}_guests_can_modify",
+				'input_type'    => 'checkbox',
+				'is_toggle'     => true,
+				'label'         => esc_attr_x( 'Guests can modify event', 'Google Calendar', 'uncanny-automator' ),
+				'description'   => esc_attr_x( 'Allow guests to modify the event details', 'Google Calendar', 'uncanny-automator' ),
+				'required'      => false,
+				'default_value' => false,
+			),
+			array(
+				'option_code'   => "{$this->prefix}_guests_can_invite_others",
+				'input_type'    => 'checkbox',
+				'is_toggle'     => true,
+				'label'         => esc_attr_x( 'Guests can invite others', 'Google Calendar', 'uncanny-automator' ),
+				'description'   => esc_attr_x( 'Allow guests to invite other people to the event', 'Google Calendar', 'uncanny-automator' ),
+				'required'      => false,
+				'default_value' => true,
+			),
+			array(
+				'option_code'   => "{$this->prefix}_guests_can_see_other_guests",
+				'input_type'    => 'checkbox',
+				'is_toggle'     => true,
+				'label'         => esc_attr_x( 'Guests can see other guests', 'Google Calendar', 'uncanny-automator' ),
+				'description'   => esc_attr_x( 'Allow guests to see the list of other attendees', 'Google Calendar', 'uncanny-automator' ),
+				'required'      => false,
+				'default_value' => true,
+			),
 		);
 	}
 
@@ -271,11 +345,16 @@ class GCALENDAR_ADDEVENT extends \Uncanny_Automator\Recipe\App_Action {
 		$end_date                = sanitize_text_field( $parsed[ "{$this->prefix}_end_date" ] ?? false );
 		$end_time                = sanitize_text_field( $parsed[ "{$this->prefix}_end_time" ] ?? false );
 		$attendees               = sanitize_text_field( $parsed[ "{$this->prefix}_attendees" ] ?? '' );
-		$notification_email      = sanitize_text_field( $parsed[ "{$this->prefix}_notification_email" ] ?? 0 );
-		$notification_popup      = sanitize_text_field( $parsed[ "{$this->prefix}_notification_popup" ] ?? 0 );
-		$notification_time_email = sanitize_text_field( $parsed[ "{$this->prefix}_notification_time_email" ] ?? 0 );
-		$notification_time_popup = sanitize_text_field( $parsed[ "{$this->prefix}_notification_time_popup" ] ?? 0 );
-		$timezone                = sanitize_text_field( $parsed[ "{$this->prefix}_timezone" ] ?? '' );
+		$notification_email        = sanitize_text_field( $parsed[ "{$this->prefix}_notification_email" ] ?? 0 );
+		$notification_popup        = sanitize_text_field( $parsed[ "{$this->prefix}_notification_popup" ] ?? 0 );
+		$notification_time_email   = sanitize_text_field( $parsed[ "{$this->prefix}_notification_time_email" ] ?? 0 );
+		$notification_time_popup   = sanitize_text_field( $parsed[ "{$this->prefix}_notification_time_popup" ] ?? 0 );
+		$timezone                  = sanitize_text_field( $parsed[ "{$this->prefix}_timezone" ] ?? '' );
+		$visibility                = sanitize_text_field( $parsed[ "{$this->prefix}_visibility" ] ?? 'default' );
+		$transparency              = sanitize_text_field( $parsed[ "{$this->prefix}_transparency" ] ?? 'opaque' );
+		$guests_can_modify         = sanitize_text_field( $parsed[ "{$this->prefix}_guests_can_modify" ] ?? '' );
+		$guests_can_invite_others  = sanitize_text_field( $parsed[ "{$this->prefix}_guests_can_invite_others" ] ?? '1' );
+		$guests_can_see_guests     = sanitize_text_field( $parsed[ "{$this->prefix}_guests_can_see_other_guests" ] ?? '1' );
 
 		// Validate attendees email addresses if provided.
 		if ( ! empty( $attendees ) ) {
@@ -284,24 +363,31 @@ class GCALENDAR_ADDEVENT extends \Uncanny_Automator\Recipe\App_Action {
 
 		// Create event body.
 		$body = array(
-			'action'                  => 'create_event',
-			'summary'                 => $summary,
-			'location'                => $location,
-			'calendar_id'             => $calendar_id,
-			'description'             => $description,
-			'start_date'              => $this->autoformat_date( $start_date ),
-			'start_time'              => $this->autoformat_time( $start_time ),
-			'end_date'                => $this->autoformat_date( $end_date ),
-			'end_time'                => $this->autoformat_time( $end_time ),
-			'attendees'               => str_replace( ' ', '', trim( $attendees ) ),
-			'notification_email'      => $notification_email,
-			'notification_popup'      => $notification_popup,
-			'notification_time_email' => $notification_time_email,
-			'notification_time_popup' => $notification_time_popup,
-			'timezone'                => ! empty( $timezone ) ? $timezone : apply_filters( 'automator_google_calendar_add_event_timezone', Automator()->get_timezone_string() ),
+			'action'                     => 'create_event',
+			'summary'                    => $summary,
+			'location'                   => $location,
+			'calendar_id'                => $calendar_id,
+			'description'                => $description,
+			'start_date'                 => $this->autoformat_date( $start_date ),
+			'start_time'                 => $this->autoformat_time( $start_time ),
+			'end_date'                   => $this->autoformat_date( $end_date ),
+			'end_time'                   => $this->autoformat_time( $end_time ),
+			'attendees'                  => str_replace( ' ', '', trim( $attendees ) ),
+			'notification_email'         => $notification_email,
+			'notification_popup'         => $notification_popup,
+			'notification_time_email'    => $notification_time_email,
+			'notification_time_popup'    => $notification_time_popup,
+			'timezone'                   => ! empty( $timezone ) ? $timezone : apply_filters( 'automator_google_calendar_add_event_timezone', Automator()->get_timezone_string() ),
 			// Google Calendar endpoint is written so the date format can be changed from the Client.
-			'date_format'             => $this->get_date_format(),
-			'time_format'             => $this->get_time_format(),
+			'date_format'                 => $this->get_date_format(),
+			'time_format'                 => $this->get_time_format(),
+			// Event settings.
+			'visibility'                  => $visibility,
+			'transparency'                => $transparency,
+			// Guest permissions.
+			'guests_can_modify'           => $guests_can_modify,
+			'guests_can_invite_others'    => $guests_can_invite_others,
+			'guests_can_see_other_guests' => $guests_can_see_guests,
 		);
 
 		$response = $this->api->api_request( $body, $action_data );

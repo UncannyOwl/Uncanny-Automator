@@ -45,7 +45,6 @@ class Zoho_Campaigns_Client_Auth {
 		$this->set_agent_credentials( $credentials );
 
 		return $this;
-
 	}
 
 	/**
@@ -70,7 +69,6 @@ class Zoho_Campaigns_Client_Auth {
 	public function get_agent_credentials() {
 
 		return $this->agent_credentials;
-
 	}
 
 	/**
@@ -103,7 +101,6 @@ class Zoho_Campaigns_Client_Auth {
 			return false;
 
 		}
-
 	}
 
 	/**
@@ -115,7 +112,7 @@ class Zoho_Campaigns_Client_Auth {
 	 */
 	public function disconnect_agent( callable $callback ) {
 
-		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE_KEY ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE_KEY ) ) {
 			wp_die( 'Insufficient privilege or nonce is invalid.', 403 );
 		}
 
@@ -127,7 +124,6 @@ class Zoho_Campaigns_Client_Auth {
 		do_action( 'automator_zoho_campaigns_client_disconnected', $this );
 
 		return call_user_func( $callback );
-
 	}
 
 	/**
@@ -154,7 +150,6 @@ class Zoho_Campaigns_Client_Auth {
 		}
 
 		return true;
-
 	}
 
 	/**
@@ -205,7 +200,6 @@ class Zoho_Campaigns_Client_Auth {
 		do_action( 'automator_zoho_campaigns_before_access_token_failed' );
 
 		throw new \Exception( 'Unable to refresh the access token. Please disconnect and reconnect.', 400 );
-
 	}
 
 	/**
@@ -220,7 +214,6 @@ class Zoho_Campaigns_Client_Auth {
 		$access_token = ! empty( $credentials['access_token'] ) ? $credentials['access_token'] : false;
 
 		return apply_filters( 'zoho_campaigns_get_access_token', $access_token, $credentials, $this );
-
 	}
 
 	/**
@@ -239,7 +232,6 @@ class Zoho_Campaigns_Client_Auth {
 		}
 
 		return apply_filters( 'automator_zoho_campaigns_user_location', $user_location, $credentials, $this );
-
 	}
 
 	/**
@@ -254,6 +246,5 @@ class Zoho_Campaigns_Client_Auth {
 		$refresh_token = ! empty( $credentials['refresh_token'] ) ? $credentials['refresh_token'] : false;
 
 		return apply_filters( 'zoho_campaigns_get_refresh_token', $refresh_token, $credentials, $this );
-
 	}
 }

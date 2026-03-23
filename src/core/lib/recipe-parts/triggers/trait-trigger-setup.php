@@ -167,7 +167,6 @@ trait Trigger_Setup {
 	public function __construct() {
 
 		$this->setup_trigger();
-
 	}
 
 	/**
@@ -604,6 +603,7 @@ trait Trigger_Setup {
 			'is_deprecated'       => $this->get_is_deprecated(), // whether trigger is deprecated.
 			'integration'         => $this->get_integration(), // trigger the integration belongs to.
 			'code'                => $this->get_code(), // unique trigger code.
+			'meta_code'           => $this->get_trigger_meta(), // trigger meta code.
 			'sentence'            => $this->get_sentence(), // sentence to show in active state.
 			'select_option_name'  => $this->get_readable_sentence(), // sentence to show in non-active state.
 			'action'              => $this->get_action(), //  trigger fire at this do_action().
@@ -640,12 +640,29 @@ trait Trigger_Setup {
 			$trigger['can_log_in_new_user'] = $this->get_can_log_in_new_user();
 		}
 
+		// Extract manifest data if trait is used
+		if ( $this->uses_item_manifest_trait() && is_callable( array( $this, 'extract_item_manifest_data' ) ) ) {
+			$manifest = call_user_func( array( $this, 'extract_item_manifest_data' ) );
+			if ( ! empty( $manifest ) ) {
+				$trigger['manifest'] = $manifest;
+			}
+		}
+
 		$trigger = apply_filters( 'automator_register_trigger', $trigger );
 
 		// $this->trigger_tokens_filter returns false if trigger has no token.
 		$this->add_trigger_tokens_filter( $this->get_trigger_code(), $this->get_integration() );
 
 		Automator()->register->trigger( $trigger );
+	}
 
+	/**
+	 * Check if trigger uses Item_Manifest trait.
+	 *
+	 * @return bool True if trait is used
+	 */
+	private function uses_item_manifest_trait() {
+		$traits = class_uses( get_class( $this ) );
+		return in_array( 'Uncanny_Automator\Item_Manifest', $traits, true );
 	}
 }

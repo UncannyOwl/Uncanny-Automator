@@ -24,6 +24,7 @@ class TWITTER_POSTSTATUS extends \Uncanny_Automator\Recipe\App_Action {
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/twitter/' ) );
 		$this->set_requires_user( false );
+		$this->set_wpautop( false );
 		$this->set_sentence(
 			sprintf(
 				// translators: %1$s is the tweet content
@@ -60,7 +61,7 @@ class TWITTER_POSTSTATUS extends \Uncanny_Automator\Recipe\App_Action {
 	 * @throws \Exception When the action fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-		$status   = sanitize_textarea_field( $parsed[ $this->get_action_meta() ] );
+		$status   = $this->get_parsed_meta_value( $this->get_action_meta() );
 		$response = $this->api->statuses_update( $status, '', $action_data );
 
 		return true;

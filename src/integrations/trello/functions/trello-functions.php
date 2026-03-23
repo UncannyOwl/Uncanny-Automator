@@ -225,7 +225,7 @@ class Trello_Functions {
 	 */
 	public function disconnect() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			return;
 		}
 

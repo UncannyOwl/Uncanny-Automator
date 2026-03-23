@@ -310,7 +310,7 @@ class Linkedin_Helpers {
 	 */
 	public function verify_access( $nonce = '' ) {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			$this->redirect(
 				$this->get_settings_url(),
 				array(
@@ -342,7 +342,6 @@ class Linkedin_Helpers {
 		automator_delete_option( self::LINKEDIN_CONNECTED_USER );
 
 		delete_transient( 'automator_linkedin_pages' );
-
 	}
 
 	/**

@@ -272,7 +272,13 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		$loop_id             = $loop->get( 'id' );
 		$loopable_expression = $loop->get( 'iterable_expression' );
 
-		$extracted_tokens = (array) json_decode( $loopable_expression['fields'] ?? '', true );
+		$fields_value = $loopable_expression['fields'] ?? '';
+
+		if ( ! is_string( $fields_value ) ) {
+			$fields_value = '';
+		}
+
+		$extracted_tokens = (array) json_decode( $fields_value, true );
 
 		$extracted_tokens_value = $this->extract_token( $extracted_tokens['TOKEN']['value'] ?? '' );
 

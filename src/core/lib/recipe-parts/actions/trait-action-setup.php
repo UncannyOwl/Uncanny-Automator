@@ -60,6 +60,11 @@ trait Action_Setup {
 	protected $function_priority = 10;
 
 	/**
+	 * @var string
+	 */
+	protected $options_agent;
+
+	/**
 	 * @var
 	 */
 	protected $sentence;
@@ -116,10 +121,26 @@ trait Action_Setup {
 	 */
 	protected $helpers;
 
+	/**
+	 * Agent discovery registry.
+	 *
+	 * @since 5.7
+	 * @var array
+	 */
+	protected static $agent_registry = array();
+	/**
+	 * Get loopable tokens.
+	 *
+	 * @return mixed
+	 */
 	public function get_loopable_tokens() {
 		return $this->loopable_tokens;
 	}
-
+	/**
+	 * Set loopable tokens.
+	 *
+	 * @param mixed $loopable_tokens The destination.
+	 */
 	public function set_loopable_tokens( $loopable_tokens ) {
 		$this->loopable_tokens = $loopable_tokens;
 	}
@@ -236,6 +257,26 @@ trait Action_Setup {
 	 */
 	public function set_action_meta( $action_meta ) {
 		$this->action_meta = $action_meta;
+	}
+
+	/**
+	 * Set options agent class.
+	 *
+	 * @since 5.7
+	 * @param string $options_agent Options agent class name.
+	 */
+	public function set_options_agent( $options_agent ) {
+		$this->options_agent = $options_agent;
+	}
+
+	/**
+	 * Get options agent class.
+	 *
+	 * @since 5.7
+	 * @return string Options agent class name.
+	 */
+	public function get_options_agent() {
+		return $this->options_agent;
 	}
 
 	/**
@@ -380,6 +421,52 @@ trait Action_Setup {
 		$this->helpers = $helpers;
 	}
 
+	/**
+	 * Enable agent discovery for this action.
+	 *
+	 * Registers the action class for agent-based execution by mapping
+	 * the action code to the implementing class.
+	 *
+	 * @since 5.7
+	 * @param string $action_code Action code identifier.
+	 * @param string $class_name  Full class name implementing Agent_Tools.
+	 * @return void
+	 */
+	public function enable_agent_discovery( $action_code, $class_name ) {
+		self::$agent_registry[ $action_code ] = $class_name;
+	}
+
+	/**
+	 * Get agent-compatible class for action code.
+	 *
+	 * @since 5.7
+	 * @param string $action_code Action code.
+	 * @return string|null Class name or null if not found.
+	 */
+	public static function get_agent_class( $action_code ) {
+		return self::$agent_registry[ $action_code ] ?? null;
+	}
+
+	/**
+	 * Get all registered agent actions.
+	 *
+	 * @since 5.7
+	 * @return array Array of action_code => class_name mappings.
+	 */
+	public static function get_agent_registry() {
+		return self::$agent_registry;
+	}
+
+	/**
+	 * Check if action supports agent execution.
+	 *
+	 * @since 5.7
+	 * @param string $action_code Action code.
+	 * @return bool True if action supports agent execution.
+	 */
+	public static function is_agent_compatible( $action_code ) {
+		return isset( self::$agent_registry[ $action_code ] );
+	}
 
 	/**
 	 * Define and register the action by pushing it into the Automator object
@@ -395,6 +482,7 @@ trait Action_Setup {
 			'is_deprecated'                 => $this->is_is_deprecated(),
 			'requires_user'                 => $this->get_requires_user(),
 			'code'                          => $this->get_action_code(),
+			'meta_code'                     => $this->get_action_meta(),
 			'sentence'                      => $this->get_sentence(),
 			'select_option_name'            => $this->get_readable_sentence(),
 			'execution_function'            => array( $this, 'do_action' ),
@@ -402,6 +490,12 @@ trait Action_Setup {
 			'should_apply_extra_formatting' => $this->get_should_apply_extra_formatting(),
 			'loopable_tokens'               => $this->get_loopable_tokens(),
 		);
+
+		$agent = $this->get_agent_class( $this->get_action_code() );
+
+		if ( ! is_null( $agent ) ) {
+			$action['agent_class'] = $agent;
+		}
 
 		if ( ! empty( $this->get_options() ) ) {
 			$action['options'] = $this->get_options();
@@ -419,8 +513,27 @@ trait Action_Setup {
 			$action['buttons'] = $this->get_buttons();
 		}
 
+		// Extract manifest data if trait is used
+		if ( $this->uses_item_manifest_trait() && is_callable( array( $this, 'extract_item_manifest_data' ) ) ) {
+			$manifest = call_user_func( array( $this, 'extract_item_manifest_data' ) );
+			if ( ! empty( $manifest ) ) {
+				$action['manifest'] = $manifest;
+			}
+		}
+
 		$action = apply_filters( 'automator_register_action', $action );
+
 		Automator()->register->action( $action );
+	}
+
+	/**
+	 * Check if action uses Item_Manifest trait.
+	 *
+	 * @return bool True if trait is used
+	 */
+	private function uses_item_manifest_trait() {
+		$traits = class_uses( get_class( $this ) );
+		return in_array( 'Uncanny_Automator\Item_Manifest', $traits, true );
 	}
 
 	/**

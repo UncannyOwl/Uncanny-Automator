@@ -166,7 +166,8 @@ class Active_Campaign_Settings extends App_Integration_Settings {
 				// If not, get options from API.
 				$options = $this->helpers->{ $item['api_method'] }();
 			}
-			$count = ! empty( $options ) ? count( $options ) : 0;
+			// Check for WP_Error before counting
+			$count = ( ! is_wp_error( $options ) && ! empty( $options ) ) ? count( $options ) : 0;
 			$desc  = sprintf(
 				// translators: %s Data type
 				esc_html_x(
@@ -252,6 +253,15 @@ class Active_Campaign_Settings extends App_Integration_Settings {
 		// Get selected options.
 		$message = $config[ $key ]['name'];
 		$options = $this->helpers->{ $config[ $key ]['api_method'] }();
+
+		// Check for WP_Error first
+		if ( is_wp_error( $options ) ) {
+			$response['alert'] = $this->get_error_alert(
+				esc_attr_x( 'API Error', 'ActiveCampaign', 'uncanny-automator' ),
+				$options->get_error_message()
+			);
+			return $response;
+		}
 
 		// If no options are returned, return a warning alert.
 		if ( empty( $options ) ) {

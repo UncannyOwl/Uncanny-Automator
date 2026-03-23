@@ -9,10 +9,6 @@ namespace Uncanny_Automator\Integrations\Gravity_Forms;
  */
 class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
-	const TRIGGER_CODE = 'ANONGFSUBFORM';
-
-	const TRIGGER_META = 'ANONGFFORMS';
-
 	private $gf;
 
 	/**
@@ -24,9 +20,9 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_integration( 'GF' );
 
-		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_code( 'ANONGFSUBFORM' );
 
-		$this->set_trigger_meta( self::TRIGGER_META );
+		$this->set_trigger_meta( 'ANONGFFORMS' );
 
 		$this->set_trigger_type( 'anonymous' );
 
@@ -43,9 +39,7 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 			esc_html_x( '{{A form}} is submitted', 'Gravity Forms', 'uncanny-automator' )
 		);
 
-		$this->add_action( 'gform_after_submission' );
-
-		$this->set_action_args_count( 2 );
+		$this->add_action( 'gform_after_submission', 10, 2 );
 
 		$this->set_author( Automator()->get_author_name( $this->trigger_code ) );
 
@@ -64,7 +58,7 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 				'label'           => esc_attr_x( 'Form', 'Gravity Forms', 'uncanny-automator' ),
 				'input_type'      => 'select',
 				'required'        => true,
-				'options'         => $this->gf->get_forms_options(),
+				'options'         => $this->gf->helpers->get_forms_as_options( true ),
 				'relevant_tokens' => array(),
 			),
 		);
@@ -79,6 +73,8 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function define_tokens( $trigger, $tokens ) {
 
+		$form_id = $trigger['meta'][ $this->get_trigger_meta() ];
+
 		$tokens[] = array(
 			'tokenId'   => 'ANONGFFORMS',
 			'tokenName' => esc_html_x( 'Form title', 'Gravity Forms', 'uncanny-automator' ),
@@ -90,6 +86,20 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 			'tokenName' => esc_html_x( 'Form ID', 'Gravity Forms', 'uncanny-automator' ),
 			'tokenType' => 'int',
 		);
+
+		$form_tokens = $this->gf->tokens->possible_tokens->form_tokens( $form_id, $this->trigger_meta );
+
+		// Remove duplicate Form title and Form ID tokens from $form_tokens since we already added them manually
+		$form_tokens = array_filter(
+			$form_tokens,
+			function ( $token ) {
+				return ! in_array( $token['tokenId'], array( 'FORM_TITLE', 'FORM_ID' ) );
+			}
+		);
+
+		$entry_tokens = $this->gf->tokens->possible_tokens->entry_tokens( 'GFENTRYTOKENS' );
+
+		$tokens = array_merge( $tokens, $form_tokens, $entry_tokens );
 
 		return $tokens;
 	}
@@ -103,16 +113,22 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function validate( $trigger, $hook_args ) {
 
-		$selected_form_id = absint( $trigger['meta'][ $this->get_trigger_meta() ] );
+		$selected_form_id = $trigger['meta'][ $this->get_trigger_meta() ];
 
 		// If any form is selected
-		if ( -1 === $selected_form_id ) {
+		if ( intval( '-1' ) === intval( $selected_form_id ) ) {
 			return true;
 		}
 
 		list( $entry, $form ) = $hook_args;
 
-		if ( absint( $form['id'] ) === $selected_form_id ) {
+		if ( absint( $form['id'] ) === absint( $selected_form_id ) ) {
+			// Set user ID dynamically
+			$user_id = isset( $entry['created_by'] ) && 0 !== absint( $entry['created_by'] ) ? absint( $entry['created_by'] ) : wp_get_current_user()->ID;
+			$user_id = apply_filters( 'automator_pro_gravity_forms_user_id', $user_id, $entry, wp_get_current_user() );
+
+			$this->set_user_id( $user_id );
+
 			return true;
 		}
 
@@ -130,8 +146,17 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
 		list( $entry, $form ) = $hook_args;
 
-		$this->gf->tokens->save_legacy_trigger_tokens( $this->trigger_records, $entry, $form );
+		$fields_tokens = $this->gf->tokens->parser->parsed_fields_tokens( $form, $entry );
+		$entry_tokens  = $this->gf->tokens->parser->parsed_entry_tokens( $entry );
 
-		return array();
+		$this->save_tokens( $this->trigger_meta, $fields_tokens );
+		$this->save_tokens( 'GFENTRYTOKENS', $entry_tokens );
+
+		$trigger_tokens = array(
+			'ANONGFFORMS'    => $form['title'],
+			'ANONGFFORMS_ID' => $form['id'],
+		);
+
+		return $trigger_tokens;
 	}
 }

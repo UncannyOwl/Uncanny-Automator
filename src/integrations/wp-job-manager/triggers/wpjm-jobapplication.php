@@ -1,177 +1,146 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Wpjm;
+
+use Uncanny_Automator\Integrations\WpJobManager\Tokens\WPJM_Legacy_Tokens;
 
 /**
- * Class WPJM_JOBAPPLICATION
+ * Class Wpjm_Jobapplication
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Wpjm
  */
-class WPJM_JOBAPPLICATION {
+class Wpjm_Jobapplication extends \Uncanny_Automator\Recipe\Trigger {
+
+	const TRIGGER_CODE = 'WPJMSUBMITJOBAPPLICATION';
+	const TRIGGER_META = 'WPJMJOBAPPLICATION';
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
+	 * @method \Uncanny_Automator\Integrations\Wpjm\Wpjm_Helpers get_item_helpers()
 	 */
-	public static $integration = 'WPJM';
-
-	private $trigger_code;
-	private $trigger_meta;
 
 	/**
-	 * Set up Automator trigger constructor.
+	 * Check if requirements are met
 	 */
-	public function __construct() {
-
-		$this->trigger_code = 'WPJMSUBMITJOBAPPLICATION';
-		$this->trigger_meta = 'WPJMJOBAPPLICATION';
-
-		// Check if get_resume_files function exists from WPJM resume add-on.
-		if ( function_exists( 'get_resume_files' ) ) {
-			$this->define_trigger();
-		}
-
+	public function requirements_met() {
+		return function_exists( 'get_resume_files' );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup trigger
 	 */
-	public function define_trigger() {
+	protected function setup_trigger() {
+		$this->set_integration( 'WPJM' );
+		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_meta( self::TRIGGER_META );
+		$this->set_is_pro( false );
+		$this->set_is_login_required( true );
+		$this->set_trigger_type( 'user' );
+		$this->set_uses_api( false );
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-job-manager/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WP Job Manager */
-			'sentence'            => sprintf( esc_attr__( 'A user applies for {{a job:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - WP Job Manager */
-			'select_option_name'  => esc_attr__( 'A user applies for {{a job}}', 'uncanny-automator' ),
-			'action'              => 'new_job_application',
-			'priority'            => 20,
-			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'new_job_application' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
+		// Deprecated new_job_application hook, added a new hook job_manager_applications_new_job_application
+		$this->add_action( 'new_job_application' );
+		$this->set_action_args_count( 2 );
 
-		Automator()->register->trigger( $trigger );
+		// translators: %1$s is the job
+		$this->set_sentence( sprintf( esc_html_x( 'A user applies for {{a job:%1$s}}', 'WP Job Manager', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+
+		$this->set_readable_sentence( esc_html_x( 'A user applies for {{a job}}', 'WP Job Manager', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * @return array[]
+	 * Define trigger options
 	 */
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
+	public function options() {
+		return array(
 			array(
-				'options' => array(
-					Automator()->helpers->recipe->wp_job_manager->options->list_wpjm_jobs( null, $this->trigger_meta ),
+				'option_code' => $this->get_trigger_meta(),
+				'label' => esc_html_x( 'Job', 'WP Job Manager', 'uncanny-automator' ),
+				'input_type' => 'select',
+				'required' => true,
+				'options' => $this->get_item_helpers()->list_wpjm_jobs(),
+				'relevant_tokens' => array(
+					$this->get_trigger_meta() => esc_html_x( 'Job', 'WP Job Manager', 'uncanny-automator' ),
+					$this->get_trigger_meta() . '_ID' => esc_html_x( 'Job ID', 'WP Job Manager', 'uncanny-automator' ),
+					$this->get_trigger_meta() . '_URL' => esc_html_x( 'Job URL', 'WP Job Manager', 'uncanny-automator' ),
 				),
-			)
+			),
 		);
 	}
 
 	/**
-	 *
+	 * Validate trigger
 	 */
-	public function plugins_loaded() {
-		$this->define_trigger();
-	}
-
-	/**
-	 * @param $fields
-	 */
-	public function new_job_application( $application_id, $job_id ) {
+	public function validate( $trigger, $hook_args ) {
+		list( $application_id, $job_id ) = $hook_args;
 
 		if ( empty( $job_id ) || ! is_numeric( $job_id ) ) {
-			return;
-		}
-		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-		$conditions = $this->match_condition( $job_id, $recipes, $this->trigger_meta, $this->trigger_code );
-
-		if ( empty( $conditions ) ) {
-			return;
-		}
-		$user_id = get_current_user_id();
-		if ( automator_filter_has_var( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) && ! empty( automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) ) ) {
-			if ( $application_id !== automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) ) {
-				update_post_meta( $application_id, '_resume_id', automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) );
-			}
-		}
-		foreach ( $conditions['recipe_ids'] as $recipe_id => $trigger_id ) {
-			if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-				$trigger_args = array(
-					'code'             => $this->trigger_code,
-					'meta'             => $this->trigger_meta,
-					'recipe_to_match'  => $recipe_id,
-					'trigger_to_match' => $trigger_id,
-					'post_id'          => $job_id,
-					'user_id'          => $user_id,
-				);
-
-				$args = Automator()->maybe_add_trigger_entry( $trigger_args, false );
-
-				if ( $args ) {
-					foreach ( $args as $result ) {
-						if ( true === $result['result'] ) {
-							$trigger_meta = array(
-								'user_id'        => $user_id,
-								'trigger_id'     => $result['args']['trigger_id'],
-								'trigger_log_id' => $result['args']['get_trigger_id'],
-								'run_number'     => $result['args']['run_number'],
-							);
-
-							$trigger_meta['meta_key']   = $this->trigger_meta;
-							$trigger_meta['meta_value'] = $job_id;
-							Automator()->insert_trigger_meta( $trigger_meta );
-
-							$trigger_meta['meta_key']   = 'WPJMJOBAPPLICATIONID';
-							$trigger_meta['meta_value'] = $application_id;
-							Automator()->insert_trigger_meta( $trigger_meta );
-
-							Automator()->maybe_trigger_complete( $result['args'] );
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * @param      $terms
-	 * @param null $recipes
-	 * @param null $trigger_meta
-	 * @param null $trigger_code
-	 *
-	 * @return array|bool
-	 */
-	public function match_condition( $job_id, $recipes = null, $trigger_meta = null, $trigger_code = null ) {
-
-		if ( null === $recipes ) {
 			return false;
 		}
 
-		$recipe_ids     = array();
-		$entry_to_match = $job_id;
+		$selected_job = $trigger['meta'][ self::TRIGGER_META ];
 
-		foreach ( $recipes as $recipe ) {
-			foreach ( $recipe['triggers'] as $trigger ) {
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) && ( (int) $trigger['meta'][ $trigger_meta ] === (int) $entry_to_match || $trigger['meta'][ $trigger_meta ] === '-1' ) ) {
-					$recipe_ids[ $recipe['ID'] ] = $trigger['ID'];
-					break;
-				}
+		// Check if any job matches or if "Any job" is selected
+		if ( intval( '-1' ) === intval( $selected_job ) ) {
+			return true;
+		}
+
+		return (int) $job_id === (int) $selected_job;
+	}
+
+	/**
+	 * Hydrate tokens
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		list( $application_id, $job_id ) = $hook_args;
+
+		// Handle resume ID if present
+		if ( automator_filter_has_var( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) && ! empty( automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) ) ) {
+			if ( automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) !== $application_id ) {
+				update_post_meta( $application_id, '_resume_id', automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) );
 			}
 		}
 
-		if ( ! empty( $recipe_ids ) ) {
-			return array(
-				'recipe_ids' => $recipe_ids,
-				'result'     => true,
-			);
+		$tokens             = array();
+		$job_tokens         = Wpjm_Token_Manager::get_job_tokens( 'WPJMJOBAPPLICATION' );
+		$application_tokens = Wpjm_Token_Manager::get_application_tokens( 'WPJMJOBAPPLICATIONID' );
+
+		// Parse common tokens.
+		foreach ( $application_tokens as $token ) {
+			$token_id = $token['tokenId'] ?? null;
+			if ( null !== $token_id ) {
+				$tokens[ $token_id ] = Wpjm_Token_Manager::hydrate_application_tokens( $application_id, $token_id );
+			}
 		}
 
-		return false;
+		foreach ( $job_tokens as $token ) {
+			$token_id = $token['tokenId'] ?? null;
+			if ( null !== $token_id ) {
+				$tokens[ $token_id ] = Wpjm_Token_Manager::hydrate_job_tokens( $job_id, $token_id );
+			}
+		}
+
+		$tokens[ $this->get_trigger_meta() . '_ID' ]  = $job_id;
+		$tokens[ $this->get_trigger_meta() ]          = wpjm_get_the_job_title( $job_id );
+		$tokens[ $this->get_trigger_meta() . '_URL' ] = get_permalink( $job_id );
+
+		// Save legacy tokens for backwards compatibility. 😳
+		$legacy_token_storage = new WPJM_Legacy_Tokens( $this->trigger_records );
+		$legacy_token_storage->save_legacy_tokens_values( 'job', 'WPJMJOBAPPLICATION', $job_id );
+		$legacy_token_storage->save_legacy_tokens_values( 'application', 'WPJMJOBAPPLICATIONID', $application_id );
+
+		return $tokens;
 	}
 
+	/**
+	 * Define tokens
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+		$custom_tokens = array_merge(
+		// Use centralized token definitions
+			Wpjm_Token_Manager::get_job_tokens( 'WPJMJOBAPPLICATION' ),
+			Wpjm_Token_Manager::get_application_tokens( 'WPJMJOBAPPLICATIONID' )
+		);
+
+		return array_merge( $tokens, $custom_tokens );
+	}
 }

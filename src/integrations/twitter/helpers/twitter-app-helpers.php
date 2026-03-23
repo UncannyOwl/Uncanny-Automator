@@ -108,6 +108,7 @@ class Twitter_App_Helpers extends App_Helpers {
 			'label'                 => esc_attr_x( 'Status', 'Twitter', 'uncanny-automator' ),
 			'input_type'            => 'textarea',
 			'supports_custom_value' => true,
+			'supports_markdown'     => true,
 			'required'              => true,
 			'placeholder'           => esc_attr_x( 'Enter the message', 'Twitter', 'uncanny-automator' ),
 			'description'           => esc_attr_x( 'Messages posted to X/Twitter have a 280 character limit.', 'Twitter', 'uncanny-automator' ),

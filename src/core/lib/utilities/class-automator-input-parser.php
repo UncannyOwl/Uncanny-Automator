@@ -90,6 +90,9 @@ class Automator_Input_Parser {
 
 		// Attach the new trigger tokens arch for actions that are scheduled.
 		add_filter( 'automator_pro_before_async_action_executed', array( $this, 'attach_trigger_tokens_hook' ), 10, 1 );
+
+		// Attach the new trigger tokens arch for background actions.
+		add_filter( 'automator_before_background_action_executed', array( $this, 'attach_trigger_tokens_hook' ), 10, 1 );
 	}
 
 	/**

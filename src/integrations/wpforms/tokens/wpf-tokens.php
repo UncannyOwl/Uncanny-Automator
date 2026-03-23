@@ -410,7 +410,7 @@ class Wpf_Tokens {
 							$args = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $trigger_id,
-								'run_number'     => $run_number, //get run number
+								'run_number'     => $run_number, // get run number
 								'trigger_log_id' => $trigger_log_id,
 							);
 
@@ -443,7 +443,7 @@ class Wpf_Tokens {
 							$args = array(
 								'user_id'        => $user_id,
 								'trigger_id'     => $trigger_id,
-								'run_number'     => $run_number, //get run number
+								'run_number'     => $run_number, // get run number
 								'trigger_log_id' => $trigger_log_id,
 							);
 
@@ -493,7 +493,7 @@ class Wpf_Tokens {
 						'trigger_id'     => $trigger_id,
 						'meta_key'       => $meta_key,
 						'meta_value'     => maybe_serialize( $data ),
-						'run_number'     => $run_number, //get run number
+						'run_number'     => $run_number, // get run number
 						'trigger_log_id' => $trigger_log_id,
 					);
 
@@ -573,8 +573,8 @@ class Wpf_Tokens {
 	/**
 	 * Retrieves the field choice label.
 	 *
-	 * @param array $field
-	 * @param array $entry
+	 * @param array  $field
+	 * @param array  $entry
 	 * @param string $to_match
 	 *
 	 * @return string
@@ -755,7 +755,7 @@ class Wpf_Tokens {
 	 * Retrieves the selected values for show values.
 	 *
 	 * @param string $value - The selected value index(es).
-	 * @param array $field - The field configuration.
+	 * @param array  $field - The field configuration.
 	 *
 	 * @return string The selected values.
 	 */
@@ -779,7 +779,7 @@ class Wpf_Tokens {
 	/**
 	 * Handles non dynamic labels.
 	 *
-	 * @param array $field - The field configuration.
+	 * @param array  $field - The field configuration.
 	 * @param string $value - The selected value.
 	 *
 	 * @return string The selections
@@ -806,7 +806,7 @@ class Wpf_Tokens {
 	/**
 	 * Handles payment field labels.
 	 *
-	 * @param array $field The field configuration.
+	 * @param array  $field The field configuration.
 	 * @param string $value The selected value.
 	 *
 	 * @return string The label.
@@ -833,7 +833,7 @@ class Wpf_Tokens {
 	/**
 	 * Handles dynamic select field.
 	 *
-	 * @param array $field The field configuration.
+	 * @param array  $field The field configuration.
 	 * @param string $entry_choice The selected value.
 	 *
 	 * @return string The selected value label.

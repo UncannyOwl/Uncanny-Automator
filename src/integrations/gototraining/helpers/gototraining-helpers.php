@@ -47,7 +47,11 @@ class Gototraining_Helpers {
 	 */
 	public $load_options = true;
 
-
+	/**
+	 * Constructor.
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 
 		$this->setting_tab = 'gtt_api';
@@ -110,11 +114,11 @@ class Gototraining_Helpers {
 			$response = $this->remote_request( $body );
 
 			if ( 200 !== $response['statusCode'] ) {
-				throw new \Exception( esc_html__( 'Unable to fetch trainings from this account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html_x( 'Unable to fetch trainings from this account', 'Gototraining', 'uncanny-automator' ) );
 			}
 
 			if ( count( $response['data'] ) < 1 ) {
-				throw new \Exception( esc_html__( 'No trainings were found in this account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html_x( 'No trainings were found in this account', 'Gototraining', 'uncanny-automator' ) );
 			}
 
 			foreach ( $response['data'] as $training ) {
@@ -149,7 +153,7 @@ class Gototraining_Helpers {
 		$user = get_userdata( $user_id );
 
 		if ( is_wp_error( $user ) ) {
-			throw new \Exception( esc_html__( 'GoTo Training user not found.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'GoTo Training user not found.', 'Gototraining', 'uncanny-automator' ) );
 		}
 
 		$customer_first_name = $user->first_name;
@@ -182,7 +186,7 @@ class Gototraining_Helpers {
 		}
 
 		if ( ! isset( $jsondata['joinUrl'] ) ) {
-			throw new \Exception( esc_html__( 'Error adding user to GoTo Training', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Error adding user to GoTo Training', 'Gototraining', 'uncanny-automator' ) );
 		}
 
 		update_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', $jsondata['registrantKey'] );
@@ -203,7 +207,7 @@ class Gototraining_Helpers {
 		$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', true );
 
 		if ( empty( $user_registrant_key ) ) {
-			throw new \Exception( esc_html__( 'User was not registered for training session.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'User was not registered for training session.', 'Gototraining', 'uncanny-automator' ) );
 		}
 
 		$body['action']              = 'gtt_unregister_user';
@@ -244,7 +248,7 @@ class Gototraining_Helpers {
 
 		if ( empty( $current_refresh_token ) ) {
 			automator_update_option( '_uncannyowl_gtt_settings_expired', true );
-			throw new \Exception( esc_html__( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'GoTo Training credentials have expired.', 'Gototraining', 'uncanny-automator' ) );
 		}
 
 		$consumer_key    = trim( automator_get_option( 'uap_automator_gtt_api_consumer_key', '' ) );
@@ -268,7 +272,7 @@ class Gototraining_Helpers {
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			automator_update_option( '_uncannyowl_gtt_settings', array() );
 			automator_update_option( '_uncannyowl_gtt_settings_expired', true );
-			throw new \Exception( esc_html__( 'GoTo Training credentails have expired.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'GoTo Training credentials have expired.', 'Gototraining', 'uncanny-automator' ) );
 		}
 
 		$jsondata = array();
@@ -351,7 +355,7 @@ class Gototraining_Helpers {
 	 */
 	public function validate_oauth_tokens() {
 
-		if ( ! automator_filter_has_var( 'state' ) || $this->setting_tab !== automator_filter_input( 'state' ) ) {
+		if ( ! automator_filter_has_var( 'state' ) || automator_filter_input( 'state' ) !== $this->setting_tab ) {
 			return;
 		}
 
@@ -386,7 +390,7 @@ class Gototraining_Helpers {
 			$response = Api_Server::call( $params );
 
 			if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-				throw new \Exception( esc_html__( 'Error validating Oauth tokens', 'uncanny-automator' ) );
+				throw new \Exception( esc_html_x( 'Error validating Oauth tokens', 'Gototraining', 'uncanny-automator' ) );
 			}
 
 			$jsondata = array();
@@ -424,7 +428,7 @@ class Gototraining_Helpers {
 		}
 
 		// Admin only action.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			return;
 		}
 

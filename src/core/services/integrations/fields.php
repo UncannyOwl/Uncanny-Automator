@@ -54,6 +54,8 @@ class Fields {
 	 */
 	public function get() {
 
+		$object = null;
+
 		if ( 'triggers' === $this->config['object_type'] ) {
 			$object = Automator()->get_trigger( $this->config['code'] );
 		}
@@ -65,19 +67,18 @@ class Fields {
 		if ( ! $object ) {
 			throw new Automator_Exception(
 				sprintf(
-				/* translators: 1. Object type */
-					esc_html__( 'Cannot identify object type of %s', 'uncanny-automator' ),
+				/* translators: 1. Code 2. Object type */
+					esc_html__( "Code '%1\$s' not found in registered %2\$s. Use search_components tool to find valid codes.", 'uncanny-automator' ),
+					esc_html( $this->config['code'] ),
 					esc_html( $this->config['object_type'] )
 				),
 				400
 			);
 		}
 
+		$options          = isset( $object['options'] ) ? $object['options'] : array();
+		$options_group    = isset( $object['options_group'] ) ? $object['options_group'] : array();
 		$options_callback = isset( $object['options_callback'] ) ? $object['options_callback'] : null;
-
-		$options = isset( $object['options'] ) ? $object['options'] : array();
-
-		$options_group = isset( $object['options_group'] ) ? $object['options_group'] : array();
 
 		if ( isset( $options_callback[0] ) && isset( $options_callback[1] ) ) {
 

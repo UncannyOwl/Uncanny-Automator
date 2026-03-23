@@ -42,7 +42,6 @@ return array(
 	'automator_gemini_api_key',
 	'automator_claude_api_key',
 	'automator_mistral_api_key',
-	'automator_deepseek_api_key',
 	'automator_grok_api_key',
 	'automator_perplexity_api_key',
 	'automator_whatsapp_secret',

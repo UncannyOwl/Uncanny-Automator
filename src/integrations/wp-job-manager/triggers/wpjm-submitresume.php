@@ -1,98 +1,88 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Wpjm;
 
 /**
- * Class WPJM_SUBMITRESUME
+ * Class Wpjm_Submitresume
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Wpjm
  */
-class WPJM_SUBMITRESUME {
+class Wpjm_Submitresume extends \Uncanny_Automator\Recipe\Trigger {
+
+	const TRIGGER_CODE = 'WPJMSUBMITRESUME';
+	const TRIGGER_META = 'WPJMJOBRESUME';
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
+	 * @method \Uncanny_Automator\Integrations\Wpjm\Wpjm_Helpers get_item_helpers()
 	 */
-	public static $integration = 'WPJM';
-
-	private $trigger_code;
-	private $trigger_meta;
 
 	/**
-	 * Set up Automator trigger constructor.
+	 * Check if requirements are met
 	 */
-	public function __construct() {
-
-		$this->trigger_code = 'WPJMSUBMITRESUME';
-		$this->trigger_meta = 'WPJMJOBRESUME';
-
-		if ( function_exists( 'get_resume_files' ) ) {
-			$this->define_trigger();
-		}
-
+	public function requirements_met() {
+		return function_exists( 'get_resume_files' );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup trigger
 	 */
-	public function define_trigger() {
+	protected function setup_trigger() {
+		$this->set_integration( 'WPJM' );
+		$this->set_trigger_code( self::TRIGGER_CODE );
+		$this->set_trigger_meta( self::TRIGGER_META );
+		$this->set_is_pro( false );
+		$this->set_is_login_required( true );
+		$this->set_trigger_type( 'user' );
+		$this->set_uses_api( false );
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-job-manager/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - WP Job Manager */
-			'sentence'            => esc_attr__( 'A user submits a resume', 'uncanny-automator' ),
-			/* translators: Logged-in trigger - WP Job Manager */
-			'select_option_name'  => esc_attr__( 'A user submits a resume', 'uncanny-automator' ),
-			'action'              => 'resume_manager_resume_submitted',
-			'priority'            => 20,
-			'accepted_args'       => 1,
-			'validation_function' => array( $this, 'resume_manager_resume_submitted' ),
-			'options'             => array(),
-		);
+		$this->add_action( 'resume_manager_resume_submitted' );
+		$this->set_action_args_count( 1 );
 
-		Automator()->register->trigger( $trigger );
+		$this->set_sentence( esc_html_x( 'A user submits a resume', 'WP Job Manager', 'uncanny-automator' ) );
+
+		$this->set_readable_sentence( esc_html_x( 'A user submits a resume', 'WP Job Manager', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * @param $fields
+	 * Define trigger options
 	 */
-	public function resume_manager_resume_submitted( $resume_id ) {
+	public function options() {
+		return array();
+	}
+
+	/**
+	 * Validate trigger
+	 */
+	public function validate( $trigger, $hook_args ) {
+		list( $resume_id ) = $hook_args;
 
 		if ( empty( $resume_id ) ) {
-			return;
+			return false;
 		}
-		$user_id      = get_current_user_id();
-		$trigger_args = array(
-			'code'           => $this->trigger_code,
-			'meta'           => $this->trigger_meta,
-			'post_id'        => intval( $resume_id ),
-			'ignore_post_id' => true,
-			'user_id'        => $user_id,
-		);
 
-		$args = Automator()->maybe_add_trigger_entry( $trigger_args, false );
+		return true;
+	}
 
-		if ( $args ) {
-			foreach ( $args as $result ) {
-				if ( true === $result['result'] ) {
-					$trigger_meta = array(
-						'user_id'        => $user_id,
-						'trigger_id'     => $result['args']['trigger_id'],
-						'trigger_log_id' => $result['args']['get_trigger_id'],
-						'run_number'     => $result['args']['run_number'],
-					);
+	/**
+	 * Hydrate tokens
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		list( $resume_id ) = $hook_args;
 
-					$trigger_meta['meta_key']   = $this->trigger_code;
-					$trigger_meta['meta_value'] = $resume_id;
-					Automator()->insert_trigger_meta( $trigger_meta );
-					Automator()->maybe_trigger_complete( $result['args'] );
-					break;
-				}
-			}
-		}
+		// Use centralized token hydration
+		$tokens                       = Wpjm_Token_Manager::hydrate_resume_tokens( $resume_id );
+		$tokens[ self::TRIGGER_CODE ] = $resume_id;
+
+		return $tokens;
+	}
+
+	/**
+	 * Define tokens
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+		// Use centralized token definitions
+		$custom_tokens = Wpjm_Token_Manager::get_resume_tokens();
+
+		return array_merge( $tokens, $custom_tokens );
 	}
 }
