@@ -144,13 +144,53 @@ class Info {
 	 * @return string
 	 */
 	public static function get_plugin_search_url( $name ) {
-		return add_query_arg(
+		return self::build_admin_url(
+			'plugins.php',
 			array(
 				'plugin_status' => 'all',
 				's'             => $name,
-			),
-			admin_url( 'plugins.php' )
+			)
 		);
+	}
+
+	/**
+	 * Get a search URL to the Add Plugins (plugin install) page.
+	 *
+	 * @param string $name - The name of the plugin to search for.
+	 *
+	 * @return string
+	 */
+	public static function get_plugin_install_search_url( $name ) {
+		return self::build_admin_url(
+			'plugin-install.php',
+			array(
+				'tab' => 'search',
+				's'   => $name,
+			)
+		);
+	}
+
+	/**
+	 * Build admin URL with query args using RFC3986 encoding.
+	 *
+	 * Uses RFC3986 encoding (%20 for spaces) instead of application/x-www-form-urlencoded
+	 * (+ for spaces) to ensure compatibility with strict filter_var() URL validation.
+	 *
+	 * @param string $path  Admin path (e.g., 'plugins.php', 'plugin-install.php')
+	 * @param array  $args  Query arguments
+	 *
+	 * @return string Complete admin URL with encoded query string
+	 */
+	private static function build_admin_url( $path, array $args ) {
+		$base = admin_url( $path );
+
+		if ( empty( $args ) ) {
+			return $base;
+		}
+
+		$query = http_build_query( $args, '', '&', PHP_QUERY_RFC3986 );
+
+		return $base . '?' . $query;
 	}
 
 	/**
@@ -243,6 +283,111 @@ class Info {
 	 */
 	public static function does_plugin_class_exist( $class_name ) {
 		return class_exists( $class_name, false );
+	}
+
+	/**
+	 * Discover plugin file by integration code or name.
+	 *
+	 * Searches installed plugins to find a match, prioritizing integration plugins
+	 * (those with "automator" or "integration" in their slug).
+	 *
+	 * @param string $integration_code Integration code (e.g., 'acymailing', 'PAYPAL')
+	 * @param string $integration_name Integration name (e.g., 'AcyMailing', 'PayPal')
+	 * @return string Plugin file path (e.g., 'plugin-dir/plugin.php') or empty string if not found
+	 */
+	public static function discover_integration_plugin_file( $integration_code, $integration_name = '' ) {
+		static $all_plugins = null;
+
+		// Cache get_plugins() call
+		if ( null === $all_plugins ) {
+			self::load_dependencies();
+			$all_plugins = get_plugins();
+		}
+
+		$code_lower = strtolower( $integration_code );
+		$name_lower = strtolower( $integration_name );
+
+		// Remove common suffixes for better matching
+		$name_search = str_replace( array( ' (not connected)', ' (test mode)', ' integration' ), '', $name_lower );
+		$name_search = trim( $name_search );
+
+		// Prioritize integration plugins (with "automator" or "integration" in slug)
+		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+			$plugin_name_lower = strtolower( $plugin_data['Name'] ?? '' );
+			$plugin_slug       = strtolower( dirname( $plugin_file ) );
+
+			// Only check plugins that look like Automator integrations
+			$is_integration = ( strpos( $plugin_slug, 'automator' ) !== false || strpos( $plugin_slug, 'integration' ) !== false );
+
+			if ( ! $is_integration ) {
+				continue;
+			}
+
+			// Match by integration code in plugin slug
+			if ( false !== strpos( $plugin_slug, $code_lower ) ) {
+				return $plugin_file;
+			}
+
+			// Match by integration name
+			if ( ! empty( $name_search ) && ( strpos( $plugin_name_lower, $name_search ) !== false || strpos( $plugin_slug, $name_search ) !== false ) ) {
+				return $plugin_file;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Get plugin data (metadata) from plugin file.
+	 *
+	 * @param string $plugin_file Plugin file path relative to plugins directory
+	 * @return array Plugin data array or empty array if not found
+	 */
+	public static function get_plugin_data( $plugin_file ) {
+		self::load_dependencies();
+
+		$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_file;
+
+		if ( ! file_exists( $plugin_path ) ) {
+			return array();
+		}
+
+		return get_plugin_data( $plugin_path, false, false );
+	}
+
+	/**
+	 * Get plugin version from plugin file.
+	 *
+	 * @param string $plugin_file Plugin file path relative to plugins directory
+	 * @return string Plugin version or '1.0.0' as fallback
+	 */
+	public static function get_plugin_version( $plugin_file ) {
+		$plugin_data = self::get_plugin_data( $plugin_file );
+		return $plugin_data['Version'] ?? '1.0.0';
+	}
+
+	/**
+	 * Normalize plugin path to relative format.
+	 *
+	 * Converts absolute paths to relative and normalizes directory separators.
+	 *
+	 * @param string $plugin_file_path Plugin file path (absolute or relative)
+	 * @return string Normalized relative plugin path
+	 */
+	public static function normalize_plugin_path( $plugin_file_path ) {
+		if ( empty( $plugin_file_path ) ) {
+			return '';
+		}
+
+		$plugin_file = $plugin_file_path;
+
+		// Convert absolute path to relative
+		if ( strpos( $plugin_file_path, WP_PLUGIN_DIR ) === 0 ) {
+			$plugin_file = str_replace( trailingslashit( WP_PLUGIN_DIR ), '', $plugin_file_path );
+		}
+
+		// Normalize directory separators to forward slashes
+		return str_replace( DIRECTORY_SEPARATOR, '/', $plugin_file );
 	}
 
 	/**

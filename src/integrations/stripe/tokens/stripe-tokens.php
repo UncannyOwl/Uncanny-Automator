@@ -9,6 +9,18 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Stripe_Tokens {
 
 	/**
+	 * @var Stripe_App_Helpers
+	 */
+	private $helpers;
+
+	/**
+	 * @param Stripe_App_Helpers $helpers
+	 */
+	public function __construct( $helpers ) {
+		$this->helpers = $helpers;
+	}
+
+	/**
 	 * Customer tokens
 	 *
 	 * @return array
@@ -518,13 +530,13 @@ class Stripe_Tokens {
 
 		$charge_tokens[] = array(
 			'tokenId'   => 'CHARGE_PAYMNET_METHOD',
-			'tokenName' => esc_html_x( 'Charge paymnet method ID', 'Stripe', 'uncanny-automator' ),
+			'tokenName' => esc_html_x( 'Charge payment method ID', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
 		$charge_tokens[] = array(
 			'tokenId'   => 'CHARGE_BALANCE_TRANSACTION',
-			'tokenName' => esc_html_x( 'Charge balance trasnaction', 'Stripe', 'uncanny-automator' ),
+			'tokenName' => esc_html_x( 'Charge balance transaction', 'Stripe', 'uncanny-automator' ),
 			'tokenType' => 'string',
 		);
 
@@ -823,9 +835,9 @@ class Stripe_Tokens {
 			'CHARGE_DESCRIPTION'     => $this->maybe_add( $charge, 'description' ),
 			'CHARGE_PAYMENT_METHOD'  => $this->maybe_add( $charge, 'payment_method' ),
 			'CHARGE_STATUS'          => $this->maybe_add( $charge, 'status' ),
-			'CHARGE_AMOUNT'          => $this->format_amount( $this->maybe_add( $charge, 'amount' ) ),
-			'CHARGE_REFUNDED_AMOUNT' => $this->format_amount( $this->maybe_add( $charge, 'amount_refunded' ) ),
-			'CHARGE_CAPTURED_AMOUNT' => $this->format_amount( $this->maybe_add( $charge, 'amount_captured' ) ),
+			'CHARGE_AMOUNT'          => $this->helpers->format_amount( $this->maybe_add( $charge, 'amount' ), $charge['currency'] ?? '' ),
+			'CHARGE_REFUNDED_AMOUNT' => $this->helpers->format_amount( $this->maybe_add( $charge, 'amount_refunded' ), $charge['currency'] ?? '' ),
+			'CHARGE_CAPTURED_AMOUNT' => $this->helpers->format_amount( $this->maybe_add( $charge, 'amount_captured' ), $charge['currency'] ?? '' ),
 			'CHARGE_RECEIPT_URL'     => $this->maybe_add( $charge, 'receipt_url' ),
 		);
 
@@ -853,7 +865,7 @@ class Stripe_Tokens {
 		}
 
 		if ( 'amount' === $format ) {
-			return $this->format_amount( $value );
+			return $this->helpers->format_amount( $value, $data['currency'] ?? '' );
 		}
 
 		if ( 'date' === $format ) {
@@ -879,15 +891,6 @@ class Stripe_Tokens {
 	}
 
 
-	/**
-	 * Format amount
-	 *
-	 * @param int $cents
-	 * @return string
-	 */
-	public function format_amount( $cents ) {
-		return number_format( $cents / 100, 2 );
-	}
 
 	/**
 	 * Format date

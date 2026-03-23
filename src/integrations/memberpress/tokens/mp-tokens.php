@@ -63,18 +63,19 @@ class Mp_Tokens {
 			return $tokens;
 		}
 		$trigger_meta = $args['meta'];
+		
 		$mepr_options = MeprOptions::fetch();
 		$fields       = array();
 		if ( $mepr_options->show_fname_lname ) {
 			$fields[] = array(
 				'tokenId'         => 'first_name',
-				'tokenName'       => esc_html__( 'First name', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'First name', 'Memberpress', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 			$fields[] = array(
 				'tokenId'         => 'last_name',
-				'tokenName'       => esc_html__( 'Last name', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Last name', 'Memberpress', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);

@@ -61,7 +61,7 @@ class Mautic_Client_Auth {
 	 */
 	public function validate_credentials( $sanitized_input, $option_name, $original_input ) {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Insufficient previlege', 401 );
 		}
 
@@ -89,7 +89,7 @@ class Mautic_Client_Auth {
 
 			add_settings_error(
 				'automator_mautic_connection_alerts',
-				_x( 'Credentials verification failed', 'Mautic', 'uncanny-automator' ),
+				esc_html_x( 'Credentials verification failed', 'Mautic', 'uncanny-automator' ),
 				$e->getCode() . ': ' . $e->getMessage(),
 				'error'
 			);

@@ -210,7 +210,7 @@ class Ontraport_Helpers {
 		}
 
 		// Current user check.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( esc_html_x( 'Unauthorized', 'Ontraport', 'uncanny-automator' ) );
 		}
 

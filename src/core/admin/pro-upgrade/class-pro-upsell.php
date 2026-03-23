@@ -45,7 +45,7 @@ class Pro_Upsell {
 			'edit.php?post_type=uo-recipe',
 			$page_meta['title'],
 			'<span class="dashicons dashicons-superhero-alt"></span>' . $page_meta['menu'],
-			'manage_options',
+			automator_get_capability(),
 			'uncanny-automator-pro-upgrade',
 			array(
 				$this,
@@ -77,7 +77,7 @@ class Pro_Upsell {
 		);
 
 		// Bail if "Upgrade to Pro" menu item is not registered.
-		if ( $upgrade_link_position === null ) {
+		if ( null === $upgrade_link_position ) {
 			return;
 		}
 

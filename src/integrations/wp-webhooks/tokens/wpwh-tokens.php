@@ -16,6 +16,11 @@ class Wpwh_Tokens {
 	 */
 	public static $integration = 'WPWEBHOOKS';
 
+	/**
+	 * Constructor.
+	 *
+	 * @since 5.7
+	 */
 	public function __construct() {
 
 		add_filter( 'automator_maybe_trigger_wpwebhooks_wpwhtrigger_tokens', array( $this, 'wpwh_possible_tokens' ), 20, 2 );
@@ -49,10 +54,11 @@ class Wpwh_Tokens {
 	 *
 	 * @return array
 	 */
-	function wpwh_possible_tokens( $tokens = array(), $args = array() ) {
+	public function wpwh_possible_tokens( $tokens = array(), $args = array() ) {
 		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
 		}
+		
 		if ( 'WPWHTRIGGER' === $args['meta'] ) {
 			$trigger_meta = $args['meta'];
 			$triggers     = WPWHPRO()->webhook->get_triggers();
@@ -161,7 +167,7 @@ class Wpwh_Tokens {
 	 */
 	public function wpwh_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'WPWHTRIGGER', $pieces ) ) {
+			if ( in_array( 'WPWHTRIGGER', $pieces, true ) ) {
 				global $wpdb;
 				$token_info   = explode( '|', $pieces[2] );
 				$request_data = $this->get_form_data_from_trigger_meta( 'WPWHTRIGGER_request_body', $replace_args['trigger_id'], $replace_args['trigger_log_id'] );

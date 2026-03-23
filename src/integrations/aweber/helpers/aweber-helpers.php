@@ -224,7 +224,7 @@ class Aweber_Helpers {
 		$data  = automator_filter_input( 'automator_api_message' );
 		$nonce = automator_filter_input( 'nonce' );
 
-		if ( ! wp_verify_nonce( $nonce, self::NONCE ) || ! current_user_can( 'manage_options' ) ) {
+		if ( ! wp_verify_nonce( $nonce, self::NONCE ) || ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'You are not allowed to do this.' );
 		}
 
@@ -270,7 +270,7 @@ class Aweber_Helpers {
 	 */
 	public function disconnect() {
 
-		if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), self::NONCE ) ) {
 			wp_die( 'You are not allowed to do this.' );
 		}
 

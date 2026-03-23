@@ -65,6 +65,10 @@ class Validator {
 			return new WP_Error( 'invalid_url', _x( 'The URL provided is not valid.', 'Email Validator', 'uncanny-automator' ) );
 		}
 
+		if ( automator_resolves_to_private_ip( $this->url ) ) {
+			return new WP_Error( 'ssrf_blocked', _x( 'The URL resolves to a private or reserved IP address and cannot be used.', 'Email Validator', 'uncanny-automator' ) );
+		}
+
 		$status_code = $this->get_status_code();
 
 		if ( ! $this->is_file_accessible( $status_code ) ) {
@@ -126,8 +130,20 @@ class Validator {
 	 */
 	public static function remote_get_status_code( $url ) {
 
-		// Make the HTTP request.
-		$response = wp_remote_get( $url );
+		if ( automator_resolves_to_private_ip( $url ) ) {
+			return 0;
+		}
+
+		// HEAD + no redirects: a redirect response returns a 3xx code which
+		// is treated as inaccessible. This prevents an open-redirect bypass
+		// where a public URL redirects to a private/internal address.
+		$response = wp_remote_head(
+			$url,
+			array(
+				'redirection' => 0,
+				'timeout'     => 10,
+			)
+		);
 
 		// Return 0 if is wp_error.
 		if ( is_wp_error( $response ) ) {
@@ -171,36 +187,44 @@ class Validator {
 	}
 
 	/**
-	 * Check if the file size is less than 3 MB.
+	 * Check if the file exceeds the allowed size limit.
+	 *
+	 * Uses a HEAD request to read the Content-Length header rather than
+	 * downloading the full file, avoiding a redundant outbound request.
+	 * If the server does not send Content-Length the check is skipped and
+	 * the download itself will impose its own timeout.
 	 *
 	 * @return bool True if the file is too large, false otherwise.
 	 */
 	private function is_file_too_large() {
 
-		require_once ABSPATH . 'wp-admin/includes/file.php';
+		$response = wp_remote_head(
+			$this->url,
+			array(
+				'timeout'     => 10,
+				'redirection' => 0,
+			)
+		);
 
-		$temp_file = download_url( $this->url, 5 * 60 ); // 5 minutes timeout.
-
-		if ( is_wp_error( $temp_file ) ) {
-			// translators: 1: Error message
-			$this->log_error( sprintf( _x( 'Failed to download the file: %s.', 'Email Validator', 'uncanny-automator' ), $temp_file->get_error_message() ) );
-			return false; // The file could not be downloaded.
+		if ( is_wp_error( $response ) ) {
+			return false; // Cannot determine size; allow download to proceed.
 		}
 
-		$file_size = filesize( $temp_file );
+		$content_length = wp_remote_retrieve_header( $response, 'content-length' );
 
-		// Delete the temporary file.
-		wp_delete_file( $temp_file );
+		if ( '' === (string) $content_length ) {
+			return false; // Server did not send Content-Length; allow download to proceed.
+		}
 
 		$limit_size = apply_filters( 'automator_email_file_size_limit', $this->file_size_limit );
 
-		if ( $file_size > $limit_size ) { // 5 MB in bytes.
+		if ( absint( $content_length ) > $limit_size ) {
 			$this->log_error(
 				sprintf(
 					// translators: 1: File size limit in MB, 2: File size in MB
-					_x( 'File size exceeds %1$d MB. The uploaded file is: %2$s MB.', 'Email Validator', 'uncanny-automator' ),
+					_x( 'File size exceeds %1$d MB. The file reports: %2$s MB.', 'Email Validator', 'uncanny-automator' ),
 					self::to_megabytes( $limit_size ),
-					self::to_megabytes( $file_size )
+					self::to_megabytes( absint( $content_length ) )
 				)
 			);
 			return true;

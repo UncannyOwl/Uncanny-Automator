@@ -51,7 +51,7 @@ class Handler {
 		$this->temp_file_path = null;
 
 		$uploads_dir = wp_get_upload_dir();
-		$dir         = trailingslashit( $uploads_dir['path'] ?? '' ) . 'uncanny-automator';
+		$dir         = trailingslashit( $uploads_dir['basedir'] ?? '' ) . 'uncanny-automator';
 
 		$this->uploads_dir = $dir;
 
@@ -67,24 +67,6 @@ class Handler {
 	}
 
 	/**
-	 * Determines if the file is already downloaded or not.
-	 *
-	 * @return true
-	 */
-	public function is_file_downloaded() {
-		return file_exists( $this->get_downloaded_file() );
-	}
-
-	/**
-	 * Returns the path of the downloaded file.
-	 *
-	 * @return string
-	 */
-	public function get_downloaded_file() {
-		return $this->get_uploads_dir() . basename( $this->file_url );
-	}
-
-	/**
 	 * Process the file attachment.
 	 *
 	 * Downloads the file, validates it, and prepares it for attachment.
@@ -95,10 +77,6 @@ class Handler {
 
 		if ( $this->temp_file_path && file_exists( $this->temp_file_path ) ) {
 			return $this->temp_file_path;
-		}
-
-		if ( $this->is_file_downloaded() ) {
-			return $this->get_downloaded_file();
 		}
 
 		$validator         = new Validator( $this->file_url );
@@ -132,26 +110,54 @@ class Handler {
 	/**
 	 * Copy the file from temporary path to an actual path.
 	 *
+	 * Validates the file type against the allowlist, assigns a random UUID
+	 * filename to prevent path traversal and predictable URLs, and ensures
+	 * the upload subdirectory is protected against PHP execution.
+	 *
 	 * @return string|WP_Error The path to the new file, or WP_Error on failure.
 	 */
 	private function create_readable_file() {
 
 		$uploads_dir = wp_get_upload_dir();
 
-		if ( empty( $uploads_dir['path'] ) ) {
+		if ( empty( $uploads_dir['basedir'] ) ) {
 			return new WP_Error( 'attachment_failed', 'Failed to copy the file to the uploads directory. Please check the file name, format, and server permissions.' );
 		}
 
-		$dir = trailingslashit( $uploads_dir['path'] ) . 'uncanny-automator';
+		$dir = trailingslashit( $uploads_dir['basedir'] ) . 'uncanny-automator';
 
 		if ( ! is_dir( $dir ) ) {
 			mkdir( $dir ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
 		}
 
-		$this->new_file_path = trailingslashit( $dir ) . basename( $this->file_url );
+		self::write_directory_protection( $dir );
+
+		// Derive a hint filename from the URL path only (strips query strings).
+		$url_path      = wp_parse_url( $this->file_url, PHP_URL_PATH ) ?? '';
+		$hint_filename = basename( $url_path );
+
+		// Validate actual file content + extension against WordPress mime types.
+		$file_data = wp_check_filetype_and_ext( $this->temp_file_path, $hint_filename );
+		$extension = $file_data['ext'] ?? '';
+
+		$allowed = apply_filters(
+			'automator_email_attachment_allowed_file_extensions',
+			automator_get_allowed_attachment_ext(),
+			$this->temp_file_path
+		);
+
+		if ( empty( $extension ) || ! in_array( $extension, $allowed, true ) ) {
+			return new WP_Error( 'invalid_file_type', 'The file type is not permitted as an email attachment. Please use an allowed file type such as PDF, PNG, or DOCX.' );
+		}
+
+		// Use a random UUID so the stored filename is unpredictable.
+		$this->new_file_path = trailingslashit( $dir ) . wp_generate_uuid4() . '.' . $extension;
 
 		if ( is_string( $this->temp_file_path ) && ! empty( $this->temp_file_path ) ) {
-			copy( $this->temp_file_path, $this->new_file_path );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_copy
+			if ( ! copy( $this->temp_file_path, $this->new_file_path ) ) {
+				return new WP_Error( 'attachment_failed', 'There was a problem copying the file to the uploads directory. Please ensure the uploads folder is writable.' );
+			}
 			return $this->new_file_path;
 		}
 
@@ -159,6 +165,30 @@ class Handler {
 			'attachment_failed',
 			'There was a problem attaching the file. Please ensure the uploads folder is writable.'
 		);
+	}
+
+	/**
+	 * Write .htaccess and index.php into the upload subdirectory to block
+	 * PHP execution and directory listing.
+	 *
+	 * @param string $dir Absolute path to the directory.
+	 *
+	 * @return void
+	 */
+	public static function write_directory_protection( $dir ) {
+
+		$dir = trailingslashit( $dir );
+
+		if ( ! file_exists( $dir . '.htaccess' ) ) {
+			$htaccess = "Options -Indexes\n<FilesMatch \"\\.php\">\n    Deny from all\n</FilesMatch>";
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			file_put_contents( $dir . '.htaccess', $htaccess );
+		}
+
+		if ( ! file_exists( $dir . 'index.php' ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			file_put_contents( $dir . 'index.php', '<?php // Silence is golden.' );
+		}
 	}
 
 	/**

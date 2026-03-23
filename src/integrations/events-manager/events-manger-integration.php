@@ -3,7 +3,6 @@
 namespace Uncanny_Automator\Integrations\Events_Manager;
 
 use EM_Event;
-
 use Uncanny_Automator\Integration;
 
 /**
@@ -25,6 +24,8 @@ class Events_Manager_Integration extends Integration {
 		new ANON_EM_REGISTER( $this->helpers );
 		new EM_BOOKING_APPROVED( $this->helpers );
 		new EM_REGISTER( $this->helpers );
+
+		new Em_Tokens();
 	}
 
 	/**

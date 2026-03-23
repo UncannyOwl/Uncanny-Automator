@@ -14,6 +14,13 @@ use Uncanny_Automator_Pro\Event_Tickets_Pro_Helpers;
 class Event_Tickets_Helpers {
 
 	/**
+	 * Internal action fired by all normalized ticket provider hooks.
+	 *
+	 * @var string
+	 */
+	const USER_REGISTERED_ACTION = 'automator_event_tickets_user_registered';
+
+	/**
 	 * @var Event_Tickets_Helpers
 	 */
 	public $options;
@@ -29,10 +36,147 @@ class Event_Tickets_Helpers {
 	public $load_options = true;
 
 	/**
+	 * Whether the normalized hooks have been registered.
+	 *
+	 * @var bool
+	 */
+	private static $hooks_registered = false;
+
+	/**
 	 * Event_Tickets_Helpers constructor.
 	 */
 	public function __construct() {
+		$this->register_normalized_hooks();
+	}
 
+	/**
+	 * Register listeners for all TEC ticket provider hooks and normalize
+	 * them into a single internal action with a consistent signature.
+	 *
+	 * Providers: RSVP, WooCommerce, PayPal (TPP), and Tickets Commerce (TC).
+	 *
+	 * @return void
+	 */
+	public function register_normalized_hooks() {
+
+		if ( true === self::$hooks_registered ) {
+			return;
+		}
+
+		self::$hooks_registered = true;
+
+		// Legacy RSVP.
+		add_action( 'event_tickets_rsvp_tickets_generated_for_product', array( $this, 'normalize_rsvp_registration' ), 10, 3 );
+
+		// Legacy WooCommerce (via Event Tickets Plus).
+		add_action( 'event_tickets_woocommerce_tickets_generated_for_product', array( $this, 'normalize_woo_registration' ), 10, 4 );
+
+		// Legacy PayPal / Tribe Commerce.
+		add_action( 'event_tickets_tpp_tickets_generated_for_product', array( $this, 'normalize_tpp_registration' ), 10, 3 );
+
+		// Modern Tickets Commerce.
+		add_action( 'tec_tickets_commerce_attendee_after_create', array( $this, 'normalize_tc_registration' ), 10, 4 );
+	}
+
+	/**
+	 * Normalize RSVP ticket registration.
+	 *
+	 * @param int    $product_id RSVP ticket post ID.
+	 * @param string $order_id   ID (hash) of the RSVP order.
+	 * @param int    $qty        Quantity ordered.
+	 *
+	 * @return void
+	 */
+	public function normalize_rsvp_registration( $product_id, $order_id, $qty ) {
+
+		$event = tribe_events_get_ticket_event( $product_id );
+
+		if ( ! $event instanceof \WP_Post ) {
+			return;
+		}
+
+		do_action( self::USER_REGISTERED_ACTION, $event->ID, $product_id, $order_id, get_current_user_id() );
+	}
+
+	/**
+	 * Normalize WooCommerce ticket registration.
+	 *
+	 * @param int $product_id WooCommerce ticket post ID.
+	 * @param int $order_id   ID of the WooCommerce order.
+	 * @param int $quantity   Quantity ordered.
+	 * @param int $post_id    ID of the event.
+	 *
+	 * @return void
+	 */
+	public function normalize_woo_registration( $product_id, $order_id, $quantity, $post_id ) {
+
+		$user_id = get_current_user_id();
+
+		// Fallback: retrieve customer from WooCommerce order (e.g. background/cron processing).
+		if ( 0 === $user_id && function_exists( 'wc_get_order' ) ) {
+			$order = wc_get_order( $order_id );
+			if ( $order ) {
+				$user_id = absint( $order->get_customer_id() );
+			}
+		}
+
+		do_action( self::USER_REGISTERED_ACTION, absint( $post_id ), $product_id, $order_id, $user_id );
+	}
+
+	/**
+	 * Normalize PayPal / Tribe Commerce ticket registration.
+	 *
+	 * @param int    $product_id PayPal ticket post ID.
+	 * @param string $order_id   ID of the PayPal order.
+	 * @param int    $qty        Quantity ordered.
+	 *
+	 * @return void
+	 */
+	public function normalize_tpp_registration( $product_id, $order_id, $qty ) {
+
+		$event = tribe_events_get_ticket_event( $product_id );
+
+		if ( ! $event instanceof \WP_Post ) {
+			return;
+		}
+
+		do_action( self::USER_REGISTERED_ACTION, $event->ID, $product_id, $order_id, get_current_user_id() );
+	}
+
+	/**
+	 * Normalize Tickets Commerce registration.
+	 *
+	 * @param \WP_Post $attendee Attendee post object.
+	 * @param \WP_Post $order    Order post object.
+	 * @param object   $ticket   Ticket object (Tribe__Tickets__Ticket_Object).
+	 * @param array    $args     Extra arguments used to populate attendee data.
+	 *
+	 * @return void
+	 */
+	public function normalize_tc_registration( $attendee, $order, $ticket, $args ) {
+
+		if ( ! $attendee instanceof \WP_Post ) {
+			return;
+		}
+
+		// Resolve event ID from ticket first (most reliable at creation time), then attendee.
+		$event_id = is_callable( array( $ticket, 'get_event_id' ) ) ? absint( $ticket->get_event_id() ) : 0;
+
+		if ( 0 === $event_id && ! empty( $attendee->event_id ) ) {
+			$event_id = absint( $attendee->event_id );
+		}
+
+		$product_id = is_object( $ticket ) && ! empty( $ticket->ID ) ? absint( $ticket->ID ) : 0;
+		$order_id   = $order instanceof \WP_Post ? $order->ID : 0;
+
+		// Resolve user from order purchaser data, then fallback to current user.
+		$user_id = ! empty( $order->purchaser['user_id'] ) ? absint( $order->purchaser['user_id'] ) : 0;
+
+		if ( 0 === $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		do_action( self::USER_REGISTERED_ACTION, $event_id, $product_id, $order_id, $user_id );
 	}
 
 	/**

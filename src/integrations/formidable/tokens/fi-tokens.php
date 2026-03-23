@@ -124,7 +124,7 @@ class Fi_Tokens {
 	 * Parse the token.
 	 *
 	 * @param string $value .
-	 * @param array $pieces .
+	 * @param array  $pieces .
 	 * @param string $recipe_id .
 	 *
 	 * @return null|string

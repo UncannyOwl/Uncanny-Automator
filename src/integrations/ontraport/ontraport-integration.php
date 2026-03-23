@@ -10,11 +10,6 @@ namespace Uncanny_Automator\Integrations\Ontraport;
 class Ontraport_Integration extends \Uncanny_Automator\Integration {
 
 	/**
-	 * @var Ontraport_Helpers
-	 */
-	protected $helpers = null;
-
-	/**
 	 * Spins up new integration.
 	 *
 	 * @return void
@@ -31,7 +26,6 @@ class Ontraport_Integration extends \Uncanny_Automator\Integration {
 
 		// Register wp-ajax callbacks.
 		$this->register_hooks();
-
 	}
 
 	/**
@@ -48,7 +42,6 @@ class Ontraport_Integration extends \Uncanny_Automator\Integration {
 		new Ontraport_Add_Contact_Tag( $this->helpers );
 
 		# Disabled - Needs clarification. new Ontraport_Subscribe_Contact_Campaign( $this->helpers );
-
 	}
 
 	/**
@@ -64,5 +57,4 @@ class Ontraport_Integration extends \Uncanny_Automator\Integration {
 		// List campaign handler.
 		add_action( 'wp_ajax_automator_ontraport_list_campaigns', array( $this->helpers, 'list_campaigns_handler' ) );
 	}
-
 }

@@ -30,7 +30,7 @@
 	</h3>
 
 	<p>
-		<iframe width="490" height="250" src="https://www.youtube.com/embed/LMR5YIPu2Kk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		<iframe width="490" height="250" src="https://www.youtube.com/embed/LMR5YIPu2Kk" title="YouTube video player" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 	</p>
 
 	<p>

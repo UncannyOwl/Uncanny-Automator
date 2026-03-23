@@ -17,7 +17,6 @@ use Uncanny_Automator\Core\Lib\AI\Exception\Validation_Exception;
  *
  * OPENAI-COMPATIBLE PROVIDERS:
  * - OpenAI: Original format, all models (GPT-3.5, GPT-4, etc.)
- * - DeepSeek: Uses OpenAI-compatible API for consistency
  * - Grok (xAI): Implements OpenAI format for easy integration
  * - Perplexity: Uses OpenAI format with additional search metadata
  *

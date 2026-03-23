@@ -5,10 +5,11 @@ namespace Uncanny_Automator\Integrations\Stripe;
  * Class Onetime_Payment_Completed
  *
  * @package Uncanny_Automator
+ *
+ * @property Stripe_App_Helpers $helpers
+ * @property Stripe_Api_Caller $api
  */
-class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
-
-	protected $helpers;
+class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
 	 * Trigger code.
@@ -22,9 +23,6 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 
 	public function setup_trigger() {
-
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'STRIPE' );
 
 		$this->set_trigger_code( self::TRIGGER_CODE );
@@ -37,20 +35,15 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
 
-		$this->set_sentence(
-			sprintf(
-				// translators: %s is a Stripe product name
-				esc_attr_x( 'One-time payment for {{a product:%1$s}} is completed', 'Stripe', 'uncanny-automator' ),
-				$this->get_trigger_meta()
-			)
-		);
+		// translators: %1$s is the Stripe product name
+		$this->set_sentence( sprintf( esc_html_x( 'One-time payment for {{a product:%1$s}} is completed', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 
 		// Non-active state sentence to show
 
-		$this->set_readable_sentence( esc_attr_x( 'One-time payment for {{a product}} is completed', 'Stripe', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'One-time payment for {{a product}} is completed', 'Stripe', 'uncanny-automator' ) );
 
 		// Which do_action() fires this trigger.
-		$this->add_action( Stripe_Webhook::LINE_ITEM_PAID_ACTION );
+		$this->add_action( Stripe_Webhooks::LINE_ITEM_PAID_ACTION );
 
 		$this->set_action_args_count( 2 );
 	}
@@ -62,7 +55,7 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function options() {
 
-		$prices = $this->helpers->api->get_prices_options( 'one_time' );
+		$prices = $this->api->get_prices_options( 'one_time' );
 
 		array_unshift(
 			$prices,
@@ -84,14 +77,14 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 		$metadata = array(
 			'input_type'        => 'repeater',
 			'option_code'       => 'METADATA',
-			'label'             => esc_attr_x( 'Extract checkout metadata', 'Stripe', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Extract checkout metadata', 'Stripe', 'uncanny-automator' ),
 			'relevant_tokens'   => array(),
 			'required'          => false,
 			'fields'            => array(
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'KEY',
-					'label'           => esc_attr_x( 'Metadata key', 'Stripe', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Metadata key', 'Stripe', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
 					'placeholder'     => esc_html_x( 'product', 'Stripe', 'uncanny-automator' ),
@@ -99,31 +92,31 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\Trigger {
 				),
 			),
 			/* translators: Non-personal infinitive verb */
-			'add_row_button'    => esc_attr_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
 			/* translators: Non-personal infinitive verb */
-			'remove_row_button' => esc_attr_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
 		);
 
 		$custom_fields = array(
 			'input_type'        => 'repeater',
 			'option_code'       => 'CUSTOM_FIELDS',
-			'label'             => esc_attr_x( 'Extract checkout custom fields', 'Stripe', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Extract checkout custom fields', 'Stripe', 'uncanny-automator' ),
 			'required'          => false,
 			'relevant_tokens'   => array(),
 			'fields'            => array(
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'KEY',
-					'label'           => esc_attr_x( 'Custom field key', 'Stripe', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Custom field key', 'Stripe', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => false,
 					'placeholder'     => esc_html_x( 'product', 'Stripe', 'uncanny-automator' ),
 				),
 			),
 			/* translators: Non-personal infinitive verb */
-			'add_row_button'    => esc_attr_x( 'Add a field', 'Stripe', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add a field', 'Stripe', 'uncanny-automator' ),
 			/* translators: Non-personal infinitive verb */
-			'remove_row_button' => esc_attr_x( 'Remove field', 'Stripe', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove field', 'Stripe', 'uncanny-automator' ),
 		);
 
 		return array(

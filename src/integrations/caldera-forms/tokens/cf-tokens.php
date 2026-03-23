@@ -41,7 +41,7 @@ class Cf_Tokens {
 
 		if ( ! empty( $form['fields'] ) ) {
 			foreach ( $form['fields'] as $field ) {
-				if ( $field['type'] !== 'html' && $field['type'] !== 'summary' && $field['type'] !== 'section_break' && $field['type'] !== 'button' ) {
+				if ( 'html' !== $field['type'] && 'summary' !== $field['type'] && 'section_break' !== $field['type'] && 'button' !== $field['type'] ) {
 					$input_id    = $field['ID'];
 					$input_title = $field['label'];
 					$token_id    = "$form_id|$input_id";
@@ -72,7 +72,7 @@ class Cf_Tokens {
 	 */
 	public function parse_cf_token( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'CFFORMS', $pieces ) || in_array( 'ANONCFFORMS', $pieces ) ) {
+			if ( in_array( 'CFFORMS', $pieces, true ) || in_array( 'ANONCFFORMS', $pieces, true ) ) {
 				// Check if Form name token is used
 				if ( isset( $pieces[2] ) && ( 'CFFORMS' === $pieces[2] || 'ANONCFFORMS' === $pieces[2] ) ) {
 					foreach ( $trigger_data as $t_d ) {
@@ -114,13 +114,13 @@ class Cf_Tokens {
 		$fields = array(
 			array(
 				'tokenId'         => 'CFENTRYID',
-				'tokenName'       => esc_html__( 'Entry ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry ID', 'Caldera Forms', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => 'CFENTRYTOKENS',
 			),
 			array(
 				'tokenId'         => 'CFENTRYDATE',
-				'tokenName'       => esc_html__( 'Entry submission date', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Entry submission date', 'Caldera Forms', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => 'CFENTRYTOKENS',
 			),
@@ -141,7 +141,7 @@ class Cf_Tokens {
 	 * @return string|null
 	 */
 	public function cf_entry_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-		if ( in_array( 'CFENTRYTOKENS', $pieces ) ) {
+		if ( in_array( 'CFENTRYTOKENS', $pieces, true ) ) {
 			if ( $trigger_data ) {
 				foreach ( $trigger_data as $trigger ) {
 					$trigger_id     = $trigger['ID'];

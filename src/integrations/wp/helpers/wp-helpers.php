@@ -30,12 +30,6 @@ class Wp_Helpers {
 	public $load_options = true;
 
 	/**
-	 * @var int
-	 */
-	private static $internal_post_id = 288662867; // Automator in numbers
-
-
-	/**
 	 * __construct.
 	 */
 	public function __construct() {
@@ -59,6 +53,9 @@ class Wp_Helpers {
 		);
 		add_action( 'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE', array( $this, 'select_posts_by_post_type_legacy' ) );
 		add_action( 'wp_ajax_select_posts_by_post_type', array( $this, 'select_posts_by_post_type' ) );
+
+		// Centralized role change handler for compatibility with User Role Editor and other plugins
+		$this->setup_role_change_handlers();
 	}
 
 	/**
@@ -940,114 +937,6 @@ class Wp_Helpers {
 	}
 
 	/**
-	 * @param $post_id
-	 * @param $action_hook
-	 *
-	 * @return void
-	 */
-	public static function add_pending_post( $post_id, $action_hook ) {
-		// Add the post ID to the post meta table.
-		global $wpdb;
-		$wpdb->insert(
-			$wpdb->postmeta,
-			array(
-				'post_id'    => absint( self::$internal_post_id ),
-				'meta_key'   => $action_hook,
-				'meta_value' => absint( $post_id ),
-			),
-			array(
-				'%d',
-				'%s',
-				'%d',
-			)
-		);
-	}
-
-	/**
-	 * @param $action_hook
-	 *
-	 * @return array|object|\stdClass[]|null
-	 */
-	public static function get_pending_posts( $action_hook ) {
-		// Retrieve the accumulated post IDs from the postmeta table
-		global $wpdb;
-
-		return $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT *
-				FROM $wpdb->postmeta
-				WHERE meta_key = %s
-				AND post_id = %d",
-				$action_hook,
-				self::$internal_post_id
-			)
-		);
-	}
-
-	/**
-	 * @param $post_meta
-	 *
-	 * @return bool|int|\mysqli_result|null
-	 */
-	public static function delete_post_after_trigger( $post_meta ) {
-		global $wpdb;
-		// Delete the post meta
-		return $wpdb->delete(
-			$wpdb->postmeta,
-			array(
-				'post_id'    => absint( $post_meta->post_id ),
-				'meta_key'   => $post_meta->meta_key,
-				'meta_value' => absint( $post_meta->meta_value ),
-			),
-			array(
-				'%d',
-				'%s',
-				'%d',
-			)
-		);
-	}
-
-	/**
-	 * @param $post_id
-	 * @param $hook
-	 *
-	 * @return bool
-	 */
-	public static function maybe_post_postponed( $post_id, $hook ) {
-
-		// Retrieve the accumulated post IDs from the post meta table.
-		$post_metas = self::get_pending_posts( $hook );
-
-		if ( empty( $post_metas ) ) {
-			return false;
-		}
-
-		$post_ids = array_column( $post_metas, 'meta_value' );
-		$post_ids = array_unique( $post_ids );
-
-		// Remove duplicates and convert to integers.
-		$post_ids = array_map( 'absint', array_unique( $post_ids ) );
-
-		return in_array( absint( $post_id ), $post_ids, true );
-	}
-
-	/**
-	 * Requeue the post if it was not processed.
-	 *
-	 * @param $post_id
-	 * @param $action_hook
-	 *
-	 * @return void
-	 */
-	public static function requeue_post( $post_id, $action_hook ) {
-		// Let's try queueing the post only once to see if the terms are populated in the next run.
-		if ( empty( get_post_meta( $post_id, $action_hook, true ) ) ) {
-			self::add_pending_post( $post_id, $action_hook );
-			add_post_meta( $post_id, $action_hook, wp_date( 'c' ) );
-		}
-	}
-
-	/**
  * Determines whether a comment should be blocked based on Akismet spam filtering.
  *
  * This method checks if the trigger has enabled the Akismet checkbox,
@@ -1083,5 +972,92 @@ class Wp_Helpers {
 
 		// Default: do not skip
 		return false;
+	}
+
+	/**
+	 * Setup role change handlers to support User Role Editor and other plugins
+	 *
+	 * This method registers hooks for both WordPress core role change methods:
+	 * - set_user_role: Fired when WP_User::set_role() is called (replaces all roles)
+	 * - add_user_role: Fired when WP_User::add_role() is called (adds a single role)
+	 *
+	 * Both hooks are normalized and fire a single internal hook 'automator_user_role_changed'
+	 * that triggers can register against for consistent behavior.
+	 *
+	 * @return void
+	 */
+	public function setup_role_change_handlers() {
+		// WordPress core set_role() - replaces all roles
+		add_action( 'set_user_role', array( $this, 'handle_set_user_role' ), 10, 3 );
+
+		// WordPress core add_role() - adds a single role (used by User Role Editor)
+		add_action( 'add_user_role', array( $this, 'handle_add_user_role' ), 10, 2 );
+	}
+
+	/**
+	 * Handle set_user_role hook (WordPress core WP_User::set_role method)
+	 *
+	 * This hook fires when a user's role is SET (replacing all existing roles).
+	 * This is used by WordPress core, profile update screens, and some plugins.
+	 *
+	 * @param int    $user_id   The user ID.
+	 * @param string $role      The new role being set.
+	 * @param array  $old_roles Array of the user's previous roles.
+	 *
+	 * @return void
+	 */
+	public function handle_set_user_role( $user_id, $role, $old_roles ) {
+		/**
+		 * Fires when a user's role is changed via any WordPress method.
+		 *
+		 * This internal hook normalizes both set_user_role and add_user_role
+		 * into a single consistent hook for Automator triggers.
+		 *
+		 * @param int    $user_id   The user ID.
+		 * @param string $role      The role that was set or added.
+		 * @param array  $old_roles Array of the user's roles before this change.
+		 */
+		do_action( 'automator_user_role_changed', $user_id, $role, $old_roles );
+	}
+
+	/**
+	 * Handle add_user_role hook (WordPress core WP_User::add_role method)
+	 *
+	 * This hook fires when a role is ADDED to a user (keeping existing roles).
+	 * This is used by User Role Editor plugin and other role management tools.
+	 *
+	 * Note: This hook fires AFTER the role has been added to the user.
+	 * We reconstruct old_roles by removing the newly added role from current roles.
+	 *
+	 * @param int    $user_id The user ID.
+	 * @param string $role    The role being added.
+	 *
+	 * @return void
+	 */
+	public function handle_add_user_role( $user_id, $role ) {
+		// Get the user object
+		$user = get_user_by( 'ID', $user_id );
+		if ( ! $user ) {
+			return;
+		}
+
+		// Get current roles (after the role was added)
+		$current_roles = $user->roles;
+
+		// Reconstruct old_roles by removing the newly added role
+		// This works because the add_user_role hook fires AFTER the role is added
+		$old_roles = array_diff( $current_roles, array( $role ) );
+
+		/**
+		 * Fires when a user's role is changed via any WordPress method.
+		 *
+		 * This internal hook normalizes both set_user_role and add_user_role
+		 * into a single consistent hook for Automator triggers.
+		 *
+		 * @param int    $user_id   The user ID.
+		 * @param string $role      The role that was set or added.
+		 * @param array  $old_roles Array of the user's roles before this change.
+		 */
+		do_action( 'automator_user_role_changed', $user_id, $role, $old_roles );
 	}
 }

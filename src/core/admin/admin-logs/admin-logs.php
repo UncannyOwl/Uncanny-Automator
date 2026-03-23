@@ -8,8 +8,18 @@ namespace Uncanny_Automator;
 
 class Admin_Logs {
 
+	/**
+	 * Asset.
+	 *
+	 * @var mixed
+	 */
 	protected $asset;
 
+	/**
+	 * Constructor.
+	 *
+	 * @return void
+	 */
 	public function __construct() {
 
 		// Register the options menu
@@ -17,13 +27,15 @@ class Admin_Logs {
 
 		// Load tabs
 		$this->load_tabs();
-
 	}
-
+	/**
+	 * Set asset.
+	 *
+	 * @param mixed $asset The asset.
+	 */
 	public function set_asset( $asset ) {
 
 		$this->asset = $asset;
-
 	}
 
 	/**
@@ -33,19 +45,18 @@ class Admin_Logs {
 
 		add_action(
 			'admin_menu',
-			function() {
+			function () {
 				add_submenu_page(
 					'edit.php?post_type=uo-recipe',
 					esc_attr__( 'Logs', 'uncanny-automator' ),
 					esc_attr__( 'Logs', 'uncanny-automator' ),
-					'manage_options',
+					automator_get_capability(),
 					'uncanny-automator-admin-logs',
 					array( $this, 'submenu_page_output' ),
 					700
 				);
 			}
 		);
-
 	}
 
 	/**
@@ -60,7 +71,6 @@ class Admin_Logs {
 		$this->load_tab( 'action' );
 
 		// $this->load_tab( 'api' );
-
 	}
 
 	/**
@@ -71,7 +81,6 @@ class Admin_Logs {
 	private function load_tab( $tab_key ) {
 
 		include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/' . sanitize_file_name( $tab_key ) . '.php';
-
 	}
 
 	/**
@@ -103,7 +112,6 @@ class Admin_Logs {
 
 		// Load the view.
 		include Utilities::automator_get_view( 'admin-logs/admin-logs.php' );
-
 	}
 
 	/**
@@ -112,7 +120,6 @@ class Admin_Logs {
 	public function get_top_level_tabs() {
 
 		return apply_filters( 'automator_admin_logs_top_level_tabs_items', array() );
-
 	}
 
 	/**
@@ -140,9 +147,12 @@ class Admin_Logs {
 			$url_parameters,
 			admin_url( 'edit.php' )
 		);
-
 	}
-
+	/**
+	 * Get current tab.
+	 *
+	 * @return mixed
+	 */
 	public function get_current_tab() {
 
 		if ( automator_filter_has_var( 'tab' ) ) {
@@ -150,7 +160,5 @@ class Admin_Logs {
 		}
 
 		return 'recipe';
-
 	}
-
 }

@@ -2,11 +2,15 @@
 
 namespace Uncanny_Automator\Integrations\Stripe;
 
-class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
-
-	protected $helpers;
-
-	protected $dependencies;
+/**
+ * Class Delete_Customer
+ *
+ * @package Uncanny_Automator
+ *
+ * @property Stripe_App_Helpers $helpers
+ * @property Stripe_Api_Caller $api
+ */
+class Delete_Customer extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * setup_action
@@ -15,17 +19,15 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 	 */
 	protected function setup_action() {
 
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'STRIPE' );
 		$this->set_action_code( 'DELETE_CUSTOMER' );
 		$this->set_action_meta( 'EMAIL' );
 
 		$this->set_requires_user( false );
 
-		/* translators: %1$s Contact Email */
-		$this->set_sentence( sprintf( esc_attr_x( 'Delete {{a customer:%1$s}}', 'Stripe', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( 'Delete {{a customer}}', 'Stripe', 'uncanny-automator' ) );
+		// translators: %1$s is the customer email
+		$this->set_sentence( sprintf( esc_html_x( 'Delete {{a customer:%1$s}}', 'Stripe', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Delete {{a customer}}', 'Stripe', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -37,10 +39,10 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 
 		$email = array(
 			'option_code' => 'EMAIL',
-			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Email', 'Stripe', 'uncanny-automator' ),
 			'input_type'  => 'email',
 			'required'    => true,
-			'description' => esc_html__( 'Email address of the customer', 'uncanny-automator' ),
+			'description' => esc_html_x( 'Email address of the customer', 'Stripe', 'uncanny-automator' ),
 		);
 
 		return array(
@@ -56,7 +58,7 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 	public function define_tokens() {
 		return array(
 			'CUSTOMER_ID' => array(
-				'name' => esc_html__( 'Customer ID', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Customer ID', 'Stripe', 'uncanny-automator' ),
 				'type' => 'text',
 			),
 		);
@@ -77,13 +79,12 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\Action {
 			'email' => $this->get_parsed_meta_value( 'EMAIL', '' ),
 		);
 
-		$response = $this->helpers->api->delete_customer( $customer, $action_data );
+		$response = $this->api->delete_customer( $customer, $action_data );
 
 		if ( empty( $response['data']['customer']['id'] ) ) {
-
-			$error = _x( 'Customer could not be deleted', 'Stripe', 'uncanny-automator' );
-
-			throw new \Exception( esc_html( $error ) );
+			throw new \Exception(
+				esc_html_x( 'Customer could not be deleted', 'Stripe', 'uncanny-automator' )
+			);
 		}
 
 		$this->hydrate_tokens(

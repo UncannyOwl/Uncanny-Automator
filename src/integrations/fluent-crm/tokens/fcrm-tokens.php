@@ -56,7 +56,7 @@ class Fcrm_Tokens {
 		if ( in_array( $trigger_code, $contact_id_token_enabled_triggers, true ) ) {
 			$tokens[] = array(
 				'tokenId'         => 'contact_id',
-				'tokenName'       => esc_html__( 'Contact ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Contact ID', 'Fluent Crm', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -75,7 +75,7 @@ class Fcrm_Tokens {
 			if ( 'company_id' === $key ) {
 				$tokens[] = array(
 					'tokenId'         => 'company_name',
-					'tokenName'       => esc_html__( 'Primary Company Name', 'uncanny-automator' ),
+					'tokenName'       => esc_html_x( 'Primary Company Name', 'Fluent Crm', 'uncanny-automator' ),
 					'tokenType'       => 'text',
 					'tokenIdentifier' => $trigger_meta,
 				);
@@ -93,7 +93,6 @@ class Fcrm_Tokens {
 		}
 
 		return $tokens;
-
 	}
 
 	/**
@@ -380,7 +379,6 @@ class Fcrm_Tokens {
 		}
 
 		return $value;
-
 	}
 
 	/**
@@ -419,7 +417,6 @@ class Fcrm_Tokens {
 		}
 
 		return $value;
-
 	}
 
 	/**
@@ -448,9 +445,14 @@ class Fcrm_Tokens {
 		);
 
 		return absint( $subscriber_id );
-
 	}
-
+	/**
+	 * Get contact id token enabled triggers.
+	 *
+	 * @param mixed $tokens The destination.
+	 * @param mixed $args The arguments.
+	 * @return mixed
+	 */
 	public function get_contact_id_token_enabled_triggers( $tokens, $args ) {
 
 		return apply_filters(
@@ -463,7 +465,5 @@ class Fcrm_Tokens {
 			$args,
 			$this
 		);
-
 	}
-
 }

@@ -51,11 +51,12 @@ class ANON_WPF_SUBFORM {
 			'is_pro'              => false,
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
+			'agent_class'         => 'Uncanny_Automator\Anon_WPF_SubForm_Agent',
 			'meta'                => $this->trigger_meta,
 			/* translators: Anonymous trigger - WP Forms */
-			'sentence'            => sprintf( esc_attr__( '{{A form:%1$s}} is submitted', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr_x( '{{A form:%1$s}} is submitted', 'Wpforms', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Anonymous trigger - WP Forms */
-			'select_option_name'  => esc_attr__( '{{A form}} is submitted', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr_x( '{{A form}} is submitted', 'Wpforms', 'uncanny-automator' ),
 			'action'              => 'wpforms_process_complete',
 			'priority'            => 20,
 			'accepted_args'       => 4,
@@ -80,7 +81,6 @@ class ANON_WPF_SUBFORM {
 		$options = Automator()->utilities->keep_order_of_options( $options );
 
 		return $options;
-
 	}
 
 	/**
@@ -107,7 +107,7 @@ class ANON_WPF_SUBFORM {
 
 		$args = Automator()->process->user->maybe_add_trigger_entry( $args, false );
 
-		//Adding an action to save form submission in trigger meta
+		// Adding an action to save form submission in trigger meta
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		do_action( 'automator_save_anon_wp_form', $fields, $form_data, $recipes, $args );
 
@@ -118,7 +118,7 @@ class ANON_WPF_SUBFORM {
 						$user_ip    = Automator()->helpers->recipe->wpforms->options->get_entry_user_ip_address( $entry_id );
 						$entry_date = Automator()->helpers->recipe->wpforms->options->get_entry_entry_date( $entry_id );
 						$entry_id   = Automator()->helpers->recipe->wpforms->options->get_entry_entry_id( $entry_id );
-						//Saving form values in trigger log meta for token parsing!
+						// Saving form values in trigger log meta for token parsing!
 						$wpf_args               = array(
 							'trigger_id'     => (int) $result['args']['trigger_id'],
 							'user_id'        => $user_id,

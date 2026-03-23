@@ -133,6 +133,9 @@ trait Premium_Integration_Templating_Helpers {
 			if ( ! empty( $args['confirm']['button'] ) ) {
 				$attrs['confirmation-button-label'] = $args['confirm']['button'];
 			}
+			if ( ! empty( $args['confirm']['fields'] ) ) {
+				$attrs['confirmation-fields'] = wp_json_encode( $args['confirm']['fields'] );
+			}
 		}
 
 		// Output the button
@@ -531,15 +534,17 @@ trait Premium_Integration_Templating_Helpers {
 				'show-tooltip' => array(),
 			),
 			'uo-text-field' => array(
-				'id'          => array(),
-				'value'       => array(),
-				'label'       => array(),
-				'class'       => array(),
-				'required'    => array(),
-				'disabled'    => array(),
-				'name'        => array(),
-				'placeholder' => array(),
-				'helper'      => array(),
+				'id'                => array(),
+				'value'             => array(),
+				'type'              => array(),
+				'label'             => array(),
+				'class'             => array(),
+				'required'          => array(),
+				'disabled'          => array(),
+				'name'              => array(),
+				'placeholder'       => array(),
+				'helper'            => array(),
+				'copy-to-clipboard' => array(),
 			),
 		);
 

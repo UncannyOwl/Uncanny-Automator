@@ -76,9 +76,9 @@ trait Action_Helpers_Email {
 	private $actions_data = array();
 
 	/**
-	 * @var Handler
+	 * @var Handler[]
 	 */
-	protected $attachment_handler = null;
+	protected $attachment_handlers = array();
 
 	/**
 	 * @return array
@@ -129,7 +129,7 @@ trait Action_Helpers_Email {
 		$data = wp_parse_args( $data, $defaults );
 
 		$from_email = sanitize_email( $data['from'] );
-		$from_name  = sanitize_text_field( $data['from_name'] );
+		$from_name  = sanitize_text_field( stripslashes( html_entity_decode( $data['from_name'] ) ) );
 		$to_email   = $data['to']; // The sanitize_email is added to Automator Email Helpers sent method.
 		$cc_email   = ! empty( $data['cc'] ) ? $data['cc'] : '';
 		$bcc_email  = ! empty( $data['bcc'] ) ? $data['bcc'] : '';
@@ -165,7 +165,6 @@ trait Action_Helpers_Email {
 		}
 
 		$this->set_actions_data( $data, $user_id, $recipe_id, $args );
-
 	}
 
 	/**
@@ -436,6 +435,16 @@ trait Action_Helpers_Email {
 	}
 
 	/**
+	 * Set the error message.
+	 *
+	 * @param string $error_message The error message.
+	 * @return void
+	 */
+	public function set_error_message( $error_message ) {
+		$this->error_message = $error_message;
+	}
+
+	/**
 	 * Processes the attachment.
 	 *
 	 * @param mixed $attachment_url
@@ -444,9 +453,10 @@ trait Action_Helpers_Email {
 	 */
 	public function process_attachment( $attachment_url ) {
 
-		$this->attachment_handler = new Handler( $attachment_url );
+		$handler                     = new Handler( $attachment_url );
+		$this->attachment_handlers[] = $handler;
 
-		$attachment_path = $this->attachment_handler->process_attachment();
+		$attachment_path = $handler->process_attachment();
 
 		// Use pathinfo to get the extension.
 		$path_info = pathinfo( wp_parse_url( $attachment_url, PHP_URL_PATH ) );
@@ -461,7 +471,6 @@ trait Action_Helpers_Email {
 		}
 
 		return $attachment_path;
-
 	}
 
 	/**
@@ -471,9 +480,10 @@ trait Action_Helpers_Email {
 	 */
 	public function __destruct() {
 
-		if ( $this->attachment_handler && $this->attachment_handler instanceof Handler ) {
-			$this->attachment_handler->cleanup();
+		foreach ( $this->attachment_handlers as $handler ) {
+			if ( $handler instanceof Handler ) {
+				$handler->cleanup();
+			}
 		}
 	}
-
 }

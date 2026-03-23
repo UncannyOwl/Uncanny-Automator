@@ -83,16 +83,6 @@ class WP_USERCREATESPOST {
 	private $child_term_log_properties = array();
 
 	/**
-	 * @var string
-	 */
-	private $action_hook;
-
-	/**
-	 * @var int
-	 */
-	private $internal_post_id = 288662867; // Automator in numbers
-
-	/**
 	 * WP_USERCREATESPOST constructor.
 	 *
 	 * @return void
@@ -100,7 +90,6 @@ class WP_USERCREATESPOST {
 	public function __construct() {
 		$this->trigger_code = 'USERSPOST';
 		$this->trigger_meta = 'WPPOSTTYPES';
-		$this->action_hook  = 'automator_userspost_posts_published';
 
 		if ( Automator()->helpers->recipe->is_edit_page() ) {
 			add_action(
@@ -114,12 +103,6 @@ class WP_USERCREATESPOST {
 			return;
 		}
 		$this->define_trigger();
-
-		// Legacy support for posts published in a specific post type
-		add_action( 'uoa_wp_after_insert_post', array( $this, 'post_published' ), 99, 1 );
-
-		// New support for posts published in a specific post type
-		add_action( $this->action_hook, array( $this, 'posts_published' ), 99 );
 	}
 
 	/**
@@ -146,7 +129,7 @@ class WP_USERCREATESPOST {
 			'action'              => 'wp_after_insert_post',
 			'priority'            => 90,
 			'accepted_args'       => 4,
-			'validation_function' => array( $this, 'schedule_a_post' ),
+			'validation_function' => array( $this, 'post_published' ),
 			'options_callback'    => array( $this, 'load_options' ),
 		);
 
@@ -204,77 +187,35 @@ class WP_USERCREATESPOST {
 	}
 
 	/**
+	 * Fires when a user publishes a post with taxonomy terms.
+	 *
+	 * @param int      $post_id     Post ID.
+	 * @param \WP_Post $post        Post object.
+	 * @param bool     $update      Whether this is an existing post being updated.
+	 * @param \WP_Post $post_before Previous post object before update.
+	 *
 	 * @return void
 	 */
-	public function posts_published() {
-		$post_metas = Wp_Helpers::get_pending_posts( $this->action_hook );
-		if ( empty( $post_metas ) ) {
-			return;
-		}
+	public function post_published( $post_id, $post, $update, $post_before ) {
 
-		$post_ids = array();
-
-		// Process each post ID
-		foreach ( $post_metas as $post_meta ) {
-			$post_id = absint( $post_meta->meta_value );
-
-			if ( in_array( $post_id, $post_ids, true ) ) {
-				Wp_Helpers::delete_post_after_trigger( $post_meta );
-				continue;
-			}
-
-			$post_ids[] = $post_id;
-
-			if ( Wp_Helpers::delete_post_after_trigger( $post_meta ) ) {
-				$this->post_published( $post_id );
-			}
-		}
-
-	}
-
-	/**
-	 * @param $post_id
-	 * @param $post
-	 * @param $update
-	 * @param $post_before
-	 *
-	 * @return void|null
-	 */
-	public function schedule_a_post( $post_id, $post, $update, $post_before ) {
-		// only run when posts
-		// are published first time
+		// Only run when posts are published first time.
 		if ( ! Automator()->utilities->is_wp_post_being_published( $post, $post_before ) ) {
 			return;
 		}
 
-		$cron_enabled = apply_filters( 'automator_wp_user_creates_post_cron_enabled', true, $post_id, $post, $update, $post_before, $this );
+		// Deprecated since 7.0 - cron-based processing replaced by wp_after_insert_post.
+		apply_filters_deprecated( 'automator_wp_user_creates_post_cron_enabled', array( true, $post_id, $post, $update, $post_before, $this ), '7.1' );
 
-		// Allow people to disable cron processing.
-		if ( false === $cron_enabled ) {
-			// Immediately run post_publised if cron not enabled.
-			return $this->post_published( $post_id );
-		}
-
-		// Add the post ID to the post meta table.
-		Wp_Helpers::add_pending_post( $post_id, $this->action_hook );
-	}
-
-	/**
-	 * Fires when a post is transitioned from one status to another.
-	 * Fires when a post is transitioned from one status to another.
-	 *
-	 * @param $post_id
-	 *
-	 * @return void
-	 */
-	public function post_published( $post_id ) {
-		// Check if the post has already been postponed to avoid duplicate recipe runs.
-		if ( $this->maybe_post_postponed( $post_id ) ) {
+		// Deduplication check - prevent multiple firings from other plugins.
+		$transient_key = 'automator_trigger_' . $this->trigger_code . '_' . $post_id;
+		if ( false !== get_transient( $transient_key ) ) {
 			return;
 		}
 
-		$post                      = get_post( $post_id );
-		$this->post                = $post;
+		// Set transient to prevent duplicate processing for 10 seconds.
+		set_transient( $transient_key, true, 10 );
+
+		$this->post = $post;
 		$user_id                   = absint( isset( $post->post_author ) ? $post->post_author : 0 );
 		$recipes                   = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_post_type        = Automator()->get->meta_from_recipes( $recipes, 'WPPOSTTYPES' );
@@ -322,7 +263,6 @@ class WP_USERCREATESPOST {
 
 		// No taxonomies found, bail
 		if ( empty( $taxonomy_recipes ) ) {
-			Wp_Helpers::requeue_post( $post_id, $this->action_hook );
 			return;
 		}
 
@@ -331,7 +271,6 @@ class WP_USERCREATESPOST {
 
 		// No terms found, bail
 		if ( empty( $terms_recipe ) ) {
-			Wp_Helpers::requeue_post( $post_id, $this->action_hook );
 			return;
 		}
 
@@ -352,44 +291,6 @@ class WP_USERCREATESPOST {
 		$this->complete_trigger( $matched_recipe_ids, $user_id, $post );
 	}
 
-	/**
-	 * @param      $post
-	 * @param null $request
-	 * @param null $creating
-	 */
-	public function store_thumbnail( $post, $request = null, $creating = null ) {
-
-		// Post Featured Image URL
-		$this->trigger_meta_log['meta_key']   = $this->result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTIMAGEURL';
-		$this->trigger_meta_log['meta_value'] = maybe_serialize( get_the_post_thumbnail_url( $this->post->ID, 'full' ) );
-		Automator()->insert_trigger_meta( $this->trigger_meta_log );
-
-		// Post Featured Image ID
-		$this->trigger_meta_log['meta_key']   = $this->result['args']['trigger_id'] . ':' . $this->trigger_code . ':POSTIMAGEID';
-		$this->trigger_meta_log['meta_value'] = maybe_serialize( get_post_thumbnail_id( $this->post->ID ) );
-		Automator()->insert_trigger_meta( $this->trigger_meta_log );
-
-	}
-
-	/**
-	 * @param $post_id
-	 * @param bool $legacy
-	 *
-	 * @return bool
-	 */
-	private function maybe_post_postponed( $post_id ) {
-
-		$post         = get_post( $post_id );
-		$cron_enabled = apply_filters( 'automator_wp_user_creates_post_cron_enabled', true, $post_id, $post, false, $post, $this );
-
-		// Allow people to disable cron processing.
-		if ( false === $cron_enabled ) {
-			// Immediately run post_publised if cron not enabled.
-			return false;
-		}
-
-		return Wp_Helpers::maybe_post_postponed( $post_id, $this->action_hook );
-	}
 
 	/**
 	 * @param $matched_recipe_ids

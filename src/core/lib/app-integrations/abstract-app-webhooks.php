@@ -5,6 +5,7 @@ namespace Uncanny_Automator\App_Integrations;
 use Exception;
 use WP_REST_Request;
 use WP_REST_Response;
+use WP_REST_Server;
 
 /**
  * Abstract class for app integration webhooks.
@@ -72,6 +73,15 @@ abstract class App_Webhooks {
 	 * @var string
 	 */
 	protected $auth_param = 'key';
+
+	/**
+	 * Whether the webhook accepts GET requests.
+	 * Default is false (POST only). Some integrations (like Mailchimp) require GET
+	 * for validation handshake.
+	 *
+	 * @var bool
+	 */
+	protected $accepts_get_requests = false;
 
 	/**
 	 * Sanitized integration ID for use in option names and endpoints.
@@ -324,6 +334,26 @@ abstract class App_Webhooks {
 	}
 
 	/**
+	 * Set whether the webhook accepts GET requests.
+	 *
+	 * @param bool $accepts Whether GET requests are accepted.
+	 *
+	 * @return void
+	 */
+	public function set_accepts_get_requests( $accepts ) {
+		$this->accepts_get_requests = (bool) $accepts;
+	}
+
+	/**
+	 * Check if the webhook accepts GET requests.
+	 *
+	 * @return bool
+	 */
+	public function accepts_get_requests() {
+		return $this->accepts_get_requests;
+	}
+
+	/**
 	 * Set the sanitized integration ID.
 	 *
 	 * @param string $sanitized_id The sanitized integration ID.
@@ -480,15 +510,20 @@ abstract class App_Webhooks {
 		// Set the current request.
 		$this->current_request = $request;
 
-		// Validate the webhook
+		// Reject GET requests unless explicitly allowed by the integration.
+		if ( WP_REST_Server::READABLE === $request->get_method() && ! $this->accepts_get_requests() ) {
+			throw new Exception( 'GET requests are not supported by this webhook' );
+		}
+
+		// Validate the webhook.
 		$result = $this->validate_webhook( $request );
 
-		// If validation returned a response (e.g., handshake), return it immediately
+		// If validation returned a response (e.g., handshake), return it immediately.
 		if ( $result instanceof WP_REST_Response ) {
 			return $result;
 		}
 
-		// Process the webhook
+		// Process the webhook.
 		return $this->process_webhook_callback( $request );
 	}
 

@@ -6,7 +6,6 @@ namespace Uncanny_Automator\Core\Lib\AI;
 use Uncanny_Automator\Core\Lib\AI\Factory\Provider_Factory;
 use Uncanny_Automator\Core\Lib\AI\Provider\OpenAI_Provider;
 use Uncanny_Automator\Core\Lib\AI\Provider\Claude_Provider;
-use Uncanny_Automator\Core\Lib\AI\Provider\Deepseek_Provider;
 use Uncanny_Automator\Core\Lib\AI\Provider\Perplexity_Provider;
 use Uncanny_Automator\Core\Lib\AI\Provider\Gemini_Provider;
 use Uncanny_Automator\Core\Lib\AI\Provider\Cohere_Provider;
@@ -49,7 +48,6 @@ class Default_Providers_Loader {
 		Provider_Factory::register_provider( 'CLAUDE', Claude_Provider::class );
 		Provider_Factory::register_provider( 'PERPLEXITY', Perplexity_Provider::class );
 		Provider_Factory::register_provider( 'GEMINI', Gemini_Provider::class );
-		Provider_Factory::register_provider( 'DEEPSEEK', Deepseek_Provider::class );
 		Provider_Factory::register_provider( 'COHERE', Cohere_Provider::class );
 		Provider_Factory::register_provider( 'GROK', Grok_Provider::class );
 		Provider_Factory::register_provider( 'MISTRAL', Mistral_Provider::class );

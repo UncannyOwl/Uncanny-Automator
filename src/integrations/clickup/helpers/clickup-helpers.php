@@ -194,7 +194,7 @@ class ClickUp_Helpers {
 	 */
 	public function verify_access( $nonce = '' ) {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			wp_die( 'Error 403: Insufficient permissions.' );
 		}
 

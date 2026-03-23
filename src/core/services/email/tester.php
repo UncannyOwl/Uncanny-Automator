@@ -33,9 +33,9 @@ class Tester {
 	protected $attachments = array();
 
 	/**
-	 * @var Handler
+	 * @var Handler[]
 	 */
-	protected $attachment_handler = null;
+	protected $attachment_handlers = array();
 
 	/**
 	 * Sets the default args.
@@ -160,9 +160,15 @@ class Tester {
 		$this->validate_recipient();
 		$this->validate_body();
 
-		$this->process_attachments( $params );
-
-		$is_sent = wp_mail( $params['to'], $params['subject'], $params['body'], $this->resolve_headers(), $this->get_attachments() );
+		try {
+			$this->process_attachments( $params );
+			$is_sent = wp_mail( $params['to'], $params['subject'], $params['body'], $this->resolve_headers(), $this->get_attachments() );
+		} finally {
+			// Always delete temporary attachment files, even when an exception is thrown.
+			foreach ( $this->attachment_handlers as $handler ) {
+				$handler->cleanup();
+			}
+		}
 
 		if ( isset( $_ENV['DOING_AUTOMATOR_TEST'] ) ) {
 			return array( 'success' => $is_sent );
@@ -189,6 +195,11 @@ class Tester {
 		if ( ! empty( $attachments ) ) {
 			foreach ( $attachments as $attachment_url ) {
 				$path = $this->process_attachment( $attachment_url );
+
+				if ( is_wp_error( $path ) ) {
+					throw new Exception( $path->get_error_message(), 400 );
+				}
+
 				if ( file_exists( $path ) ) {
 					$this->add_attachment( $path );
 				}
@@ -206,11 +217,10 @@ class Tester {
 	 */
 	public function process_attachment( $attachment_url ) {
 
-		$this->attachment_handler = new Handler( $attachment_url );
+		$handler                    = new Handler( $attachment_url );
+		$this->attachment_handlers[] = $handler;
 
-		$attachment_path = $this->attachment_handler->process_attachment();
-
-		return $attachment_path;
+		return $handler->process_attachment();
 
 	}
 

@@ -40,7 +40,6 @@ class Admin_Template_Library {
 		add_action( 'admin_menu', array( $this, 'submenu_page' ) );
 		add_action( 'automator_template_library_admin_load', array( $this, 'admin_load' ) );
 		add_action( 'rest_api_init', array( $this, 'register_rest_endpoint' ) );
-
 	}
 
 	/**
@@ -56,7 +55,7 @@ class Admin_Template_Library {
 			/* translators: 1. Trademarked term */
 			sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' ),
 			esc_attr__( 'Recipe templates', 'uncanny-automator' ),
-			'manage_options',
+			automator_get_capability(),
 			'uncanny-automator-template-library',
 			array( $this, 'submenu_page_output' ),
 			3
@@ -65,7 +64,7 @@ class Admin_Template_Library {
 		// Add load hook
 		add_action(
 			"load-{$this->admin_hook}",
-			function() {
+			function () {
 				do_action( 'automator_template_library_admin_load', $this );
 			}
 		);
@@ -99,7 +98,7 @@ class Admin_Template_Library {
 		// Add the page slug to the global assets.
 		add_filter(
 			'automator_enqueue_global_assets',
-			function( $slugs ) {
+			function ( $slugs ) {
 				$slugs[] = self::PAGE_SLUG;
 				return $slugs;
 			}
@@ -108,7 +107,7 @@ class Admin_Template_Library {
 		// Dequeue conflicting Select2 scripts.
 		add_filter(
 			'automator_conflictive_assets',
-			function( $assets ) {
+			function ( $assets ) {
 				// Remove the default Select2 scripts and styles.
 				foreach ( $assets as $type => $group ) {
 					foreach ( $group as $key => $handle ) {
@@ -269,5 +268,4 @@ class Admin_Template_Library {
 		}
 		return $this->library;
 	}
-
 }

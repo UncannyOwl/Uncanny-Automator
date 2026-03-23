@@ -43,6 +43,8 @@ class Ameliabooking_Helpers {
 
 		add_action( 'wp_ajax_ameliabooking_service_category_endpoint', array( $this, 'ameliabooking_service_category_endpoint' ) );
 
+		add_action( 'AmeliaBookingAddedBeforeNotify', array( $this, 'normalize_booking_data' ), 10, 2 );
+		add_action( 'amelia_after_appointment_added', array( $this, 'normalize_appointment_data' ), 10, 3 );
 	}
 
 	/**
@@ -67,7 +69,7 @@ class Ameliabooking_Helpers {
 					'input_type'      => 'select',
 					'option_code'     => $trigger_code . '_SERVICES',
 					'required'        => true,
-					'label'           => esc_html__( 'Category', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Category', 'Ameliabooking', 'uncanny-automator' ),
 					'options'         => $this->get_services_categories(),
 					'is_ajax'         => true,
 					'endpoint'        => 'ameliabooking_service_category_endpoint',
@@ -78,7 +80,7 @@ class Ameliabooking_Helpers {
 					'input_type'      => 'select',
 					'option_code'     => $trigger_meta,
 					'required'        => true,
-					'label'           => esc_html__( 'Service', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Service', 'Ameliabooking', 'uncanny-automator' ),
 					'relevant_tokens' => array(),
 				),
 			),
@@ -98,7 +100,7 @@ class Ameliabooking_Helpers {
 
 		$items = array(
 			array(
-				'text'  => esc_html__( 'Any service', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Any service', 'Ameliabooking', 'uncanny-automator' ),
 				'value' => '-1',
 			),
 		);
@@ -115,7 +117,6 @@ class Ameliabooking_Helpers {
 		}
 
 		wp_send_json( $items );
-
 	}
 
 	/**
@@ -144,7 +145,6 @@ class Ameliabooking_Helpers {
 		}
 
 		return $items;
-
 	}
 
 	/**
@@ -184,7 +184,6 @@ class Ameliabooking_Helpers {
 			),
 			OBJECT
 		);
-
 	}
 
 	/**
@@ -195,7 +194,7 @@ class Ameliabooking_Helpers {
 		$events = $this->get_events();
 
 		$options = array(
-			'-1' => esc_attr__( 'Any event', 'uncanny-automator' ),
+			'-1' => esc_attr_x( 'Any event', 'Ameliabooking', 'uncanny-automator' ),
 		);
 
 		if ( ! empty( $events ) ) {
@@ -207,7 +206,6 @@ class Ameliabooking_Helpers {
 		}
 
 		return $options;
-
 	}
 
 	/**
@@ -228,7 +226,6 @@ class Ameliabooking_Helpers {
 		);
 
 		return $results;
-
 	}
 
 	/**
@@ -255,7 +252,6 @@ class Ameliabooking_Helpers {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -274,7 +270,6 @@ class Ameliabooking_Helpers {
 		$period_start = isset( $reservation_periods['periodStart'] ) ? $reservation_periods['periodStart'] : '';
 
 		return $period_start . ' - ' . $period_end;
-
 	}
 
 	/**
@@ -299,7 +294,6 @@ class Ameliabooking_Helpers {
 			);
 
 		}
-
 	}
 
 	/**
@@ -322,7 +316,6 @@ class Ameliabooking_Helpers {
 		}
 
 		return $tag_string;
-
 	}
 
 	/**
@@ -397,7 +390,6 @@ class Ameliabooking_Helpers {
 			),
 			ARRAY_A
 		);
-
 	}
 
 	/**
@@ -423,7 +415,6 @@ class Ameliabooking_Helpers {
 		);
 
 		return implode( ', ', array_column( $results, 'name' ) );
-
 	}
 
 	/**
@@ -449,7 +440,6 @@ class Ameliabooking_Helpers {
 		);
 
 		return implode( ', ', array_column( $results, 'name' ) );
-
 	}
 
 	/**
@@ -473,7 +463,91 @@ class Ameliabooking_Helpers {
 		);
 
 		return isset( $results['total'] ) ? absint( $results['total'] ) : 0;
-
 	}
 
+	/**
+	 * Normalize data from AmeliaBookingAddedBeforeNotify hook.
+	 *
+	 * @param array $data The booking data.
+	 * @param mixed $container The Amelia container object.
+	 *
+	 * @return void
+	 */
+	public function normalize_booking_data( $data, $container = null ) {
+
+		if ( empty( $data ) ) {
+			return;
+		}
+
+		$normalized_data = $this->extract_normalized_data( $data );
+
+		if ( ! empty( $normalized_data ) ) {
+			do_action( 'automator_amelia_appointment_booked', $normalized_data );
+		}
+	}
+
+	/**
+	 * Normalize data from amelia_after_appointment_added hook.
+	 *
+	 * @param array $appointment The appointment data.
+	 * @param array $service The service data.
+	 * @param array $payment_data The payment data.
+	 *
+	 * @return void
+	 */
+	public function normalize_appointment_data( $appointment, $service = null, $payment_data = null ) {
+
+		if ( empty( $appointment ) ) {
+			return;
+		}
+
+		// The appointment data from amelia_after_appointment_added is already in the right format
+		// Just wrap it to match our normalization expectations
+		$normalized_data = $this->extract_normalized_data( array( 'appointment' => $appointment ) );
+
+		if ( ! empty( $normalized_data ) ) {
+			do_action( 'automator_amelia_appointment_booked', $normalized_data );
+		}
+	}
+
+	/**
+	 * Extract normalized data from either hook format.
+	 *
+	 * @param array $data The raw data from Amelia hooks.
+	 *
+	 * @return array Normalized appointment data.
+	 */
+	private function extract_normalized_data( $data ) {
+
+		$appointment = array();
+		$booking     = array();
+		$customer    = array();
+
+		if ( isset( $data['appointment'] ) && is_array( $data['appointment'] ) ) {
+			$appointment = $data['appointment'];
+		}
+
+		if ( isset( $data['booking'] ) && is_array( $data['booking'] ) ) {
+			$booking = $data['booking'];
+		} elseif ( isset( $appointment['bookings'][0] ) && is_array( $appointment['bookings'][0] ) ) {
+			$booking = $appointment['bookings'][0];
+		}
+
+		if ( isset( $data['customer'] ) && is_array( $data['customer'] ) ) {
+			$customer = $data['customer'];
+		} elseif ( isset( $booking['customer'] ) && is_array( $booking['customer'] ) ) {
+			$customer = $booking['customer'];
+		}
+
+		if ( empty( $appointment ) || empty( $booking ) ) {
+			return array();
+		}
+
+		return array(
+			'appointment' => $appointment,
+			'booking'     => $booking,
+			'customer'    => $customer,
+			'type'        => isset( $data['type'] ) ? $data['type'] : 'appointment',
+		);
+	}
 }

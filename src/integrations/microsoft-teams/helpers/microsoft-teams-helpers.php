@@ -363,7 +363,7 @@ class Microsoft_Teams_Helpers {
 	 */
 	public function disconnect() {
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			$this->redirect_to_settings_page();
 		}
 
@@ -379,7 +379,7 @@ class Microsoft_Teams_Helpers {
 	 * redirect_to_settings_page
 	 *
 	 * @return void
-	 */	
+	 */
 	public function redirect_to_settings_page() {
 		wp_safe_redirect( $this->get_settings_page_url() );
 		exit;

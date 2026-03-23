@@ -229,12 +229,11 @@ $setup_wizard_link = add_query_arg(
 					</div>
 				</div>
 				<div class="uap-dashboard-box-content uap-dashboard-box-content--top">
-					<iframe 
+					<iframe
 						src="https://www.youtube.com/embed/LMR5YIPu2Kk"
-						frameborder="0"
+						referrerpolicy="strict-origin-when-cross-origin"
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 						allowfullscreen
-
 						style="width: 100%; aspect-ratio: 16 / 9;"
 					></iframe>
 					<div class="uap-dashboard-videos-container">

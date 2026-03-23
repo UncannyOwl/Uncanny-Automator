@@ -155,10 +155,10 @@ abstract class Action {
 	 */
 	final public function __construct( ...$args ) {
 		$this->dependencies = $args;
-		
+
 		// Automatically set up helpers from dependencies
 		$this->set_helpers_from_dependencies( $this->dependencies );
-		
+
 		$this->setup_action();
 
 		add_filter( 'automator_actions', array( $this, 'register_action' ) );
@@ -169,7 +169,6 @@ abstract class Action {
 				$this->get_action_code()
 			);
 		}
-
 	}
 
 	/**
@@ -201,6 +200,7 @@ abstract class Action {
 			'is_deprecated'         => $this->is_is_deprecated(),
 			'requires_user'         => $this->get_requires_user(),
 			'code'                  => $this->get_action_code(),
+			'meta_code'             => $this->get_action_meta(),
 			'sentence'              => $this->get_sentence(),
 			'select_option_name'    => $this->get_readable_sentence(),
 			'execution_function'    => array( $this, 'do_action' ),
@@ -209,8 +209,20 @@ abstract class Action {
 			'loopable_tokens'       => $this->get_loopable_tokens(),
 		);
 
+		if ( ! empty( self::$agent_registry ) && isset( self::$agent_registry[ $this->get_action_code() ] ) ) {
+			$action['agent_class'] = self::$agent_registry[ $this->get_action_code() ];
+		}
+
 		if ( ! empty( $this->get_buttons() ) ) {
 			$action['buttons'] = $this->get_buttons();
+		}
+
+		// Extract manifest data if trait is used
+		if ( $this->uses_item_manifest_trait() && is_callable( array( $this, 'extract_item_manifest_data' ) ) ) {
+			$manifest = call_user_func( array( $this, 'extract_item_manifest_data' ) );
+			if ( ! empty( $manifest ) ) {
+				$action['manifest'] = $manifest;
+			}
 		}
 
 		$action = apply_filters( 'automator_register_action', $action );
@@ -218,6 +230,16 @@ abstract class Action {
 		$actions[ $this->get_action_code() ] = $action;
 
 		return $actions;
+	}
+
+	/**
+	 * Check if action uses Item_Manifest trait.
+	 *
+	 * @return bool True if trait is used
+	 */
+	private function uses_item_manifest_trait() {
+		$traits = class_uses( get_class( $this ) );
+		return in_array( 'Uncanny_Automator\Item_Manifest', $traits, true );
 	}
 
 	/**
@@ -352,14 +374,14 @@ abstract class Action {
 	 * get_parsed_meta_value
 	 *
 	 * @param string $meta
-	 * @param mixed $default
+	 * @param mixed $default_value
 	 *
 	 * @return mixed
 	 */
-	public function get_parsed_meta_value( $meta, $default = '' ) {
+	public function get_parsed_meta_value( $meta, $default_value = '' ) {
 
 		if ( ! isset( $this->maybe_parsed[ $meta ] ) ) {
-			return $default;
+			return $default_value;
 		}
 
 		return $this->maybe_parsed[ $meta ];

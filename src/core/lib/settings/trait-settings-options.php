@@ -151,7 +151,7 @@ trait Settings_Options {
 		$sanitize_callback = $this->options[ $option_name ]['sanitize_callback'];
 
 		if ( ! is_callable( $sanitize_callback ) ) {
-			throw new Exception(
+			throw new \Exception(
 				sprintf(
 					// translators: %s is the option name
 					esc_html_x( 'Invalid sanitize callback for option "%s"', 'Integration settings', 'uncanny-automator' ),

@@ -394,36 +394,31 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @return boolean
 	 */
 	public function is_edit_page() {
-		global $pagenow;
-
-		if ( null === $pagenow && isset( $_SERVER['SCRIPT_FILENAME'] ) ) {
-			$pagenow = basename( sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_FILENAME'] ) ) ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		// Allow override via constant
+		if ( defined( 'AUTOMATOR_FORCE_EDIT_PAGE' ) && AUTOMATOR_FORCE_EDIT_PAGE ) {
+			return true;
 		}
-		//make sure we are on the backend
+
+		// Early return if not admin
 		if ( ! is_admin() ) {
 			return false;
 		}
-		if ( automator_filter_has_var( 'post' ) && ! empty( automator_filter_input( 'post' ) ) ) {
-			$current_post = get_post( absint( automator_filter_input( 'post' ) ) );
-			if (
-				isset( $current_post->post_type )
-				&& 'uo-recipe' === $current_post->post_type
-				&& in_array(
-					$pagenow,
-					array(
-						'post.php',
-						'post-new.php',
-					),
-					true
-				)
-			) {
-				return true;
-			}
 
+		// Check if we have a post parameter
+		if ( ! automator_filter_has_var( 'post' ) || empty( automator_filter_input( 'post' ) ) ) {
 			return false;
 		}
 
-		return false;
+		// Get current post and validate
+		$current_post = get_post( absint( automator_filter_input( 'post' ) ) );
+		if ( ! $current_post || 'uo-recipe' !== $current_post->post_type ) {
+			return false;
+		}
+
+		// Check if we're on the correct page
+		global $pagenow;
+		$valid_pages = array( 'post.php', 'post-new.php' );
+		return in_array( $pagenow, $valid_pages, true );
 	}
 
 	/**
@@ -777,8 +772,11 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 			$add_any_option_label = esc_attr__( 'Any page', 'uncanny-automator' );
 		}
 
-		// bail, if we aren't supposed to do this at all.
-		if ( ! $this->load_helpers ) {
+		// Allow automator to load this wp_query results from MCP requests. Backwards compatibility.
+		$is_mcp = ( defined( 'REST_REQUEST' ) && REST_REQUEST )
+			&& isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/automator/v1/mcp' );
+
+		if ( ! $this->load_helpers && ! $is_mcp ) {
 			return array();
 		}
 

@@ -101,8 +101,8 @@ class UC_ADD_BATCH_CODES {
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 		$batch_id        = isset( $parsed[ $this->get_action_meta() ] ) ? absint( wp_strip_all_tags( $parsed[ $this->get_action_meta() ] ) ) : 0;
 		$number_of_codes = isset( $parsed['UCNUMBERS'] ) ? absint( sanitize_text_field( $parsed['UCNUMBERS'] ) ) : 0;
-		$prefix          = isset( $parsed['UCADDPREFIX'] ) ? absint( sanitize_text_field( $parsed['UCADDPREFIX'] ) ) : '';
-		$suffix          = isset( $parsed['UCADDUSFFIX'] ) ? absint( sanitize_text_field( $parsed['UCADDUSFFIX'] ) ) : '';
+		$prefix          = isset( $parsed['UCADDPREFIX'] ) ? sanitize_text_field( $parsed['UCADDPREFIX'] ) : '';
+		$suffix          = isset( $parsed['UCADDUSFFIX'] ) ? sanitize_text_field( $parsed['UCADDUSFFIX'] ) : '';
 
 		if ( $batch_id <= 0 || $number_of_codes <= 0 ) {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_html__( 'Invalid request.', 'uncanny-automator' ) );
@@ -120,9 +120,19 @@ class UC_ADD_BATCH_CODES {
 		}
 
 		$generation_type = $group_details['generation_type'];
-		$code_length     = 20 - strlen( $prefix ) - strlen( $suffix );
 		$dashes          = $group_details['dashes'];
 		$character_type  = $group_details['character_type'];
+
+		// Use batch defaults when prefix/suffix are empty (Yoda style).
+		if ( empty( $prefix ) && ! empty( $group_details['prefix'] ) ) {
+			$prefix = $group_details['prefix'];
+		}
+		if ( empty( $suffix ) && ! empty( $group_details['suffix'] ) ) {
+			$suffix = $group_details['suffix'];
+		}
+
+		// Calculate code_length from existing batch codes if available.
+		$code_length = $this->get_batch_code_length( $batch_id, $prefix, $suffix, $dashes );
 
 		$args = array(
 			'generation_type' => $generation_type,
@@ -144,5 +154,36 @@ class UC_ADD_BATCH_CODES {
 		}
 
 		Automator()->complete->action( $user_id, $action_data, $recipe_id );
+	}
+
+	/**
+	 * Calculate code length by sampling existing codes from the batch.
+	 *
+	 * @param int    $batch_id The batch ID.
+	 * @param string $prefix   The code prefix.
+	 * @param string $suffix   The code suffix.
+	 * @param array  $dashes   The dash configuration (unused, for compatibility).
+	 *
+	 * @return int The calculated code length.
+	 */
+	private function get_batch_code_length( $batch_id, $prefix, $suffix, $dashes ) {
+		global $wpdb;
+		$tbl_codes = $wpdb->prefix . \uncanny_learndash_codes\Config::$tbl_codes;
+
+		// Sample existing codes from the batch to determine length.
+		$sample_code = $wpdb->get_var( $wpdb->prepare( "SELECT code FROM $tbl_codes WHERE code_group = %d LIMIT 1", $batch_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		// If batch has existing codes, calculate length from sample (Yoda style).
+		if ( ! empty( $sample_code ) ) {
+			// Remove dashes and prefix/suffix to get the actual code length.
+			$code_without_dashes = str_replace( '-', '', $sample_code );
+			$code_length         = strlen( $code_without_dashes ) - strlen( $prefix ) - strlen( $suffix );
+
+			// Ensure positive length.
+			return max( 1, $code_length );
+		}
+
+		// Fallback to 20 for empty batches (matches system default for new code generation).
+		return 20 - strlen( $prefix ) - strlen( $suffix );
 	}
 }

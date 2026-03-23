@@ -45,7 +45,11 @@ class Gotowebinar_Helpers {
 	 */
 	public $load_options = true;
 
-
+	/**
+	 * Constructor.
+	 *
+	 * Initializes the GoToWebinar helper with OAuth handlers and disconnect action.
+	 */
 	public function __construct() {
 
 		$this->setting_tab = 'gtw_api';
@@ -94,8 +98,11 @@ class Gotowebinar_Helpers {
 	public function setPro( \Uncanny_Automator_Pro\Gotowebinar_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$this->pro = $pro;
 	}
-
-
+	/**
+	 * Get webinars.
+	 *
+	 * @return mixed
+	 */
 	public function get_webinars() {
 
 		$webinars = array();
@@ -109,7 +116,7 @@ class Gotowebinar_Helpers {
 
 			// Prepare webinar list.
 			if ( 200 !== $code ) {
-				throw new \Exception( esc_html__( 'Unable to fetch webinars from this account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html_x( 'Unable to fetch webinars from this account', 'Gotowebinar', 'uncanny-automator' ) );
 			}
 
 			$jsondata = $response['data'];
@@ -117,7 +124,7 @@ class Gotowebinar_Helpers {
 			$jsondata = isset( $jsondata['_embedded']['webinars'] ) ? $jsondata['_embedded']['webinars'] : array();
 
 			if ( count( $jsondata ) < 1 ) {
-				throw new \Exception( esc_html__( 'No webinars were found in this account', 'uncanny-automator' ) );
+				throw new \Exception( esc_html_x( 'No webinars were found in this account', 'Gotowebinar', 'uncanny-automator' ) );
 			}
 
 			foreach ( $jsondata as $webinar ) {
@@ -152,7 +159,7 @@ class Gotowebinar_Helpers {
 		$user = get_userdata( $user_id );
 
 		if ( is_wp_error( $user ) ) {
-			throw new \Exception( esc_html__( 'GoTo Webinar user not found.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'GoTo Webinar user not found.', 'Gotowebinar', 'uncanny-automator' ) );
 		}
 
 		$customer_first_name = $user->first_name;
@@ -185,7 +192,7 @@ class Gotowebinar_Helpers {
 		}
 
 		if ( ! isset( $jsondata['joinUrl'] ) ) {
-			throw new \Exception( esc_html__( 'Error adding user to GoTo Webinar', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Error adding user to GoTo Webinar', 'Gotowebinar', 'uncanny-automator' ) );
 		}
 
 		update_user_meta( $user_id, '_uncannyowl_gtw_webinar_' . $webinar_key . '_registrantKey', $jsondata['registrantKey'] );
@@ -205,7 +212,7 @@ class Gotowebinar_Helpers {
 		$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtw_webinar_' . $webinar_key . '_registrantKey', true );
 
 		if ( empty( $user_registrant_key ) ) {
-			throw new \Exception( esc_html__( 'User was not registered for webinar.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'User was not registered for webinar.', 'Gotowebinar', 'uncanny-automator' ) );
 		}
 
 		$body['action']              = 'gtw_unregister_user';
@@ -245,7 +252,7 @@ class Gotowebinar_Helpers {
 
 		if ( empty( $current_refresh_token ) ) {
 			automator_update_option( '_uncannyowl_gtw_settings_expired', true );
-			throw new \Exception( esc_html__( 'GoTo Webinar credentails have expired.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'GoTo Webinar credentails have expired.', 'Gotowebinar', 'uncanny-automator' ) );
 		}
 
 		$consumer_key    = trim( automator_get_option( 'uap_automator_gtw_api_consumer_key', '' ) );
@@ -269,7 +276,7 @@ class Gotowebinar_Helpers {
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			automator_update_option( '_uncannyowl_gtw_settings', array() );
 			automator_update_option( '_uncannyowl_gtw_settings_expired', true );
-			throw new \Exception( esc_html__( 'GoTo Webinar credentails have expired.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'GoTo Webinar credentails have expired.', 'Gotowebinar', 'uncanny-automator' ) );
 		}
 
 		//get new access token and refresh token
@@ -364,7 +371,7 @@ class Gotowebinar_Helpers {
 	 */
 	public function validate_oauth_tokens() {
 
-		if ( ! automator_filter_has_var( 'state' ) || $this->setting_tab !== automator_filter_input( 'state' ) ) {
+		if ( ! automator_filter_has_var( 'state' ) || automator_filter_input( 'state' ) !== $this->setting_tab ) {
 			return;
 		}
 
@@ -399,7 +406,7 @@ class Gotowebinar_Helpers {
 			$response = Api_Server::call( $params );
 
 			if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-				throw new \Exception( esc_html__( 'Error validating Oauth tokens', 'uncanny-automator' ) );
+				throw new \Exception( esc_html_x( 'Error validating Oauth tokens', 'Gotowebinar', 'uncanny-automator' ) );
 			}
 
 			$jsondata = array();
@@ -436,7 +443,7 @@ class Gotowebinar_Helpers {
 		}
 
 		// Admin only action.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
 			return;
 		}
 

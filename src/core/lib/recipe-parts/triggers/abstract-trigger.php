@@ -214,7 +214,9 @@ abstract class Trigger {
 	 */
 	public function register_trigger( $triggers ) {
 
-		if ( ! $this->requirements_met() ) {
+		$requirement_met = $this->requirements_met();
+		$requirement_met = apply_filters( 'automator_item_requirement_meta', $requirement_met, $triggers );
+		if ( ! $requirement_met ) {
 			return $triggers;
 		}
 
@@ -227,6 +229,7 @@ abstract class Trigger {
 			'is_deprecated'       => $this->get_is_deprecated(), // whether trigger is deprecated.
 			'integration'         => $this->get_integration(), // trigger the integration belongs to.
 			'code'                => $this->get_code(), // unique trigger code.
+			'meta_code'           => $this->get_trigger_meta(), // primary meta field code.
 			'sentence'            => $this->get_sentence(), // sentence to show in active state.
 			'select_option_name'  => $this->get_readable_sentence(), // sentence to show in non-active state.
 			'action'              => $this->get_action(), //  trigger fire at this do_action().
@@ -251,11 +254,29 @@ abstract class Trigger {
 			$trigger['can_log_in_new_user'] = $this->get_can_log_in_new_user();
 		}
 
+		// Extract manifest data if trait is used
+		if ( $this->uses_item_manifest_trait() && is_callable( array( $this, 'extract_item_manifest_data' ) ) ) {
+			$manifest = call_user_func( array( $this, 'extract_item_manifest_data' ) );
+			if ( ! empty( $manifest ) ) {
+				$trigger['manifest'] = $manifest;
+			}
+		}
+
 		$trigger = apply_filters( 'automator_register_trigger', $trigger );
 
 		$triggers[ $this->get_code() ] = $trigger;
 
 		return $triggers;
+	}
+
+	/**
+	 * Check if trigger uses Item_Manifest trait.
+	 *
+	 * @return bool True if trait is used
+	 */
+	private function uses_item_manifest_trait() {
+		$traits = class_uses( get_class( $this ) );
+		return in_array( 'Uncanny_Automator\Item_Manifest', $traits, true );
 	}
 
 	/**
@@ -317,7 +338,6 @@ abstract class Trigger {
 		);
 
 		add_filter( $filter, array( $this, 'fetch_token_data' ), 20, 6 );
-
 	}
 
 	/**
@@ -503,7 +523,7 @@ abstract class Trigger {
 		);
 
 		$this->token_values = $this->hydrate_tokens( $this->trigger, $this->hook_args );
-		$this->save_tokens( $this->trigger, $this->trigger_records, $this->token_values );
+		$this->save_tokens( $this->get_code(), $this->token_values );
 
 		$do_action = array(
 			'trigger_entry' => $this->trigger,
@@ -525,7 +545,6 @@ abstract class Trigger {
 		}
 
 		do_action( 'automator_after_maybe_trigger_complete', $do_action, $this );
-
 	}
 
 	/**
@@ -545,8 +564,6 @@ abstract class Trigger {
 				$token_class->set_trigger( $trigger );
 			}
 		}
-
-		return;
 	}
 
 	/**
@@ -626,17 +643,14 @@ abstract class Trigger {
 	/**
 	 * save_tokens
 	 *
-	 * @param mixed $trigger
-	 * @param mixed $trigger_records
-	 * @param mixed $token_values
-	 *
+	 * @param  string $code
+	 * @param  array $values
 	 * @return void
 	 */
-	public function save_tokens( $trigger, $trigger_records, $token_values ) {
-
+	public function save_tokens( $code, $values ) {
 		Automator()->db->token->save(
-			$this->get_code(),
-			wp_json_encode( $this->token_values ),
+			$code,
+			wp_json_encode( $values ),
 			$this->trigger_records
 		);
 	}
@@ -666,13 +680,13 @@ abstract class Trigger {
 		list( $recipe_id, $token_identifier, $token_id ) = $pieces;
 
 		$data = Automator()->db->token->get( $token_identifier, $replace_arg );
+
 		$data = is_array( $data ) ? $data : json_decode( $data, true );
 		if ( isset( $data[ $token_id ] ) ) {
 			return $data[ $token_id ];
 		}
 
 		return $value;
-
 	}
 
 	/**

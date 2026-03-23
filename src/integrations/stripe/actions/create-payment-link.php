@@ -2,11 +2,15 @@
 
 namespace Uncanny_Automator\Integrations\Stripe;
 
-class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
-
-	protected $helpers;
-
-	protected $dependencies;
+/**
+ * Class Create_Payment_Link
+ *
+ * @package Uncanny_Automator
+ *
+ * @property Stripe_App_Helpers $helpers
+ * @property Stripe_Api_Caller $api
+ */
+class Create_Payment_Link extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * setup_action
@@ -15,8 +19,6 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 	 */
 	protected function setup_action() {
 
-		$this->helpers = array_shift( $this->dependencies );
-
 		// Define the Actions's info
 		$this->set_integration( 'STRIPE' );
 		$this->set_action_code( 'CREATE_PAYMENT_LINK' );
@@ -24,9 +26,9 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 
 		$this->set_requires_user( false );
 
-		/* translators: %1$s Contact Email */
-		$this->set_sentence( sprintf( esc_attr_x( 'Create a payment link for {{a product:%1$s}}', 'Stripe', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_attr_x( 'Create a payment link for {{a product}}', 'Stripe', 'uncanny-automator' ) );
+		// translators: %1$s is the product name
+		$this->set_sentence( sprintf( esc_html_x( 'Create a payment link for {{a product:%1$s}}', 'Stripe', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Create a payment link for {{a product}}', 'Stripe', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -43,12 +45,14 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 			'required'          => true,
 			'fields'            => array(
 				array(
-					'option_code' => 'PRICE',
-					'label'       => esc_html_x( 'Product and price', 'Stripe', 'uncanny-automator' ),
-					'input_type'  => 'select',
-					'required'    => true,
-					'read_only'   => false,
-					'options'     => $this->helpers->api->get_prices_options(),
+					'option_code'           => 'PRICE',
+					'label'                 => esc_html_x( 'Product and price', 'Stripe', 'uncanny-automator' ),
+					'input_type'            => 'select',
+					'required'              => true,
+					'read_only'             => false,
+					'supports_custom_value' => true,
+					'description'           => esc_html_x( 'Select a product and price or enter a Stripe Price ID (starts with price_ or plan_)', 'Stripe', 'uncanny-automator' ),
+					'options'               => $this->api->get_prices_options(),
 				),
 				Automator()->helpers->recipe->field->text(
 					array(
@@ -69,11 +73,11 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		$metadata = array(
 			'option_code'     => 'METADATA',
 			'input_type'      => 'repeater',
-			'label'           => _x( 'Metadata', 'Stripe', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Metadata', 'Stripe', 'uncanny-automator' ),
 			'required'        => false,
 			'description'     => sprintf(
 			/* translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag */
-				_x( 'Set of %1$skey-value-pairs%2$s that you can attach to an object. This can be useful for storing additional information about the object in a structured format.', 'Stripe', 'uncanny-automator' ),
+				esc_html_x( 'Set of %1$skey-value-pairs%2$s that you can attach to an object. This can be useful for storing additional information about the object in a structured format.', 'Stripe', 'uncanny-automator' ),
 				'<a href="https://docs.stripe.com/api/metadata" target="_blank">',
 				'</a>'
 			),
@@ -81,14 +85,14 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 				array(
 					'input_type'  => 'text',
 					'option_code' => 'KEY',
-					'label'       => _x( 'Key', 'Stripe', 'uncanny-automator' ),
-					'description' => _x( 'e.g. order_id', 'Stripe', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Key', 'Stripe', 'uncanny-automator' ),
+					'description' => esc_html_x( 'e.g. order_id', 'Stripe', 'uncanny-automator' ),
 					'required'    => true,
 				),
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'VALUE',
-					'label'           => _x( 'Value', 'Stripe', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Value', 'Stripe', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => true,
 				),
@@ -99,26 +103,26 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		$custom_fields = array(
 			'option_code'     => 'CUSTOM_FIELDS',
 			'input_type'      => 'repeater',
-			'label'           => _x( 'Custom fields', 'Stripe', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Custom fields', 'Stripe', 'uncanny-automator' ),
 			'required'        => false,
-			'description'     => _x( 'Collect additional information from your customer using custom fields. Up to 3 fields are supported.', 'Stripe', 'uncanny-automator' ),
+			'description'     => esc_html_x( 'Collect additional information from your customer using custom fields. Up to 3 fields are supported.', 'Stripe', 'uncanny-automator' ),
 			'fields'          => array(
 				array(
 					'input_type'  => 'text',
 					'option_code' => 'FIELD_KEY',
-					'label'       => _x( 'Field key', 'Stripe', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Field key', 'Stripe', 'uncanny-automator' ),
 					'required'    => true,
 				),
 				array(
 					'input_type'  => 'text',
 					'option_code' => 'FIELD_LABEL',
-					'label'       => _x( 'Field label', 'Stripe', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Field label', 'Stripe', 'uncanny-automator' ),
 					'required'    => true,
 				),
 				array(
 					'input_type'            => 'select',
 					'option_code'           => 'FIELD_TYPE',
-					'label'                 => _x( 'Field type', 'Stripe', 'uncanny-automator' ),
+					'label'                 => esc_html_x( 'Field type', 'Stripe', 'uncanny-automator' ),
 					'required'              => true,
 					'supports_tokens'       => false,
 					'supports_custom_value' => false,
@@ -136,7 +140,7 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 				array(
 					'input_type'  => 'checkbox',
 					'option_code' => 'FIELD_OPTIONAL',
-					'label'       => _x( 'Optional', 'Stripe', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Optional', 'Stripe', 'uncanny-automator' ),
 				),
 			),
 			'relevant_tokens' => array(),
@@ -146,11 +150,11 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		$additional_params = array(
 			'option_code'     => 'ADD_PARAMS',
 			'input_type'      => 'repeater',
-			'label'           => _x( 'Additional parameters', 'Stripe', 'uncanny-automator' ),
+			'label'           => esc_html_x( 'Additional parameters', 'Stripe', 'uncanny-automator' ),
 			'required'        => false,
 			'description'     => sprintf(
 			/* translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag */
-				_x( 'Please visit %1$sStripe documentation article%2$s for the full list of available parameters', 'Stripe', 'uncanny-automator' ),
+				esc_html_x( 'Please visit %1$sStripe documentation article%2$s for the full list of available parameters', 'Stripe', 'uncanny-automator' ),
 				'<a href="https://docs.stripe.com/api/payment-link/create?lang=php" target="_blank">',
 				'</a>'
 			),
@@ -158,15 +162,15 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 				array(
 					'input_type'  => 'select',
 					'option_code' => 'PARAM_NAME',
-					'label'       => _x( 'Parameter', 'Stripe', 'uncanny-automator' ),
-					'description' => _x( 'e.g. custom_text.after_submit.message', 'Stripe', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Parameter', 'Stripe', 'uncanny-automator' ),
+					'description' => esc_html_x( 'e.g. custom_text.after_submit.message', 'Stripe', 'uncanny-automator' ),
 					'required'    => true,
 					'options'     => $this->additional_params(),
 				),
 				array(
 					'input_type'      => 'text',
 					'option_code'     => 'PARAM_VALUE',
-					'label'           => _x( 'Value', 'Stripe', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Value', 'Stripe', 'uncanny-automator' ),
 					'supports_tokens' => true,
 					'required'        => true,
 				),
@@ -215,8 +219,27 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 
 		foreach ( $prices as $price ) {
 
+			// Get the price ID, checking for custom value
+			$price_id = isset( $price['PRICE'] ) ? trim( $price['PRICE'] ) : '';
+
+			// If custom value is used, get it from PRICE_custom
+			if ( 'automator_custom_value' === $price_id && isset( $price['PRICE_custom'] ) ) {
+				$price_id = trim( $price['PRICE_custom'] );
+			}
+
+			// Parse using Automator's text parser to resolve tokens
+			$price_id = Automator()->parse->text( $price_id, $recipe_id, $user_id, $args );
+			$price_id = trim( $price_id );
+
+			// Validate that price ID is not empty
+			if ( empty( $price_id ) ) {
+				throw new \Exception(
+					esc_html_x( 'Price ID cannot be empty', 'Stripe', 'uncanny-automator' )
+				);
+			}
+
 			$payment_link['line_items'][] = array(
-				'price'    => $price['PRICE'],
+				'price'    => $price_id,
 				'quantity' => $price['QUANTITY'],
 			);
 		}
@@ -236,6 +259,8 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		$temp_array = $this->helpers->explode_fields( $temp_array, $this->multiselect_fields() );
+
+		$temp_array = $this->helpers->parse_metadata_fields( $temp_array );
 
 		$temp_array = $this->helpers->dots_to_array( $temp_array );
 
@@ -263,13 +288,12 @@ class Create_Payment_Link extends \Uncanny_Automator\Recipe\Action {
 			$payment_link['custom_fields'][] = $field;
 		}
 
-		$response = $this->helpers->api->create_payment_link( $payment_link, $action_data );
+		$response = $this->api->create_payment_link( $payment_link, $action_data );
 
 		if ( empty( $response['data']['payment_link']['url'] ) ) {
-
-			$error = _x( 'Link could not be created', 'Stripe', 'uncanny-automator' );
-
-			throw new \Exception( esc_html( $error ) );
+			throw new \Exception(
+				esc_html_x( 'Link could not be created', 'Stripe', 'uncanny-automator' )
+			);
 		}
 
 		$this->hydrate_tokens(

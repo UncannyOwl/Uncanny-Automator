@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 /**
  * Class Wpum_Tokens
+ *
  * @package Uncanny_Automator
  */
 class Wpum_Tokens {
@@ -13,37 +14,67 @@ class Wpum_Tokens {
 	 */
 	public function __construct() {
 
-		add_filter( 'automator_maybe_trigger_wpusermanager_wpumregform_tokens', [
-			$this,
-			'wpum_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wpusermanager_wpumregform_tokens',
+			array(
+				$this,
+				'wpum_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_trigger_wpusermanager_wpumuserpphoto_tokens', [
-			$this,
-			'wpum_fields_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wpusermanager_wpumuserpphoto_tokens',
+			array(
+				$this,
+				'wpum_fields_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_trigger_wpusermanager_wpumuserpphotor_tokens', [
-			$this,
-			'wpum_fields_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wpusermanager_wpumuserpphotor_tokens',
+			array(
+				$this,
+				'wpum_fields_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_trigger_wpusermanager_wpumusercover_tokens', [
-			$this,
-			'wpum_fields_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wpusermanager_wpumusercover_tokens',
+			array(
+				$this,
+				'wpum_fields_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_trigger_wpusermanager_wpumuserpcoverr_tokens', [
-			$this,
-			'wpum_fields_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wpusermanager_wpumuserpcoverr_tokens',
+			array(
+				$this,
+				'wpum_fields_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_trigger_wpusermanager_wpumuserdescription_tokens', [
-			$this,
-			'wpum_fields_possible_tokens',
-		], 20, 2 );
+		add_filter(
+			'automator_maybe_trigger_wpusermanager_wpumuserdescription_tokens',
+			array(
+				$this,
+				'wpum_fields_possible_tokens',
+			),
+			20,
+			2
+		);
 
-		add_filter( 'automator_maybe_parse_token', [ $this, 'parse_wpum_tokens' ], 20, 6 );
+		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_wpum_tokens' ), 20, 6 );
 	}
 
 	/**
@@ -77,12 +108,12 @@ class Wpum_Tokens {
 				foreach ( $stored_fields as $field ) {
 					$stored_field = new \WPUM_Field( $field );
 					if ( $stored_field->exists() ) {
-						$fields[] = [
+						$fields[] = array(
 							'tokenId'         => $stored_field->get_primary_id(),
 							'tokenName'       => $stored_field->get_name(),
 							'tokenType'       => $stored_field->get_type(),
 							'tokenIdentifier' => $trigger_meta,
-						];
+						);
 					}
 				}
 			}
@@ -106,30 +137,30 @@ class Wpum_Tokens {
 		$trigger_meta = $args['meta'];
 
 		$account_fields = WPUM()->fields->get_fields(
-			[
+			array(
 				'group_id' => 1,
 				'orderby'  => 'field_order',
 				'order'    => 'ASC',
-			]
+			)
 		);
 
 		foreach ( $account_fields as $field ) {
 
 			$field = new \WPUM_Field( $field );
 
-			if ( $field->exists() && $field->get_meta( 'editing' ) == 'public' &&
-			     $field->get_primary_id() !== 'user_password' ) {
+			if ( $field->exists() && 'public' === $field->get_meta( 'editing' ) &&
+				$field->get_primary_id() !== 'user_password' ) {
 
 				// Skip the avatar field if disabled.
-				if ( $field->get_primary_id() == 'user_avatar' && ! wpum_get_option( 'custom_avatars' ) ) {
+				if ( 'user_avatar' === $field->get_primary_id() && ! wpum_get_option( 'custom_avatars' ) ) {
 					continue;
 				}
-				$fields[] = [
+				$fields[] = array(
 					'tokenId'         => $field->get_primary_id(),
 					'tokenName'       => $field->get_name(),
 					'tokenType'       => $field->get_type(),
 					'tokenIdentifier' => $trigger_meta,
-				];
+				);
 			}
 		}
 
@@ -151,30 +182,30 @@ class Wpum_Tokens {
 		$trigger_meta = $args['meta'];
 
 		$all_fields = WPUM()->fields->get_fields(
-			[
+			array(
 				'group_id' => false,
 				'orderby'  => 'field_order',
 				'order'    => 'ASC',
-			]
+			)
 		);
 
 		foreach ( $all_fields as $field ) {
 
 			$field = new \WPUM_Field( $field );
 
-			if ( $field->exists() && $field->get_meta( 'editing' ) == 'public' &&
-			     $field->get_primary_id() !== 'user_password' ) {
+			if ( $field->exists() && 'public' === $field->get_meta( 'editing' ) &&
+				$field->get_primary_id() !== 'user_password' ) {
 
 				// Skip the avatar field if disabled.
-				if ( $field->get_primary_id() == 'user_avatar' && ! wpum_get_option( 'custom_avatars' ) ) {
+				if ( 'user_avatar' === $field->get_primary_id() && ! wpum_get_option( 'custom_avatars' ) ) {
 					continue;
 				}
-				$fields[] = [
+				$fields[] = array(
 					'tokenId'         => $field->get_primary_id(),
 					'tokenName'       => $field->get_name(),
 					'tokenType'       => $field->get_type(),
 					'tokenIdentifier' => $trigger_meta,
-				];
+				);
 			}
 		}
 
@@ -195,8 +226,8 @@ class Wpum_Tokens {
 	 */
 	public function parse_wpum_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
 		if ( $pieces ) {
-			if ( in_array( 'WPUMREGFORM', $pieces ) || in_array( 'WPUMUSERREGISTERED', $pieces )
-			     || in_array( 'WPUMUSERDESCRIPTION', $pieces ) || in_array( 'WPUMDESCRIPTIONUPDATED', $pieces )
+			if ( in_array( 'WPUMREGFORM', $pieces, true ) || in_array( 'WPUMUSERREGISTERED', $pieces, true )
+				|| in_array( 'WPUMUSERDESCRIPTION', $pieces, true ) || in_array( 'WPUMDESCRIPTIONUPDATED', $pieces, true )
 			) {
 				global $wpdb;
 				$trigger_id     = $pieces[0];
@@ -217,13 +248,13 @@ LIMIT 0,1",
 				);
 
 				$value = maybe_unserialize( $entry );
-			} elseif ( in_array( 'WPUMUSERPPHOTO', $pieces ) || in_array( 'WPUMPPUPDATED', $pieces )
-			           || in_array( 'WPUMUSERPPHOTOR', $pieces ) || in_array( 'WPUMPPREMOVED', $pieces )
-			           || in_array( 'WPUMUSERCOVER', $pieces ) || in_array( 'WPUMCPUPDATED', $pieces )
-			           || in_array( 'WPUMUSERPCOVERR', $pieces ) || in_array( 'WPUMPCREMOVED', $pieces )
+			} elseif ( in_array( 'WPUMUSERPPHOTO', $pieces, true ) || in_array( 'WPUMPPUPDATED', $pieces, true )
+						|| in_array( 'WPUMUSERPPHOTOR', $pieces, true ) || in_array( 'WPUMPPREMOVED', $pieces, true )
+						|| in_array( 'WPUMUSERCOVER', $pieces, true ) || in_array( 'WPUMCPUPDATED', $pieces, true )
+						|| in_array( 'WPUMUSERPCOVERR', $pieces, true ) || in_array( 'WPUMPCREMOVED', $pieces, true )
 			) {
-				if ( $pieces[2] == 'WPUMPPUPDATED' || $pieces[2] == 'WPUMPPREMOVED' || $pieces[2] == 'WPUMCPUPDATED' ||
-				     $pieces[2] == 'WPUMPCREMOVED' ) {
+				if ( 'WPUMPPUPDATED' === $pieces[2] || 'WPUMPPREMOVED' === $pieces[2] || 'WPUMCPUPDATED' === $pieces[2] ||
+				'WPUMPCREMOVED' === $pieces[2] ) {
 					global $wpdb;
 					$trigger_id     = $pieces[0];
 					$trigger_meta   = $pieces[2];
@@ -242,7 +273,7 @@ LIMIT 0,1",
 						)
 					);
 
-					$value = maybe_unserialize( $entry );
+						$value = maybe_unserialize( $entry );
 				} else {
 					$user  = get_user_by( 'id', $user_id );
 					$field = $pieces[2];
@@ -250,7 +281,6 @@ LIMIT 0,1",
 					$entry = $this->get_field_value( $user, $field );
 					$value = maybe_unserialize( $entry );
 				}
-
 			}
 		}
 
@@ -263,7 +293,7 @@ LIMIT 0,1",
 	 *
 	 * @return mixed
 	 */
-	function get_field_value( $user, $field ) {
+	public function get_field_value( $user, $field ) {
 		switch ( $field ) {
 			case 'user_firstname':
 				$value = $user->user_firstname;
@@ -295,11 +325,13 @@ LIMIT 0,1",
 			default:
 				global $wpdb;
 				$field_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}wpum_fields WHERE type = %s LIMIT 0,1", $field ) );
-				$value    = get_user_meta( $user->ID, WPUM()->field_meta->get_meta( $field_id, 'user_meta_key' ),
-					true );
+				$value    = get_user_meta(
+					$user->ID,
+					WPUM()->field_meta->get_meta( $field_id, 'user_meta_key' ),
+					true
+				);
 		}
 
 		return $value;
 	}
-
 }

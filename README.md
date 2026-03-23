@@ -2,10 +2,10 @@
 
 **Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, google sheets, openai, learndash, webhooks \
-**Requires at least:** 5.6 \
-**Tested up to:** 6.8.3 \
-**Requires PHP:** 7.3 \
-**Stable tag:** 6.10.0 \
+**Requires at least:** 5.8 \
+**Tested up to:** 6.9.1 \
+**Requires PHP:** 7.4 \
+**Stable tag:** 7.1.0 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -72,7 +72,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Cohere](https://automatorplugin.com/integration/cohere/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Deprecated)
 - [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -125,6 +125,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Advanced Custom Fields](https://automatorplugin.com/integration/advanced-custom-fields/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [AffiliateWP](https://automatorplugin.com/integration/affiliatewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Airtable](https://automatorplugin.com/integration/airtable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [All in One SEO](https://automatorplugin.com/integration/all-in-one-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Amelia](https://automatorplugin.com/integration/amelia/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -138,6 +139,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [CSV](https://automatorplugin.com/integration/csv/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Custom User Fields](https://automatorplugin.com/integration/custom-user-fields-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
 - [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Cloudflare](https://automatorplugin.com/integration/cloudflare/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Code Snippets](https://automatorplugin.com/integration/code-snippets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Custom Action](https://automatorplugin.com/integration/custom-action/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
@@ -150,6 +152,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Easy Digital Downloads-Recurring Payments](https://automatorplugin.com/integration/easy-digital-downloads-recurring-payments/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Easy Digital Downloads-Software Licensing](https://automatorplugin.com/integration/easy-digital-downloads-software-licensing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Easy WP SMTP](https://automatorplugin.com/integration/easy-wp-smtp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Elementor Pro](https://automatorplugin.com/integration/elementor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -184,6 +187,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [LearnDash Achievements](https://automatorplugin.com/integration/learndash-achievements/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LearnPress](https://automatorplugin.com/integration/learnpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [LifterLMS](https://automatorplugin.com/integration/lifterlms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [LiteSpeed Cache](https://automatorplugin.com/integration/litespeed-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Loop](https://automatorplugin.com/integration/loop/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Logging](https://automatorplugin.com/integration/logging/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Magic Button](https://automatorplugin.com/integration/magic-button/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
@@ -210,6 +214,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Pretty Links](https://automatorplugin.com/integration/pretty-links/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [QR Code](https://automatorplugin.com/integration/qr-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Rank Math SEO](https://automatorplugin.com/integration/rank-math-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [RSS feed](https://automatorplugin.com/integration/rss-feed/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Restrict Content](https://automatorplugin.com/integration/restrict-content-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
@@ -218,7 +223,10 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [SG Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [SG Security](https://automatorplugin.com/integration/sg-security/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Sugar Calendar](https://automatorplugin.com/integration/sugar-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureForms](https://automatorplugin.com/integration/sureforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureMembers](https://automatorplugin.com/integration/suremembers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -243,6 +251,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [URL](https://automatorplugin.com/integration/url/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [UserFeedback](https://automatorplugin.com/integration/userfeedback/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [W3 Total Cache](https://automatorplugin.com/integration/w3-total-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Webhooks](https://automatorplugin.com/integration/webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Wholesale Suite](https://automatorplugin.com/integration/wholesale-suite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Wishlist Member](https://automatorplugin.com/integration/wishlist-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -258,12 +267,15 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Bitly](https://automatorplugin.com/integration/wp-bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro) (Deprecated)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP LMS](https://automatorplugin.com/integration/wp-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Mail SMTP Pro](https://automatorplugin.com/integration/wp-mail-smtp-pro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WP Rocket](https://automatorplugin.com/integration/wp-rocket/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Simple Pay](https://automatorplugin.com/integration/wp-simple-pay/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WP Super Cache](https://automatorplugin.com/integration/wp-super-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP User Manager](https://automatorplugin.com/integration/wp-user-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP-Polls](https://automatorplugin.com/integration/wp-polls/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -273,6 +285,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [wpDiscuz](https://automatorplugin.com/integration/wpdiscuz/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [XML](https://automatorplugin.com/integration/xml/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [Yoast SEO](https://automatorplugin.com/integration/yoast-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Zapier](https://automatorplugin.com/integration/zapier/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 
 Over 350 automation triggers and actions are available for the plugins and apps listed above in the free version. There's straightforward documentation in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
@@ -430,88 +443,119 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ## Changelog
 
-### 6.10.0 [2025-11-13]
+### 7.1.0 [2026-02-27]
 
-**New Feature:**
+**New Plugin Integrations:**
 
-* Recipe UI - *Custom x label* field to triggers and actions - Now you can label your triggers/actions like a proud parent. #6259
+* [All in One SEO](https://automatorplugin.com/integration/all-in-one-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6648
+* [Cloudflare](https://automatorplugin.com/integration/cloudflare/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6694
+* [Easy WP SMTP](https://automatorplugin.com/integration/easy-wp-smtp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6696
+* [LiteSpeed Cache](https://automatorplugin.com/integration/litespeed-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6699
+* [Rank Math SEO](https://automatorplugin.com/integration/rank-math-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6692
+* [SG Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6700
+* [SG Security](https://automatorplugin.com/integration/sg-security/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6695
+* [Sugar Calendar](https://automatorplugin.com/integration/sugar-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6690
+* [W3 Total Cache](https://automatorplugin.com/integration/w3-total-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6697
+* [WP Rocket](https://automatorplugin.com/integration/wp-rocket/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6693
+* [WP Super Cache](https://automatorplugin.com/integration/wp-super-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6698
+* [Yoast SEO](https://automatorplugin.com/integration/yoast-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6691
+
+**New Triggers:**
+
+* All in One SEO - A post's SEO data is updated #6653
+* All in One SEO - A post's SEO score is greater than, less than, or equal to a specific value #6654
+* Easy WP SMTP - An email fails to send #6733
+* Easy WP SMTP - An email is blocked from sending #6734
+* Easy WP SMTP - An email is sent successfully #6732
+* Rank Math SEO - A post's SEO data is updated #6713
+* Rank Math SEO - A post's SEO score is greater than, less than, or equal to a value #6714
+* Sugar Calendar - A ticket for an event is purchased #6702
+* Sugar Calendar - An event is created in a calendar #6701
+* Yoast SEO - A post's SEO data is updated #6706
+* Yoast SEO - A post's SEO score is greater than, less than, or equal to a value #6707
 
 **New Actions:**
 
-* ActiveCampaign - Delete a contact that matches an email #3478
-* Help Scout - Add a note to a conversation #6362
+* All in One SEO - Regenerate AIOSEO XML sitemap #6656
+* All in One SEO - Reset a post's SEO description #6649
+* All in One SEO - Reset a post's SEO title #6650
+* All in One SEO - Set AIOSEO XML sitemap to a status #6659
+* All in One SEO - Set AIOSEO robots.txt to a status #6658
+* All in One SEO - Set a post's SEO description to a specific value #6651
+* All in One SEO - Set a post's SEO title to a specific value #6652
+* All in One SEO - Set a post's focus keyphrase to a specific value #6657
+* Cloudflare - Purge Cloudflare cache for a specific URL #6725
+* Cloudflare - Purge Cloudflare cache for a specific post #6724
+* Cloudflare - Purge all Cloudflare cache #6723
+* LiteSpeed Cache - Purge LiteSpeed cache for a specific URL #6743
+* LiteSpeed Cache - Purge LiteSpeed cache for a specific post #6742
+* LiteSpeed Cache - Purge all LiteSpeed caches #6741
+* Rank Math SEO - Delete a post's SEO description #6719
+* Rank Math SEO - Delete a post's SEO title #6718
+* Rank Math SEO - Delete a post's focus keyword #6776
+* Rank Math SEO - Set a post's SEO description to a specific value #6716
+* Rank Math SEO - Set a post's SEO title to a specific value #6715
+* Rank Math SEO - Set a post's focus keyword to a specific value #6717
+* SG Optimizer - Purge SG Optimizer cache for a specific URL #6745
+* SG Optimizer - Purge all SG Optimizer caches #6744
+* SG Security - Block a user #6728
+* SG Security - Block an IP address #6726
+* SG Security - Force all users to log out #6730
+* SG Security - Force all users to reset their passwords #6731
+* SG Security - Unblock a user #6729
+* SG Security - Unblock an IP address #6727
+* Stripe - Create and send an invoice to a customer #6603
+* Sugar Calendar - Create an event with a title #6703
+* Sugar Calendar - Delete an event #6704
+* Sugar Calendar - Register an attendee to an event #6705
+* Sugar Calendar - Submit an RSVP for an event #6778
+* W3 Total Cache - Purge W3 Total Cache for a specific URL #6737
+* W3 Total Cache - Purge W3 Total Cache for a specific post #6736
+* W3 Total Cache - Purge all W3 Total Cache caches #6735
+* WP Rocket - Purge WP Rocket cache for a specific URL #6722
+* WP Rocket - Purge WP Rocket cache for a specific post #6721
+* WP Rocket - Purge all WP Rocket caches #6720
+* WP Super Cache - Purge WP Super Cache for a specific URL #6740
+* WP Super Cache - Purge WP Super Cache for a specific post #6739
+* WP Super Cache - Purge all WP Super Cache caches #6738
+* Yoast SEO - Delete a post's SEO description #6712
+* Yoast SEO - Delete a post's SEO title #6711
+* Yoast SEO - Delete a post's focus keyphrase #6777
+* Yoast SEO - Set a post's SEO description to a specific value #6709
+* Yoast SEO - Set a post's SEO title to a specific value #6708
+* Yoast SEO - Set a post's focus keyphrase to a specific value #6710
 
 **New Token:**
 
-* Woo Bookings - Booking order item ID #6394
+* WordPress Core – Added taxonomy tokens to all post publication triggers #6631
 
 **Updated:**
 
-* Constant Contact - Create or update a contact - Rebuilt this action from the studs up, now with smarter address handling and custom fields that actually listen. #6287
-* Woo - Order Summary Token - You can now tweak the width and colours like it's your personal style guide. #6276
+* Constant Contact - Empty fields will no longer wipe out perfectly good contact data. #6747
+* GiveWP - Tokens are now available for custom fields. #6499
+* WordPress - A post in a taxonomy is created - Simplified trigger logic. #6604
 
 **Fixed:**
 
-* Event Manager - Fixed a rogue namespace issue for the `Em_Tokens` class—it now knows where it belongs. #6331
-* Fluent Forms - `Form ID` token was showing up empty-handed—we've filled its pockets. #6240
-* Fluent Forms AI - `default_api_timeout()` was feeling shy with its arguments. We gave it what it needed. #6345
-* Notion - Add / Update Database - Our date token was having an existential crisis. Now it knows what time it is. #6347
-* Notion - `str_contains` error when attempting to parse text on array values - It tried to read too much into arrays—now it's been taught better boundaries. #6261
-* Populate from Query - JS Error - `getintegrationCode` has now been defined and won't ghost us anymore. #6385
-* SureCart - A user purchases a product - This trigger was overexcited and firing twice. It's calmed down now. #6141
-* Slack - Cleanse text content of HTML before posting - Slack messages got a digital spa treatment—now scrubbed clean of unwanted HTML. #6257
-* WordPress 6.7+ translation warnings - Translation warnings were getting loud. We've hushed them up for WordPress 6.7+. #5783
-
-**Security Fix:**
-
-* Notion - Tightened security for `wp_ajax_automator_notion_list_users` endpoint due to missing nonce check. #6383
+* FluentCRM - Corrected a typo in `add_user_as_contact()` where `subscribe` was passed instead of `subscribed`, preventing automations from firing. #6803
+* Settings - Background actions - Prevented disabled background actions from being automatically re-enabled. #6784
+* StudioCart - A user completes an order for a product - Tokens now appear properly after checkout. #6780
+* The Event Calendar - A user registers for an event - Restored compatibility with the latest version. #6608
+* Trigger tokens - Now parse properly inside actions when Background processing is enabled. #6801
 
 **Under the hood:**
 
-* App Integration OAuth Callback race condition resolved in a rare situation - We caught and calmed down a rare race condition so OAuth doesn't run off without you. #6379
-* Consolidate Copy to clipboard functionality - All clipboard functions are now singing from the same playbook—click, copy, done. #6236
-* EDD-Recurring Payment items moved from EDD to their own integration - Recurring Payments packed their bags and moved out—independent and loving it. #6370
-* Inconsistent `esc_html` usage in core - Some parts of the code weren't playing by the HTML-escaping rules. We've brought them in line—safely sanitized and secure. #6334
-* Replace Duplicator icon - Gave Duplicator a fresh new icon because even integrations like a glow-up. #6275
-* Trigger Engine - More robust trigger engine - Beefed it up so it won't flinch, even under pressure. #6376
-* TinyMCE configuration options at the field level - Editors now get more say in their setup. #6354
-* Triggers - Setting default value of `is_login_required` to `false` - We're assuming users don't need to be logged in—unless told otherwise. #6393
-* UI doesn't render — `t.trim is not a function` in a rare situation - Squashed this rare bug before it could confuse more letters with undefined functions. #6358
-* Plain permalink REST endpoints are now supported - No pretty permalinks? No problem. REST endpoints now work even when things get... plain. #6398
-* Automator now loads even on minimalist, plugin-bare sites—because everyone deserves a little automation magic. #6399
-* Integration framework upgrades:
-  * ActiveCampaign #6241
-  * Bluesky #6169
-  * Brevo #6170
-  * Campaign Monitor #6217
-  * Claude, Cohere, DeepSeek, Gemini, Grok, Mistral, and Perplexity #6252
-  * Constant Contact #6267
-  * EDD - Recurring Payments #6370
-  * GetResponse #6232
-  * Google Calendar #6244
-  * Google Contacts #6233
-  * Help Scout #6218
-  * Notion #6165
-  * Presto #6189
-  * Sendy #6327
-  * SureCart #6141
-  * Threads #6249
-  * Thrive Leads #5951
-  * Twilio #6219
-  * Twitter #6167
-
-**Developers:**
-
-* Available filters for Woo Order Summary customization - You're now the fashion designer of Woo Order Summary emails. Pick the colours, tailor the widths, and strut your styles down the inbox runway:
-  * `automator_woocommerce_order_summary_max_width` — Set max width (default: `'640px'`)
-  * `automator_woocommerce_order_summary_container_class` — Container CSS class (default: `'automator-order-summary-container'`)
-  * `automator_woocommerce_order_summary_container_id` — Container ID (default: `'automator-order-summary-{order_id}'`)
-  * `automator_woocommerce_order_summary_table_class` — Table CSS class (default: `'automator-order-summary-table'`)
-  * `automator_woocommerce_order_summary_tr_text_color` — Table row text color (default: `'#636363'`)
-  * `automator_woocommerce_order_summary_td_border_color` — Table cell border color (default: `'#e5e5e5'`)
-  * `automator_woocommerce_order_summary_td_text_color` — Table cell text color (default: `'#636363'`)
-  * `automator_order_summary_html_raw` — Filter the raw HTML array before output (receives `$html` and `$order`)
+* Legacy date-based attachment upload directories are removed on update. #6791
+* Uncanny Agent Beta Program - Performance and UX improvements. #6795 #6797 #6796 #6792 #6794 #6793
+* Blocked SSRF on featured image URL in the Create a post action and added a log notice when blocked. #6789
+* Blocked SSRF via private/reserved IP addresses on email attachment URLs (CVE-2026-2269). #6788
+* Email attachments are validated against an allowed file extension list and stored with unpredictable filenames. #6785
+* Upload directory is hardened with `.htaccess` and `index.php` to prevent PHP execution and directory listing. #6790
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 
 ## Upgrade Notice
+
+### 7.0
+
+Includes major integration refactors and updates. If you have both Uncanny Automator and Uncanny Automator Pro installed, please upgrade both to version 7.0 or higher to avoid recipe issues.
