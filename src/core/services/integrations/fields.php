@@ -68,7 +68,7 @@ class Fields {
 			throw new Automator_Exception(
 				sprintf(
 				/* translators: 1. Code 2. Object type */
-					esc_html__( "Code '%1\$s' not found in registered %2\$s. Use search_components tool to find valid codes.", 'uncanny-automator' ),
+					esc_html__( "Code '%1\$s' not found in registered %2\$s. Use search tool to find valid codes.", 'uncanny-automator' ),
 					esc_html( $this->config['code'] ),
 					esc_html( $this->config['object_type'] )
 				),

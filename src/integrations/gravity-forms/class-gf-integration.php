@@ -22,20 +22,34 @@ class Gravity_Forms_Integration extends \Uncanny_Automator\Integration {
 	}
 
 	/**
+	 * Build shared dependencies for triggers/actions.
+	 *
+	 * Creates the $gf stdClass and stores it in $this->helpers so that
+	 * get_load_arguments() can pass it to individual items in targeted mode.
+	 *
+	 * @return void
+	 */
+	protected function load_shared_hooks() {
+		$gf          = new \stdClass();
+		$gf->tokens  = new Gravity_Forms_Tokens();
+		$gf->helpers = new \Uncanny_Automator\Gravity_Forms_Helpers();
+
+		$this->helpers = $gf;
+	}
+
+	/**
 	 * load
 	 *
 	 * @return void
 	 */
 	protected function load() {
-		$gf          = new \stdClass();
-		$gf->tokens  = new Gravity_Forms_Tokens();
-		$gf->helpers = new \Uncanny_Automator\Gravity_Forms_Helpers();
+		$this->load_shared_hooks();
 
-		new ANON_GF_FORM_ENTRY_UPDATED( $gf );
-		new ANON_GF_SUBFORM( $gf );
-		new GF_SUBFORM( $gf );
-		new GF_SUBFORM_CODES( $gf );
-		new GF_SUBFORM_GROUPS( $gf );
+		new ANON_GF_FORM_ENTRY_UPDATED( $this->helpers );
+		new ANON_GF_SUBFORM( $this->helpers );
+		new GF_SUBFORM( $this->helpers );
+		new GF_SUBFORM_CODES( $this->helpers );
+		new GF_SUBFORM_GROUPS( $this->helpers );
 	}
 
 	/**
@@ -108,7 +122,7 @@ class Gravity_Forms_Integration extends \Uncanny_Automator\Integration {
 	public function automator_compatibility_notice() {
 
 		// Only add padding 0 if editing a recipe
-		$style = Automator()->helpers->recipe->is_edit_page() ? 'padding:0;' : ''; 
+		$style = Automator()->helpers->recipe->is_edit_page() ? 'padding:0;' : '';
 		?>
 		<div class="uap notice notice-error" style="<?php echo esc_attr( $style ); ?>">
 			<uo-alert type="error" no-radius>

@@ -54,10 +54,6 @@ class Buddypress_Helpers {
 	 * @return mixed
 	 */
 	public function all_buddypress_groups( $label = null, $option_code = 'BPGROUPS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		$args = wp_parse_args(
 			$args,
@@ -120,10 +116,6 @@ class Buddypress_Helpers {
 	 * @return mixed
 	 */
 	public function all_buddypress_users( $label = null, $option_code = 'BPUSERS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'User', 'uncanny-automator' );

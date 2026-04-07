@@ -83,13 +83,11 @@ class WC_PURCHASESPRODUCT {
 	public function load_options() {
 		Automator()->helpers->recipe->woocommerce->options->load_options = true;
 
-		$options            = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_html_x( 'Product', 'Woocommerce', 'uncanny-automator' ) );
-		$options['options'] = array( '-1' => esc_html_x( 'Any product', 'Woocommerce', 'uncanny-automator' ) ) + $options['options'];
-		$trigger_condition  = Automator()->helpers->recipe->woocommerce->get_woocommerce_trigger_conditions( $this->trigger_condition );
-		$options_array      = array(
+		$trigger_condition = Automator()->helpers->recipe->woocommerce->get_woocommerce_trigger_conditions( $this->trigger_condition );
+		$options_array     = array(
 			'options' => array(
 				Automator()->helpers->recipe->options->number_of_times(),
-				$options,
+				Woocommerce_Helpers::get_ajax_product_select_field( 'WOOPRODUCT' ),
 				$trigger_condition,
 			),
 		);

@@ -182,6 +182,14 @@ abstract class Trigger {
 	 */
 	final public function __construct( ...$dependencies ) {
 
+		// Prevent double-instantiation — Free and Pro may both try to load the same trigger.
+		static $instantiated = array();
+		$fqcn                = static::class;
+		if ( isset( $instantiated[ $fqcn ] ) ) {
+			return;
+		}
+		$instantiated[ $fqcn ] = true;
+
 		$this->dependencies = $dependencies;
 
 		// Automatically set up helpers from dependencies

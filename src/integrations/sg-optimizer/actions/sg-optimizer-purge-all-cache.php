@@ -22,8 +22,8 @@ class Sg_Optimizer_Purge_All_Cache extends \Uncanny_Automator\Recipe\Action {
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
 		$this->set_background_processing( true );
-		$this->set_sentence( esc_html_x( 'Purge all SG Optimizer caches', 'SG Optimizer', 'uncanny-automator' ) );
-		$this->set_readable_sentence( esc_html_x( 'Purge all SG Optimizer caches', 'SG Optimizer', 'uncanny-automator' ) );
+		$this->set_sentence( esc_html_x( 'Purge all Speed Optimizer caches', 'Speed Optimizer', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'Purge all Speed Optimizer caches', 'Speed Optimizer', 'uncanny-automator' ) );
 	}
 
 	/**

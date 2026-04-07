@@ -91,7 +91,7 @@ class Trigger_Formatter {
 	 */
 	private function check_integration_availability( array $trigger ) {
 
-		$service = Trigger_Registry_Service::get_instance();
+		$service = Trigger_Registry_Service::instance();
 
 		// Map trigger array keys to expected format.
 		$trigger_data = array(

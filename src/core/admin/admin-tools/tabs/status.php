@@ -20,7 +20,6 @@ class Admin_Tools_Status {
 
 		// Load tabs
 		$this->load_tabs();
-
 	}
 
 	/**
@@ -39,7 +38,6 @@ class Admin_Tools_Status {
 	private function load_tab( $tab_key ) {
 
 		include __DIR__ . DIRECTORY_SEPARATOR . 'status-tabs/' . $tab_key . '.php';
-
 	}
 
 	/**
@@ -50,7 +48,7 @@ class Admin_Tools_Status {
 		// Add the tab using the filter.
 		add_filter(
 			'automator_admin_tools_tabs',
-			function( $tabs ) {
+			function ( $tabs ) {
 				// General
 				$tabs['status'] = (object) array(
 					'name'     => esc_html__( 'Status', 'uncanny-automator' ),
@@ -63,7 +61,6 @@ class Admin_Tools_Status {
 			self::PRIORITY,
 			self::ACCEPTED_ARGS
 		);
-
 	}
 
 	/**
@@ -97,7 +94,6 @@ class Admin_Tools_Status {
 
 		// Load the view.
 		include Utilities::automator_get_view( 'admin-tools/tab/status.php' );
-
 	}
 
 	/**
@@ -106,7 +102,6 @@ class Admin_Tools_Status {
 	public function get_status_tabs() {
 
 		return apply_filters( 'automator_admin_tools_status_tabs', array() );
-
 	}
 
 	/**
@@ -118,7 +113,7 @@ class Admin_Tools_Status {
 	public static function utility_get_general_page_link( $selected_tab = '' ) {
 		// Define the list of URL parameters
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-config',
 			'tab'       => 'general',
 		);

@@ -19,6 +19,8 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\Api\Components\Loop\Filter\Services;
 
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
+
 /**
  * Field Normalizer Class.
  *
@@ -77,7 +79,7 @@ class Field_Normalizer {
 	 * @return bool True if has _readable suffix.
 	 */
 	private function is_readable_suffix( string $code ): bool {
-		return str_ends_with( $code, '_readable' );
+		return Str::ends_with( $code, '_readable' );
 	}
 
 	/**

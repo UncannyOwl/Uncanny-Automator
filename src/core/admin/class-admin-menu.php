@@ -213,6 +213,10 @@ class Admin_Menu {
 				if ( $tab_settings->fields ) {
 					foreach ( $tab_settings->fields as $field_id => $field_settings ) {
 						$args = isset( $field_settings->field_args ) ? $field_settings->field_args : array();
+						// Third-party settings_field values must start with 'uncanny_automator_' to be recognized
+						// by the demand-driven loader when options.php processes the form submission. Otherwise,
+						// WordPress will reject it with "options page is not in the allowed options list".
+						// See: Recipe_Manifest::is_automator_options_php_submit().
 						register_setting( $tab_settings->settings_field, $field_id, $args ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
 					}
 				}
@@ -1048,7 +1052,7 @@ class Admin_Menu {
 			return;
 		}
 
-		if ( 'uo-recipe' !== automator_filter_input( 'post_type' ) ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== automator_filter_input( 'post_type' ) ) {
 			return;
 		}
 
@@ -1073,7 +1077,7 @@ class Admin_Menu {
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'post_type' => 'uo-recipe',
+					'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 					'page'      => 'uncanny-automator-settings',
 					'tab'       => array_shift( $tab_ids ),
 				),
@@ -1325,7 +1329,7 @@ class Admin_Menu {
 		// Add exception for the "post.php" hook
 		if ( in_array( $hook, $hooks_assets_loaded, true ) ) {
 			if (
-				'uo-recipe' !== $this->get_current_screen_post_type() &&
+				AUTOMATOR_POST_TYPE_RECIPE !== $this->get_current_screen_post_type() &&
 				'admin_page_uncanny-automator-recipe-activity-details' !== $current_screen->id
 			) {
 				return;
@@ -1407,6 +1411,9 @@ class Admin_Menu {
 				'url'   => esc_url_raw( rest_url() . AUTOMATOR_REST_API_END_POINT ), // Automator URL endpoint
 				'base'  => esc_url_raw( rest_url() ), // Actual URL of the /wp-json/
 				'nonce' => \wp_create_nonce( 'wp_rest' ),
+			),
+			'logs'       => array(
+				'runsPerPage' => (int) apply_filters( 'automator_loop_logs_runs_per_page', \Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Resources\Loop_Logs_Resources::DEFAULT_RUNS_PER_PAGE ),
 			),
 			'debugging'  => array(
 				'enabled' => (bool) AUTOMATOR_DEBUG_MODE,
@@ -1574,7 +1581,7 @@ class Admin_Menu {
 		// Go to all recipes URL
 		$all_recipes_url = add_query_arg(
 			array(
-				'post_type' => 'uo-recipe',
+				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			),
 			admin_url( 'edit.php' )
 		);
@@ -1692,7 +1699,7 @@ class Admin_Menu {
 			$integration_name = $integration['integration_name'];
 			$permalink        = add_query_arg(
 				array(
-					'post_type'   => 'uo-recipe',
+					'post_type'   => AUTOMATOR_POST_TYPE_RECIPE,
 					'page'        => 'uncanny-automator-integrations',
 					'integration' => $integration_id,
 				),
@@ -2011,7 +2018,7 @@ class Admin_Menu {
 	public static function get_license_page_url() {
 		return add_query_arg(
 			array(
-				'post_type' => 'uo-recipe',
+				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 				'page'      => 'uncanny-automator-config',
 				'tab'       => 'general',
 				'general'   => 'license',

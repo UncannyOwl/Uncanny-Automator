@@ -30,11 +30,7 @@ class Import_Recipe {
 	 *
 	 * @var array
 	 */
-	private $draft_post_types = array(
-		'uo-recipe',
-		'uo-trigger',
-		'uo-action',
-	);
+	private $draft_post_types = array();
 
 	/**
 	 * The trigger codes that should be published on import.
@@ -73,6 +69,12 @@ class Import_Recipe {
 	 */
 	public function __construct() {
 
+		$this->draft_post_types = array(
+			AUTOMATOR_POST_TYPE_RECIPE,
+			AUTOMATOR_POST_TYPE_TRIGGER,
+			AUTOMATOR_POST_TYPE_ACTION,
+		);
+
 		// Add upload handler and form to the recipe list page.
 		add_action( 'admin_init', array( $this, 'handle_upload' ) );
 		add_action( 'in_admin_header', array( $this, 'render_import_form' ) );
@@ -110,6 +112,12 @@ class Import_Recipe {
 			return;
 		}
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$this->set_import_error( _x( 'You do not have permission to import recipes.', 'Import Recipe', 'uncanny-automator' ) );
+
+			return;
+		}
+
 		if ( ! isset( $_FILES['recipejson'] ) ) {
 			$this->set_import_error( _x( 'No recipe .json file uploaded.', 'Import Recipe', 'uncanny-automator' ) );
 
@@ -117,9 +125,17 @@ class Import_Recipe {
 		}
 
 		$file = $_FILES['recipejson']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$type = isset( $file['type'] ) ? $file['type'] : null;
 		$temp = isset( $file['tmp_name'] ) ? $file['tmp_name'] : null;
-		if ( 'application/json' !== $type || empty( $temp ) ) {
+		$name = isset( $file['name'] ) ? sanitize_file_name( $file['name'] ) : '';
+
+		if ( empty( $temp ) ) {
+			$this->set_import_error( _x( 'The uploaded file is not a valid recipe .json file.', 'Import Recipe', 'uncanny-automator' ) );
+
+			return;
+		}
+
+		$filetype = wp_check_filetype( $name, array( 'json' => 'application/json' ) );
+		if ( 'application/json' !== $filetype['type'] ) {
 			$this->set_import_error( _x( 'The uploaded file is not a valid recipe .json file.', 'Import Recipe', 'uncanny-automator' ) );
 
 			return;
@@ -369,7 +385,7 @@ class Import_Recipe {
 		$status = 'draft';
 
 		// Check if the trigger is a published trigger.
-		if ( 'uo-trigger' === $post_type ) {
+		if ( AUTOMATOR_POST_TYPE_TRIGGER === $post_type ) {
 			$code = isset( $recipe_part->meta->code ) && isset( $recipe_part->meta->code[0] ) ? $recipe_part->meta->code[0] : null;
 			if ( in_array( $code, $this->published_trigger_codes, true ) ) {
 				$status = 'publish';
@@ -618,7 +634,7 @@ class Import_Recipe {
 			return;
 		}
 
-		if ( 'uo-recipe' !== $screen->post_type || 'post' !== $screen->base ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== $screen->post_type || 'post' !== $screen->base ) {
 			return;
 		}
 

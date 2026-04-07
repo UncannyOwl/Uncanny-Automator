@@ -117,6 +117,43 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * Define output schema.
+	 *
+	 * @return array|null
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'items'    => array(
+					'type'  => 'array',
+					'items' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'id'           => array( 'type' => 'integer' ),
+							'user_login'   => array( 'type' => 'string' ),
+							'display_name' => array( 'type' => 'string' ),
+							'first_name'   => array( 'type' => 'string' ),
+							'last_name'    => array( 'type' => 'string' ),
+							'email'        => array( 'type' => 'string' ),
+							'roles'        => array(
+								'type' => 'array',
+								'items' => array( 'type' => 'string' ),
+							),
+							'registered'   => array( 'type' => 'string' ),
+						),
+					),
+				),
+				'total'    => array( 'type' => 'integer' ),
+				'offset'   => array( 'type' => 'integer' ),
+				'limit'    => array( 'type' => 'integer' ),
+				'has_more' => array( 'type' => 'boolean' ),
+			),
+			'required'   => array( 'items', 'total' ),
+		);
+	}
+
+	/**
 	 * Execute tool.
 	 *
 	 * @param User_Context $user_context User context.

@@ -17,13 +17,14 @@ use Uncanny_Automator\Api\Components\Condition\Value_Objects\Individual_Conditio
 use Uncanny_Automator\Api\Components\Condition\Value_Objects\Condition_Fields;
 use Uncanny_Automator\Api\Components\Condition\Dtos\Condition_Backup_Info;
 use Uncanny_Automator\Api\Database\Interfaces\Recipe_Store;
+use Uncanny_Automator\Api\Database\Recipe_Cache;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Trigger_Logic;
 use WP_Post;
 use wpdb;
 
 class WP_Recipe_Store implements Recipe_Store {
 
-	const POST_TYPE                   = 'uo-recipe';
+	const POST_TYPE                   = AUTOMATOR_POST_TYPE_RECIPE;
 	const _META_RECIPE_TYPE           = 'uap_recipe_type';
 	const _META_RECIPE_NOTES          = 'uap_recipe_notes';
 	const _META_RECIPE_THROTTLE       = 'field_recipe_throttle';
@@ -65,6 +66,8 @@ class WP_Recipe_Store implements Recipe_Store {
 			$this->update_recipe_post( $recipe_id, $recipe );
 			$this->persist_recipe_meta( $recipe_id, $meta_input );
 		}
+
+		Recipe_Cache::invalidate( $recipe_id );
 
 		return $this->get( $recipe_id );
 	}
@@ -283,6 +286,8 @@ class WP_Recipe_Store implements Recipe_Store {
 		if ( false === $result || null === $result ) {
 			throw new RuntimeException( esc_html_x( 'Failed to delete recipe', 'Recipe store deletion failed', 'uncanny-automator' ) );
 		}
+
+		Recipe_Cache::invalidate( $recipe_id );
 	}
 
 	/**
@@ -487,7 +492,7 @@ class WP_Recipe_Store implements Recipe_Store {
 				OR pm.meta_value LIKE %s
 			)
 			AND p.post_parent > 0
-			AND p.post_type IN ('uo-trigger', 'uo-action')",
+			AND p.post_type IN ('" . AUTOMATOR_POST_TYPE_TRIGGER . "', '" . AUTOMATOR_POST_TYPE_ACTION . "')",
 			$field_value_str,
 			'%"' . $field_value_str . '"%'
 		);
@@ -695,7 +700,7 @@ class WP_Recipe_Store implements Recipe_Store {
 		/** Query all triggers for this recipe */
 		$triggers = get_posts(
 			array(
-				'post_type'      => 'uo-trigger',
+				'post_type'      => AUTOMATOR_POST_TYPE_TRIGGER,
 				'post_parent'    => $recipe_id,
 				'posts_per_page' => -1,
 				'post_status'    => array( Recipe_Status::DRAFT, Recipe_Status::PUBLISH ),
@@ -712,7 +717,7 @@ class WP_Recipe_Store implements Recipe_Store {
 		/** Query all actions for this recipe */
 		$actions = get_posts(
 			array(
-				'post_type'      => 'uo-action',
+				'post_type'      => AUTOMATOR_POST_TYPE_ACTION,
 				'post_parent'    => $recipe_id,
 				'posts_per_page' => -1,
 				'post_status'    => array( Recipe_Status::DRAFT, Recipe_Status::PUBLISH ),
@@ -1001,7 +1006,9 @@ class WP_Recipe_Store implements Recipe_Store {
 			return '';
 		}
 
-		return $encoded;
+		// wp_slash: both wp_insert_post (create) and update_post_meta (update) call wp_unslash,
+		// which strips backslash escapes from JSON strings. Pre-slash to preserve valid JSON.
+		return wp_slash( $encoded );
 	}
 
 
@@ -1261,4 +1268,5 @@ class WP_Recipe_Store implements Recipe_Store {
 	public function get_post_type(): string {
 		return self::POST_TYPE;
 	}
+
 }

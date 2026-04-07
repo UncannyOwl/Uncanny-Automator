@@ -35,7 +35,7 @@ class Automator_Taxonomies {
 		// Add recipe category
 		register_taxonomy(
 			'recipe_category', // The name of the taxonomy. Name should be in slug form (must not contain capital letters or spaces).
-			'uo-recipe', // post type name
+			AUTOMATOR_POST_TYPE_RECIPE, // post type name
 			array(
 				'public'             => false,
 				'publicly_queryable' => false,
@@ -63,7 +63,7 @@ class Automator_Taxonomies {
 		// Add recipe tag
 		register_taxonomy(
 			'recipe_tag', // The name of the taxonomy. Name should be in slug form (must not contain capital letters or spaces).
-			'uo-recipe', // post type name
+			AUTOMATOR_POST_TYPE_RECIPE, // post type name
 			array(
 				'public'             => false,
 				'publicly_queryable' => false,
@@ -96,7 +96,7 @@ class Automator_Taxonomies {
 	public function filter_taxonomies( $post_type, $which ) {
 
 		// Apply this only on a specific post type
-		if ( 'uo-recipe' !== $post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== $post_type ) {
 			return;
 		}
 

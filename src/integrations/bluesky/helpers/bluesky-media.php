@@ -70,8 +70,12 @@ class Bluesky_Media {
 	 * @return array|false
 	 */
 	public function get_embed() {
-		if ( empty( $this->media ) || empty( $this->type ) ) {
-			return false;
+		if ( empty( $this->media ) ) {
+			throw new Exception( esc_attr_x( 'Media embed: No media or URL was provided.', 'Bluesky', 'uncanny-automator' ) );
+		}
+
+		if ( empty( $this->type ) ) {
+			throw new Exception( esc_attr_x( 'Media embed: No embed type was specified.', 'Bluesky', 'uncanny-automator' ) );
 		}
 
 		switch ( $this->type ) {
@@ -333,18 +337,18 @@ class Bluesky_Media {
 		$url = $this->get_valid_url( $this->media );
 
 		if ( ! $url ) {
-			return array();
+			throw new Exception( esc_attr_x( 'Website embed: Invalid URL provided.', 'Bluesky', 'uncanny-automator' ) );
 		}
 
 		// Get HTML content
 		$response = wp_remote_get( $url );
 		if ( is_wp_error( $response ) ) {
-			return array();
+			throw new Exception( esc_attr_x( 'Website embed: Unable to fetch the URL. Please verify the URL is accessible.', 'Bluesky', 'uncanny-automator' ) );
 		}
 
 		$html = wp_remote_retrieve_body( $response );
 		if ( empty( $html ) ) {
-			return array();
+			throw new Exception( esc_attr_x( 'Website embed: The URL returned an empty response.', 'Bluesky', 'uncanny-automator' ) );
 		}
 
 		// Create a DOMDocument to parse the HTML
@@ -357,17 +361,19 @@ class Bluesky_Media {
 		// Get OpenGraph data
 		$thumb_url = $this->get_meta_content( $xpath, 'og:image' );
 
-		// Bail early if no thumbnail
-		if ( ! $thumb_url ) {
-			return array();
-		}
+		$og_title       = $this->get_meta_content( $xpath, 'og:title' );
+		$og_description = $this->get_meta_content( $xpath, 'og:description' );
 
 		$data = array(
 			'uri'         => $url,
-			'title'       => $this->get_meta_content( $xpath, 'og:title' ) ?: $this->get_title( $xpath ), // phpcs:ignore Universal.Operators.DisallowShortTernary.Found
-			'description' => $this->get_meta_content( $xpath, 'og:description' ) ?: $this->get_meta_content( $xpath, 'description' ), // phpcs:ignore Universal.Operators.DisallowShortTernary.Found
-			'thumb'       => $thumb_url,
+			'title'       => ! empty( $og_title ) ? $og_title : $this->get_title( $xpath ),
+			'description' => ! empty( $og_description ) ? $og_description : (string) $this->get_meta_content( $xpath, 'description' ),
 		);
+
+		// Include thumbnail if available.
+		if ( $thumb_url ) {
+			$data['thumb'] = $thumb_url;
+		}
 
 		return $this->create_external_embed( $data );
 	}
@@ -415,8 +421,8 @@ class Bluesky_Media {
 	 * @return array
 	 */
 	private function create_external_embed( $data ) {
-		if ( empty( $data['title'] ) || empty( $data['thumb'] ) ) {
-			return array();
+		if ( empty( $data['title'] ) ) {
+			throw new Exception( esc_attr_x( 'Website embed: No page title or og:title meta tag found on the URL.', 'Bluesky', 'uncanny-automator' ) );
 		}
 
 		return array(

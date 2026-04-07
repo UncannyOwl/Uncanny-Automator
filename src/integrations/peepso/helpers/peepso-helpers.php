@@ -204,9 +204,6 @@ class PeepSo_Helpers {
 	 */
 	public function get_profile_fields( $label = null, $option_code = 'PPPROFILEFIELDS', $args = array(), $bynames = false ) {
 
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Profile fields', 'uncanny-automator' );

@@ -55,10 +55,6 @@ class Paid_Memberships_Pro_Helpers {
 	 * @return mixed|void
 	 */
 	public function all_memberships( $label = null, $option_code = 'PMPMEMBERSHIP' ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Membership', 'uncanny-automator' );

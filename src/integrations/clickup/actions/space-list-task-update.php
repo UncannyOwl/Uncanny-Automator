@@ -1,206 +1,215 @@
 <?php
-namespace Uncanny_Automator;
+
+namespace Uncanny_Automator\Integrations\ClickUp;
+
+use Exception;
 
 /**
- * Class Space_List_Task_Update
+ * Action: Update a task.
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\ClickUp
+ *
+ * @property ClickUp_App_Helpers $helpers
+ * @property ClickUp_Api_Caller $api
  */
-class Space_List_Task_Update {
+class Space_List_Task_Update extends \Uncanny_Automator\Recipe\App_Action {
 
-	use Recipe\Actions;
-
-	/**
-	 * Method __construct
-	 *
-	 * @return void
-	 */
-	public function __construct() {
-
-		$this->set_helpers( new ClickUp_Helpers() );
-
-		$this->setup_action();
-
-	}
+	use ClickUp_Hierarchy_Options;
 
 	/**
-	 * Setups the Action.
+	 * Setup the action.
 	 *
 	 * @return void
 	 */
 	public function setup_action() {
-
 		$this->set_integration( 'CLICKUP' );
-
 		$this->set_action_code( 'CLICKUP_SPACE_LIST_TASK_TAG_UPDATE' );
-
 		$this->set_action_meta( 'CLICKUP_SPACE_LIST_TASK_TAG_UPDATE_META' );
-
-		$this->set_is_pro( false );
-
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/clickup/' ) );
-
 		$this->set_requires_user( false );
-
+		$this->set_is_pro( false );
+		$this->set_wpautop( false );
+		$this->set_background_processing( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/clickup/' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Update {{a task}}', 'ClickUp', 'uncanny-automator' ) );
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
-				esc_attr__( 'Update {{a task:%1$s}}', 'uncanny-automator' ),
+				// translators: %1$s: Task name
+				esc_attr_x( 'Update {{a task:%1$s}}', 'ClickUp', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
 		);
-
-		$this->set_readable_sentence( esc_attr__( 'Update {{a task}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		$this->set_wpautop( false );
-
-		$this->set_background_processing( true );
-
-		$this->register_action();
-
 	}
 
 	/**
-	 * Loads options.
+	 * Define options.
 	 *
-	 * @return void.
+	 * @return array
 	 */
-	public function load_options() {
+	public function options() {
+		return array(
+			$this->get_team_option_config(),
+			$this->get_space_option_config(),
+			$this->get_folder_option_config(),
+			$this->helpers->get_list_option_config(),
+			$this->helpers->get_task_option_config( $this->get_action_meta() ),
+			$this->get_multi_assignee_config( 'ASSIGNEES_ADD', esc_attr_x( 'Add assignees', 'ClickUp', 'uncanny-automator' ) ),
+			$this->get_multi_assignee_config( 'ASSIGNEES_REMOVE', esc_attr_x( 'Remove assignees', 'ClickUp', 'uncanny-automator' ) ),
+			$this->helpers->get_status_option_config(),
+			$this->helpers->get_priority_option_config( true ),
+			// Repeater fields for conditional updates.
+			$this->get_repeater_field( 'NAME', esc_attr_x( 'Name', 'ClickUp', 'uncanny-automator' ), 'text' ),
+			$this->get_repeater_field( 'DESCRIPTION', esc_attr_x( 'Description', 'ClickUp', 'uncanny-automator' ), 'textarea' ),
+			$this->get_repeater_field( 'START_DATE', esc_attr_x( 'Start date', 'ClickUp', 'uncanny-automator' ), 'date' ),
+			$this->get_repeater_field( 'START_TIME', esc_attr_x( 'Start time', 'ClickUp', 'uncanny-automator' ), 'time' ),
+			$this->get_repeater_field( 'DUE_DATE', esc_attr_x( 'Due date', 'ClickUp', 'uncanny-automator' ), 'date' ),
+			$this->get_repeater_field( 'DUE_TIME', esc_attr_x( 'Due date time', 'ClickUp', 'uncanny-automator' ), 'time' ),
+		);
+	}
 
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options_group' => array(
-					$this->get_action_meta() => $this->get_helpers()->get_action_fields( $this, 'space-list-task-update-fields' ),
+	/**
+	 * Build a repeater field config with value + update checkbox.
+	 *
+	 * @param string $key        The field key.
+	 * @param string $label      The field label.
+	 * @param string $input_type The input type for the value field.
+	 *
+	 * @return array
+	 */
+	private function get_repeater_field( $key, $label, $input_type ) {
+		$value_label = esc_attr_x( 'Value', 'ClickUp', 'uncanny-automator' );
+
+		return array(
+			'option_code'     => $key . '_REPEATER',
+			'label'           => $label,
+			'hide_actions'    => true,
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'required'        => true,
+			'fields'          => array(
+				array(
+					'option_code'   => $key,
+					'label'         => $value_label,
+					'input_type'    => $input_type,
+					'default_value' => '',
 				),
+				array(
+					'option_code' => $key . '_UPDATE',
+					'label'       => esc_attr_x( 'Update?', 'ClickUp', 'uncanny-automator' ),
+					'input_type'  => 'checkbox',
+					'is_toggle'   => true,
+				),
+			),
+		);
+	}
+
+	/**
+	 * Extend the base assignee config for multi-select.
+	 *
+	 * @param string $option_code  The option meta key.
+	 * @param string $label        The field label.
+	 *
+	 * @return array
+	 */
+	private function get_multi_assignee_config( $option_code, $label ) {
+		return array_merge(
+			$this->helpers->get_assignee_option_config( $option_code, $this->helpers->get_const( 'META_LIST' ) ),
+			array(
+				'label'                    => $label,
+				'placeholder'              => esc_attr_x( 'Click to choose from list of assignees', 'ClickUp', 'uncanny-automator' ),
+				'supports_multiple_values' => true,
+				'supports_custom_value'    => false,
 			)
 		);
-
 	}
 
 	/**
-	 * Processes the action.
+	 * Process the action.
 	 *
-	 * @return void.
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        Additional arguments.
+	 * @param array $parsed      Parsed action data.
+	 *
+	 * @return bool
+	 * @throws Exception If the action fails.
 	 */
-	public function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$name        = $this->read_from_repeater( $parsed, 'NAME' );
+		$description = $this->read_from_repeater( $parsed, 'DESCRIPTION', 'sanitize_textarea_field' );
+		$start_date  = $this->read_from_repeater( $parsed, 'START_DATE' );
+		$start_time  = $this->read_from_repeater( $parsed, 'START_TIME' );
+		$due_date    = $this->read_from_repeater( $parsed, 'DUE_DATE' );
+		$due_time    = $this->read_from_repeater( $parsed, 'DUE_TIME' );
 
-		try {
+		$body = array(
+			'action'               => 'task_update',
+			'status'               => sanitize_text_field( $parsed['STATUS'] ?? '' ),
+			'priority'             => sanitize_text_field( $parsed['PRIORITY'] ?? '' ),
+			'assignees_add'        => sanitize_text_field( $parsed['ASSIGNEES_ADD'] ?? '' ),
+			'assignees_remove'     => sanitize_text_field( $parsed['ASSIGNEES_REMOVE'] ?? '' ),
+			'task_id'              => sanitize_text_field( $parsed[ $this->get_action_meta() ] ?? '' ),
+			'name'                 => $name,
+			'description'          => $description,
+			'date_start_timestamp' => $this->to_timestamp( $start_date, $start_time ),
+			'date_due_timestamp'   => $this->to_timestamp( $due_date, $due_time ),
+		);
 
-			$name        = $this->read_from_repeater( $parsed, 'name' );
-			$description = $this->read_from_repeater( $parsed, 'description', '', 'sanitize_textarea_field' );
-			$start_date  = $this->read_from_repeater( $parsed, 'start_date', true );
-			$start_time  = $this->read_from_repeater( $parsed, 'start_time', true );
-			$due_date    = $this->read_from_repeater( $parsed, 'due_date', true );
-			$due_time    = $this->read_from_repeater( $parsed, 'due_time', true );
-
-			$body = array(
-				'action'               => 'task_update',
-				'status'               => $this->read_from_parsed( $parsed, 'status' ),
-				'priority'             => $this->read_from_parsed( $parsed, 'priority' ),
-				'assignees_add'        => $this->read_from_parsed( $parsed, 'assignees_add' ),
-				'assignees_remove'     => $this->read_from_parsed( $parsed, 'assignees_remove' ),
-				'task_id'              => $this->read_from_parsed( $parsed, $this->get_action_meta() ),
-				'name'                 => $name,
-				'description'          => $description,
-				'date_start_timestamp' => $this->read_as_timestamp( $start_date, $start_time ),
-				'date_due_timestamp'   => $this->read_as_timestamp( $due_date, $due_time ),
-			);
-
-			// Enable start time if value exists.
-			if ( ! empty( $start_time ) ) {
-				$body['enable_start_time'] = 'yes';
-			}
-
-			// Enable due time if value exists.
-			if ( ! empty( $due_time ) ) {
-				$body['enable_due_time'] = 'yes';
-			}
-
-			$response = $this->get_helpers()->api_request(
-				$this->get_helpers()->get_client(),
-				$body,
-				$action_data
-			);
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
+		// Enable time flags if values are present.
+		if ( ! empty( $start_time ) ) {
+			$body['enable_start_time'] = 'yes';
 		}
 
+		if ( ! empty( $due_time ) ) {
+			$body['enable_due_time'] = 'yes';
+		}
+
+		$this->api->api_request( $body, $action_data );
+
+		return true;
 	}
 
 	/**
-	 * Read from repeater field.
+	 * Read a value from a repeater field.
 	 *
-	 * @param array $parsed The data being parsed by the Action.
-	 * @param string $key The key of the Action processed from $parsed.
-	 * @param string $default The default value.
-	 * @param callable $cd The callable function to pass.
+	 * Only returns the value if the _UPDATE checkbox is enabled.
 	 *
-	 * @return null|string Null when disabled. Otherwise, the value of the field.
+	 * @param array    $parsed The parsed action data.
+	 * @param string   $key    The field key (uppercase).
+	 * @param callable $cb     The sanitization callback.
+	 *
+	 * @return string|null Null when disabled.
 	 */
-	private function read_from_repeater( $parsed = array(), $key = '', $default = '', callable $cb = null ) {
+	private function read_from_repeater( $parsed, $key, $cb = 'sanitize_text_field' ) {
+		$repeater_key = $key . '_REPEATER';
 
-		$key = strtoupper( $key );
-
-		if ( null === $cb ) {
-			$cb = 'sanitize_text_field';
+		if ( ! isset( $parsed[ $repeater_key ] ) ) {
+			return null;
 		}
 
 		// Convert br to nl.
-		$field_value_br2nl = str_replace( array( '<br>', '<br/>', '<br />' ), PHP_EOL, $parsed[ $key . '_REPEATER' ] );
+		$field_value = str_replace( array( '<br>', '<br/>', '<br />' ), PHP_EOL, $parsed[ $repeater_key ] );
 
-		// E.g. addcslashes( sanitize_text_field( $parsed['NAME_REPEATER] ) ).
-		$restore_slashes = addcslashes( $cb( $field_value_br2nl ), PHP_EOL );
+		$restore_slashes = addcslashes( $cb( $field_value ), PHP_EOL );
 		$repeater_fields = (array) json_decode( $restore_slashes, true );
 		$repeater_fields = end( $repeater_fields );
 
-		$retval = null;
-
 		if ( isset( $repeater_fields[ $key . '_UPDATE' ] ) && true === $repeater_fields[ $key . '_UPDATE' ] ) {
-			$retval = isset( $repeater_fields[ $key ] ) ? $repeater_fields[ $key ] : '';
+			return $repeater_fields[ $key ] ?? '';
 		}
 
-		return apply_filters( 'automator_clickup_update_action_read_from_repeater', $retval, $parsed, $key, $default, $cb, $this );
-
+		return apply_filters( 'automator_clickup_update_action_read_from_repeater', null, $parsed, $key, '', $cb, $this );
 	}
 
 	/**
-	 * Normalizes the input from $parsed var.
+	 * Convert date and time to a 13-digit millisecond timestamp.
 	 *
-	 * @param array $parsed The data being parsed by the Action.
-	 * @param string $key The key of the Action processed from $parsed.
-	 * @param string $default The default value.
-	 * @param callable $cd The callable function to pass.
+	 * @param string|null $date The date string.
+	 * @param string|null $time The time string.
 	 *
-	 * @return mixed The value.
+	 * @return int|null
 	 */
-	private function read_from_parsed( $parsed = array(), $key = '', $default = '', callable $cb = null ) {
-
-		$key = strtoupper( $key );
-
-		if ( null === $cb ) {
-			$cb = 'sanitize_text_field';
-		}
-
-		return isset( $parsed[ $key ] ) ? $cb( $parsed[ $key ] ) : $default;
-
-	}
-
-	/**
-	 * Reads the date and time as timestamp which can be understood by ClickUp.
-	 *
-	 * @return int The 13-digit unix timestamp required by ClickUp.
-	 */
-	private function read_as_timestamp( $date = '', $time = '' ) {
-
+	private function to_timestamp( $date, $time ) {
 		if ( empty( $date ) ) {
 			return null;
 		}
@@ -212,13 +221,6 @@ class Space_List_Task_Update {
 			new \DateTimeZone( Automator()->get_timezone_string() )
 		);
 
-		if ( false === $date_time_object ) {
-			throw new \Exception( 'ClickUp integration has returned an error: Cannot parse date/time as a valid timestamp.', 400 );
-		}
-
-		return (int) $date_time_object->format( 'U' ) * 1000; // 13-digit unix timestamp as required by ClickUp.
-
+		return (int) $date_time_object->format( 'U' ) * 1000;
 	}
-
 }
-

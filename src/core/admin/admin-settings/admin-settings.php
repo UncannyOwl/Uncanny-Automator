@@ -111,7 +111,7 @@ class Admin_Settings {
 	public static function utility_get_settings_page_link( $selected_tab = '' ) {
 		// Define the list of URL parameters
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-config',
 		);
 

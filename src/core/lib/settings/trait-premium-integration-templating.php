@@ -452,6 +452,7 @@ trait Premium_Integration_Templating {
 	 *     Optional. Array of user info display arguments.
 	 *     @property string avatar_type     'icon', 'image', or 'text'
 	 *     @property string avatar_value    Value to use for the avatar
+	 *     @property string avatar_styles      Optional. Inline CSS for the avatar container.
 	 *     @property string main_info       Primary user info (e.g. email)
 	 *     @property bool   main_info_icon  Whether to show integration icon in main info
 	 *     @property string additional      Optional. Additional user info (e.g. username).
@@ -462,6 +463,7 @@ trait Premium_Integration_Templating {
 		$defaults = array(
 			'avatar_type'    => 'icon', // 'icon', 'image', or 'text'
 			'avatar_value'   => $this->get_icon(),
+			'avatar_styles'  => '',
 			'main_info'      => '',
 			'main_info_icon' => false,
 			'additional'     => '',
@@ -473,7 +475,7 @@ trait Premium_Integration_Templating {
 		$kses_args = $this->filter_content_kses_args();
 		?>
 		<div class="uap-settings-panel-user">
-			<div class="uap-settings-panel-user__avatar">
+			<div class="uap-settings-panel-user__avatar"<?php echo ! empty( $args['avatar_styles'] ) ? ' style="' . esc_attr( $args['avatar_styles'] ) . '"' : ''; ?>>
 				<?php
 				switch ( $args['avatar_type'] ) {
 					case 'image':

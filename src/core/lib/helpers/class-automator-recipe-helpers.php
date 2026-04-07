@@ -411,7 +411,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		// Get current post and validate
 		$current_post = get_post( absint( automator_filter_input( 'post' ) ) );
-		if ( ! $current_post || 'uo-recipe' !== $current_post->post_type ) {
+		if ( ! $current_post || AUTOMATOR_POST_TYPE_RECIPE !== $current_post->post_type ) {
 			return false;
 		}
 
@@ -543,27 +543,63 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	}
 
 	/**
-	 * @param $meta
+	 * Check if a given action or trigger code is active in any published recipe.
 	 *
-	 * @return bool
+	 * @param string $code The action or trigger code (e.g. "SHOW_CAMPAIGN").
+	 *
+	 * @return bool True if active in at least one published recipe, false otherwise.
 	 */
-	public function is_action_or_trigger_active( $meta ) {
+	public function is_action_or_trigger_active( $code ) {
+
+		// Use the manifest for O(1) lookup when available.
+		$manifest      = Recipe_Manifest::get_instance();
+		$manifest_data = $manifest->get();
+
+		if ( ! empty( $manifest_data ) ) {
+			// Build a reverse lookup on first access: bare_code => true.
+			static $bare_code_lookup = null;
+			static $bare_code_source = null;
+
+			// Rebuild if the manifest data changed (e.g. after rebuild).
+			if ( null === $bare_code_lookup || $bare_code_source !== $manifest_data ) {
+				$bare_code_lookup = array();
+				foreach ( $manifest_data as $composite_key => $integration_code ) {
+					$bare                      = substr( $composite_key, strlen( $integration_code ) + 1 );
+					$bare_code_lookup[ $bare ] = true;
+				}
+				$bare_code_source = $manifest_data;
+			}
+
+			return isset( $bare_code_lookup[ $code ] );
+		}
+
+		// Fallback: direct DB query if manifest is not yet built.
 		global $wpdb;
-		$results = $wpdb->get_results(
+
+		$result = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT p.ID AS child_ID, pp.ID AS recipe_ID
-FROM $wpdb->postmeta pm
-JOIN $wpdb->posts p
-ON pm.post_id = p.ID AND pm.meta_value = %s AND p.post_status = %s
-JOIN $wpdb->posts pp
-ON p.post_parent = pp.ID AND pp.post_status = %s;",
-				$meta,
-				'publish',
-				'publish'
+				"SELECT 1
+				FROM {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->posts} p
+					ON pm.post_id = p.ID
+				WHERE p.post_type IN ( %s, %s )
+					AND p.post_status = 'publish'
+					AND pm.meta_key = 'code'
+					AND pm.meta_value = %s
+					AND p.post_parent IN (
+						SELECT ID FROM {$wpdb->posts}
+						WHERE post_type = %s
+						AND post_status = 'publish'
+					)
+				LIMIT 1",
+				AUTOMATOR_POST_TYPE_ACTION,
+				AUTOMATOR_POST_TYPE_TRIGGER,
+				$code,
+				AUTOMATOR_POST_TYPE_RECIPE
 			)
 		);
 
-		return empty( $results );
+		return null !== $result;
 	}
 
 	/**
@@ -767,11 +803,6 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 	 */
 	public function wp_query( $args, $add_any_option = false, $add_any_option_label = null, $is_all_label = false ) {
 
-		// set up a default label.
-		if ( is_null( $add_any_option_label ) ) {
-			$add_any_option_label = esc_attr__( 'Any page', 'uncanny-automator' );
-		}
-
 		// Allow automator to load this wp_query results from MCP requests. Backwards compatibility.
 		$is_mcp = ( defined( 'REST_REQUEST' ) && REST_REQUEST )
 			&& isset( $_SERVER['REQUEST_URI'] ) && false !== strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), '/automator/v1/mcp' );
@@ -780,180 +811,52 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 			return array();
 		}
 
-		// bail if no arguments are supplied.
 		if ( empty( $args ) ) {
 			return array();
 		}
 
-		/**
-		 * Allow developers to modify $args
-		 *
-		 * @version 2.6
-		 * @author  Saad
-		 */
+		/** @var array $args Allow developers to modify $args. */
 		$args = apply_filters( 'automator_wp_query_args', $args );
 
-		extract( $args ); // phpcs:ignore WordPress.PHP.DontExtract.extract_extract
+		// Translate legacy positional params into modern array params.
+		$params = $args;
 
-		// prepare transient key.
-		$transient_key = apply_filters( 'automator_transient_name', 'automator_transient', $args );
-
-		// suffix post type is needed.
-		if ( isset( $args['post_type'] ) ) {
-			$transient_key .= md5( wp_json_encode( $args['post_type'] ) );
-		}
-
-		// attempt fetching options from transient.
-		$options = apply_filters( 'automator_modify_transient_options', Automator()->cache->get( $transient_key ), $args );
-		// if meta query is set, its better to re-run query instead of transient
-		if ( isset( $args['meta_query'] ) && ! empty( $args['meta_query'] ) ) {
-			$options = array();
-		}
-		// if the transient is empty, generate options afresh.
-		if ( empty( $options ) ) {
-			// fetch all the posts.
-			global $wpdb;
-			if ( isset( $args['meta_query'] ) && ( isset( $args['meta_query']['relation'] ) || count( $args['meta_query'] ) > 1 ) ) {
-				$posts = get_posts( $args );
-			} else {
-				$join = '';
-				// basic query begins
-				$query = "SELECT p.ID, p.post_title
-						FROM $wpdb->posts p";
-
-				// check if there's meta query.. which means
-				// we have to join postmeta table
-				if ( isset( $meta_query ) ) {
-					$mq         = array_shift( $meta_query );
-					$meta_key   = sanitize_text_field( $mq['key'] );
-					$meta_value = sanitize_text_field( $mq['value'] );
-					$compare    = isset( $mq['compare'] ) ? $mq['compare'] : 'LIKE';
-					$join      .= " INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id AND pm.meta_key = '{$meta_key}' AND pm.meta_value {$compare} '{$meta_value}'"; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
-				}
-
-				// Join tables
-				$query .= $join;
-
-				// basic where 1=1 so all other
-				// where clauses can be joined via AND
-				$query .= ' WHERE 1=1 ';
-
-				// include post_type with fallback to publish
-				if ( isset( $post_status ) ) {
-					if ( ! empty( $post_status ) && ! is_array( $post_status ) ) {
-						$query .= " AND p.post_status = '$post_status' ";
-					} elseif ( ! empty( $post_status ) && is_array( $post_status ) ) {
-						$comma_separated = implode( "','", $post_status );
-						$comma_separated = "'" . $comma_separated . "'";
-						$query          .= "AND p.post_status IN ({$comma_separated}) "; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
-					} else {
-						$query .= " AND p.post_status = 'publish' ";
-					}
-				} else {
-					$query .= " AND p.post_status = 'publish' ";
-				}
-
-				// filter by post_type with fallback to 'page' only
-				if ( isset( $post_type ) && ! is_array( $post_type ) ) {
-					$query .= " AND p.post_type = '{$post_type}'";
-				} elseif ( isset( $post_type ) && is_array( $post_type ) ) {
-					$comma_separated = implode( "','", $post_type );
-					$comma_separated = "'" . $comma_separated . "'";
-					$query          .= " AND p.post_type = '{$comma_separated}'"; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
-				} else {
-					$query .= " AND p.post_type = 'page'";
-				}
-
-				// order by provided argument, fallback to title
-				if ( isset( $orderby ) && ! empty( $orderby ) ) {
-					switch ( $orderby ) {
-						case 'ID':
-							$order_by = 'p.ID';
-							break;
-						case 'parent_id':
-							$order_by = 'p.parent_id';
-							break;
-						case 'post_date':
-							$order_by = 'p.post_date';
-							break;
-						case 'post_type':
-							$order_by = 'p.post_type';
-							break;
-						case 'title':
-						default:
-							$order_by = 'p.post_title';
-							break;
-
-					}
-					$query .= " ORDER BY $order_by";
-				} else {
-					$query .= ' ORDER BY p.post_title';
-				}
-
-				if ( isset( $order ) && ! empty( $order ) ) {
-					$query .= " $order";
-				} else {
-					$query .= ' ASC';
-				}
-
-				if ( isset( $posts_per_page ) ) {
-					$query .= " LIMIT 0, $posts_per_page";
-				}
-
-				/**
-				 * dropped get_posts() and used direct query to reduce load time
-				 *
-				 * @version 2.6
-				 * @author  Saad
-				 *
-				 * @var string $query MySQL query
-				 * @var array $args of arguments passed to function
-				 */
-				$query = apply_filters( 'automator_maybe_modify_wp_query', $query, $args );
-
-				$posts = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			}
-			// type set to array.
-			$options = array();
-
-			// if posts were found.
-			if ( $posts ) {
-
-				// loop through each post to set up individual options.
-				foreach ( $posts as $post ) {
-					$title = $post->post_title;
-
-					// set up a descriptive title for posts with no title.
-					if ( empty( $title ) ) {
-						/* translators: ID of recipe, trigger or action  */
-						$title = sprintf( esc_attr__( 'ID: %1$s (no title)', 'uncanny-automator' ), $post->ID );
-					}
-
-					// add post as an option.
-					$options[ $post->ID ] = $title;
-				}
-
-				// save fetched posts in a transient for 5 minutes for performance gains.
-				/**
-				 * Allow developers to modify transient times
-				 *
-				 * @version 2.6
-				 * @author  Saad
-				 */
-				$transient_time = apply_filters( 'automator_transient_time', Automator()->cache->expires );
-				Automator()->cache->set( $transient_key, $options, 'automator', $transient_time );
-			}
-		}
-
-		// do we need to add an any/all posts option
 		if ( $add_any_option ) {
-
-			// get extra option.
-			$any_option = $this->maybe_add_any_option( $add_any_option_label, $is_all_label );
-			$options    = $any_option + $options;
+			if ( $is_all_label ) {
+				$params['include_all'] = true;
+				$params['all_label']   = $this->resolve_any_option_label( $add_any_option_label, true );
+			} else {
+				$params['include_any'] = true;
+				$params['any_label']   = $this->resolve_any_option_label( $add_any_option_label, false );
+			}
 		}
+
+		$options = automator_wp_query( $params, 'legacy' );
 
 		return apply_filters( 'automator_modify_option_results', $options, $args );
+	}
+
+	/**
+	 * Resolve the Any/All label from legacy switch-case logic.
+	 *
+	 * @param string|null $label       The label passed to wp_query.
+	 * @param bool        $is_all      Whether this is an "All" label.
+	 *
+	 * @return string
+	 */
+	private function resolve_any_option_label( $label, $is_all ) {
+
+		if ( null === $label ) {
+			$label = $is_all
+				? esc_html_x( 'All', 'Uncanny Automator', 'uncanny-automator' )
+				: esc_html_x( 'Any page', 'Uncanny Automator', 'uncanny-automator' );
+		}
+
+		// If the label resolves via the legacy maybe_add_any_option switch, use it.
+		$resolved = $this->maybe_add_any_option( $label, $is_all );
+
+		// maybe_add_any_option returns [ '-1' => 'label' ].
+		return isset( $resolved['-1'] ) ? $resolved['-1'] : $label;
 	}
 
 	/**
@@ -1144,7 +1047,7 @@ ON p.post_parent = pp.ID AND pp.post_status = %s;",
 		if ( is_admin() && automator_filter_has_var( 'action' ) && 'edit' === automator_filter_input( 'action' ) && automator_filter_has_var( 'post' ) ) {
 			$post_id = absint( automator_filter_input( 'post' ) );
 			$post    = get_post( $post_id );
-			if ( $post && $post instanceof \WP_Post && 'uo-recipe' === $post->post_type ) {
+			if ( $post && $post instanceof \WP_Post && AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
 				return apply_filters( 'automator_do_load_options', true, $class_name );
 			}
 		}

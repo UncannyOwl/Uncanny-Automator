@@ -373,7 +373,7 @@ class Structure {
 			get_posts(
 				array(
 					'post_parent' => $recipe_id,
-					'post_type'   => array( 'uo-trigger', 'uo-action' ),
+					'post_type'   => array( AUTOMATOR_POST_TYPE_TRIGGER, AUTOMATOR_POST_TYPE_ACTION ),
 					'post_status' => array( 'draft', 'publish' ),
 				),
 				ARRAY_A
@@ -386,7 +386,7 @@ class Structure {
 			get_posts(
 				array(
 					'post_parent' => $recipe_id,
-					'post_type'   => 'uo-loop',
+					'post_type'   => AUTOMATOR_POST_TYPE_LOOP,
 					'post_status' => array( 'draft', 'publish' ),
 				),
 				ARRAY_A
@@ -402,7 +402,7 @@ class Structure {
 				get_posts(
 					array(
 						'post_parent' => $loop_id,
-						'post_type'   => 'uo-action',
+						'post_type'   => AUTOMATOR_POST_TYPE_ACTION,
 						'post_status' => array( 'draft', 'publish' ),
 					),
 					ARRAY_A
@@ -467,7 +467,7 @@ class Structure {
 
 			$items[ $code ] = array(
 				'name'           => $props['name'],
-				'icon'           => $props['icon_svg'],
+				'icon'           => $props['icon_svg'] ?? '',
 				'is_available'   => $this->is_integration_active( $code ),
 				'is_app'         => $this->has_settings_and_has_connected_prop( $code ),
 				'is_third_party' => $props['is_third_party'] ?? false,
@@ -496,7 +496,7 @@ class Structure {
 
 			$items[ $code ] = array(
 				'name'           => $props['name'],
-				'icon'           => $props['icon_svg'],
+				'icon'           => $props['icon_svg'] ?? '',
 				'is_available'   => $this->is_integration_active( $code ),
 				'is_app'         => $this->has_settings_and_has_connected_prop( $code ),
 				'is_third_party' => $props['is_third_party'] ?? false,

@@ -11,6 +11,7 @@
 namespace Uncanny_Automator\Api\Services\Integration\Utilities\Store;
 
 use Uncanny_Automator\Api\Components\Integration\Enums\Integration_Item_Types;
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
 use Uncanny_Automator\Api\Services\Integration\Integration_Registry_Service;
 
 /**
@@ -308,6 +309,6 @@ class Integration_Details_Normalizer {
 			return false;
 		}
 
-		return str_starts_with( $url, 'http://' ) || str_starts_with( $url, 'https://' );
+		return Str::starts_with( $url, 'http://' ) || Str::starts_with( $url, 'https://' );
 	}
 }

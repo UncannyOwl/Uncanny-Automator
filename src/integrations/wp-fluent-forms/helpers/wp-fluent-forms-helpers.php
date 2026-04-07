@@ -55,10 +55,6 @@ class Wp_Fluent_Forms_Helpers {
 	 * @throws Exception
 	 */
 	public function list_wp_fluent_forms( $label = null, $option_code = 'WPFFFORMS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Form', 'Wp Fluent Forms', 'uncanny-automator' );

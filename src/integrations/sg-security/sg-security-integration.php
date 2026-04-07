@@ -17,7 +17,7 @@ class Sg_Security_Integration extends \Uncanny_Automator\Integration {
 	protected function setup() {
 		$this->helpers = new Sg_Security_Helpers();
 		$this->set_integration( 'SG_SECURITY' );
-		$this->set_name( 'SG Security' );
+		$this->set_name( 'Security Optimizer' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/sg-security-icon.svg' );
 	}
 
@@ -36,7 +36,7 @@ class Sg_Security_Integration extends \Uncanny_Automator\Integration {
 	}
 
 	/**
-	 * Check if SG Security is active.
+	 * Check if Security Optimizer is active.
 	 *
 	 * @return bool
 	 */

@@ -54,10 +54,6 @@ class Bbpress_Helpers {
 	 * @return mixed
 	 */
 	public function list_bbpress_forums( $label = null, $option_code = 'BBFORUMS', $any_option = false ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! function_exists( 'bbp_get_forum_post_type' ) ) {
 

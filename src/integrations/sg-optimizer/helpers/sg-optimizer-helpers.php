@@ -10,7 +10,7 @@ namespace Uncanny_Automator\Integrations\Sg_Optimizer;
 class Sg_Optimizer_Helpers {
 
 	/**
-	 * Purge all SG Optimizer caches.
+	 * Purge all Speed Optimizer caches.
 	 *
 	 * Clears dynamic cache, file-based cache, memcached, and minified assets.
 	 *

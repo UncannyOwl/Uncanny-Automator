@@ -65,6 +65,10 @@ class Autonami_Helpers {
 	 */
 	public function get_lists() {
 
+		if ( ! class_exists( '\BWFCRM_Lists' ) ) {
+			return array();
+		}
+
 		$bwfcrm_lists = \BWFCRM_Lists::get_lists();
 
 		$lists = array();

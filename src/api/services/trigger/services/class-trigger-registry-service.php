@@ -81,7 +81,7 @@ class Trigger_Registry_Service {
 	 *
 	 * @return Trigger_Registry_Service Service instance.
 	 */
-	public static function get_instance(): Trigger_Registry_Service {
+	public static function instance(): Trigger_Registry_Service {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -107,25 +107,23 @@ class Trigger_Registry_Service {
 
 		$active_codes = \Uncanny_Automator\Set_Up_Automator::$active_integrations_code;
 
-		// Add built-in Pro integrations that don't require external plugins.
-		// These are always available when Automator Pro is active.
+		// Allow Pro (or any add-on) to append built-in integration codes that
+		// don't require external plugins. Core no longer ships a default list —
+		// Pro owns its own codes and registers them via the filter.
 		if ( defined( 'AUTOMATOR_PRO_FILE' ) ) {
-			// Default built-in integrations that don't depend on external plugins:
-			// - WEBHOOKS: incoming/outgoing webhooks
-			// - URL: URL parameter detection triggers
-			// Pro can filter this to add more (IFTTT, ZAPIER, INTEGRATELY, etc.).
-			$builtin_pro = array( 'WEBHOOKS', 'URL' );
-
 			/**
 			 * Filter the list of built-in Pro integrations.
 			 *
-			 * Allows Pro to add additional built-in integrations like IFTTT, ZAPIER, etc.
+			 * Pro and Pro add-ons hook into this filter to register integration
+			 * codes that are always available when Automator Pro is active
+			 * (WEBHOOKS, URL, IFTTT, ZAPIER, etc.). Core intentionally defaults
+			 * to an empty array so it stays ignorant of Pro integration codes.
 			 *
 			 * @since 7.0.0
 			 *
-			 * @param array $builtin_pro Default: ['WEBHOOKS'].
+			 * @param array $builtin_pro Starts empty — Pro populates it.
 			 */
-			$builtin_pro = apply_filters( 'automator_builtin_pro_integrations', $builtin_pro );
+			$builtin_pro = apply_filters( 'automator_builtin_pro_integrations', array() );
 
 			foreach ( $builtin_pro as $code ) {
 				if ( ! in_array( $code, $active_codes, true ) ) {
@@ -346,7 +344,7 @@ class Trigger_Registry_Service {
 				return $this->error_response(
 					'trigger_not_found',
 					"Trigger '{$trigger_code}' not found in registry."
-					. ' Use the search_components tool to discover available triggers.'
+					. ' Use the search tool to discover available triggers.'
 				);
 			}
 
@@ -559,7 +557,7 @@ class Trigger_Registry_Service {
 					'trigger_not_found',
 					'Trigger not found: '
 					. $trigger_code
-					. 'use the search_components tool to discover available triggers.'
+					. 'use the search tool to discover available triggers.'
 				);
 			}
 
@@ -572,7 +570,7 @@ class Trigger_Registry_Service {
 					'trigger_definition_not_found',
 					'Trigger definition not found: '
 					. $trigger_code
-					. 'use the search_components tool to discover available triggers.'
+					. 'use the search tool to discover available triggers.'
 				);
 			}
 

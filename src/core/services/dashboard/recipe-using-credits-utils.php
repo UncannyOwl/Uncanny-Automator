@@ -77,7 +77,7 @@ class Recipe_Using_Credits_Utils {
 	 */
 	public function fetch_actions_from_specific_integrations() {
 		$placeholders = implode( ', ', array_fill( 0, count( $this->integrations ), '%s' ) );
-		$parameters   = array( 'uo-action', 'publish', 'integration' );
+		$parameters   = array( AUTOMATOR_POST_TYPE_ACTION, 'publish', 'integration' );
 		$args         = array_merge( $parameters, $this->integrations );
 
 		$stmt = $this->db->prepare(
@@ -132,7 +132,7 @@ class Recipe_Using_Credits_Utils {
 
 		$recipe_ids = array();
 		foreach ( $loops_and_recipes as $_post ) {
-			$recipe_ids[] = 'uo-loop' === $_post['post_type'] ? $_post['post_parent'] : $_post['ID'];
+			$recipe_ids[] = AUTOMATOR_POST_TYPE_LOOP === $_post['post_type'] ? $_post['post_parent'] : $_post['ID'];
 		}
 		return (array) $recipe_ids;
 	}

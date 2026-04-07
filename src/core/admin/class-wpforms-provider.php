@@ -61,7 +61,6 @@ class WPForms_Uncanny_Automator extends WPForms_Provider {
 				)
 			);
 		}
-
 	}
 
 	/**
@@ -83,7 +82,9 @@ class WPForms_Uncanny_Automator extends WPForms_Provider {
 	public function is_marketing_page() {
 		return automator_filter_has_var( 'page' ) && 'wpforms-builder' === automator_filter_input( 'page' );
 	}
-
+	/**
+	 * Builder sidebar.
+	 */
 	public function builder_sidebar() {
 
 		if ( ! automator_filter_has_var( 'form_id' ) ) {
@@ -103,7 +104,7 @@ WHERE 1=1
 AND ( pm.`meta_key` LIKE %s OR pm.`meta_key` LIKE %s OR pm.`meta_key` LIKE %s )
 AND pm.`meta_value` LIKE %d
 GROUP BY p.post_parent",
-				'uo-trigger',
+				AUTOMATOR_POST_TYPE_TRIGGER,
 				'ANONWPFFORMS',
 				'WPFFORMS',
 				'ANONWPFSUBFORM',
@@ -140,8 +141,8 @@ GROUP BY p.post_parent",
 			'wpforms',
 			array(
 				'localize' => array(
-					'wpforms_uncannyautomator' => $this->get_js_strings()
-				)
+					'wpforms_uncannyautomator' => $this->get_js_strings(),
+				),
 			)
 		);
 	}
@@ -258,8 +259,8 @@ GROUP BY p.post_parent",
 		$new_recipe_url      = admin_url( $this->config['new_recipe'] ) . '&is_anon=yes&item_code=ANONWPFSUBFORM&nonce=' . $nonce;
 		$new_anon_recipe_url = admin_url( $this->config['new_recipe'] ) . '&is_anon=yes&item_code=ANONWPFSUBMITFIELD&nonce=' . $nonce;
 
-		$new_recipe_url          .= '&optionCode=ANONWPFFORMS&optionValue=' . $form_id . '&optionValue_readable=' . rawurlencode( $form->post_title );
-		$new_anon_recipe_url     .= '&optionCode=ANONWPFFORMS&optionValue=' . $form_id . '&optionValue_readable=' . rawurlencode( $form->post_title );
+		$new_recipe_url         .= '&optionCode=ANONWPFFORMS&optionValue=' . $form_id . '&optionValue_readable=' . rawurlencode( $form->post_title );
+		$new_anon_recipe_url    .= '&optionCode=ANONWPFFORMS&optionValue=' . $form_id . '&optionValue_readable=' . rawurlencode( $form->post_title );
 		$is_automator_pro_active = defined( 'AUTOMATOR_PRO_FILE' );
 		?>
 
@@ -399,7 +400,6 @@ GROUP BY p.post_parent",
 	 * @since 1.7.0
 	 */
 	public function integrations_tab_options( $active, $settings ) {
-
 	}
 
 	/**
@@ -410,7 +410,6 @@ GROUP BY p.post_parent",
 	 * @since 1.7.0
 	 */
 	public function install_button( $class = '' ) {
-
 	}
 
 	/**

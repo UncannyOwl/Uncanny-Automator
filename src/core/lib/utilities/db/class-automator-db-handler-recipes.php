@@ -267,7 +267,7 @@ class Automator_DB_Handler_Recipes {
 
 		$tbl = Automator()->db->tables->action;
 
-		$results = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed = 5 AND automator_recipe_log_id = $recipe_log_id" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$results = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}{$tbl} WHERE completed = 5 AND automator_recipe_log_id = %d", $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return apply_filters( 'automator_has_scheduled_actions', absint( $results ), $recipe_log_id, $args );
 	}

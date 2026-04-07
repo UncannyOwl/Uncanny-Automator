@@ -120,7 +120,7 @@ class Prune_Logs {
 	 */
 	public function dismiss_log_notification() {
 
-		if ( ! current_user_can( automator_get_admin_capability() ) || wp_verify_nonce( 'dismiss_log_notification', 'dismiss_log_notification' ) ) {
+		if ( ! current_user_can( automator_get_admin_capability() ) || ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'dismiss_log_notification' ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 			wp_die( 'Unauthorized.' );
 		}
 
@@ -371,6 +371,10 @@ class Prune_Logs {
 	 */
 	public function purge_logs_handler() {
 
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
+			wp_die( 'Unauthorized.' );
+		}
+
 		$prune_value = floatval( automator_filter_input( 'automator_manual_purge_days', INPUT_POST ) );
 
 		// Verify nonce.
@@ -593,6 +597,10 @@ class Prune_Logs {
 	 */
 	public function maybe_update_user_deleted_setting() {
 
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
+			return;
+		}
+
 		if ( ! automator_filter_has_var( '_wpnonce', INPUT_POST ) ) {
 			return;
 		}
@@ -617,6 +625,10 @@ class Prune_Logs {
 	 */
 	public function maybe_update_automator_delete_data_on_uninstall() {
 
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
+			return;
+		}
+
 		if ( ! automator_filter_has_var( '_wpnonce', INPUT_POST ) ) {
 			return;
 		}
@@ -640,6 +652,10 @@ class Prune_Logs {
 	 * @return void
 	 */
 	public function maybe_update_delete_recipe_on_completion_setting() {
+
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
+			return;
+		}
 
 		if ( ! automator_filter_has_var( '_wpnonce', INPUT_POST ) ) {
 			return;
@@ -668,7 +684,7 @@ class Prune_Logs {
 	public function get_logs_settings_url() {
 		return add_query_arg(
 			array(
-				'post_type' => 'uo-recipe',
+				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 				'page'      => 'uncanny-automator-config',
 				'tab'       => 'general',
 				'general'   => 'logs',

@@ -13,8 +13,13 @@ namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\Api\Services\Recipe\Recipe_Service;
+use Uncanny_Automator\Api\Services\Recipe\Utilities\Recipe_Validator;
+use Uncanny_Automator\Api\Services\User_Selector\User_Selector_Service;
+use Uncanny_Automator\Api\Services\Token\Validation\Token_Validator;
 use Uncanny_Automator\Api\Components\User\Value_Objects\User_Context;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Status;
+use Uncanny_Automator\Api\Services\Recipe\Utilities\Recipe_Link_Builder;
+use Uncanny_Automator\Api\Services\User_Selector\User_Selector_Advisor;
 use WP_Error;
 
 class Save_Recipe_Tool extends Abstract_MCP_Tool {
@@ -30,32 +35,27 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 	 * {@inheritDoc}
 	 */
 	public function get_description() {
-		return 'Create a new recipe or update an existing recipe. Omit recipe_id to create a draft. Include recipe_id to update title, status, notes, throttling, or execution limits. ALWAYS send back the recipe link when createing or updating.';
+		return 'Create a new recipe or update an existing recipe. Omit recipe_id to create a draft. Include recipe_id to update title, status, notes, throttling, or execution limits. '
+			. 'Pass user_selector to configure which user actions execute on (required for anonymous recipes needing user context). '
+			. 'ALWAYS send back the recipe link when creating or updating.';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function get_annotations(): array {
+		return array(
+			'readOnlyHint'    => false,
+			'destructiveHint' => false,
+			'idempotentHint'  => false,
+			'openWorldHint'   => true,
+		);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	protected function schema_definition() {
-		// Get existing categories for enum.
-		$category_terms = get_terms(
-			array(
-				'taxonomy'   => 'recipe_category',
-				'hide_empty' => false,
-				'fields'     => 'slugs',
-			)
-		);
-		$category_slugs = is_array( $category_terms ) ? array_values( $category_terms ) : array();
-
-		// Get existing tags for enum.
-		$tag_terms = get_terms(
-			array(
-				'taxonomy'   => 'recipe_tag',
-				'hide_empty' => false,
-				'fields'     => 'slugs',
-			)
-		);
-		$tag_slugs = is_array( $tag_terms ) ? array_values( $tag_terms ) : array();
 
 		return array(
 			'type'       => 'object',
@@ -92,18 +92,16 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 				),
 				'categories'     => array(
 					'type'        => 'array',
-					'description' => 'Recipe categories (slugs). Use existing categories from the enum. Categories help organize recipes.',
+					'description' => 'Recipe categories (slugs). Use get_terms tool to discover available categories.',
 					'items'       => array(
 						'type' => 'string',
-						'enum' => $category_slugs,
 					),
 				),
 				'tags'           => array(
 					'type'        => 'array',
-					'description' => 'Recipe tags (slugs). Use existing tags from the enum. Tags provide additional labeling.',
+					'description' => 'Recipe tags (slugs). Use get_terms tool to discover available tags.',
 					'items'       => array(
 						'type' => 'string',
-						'enum' => $tag_slugs,
 					),
 				),
 				'throttle'       => array(
@@ -146,7 +144,101 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 					'description' => 'URL to redirect users to when the recipe completes. Leave empty to remove redirect. When provided, automatically creates or updates a redirect closure.',
 					'format'      => 'uri',
 				),
+				'user_selector'  => array(
+					'type'        => 'object',
+					'description' => 'User selector configuration. Determines which user actions execute on. Required for anonymous recipes needing user context. Omit to leave user selector unchanged.',
+					'properties'  => array(
+						'source'             => array(
+							'type'        => 'string',
+							'description' => '"existingUser" (find by field) or "newUser" (create user).',
+							'enum'        => array( 'existingUser', 'newUser' ),
+						),
+						'unique_field'       => array(
+							'type'        => 'string',
+							'description' => 'For existingUser: field to identify user.',
+							'enum'        => array( 'email', 'id', 'username' ),
+						),
+						'unique_field_value' => array(
+							'type'        => 'string',
+							'description' => 'For existingUser: value to match. Supports tokens like {{user_email}}.',
+						),
+						'fallback'           => array(
+							'type'        => 'string',
+							'description' => 'Fallback behavior. existingUser: "create-new-user" or "do-nothing". newUser: "select-existing-user" or "do-nothing".',
+							'enum'        => array( 'create-new-user', 'do-nothing', 'select-existing-user' ),
+						),
+						'prioritized_field'  => array(
+							'type'        => 'string',
+							'description' => 'For newUser with fallback=select-existing-user: which field to check first for duplicates.',
+							'enum'        => array( 'email', 'username' ),
+						),
+						'user_data'          => array(
+							'type'        => 'object',
+							'description' => 'User data. Required for newUser, optional for existingUser with create-new-user fallback.',
+							'properties'  => array(
+								'email'       => array(
+									'type' => 'string',
+									'description' => 'User email. Supports tokens.',
+								),
+								'username'    => array(
+									'type' => 'string',
+									'description' => 'User login name. Supports tokens.',
+								),
+								'firstName'   => array(
+									'type' => 'string',
+									'description' => 'First name.',
+								),
+								'lastName'    => array(
+									'type' => 'string',
+									'description' => 'Last name.',
+								),
+								'displayName' => array(
+									'type' => 'string',
+									'description' => 'Display name.',
+								),
+								'password'    => array(
+									'type' => 'string',
+									'description' => 'Password. Empty = auto-generate.',
+								),
+								'role'        => array(
+									'type' => 'string',
+									'description' => 'WordPress role.',
+									'default' => 'subscriber',
+								),
+								'logUserIn'   => array(
+									'type' => 'boolean',
+									'description' => 'Log user in after creation.',
+									'default' => false,
+								),
+							),
+						),
+					),
+				),
 			),
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'recipe_id'  => array( 'type' => 'integer' ),
+				'recipe'     => array( 'type' => 'object' ),
+				'links'      => array(
+					'type'       => 'object',
+					'properties' => array(
+						'edit_recipe' => array( 'type' => 'string' ),
+					),
+				),
+				'notes'      => array(
+					'type' => 'array',
+					'items' => array( 'type' => 'string' ),
+				),
+			),
+			'required'   => array( 'recipe_id', 'recipe', 'links' ),
 		);
 	}
 
@@ -157,16 +249,14 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 		$this->require_authenticated_executor( $user_context );
 
 		$recipe_id = isset( $params['recipe_id'] ) ? (int) $params['recipe_id'] : 0;
-		if ( ! $recipe_id && isset( $params['id'] ) ) {
-			$recipe_id = (int) $params['id'];
-		}
 
-		// Extract taxonomy params before passing to service (service doesn't handle taxonomies).
-		$categories = $params['categories'] ?? null;
-		$tags       = $params['tags'] ?? null;
-		unset( $params['categories'], $params['tags'] );
+		// Extract taxonomy and user_selector params before passing to service.
+		$categories    = $params['categories'] ?? null;
+		$tags          = $params['tags'] ?? null;
+		$user_selector = $params['user_selector'] ?? null;
+		unset( $params['categories'], $params['tags'], $params['user_selector'] );
 
-		// Validate redirect_url scheme if provided.
+		// Validate redirect_url scheme if provided (transport-level input validation).
 		if ( ! empty( $params['redirect_url'] ) ) {
 			$parsed = wp_parse_url( $params['redirect_url'] );
 			if ( ! isset( $parsed['scheme'] ) || ! in_array( $parsed['scheme'], array( 'http', 'https' ), true ) ) {
@@ -176,9 +266,26 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 
 		$service = Recipe_Service::instance();
 
+		// Pre-publish validation (service-layer checks).
+		$wants_publish = isset( $params['status'] ) && 'publish' === $params['status'];
+		if ( $wants_publish && $recipe_id > 0 ) {
+			$validator = new Recipe_Validator();
+			$readiness = $validator->validate_publish_readiness( $recipe_id );
+			if ( is_wp_error( $readiness ) ) {
+				return Json_Rpc_Response::create_error_response( $readiness->get_error_message() );
+			}
+
+			// Block publish if anonymous recipe needs user selector.
+			$advisor        = new User_Selector_Advisor();
+			$selector_error = $advisor->check_on_publish( $recipe_id );
+			if ( null !== $selector_error ) {
+				return Json_Rpc_Response::create_error_response( $selector_error );
+			}
+		}
+
 		try {
 			if ( $recipe_id > 0 ) {
-				// Update existing recipe
+				// Update existing recipe.
 				unset( $params['recipe_id'] );
 				$params['id'] = $recipe_id;
 
@@ -192,14 +299,21 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 					$recipe_id = (int) $recipe_data['id'];
 				}
 
-				// Handle taxonomy assignment after successful update.
-				$this->assign_taxonomies( $recipe_id, $categories, $tags );
+				// Taxonomy assignment via service layer.
+				$service->assign_taxonomies( $recipe_id, $categories, $tags );
+
+				// Handle user_selector if provided — fail the operation on error.
+				$us_result = $this->save_user_selector_if_present( $recipe_id, $user_selector );
+				if ( is_wp_error( $us_result ) ) {
+					return Json_Rpc_Response::create_error_response(
+						'Recipe updated but user selector save failed: ' . $us_result->get_error_message()
+					);
+				}
 
 				$payload = array(
-					'recipe_id'  => $recipe_id,
-					'recipe'     => $recipe_data,
-					'links'      => $this->build_recipe_links( $recipe_id ),
-					'next_steps' => $this->build_recipe_next_steps( $recipe_id ),
+					'recipe_id' => $recipe_id,
+					'recipe'    => $recipe_data,
+					'links'     => ( new Recipe_Link_Builder() )->build_links( $recipe_id ),
 				);
 
 				if ( isset( $result['message'] ) && '' !== $result['message'] ) {
@@ -208,7 +322,7 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 
 				return Json_Rpc_Response::create_success_response( 'Recipe updated successfully', $payload );
 			} else {
-				// Create new recipe
+				// Create new recipe.
 				$result = $service->create_recipe( $params );
 				if ( is_wp_error( $result ) ) {
 					return Json_Rpc_Response::create_error_response( $result->get_error_message() );
@@ -217,14 +331,26 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 				$recipe_data = $result['recipe'] ?? array();
 				$created_id  = isset( $result['recipe_id'] ) ? (int) $result['recipe_id'] : (int) ( $recipe_data['id'] ?? 0 );
 
-				// Handle taxonomy assignment after successful creation.
-				$this->assign_taxonomies( $created_id, $categories, $tags );
+				// Taxonomy assignment via service layer.
+				$service->assign_taxonomies( $created_id, $categories, $tags );
+
+				// Handle user_selector if provided — include created_id in error so caller can reconcile.
+				$us_result = $this->save_user_selector_if_present( $created_id, $user_selector );
+				if ( is_wp_error( $us_result ) ) {
+					return Json_Rpc_Response::create_error_response(
+						'Recipe created (recipe_id: ' . $created_id . ') but user selector save failed: ' . $us_result->get_error_message(),
+						array(
+							'recipe_id' => $created_id,
+							'recipe'    => $recipe_data,
+							'links'     => ( new Recipe_Link_Builder() )->build_links( $created_id ),
+						)
+					);
+				}
 
 				$payload = array(
-					'recipe_id'  => $created_id,
-					'recipe'     => $recipe_data,
-					'links'      => $this->build_recipe_links( $created_id ),
-					'next_steps' => $this->build_recipe_next_steps( $created_id ),
+					'recipe_id' => $created_id,
+					'recipe'    => $recipe_data,
+					'links'     => ( new Recipe_Link_Builder() )->build_links( $created_id ),
 				);
 
 				if ( isset( $result['message'] ) && '' !== $result['message'] ) {
@@ -241,85 +367,54 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
-	 * Assign categories and tags to a recipe.
+	 * Save user selector if provided.
 	 *
-	 * @param int        $recipe_id  Recipe post ID.
-	 * @param array|null $categories Category slugs to assign.
-	 * @param array|null $tags       Tag slugs to assign.
-	 * @return void
-	 */
-	private function assign_taxonomies( int $recipe_id, ?array $categories, ?array $tags ): void {
-		if ( $recipe_id <= 0 ) {
-			return;
-		}
-
-		// Assign categories if provided (replaces existing).
-		if ( is_array( $categories ) ) {
-			$sanitized_cats = array_map( 'sanitize_title', $categories );
-			wp_set_object_terms( $recipe_id, $sanitized_cats, 'recipe_category' );
-		}
-
-		// Assign tags if provided (replaces existing).
-		if ( is_array( $tags ) ) {
-			$sanitized_tags = array_map( 'sanitize_title', $tags );
-			wp_set_object_terms( $recipe_id, $sanitized_tags, 'recipe_tag' );
-		}
-	}
-
-	/**
-	 * Build useful admin/front-end links for a recipe.
+	 * Delegates token validation, admin check, and persistence to service-layer classes.
+	 * Returns WP_Error on failure so the caller can decide whether to fail or warn.
 	 *
-	 * @param int $recipe_id Recipe post ID.
-	 * @return array Links keyed by purpose.
-	 */
-	private function build_recipe_links( int $recipe_id ): array {
-		if ( $recipe_id <= 0 ) {
-			return array();
-		}
-
-		$edit_link = get_edit_post_link( $recipe_id, 'raw' );
-		if ( ! is_string( $edit_link ) || '' === $edit_link ) {
-			return array();
-		}
-
-		return array(
-			'edit_recipe' => $edit_link,
-		);
-	}
-
-	/**
-	 * Suggest sensible follow-up calls for agents after creating/updating a recipe.
+	 * @param int        $recipe_id     Recipe ID.
+	 * @param array|null $user_selector User selector data from params.
 	 *
-	 * @param int $recipe_id Recipe post ID.
-	 * @return array Structured follow-up suggestions.
+	 * @return true|\WP_Error True on success (or no-op), WP_Error on failure.
 	 */
-	private function build_recipe_next_steps( int $recipe_id ): array {
-		if ( $recipe_id <= 0 ) {
-			return array();
+	private function save_user_selector_if_present( int $recipe_id, ?array $user_selector ) {
+		if ( null === $user_selector || empty( $user_selector ) || $recipe_id <= 0 ) {
+			return true;
 		}
 
-		return array(
-			'add_trigger' => array(
-				'tool'   => 'add_trigger',
-				'params' => array(
-					'recipe_id' => $recipe_id,
-				),
-				'hint'   => 'Recipes need at least one trigger before they can run.',
-			),
-			'add_action'  => array(
-				'tool'   => 'add_action',
-				'params' => array(
-					'recipe_id' => $recipe_id,
-				),
-				'hint'   => 'Add at least one action so the recipe does something useful.',
-			),
-			'list_tokens' => array(
-				'tool'   => 'get_recipe_tokens',
-				'params' => array(
-					'recipe_id' => $recipe_id,
-				),
-				'hint'   => 'Use recipe tokens to personalise action fields.',
-			),
-		);
+		// Validate tokens in user selector fields.
+		$fields_to_validate = array();
+		if ( isset( $user_selector['unique_field_value'] ) ) {
+			$fields_to_validate['unique_field_value'] = $user_selector['unique_field_value'];
+		}
+		if ( isset( $user_selector['user_data'] ) && is_array( $user_selector['user_data'] ) ) {
+			foreach ( $user_selector['user_data'] as $key => $value ) {
+				if ( is_string( $value ) && ! empty( $value ) ) {
+					$fields_to_validate[ 'user_data_' . $key ] = $value;
+				}
+			}
+		}
+
+		if ( ! empty( $fields_to_validate ) ) {
+			$validation = Token_Validator::validate( $recipe_id, $fields_to_validate );
+			if ( ! $validation['valid'] ) {
+				return new WP_Error( 'user_selector_token_error', 'User selector token validation failed: ' . $validation['message'] );
+			}
+		}
+
+		// Reject static (non-token) values that resolve to an administrator (service-layer check).
+		$us_service  = User_Selector_Service::instance();
+		$admin_error = $us_service->validate_user_selector_not_admin( $user_selector );
+		if ( is_wp_error( $admin_error ) ) {
+			return $admin_error;
+		}
+
+		$result = $us_service->save_user_selector( $recipe_id, $user_selector );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		return true;
 	}
 }

@@ -1,160 +1,123 @@
 <?php
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Zoho_Campaigns;
 
 /**
- * Class Zoho_Campaigns_List_Add
+ * Create a new list in Zoho Campaigns.
  *
- * @package Uncanny_Automator
+ * @property Zoho_Campaigns_App_Helpers $helpers
+ * @property Zoho_Campaigns_Api_Caller $api
  */
-class Zoho_Campaigns_List_Add {
-
-	use Recipe\Actions;
-	use Recipe\Action_Tokens;
+class ZOHO_CAMPAIGNS_LIST_ADD extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * Method __construct
+	 * Setup action.
 	 *
 	 * @return void
 	 */
-	public function __construct() {
-
-		$this->setup_action();
-
-	}
-
-	/**
-	 * Setups the Action.
-	 *
-	 * @return void
-	 */
-	public function setup_action() {
-
+	protected function setup_action() {
 		$this->set_integration( 'ZOHO_CAMPAIGNS' );
-
 		$this->set_action_code( 'ZOHO_CAMPAIGNS_LIST_ADD' );
-
 		$this->set_action_meta( 'ZOHO_CAMPAIGNS_LIST_ADD_META' );
-
 		$this->set_is_pro( false );
-
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/zoho-campaigns/' ) );
-
 		$this->set_requires_user( false );
-
-		/* translators: Action sentence */
-		$this->set_sentence( sprintf( esc_attr__( 'Create {{a list:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
-
-		$this->set_readable_sentence( esc_attr__( 'Create {{a list}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
 		$this->set_background_processing( true );
+		$this->set_readable_sentence( esc_html_x( 'Create {{a list}}', 'Zoho Campaigns', 'uncanny-automator' ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: %s: list meta
+				esc_html_x( 'Create {{a list:%s}}', 'Zoho Campaigns', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
+		);
 
 		$this->set_action_tokens(
 			array(
-				'LIST_ID' => array(
-					'name' => esc_attr__( 'List ID', 'uncanny-automator' ),
+				'LIST_KEY'  => array(
+					'name' => esc_html_x( 'List key', 'Zoho Campaigns', 'uncanny-automator' ),
+					'type' => 'text',
+				),
+				'LIST_NAME' => array(
+					'name' => esc_html_x( 'List name', 'Zoho Campaigns', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
 			$this->get_action_code()
 		);
-
-		$this->register_action();
-
 	}
 
 	/**
 	 * Loads options.
 	 *
-	 * @return void.
+	 * @return array
 	 */
-	public function load_options() {
-
-		return Automator()->utilities->keep_order_of_options(
+	public function options() {
+		return array(
 			array(
-				'options_group' => array(
-					$this->get_action_meta() => array(
-						array(
-							'option_code' => $this->get_action_meta(),
-							/* translators: Action field */
-							'label'       => esc_attr__( 'List name', 'uncanny-automator' ),
-							'input_type'  => 'text',
-							'required'    => true,
-						),
-						array(
-							'option_code' => 'SIGNUP_FORM',
-							/* translators: Action field */
-							'label'       => esc_attr__( 'Signup form', 'uncanny-automator' ),
-							'input_type'  => 'select',
-							'options'     => array(
-								'private' => esc_html__( 'Private', 'uncanny-automator' ),
-								'public'  => esc_html__( 'Public', 'uncanny-automator' ),
-							),
-							'required'    => true,
-						),
-						array(
-							'option_code' => 'EMAILS',
-							/* translators: Action field */
-							'label'       => esc_attr__( 'Emails', 'uncanny-automator' ),
-							'description' => esc_attr__( 'Max 10 emails separated by comma', 'uncanny-automator' ),
-							'input_type'  => 'text',
-							'required'    => true,
-						),
+				'option_code' => $this->get_action_meta(),
+				'label'       => esc_html_x( 'List name', 'Zoho Campaigns', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => true,
+			),
+			array(
+				'option_code' => 'SIGNUP_FORM',
+				'label'       => esc_html_x( 'Signup form type', 'Zoho Campaigns', 'uncanny-automator' ),
+				'input_type'  => 'select',
+				'required'    => true,
+				'options'     => array(
+					array(
+						'text'  => esc_html_x( 'Private', 'Zoho Campaigns', 'uncanny-automator' ),
+						'value' => 'private',
+					),
+					array(
+						'text'  => esc_html_x( 'Public', 'Zoho Campaigns', 'uncanny-automator' ),
+						'value' => 'public',
 					),
 				),
-			)
+			),
+			array(
+				'option_code' => 'EMAILS',
+				'label'       => esc_html_x( 'Email addresses', 'Zoho Campaigns', 'uncanny-automator' ),
+				'input_type'  => 'textarea',
+				'required'    => true,
+				'description' => esc_html_x( 'Max 10 emails separated by comma.', 'Zoho Campaigns', 'uncanny-automator' ),
+			),
 		);
-
 	}
 
 	/**
 	 * Processes the action.
 	 *
-	 * @return void.
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool True on success.
 	 */
-	public function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$list_name   = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
-		$email_ids   = isset( $parsed['EMAILS'] ) ? sanitize_text_field( $parsed['EMAILS'] ) : 0;
-		$signup_form = isset( $parsed['SIGNUP_FORM'] ) ? sanitize_text_field( $parsed['SIGNUP_FORM'] ) : 0;
+		$list_name   = sanitize_text_field( $parsed[ $this->get_action_meta() ] ?? '' );
+		$signup_form = sanitize_text_field( $parsed['SIGNUP_FORM'] ?? 'private' );
+		$emails      = sanitize_text_field( $parsed['EMAILS'] ?? '' );
 
-		try {
+		$response = $this->api->list_add(
+			array(
+				'list_name'   => $list_name,
+				'signup_form' => $signup_form,
+				'email_ids'   => $emails,
+			),
+			$action_data
+		);
 
-			$this->set_helpers( new Zoho_Campaigns_Helpers( false ) );
+		$this->hydrate_tokens(
+			array(
+				'LIST_NAME' => $list_name,
+				'LIST_KEY'  => $response['data']['list_key'] ?? '',
+			)
+		);
 
-			$this->get_helpers()->require_dependency( 'client/actions/zoho-campaigns-actions' );
-			$this->get_helpers()->require_dependency( 'client/auth/zoho-campaigns-client-auth' );
-
-			$zoho_actions = new Zoho_Campaigns_Actions( Api_Server::get_instance(), new Zoho_Campaigns_Client_Auth() );
-
-			$response = $zoho_actions->list_add(
-				array(
-					'list_name'   => $list_name,
-					'email_ids'   => $email_ids,
-					'signup_form' => $signup_form,
-				),
-				$action_data
-			);
-
-			$this->hydrate_tokens(
-				array(
-					'LIST_ID' => isset( $response['data']['listkey'] ) ? $response['data']['listkey'] : '',
-				)
-			);
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-			return false;
-
-		}
-
-		Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
+		return true;
 	}
-
 }

@@ -1,9 +1,11 @@
 <?php
-namespace Uncanny_Automator\Integrations\Mautic;
 
-$integration = __NAMESPACE__ . '\\Mautic_Integration';
-
-// Only load when WordPress loads it and if the integration class exists.
-if ( defined( 'ABSPATH' ) && class_exists( $integration ) ) {
-	return new $integration();
+if ( ! defined( 'ABSPATH' ) ) {
+	return;
 }
+
+if ( ! class_exists( 'Uncanny_Automator\Integrations\Mautic\Mautic_Integration' ) ) {
+	return;
+}
+
+new Uncanny_Automator\Integrations\Mautic\Mautic_Integration();

@@ -1,21 +1,21 @@
 <?php
-namespace Uncanny_Automator;
 
-use Uncanny_Automator\OpenAI\HTTP_Client;
-use Uncanny_Automator\Recipe;
+namespace Uncanny_Automator\Integrations\OpenAI;
+
+use Uncanny_Automator\Recipe\App_Action;
 
 /**
- * Class OPEN_AI_IMAGE_GENERATE
+ * Class OPEN_AI_IMAGE_GENERATE_DALL_E
  *
  * @package Uncanny_Automator
  *
  * @since 5.3  - Added Dall-E-3 and Dall-E-3 (hd).
  * @since 4.11 - Intro.
+ *
+ * @property OpenAI_App_Helpers $helpers
+ * @property OpenAI_Api_Caller $api
  */
-class OPEN_AI_IMAGE_GENERATE_DALL_E {
-
-	use Recipe\Actions;
-	use Recipe\Action_Tokens;
+class OPEN_AI_IMAGE_GENERATE_DALL_E extends App_Action {
 
 	/**
 	 * Default Model.
@@ -27,7 +27,7 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 	/**
 	 * Default HTTP request body.
 	 *
-	 * @var (string|int)[]
+	 * @var array
 	 */
 	private $default_request_body = array(
 		'model'  => 'dall-e-2',
@@ -37,23 +37,7 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 	);
 
 	/**
-	 * Constructor.
-	 *
 	 * @return void
-	 */
-	public function __construct() {
-
-		$this->set_helpers( new Open_AI_Helpers( false ) );
-
-		$this->setup_action();
-
-		add_action( 'wp_ajax_automator_openai_generate_sizes', array( $this, 'generate_sizes' ) );
-	}
-
-	/**
-	 * Setup Action.
-	 *
-	 * @return void.
 	 */
 	protected function setup_action() {
 
@@ -62,44 +46,46 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 		$this->set_action_meta( 'OPEN_AI_IMAGE_GENERATE_META' );
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/open-ai/' ) );
 		$this->set_requires_user( false );
+		$this->set_wpautop( false );
+		$this->set_background_processing( false );
 
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
+				// translators: %1$s is the input field name
 				esc_attr_x( 'Use {{a prompt:%1$s}} to generate an image with DALL-E', 'OpenAI', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
 		);
 
-		/* translators: Action sentence */
 		$this->set_readable_sentence( esc_attr_x( 'Use {{a prompt}} to generate an image with DALL-E', 'OpenAI', 'uncanny-automator' ) );
 
-		$this->set_options_callback( array( $this, 'load_options' ) );
-		$this->set_wpautop( false );
-
-		// Disable background processing.
-		$this->set_background_processing( false );
-
 		$this->set_action_tokens( $this->create_action_tokens(), $this->get_action_code() );
-		$this->register_action();
+
+		add_action( 'wp_ajax_automator_openai_generate_sizes', array( $this, 'generate_sizes' ) );
 	}
 
 	/**
-	 * Loads options.
-	 *
-	 * @return array The list of option fields.
+	 * @return array
 	 */
-	public function load_options() {
+	public function options() {
 
 		$model = array(
 			'option_code'           => 'MODEL',
-			/* translators: Action field */
 			'label'                 => esc_attr_x( 'Model', 'OpenAI', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'options'               => array(
-				'dall-e-3'           => esc_attr_x( 'Dall-E 3', 'OpenAI', 'uncanny-automator' ),
-				'dall-e-3-hd'        => esc_attr_x( 'Dall-E 3 HD', 'OpenAI', 'uncanny-automator' ),
-				$this->default_model => esc_attr_x( 'Dall-E 2', 'OpenAI', 'uncanny-automator' ),
+				array(
+					'value' => 'dall-e-3',
+					'text'  => esc_attr_x( 'Dall-E 3', 'OpenAI', 'uncanny-automator' ),
+				),
+				array(
+					'value' => 'dall-e-3-hd',
+					'text'  => esc_attr_x( 'Dall-E 3 HD', 'OpenAI', 'uncanny-automator' ),
+				),
+				array(
+					'value' => $this->default_model,
+					'text'  => esc_attr_x( 'Dall-E 2', 'OpenAI', 'uncanny-automator' ),
+				),
 			),
 			'required'              => false,
 			'default_value'         => $this->default_model,
@@ -109,7 +95,6 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 
 		$image_size = array(
 			'option_code'     => 'SIZE',
-			/* translators: Action field */
 			'label'           => esc_attr_x( 'Size', 'OpenAI', 'uncanny-automator' ),
 			'input_type'      => 'select',
 			'options'         => array(),
@@ -121,32 +106,17 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 			'options_show_id' => false,
 		);
 
-		$prompt = array(
-			'option_code'       => $this->get_action_meta(),
-			/* translators: Action field */
-			'label'             => esc_attr_x( 'Prompt', 'OpenAI', 'uncanny-automator' ),
-			'input_type'        => 'textarea',
-			'supports_markdown' => true,
-			'required'          => true,
-		);
-
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options_group' => array(
-					$this->get_action_meta() => array(
-						$model,
-						$image_size,
-						$prompt,
-					),
-				),
-			)
+		return array(
+			$model,
+			$image_size,
+			$this->helpers->get_prompt_field( $this->get_action_meta() ),
 		);
 	}
 
 	/**
 	 * Generates sizes endpoint for our OpenAI action.
 	 *
-	 * @return (true|string[][])[]
+	 * @return void
 	 */
 	public function generate_sizes() {
 
@@ -184,7 +154,6 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 					'value' => '1792x1024',
 				),
 			);
-
 		}
 
 		wp_send_json(
@@ -198,14 +167,13 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 	/**
 	 * Creates an HTTP Request body for OpenAI Consumption.
 	 *
-	 * @param string  $model
-	 * @param mixed[] $args
+	 * @param string $model The model.
+	 * @param array  $args The arguments.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	protected function create_body( $model, $args ) {
 
-		// Apply default if empty.
 		if ( empty( $model ) ) {
 			$model = $this->default_model;
 		}
@@ -221,15 +189,13 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 	}
 
 	/**
-	 * Processes action.
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
-	 *
-	 * @return void.
+	 * @return bool
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
@@ -237,56 +203,28 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 		$size   = isset( $parsed['SIZE'] ) ? $parsed['SIZE'] : '1024x1024';
 		$model  = isset( $parsed['MODEL'] ) ? $parsed['MODEL'] : $this->default_model;
 
-		try {
+		$request_args = array(
+			'model'  => $model,
+			'prompt' => $prompt,
+			'size'   => $size,
+			'n'      => 1,
+		);
 
-			$args = array(
-				'model'  => 'gpt-image-1',
-				'prompt' => $prompt,
-				'size'   => '1024x1024',
-				'n'      => 1,
-			);
+		$body = $this->create_body( $model, $request_args );
+		$body = apply_filters( 'automator_openai_image_generate', $body );
 
-			$body = $this->create_body( $model, $args );
+		$response = $this->api->openai_request( 'v1/images/generations', $body );
 
-			$body = apply_filters( 'automator_openai_image_generate', $body );
+		$attachment_id = $this->insert_to_media( $response['data'][0]['url'], $prompt );
+		$this->hydrate_tokens_from_response( $response, $attachment_id );
 
-			require_once dirname( __DIR__ ) . '/client/http-client.php';
-
-			$client = new HTTP_Client( Api_Server::get_instance() );
-			$client->set_endpoint( 'v1/images/generations' );
-			$client->set_api_key( (string) automator_get_option( 'automator_open_ai_secret', '' ) );
-			$client->set_request_body( $body );
-
-			try {
-
-				$client->send_request();
-				$response = $client->get_response();
-				// Hydrates tokens based on the generated image.
-				$attachment_id = $this->insert_to_media( $response['data'][0]['url'], $prompt );
-				$this->hydrate_tokens_from_response( $response, $attachment_id );
-
-			} catch ( \Exception $e ) {
-
-				$action_data['complete_with_errors'] = true;
-				return Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-			}
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-		}
+		return true;
 	}
 
 	/**
 	 * Inserts the image URL to the media library.
 	 *
-	 * @param string $image_url The image url.
+	 * @param string $image_url The image URL.
 	 * @param string $prompt The prompt.
 	 *
 	 * @return int The attachment ID.
@@ -302,7 +240,7 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 		$attachment_id = media_sideload_image( $image_url, null, $description, 'id' );
 
 		if ( is_wp_error( $attachment_id ) ) {
-			automator_log( $attachment_id->get_error_message(), 'OpenAI insert_to_media error', true, 'openai' );
+			throw new \Exception( esc_html( $attachment_id->get_error_message() ), 500 );
 		}
 
 		return $attachment_id;
@@ -311,9 +249,10 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 	/**
 	 * Hydrates this specific action tokens.
 	 *
-	 * @param array $response.
+	 * @param array    $response The API response.
+	 * @param int|null $attachment_id The attachment ID.
 	 *
-	 * @return self
+	 * @return void
 	 */
 	protected function hydrate_tokens_from_response( $response, $attachment_id ) {
 
@@ -336,20 +275,20 @@ class OPEN_AI_IMAGE_GENERATE_DALL_E {
 	/**
 	 * Creates Action Tokens.
 	 *
-	 * @return string[][]
+	 * @return array
 	 */
 	private function create_action_tokens() {
 		return array(
 			'ATTACHMENT_ID'        => array(
-				'name' => esc_html_x( 'Attachment ID', 'Open Ai', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Attachment ID', 'OpenAI', 'uncanny-automator' ),
 				'type' => 'int',
 			),
 			'ATTACHMENT_URL'       => array(
-				'name' => esc_html_x( 'Attachment URL', 'Open Ai', 'uncanny-automator' ),
+				'name' => esc_html_x( 'Attachment URL', 'OpenAI', 'uncanny-automator' ),
 				'type' => 'url',
 			),
 			'OPENAI_GEN_IMAGE_URL' => array(
-				'name' => esc_html_x( 'OpenAI generated image URL', 'Open Ai', 'uncanny-automator' ),
+				'name' => esc_html_x( 'OpenAI generated image URL', 'OpenAI', 'uncanny-automator' ),
 				'type' => 'url',
 			),
 		);

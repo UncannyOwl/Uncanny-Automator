@@ -81,6 +81,6 @@ class Triggers_Post_Type {
 			),
 		);
 
-		register_post_type( 'uo-trigger', apply_filters( 'automator_post_type_trigger_args', $args ) );
+		register_post_type( AUTOMATOR_POST_TYPE_TRIGGER, apply_filters( 'automator_post_type_trigger_args', $args ) );
 	}
 }

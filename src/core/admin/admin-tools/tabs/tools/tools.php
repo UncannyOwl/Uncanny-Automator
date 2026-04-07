@@ -45,7 +45,7 @@ class Admin_Tools_Tabs_Tools {
 		$this->validate_request();
 
 		$query_params = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-admin-tools',
 			'tab'       => 'tools',
 		);
@@ -103,7 +103,7 @@ class Admin_Tools_Tabs_Tools {
 		automator_update_option( 'automator_db_size', $total_size, 'no' );
 
 		$query_params = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-admin-tools',
 			'tab'       => 'tools',
 			'purged'    => 'true',

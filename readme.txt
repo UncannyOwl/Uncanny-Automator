@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
-Tested up to: 6.9.1
+Tested up to: 6.9.4
 Requires PHP: 7.4
-Stable tag: 7.1.0.1
+Stable tag: 7.2.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -222,8 +222,8 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [SG Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [SG Security](https://automatorplugin.com/integration/sg-security/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Speed Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Security Optimizer](https://automatorplugin.com/integration/sg-security/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Sugar Calendar](https://automatorplugin.com/integration/sugar-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -418,120 +418,84 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 7.1.0.1 [2026-03-02] =
-
-**Fixed:**
-
-* Fixed a PHP error on PHP 7.4 sites caused by throw expressions #6814
-
-= 7.1.0 [2026-02-27] =
-
-**New Plugin Integrations:**
-
-* [All in One SEO](https://automatorplugin.com/integration/all-in-one-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6648
-* [Cloudflare](https://automatorplugin.com/integration/cloudflare/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6694
-* [Easy WP SMTP](https://automatorplugin.com/integration/easy-wp-smtp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6696
-* [LiteSpeed Cache](https://automatorplugin.com/integration/litespeed-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6699
-* [Rank Math SEO](https://automatorplugin.com/integration/rank-math-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6692
-* [SG Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6700
-* [SG Security](https://automatorplugin.com/integration/sg-security/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6695
-* [Sugar Calendar](https://automatorplugin.com/integration/sugar-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6690
-* [W3 Total Cache](https://automatorplugin.com/integration/w3-total-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6697
-* [WP Rocket](https://automatorplugin.com/integration/wp-rocket/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6693
-* [WP Super Cache](https://automatorplugin.com/integration/wp-super-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6698
-* [Yoast SEO](https://automatorplugin.com/integration/yoast-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #6691
+= 7.2.0 [2026-04-07] =
 
 **New Triggers:**
 
-* All in One SEO - A post's SEO data is updated #6653
-* All in One SEO - A post's SEO score is greater than, less than, or equal to a specific value #6654
-* Easy WP SMTP - An email fails to send #6733
-* Easy WP SMTP - An email is blocked from sending #6734
-* Easy WP SMTP - An email is sent successfully #6732
-* Rank Math SEO - A post's SEO data is updated #6713
-* Rank Math SEO - A post's SEO score is greater than, less than, or equal to a value #6714
-* Sugar Calendar - A ticket for an event is purchased #6702
-* Sugar Calendar - An event is created in a calendar #6701
-* Yoast SEO - A post's SEO data is updated #6706
-* Yoast SEO - A post's SEO score is greater than, less than, or equal to a value #6707
+* AffiliateWP - An affiliate's unpaid referral count is greater than, less than, or equal to a specific number #7004
+* AffiliateWP - An affiliate's visit count is greater than, less than, or equal to a specific number #7003
 
 **New Actions:**
 
-* All in One SEO - Regenerate AIOSEO XML sitemap #6656
-* All in One SEO - Reset a post's SEO description #6649
-* All in One SEO - Reset a post's SEO title #6650
-* All in One SEO - Set AIOSEO XML sitemap to a status #6659
-* All in One SEO - Set AIOSEO robots.txt to a status #6658
-* All in One SEO - Set a post's SEO description to a specific value #6651
-* All in One SEO - Set a post's SEO title to a specific value #6652
-* All in One SEO - Set a post's focus keyphrase to a specific value #6657
-* Cloudflare - Purge Cloudflare cache for a specific URL #6725
-* Cloudflare - Purge Cloudflare cache for a specific post #6724
-* Cloudflare - Purge all Cloudflare cache #6723
-* LiteSpeed Cache - Purge LiteSpeed cache for a specific URL #6743
-* LiteSpeed Cache - Purge LiteSpeed cache for a specific post #6742
-* LiteSpeed Cache - Purge all LiteSpeed caches #6741
-* Rank Math SEO - Delete a post's SEO description #6719
-* Rank Math SEO - Delete a post's SEO title #6718
-* Rank Math SEO - Delete a post's focus keyword #6776
-* Rank Math SEO - Set a post's SEO description to a specific value #6716
-* Rank Math SEO - Set a post's SEO title to a specific value #6715
-* Rank Math SEO - Set a post's focus keyword to a specific value #6717
-* SG Optimizer - Purge SG Optimizer cache for a specific URL #6745
-* SG Optimizer - Purge all SG Optimizer caches #6744
-* SG Security - Block a user #6728
-* SG Security - Block an IP address #6726
-* SG Security - Force all users to log out #6730
-* SG Security - Force all users to reset their passwords #6731
-* SG Security - Unblock a user #6729
-* SG Security - Unblock an IP address #6727
-* Stripe - Create and send an invoice to a customer #6603
-* Sugar Calendar - Create an event with a title #6703
-* Sugar Calendar - Delete an event #6704
-* Sugar Calendar - Register an attendee to an event #6705
-* Sugar Calendar - Submit an RSVP for an event #6778
-* W3 Total Cache - Purge W3 Total Cache for a specific URL #6737
-* W3 Total Cache - Purge W3 Total Cache for a specific post #6736
-* W3 Total Cache - Purge all W3 Total Cache caches #6735
-* WP Rocket - Purge WP Rocket cache for a specific URL #6722
-* WP Rocket - Purge WP Rocket cache for a specific post #6721
-* WP Rocket - Purge all WP Rocket caches #6720
-* WP Super Cache - Purge WP Super Cache for a specific URL #6740
-* WP Super Cache - Purge WP Super Cache for a specific post #6739
-* WP Super Cache - Purge all WP Super Cache caches #6738
-* Yoast SEO - Delete a post's SEO description #6712
-* Yoast SEO - Delete a post's SEO title #6711
-* Yoast SEO - Delete a post's focus keyphrase #6777
-* Yoast SEO - Set a post's SEO description to a specific value #6709
-* Yoast SEO - Set a post's SEO title to a specific value #6708
-* Yoast SEO - Set a post's focus keyphrase to a specific value #6710
-
-**New Token:**
-
-* WordPress Core – Added taxonomy tokens to all post publication triggers #6631
+* Kit - Create a broadcast #6821
+* Kit - Create a custom field #6825
+* Kit - Create a purchase #6822
+* Kit - Create a tag #6824
+* Kit - Unsubscribe a subscriber #6823
+* LinkedIn - Schedule a post on LinkedIn profile #6683
+* Mautic - Add tags to a contact #6838
+* Mautic - Create a tag #6837
+* Mautic - Remove tags from a contact #6839
+* Microsoft Teams - Add a user to a tag in a team #6906
+* Microsoft Teams - Add a user to a team as a role #6905
+* Microsoft Teams - Archive a team #6907
+* Microsoft Teams - Create a group chat #6908
+* Microsoft Teams - Create a tag in a team #6910
+* Microsoft Teams - Create an online meeting #6909
+* Microsoft Teams - Delete a channel from a team #6911
+* Microsoft Teams - Remove a user from a team #6912
+* Microsoft Teams - Reply to a channel message #6913
+* Microsoft Teams - Update settings for a team #6914
 
 **Updated:**
 
-* Constant Contact - Empty fields will no longer wipe out perfectly good contact data. #6747
-* GiveWP - Tokens are now available for custom fields. #6499
-* WordPress - A post in a taxonomy is created - Simplified trigger logic. #6604
+* LinkedIn - Posting to personal pages now supported! #6769
+* Bluesky - Error messages are improved and external links can now strut without images. #7026
+* Closure - Only the current tab gets a redirect, others relax. #4486
+* Closure - Now storing redirects in privacy-friendly sessions, no more cookies. #6870
+* FluentCRM - Triggers can now play "Any" tag/list bingo. #6764
+* Recipe logs - Paginated loop runs now sprint through large datasets. #6866
+* Recipe logs - Timestamps now speak human instead of robot. #7005
+* Stripe - Invoices dropped their empty line items—going lean and mean. #6855
+* SG Optimizer and SG Security got their names updated. #7016
 
 **Fixed:**
 
-* FluentCRM - Corrected a typo in `add_user_as_contact()` where `subscribe` was passed instead of `subscribed`, preventing automations from firing. #6803
-* Settings - Background actions - Prevented disabled background actions from being automatically re-enabled. #6784
-* StudioCart - A user completes an order for a product - Tokens now appear properly after checkout. #6780
-* The Event Calendar - A user registers for an event - Restored compatibility with the latest version. #6608
-* Trigger tokens - Now parse properly inside actions when Background processing is enabled. #6801
+* Action conditions - Double quotes no longer play charades. #6997
+* Activity log - Trigger and action counts now speak the correct language. #6874
+* Bitly - API calls tamed on settings page. #6878
+* Database queries - Action count query's new best friend is a prepared statement. #6875
+* Gravity Forms - Radio fields tuned to parse token labels correctly. #7017
+* MemberPress - Array key "ID" got found in the token hunt. #6988
+* MemberPress - Trigger now pops for trial subscriptions via Stripe. #6786
+* OptinMonster - Campaign scripts now know their way home. #6876
+* Scheduled actions no longer stuck when new users are created, user selector mischief managed. #7024
+* SureCart - Argument counts between checkout and webhook now shake hands. #6817
+* Twilio - Phone numbers trimmed of HTML frills. #6979
+* Uncaught TypeError - Undefined triggers now politely decline. #7023
+* WordPress - Profile updates won't retrigger recipes after role changes. #6805
+* `is_action_or_trigger_active()` - Query streamlined for the data packrats. #6880
+* WordPress - Titles now truly live up to their unique promise when creating posts with "Title must be unique" setting. #7067
+* Memory leaks plugged, code tightened like a drum. #6755
+* Security improvements - The usual suspects got rounded up. #6976
 
 **Under the hood:**
 
-* Legacy date-based attachment upload directories are removed on update. #6791
-* Uncanny Agent Beta Program - Performance and UX improvements. #6795 #6797 #6796 #6792 #6794 #6793
-* Blocked SSRF on featured image URL in the Create a post action and added a log notice when blocked. #6789
-* Blocked SSRF via private/reserved IP addresses on email attachment URLs (CVE-2026-2269). #6788
-* Email attachments are validated against an allowed file extension list and stored with unpredictable filenames. #6785
-* Upload directory is hardened with `.htaccess` and `index.php` to prevent PHP execution and directory listing. #6790
+* Core improvements - Smarter integrations, leaner storage, faster caching, safer triggers, lighter memory use, quicker database lookups, speedier plugin loading, more reliable trigger queues, and redirects that finally speak up—everything’s running fitter, faster, and just a bit more chatty. #7034 #6756 #6808 #6868 #6871 #6865 #6867 #6869 #6877 #6853 #6872 #6873
+* Recipe UI - Sentence tokens now behave when added via API. #7020
+* Recipe log - Pagination plays nice, and constants got cozy. #6882
+* Automator Views Schema - SQL SECURITY INVOKER keeps DEFINER errors at bay during migrations. #6881
+* Repeater - Textareas keep their formatting cool during edits. #6350
+* REST functionality is back, even when permalinks are in their plainest form. #7041
+* New framework party
+    * Drip #6829
+    * ClickUp #6842
+    * Kit (ConvertKit) #6832
+    * LinkedIn #6833
+    * Mautic #6830
+    * Microsoft Teams #6844
+    * OpenAI #6843
+    * Zoho Campaigns #6307
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

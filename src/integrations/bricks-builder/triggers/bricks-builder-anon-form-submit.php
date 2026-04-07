@@ -9,7 +9,7 @@ namespace Uncanny_Automator\Integrations\Bricks_Builder;
  */
 class BRICKS_BUILDER_ANON_FORM_SUBMIT extends \Uncanny_Automator\Recipe\Trigger {
 
-	protected $helper;
+	protected $helpers;
 
 	/**
 	 * @return array[]

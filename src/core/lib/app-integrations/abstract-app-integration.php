@@ -349,6 +349,17 @@ abstract class App_Integration extends Integration {
 	}
 
 	/**
+	 * Arguments to pass to trigger/action constructors in targeted loading mode.
+	 *
+	 * App_Integration passes the dependencies stdClass (helpers, api, webhooks).
+	 *
+	 * @return array Constructor arguments.
+	 */
+	protected function get_load_arguments() {
+		return null !== $this->dependencies ? array( $this->dependencies ) : array();
+	}
+
+	/**
 	 * Get the class name for an integration component (API, Webhooks, etc.).
 	 * Override in child classes if needed.
 	 *

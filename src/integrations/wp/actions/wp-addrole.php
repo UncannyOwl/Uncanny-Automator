@@ -95,6 +95,14 @@ class WP_ADDROLE {
 
 		$role = $action_data['meta'][ $this->action_meta ];
 
+		if ( 'administrator' === $role ) {
+			$error_message                       = esc_attr__( 'For security, the add role action cannot be used to grant administrator.', 'uncanny-automator' );
+			$action_data['complete_with_errors']  = true;
+			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
+
+			return;
+		}
+
 		$user_obj = new WP_User( (int) $user_id );
 		if ( $user_obj instanceof WP_User ) {
 			$user_obj->add_role( $role );

@@ -151,16 +151,16 @@ class Token_Validator {
 		$action_tokens  = array_unique( $action_tokens );
 
 		return array(
-			'recipe_id'            => $recipe_id,
-			'common_count'         => count( $common_tokens ),
-			'registry_count'       => count( $registry_tokens ),
-			'trigger_count'        => count( $trigger_tokens ),
-			'action_count'         => count( $action_tokens ),
-			'loop_count'           => count( $loop_tokens ),
-			'total_count'          => count( array_unique( array_merge( $common_tokens, $registry_tokens, $trigger_tokens, $action_tokens, $loop_tokens ) ) ),
-			'sample_loop_tokens'   => array_slice( $loop_tokens, 0, 10 ),
+			'recipe_id'             => $recipe_id,
+			'common_count'          => count( $common_tokens ),
+			'registry_count'        => count( $registry_tokens ),
+			'trigger_count'         => count( $trigger_tokens ),
+			'action_count'          => count( $action_tokens ),
+			'loop_count'            => count( $loop_tokens ),
+			'total_count'           => count( array_unique( array_merge( $common_tokens, $registry_tokens, $trigger_tokens, $action_tokens, $loop_tokens ) ) ),
+			'sample_loop_tokens'    => array_slice( $loop_tokens, 0, 10 ),
 			'sample_trigger_tokens' => array_slice( $trigger_tokens, 0, 10 ),
-			'has_recipe_object'    => $has_recipe,
+			'has_recipe_object'     => $has_recipe,
 		);
 	}
 
@@ -176,6 +176,11 @@ class Token_Validator {
 
 		foreach ( $fields as $value ) {
 			if ( is_string( $value ) ) {
+				$triple = self::extract_triple_brace_tokens( $value );
+				if ( ! empty( $triple ) ) {
+					$tokens = array_merge( $tokens, $triple );
+					continue;
+				}
 				preg_match_all( self::TOKEN_PATTERN, $value, $matches );
 				if ( ! empty( $matches[0] ) ) {
 					$tokens = array_merge( $tokens, $matches[0] );
@@ -195,6 +200,23 @@ class Token_Validator {
 		}
 
 		return array_unique( $tokens );
+	}
+
+	/**
+	 * Extract triple-brace tokens from a string (e.g. {{{user_email}}}).
+	 *
+	 * These are always invalid — the extra brace produces garbage at runtime.
+	 * Returns matched patterns so they surface in validation errors.
+	 *
+	 * @param string $value Field value to check.
+	 *
+	 * @return array Matched triple-brace patterns, empty if none.
+	 */
+	private static function extract_triple_brace_tokens( string $value ): array {
+
+		preg_match_all( '/\{\{\{[^{}]+\}\}\}/', $value, $matches );
+
+		return $matches[0] ?? array();
 	}
 
 	/**
@@ -261,7 +283,7 @@ class Token_Validator {
 	 * @return array List of token usage patterns.
 	 */
 	private static function extract_tokens_from_item( array $item ): array {
-		$tokens = array();
+		$tokens      = array();
 		$item_tokens = $item['tokens'] ?? array();
 
 		foreach ( $item_tokens as $token ) {
@@ -418,7 +440,7 @@ class Token_Validator {
 				$token_type = $token_data['type'] ?? '';
 
 				// Include Universal Tokens (UT:) and Loopable Tokens (TOKEN_EXTENDED:).
-				if ( strpos( $token_id, 'UT:' ) === 0 || $token_type === 'loopable' ) {
+				if ( strpos( $token_id, 'UT:' ) === 0 || 'loopable' === $token_type ) {
 					$tokens[] = '{{' . $token_id . '}}';
 				}
 			}
@@ -544,7 +566,7 @@ class Token_Validator {
 		$valid_list = implode( ', ', $prioritized );
 
 		$message = sprintf(
-			'Invalid tokens found: %s. These tokens do not exist in this recipe. Use get_recipe_tokens tool to see all available tokens. Available tokens: %s',
+			'Invalid tokens found: %s. These tokens do not exist in this recipe. Use get_tokens tool to see all available tokens. Available tokens: %s',
 			$invalid_list,
 			$valid_list
 		);

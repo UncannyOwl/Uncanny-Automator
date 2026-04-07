@@ -15,12 +15,17 @@ class Filters_Db {
 		global $wpdb;
 		$this->db = $wpdb;
 	}
-
+	/**
+	 * Get loop filters.
+	 *
+	 * @param mixed $loop_id The ID.
+	 * @return mixed
+	 */
 	public function get_loop_filters( $loop_id ) {
 
 		$args = array(
 			'post_parent' => $loop_id,
-			'post_type'   => 'uo-loop-filter',
+			'post_type'   => AUTOMATOR_POST_TYPE_LOOP_FILTER,
 			'post_status' => 'publish',
 		);
 
@@ -31,6 +36,5 @@ class Filters_Db {
 		}
 
 		return array_column( $results, 'ID' );
-
 	}
 }

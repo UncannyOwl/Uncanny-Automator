@@ -15,10 +15,12 @@ class Recipe_Status {
 
 	const DRAFT   = 'draft';
 	const PUBLISH = 'publish';
+	const TRASH   = 'trash';
 
 	private static $allowed_values = array(
 		self::DRAFT,
 		self::PUBLISH,
+		self::TRASH,
 	);
 
 	private $value;
@@ -48,5 +50,13 @@ class Recipe_Status {
 	 */
 	public function get_value() {
 		return $this->value;
+	}
+
+	public function is_trashed(): bool {
+		return self::TRASH === $this->value;
+	}
+
+	public function is_writable(): bool {
+		return ! $this->is_trashed();
 	}
 }

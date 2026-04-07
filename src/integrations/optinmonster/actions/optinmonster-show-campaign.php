@@ -62,7 +62,7 @@ class OPTINMONSTER_SHOW_CAMPAIGN {
 			return;
 		}
 
-		$script_uri = plugin_dir_url( __FILE__ ) . '../scripts/show-campaign.js';
+		$script_uri = plugin_dir_url( dirname( __FILE__ ) ) . 'scripts/show-campaign.js';
 
 		wp_enqueue_script( 'automator-optinmonster', $script_uri, array( 'jquery' ), AUTOMATOR_PLUGIN_VERSION, true );
 
@@ -77,7 +77,7 @@ class OPTINMONSTER_SHOW_CAMPAIGN {
 	 */
 	public function optinmonster_action_exists() {
 
-		return Automator()->helpers->recipe->is_action_or_trigger_active( $this->get_action_meta() );
+		return Automator()->helpers->recipe->is_action_or_trigger_active( $this->get_action_code() );
 	}
 
 	/**

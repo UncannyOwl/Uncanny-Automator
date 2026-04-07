@@ -44,6 +44,18 @@ class Async_Actions_Logger_Singleton {
 	}
 
 	/**
+	 * Clears all logged async-action entries.
+	 *
+	 * Called on `automator_recipe_completed` to prevent unbounded growth
+	 * in long-running processes (WP-CLI, Action Scheduler batch workers).
+	 *
+	 * @return void
+	 */
+	public function clear() {
+		self::$entries = array();
+	}
+
+	/**
 	 * Prevents the object from being unserialized
 	 *
 	 * @throws \Exception
@@ -57,11 +69,12 @@ class Async_Actions_Logger_Singleton {
 	/**
 	 * Prevents the object from being directly instantiated
 	 */
-	protected function __construct() {}
+	protected function __construct() {
+		add_action( 'automator_recipe_completed', array( $this, 'clear' ) );
+	}
 
 	/**
 	 * Prevents the object from being cloned
 	 */
 	protected function __clone() {}
-
 }

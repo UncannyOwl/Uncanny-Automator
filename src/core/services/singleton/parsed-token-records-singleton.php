@@ -54,6 +54,18 @@ class Parsed_Token_Records_Singleton {
 	}
 
 	/**
+	 * Clears all recorded tokens.
+	 *
+	 * Called on `automator_recipe_completed` to prevent unbounded growth
+	 * in long-running processes (WP-CLI, Action Scheduler batch workers).
+	 *
+	 * @return void
+	 */
+	public function clear() {
+		self::$token_record = array();
+	}
+
+	/**
 	 * Interpolates a given text using an array of values
 	 *
 	 * @param string $field_text
@@ -83,11 +95,12 @@ class Parsed_Token_Records_Singleton {
 	/**
 	 * Prevents the object from being directly instantiated
 	 */
-	protected function __construct() {}
+	protected function __construct() {
+		add_action( 'automator_recipe_completed', array( $this, 'clear' ) );
+	}
 
 	/**
 	 * Prevents the object from being cloned
 	 */
 	protected function __clone() {}
-
 }

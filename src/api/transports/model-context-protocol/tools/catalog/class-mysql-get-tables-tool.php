@@ -64,6 +64,34 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * Define output schema.
+	 *
+	 * @return array|null
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'database' => array( 'type' => 'string' ),
+				'prefix'   => array( 'type' => 'string' ),
+				'tables'   => array(
+					'type'  => 'array',
+					'items' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'name'       => array( 'type' => 'string' ),
+							'row_count'  => array( 'type' => 'integer' ),
+							'is_wp_core' => array( 'type' => 'boolean' ),
+						),
+					),
+				),
+				'total'    => array( 'type' => 'integer' ),
+			),
+			'required'   => array( 'database', 'prefix', 'tables', 'total' ),
+		);
+	}
+
+	/**
 	 * Execute tool.
 	 *
 	 * @param User_Context $user_context User context.

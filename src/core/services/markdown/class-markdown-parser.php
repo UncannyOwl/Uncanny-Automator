@@ -144,14 +144,17 @@ class Markdown_Parser {
 	private function convert_markdown_to_html( $text, $options = array() ) {
 		$html = $text;
 
-		// Process in order of precedence to avoid conflicts
+		// Process in order of precedence to avoid conflicts.
+		// Images must run before links: both share [text](url) syntax and the
+		// link regex would consume the inner [alt](src) of ![alt](src) first,
+		// leaving a dangling "!" and preventing image conversion.
 		$html = $this->process_code_blocks( $html, $options );
 		$html = $this->process_headers( $html, $options );
 		$html = $this->process_blockquotes( $html, $options );
 		$html = $this->process_emphasis( $html, $options );
 		$html = $this->process_strikethrough( $html, $options );
-		$html = $this->process_links( $html, $options );
 		$html = $this->process_images( $html, $options );
+		$html = $this->process_links( $html, $options );
 		$html = $this->process_mentions( $html, $options );
 		$html = $this->process_inline_code( $html, $options );
 		$html = $this->process_lists( $html, $options );

@@ -35,12 +35,14 @@ class Automator_DB_Handler_Closures {
 		return $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT cp.ID FROM $wpdb->posts cp
-	                    LEFT JOIN $wpdb->posts rp ON rp.ID = cp.post_parent
-						WHERE cp.post_type LIKE %s
-						  AND cp.post_status LIKE %s
-						  AND rp.post_status LIKE %s LIMIT 1",
-				'uo-closure',
+	                    INNER JOIN $wpdb->posts rp ON rp.ID = cp.post_parent
+						WHERE cp.post_type = %s
+						  AND cp.post_status = %s
+						  AND rp.post_type = %s
+						  AND rp.post_status = %s",
+				AUTOMATOR_POST_TYPE_CLOSURE,
 				'publish',
+				AUTOMATOR_POST_TYPE_RECIPE,
 				'publish'
 			)
 		);
@@ -176,7 +178,6 @@ class Automator_DB_Handler_Closures {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -230,7 +231,6 @@ class Automator_DB_Handler_Closures {
 				'%s',
 			)
 		);
-
 	}
 
 	/**
@@ -286,7 +286,5 @@ class Automator_DB_Handler_Closures {
 		}
 
 		return $meta_value;
-
 	}
-
 }

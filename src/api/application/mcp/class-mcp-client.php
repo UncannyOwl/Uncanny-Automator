@@ -130,6 +130,12 @@ class Mcp_Client {
 		add_action( 'admin_footer', array( $this, 'load_chat_sdk' ), 10, 1 );
 		add_action( 'admin_footer', array( $this, 'render_launcher' ), 20, 1 );
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+
+		// Handshake for app.uncannyagent.com site connection.
+		( new Handshake\Handshake_Handler() )->init();
+
+		// Agent context REST endpoint for standalone app.
+		add_action( 'rest_api_init', array( new Agent_Context_Rest_Controller(), 'register_routes' ) );
 	}
 
 	/**
@@ -266,10 +272,6 @@ class Mcp_Client {
 			return;
 		}
 
-		// if ( ! $this->in_allowed_pages() ) {
-		// 	return;
-		// }
-
 		if ( ! $this->context_service->should_render_button( $post ) ) {
 			return;
 		}
@@ -284,17 +286,23 @@ class Mcp_Client {
 	 * Returns true for any page under the Automator menu: the uo-recipe post type
 	 * screens (list, edit, add new, taxonomies) and all registered submenu pages.
 	 *
+	 * @see self::generate_launcher_html() — sole caller, uses the result for $can_dock_to_right.
+	 *
 	 * @return bool
 	 */
 	private function in_allowed_pages(): bool {
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return false;
+		}
+
 		$current_screen = get_current_screen();
 
-		if ( ! $current_screen ) {
+		if ( ! $current_screen instanceof \WP_Screen ) {
 			return false;
 		}
 
 		// Post type screens: All recipes, Add new, single recipe editor.
-		if ( 'uo-recipe' === $current_screen->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE === $current_screen->post_type ) {
 			return true;
 		}
 
@@ -326,7 +334,6 @@ class Mcp_Client {
 	 *
 	 * Handles all the logic: payload generation, recipe fetching, context building, CSS styles, and HTML element. Returns empty string on any failure.
 	 *
-	 * @param int $recipe_id Recipe post ID.
 	 * @return string The CSS and launcher HTML, or empty string on failure.
 	 */
 	private function generate_launcher_html(): string {
@@ -525,7 +532,7 @@ class Mcp_Client {
 	 * @return WP_REST_Response
 	 */
 	public function get_launcher_html( WP_REST_Request $request ) {
-		$html = $this->generate_launcher_html( $request->get_param( 'recipe_id' ) );
+		$html = $this->generate_launcher_html();
 
 		return rest_ensure_response(
 			array(

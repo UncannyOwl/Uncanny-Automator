@@ -54,10 +54,6 @@ class Wishlist_Member_Helpers {
 	 * @return mixed|void
 	 */
 	public function wm_get_all_membership_levels( $label = null, $option_code = 'WMMEMBERSHIPLEVELS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Membership level', 'uncanny-automator' );

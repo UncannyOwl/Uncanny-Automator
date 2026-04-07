@@ -78,6 +78,79 @@ class Recipe_Validator {
 
 
 	/**
+	 * Validate that a recipe is ready to be published.
+	 *
+	 * Requires at least 1 published trigger and 1 published action.
+	 * Actions may be direct children of the recipe or inside loops.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @param int $recipe_id Recipe ID.
+	 *
+	 * @return null|\WP_Error Null on success, WP_Error if not ready.
+	 */
+	public function validate_publish_readiness( int $recipe_id ) {
+
+		$missing = array();
+
+		// Check triggers.
+		$triggers = get_posts(
+			array(
+				'post_type'   => 'uo-trigger',
+				'post_parent' => $recipe_id,
+				'post_status' => 'publish',
+				'numberposts' => 1,
+				'fields'      => 'ids',
+			)
+		);
+
+		if ( empty( $triggers ) ) {
+			$missing[] = 'at least 1 live trigger (use save_trigger with status=publish)';
+		}
+
+		// Check actions — can be direct children or inside loops.
+		$parent_ids = array( $recipe_id );
+		$loops      = get_posts(
+			array(
+				'post_type'   => 'uo-loop',
+				'post_parent' => $recipe_id,
+				'post_status' => 'any',
+				'numberposts' => 100,
+				'fields'      => 'ids',
+			)
+		);
+
+		if ( ! empty( $loops ) ) {
+			$parent_ids = array_merge( $parent_ids, $loops );
+		}
+
+		$actions = get_posts(
+			array(
+				'post_type'       => 'uo-action',
+				'post_parent__in' => $parent_ids,
+				'post_status'     => 'publish',
+				'numberposts'     => 1,
+				'fields'          => 'ids',
+			)
+		);
+
+		if ( empty( $actions ) ) {
+			$missing[] = 'at least 1 live action (use save_action with status=publish)';
+		}
+
+		if ( ! empty( $missing ) ) {
+			return new \WP_Error(
+				'recipe_not_ready',
+				'Cannot publish recipe. Missing: ' . implode( '; ', $missing )
+				. '. Add the required components first, then set status=publish.'
+			);
+		}
+
+		return null;
+	}
+
+
+	/**
 	 * Sanitize recipe data array.
 	 *
 	 * @param array $data Recipe data to sanitize.

@@ -14,6 +14,7 @@ namespace Uncanny_Automator\Api\Services\Recipe\Utilities;
 
 use WP_Error;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Status;
+use Uncanny_Automator\Api\Components\Shared\Traits\Empty_Array_To_Object;
 
 /**
  * Recipe_Formatter Class
@@ -21,6 +22,8 @@ use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Status;
  * Formats recipe data for consistent API responses.
  */
 class Recipe_Formatter {
+
+	use Empty_Array_To_Object;
 
 	/**
 	 * Format recipe response data.
@@ -36,7 +39,7 @@ class Recipe_Formatter {
 			'status'         => $recipe_data['recipe_status'] ?? $recipe_data['status'] ?? Recipe_Status::DRAFT,
 			'type'           => $recipe_data['recipe_type'] ?? $recipe_data['type'] ?? 'user',
 			'notes'          => $recipe_data['notes'] ?? '',
-			'meta'           => $recipe_data['meta'] ?? array(),
+			'meta'           => $this->ensure_object( $recipe_data['meta'] ?? array() ),
 			'times_per_user' => $recipe_data['times_per_user'] ?? null,
 			'total_times'    => $recipe_data['total_times'] ?? null,
 			'throttle'       => $recipe_data['throttle'] ?? array(

@@ -59,7 +59,9 @@ class Bitly_Settings extends App_Integration_Settings {
 	 * @return void
 	 */
 	public function set_properties() {
-		$this->account = $this->helpers->get_saved_account_details();
+		// Use stored account info only — get_saved_account_details() can trigger
+		// a live API call when login is missing, causing excessive requests on every page load.
+		$this->account = $this->helpers->get_account_info();
 	}
 
 	/**

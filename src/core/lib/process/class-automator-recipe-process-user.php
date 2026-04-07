@@ -23,7 +23,7 @@ class Automator_Recipe_Process_User {
 	 * @param      $args
 	 * @param bool $mark_trigger_complete
 	 * @param array $trigger_args
-	 * 
+	 *
 	 * @since 6.7.0 - Moved is_recipe_throttled() to Automator_Functions class.
 	 *
 	 * @return array|null
@@ -65,6 +65,16 @@ class Automator_Recipe_Process_User {
 			$recipes = $this->recipes_from_trigger_code( $check_trigger_code );
 		}
 
+		// Batch-prime postmeta cache for all matched recipe IDs (1 query instead of N).
+		$recipe_ids = array_keys( $recipes );
+
+		if ( ! empty( $recipe_ids ) ) {
+			update_meta_cache( 'post', $recipe_ids );
+		}
+
+		// Batch-check completion for all matched recipes (2 queries instead of N×2).
+		$completed_map = $this->batch_check_completed( $recipe_ids, $user_id );
+
 		foreach ( $recipes as $recipe ) {
 			//loop only published
 			if ( 'publish' !== $recipe['post_status'] ) {
@@ -83,11 +93,11 @@ class Automator_Recipe_Process_User {
 			 * @version 2.5.1
 			 * @author  Saad
 			 */
-			if ( $this->is_recipe_completed( $recipe_id, $user_id ) ) {
+			if ( ! empty( $completed_map[ $recipe_id ] ) ) {
 				continue;
 			}
 
-			// Skip if the recipe is being throttled.
+			// Skip if the recipe is being throttled (postmeta already primed above).
 			if ( Automator()->is_recipe_throttled( absint( $recipe_id ), absint( $user_id ) ) ) {
 				continue;
 			}
@@ -1246,5 +1256,93 @@ class Automator_Recipe_Process_User {
 	 */
 	public function maybe_get_meta_id_from_trigger_log( $run_number, $trigger_id, $trigger_log_id, $trigger_meta, $user_id ) {
 		return Automator()->get->maybe_get_meta_id_from_trigger_log( $run_number, $trigger_id, $trigger_log_id, $trigger_meta, $user_id );
+	}
+
+	/**
+	 * Batch-check whether recipes are completed for a user.
+	 *
+	 * Combines is_recipe_completed_max_times() and user_completed_recipe_number_times()
+	 * into 1-2 queries for all recipe IDs instead of N×2 per-recipe queries.
+	 *
+	 * @param int[] $recipe_ids Array of recipe IDs.
+	 * @param int   $user_id   The user ID.
+	 *
+	 * @return array Map of recipe_id => true for completed recipes.
+	 */
+	private function batch_check_completed( $recipe_ids, $user_id ) {
+
+		$completed = array();
+
+		if ( empty( $recipe_ids ) ) {
+			return $completed;
+		}
+
+		global $wpdb;
+
+		$placeholders = implode( ', ', array_fill( 0, count( $recipe_ids ), '%d' ) );
+
+		// Query 1: Global completion counts (max times check).
+		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+		$global_counts = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT automator_recipe_id AS recipe_id, COUNT(completed) AS num_times
+				FROM {$wpdb->prefix}uap_recipe_log
+				WHERE automator_recipe_id IN ({$placeholders})
+					AND completed = 1
+				GROUP BY automator_recipe_id",
+				...$recipe_ids
+			),
+			OBJECT
+		);
+		// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+
+		// Check global max-times limit for each recipe.
+		foreach ( $global_counts as $row ) {
+			$rid = absint( $row->recipe_id );
+			if ( Automator()->utilities->recipe_max_times_completed( $rid, (int) $row->num_times ) ) {
+				$completed[ $rid ] = true;
+			}
+		}
+
+		// Early return if no logged-in user (anonymous recipes can't have per-user completion).
+		if ( ! is_user_logged_in() || 0 === absint( $user_id ) ) {
+			return $completed;
+		}
+
+		// Filter out already-completed recipe IDs to avoid redundant per-user checks.
+		$remaining = array_diff( $recipe_ids, array_keys( $completed ) );
+
+		if ( empty( $remaining ) ) {
+			return $completed;
+		}
+
+		$remaining    = array_values( $remaining );
+		$placeholders = implode( ', ', array_fill( 0, count( $remaining ), '%d' ) );
+
+		// Query 2: Per-user completion counts.
+		// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+		$user_counts = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT automator_recipe_id AS recipe_id, COUNT(completed) AS num_times
+				FROM {$wpdb->prefix}uap_recipe_log
+				WHERE user_id = %d
+					AND automator_recipe_id IN ({$placeholders})
+					AND completed = 1
+				GROUP BY automator_recipe_id",
+				$user_id,
+				...$remaining
+			),
+			OBJECT
+		);
+		// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
+
+		foreach ( $user_counts as $row ) {
+			$rid = absint( $row->recipe_id );
+			if ( Automator()->utilities->recipe_number_times_completed( $rid, (int) $row->num_times ) ) {
+				$completed[ $rid ] = true;
+			}
+		}
+
+		return $completed;
 	}
 }

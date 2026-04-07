@@ -57,10 +57,6 @@ class Mailpoet_Helpers {
 	 * @throws \Exception
 	 */
 	public function get_all_mailpoet_lists( $label = null, $option_code = 'MAILPOETLISTS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		$any_option  = key_exists( 'any_option', $args ) ? $args['any_option'] : false;
 		$all_include = key_exists( 'all_include', $args ) ? $args['all_include'] : false;
@@ -108,10 +104,6 @@ class Mailpoet_Helpers {
 	 * @return array|mixed|null
 	 */
 	public function get_all_mailpoet_subscribers( $label = null, $option_code = 'MAILPOETSUBSCRIBERS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Subscriber', 'Mailpoet', 'uncanny-automator' );
@@ -152,9 +144,6 @@ class Mailpoet_Helpers {
 	public function list_mailpoet_forms( $label = null, $option_code = 'MAILPOETFORMS', $args = array() ) {
 		global $wpdb;
 
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Form', 'Mailpoet', 'uncanny-automator' );

@@ -25,7 +25,12 @@ class Admin_Settings_Addons {
 		// Add the tab using the filter
 		add_filter( 'automator_settings_sections', array( $this, 'register_tab' ), 30, 1 );
 	}
-
+	/**
+	 * Register tab.
+	 *
+	 * @param mixed $tabs The tabs.
+	 * @return mixed
+	 */
 	public function register_tab( $tabs ) {
 		// General
 		$tabs['addons'] = (object) array(
@@ -63,7 +68,6 @@ class Admin_Settings_Addons {
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/addons.php' );
-
 	}
 
 	/**
@@ -76,7 +80,7 @@ class Admin_Settings_Addons {
 
 		// Define the list of URL parameters
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-config',
 			'tab'       => 'addons',
 		);
@@ -91,9 +95,7 @@ class Admin_Settings_Addons {
 			$url_parameters,
 			admin_url( 'edit.php' )
 		);
-
 	}
-
 }
 
 new Admin_Settings_Addons();

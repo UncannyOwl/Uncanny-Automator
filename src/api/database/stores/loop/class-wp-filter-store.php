@@ -6,6 +6,7 @@ use Exception;
 use Uncanny_Automator\Api\Components\Loop\Filter\Filter;
 use Uncanny_Automator\Api\Components\Loop\Filter\Config as Filter_Config;
 use Uncanny_Automator\Api\Database\Interfaces\Loop\Filter_Store;
+use Uncanny_Automator\Api\Database\Recipe_Cache;
 
 /**
  * WordPress Filter Store.
@@ -17,7 +18,7 @@ use Uncanny_Automator\Api\Database\Interfaces\Loop\Filter_Store;
  */
 class WP_Filter_Store implements Filter_Store {
 
-	const POST_TYPE = 'uo-loop-filter';
+	const POST_TYPE = AUTOMATOR_POST_TYPE_LOOP_FILTER;
 
 	private \wpdb $wpdb;
 
@@ -79,7 +80,12 @@ class WP_Filter_Store implements Filter_Store {
 	 * @param int $id The ID.
 	 */
 	public function delete_by_id( int $id ): void {
+		$loop_id   = (int) wp_get_post_parent_id( $id );
+		$recipe_id = (int) wp_get_post_parent_id( $loop_id );
+
 		wp_delete_post( $id, true );
+
+		Recipe_Cache::invalidate( $recipe_id );
 	}
 	/**
 	 * Get loop filters.
@@ -135,6 +141,8 @@ class WP_Filter_Store implements Filter_Store {
 		foreach ( $ids as $id ) {
 			wp_delete_post( $id, true );
 		}
+
+		Recipe_Cache::invalidate( (int) wp_get_post_parent_id( $loop_id ) );
 	}
 	/**
 	 * Sync.
@@ -228,6 +236,9 @@ class WP_Filter_Store implements Filter_Store {
 		if ( null === $filter ) {
 			throw new Exception( 'Failed to reload filter after creation' );
 		}
+
+		Recipe_Cache::invalidate( (int) wp_get_post_parent_id( $loop_id ) );
+
 		return $filter;
 	}
 	/**
@@ -261,6 +272,10 @@ class WP_Filter_Store implements Filter_Store {
 		if ( null === $filter ) {
 			throw new Exception( 'Failed to reload filter after update' );
 		}
+
+		$loop_id = (int) wp_get_post_parent_id( $filter_id );
+		Recipe_Cache::invalidate( (int) wp_get_post_parent_id( $loop_id ) );
+
 		return $filter;
 	}
 	/**

@@ -21,8 +21,8 @@ class Sg_Force_Password_Reset_All extends \Uncanny_Automator\Recipe\Action {
 		$this->set_is_pro( false );
 		$this->set_requires_user( false );
 		$this->set_background_processing( true );
-		$this->set_sentence( esc_html_x( 'Force all users to reset their passwords', 'SG Security', 'uncanny-automator' ) );
-		$this->set_readable_sentence( esc_html_x( 'Force all users to reset their passwords', 'SG Security', 'uncanny-automator' ) );
+		$this->set_sentence( esc_html_x( 'Force all users to reset their passwords', 'Security Optimizer', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'Force all users to reset their passwords', 'Security Optimizer', 'uncanny-automator' ) );
 	}
 
 	/**

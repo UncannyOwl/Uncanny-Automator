@@ -458,16 +458,10 @@ class Logs_List_Table extends WP_List_Table {
 				$recipe->recipe_date_time :
 				'';
 
-			$recipe_datetime_completed = $this->get_datetime_formatted( $recipe_date_completed );
+			$recipe_date_html = $this->get_completion_date_html( $recipe_date_completed, 'recipe' );
 
-			if ( false !== $recipe_datetime_completed ) {
-				$recipe_date_completed = '
-					<div class="uap-logs-complation-date uap-logs-recipe-complation-date">'
-							. esc_html( $recipe_datetime_completed['date'] ) . '
-						<span class="uap-logs-complation-date__time">@ '
-							. esc_html( $recipe_datetime_completed['time'] ) . '
-						</span>
-					</div>';
+			if ( false !== $recipe_date_html ) {
+				$recipe_date_completed = $recipe_date_html;
 			}
 
 			$current_type = Automator()->utilities->get_recipe_type( $recipe_id );
@@ -515,7 +509,7 @@ class Logs_List_Table extends WP_List_Table {
 			$delete_url = sprintf(
 				'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&delete_specific_activity=1&wpnonce=' . wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ),
 				admin_url( 'edit.php' ),
-				'uo-recipe',
+				AUTOMATOR_POST_TYPE_RECIPE,
 				'uncanny-automator-admin-logs',
 				$recipe_id,
 				$run_number_log,
@@ -642,17 +636,11 @@ class Logs_List_Table extends WP_List_Table {
 
 			$trigger_date_completed = $trigger->trigger_date;
 
-			// Show trigger run time instead of the completeion date.
-			$trigger_datetime_completed = $this->get_datetime_formatted( $trigger->trigger_run_time );
+			// Show trigger run time instead of the completion date.
+			$trigger_date_html = $this->get_completion_date_html( $trigger->trigger_run_time, 'trigger' );
 
-			if ( false !== $trigger_datetime_completed ) {
-				$trigger_date_completed = '
-					<div class="uap-logs-complation-date uap-logs-trigger-complation-date">' .
-							esc_html( $trigger_datetime_completed['date'] ) . '
-						<span class="uap-logs-complation-date__time">@ ' .
-							esc_html( $trigger_datetime_completed['time'] ) .
-						'</span>
-					</div>';
+			if ( false !== $trigger_date_html ) {
+				$trigger_date_completed = $trigger_date_html;
 			}
 
 			$current_type = Automator()->utilities->get_recipe_type( $trigger->automator_recipe_id );
@@ -904,16 +892,10 @@ class Logs_List_Table extends WP_List_Table {
 
 			$action_date_completed = $action->action_date;
 
-			$action_datetime_completed = $this->get_datetime_formatted( $action->action_date );
+			$action_date_html = $this->get_completion_date_html( $action->action_date, 'action' );
 
-			if ( false !== $action_datetime_completed ) {
-				$action_date_completed = '
-					<div class="uap-logs-complation-date uap-logs-trigger-complation-date">' .
-							esc_html( $action_datetime_completed['date'] ) . '
-						<span class="uap-logs-complation-date__time">@ ' .
-							esc_html( $action_datetime_completed['time'] ) . '
-						</span>
-					</div>';
+			if ( false !== $action_date_html ) {
+				$action_date_completed = $action_date_html;
 			}
 
 			$action_status = apply_filters( 'automator_action_log_status', $action_status_html, $action );
@@ -1128,8 +1110,64 @@ class Logs_List_Table extends WP_List_Table {
 		}
 
 		return array(
-			'date' => $datetime->format( 'Y-m-d' ),
-			'time' => $datetime->format( 'H:i:s' ),
+			'date' => $datetime->format( get_option( 'date_format' ) ),
+			'time' => $datetime->format( get_option( 'time_format' ) ),
+		);
+	}
+
+	/**
+	 * Get completion date HTML with relative time appended for same-day dates.
+	 *
+	 * Same-day: "March 26, 2026 11:45 AM (17 minutes ago)"
+	 * Older: "March 25, 2026 2:30 PM"
+	 *
+	 * @param string $time_string The datetime in Y-m-d H:i:s format.
+	 * @param string $css_modifier CSS modifier class (e.g. 'recipe', 'trigger').
+	 *
+	 * @return string|false The formatted HTML string, or false if $time_string is empty.
+	 */
+	private function get_completion_date_html( $time_string = '', $css_modifier = 'recipe' ) {
+
+		$datetime_parts = $this->get_datetime_formatted( $time_string );
+
+		if ( false === $datetime_parts ) {
+			return false;
+		}
+
+		$full_date = $datetime_parts['date'] . ' ' . $datetime_parts['time'];
+		$wp_tz     = new \DateTimeZone( Automator()->get_timezone_string() );
+
+		try {
+			$now_dt       = new \DateTime( 'now', $wp_tz );
+			$timestamp_dt = new \DateTime( $time_string, $wp_tz );
+		} catch ( \Exception $e ) {
+			$now_dt       = null;
+			$timestamp_dt = null;
+		}
+
+		// Same calendar day and in the past — append relative time.
+		if ( null !== $now_dt && null !== $timestamp_dt && $now_dt->format( 'Y-m-d' ) === $timestamp_dt->format( 'Y-m-d' ) ) {
+
+			$diff_seconds = $now_dt->getTimestamp() - $timestamp_dt->getTimestamp();
+
+			if ( $diff_seconds >= 0 && $diff_seconds < DAY_IN_SECONDS ) {
+				/* translators: %s is a human-readable time difference, e.g. "17 minutes" */
+				$relative = sprintf( __( '%s ago', 'uncanny-automator' ), human_time_diff( $timestamp_dt->getTimestamp(), $now_dt->getTimestamp() ) );
+
+				return sprintf(
+					'<div class="uap-logs-complation-date uap-logs-%s-complation-date">%s<div class="uap-logs-complation-date__time">(%s)</div></div>',
+					sanitize_html_class( $css_modifier ),
+					esc_html( $full_date ),
+					esc_html( $relative )
+				);
+			}
+		}
+
+		// Fallback: standard date + time format.
+		return sprintf(
+			'<div class="uap-logs-complation-date uap-logs-%s-complation-date">%s</div>',
+			sanitize_html_class( $css_modifier ),
+			esc_html( $full_date )
 		);
 	}
 
@@ -1353,10 +1391,10 @@ AND p.post_parent IN (" . join( ',', $recipe_ids ) . ')', // phpcs:ignore WordPr
 		$triggers = array();
 		$actions  = array();
 		foreach ( $results as $r ) {
-			if ( 'uo-action' === $r->post_type ) {
+			if ( AUTOMATOR_POST_TYPE_ACTION === $r->post_type ) {
 				$actions[ $r->post_parent ][] = $r->integration;
 			}
-			if ( 'uo-trigger' === $r->post_type ) {
+			if ( AUTOMATOR_POST_TYPE_TRIGGER === $r->post_type ) {
 				$triggers[ $r->post_parent ][] = $r->integration;
 			}
 		}

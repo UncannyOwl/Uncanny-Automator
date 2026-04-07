@@ -344,7 +344,7 @@ class WP_Trigger_Registry implements Trigger_Registry {
 				if ( ! empty( $fields ) ) {
 					return $fields;
 				}
-			} catch ( \Exception $e ) {
+			} catch ( \Throwable $e ) {
 				// Continue to fallback, but log for debugging.
 				automator_log( sprintf( 'Failed to extract fields from callback: %s', $e->getMessage() ), 'Trigger Registry Error' );
 			}
@@ -439,7 +439,7 @@ class WP_Trigger_Registry implements Trigger_Registry {
 		try {
 			$options_data = call_user_func( $callback );
 			return $this->parse_options_to_fields( $options_data );
-		} catch ( \Exception $e ) {
+		} catch ( \Throwable $e ) {
 			automator_log( sprintf( 'Failed to extract fields from callback: %s', $e->getMessage() ), 'Trigger Registry Error' );
 			return array();
 		}

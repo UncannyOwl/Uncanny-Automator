@@ -83,6 +83,6 @@ class Closures_Post_Type {
 			),
 		);
 
-		register_post_type( 'uo-closure', apply_filters( 'automator_post_type_closure_args', $args ) );
+		register_post_type( AUTOMATOR_POST_TYPE_CLOSURE, apply_filters( 'automator_post_type_closure_args', $args ) );
 	}
 }

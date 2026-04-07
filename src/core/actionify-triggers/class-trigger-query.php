@@ -11,6 +11,24 @@ namespace Uncanny_Automator\Actionify_Triggers;
 class Trigger_Query {
 
 	/**
+	 * Transient key for caching active triggers query result.
+	 *
+	 * @var string
+	 */
+	const CACHE_KEY = 'automator_actionified_triggers';
+
+	/**
+	 * Cache TTL in seconds.
+	 *
+	 * Kept short (60s) as a safety net — primary invalidation happens via
+	 * Automator_Cache_Handler::remove() on recipe/trigger save, status
+	 * change, plugin activation, and cache flush.
+	 *
+	 * @var int
+	 */
+	const CACHE_TTL = 60;
+
+	/**
 	 * Get all active triggers from the WordPress database.
 	 *
 	 * Queries the WordPress database for all published triggers associated with
@@ -54,36 +72,51 @@ class Trigger_Query {
 	/**
 	 * Find triggers from WordPress database.
 	 *
+	 * Uses a transient cache to avoid running the 4-table JOIN on every request.
+	 * Cache is invalidated when the Automator cache handler clears `automator_actionified_triggers`.
+	 *
 	 * @return array Array of triggers.
 	 */
 	private function find_triggers() {
+
+		$cached = get_transient( self::CACHE_KEY );
+
+		if ( false !== $cached ) {
+			return (array) $cached;
+		}
 
 		global $wpdb;
 
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT 
+				"SELECT
                     action_hook_meta.meta_value as action_hook,
                     code_meta.meta_value as trigger_code
                 FROM $wpdb->postmeta action_hook_meta
                 INNER JOIN $wpdb->postmeta code_meta
                     ON code_meta.post_id = action_hook_meta.post_id
                     AND code_meta.meta_key = 'code'
-                INNER JOIN $wpdb->posts trigger_post 
+                INNER JOIN $wpdb->posts trigger_post
                     ON trigger_post.ID = action_hook_meta.post_id
                     AND trigger_post.post_status = %s
-                    AND trigger_post.post_type = 'uo-trigger'
-                INNER JOIN $wpdb->posts recipe_post 
+                    AND trigger_post.post_type = %s
+                INNER JOIN $wpdb->posts recipe_post
                     ON recipe_post.ID = trigger_post.post_parent
                     AND recipe_post.post_status = %s
-                    AND recipe_post.post_type = 'uo-recipe'
+                    AND recipe_post.post_type = %s
                 WHERE action_hook_meta.meta_key = 'add_action'",
 				'publish',
-				'publish'
+				AUTOMATOR_POST_TYPE_TRIGGER,
+				'publish',
+				AUTOMATOR_POST_TYPE_RECIPE
 			),
 			ARRAY_A
 		);
 
-		return (array) $results;
+		$results = (array) $results;
+
+		set_transient( self::CACHE_KEY, $results, self::CACHE_TTL );
+
+		return $results;
 	}
 }

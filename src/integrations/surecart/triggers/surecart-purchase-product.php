@@ -77,8 +77,9 @@ class SURECART_PURCHASE_PRODUCT extends Trigger {
 	 * @return bool True if validation was successful.
 	 */
 	public function validate( $trigger, $hook_args ) {
-		list( $purchase, $webhook_data ) = $hook_args;
-		$product_id                      = $trigger['meta'][ $this->get_trigger_meta() ];
+		$purchase     = $hook_args[0] ?? null;
+		$webhook_data = $hook_args[1] ?? null;
+		$product_id   = $trigger['meta'][ $this->get_trigger_meta() ];
 
 		if ( empty( $purchase ) || empty( $purchase->id ) ) {
 			return false;
@@ -92,7 +93,7 @@ class SURECART_PURCHASE_PRODUCT extends Trigger {
 
 		// Fall back to current user if no user found in hook data
 		if ( empty( $user_id ) ) {
-			$user_id = wp_get_current_user_id();
+			$user_id = get_current_user_id();
 		}
 
 		// Set the user_id for the trigger
@@ -140,7 +141,8 @@ class SURECART_PURCHASE_PRODUCT extends Trigger {
 	 * @return array The token values.
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
-		list( $purchase, $webhook_data ) = $hook_args;
+		$purchase     = $hook_args[0] ?? null;
+		$webhook_data = $hook_args[1] ?? null;
 
 		$tokens = array();
 

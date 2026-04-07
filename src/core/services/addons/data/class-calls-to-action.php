@@ -82,7 +82,7 @@ class Calls_To_Action {
 			'type'  => $type, // Secondary?
 			'url'   => add_query_arg(
 				array(
-					'post_type' => 'uo-recipe',
+					'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 					'page'      => 'uncanny-automator-config',
 					'tab'       => 'general',
 					'general'   => 'license',
@@ -225,8 +225,8 @@ class Calls_To_Action {
 		}
 
 		if ( empty( $url ) ) {
-			$url = ! empty( $name ) 
-				? \Uncanny_Automator\Services\Plugin\Info::get_plugin_search_url( $name ) 
+			$url = ! empty( $name )
+				? \Uncanny_Automator\Services\Plugin\Info::get_plugin_search_url( $name )
 				: admin_url( 'plugins.php' );
 		}
 

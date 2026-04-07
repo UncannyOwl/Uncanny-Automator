@@ -2,7 +2,6 @@
 namespace Uncanny_Automator\Settings;
 
 use Exception;
-use ReflectionClass;
 
 /**
  * Trait for discovering available actions and triggers in premium integrations
@@ -60,7 +59,20 @@ trait Premium_Integration_Items {
 	}
 
 	/**
-	 * Get items by instantiating classes and getting readable sentences
+	 * Get items (actions or triggers) for this integration from Automator's
+	 * global registry.
+	 *
+	 * Previously this scanned the integration's `actions/`/`triggers/` directories
+	 * and instantiated each class to read its readable sentence. That approach
+	 * stopped working once `Abstract_Action::__construct()` and
+	 * `Abstract_Trigger::__construct()` gained a static double-instantiation
+	 * guard: by the time the settings page renders, every action/trigger class
+	 * has already been instantiated during plugin boot, so re-instantiating from
+	 * here short-circuits before `setup_action()`/`setup_trigger()` runs and
+	 * `readable_sentence` is never set.
+	 *
+	 * Reading from the registry avoids that pitfall and is also independent of
+	 * on-disk file layout.
 	 *
 	 * @param string $type Either 'actions' or 'triggers'
 	 * @return array
@@ -71,72 +83,34 @@ trait Premium_Integration_Items {
 		// Validate type.
 		$this->validate_item_type( $type );
 
-		$items     = array();
-		$directory = $this->get_items_directory( $type );
+		$registered = 'actions' === $type
+			? Automator()->get_actions()
+			: Automator()->get_triggers();
 
-		if ( ! is_dir( $directory ) ) {
-			return $items;
+		if ( empty( $registered ) ) {
+			return array();
 		}
 
-		// Get all PHP files in the directory
-		$files = glob( $directory . '/*.php' );
+		$integration_code = strtoupper( $this->get_id() );
+		$items            = array();
 
-		foreach ( $files as $file ) {
-			$class_name = $this->get_class_name_from_file( $file );
-			if ( $class_name && class_exists( $class_name ) ) {
-				$item     = new $class_name( $this->dependencies );
-				$sentence = $item->get_readable_sentence();
-				if ( $sentence ) {
-					$items[] = $this->format_readable_sentence( $sentence );
-				}
+		foreach ( $registered as $registered_item ) {
+			if ( ! isset( $registered_item['integration'] ) ) {
+				continue;
 			}
+			if ( strtoupper( $registered_item['integration'] ) !== $integration_code ) {
+				continue;
+			}
+			$sentence = isset( $registered_item['select_option_name'] )
+				? $registered_item['select_option_name']
+				: '';
+			if ( '' === $sentence ) {
+				continue;
+			}
+			$items[] = $this->format_readable_sentence( $sentence );
 		}
 
 		return $items;
-	}
-
-	/**
-	 * Get the full path to the items directory
-	 *
-	 * @param string $type Either 'actions' or 'triggers'
-	 * @return string
-	 * @throws Exception If invalid item type.
-	 */
-	protected function get_items_directory( $type ) {
-
-		// Validate type.
-		$this->validate_item_type( $type );
-
-		// Get the current class's directory
-		$reflection = new ReflectionClass( get_class( $this ) );
-		$dir        = dirname( $reflection->getFileName() );
-
-		// Go up one level and into type directory
-		return dirname( $dir ) . '/' . $type;
-	}
-
-	/**
-	 * Get class name from file path
-	 *
-	 * @param string $file_path
-	 * @return string|null
-	 */
-	protected function get_class_name_from_file( $file_path ) {
-		// Get the file contents
-		$content = file_get_contents( $file_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-
-		// Extract namespace
-		if ( preg_match( '/namespace\s+([^;]+);/', $content, $matches ) ) {
-			$namespace = $matches[1];
-		}
-
-		// Extract class name
-		if ( preg_match( '/class\s+(\w+)/', $content, $matches ) ) {
-			$class_name = $matches[1];
-			return isset( $namespace ) ? $namespace . '\\' . $class_name : $class_name;
-		}
-
-		return null;
 	}
 
 	/**

@@ -28,6 +28,23 @@ final class Miscellaneous implements \JsonSerializable {
 	 */
 	use Common\Trait_Setter_Getter;
 
+	/**
+	 * @var bool|null
+	 */
+	public $has_run_now;
+	/**
+	 * @var bool|null
+	 */
+	public $recipe_is_running;
+	/**
+	 * @var bool|null
+	 */
+	public $can_edit;
+	/**
+	 * @var string|null
+	 */
+	public $latest_recipe_log_status;
+
 	protected $created_on_date                = null;
 	protected $has_loop                       = false;
 	protected $has_loop_running               = false;
@@ -45,6 +62,9 @@ final class Miscellaneous implements \JsonSerializable {
 	 */
 	private static $recipe = null;
 
+	/**
+	 * @param \Uncanny_Automator\Services\Recipe\Structure $recipe
+	 */
 	public function __construct( \Uncanny_Automator\Services\Recipe\Structure $recipe ) {
 		self::$recipe = $recipe;
 		$this->hydrate_properties();
@@ -147,10 +167,21 @@ final class Miscellaneous implements \JsonSerializable {
 		);
 	}
 
+	/**
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
 	private function mask_unlimited_value( $value ) {
 		return -1 === $value ? '' : $value; // Front-end will take care of providing the placeholder.
 	}
 
+	/**
+	 * @param int    $recipe_id
+	 * @param string $setting_id
+	 *
+	 * @return \Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field|null
+	 */
 	private function get_field( int $recipe_id, string $setting_id ) {
 
 		$repository = new Settings_Repository();
@@ -161,6 +192,9 @@ final class Miscellaneous implements \JsonSerializable {
 		return $field_manager->get_field( absint( $recipe_id ), $setting_id );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	private function get_throttle_settings() {
 
 		$recipe_id = self::$recipe->get_recipe_id();

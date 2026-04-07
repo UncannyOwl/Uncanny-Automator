@@ -64,6 +64,33 @@ class List_Plugins_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * Define output schema.
+	 *
+	 * @return array|null
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'items' => array(
+					'type'  => 'array',
+					'items' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'name'    => array( 'type' => 'string' ),
+							'slug'    => array( 'type' => 'string' ),
+							'version' => array( 'type' => 'string' ),
+							'status'  => array( 'type' => 'string' ),
+						),
+					),
+				),
+				'total' => array( 'type' => 'integer' ),
+			),
+			'required'   => array( 'items', 'total' ),
+		);
+	}
+
+	/**
 	 * Execute tool.
 	 *
 	 * @param User_Context $user_context User context.

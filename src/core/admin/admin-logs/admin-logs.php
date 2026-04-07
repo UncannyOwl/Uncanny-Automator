@@ -133,7 +133,7 @@ class Admin_Logs {
 
 		// Define the list of URL parameters.
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-admin-logs',
 		);
 

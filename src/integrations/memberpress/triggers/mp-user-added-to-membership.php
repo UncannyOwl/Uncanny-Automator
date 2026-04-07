@@ -32,6 +32,7 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 		$this->trigger_code = 'USERADDEDTOMEMBERSHIP';
 		$this->trigger_meta = 'MPPRODUCT';
 		$this->define_trigger();
+		$this->maybe_migrate_trigger_hook();
 	}
 
 	/**
@@ -47,7 +48,7 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 			'sentence'            => sprintf( esc_attr__( 'A user is added to a {{membership:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - MemberPress */
 			'select_option_name'  => esc_attr__( 'A user is added to a {{membership}}', 'uncanny-automator' ),
-			'action'              => 'mepr-event-transaction-completed',
+			'action'              => 'mepr-account-is-active',
 			'priority'            => 18,
 			'accepted_args'       => 1,
 			'validation_function' => array( $this, 'mp_user_added_to_product' ),
@@ -77,16 +78,24 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 	}
 
 	/**
-	 * @param \MeprEvent $event
+	 * @param \MeprTransaction $transaction
 	 */
-	public function mp_user_added_to_product( \MeprEvent $event ) {
+	public function mp_user_added_to_product( \MeprTransaction $transaction ) {
 
-		/** @var \MeprTransaction $transaction */
-		$transaction = $event->get_data();
 		/** @var \MeprProduct $product */
 		$product    = $transaction->product();
 		$product_id = $product->ID;
 		$user_id    = absint( $transaction->user()->ID );
+
+		// Idempotency: prevent the trigger from firing more than once per user + product.
+		// Keyed by user+product (not txn ID) so that when Stripe creates both a confirmation
+		// and a payment transaction via separate webhooks, the first request wins and the
+		// second is blocked — avoiding a race where both see count > 1 and neither fires.
+		$idempotency_key = 'uap_mp_added_' . $user_id . '_' . $product_id;
+		if ( get_transient( $idempotency_key ) ) {
+			return;
+		}
+		set_transient( $idempotency_key, true, HOUR_IN_SECONDS );
 
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		if ( empty( $recipes ) ) {
@@ -114,9 +123,13 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 			return;
 		}
 
-		// Verify if the user has only one transaction for this membership product. If not, exit.
-		$count = absint( \MeprTransaction::get_count_by_user_and_product( $user_id, $product_id, \MeprTransaction::$complete_str ) );
-		if ( 1 !== $count ) {
+		// Only fire on the user's very first membership access — whether that's a free trial,
+		// a paid trial, or a standard purchase. Skips renewals and prevents double-firing in
+		// cases where MemberPress creates both a confirmation and a payment transaction
+		// back-to-back during the same checkout (e.g. Stripe subscriptions).
+		$complete_count  = absint( \MeprTransaction::get_count_by_user_and_product( $user_id, $product_id, \MeprTransaction::$complete_str ) );
+		$confirmed_count = absint( \MeprTransaction::get_count_by_user_and_product( $user_id, $product_id, \MeprTransaction::$confirmed_str ) );
+		if ( ( $complete_count + $confirmed_count ) > 1 ) {
 			return;
 		}
 
@@ -152,6 +165,41 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 				}
 			}
 		}
+	}
+
+	/**
+	 * One-time migration: update the stored `add_action` hook for any existing
+	 * USERADDEDTOMEMBERSHIP triggers that still reference the old hook. Without
+	 * this, Automator won't bind the validation callback for recipes created
+	 * before this change.
+	 */
+	public function maybe_migrate_trigger_hook() {
+
+		$option_key = 'uap_mp_membership_trigger_hook_migrated';
+
+		if ( automator_get_option( $option_key, '' ) ) {
+			return;
+		}
+
+		global $wpdb;
+
+		$wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->postmeta} pm_code
+					ON pm_code.post_id = pm.post_id
+					AND pm_code.meta_key = 'code'
+					AND pm_code.meta_value = %s
+				SET pm.meta_value = %s
+				WHERE pm.meta_key = 'add_action'
+				AND pm.meta_value = %s",
+				'USERADDEDTOMEMBERSHIP',
+				'mepr-account-is-active',
+				'mepr-event-transaction-completed'
+			)
+		);
+
+		automator_update_option( $option_key, time() );
 	}
 
 }

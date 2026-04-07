@@ -76,7 +76,7 @@ class Integration_Map_Builder {
 		$registry            = Integration_Registry_Service::get_instance();
 		$trigger_registry    = new WP_Trigger_Registry();
 		$action_registry     = new WP_Action_Registry();
-		$condition_service   = Condition_Registry_Service::get_instance();
+		$condition_service   = Condition_Registry_Service::instance();
 		$loop_filter_service = Filter_Registry_Service::instance();
 		$all_integrations    = $registry->get_all_integrations();
 		$map                 = array();

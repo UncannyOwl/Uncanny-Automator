@@ -38,7 +38,6 @@ class Admin_Settings_Advanced_Automator_Cache {
 		);
 
 		return $tabs;
-
 	}
 
 	/**
@@ -55,7 +54,7 @@ class Admin_Settings_Advanced_Automator_Cache {
 	public function get_advanced_settings_url() {
 		return add_query_arg(
 			array(
-				'post_type' => 'uo-recipe',
+				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 				'page'      => 'uncanny-automator-cache',
 				'tab'       => 'advanced',
 				'advanced'  => 'automator_cache',
@@ -63,7 +62,6 @@ class Admin_Settings_Advanced_Automator_Cache {
 			admin_url( 'edit.php' )
 		);
 	}
-
 }
 
 new Admin_Settings_Advanced_Automator_Cache();

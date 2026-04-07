@@ -107,22 +107,18 @@ class Usage_Reports {
 	/**
 	 * @param $request
 	 *
-	 * @return bool
+	 * @return bool|\WP_Error
 	 */
 	public function validate_event( $request ) {
 
 		$request_params = $request->get_params();
 
-		if ( ! isset( $request_params['nonce'] ) ) {
-			return false;
-		}
-
-		if ( false === wp_verify_nonce( $request_params['nonce'], 'uncanny_automator' ) ) {
-			return false;
+		if ( ! isset( $request_params['nonce'] ) || false === wp_verify_nonce( $request_params['nonce'], 'uncanny_automator' ) ) {
+			return new \WP_Error( 'rest_forbidden', esc_html__( 'Invalid or missing nonce.', 'uncanny-automator' ), array( 'status' => 403 ) );
 		}
 
 		if ( empty( $request_params['event'] ) ) {
-			return false;
+			return new \WP_Error( 'rest_forbidden', esc_html__( 'Missing event parameter.', 'uncanny-automator' ), array( 'status' => 403 ) );
 		}
 
 		return true;
@@ -620,8 +616,8 @@ FROM $wpdb->posts p
         ON p.ID = p1.post_parent
 WHERE p.post_type LIKE %s
   AND p1.post_type = %s",
-				'uo-recipe',
-				'uo-loop'
+				AUTOMATOR_POST_TYPE_RECIPE,
+				AUTOMATOR_POST_TYPE_LOOP
 			)
 		);
 

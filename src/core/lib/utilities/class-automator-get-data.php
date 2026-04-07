@@ -742,7 +742,6 @@ class Automator_Get_Data {
 		}
 
 		return array();
-
 	}
 
 	/**
@@ -859,7 +858,7 @@ class Automator_Get_Data {
 
 			if ( is_numeric( $run_number ) ) {
 				if ( false === $fetch_current ) {
-					$run_number ++;
+					$run_number++;
 				}
 
 				return $run_number;
@@ -1043,8 +1042,34 @@ class Automator_Get_Data {
 		if ( ! empty( $return ) ) {
 			return $return;
 		}
-		$return = array();
-		// Get recipes that are in the memory right now.
+
+		// Escape hatch: fall back to legacy monolith if explicitly disabled.
+		if ( defined( 'AUTOMATOR_DISABLE_TRIGGER_INDEX' ) && AUTOMATOR_DISABLE_TRIGGER_INDEX ) {
+			$return = $this->recipes_from_trigger_code_legacy( $check_trigger_code, $recipe_id );
+			Automator()->cache->set( $key, $return );
+			return $return;
+		}
+
+		// Fast path: O(1) lookup from Trigger_Index.
+		$return = Trigger_Index::get_instance()->get_by_code( $check_trigger_code, $recipe_id );
+
+		Automator()->cache->set( $key, $return );
+
+		return $return;
+	}
+
+	/**
+	 * Legacy implementation of recipes_from_trigger_code() using get_recipes_data().
+	 * Retained as fallback behind AUTOMATOR_DISABLE_TRIGGER_INDEX constant.
+	 *
+	 * @param string   $check_trigger_code The trigger code.
+	 * @param int|null $recipe_id          Optional recipe ID filter.
+	 *
+	 * @return array
+	 */
+	private function recipes_from_trigger_code_legacy( $check_trigger_code, $recipe_id = null ) {
+
+		$return  = array();
 		$recipes = Automator()->get_recipes_data( false, $recipe_id );
 
 		if ( empty( $recipes ) ) {
@@ -1061,17 +1086,15 @@ class Automator_Get_Data {
 
 				$trigger_code = $trigger['meta']['code'];
 
-				// Skip if the executed trigger doesn't match
+				// Skip if the executed trigger doesn't match.
 				if ( (string) $check_trigger_code !== (string) $trigger_code ) {
 					continue;
 				}
 
-				$recipe_id            = absint( $recipe['ID'] );
-				$return[ $recipe_id ] = $recipe;
+				$rid            = absint( $recipe['ID'] );
+				$return[ $rid ] = $recipe;
 			}
 		}
-
-		Automator()->cache->set( $key, $return );
 
 		return $return;
 	}
@@ -1176,7 +1199,6 @@ class Automator_Get_Data {
 				$run_number
 			)
 		);
-
 	}
 
 	/**
@@ -1216,7 +1238,6 @@ class Automator_Get_Data {
 		}
 
 		return null;
-
 	}
 
 	/**
@@ -1236,16 +1257,16 @@ class Automator_Get_Data {
 		$allowed_post_types = apply_filters(
 			'automator_allowed_post_types',
 			array(
-				'uo-recipe',
-				'uo-trigger',
-				'uo-action',
-				'uo-closure',
+				AUTOMATOR_POST_TYPE_RECIPE,
+				AUTOMATOR_POST_TYPE_TRIGGER,
+				AUTOMATOR_POST_TYPE_ACTION,
+				AUTOMATOR_POST_TYPE_CLOSURE,
 			)
 		);
 
 		$post = get_post( $id );
 
-		if ( $post instanceof \WP_Post && 'uo-recipe' === $post->post_type ) {
+		if ( $post instanceof \WP_Post && AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
 			return absint( $post->ID );
 		}
 
@@ -1375,7 +1396,7 @@ WHERE t.automator_trigger_id = %d
 			$timestamp = current_time( 'timestamp' );
 			$time_ago  = strtotime( "-$seconds_to_include Seconds", $timestamp );
 			$date      = date_i18n( 'Y-m-d H:i:s', $time_ago );
-			$query     .= " AND date_time >= '$date'";
+			$query    .= " AND date_time >= '$date'";
 		}
 
 		$results = $wpdb->get_var( $query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -1448,7 +1469,6 @@ WHERE t.automator_trigger_id = %d
 
 		// Automatically remove empty elements.
 		return array_filter( $published_actions );
-
 	}
 
 	/**
@@ -1489,6 +1509,8 @@ WHERE t.automator_trigger_id = %d
 	}
 
 	/**
+	 * @deprecated 7.2 Use fetch_recipe_with_apps() instead.
+	 *
 	 * @return array|int
 	 */
 	public function recipes_using_credits( $count_only = false ) {
@@ -1513,8 +1535,20 @@ WHERE t.automator_trigger_id = %d
 			'ZOOMWEBINAR',
 		);
 
-		$meta          = "'" . implode( "','", $integration_codes ) . "'";
-		$sql           = $wpdb->prepare( "SELECT rp.ID as ID FROM $wpdb->posts cp LEFT JOIN $wpdb->posts rp ON rp.ID = cp.post_parent WHERE cp.ID IN ( SELECT post_id FROM $wpdb->postmeta WHERE meta_value IN ($meta) ) AND cp.post_status LIKE %s AND rp.post_status LIKE %s", 'publish', 'publish' ); //phpcs:ignore
+		$placeholders  = implode( ', ', array_fill( 0, count( $integration_codes ), '%s' ) );
+		$sql           = $wpdb->prepare(
+			"SELECT rp.ID as ID
+			FROM {$wpdb->posts} cp
+			LEFT JOIN {$wpdb->posts} rp ON rp.ID = cp.post_parent
+			WHERE cp.ID IN (
+				SELECT post_id FROM {$wpdb->postmeta}
+				WHERE meta_key = 'integration'
+				AND meta_value IN ({$placeholders})
+			)
+			AND cp.post_status = %s
+			AND rp.post_status = %s",
+			array_merge( $integration_codes, array( 'publish', 'publish' ) )
+		);
 		$check_recipes = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		if ( $count_only ) {
 			return count( $check_recipes );
@@ -1577,7 +1611,6 @@ WHERE t.automator_trigger_id = %d
 		Automator()->cache->set( 'get_completed_recipes_count', $total_recipe_completion );
 
 		return apply_filters( 'automator_review_get_completed_recipes_count', absint( $total_recipe_completion ), $this );
-
 	}
 
 	/**
@@ -1588,10 +1621,10 @@ WHERE t.automator_trigger_id = %d
 	public function total_recipes( $status = 'all' ) {
 		global $wpdb;
 		if ( 'all' === $status ) {
-			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s", 'uo-recipe' ) );
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s", AUTOMATOR_POST_TYPE_RECIPE ) );
 		}
 		if ( 'all' !== $status ) {
-			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s AND post_status = %s", 'uo-recipe', $status ) );
+			$count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s AND post_status = %s", AUTOMATOR_POST_TYPE_RECIPE, $status ) );
 		}
 
 		return is_numeric( $count ) ? $count : 0;

@@ -1,149 +1,96 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+<?php
+
+namespace Uncanny_Automator\Integrations\ConvertKit;
 
 /**
- * Class CONVERTKIT_SUBSCRIBER_TAG_REMOVE
+ * ConvertKit - Remove a tag from a subscriber
  *
- * @package Uncanny_Automator
+ * @property ConvertKit_App_Helpers $helpers
+ * @property ConvertKit_Api_Caller $api
  */
-class CONVERTKIT_SUBSCRIBER_TAG_REMOVE {
-
-	use Recipe\Actions;
-	use Recipe\Action_Tokens;
-
-	public function __construct() {
-
-		$this->set_helpers( new ConvertKit_Helpers( false ) );
-
-		$this->setup_action();
-
-	}
+class CONVERTKIT_SUBSCRIBER_TAG_REMOVE extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Setup Action.
 	 *
-	 * @return void.
+	 * @return void
 	 */
 	protected function setup_action() {
-
 		$this->set_integration( 'CONVERTKIT' );
-
 		$this->set_action_code( 'CONVERTKIT_SUBSCRIBER_TAG_REMOVE' );
-
 		$this->set_action_meta( 'CONVERTKIT_SUBSCRIBER_TAG_REMOVE_META' );
-
 		$this->set_is_pro( false );
-
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/convertkit/' ) );
-
 		$this->set_requires_user( false );
-
+		$this->set_background_processing( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/convertkit/' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Remove {{a tag}} from {{a subscriber}}', 'ConvertKit', 'uncanny-automator' ) );
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence - WordPress */
-				esc_attr__( 'Remove {{a tag:%1$s}} from {{a subscriber:%2$s}}', 'uncanny-automator' ),
+				// translators: %1$s is the tag name, %2$s is the email address
+				esc_attr_x( 'Remove {{a tag:%1$s}} from {{a subscriber:%2$s}}', 'ConvertKit', 'uncanny-automator' ),
 				$this->get_action_meta(),
 				'EMAIL:' . $this->get_action_meta()
 			)
 		);
-
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Remove {{a tag}} from {{a subscriber}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		$this->set_background_processing( true );
-
-		$this->set_action_tokens(
-			array(
-				'TAG_NAME' => array(
-					'name' => esc_html__( 'Tag name', 'uncanny-automator' ),
-					'type' => 'text',
-				),
-			),
-			$this->get_action_code()
-		);
-
-		$this->register_action();
-
 	}
-
-	public function load_options() {
-
-		return array(
-			'options_group' => array(
-				$this->get_action_meta() => array(
-					array(
-						'option_code'              => $this->get_action_meta(),
-						'label'                    => esc_attr__( 'Tag', 'uncanny-automator' ),
-						'input_type'               => 'select',
-						'options'                  => array(),
-						'endpoint'                 => 'automator_convertkit_tags_dropdown_handler',
-						'token_name'               => esc_attr__( 'Tag ID', 'uncanny-automator' ),
-						'custom_value_description' => esc_attr__( 'Tag ID', 'uncanny-automator' ),
-						'is_ajax'                  => true,
-						'required'                 => true,
-					),
-					array(
-						'option_code'           => 'EMAIL',
-						'label'                 => esc_attr__( 'Email address', 'uncanny-automator' ),
-						'input_type'            => 'email',
-						'supports_custom_value' => false,
-						'required'              => true,
-					),
-				),
-			),
-		);
-
-	}
-
 
 	/**
-	 * Processes action.
+	 * Define options.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
+	 * @return array
+	 */
+	public function options() {
+		return array(
+			$this->helpers->get_tag_option_config( $this->get_action_meta() ),
+			$this->helpers->get_email_option_config( 'EMAIL', false ),
+		);
+	}
+
+	/**
+	 * Define tokens.
 	 *
-	 * @return void.
+	 * @return array
+	 */
+	public function define_tokens() {
+		return array(
+			'TAG_NAME' => array(
+				'name' => esc_html_x( 'Tag name', 'ConvertKit', 'uncanny-automator' ),
+				'type' => 'text',
+			),
+		);
+	}
+
+	/**
+	 * Process the action.
+	 *
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool
+	 * @throws \Exception
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$tag_id = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : 0;
+		$tag_id = $this->helpers->require_valid_tag_id( $parsed[ $this->get_action_meta() ] ?? '' );
+		$email  = $this->helpers->require_valid_email( $parsed['EMAIL'] ?? '' );
 
-		$email_address = isset( $parsed['EMAIL'] ) ? sanitize_text_field( $parsed['EMAIL'] ) : '';
+		$body = array(
+			'action'        => 'remove_tag_from_subscriber',
+			'tag_id'        => $tag_id,
+			'email_address' => $email,
+		);
 
-		try {
+		$this->api->api_request( $body, $action_data );
 
-			$body = array(
-				'action'        => 'remove_tag_from_subscriber',
-				'tag_id'        => $tag_id,
-				'email_address' => $email_address,
-				'access_token'  => automator_get_option( ConvertKit_Settings::OPTIONS_API_SECRET, null ),
-			);
+		$this->hydrate_tokens(
+			array(
+				'TAG_NAME' => $action_data['meta'][ $this->get_action_meta() . '_readable' ] ?? '',
+			)
+		);
 
-			$response = $this->get_helpers()->api_request( $body, $action_data );
-
-			$format = sprintf( '%s %s', get_option( 'date_format', 'F j, Y' ), get_option( 'time_format', 'g:i a' ) );
-
-			$this->hydrate_tokens(
-				array(
-					'TAG_NAME' => $response['data']['name'],
-				)
-			);
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-		}
-
+		return true;
 	}
-
 }

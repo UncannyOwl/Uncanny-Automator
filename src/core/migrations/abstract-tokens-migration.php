@@ -31,14 +31,18 @@ abstract class Tokens_Migration extends Migration {
 	 */
 	public function migrate() {
 
-		$this->loop_through_post_type( 'uo-action' );
-		$this->loop_through_post_type( 'uo-recipe' );
-		$this->loop_through_post_type( 'uo-loop' );
-		$this->loop_through_post_type( 'uo-loop-filter' );
-		
+		$this->loop_through_post_type( AUTOMATOR_POST_TYPE_ACTION );
+		$this->loop_through_post_type( AUTOMATOR_POST_TYPE_RECIPE );
+		$this->loop_through_post_type( AUTOMATOR_POST_TYPE_LOOP );
+		$this->loop_through_post_type( AUTOMATOR_POST_TYPE_LOOP_FILTER );
+
 		$this->complete();
 	}
-
+	/**
+	 * Loop through post type.
+	 *
+	 * @param mixed $post_type The type.
+	 */
 	public function loop_through_post_type( $post_type ) {
 
 		$posts = $this->get_all_posts( $post_type );

@@ -8,6 +8,7 @@ use Uncanny_Automator\Api\Components\Closure\Closure_Config;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Status;
 use Uncanny_Automator\Api\Database\Interfaces\Closure_Store;
+use Uncanny_Automator\Api\Database\Recipe_Cache;
 
 /**
  * WordPress Closure Store.
@@ -22,7 +23,7 @@ class WP_Closure_Store implements Closure_Store {
 	/**
 	 * Post type for closures.
 	 */
-	const POST_TYPE = 'uo-closure';
+	const POST_TYPE = AUTOMATOR_POST_TYPE_CLOSURE;
 
 	/**
 	 * WordPress database object.
@@ -127,12 +128,16 @@ class WP_Closure_Store implements Closure_Store {
 			throw new Exception( sprintf( esc_html_x( 'Closure with ID %s not found', 'Closure store not found error', 'uncanny-automator' ), absint( $closure_id ) ) );
 		}
 
+		$recipe_id = $closure->get_recipe_id()->get_value();
+
 		$result = wp_delete_post( $closure_id, true );
 
 		if ( ! $result ) {
 			// translators: %s is the closure ID.
 			throw new Exception( sprintf( esc_html_x( 'Failed to delete closure with ID: %s', 'Closure store delete error with ID', 'uncanny-automator' ), absint( $closure_id ) ) );
 		}
+
+		Recipe_Cache::invalidate( $recipe_id );
 	}
 
 	/**
@@ -256,6 +261,8 @@ class WP_Closure_Store implements Closure_Store {
 
 		// Set ID in original config for persistence state
 		$config->id( (int) $closure_id );
+
+		Recipe_Cache::invalidate( $closure->get_recipe_id()->get_value() );
 	}
 
 	/**
@@ -286,6 +293,8 @@ class WP_Closure_Store implements Closure_Store {
 		foreach ( $meta_data as $key => $value ) {
 			update_post_meta( $closure_id, $key, $value );
 		}
+
+		Recipe_Cache::invalidate( $closure->get_recipe_id()->get_value() );
 	}
 
 	/**
@@ -454,4 +463,5 @@ class WP_Closure_Store implements Closure_Store {
 	public static function get_post_type(): string {
 		return self::POST_TYPE;
 	}
+
 }

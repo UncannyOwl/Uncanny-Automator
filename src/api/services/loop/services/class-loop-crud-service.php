@@ -468,7 +468,7 @@ class Loop_CRUD_Service {
 			array( 'post_parent' => $recipe_id ),
 			array(
 				'post_parent' => $loop_id,
-				'post_type'   => 'uo-action',
+				'post_type'   => AUTOMATOR_POST_TYPE_ACTION,
 			),
 			array( '%d' ),
 			array( '%d', '%s' )
@@ -596,28 +596,31 @@ class Loop_CRUD_Service {
 					'backup'           => array(
 						'integration_name' => 'WordPress',
 						'sentence'         => 'User {{has:CRITERIA}} {{a specific role:WP_USER_HAS_ROLE}}',
-						'sentence_html'    => $this->compose_filter_sentence_html( 'User {{has:CRITERIA}} {{a specific role:WP_USER_HAS_ROLE}}', array(
-							'CRITERIA'         => array(
-								'type'     => 'select',
-								'value'    => 'does-not-have',
-								'readable' => 'does not have',
-								'backup'   => array(
-									'label'                    => 'Criteria',
-									'supports_custom_value'    => false,
-									'supports_multiple_values' => false,
+						'sentence_html'    => $this->compose_filter_sentence_html(
+							'User {{has:CRITERIA}} {{a specific role:WP_USER_HAS_ROLE}}',
+							array(
+								'CRITERIA'         => array(
+									'type'     => 'select',
+									'value'    => 'does-not-have',
+									'readable' => 'does not have',
+									'backup'   => array(
+										'label'                    => 'Criteria',
+										'supports_custom_value'    => false,
+										'supports_multiple_values' => false,
+									),
 								),
-							),
-							'WP_USER_HAS_ROLE' => array(
-								'type'     => 'select',
-								'value'    => 'administrator',
-								'readable' => 'Administrator',
-								'backup'   => array(
-									'label'                    => 'Role',
-									'supports_custom_value'    => false,
-									'supports_multiple_values' => false,
+								'WP_USER_HAS_ROLE' => array(
+									'type'     => 'select',
+									'value'    => 'administrator',
+									'readable' => 'Administrator',
+									'backup'   => array(
+										'label'                    => 'Role',
+										'supports_custom_value'    => false,
+										'supports_multiple_values' => false,
+									),
 								),
-							),
-						) ),
+							)
+						),
 					),
 				);
 
@@ -640,18 +643,21 @@ class Loop_CRUD_Service {
 					'backup'           => array(
 						'integration_name' => 'WordPress',
 						'sentence'         => 'Post type is {{a specific post type:WP_POST_EQUALS_POST_TYPE}}',
-						'sentence_html'    => $this->compose_filter_sentence_html( 'Post type is {{a specific post type:WP_POST_EQUALS_POST_TYPE}}', array(
-							'WP_POST_EQUALS_POST_TYPE' => array(
-								'type'     => 'select',
-								'value'    => 'post',
-								'readable' => 'Posts',
-								'backup'   => array(
-									'label'                    => 'Post type',
-									'supports_custom_value'    => true,
-									'supports_multiple_values' => false,
+						'sentence_html'    => $this->compose_filter_sentence_html(
+							'Post type is {{a specific post type:WP_POST_EQUALS_POST_TYPE}}',
+							array(
+								'WP_POST_EQUALS_POST_TYPE' => array(
+									'type'     => 'select',
+									'value'    => 'post',
+									'readable' => 'Posts',
+									'backup'   => array(
+										'label'                    => 'Post type',
+										'supports_custom_value'    => true,
+										'supports_multiple_values' => false,
+									),
 								),
-							),
-						) ),
+							)
+						),
 					),
 				);
 
@@ -675,19 +681,22 @@ class Loop_CRUD_Service {
 					'backup'           => array(
 						'integration_name' => 'GEN',
 						'sentence'         => 'The item is not empty',
-						'sentence_html'    => $this->compose_filter_sentence_html( 'The item is not empty', array(
-							'ITEM_NOT_EMPTY' => array(
-								'type'     => 'select',
-								'value'    => 'is_not_empty',
-								'readable' => 'The item is not empty',
-								'backup'   => array(
-									'label'                    => 'Condition',
-									'show_label_in_sentence'   => true,
-									'supports_custom_value'    => false,
-									'supports_multiple_values' => false,
+						'sentence_html'    => $this->compose_filter_sentence_html(
+							'The item is not empty',
+							array(
+								'ITEM_NOT_EMPTY' => array(
+									'type'     => 'select',
+									'value'    => 'is_not_empty',
+									'readable' => 'The item is not empty',
+									'backup'   => array(
+										'label'                    => 'Condition',
+										'show_label_in_sentence'   => true,
+										'supports_custom_value'    => false,
+										'supports_multiple_values' => false,
+									),
 								),
-							),
-						) ),
+							)
+						),
 					),
 				);
 

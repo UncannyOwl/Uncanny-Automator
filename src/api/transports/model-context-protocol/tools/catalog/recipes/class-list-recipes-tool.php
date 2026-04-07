@@ -77,7 +77,7 @@ class List_Recipes_Tool extends Abstract_MCP_Tool {
 			'properties' => array(
 				'status' => array(
 					'type'        => 'string',
-					'description' => 'Filter recipes by publication status. "draft" = unpublished recipes, "publish" = live recipes. Defaults to "publish" if not specified.',
+					'description' => 'Filter recipes by publication status. "draft" = unpublished recipes, "publish" = live recipes. Omit to return both draft and publish.',
 					'enum'        => array( Recipe_Status::DRAFT, Recipe_Status::PUBLISH ),
 				),
 				'type'   => array(
@@ -100,6 +100,36 @@ class List_Recipes_Tool extends Abstract_MCP_Tool {
 				),
 			),
 			'required'   => array(),
+		);
+	}
+
+	/**
+	 * Define the output schema for the list recipes tool response data.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @return array|null JSON Schema for list recipes response data.
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'success'      => array( 'type' => 'boolean' ),
+				'message'      => array( 'type' => 'string' ),
+				'recipe_count' => array( 'type' => 'integer' ),
+				'recipes'      => array(
+					'type'  => 'array',
+					'items' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'id'     => array( 'type' => 'integer' ),
+							'title'  => array( 'type' => 'string' ),
+							'status' => array( 'type' => 'string' ),
+						),
+					),
+				),
+			),
+			'required'   => array( 'success', 'recipes', 'recipe_count' ),
 		);
 	}
 

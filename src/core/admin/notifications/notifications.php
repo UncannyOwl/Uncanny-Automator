@@ -73,7 +73,7 @@ class Automator_Notifications {
 
 		add_action( 'automator_tools_header_after', array( $this, 'show_notifications' ) );
 
-		if ( 'uo-recipe' === automator_filter_input( 'post_type' ) ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE === automator_filter_input( 'post_type' ) ) {
 			add_action(
 				'current_screen',
 				function () {

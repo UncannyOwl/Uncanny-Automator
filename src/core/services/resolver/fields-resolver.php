@@ -125,11 +125,19 @@ class Fields_Resolver {
 	public function add_ignored_meta_keys( $meta_key = '' ) {
 		$this->ignored_meta_keys[] = $meta_key;
 	}
-
+	/**
+	 * Get show relevant tokens.
+	 *
+	 * @return mixed
+	 */
 	public function get_show_relevant_tokens() {
 		return $this->show_relevant_tokens;
 	}
-
+	/**
+	 * Set show relevant tokens.
+	 *
+	 * @param mixed $bool The bool.
+	 */
 	public function set_show_relevant_tokens( $bool = false ) {
 		$this->show_relevant_tokens = (bool) $bool;
 	}
@@ -150,7 +158,7 @@ class Fields_Resolver {
 
 		// Flatten the post meta.
 		$trigger_meta = array_map(
-			function( $item = array() ) {
+			function ( $item = array() ) {
 				return is_array( $item ) && isset( $item[0] ) ? $item[0] : '';
 			},
 			$trigger_meta
@@ -159,14 +167,13 @@ class Fields_Resolver {
 		// Ignore uncessary meta keys.
 		$trigger_meta = array_filter(
 			$trigger_meta,
-			function( $key ) {
+			function ( $key ) {
 				return ! in_array( $key, $this->get_ignored_meta_keys(), true );
 			},
 			ARRAY_FILTER_USE_KEY
 		);
 
 		return $trigger_meta;
-
 	}
 
 	/**
@@ -272,24 +279,26 @@ class Fields_Resolver {
 				$replace_pairs[ $value ] = $labels[ $key ];
 			}
 
-			// Replace the keys.
-			$repeater_fields = (array) json_decode( $field['value']['raw'], true );
+			// Replace the keys. Guard against malformed JSON — do not overwrite
+			// the stored value with '[]' if decoding fails.
+			$repeater_fields = json_decode( $field['value']['raw'], true );
 
-			// The $repeater_field_array_index is a numeric variable.
-			foreach ( $repeater_fields as $repeater_field_array_index => $repeater_field ) {
-				foreach ( $repeater_field as $repeater_field_key => $repeater_field_value ) {
-					// Replace the key.
-					$replaced_key = strtr( $repeater_field_key, $replace_pairs );
-					// Add them to repeater field's replace pairs.
-					$repeater_field_replace_pairs[ $repeater_field_array_index ][ $replaced_key ] = $repeater_field_value;
+			if ( is_array( $repeater_fields ) ) {
+				// The $repeater_field_array_index is a numeric variable.
+				foreach ( $repeater_fields as $repeater_field_array_index => $repeater_field ) {
+					foreach ( $repeater_field as $repeater_field_key => $repeater_field_value ) {
+						// Replace the key.
+						$replaced_key = strtr( $repeater_field_key, $replace_pairs );
+						// Add them to repeater field's replace pairs.
+						$repeater_field_replace_pairs[ $repeater_field_array_index ][ $replaced_key ] = $repeater_field_value;
+					}
 				}
+				// Overwrite the value only if we successfully decoded.
+				$field['value']['raw'] = wp_json_encode( $repeater_field_replace_pairs );
 			}
-			// Overwrite the value.
-			$field['value']['raw'] = wp_json_encode( $repeater_field_replace_pairs );
 		}
 
 		return $field;
-
 	}
 
 	/**
@@ -331,7 +340,6 @@ class Fields_Resolver {
 		}
 
 		return $fields;
-
 	}
 
 	/**
@@ -367,6 +375,136 @@ class Fields_Resolver {
 	}
 
 	/**
+	 * Resolve the integration code for the given object code and type.
+	 * Extracted as a protected method so tests can stub Automator() without booting the full container.
+	 *
+	 * @param string $object_code  The trigger or action code.
+	 * @param string $object_type  'trigger' or 'action'.
+	 *
+	 * @return string The integration code, or empty string if not found.
+	 */
+	protected function resolve_integration_code( string $object_code, string $object_type ): string {
+		$result = 'trigger' === $object_type
+			? Automator()->get->value_from_trigger_meta( $object_code, 'integration' )
+			: Automator()->get->value_from_action_meta( $object_code, 'integration' );
+
+		return (string) ( $result ?? '' );
+	}
+
+	/**
+	 * Retrieve the cached extra_options payload from uap_options for a given
+	 * integration + code pair. Returns null on cache miss.
+	 * Extracted as a protected method so tests can stub without touching the DB.
+	 *
+	 * @param string $integration_code
+	 * @param string $object_code
+	 *
+	 * @return array|null Cached payload, or null on miss.
+	 */
+	protected function get_cached_extra_options( string $integration_code, string $object_code ): ?array {
+
+		$cache_key = 'uap_extra_options_' . $integration_code . '_' . $object_code;
+		$cached    = automator_get_option( $cache_key, null );
+
+		// A non-empty array means the cache is valid — return it. An empty array is
+		// treated as a miss because earlier (broken) execution runs persisted empty
+		// arrays before this lazy-build code existed; without re-treating them as a
+		// miss those rows would never self-heal.
+		if ( is_array( $cached ) && ! empty( $cached ) ) {
+			return $cached;
+		}
+
+		// Cache miss path. The schema cache is only written by load_extra_options(),
+		// which only runs from the editor / REST / MCP / admin paths via
+		// get_recipe_data_by_recipe_id(). The frontend execution path (any trigger,
+		// any recipe) never touches that, so on a fresh manifest build the cache is
+		// empty when an action runs and we'd write empty action_fields/properties
+		// meta — baking an empty log sidebar into the row forever.
+		//
+		// Build the cache lazily right here, at the actual cache-miss site. The
+		// action/trigger class is guaranteed to be loaded (it just executed), so
+		// its options_callback is registered and we can call it directly.
+		return $this->build_extra_options_cache( $integration_code, $object_code, $cache_key );
+	}
+
+	/**
+	 * Lazy-build the uap_extra_options_{INTEGRATION}_{CODE} cache by invoking the
+	 * registered options_callback. One-shot cost per integration+code: subsequent
+	 * requests hit the cache normally.
+	 *
+	 * @param string $integration_code Integration code (e.g. WC, EMAILS).
+	 * @param string $object_code      Item code (e.g. SENDEMAIL).
+	 * @param string $cache_key        Pre-built option key.
+	 *
+	 * @return array|null Built payload, or null if no callback is registered.
+	 */
+	protected function build_extra_options_cache( string $integration_code, string $object_code, string $cache_key ): ?array {
+
+		// Fields_Resolver uses singular type ('action'/'trigger'), but
+		// load_extra_options() / get_options_from_callable() use plural
+		// ('actions'/'triggers'). Normalise here so this builder matches the
+		// existing builder semantics rather than its own singular-flavoured ones.
+		$is_action     = 'action' === $this->get_object_type();
+		$callable_type = $is_action ? 'actions' : 'triggers';
+
+		$callback = $is_action
+			? Automator()->get->value_from_action_meta( $object_code, 'options_callback' )
+			: Automator()->get->value_from_trigger_meta( $object_code, 'options_callback' );
+
+		if ( ! $callback ) {
+			return null;
+		}
+
+		try {
+			$response = Automator()->get_options_from_callable( $callable_type, $object_code, $callback );
+		} catch ( \Throwable $e ) {
+			return null;
+		}
+
+		if ( ! is_array( $response ) || empty( $response ) ) {
+			return null;
+		}
+
+		$response = apply_filters( 'automator_options_callback_response', $response, $callback, array(), array(), $callable_type );
+
+		automator_update_option( $cache_key, $response, false );
+
+		return $response;
+	}
+
+	/**
+	 * Retrieve the options_group field schema from the in-memory integration registry.
+	 * Extracted as a protected method so tests can inject a schema without registering
+	 * a real integration.
+	 *
+	 * @param string $object_code
+	 * @param string $object_type
+	 *
+	 * @return array Schema array with keys integration/trigger_code/options_group, or empty.
+	 */
+	protected function get_options_group_schema( string $object_code, string $object_type ): array {
+		$result = Automator()->get->object_field_options_from_object_code( $object_code, 'options_group', $object_type );
+
+		return is_array( $result ) ? $result : array();
+	}
+
+	/**
+	 * Retrieve the flat options field schema from the in-memory integration registry.
+	 * Extracted as a protected method so tests can inject a schema without registering
+	 * a real integration.
+	 *
+	 * @param string $object_code
+	 * @param string $object_type
+	 *
+	 * @return array Schema array with keys integration/trigger_code/options, or empty.
+	 */
+	protected function get_options_schema( string $object_code, string $object_type ): array {
+		$result = Automator()->get->object_field_options_from_object_code( $object_code, 'options', $object_type );
+
+		return is_array( $result ) ? $result : array();
+	}
+
+	/**
 	 * Given the recipe id, object id, analyze all the fields and returns the options_group and options.
 	 *
 	 * Notes:
@@ -397,18 +535,29 @@ class Fields_Resolver {
 
 		$object_meta_flattended = $this->flatten_post_meta_array( $object_meta );
 
-		// Aggregate the options starting with the 'extra_options' from recipe meta.
-		$options_aggregate = get_post_meta( $this->get_recipe_id(), 'extra_options', true );
+		// Aggregate the options from uap_options, keyed per integration+code.
+		$options_aggregate = array();
+		$object_code       = isset( $object_meta['code'][0] ) ? $object_meta['code'][0] : '';
 
-		// The function get_post_meta return a mixed data.
-		if ( ! is_array( $options_aggregate ) ) {
-			$options_aggregate = array();
+		if ( $object_code ) {
+			$object_type      = $this->get_object_type();
+			$integration_code = $this->resolve_integration_code( $object_code, $object_type );
+
+			if ( $integration_code ) {
+				// Note: cached data has 'options' choices stripped from options_group items
+				// (see strip_duplicate_options_from_group() in class-automator-functions.php).
+				// The resolver only needs option_code, input_type, label, relevant_tokens,
+				// fields, and supports_tinymce — never the choices array. Do not read
+				// $option_field['options'] here without first calling expand_options_group().
+				$cached = $this->get_cached_extra_options( $integration_code, $object_code );
+				if ( null !== $cached ) {
+					$options_aggregate[ $integration_code ][ $object_code ] = $cached;
+				}
+			}
 		}
 
-		$object_code = isset( $object_meta['code'][0] ) ? $object_meta['code'][0] : '';
-
-		$options_group = Automator()->get->object_field_options_from_object_code( $object_code, 'options_group', $this->get_object_type() );
-		$options       = Automator()->get->object_field_options_from_object_code( $object_code, 'options', $this->get_object_type() );
+		$options_group = $this->get_options_group_schema( $object_code, $this->get_object_type() );
+		$options       = $this->get_options_schema( $object_code, $this->get_object_type() );
 
 		// Figure out if we have an options_group here.
 		if ( is_array( $options_group ) && ! empty( $options_group ) ) {
@@ -462,6 +611,5 @@ class Fields_Resolver {
 			'options'       => 1 === count( $options_fields ) ? array_shift( $options_fields ) : $options_fields, // / @phpstan-ignore-line PHP Stan issue: <https://github.com/phpstan/phpstan/issues/2889>
 			'options_group' => 1 === count( $options_group_fields ) ? array_shift( $options_group_fields ) : $options_group_fields, // / @phpstan-ignore-line PHP Stan issue: <https://github.com/phpstan/phpstan/issues/2889>
 		);
-
 	}
 }

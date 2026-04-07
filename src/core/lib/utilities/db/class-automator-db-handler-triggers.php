@@ -626,7 +626,10 @@ AND r.run_number = %d;",
 
 		global $wpdb;
 
-		$column = sanitize_title( $column );
+		$allowed_columns = array( 'ID', 'date_time', 'automator_recipe_id', 'automator_recipe_log_id', 'automator_trigger_id', 'completed', 'user_id', 'run_number' );
+		if ( ! in_array( $column, $allowed_columns, true ) ) {
+			return null;
+		}
 
 		$id = $wpdb->get_var( $wpdb->prepare( "SELECT {$column} FROM {$wpdb->prefix}uap_trigger_log WHERE ID = %d", $log_id ) ); // phpcs:ignore
 

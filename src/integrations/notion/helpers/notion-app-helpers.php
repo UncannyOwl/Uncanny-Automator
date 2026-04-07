@@ -292,6 +292,16 @@ class Notion_App_Helpers extends App_Helpers {
 				// Extract the field ID and type.
 				list ( $notion, $field, $field_id, $type ) = $split;
 
+			} catch ( \InvalidArgumentException $e ) {
+				// Simplified key format from AI agent / Action_Executor.
+				// Accepts "field_id:type" (e.g. "abc123:rich_text") or plain name (defaults to title).
+				$parsed   = self::parse_simplified_key( $key );
+				$field_id = $parsed['id'];
+				$type     = $parsed['type'];
+			}
+
+			try {
+
 				$value = is_array( $value )
 					// Skip array values (like people, multi_select) - they don't need parsing.
 					? $value
@@ -429,6 +439,58 @@ class Notion_App_Helpers extends App_Helpers {
 		$parts[3] = ltrim( $parts[3], '_' );
 
 		return $parts;
+	}
+
+	/**
+	 * Parse a simplified field key from the AI agent / Action_Executor.
+	 *
+	 * Accepts two formats:
+	 *   - "field_id:type" (e.g. "abc123:rich_text") — explicit ID and type.
+	 *   - "Name" (plain string) — used as both the ID and name, defaults to "title" type.
+	 *
+	 * @since 7.2.0
+	 *
+	 * @param string $key The simplified key.
+	 *
+	 * @return array{id: string, type: string} Parsed field ID and type.
+	 */
+	public static function parse_simplified_key( $key ) {
+
+		// Check for "id:type" notation (e.g. "abc123:rich_text").
+		$last_colon = strrpos( $key, ':' );
+
+		if ( false !== $last_colon && $last_colon > 0 ) {
+			$potential_id   = substr( $key, 0, $last_colon );
+			$potential_type = substr( $key, $last_colon + 1 );
+
+			// Only treat as id:type if the type part is a known Notion property type.
+			$known_types = array(
+				'title',
+				'rich_text',
+				'number',
+				'select',
+				'multi_select',
+				'date',
+				'checkbox',
+				'url',
+				'email',
+				'phone_number',
+				'status',
+			);
+
+			if ( in_array( $potential_type, $known_types, true ) ) {
+				return array(
+					'id'   => $potential_id,
+					'type' => $potential_type,
+				);
+			}
+		}
+
+		// Plain name — default to title type.
+		return array(
+			'id'   => $key,
+			'type' => 'title',
+		);
 	}
 
 	/**

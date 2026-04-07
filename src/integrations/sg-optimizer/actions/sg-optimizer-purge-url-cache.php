@@ -23,12 +23,12 @@ class Sg_Optimizer_Purge_Url_Cache extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_background_processing( true );
 		// translators: %1$s is the URL.
-		$this->set_sentence( sprintf( esc_html_x( 'Purge SG Optimizer cache for {{a specific URL:%1$s}}', 'SG Optimizer', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_html_x( 'Purge SG Optimizer cache for {{a specific URL}}', 'SG Optimizer', 'uncanny-automator' ) );
+		$this->set_sentence( sprintf( esc_html_x( 'Purge Speed Optimizer cache for {{a specific URL:%1$s}}', 'Speed Optimizer', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Purge Speed Optimizer cache for {{a specific URL}}', 'Speed Optimizer', 'uncanny-automator' ) );
 		$this->set_action_tokens(
 			array(
 				'PURGED_URL' => array(
-					'name' => esc_html_x( 'Purged URL', 'SG Optimizer', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Purged URL', 'Speed Optimizer', 'uncanny-automator' ),
 					'type' => 'url',
 				),
 			),
@@ -45,11 +45,11 @@ class Sg_Optimizer_Purge_Url_Cache extends \Uncanny_Automator\Recipe\Action {
 		return array(
 			array(
 				'option_code'     => $this->get_action_meta(),
-				'label'           => esc_html_x( 'URL', 'SG Optimizer', 'uncanny-automator' ),
+				'label'           => esc_html_x( 'URL', 'Speed Optimizer', 'uncanny-automator' ),
 				'input_type'      => 'url',
 				'required'        => true,
 				'relevant_tokens' => array(),
-				'description'     => esc_html_x( 'Enter the full URL to purge from cache (e.g. https://example.com/my-page/)', 'SG Optimizer', 'uncanny-automator' ),
+				'description'     => esc_html_x( 'Enter the full URL to purge from cache (e.g. https://example.com/my-page/)', 'Speed Optimizer', 'uncanny-automator' ),
 			),
 		);
 	}

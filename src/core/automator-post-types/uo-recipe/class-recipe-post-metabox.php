@@ -31,7 +31,6 @@ class Recipe_Post_Metabox {
 
 		// Clear any custom ordering of the sidebar metaboxes.
 		add_filter( 'get_user_option_meta-box-order_uo-recipe', array( $this, 'maybe_clear_user_sidebar_sort' ), PHP_INT_MAX, 1 );
-
 	}
 
 	/**
@@ -104,7 +103,7 @@ class Recipe_Post_Metabox {
 				// HTML is included. Ignoring
 				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			},
-			'uo-recipe',
+			AUTOMATOR_POST_TYPE_RECIPE,
 			'uap_items',
 			'high'
 		);
@@ -146,7 +145,7 @@ class Recipe_Post_Metabox {
 				// HTML is included. Ignoring
 				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			},
-			'uo-recipe',
+			AUTOMATOR_POST_TYPE_RECIPE,
 			'uap_items',
 			'high'
 		);
@@ -216,7 +215,7 @@ class Recipe_Post_Metabox {
 				// HTML is included. Ignoring
 				echo ob_get_clean(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			},
-			'uo-recipe',
+			AUTOMATOR_POST_TYPE_RECIPE,
 			'side',
 			'high'
 		);
@@ -241,16 +240,15 @@ class Recipe_Post_Metabox {
 				</div>
 				<?php
 			},
-			'uo-recipe',
+			AUTOMATOR_POST_TYPE_RECIPE,
 			'side',
 			'high'
 		);
 
-		if ( 'uo-recipe' === $post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE === $post_type ) {
 			// Remove the Author meta box
 			remove_meta_box( 'authordiv', $post_type, 'normal' );
 		}
-
 	}
 
 	/**
@@ -270,5 +268,4 @@ class Recipe_Post_Metabox {
 
 		return $sorted;
 	}
-
 }

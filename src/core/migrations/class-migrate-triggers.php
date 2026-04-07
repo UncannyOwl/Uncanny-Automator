@@ -84,7 +84,7 @@ class Migrate_Triggers {
 							AND $wpdb->postmeta.post_id=posts.ID
 						)
 				ORDER BY pm.meta_value ASC",
-				'uo-trigger'
+				AUTOMATOR_POST_TYPE_TRIGGER
 			),
 			ARRAY_A
 		);

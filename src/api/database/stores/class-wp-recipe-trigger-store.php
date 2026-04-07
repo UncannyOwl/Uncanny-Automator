@@ -9,6 +9,7 @@ use Uncanny_Automator\Api\Components\Trigger\Trigger_Config;
 use Uncanny_Automator\Api\Components\Trigger\Value_Objects\Trigger_Id;
 use Uncanny_Automator\Api\Components\Trigger\Enums\Trigger_Status;
 use Uncanny_Automator\Api\Database\Interfaces\Recipe_Trigger_Store;
+use Uncanny_Automator\Api\Database\Recipe_Cache;
 
 /**
  * WordPress Recipe Trigger Store.
@@ -23,7 +24,7 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	/**
 	 * Post type for triggers.
 	 */
-	const POST_TYPE = 'uo-trigger';
+	const POST_TYPE = AUTOMATOR_POST_TYPE_TRIGGER;
 
 	/**
 	 * WordPress database object.
@@ -107,6 +108,8 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 			delete_post_meta( $recipe_id, self::META_TRIGGER_LOGIC );
 		}
 
+		Recipe_Cache::invalidate( $recipe_id );
+
 		// Reload and return the saved triggers collection
 		return $this->get_recipe_triggers( new Recipe_Id( $recipe_id ) );
 	}
@@ -122,7 +125,7 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		$recipe_id_value = $recipe_id->get_value();
 		$recipe_post     = get_post( $recipe_id_value );
 
-		if ( ! $recipe_post || 'uo-recipe' !== $recipe_post->post_type ) {
+		if ( ! $recipe_post || AUTOMATOR_POST_TYPE_RECIPE !== $recipe_post->post_type ) {
 			return new Recipe_Triggers( array(), 'user' );
 		}
 
@@ -185,6 +188,8 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 
 		$trigger_id = $this->save_single_trigger( $recipe_id->get_value(), $trigger );
 
+		Recipe_Cache::invalidate( $recipe_id->get_value() );
+
 		// Reload and return the persisted trigger
 		$trigger_post  = get_post( $trigger_id );
 		$saved_trigger = $this->hydrate_trigger_from_post( $trigger_post );
@@ -237,6 +242,8 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 			throw new \Exception( sprintf( esc_html_x( 'Failed to reload trigger after update: %s', 'Trigger store reload error', 'uncanny-automator' ), absint( $trigger_id_value ) ) );
 		}
 
+		Recipe_Cache::invalidate( $recipe_id->get_value() );
+
 		return $updated_trigger;
 	}
 
@@ -253,6 +260,8 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		if ( $trigger_post && self::POST_TYPE === $trigger_post->post_type ) {
 			wp_delete_post( $trigger_id_value, true );
 		}
+
+		Recipe_Cache::invalidate( $recipe_id->get_value() );
 	}
 
 	/**
@@ -263,6 +272,8 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	 */
 	public function set_recipe_trigger_logic( Recipe_Id $recipe_id, string $logic ): void {
 		update_post_meta( $recipe_id->get_value(), self::META_TRIGGER_LOGIC, $logic );
+
+		Recipe_Cache::invalidate( $recipe_id->get_value() );
 	}
 
 	/**
@@ -297,6 +308,8 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 
 		// Clean up recipe meta
 		delete_post_meta( $recipe_id->get_value(), self::META_TRIGGER_LOGIC );
+
+		Recipe_Cache::invalidate( $recipe_id->get_value() );
 	}
 
 	/**
@@ -341,7 +354,7 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	public function recipe_has_manual_trigger( Recipe_Id $recipe_id ): bool {
 
 		// Define manual trigger codes.
-		$manual_trigger_codes = array( 'RECIPE_MANUAL_TRIGGER_ANON', 'RECIPE_MANUAL_TRIGGER' );
+		$manual_trigger_codes = array( 'RECIPE_MANUAL_TRIGGER_ANON' );
 
 		// Build placeholders for IN clause (%s, %s, ...).
 		// Safe: count is from our own array, not user input.
@@ -677,4 +690,5 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	public function get_post_type(): string {
 		return self::POST_TYPE;
 	}
+
 }

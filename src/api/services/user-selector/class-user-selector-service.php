@@ -75,7 +75,7 @@ class User_Selector_Service {
 		try {
 			// Validate recipe exists.
 			$recipe = get_post( $recipe_id );
-			if ( ! $recipe || 'uo-recipe' !== $recipe->post_type ) {
+			if ( ! $recipe || AUTOMATOR_POST_TYPE_RECIPE !== $recipe->post_type ) {
 				return new \WP_Error(
 					'invalid_recipe',
 					sprintf( 'Recipe with ID %d not found', $recipe_id ),
@@ -122,7 +122,7 @@ class User_Selector_Service {
 		try {
 			// Validate recipe exists.
 			$recipe = get_post( $recipe_id );
-			if ( ! $recipe || 'uo-recipe' !== $recipe->post_type ) {
+			if ( ! $recipe || AUTOMATOR_POST_TYPE_RECIPE !== $recipe->post_type ) {
 				return new \WP_Error(
 					'invalid_recipe',
 					sprintf( 'Recipe with ID %d not found', $recipe_id ),
@@ -163,7 +163,7 @@ class User_Selector_Service {
 		try {
 			// Validate recipe exists.
 			$recipe = get_post( $recipe_id );
-			if ( ! $recipe || 'uo-recipe' !== $recipe->post_type ) {
+			if ( ! $recipe || AUTOMATOR_POST_TYPE_RECIPE !== $recipe->post_type ) {
 				return new \WP_Error(
 					'invalid_recipe',
 					sprintf( 'Recipe with ID %d not found', $recipe_id ),
@@ -204,6 +204,66 @@ class User_Selector_Service {
 	public function has_user_selector( int $recipe_id ): bool {
 		return $this->store->exists_for_recipe( $recipe_id );
 	}
+
+	/**
+	 * Validate that the user selector does not target an administrator.
+	 *
+	 * Static (non-token) values that resolve to an admin user are rejected.
+	 * Token values like {{user_email}} are allowed since they resolve at runtime.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @param array $user_selector User selector configuration.
+	 *
+	 * @return true|\WP_Error True if valid, WP_Error if targeting an admin.
+	 */
+	public function validate_user_selector_not_admin( array $user_selector ) {
+
+		$source = $user_selector['source'] ?? '';
+
+		// Only check existingUser with a static unique_field_value.
+		if ( 'existingUser' !== $source ) {
+			return true;
+		}
+
+		$field = $user_selector['unique_field'] ?? '';
+		$value = $user_selector['unique_field_value'] ?? '';
+
+		// Token values resolve at runtime — skip.
+		if ( empty( $value ) || false !== strpos( (string) $value, '{{' ) ) {
+			return true;
+		}
+
+		$user = null;
+
+		if ( 'email' === $field ) {
+			$user = get_user_by( 'email', $value );
+		} elseif ( 'id' === $field ) {
+			$user = get_user_by( 'ID', $value );
+		} elseif ( 'username' === $field ) {
+			$user = get_user_by( 'login', $value );
+		}
+
+		if ( ! $user ) {
+			return true; // User not found — will fail at runtime, but not our concern here.
+		}
+
+		if ( user_can( $user, 'manage_options' ) ) {
+			return new \WP_Error(
+				'user_selector_admin_rejected',
+				sprintf(
+					'User selector cannot target an administrator (user #%d: %s). '
+					. 'Automator recipes should not run actions as admin users for security reasons. '
+					. 'Use a non-admin user, or use a token like {{user_email}} so the user is determined at runtime.',
+					$user->ID,
+					$user->user_email
+				)
+			);
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Build User_Selector_Config from raw data array.

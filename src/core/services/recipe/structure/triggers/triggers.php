@@ -37,7 +37,6 @@ final class Triggers implements \JsonSerializable {
 		self::$recipe = $recipe;
 
 		$this->hydrate_properties();
-
 	}
 
 	/**
@@ -55,7 +54,7 @@ final class Triggers implements \JsonSerializable {
 		$this->logic = isset( $meta['automator_trigger_logic'] )
 			? $meta['automator_trigger_logic'] : 'all';
 
-		$triggers = Automator()->get_recipe_data( 'uo-trigger', self::$recipe->get_recipe_id() );
+		$triggers = Automator()->get_recipe_data( AUTOMATOR_POST_TYPE_TRIGGER, self::$recipe->get_recipe_id() );
 
 		foreach ( $triggers as $trigger_item ) {
 
@@ -68,6 +67,5 @@ final class Triggers implements \JsonSerializable {
 
 		// Trigger items.
 		$this->items = $trigger_items;
-
 	}
 }

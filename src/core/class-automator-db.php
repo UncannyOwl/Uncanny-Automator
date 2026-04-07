@@ -141,7 +141,9 @@ class Automator_DB {
 PRIMARY KEY  (`ID`),
 KEY completed (`completed`),
 KEY user_id (`user_id`),
-KEY automator_recipe_id (`automator_recipe_id`)
+KEY automator_recipe_id (`automator_recipe_id`),
+KEY recipe_completed (`automator_recipe_id`, `completed`),
+KEY date_completed (`date_time`, `completed`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_recipe_log_meta} (
 `ID` bigint NOT NULL AUTO_INCREMENT,
@@ -186,7 +188,8 @@ KEY user_id (`user_id`),
 KEY completed (`completed`),
 KEY automator_recipe_id (`automator_recipe_id`),
 KEY automator_trigger_id (`automator_trigger_id`),
-KEY automator_recipe_log_id (`automator_recipe_log_id`)
+KEY automator_recipe_log_id (`automator_recipe_log_id`),
+KEY trigger_completed (`automator_trigger_id`, `completed`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_trigger_log_meta} (
 `ID` bigint unsigned NOT NULL auto_increment,
@@ -218,7 +221,8 @@ KEY user_id (`user_id`),
 KEY completed (`completed`),
 KEY automator_action_id (`automator_action_id`),
 KEY automator_recipe_log_id (`automator_recipe_log_id`),
-KEY automator_recipe_id (`automator_recipe_id`)
+KEY automator_recipe_id (`automator_recipe_id`),
+KEY action_completed (`automator_action_id`, `completed`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_action_log_meta} (
 `ID` bigint unsigned NOT NULL auto_increment,
@@ -404,22 +408,22 @@ KEY `cleanup` (`last_run`)
 
 		$recipe_view       = "{$wpdb->prefix}uap_recipe_logs_view";
 		$recipe_view_query = self::recipe_log_view_query();
-		$wpdb->query( "CREATE OR REPLACE VIEW $recipe_view AS $recipe_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $recipe_view AS $recipe_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$trigger_view       = "{$wpdb->prefix}uap_trigger_logs_view";
 		$trigger_view_query = self::trigger_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE VIEW $trigger_view AS $trigger_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $trigger_view AS $trigger_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$action_view       = "{$wpdb->prefix}uap_action_logs_view";
 		$action_view_query = self::action_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE VIEW $action_view AS $action_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $action_view AS $action_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		$api_view       = "{$wpdb->prefix}uap_api_logs_view";
 		$api_view_query = self::api_log_view_query();
 
-		$wpdb->query( "CREATE OR REPLACE VIEW $api_view AS $api_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "CREATE OR REPLACE SQL SECURITY INVOKER VIEW $api_view AS $api_view_query" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		automator_update_option( 'uap_database_views_version', AUTOMATOR_DATABASE_VIEWS_VERSION );
 	}
 

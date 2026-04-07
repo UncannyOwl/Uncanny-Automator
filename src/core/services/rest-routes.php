@@ -154,6 +154,7 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 				$recipe_logs_resources  = new Recipe_Logs_Resources( $recipe_logs_queries, $utils, $automator_factory );
 				$trigger_logs_resources = new Trigger_Logs_Resources( $trigger_logs_queries, $utils, $automator_factory );
 				$loops_logs_resources = new Loop_Logs_Resources( $loop_logs_queries, $utils, $automator_factory );
+
 				$action_logs_resources  = new Action_Logs_Resources( $action_logs_queries, $utils, $automator_factory, $loops_logs_resources );
 
 				// Require the class because its not part of the autoloaded directory.
@@ -191,6 +192,125 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 				}
 
 				return $response;
+			},
+		)
+	);
+
+	/**
+	 * Registers the loop runs pagination endpoint.
+	 *
+	 * Returns only the runs for a specific loop action, avoiding the overhead
+	 * of re-fetching the entire log structure.
+	 *
+	 * #[Uncanny_Automator_Route('/wp-json/automator/v1/log/loop-runs/:recipe_id/:run_number/:recipe_log_id/:action_id')]
+	 */
+	register_rest_route(
+		'automator/v1',
+		'/log/loop-runs/(?P<recipe_id>\d+)/(?P<run_number>\d+)/(?P<recipe_log_id>\d+)/(?P<action_id>\d+)',
+		array(
+			'methods'             => 'GET',
+			'permission_callback' => $authentication,
+			'callback'            => function ( WP_REST_Request $request ) {
+
+				if ( ! apply_filters( 'automator_rest_routes_log_display_notices_warnings', false ) ) {
+					ini_set( 'display_errors', '0' ); // phpcs:ignore WordPress.PHP.IniSet
+				}
+
+				global $wpdb;
+
+				$params = array(
+					'recipe_id'     => absint( $request->get_param( 'recipe_id' ) ),
+					'recipe_log_id' => absint( $request->get_param( 'recipe_log_id' ) ),
+					'run_number'    => absint( $request->get_param( 'run_number' ) ),
+				);
+
+				$action_id = absint( $request->get_param( 'action_id' ) );
+				$page      = max( 1, absint( $request->get_param( 'page' ) ) );
+				$per_page  = min( absint( $request->get_param( 'per_page' ) ), 500 );
+
+				if ( 0 === $per_page ) {
+					$per_page = Loop_Logs_Resources::DEFAULT_RUNS_PER_PAGE;
+				}
+
+				$utils             = new Formatters_Utils();
+				$automator_factory = new Automator_Factory(
+					Automator_Functions::get_instance(),
+					new Automator_Status()
+				);
+
+				$loop_logs_queries   = new Loop_Logs_Queries( $wpdb );
+				$loops_logs_resources = new Loop_Logs_Resources( $loop_logs_queries, $utils, $automator_factory );
+				$loops_logs_resources->set_runs_pagination( $per_page, $page );
+
+				// Get the loop entries for this recipe run.
+				$loops_log = $loop_logs_queries->get_recipe_loops_logs( $params );
+
+				if ( empty( $loops_log ) ) {
+					return new WP_REST_Response(
+						array(
+							'success' => false,
+							'error'   => 'No loop entries found',
+						),
+						404
+					);
+				}
+
+				// Find the loop containing this action and return its runs.
+				foreach ( $loops_log as $log ) {
+					$flow = (array) maybe_unserialize( $log['flow'] );
+
+					$loop_index = array_search( absint( $log['loop_id'] ), array_column( $flow['items'] ?? array(), 'id' ), true );
+
+					if ( false === $loop_index ) {
+						continue;
+					}
+
+					$loop = $flow['items'][ $loop_index ];
+
+					// Search for the action inside this loop.
+					foreach ( (array) $loop['items'] as $item ) {
+
+						// Direct action inside the loop.
+						if ( 'action' === $item['type'] && absint( $item['id'] ) === $action_id ) {
+							$runs = $loops_logs_resources->get_runs( $loop, $item, $params, $action_id, $log );
+
+							return new WP_HTTP_Response(
+								array(
+									'success'   => true,
+									'action_id' => $action_id,
+									'runs'      => $runs,
+								),
+								200
+							);
+						}
+
+						// Action inside a filter (action condition).
+						if ( 'filter' === $item['type'] && ! empty( $item['items'] ) ) {
+							foreach ( (array) $item['items'] as $filter_item ) {
+								if ( absint( $filter_item['id'] ) === $action_id ) {
+									$runs = $loops_logs_resources->get_runs( $loop, $item, $params, $action_id, $log );
+
+									return new WP_HTTP_Response(
+										array(
+											'success'   => true,
+											'action_id' => $action_id,
+											'runs'      => $runs,
+										),
+										200
+									);
+								}
+							}
+						}
+					}
+				}
+
+				return new WP_REST_Response(
+					array(
+						'success' => false,
+						'error'   => 'Action not found in any loop',
+					),
+					404
+				);
 			},
 		)
 	);

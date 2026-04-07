@@ -74,7 +74,7 @@ class Admin_Settings_Premium_Integrations {
 		// Get the link to connect the site
 		$connect_site_url = add_query_arg(
 			array(
-				'post_type' => 'uo-recipe',
+				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 				'page'      => 'uncanny-automator-setup-wizard',
 			),
 			admin_url( 'edit.php' )
@@ -135,7 +135,7 @@ class Admin_Settings_Premium_Integrations {
 	public static function utility_get_premium_integrations_page_link( $selected_tab = '' ) {
 		// Define the list of URL parameters
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-config',
 			'tab'       => 'premium-integrations',
 		);

@@ -19,7 +19,6 @@ class Admin_Settings_Advanced {
 
 		// Load tabs
 		$this->load_tabs();
-
 	}
 
 	/**
@@ -32,7 +31,6 @@ class Admin_Settings_Advanced {
 		// Load the files
 		$this->load_tab( 'background-actions' );
 		$this->load_tab( 'automator-cache' );
-
 	}
 
 	/**
@@ -55,7 +53,7 @@ class Admin_Settings_Advanced {
 		// Add the tab using the filter
 		add_filter(
 			'automator_settings_sections',
-			function( $tabs ) {
+			function ( $tabs ) {
 				// General
 				$tabs['advanced'] = (object) array(
 					'name'     => esc_html__( 'Advanced', 'uncanny-automator' ),
@@ -99,7 +97,6 @@ class Admin_Settings_Advanced {
 
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/advanced.php' );
-
 	}
 
 	/**
@@ -108,7 +105,6 @@ class Admin_Settings_Advanced {
 	public function get_advanced_tabs() {
 
 		return apply_filters( 'automator_settings_advanced_tabs', array() );
-
 	}
 
 	/**
@@ -121,7 +117,7 @@ class Admin_Settings_Advanced {
 
 		// Define the list of URL parameters
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-config',
 			'tab'       => 'advanced',
 		);
@@ -136,9 +132,7 @@ class Admin_Settings_Advanced {
 			$url_parameters,
 			admin_url( 'edit.php' )
 		);
-
 	}
-
 }
 
 new Admin_Settings_Advanced();

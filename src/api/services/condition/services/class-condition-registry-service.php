@@ -29,7 +29,7 @@ class Condition_Registry_Service {
 	 *
 	 * @return Condition_Registry_Service
 	 */
-	public static function get_instance(): Condition_Registry_Service {
+	public static function instance(): Condition_Registry_Service {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -334,7 +334,7 @@ class Condition_Registry_Service {
 
 			return new WP_Error(
 				'condition_not_found',
-				esc_html_x( 'Condition not found in registry. Use the search_components tool to discover available conditions.', 'Condition registry error', 'uncanny-automator' )
+				esc_html_x( 'Condition not found in registry. Use the search tool to discover available conditions.', 'Condition registry error', 'uncanny-automator' )
 			);
 
 		} catch ( \Throwable $e ) {

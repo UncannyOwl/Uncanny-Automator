@@ -497,7 +497,7 @@ class SureCart_Tokens {
 			$interval = $this->get_interval_string( $price->recurring_interval, $price->recurring_interval_count );
 
 			// translators: 1. recurring count 2. recurring interval.
-			$amount .= sprintf( esc_html_x( 'every %1$d %2$s', 'Surecart', 'uncanny-automator' ), $price->recurring_interval_count, $interval );
+			$amount .= ' ' . sprintf( esc_html_x( 'every %1$d %2$s', 'Surecart', 'uncanny-automator' ), $price->recurring_interval_count, $interval );
 		}
 
 		if ( ! empty( $price->recurring_period_count ) ) {

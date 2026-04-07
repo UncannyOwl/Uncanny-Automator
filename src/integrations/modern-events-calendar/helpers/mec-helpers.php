@@ -374,7 +374,7 @@ class MEC_HELPERS {
 	private function get_date( $type = 'start', $format = 'F j, o g:i A' ) {
 
 		// Get the date settings.
-		$date_settings = unserialize( end( $this->event_meta['mec_date'] ) ); // phpcs:ignore
+		$date_settings = unserialize( end( $this->event_meta['mec_date'] ), array( 'allowed_classes' => false ) ); // phpcs:ignore
 
 		// Get the start date.
 		$date_start_date = $date_settings[ $type ]['date'];

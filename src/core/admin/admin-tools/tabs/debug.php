@@ -77,7 +77,7 @@ class Admin_Tools_Tab_Debug {
 	public function redirect( $success = true ) {
 
 		$query_params = array(
-			'post_type'    => 'uo-recipe',
+			'post_type'    => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'         => 'uncanny-automator-admin-tools',
 			'tab'          => 'debug',
 			'file_removed' => 'yes',
@@ -198,7 +198,7 @@ class Admin_Tools_Tab_Debug {
 
 		// Define the list of URL parameters.
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-admin-tools',
 			'tab'       => 'debug',
 		);

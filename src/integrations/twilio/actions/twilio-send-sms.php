@@ -118,6 +118,9 @@ class TWILIO_SEND_SMS extends \Uncanny_Automator\Recipe\App_Action {
 			throw new Exception( esc_html_x( 'Message body is required', 'Twilio', 'uncanny-automator' ) );
 		}
 
+		// Strip HTML tags that may be present from token values (e.g. BuddyBoss phone fields).
+		$to_numbers = wp_strip_all_tags( $to_numbers );
+
 		// Parse multiple numbers
 		$numbers = array_map( 'trim', explode( ',', $to_numbers ) );
 

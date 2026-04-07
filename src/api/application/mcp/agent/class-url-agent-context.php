@@ -64,22 +64,49 @@ class Url_Agent_Context extends Agent_Context {
 			return null;
 		}
 
-		// WP_Screen and get_current_screen() are admin-only; ensure both are available in REST context.
-		if ( ! function_exists( 'get_current_screen' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/screen.php';
-		}
-
-		if ( ! class_exists( 'WP_Screen' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/class-wp-screen.php';
+		if ( ! $this->ensure_screen_api_loaded() ) {
+			return null;
 		}
 
 		$screen = WP_Screen::get( $screen_id );
+
+		if ( ! $screen instanceof WP_Screen ) {
+			return null;
+		}
 
 		if ( '' !== $this->resolved['taxonomy'] ) {
 			$screen->taxonomy = $this->resolved['taxonomy'];
 		}
 
 		return $screen;
+	}
+
+	/**
+	 * Ensure the WordPress admin screen API is loaded for REST contexts.
+	 *
+	 * @return bool
+	 */
+	private function ensure_screen_api_loaded(): bool {
+		if ( function_exists( 'get_current_screen' ) && class_exists( 'WP_Screen', false ) ) {
+			return true;
+		}
+
+		if ( ! defined( 'ABSPATH' ) ) {
+			return false;
+		}
+
+		$screen_file       = ABSPATH . 'wp-admin/includes/screen.php';
+		$screen_class_file = ABSPATH . 'wp-admin/includes/class-wp-screen.php';
+
+		if ( ! function_exists( 'get_current_screen' ) && file_exists( $screen_file ) ) {
+			require_once $screen_file;
+		}
+
+		if ( ! class_exists( 'WP_Screen', false ) && file_exists( $screen_class_file ) ) {
+			require_once $screen_class_file;
+		}
+
+		return function_exists( 'get_current_screen' ) && class_exists( 'WP_Screen', false );
 	}
 
 	/**

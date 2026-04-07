@@ -113,6 +113,9 @@ class Automator_Load {
 
 		add_action( 'admin_notices', array( $this, 'check_runtime_environment' ) );
 
+		// Register recipe manifest hooks for demand-driven integration loading.
+		Recipe_Manifest::get_instance()->register_hooks();
+
 		$this->load_automator();
 
 		// Show set-up wizard.
@@ -240,8 +243,6 @@ class Automator_Load {
 	 * @return void
 	 */
 	public function load_deactivation_survey() {
-
-		require_once UA_ABSPATH . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'deactivation-survey' . DIRECTORY_SEPARATOR . 'class-automator-deactivation-survey.php';
 
 		add_action(
 			'admin_menu',
@@ -460,7 +461,6 @@ class Automator_Load {
 		require_once UA_ABSPATH . 'src/core/services/logger/async-logger.php';
 
 		// App integration REST and Admin Post action manager.
-		require_once UA_ABSPATH . 'src/core/services/app-integrations/action-manager.php';
 		( new \Uncanny_Automator\Services\App_Integrations\Action_Manager() )->register_hooks();
 	}
 
@@ -515,7 +515,6 @@ class Automator_Load {
 	 */
 	public function initialize_utilities() {
 
-		require_once UA_ABSPATH . 'src/core/class-utilities.php';
 		Utilities::get_instance();
 	}
 
@@ -526,8 +525,6 @@ class Automator_Load {
 	 * @since 1.0.0
 	 */
 	public function initialize_automator_db() {
-
-		include_once dirname( AUTOMATOR_BASE_FILE ) . '/src/core/class-automator-db.php';
 
 		$config_instance = Automator_DB::get_instance();
 
@@ -556,7 +553,7 @@ class Automator_Load {
 	 *
 	 * @return void
 	 */
-	public function plugin_activated(){
+	public function plugin_activated() {
 
 		// Clean up legacy cron hooks (v7.0+).
 		// These crons were replaced by the new Trigger Engine using wp_after_insert_post.
@@ -763,8 +760,6 @@ class Automator_Load {
 		$classes['Import_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-import-recipe.php';
 		$classes['Pricing_Plan_Resolver']               = UA_ABSPATH . 'src/core/admin/class-pricing-plan-resolver.php';
 
-		require_once UA_ABSPATH . 'src/core/classes/class-api-server.php';
-
 		// Load migrations
 		$this->load_migrations();
 
@@ -791,8 +786,8 @@ class Automator_Load {
 		// Always load Usage_Reports for analytics
 		$classes['Usage_Reports']              = UA_ABSPATH . 'src/core/classes/class-usage-reports.php';
 		$classes['Upload_Directory_Sanitizer'] = UA_ABSPATH . 'src/core/services/email/attachment/class-upload-directory-sanitizer.php';
-		$classes['Set_Up_Automator']     = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
-		$classes['Initialize_Automator'] = UA_ABSPATH . 'src/core/classes/class-initialize-automator.php';
+		$classes['Set_Up_Automator']           = UA_ABSPATH . 'src/core/classes/class-set-up-automator.php';
+		$classes['Initialize_Automator']       = UA_ABSPATH . 'src/core/classes/class-initialize-automator.php';
 
 		// Load Anon part if Pro is not active
 		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
@@ -825,7 +820,7 @@ class Automator_Load {
 		if ( empty( $results ) ) {
 			global $wpdb;
 
-			$results = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s AND post_status = %s", 'uo-recipe', 'publish' ) );
+			$results = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM $wpdb->posts WHERE post_type = %s AND post_status = %s", AUTOMATOR_POST_TYPE_RECIPE, 'publish' ) );
 			$results = 0 !== absint( $results );
 			$val     = 'yes';
 			if ( false === $results ) {
@@ -856,75 +851,17 @@ class Automator_Load {
 	 * @return void
 	 */
 	public function load_migrations() {
-		require_once UA_ABSPATH . 'src/core/migrations/abstract-migration.php';
-		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-schedules.php';
-		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-triggers.php';
-		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens.php';
-		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-nested-tokens-pro.php';
-		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-option-types.php';
+		// Migration classes are covered by "classmap": ["src/"] in composer.json.
 	}
 
 	/**
 	 *
 	 */
 	public function load_traits() {
+		// All trait, abstract, and helper files under src/core/lib/recipe-parts/ and
+		// src/core/lib/settings/ are covered by the "classmap": ["src/"] entry in
+		// composer.json. Composer loads each file on first use — no require_once needed.
 		do_action( 'automator_before_traits' );
-
-		// Settings
-		$classes['Trait_Settings_Premium_Integrations'] = UA_ABSPATH . 'src/core/lib/settings/trait-premium-integrations.php';
-
-		$classes['Premium_Integration_Settings'] = UA_ABSPATH . 'src/core/lib/settings/premium-integration-settings.php';
-		// Temp v2 version of Premium_Integration_Settings
-		$classes['App_Integration_Settings'] = UA_ABSPATH . 'src/core/lib/settings/app-integration-settings.php';
-
-		// Integrations
-		$classes['Integrations'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-integrations.php';
-
-		// Closures
-		$classes['Trait_Closure_Setup'] = UA_ABSPATH . 'src/core/lib/recipe-parts/closures/trait-closure-setup.php';
-		$classes['Closures']            = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-closures.php';
-
-		// Tokens
-		$classes['Trait_Trigger_Tokens'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-trigger-tokens.php';
-
-		// Triggers
-		$classes['Trait_Trigger_Setup']          = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-setup.php';
-		$classes['Trait_Trigger_Filters']        = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-filters.php';
-		$classes['Trait_Trigger_Recipe_Filters'] = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-recipe-filters.php';
-		$classes['Trait_Trigger_Conditions']     = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-conditions.php';
-		$classes['Trait_Trigger_Process']        = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-trigger-process.php';
-		$classes['Triggers']                     = UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/trait-triggers.php';
-
-		// Action Tokens
-		$classes['Trait_Action_Tokens'] = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-tokens.php';
-
-		// Actions
-		$classes['Trait_Action_Setup']         = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-setup.php';
-		$classes['Trait_Action_Conditions']    = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-conditions.php';
-		$classes['Trait_Action_Parser']        = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-parser.php';
-		$classes['Trait_Action_Process']       = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-process.php';
-		$classes['Trait_Action_Helpers_Email'] = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-helpers-email.php';
-		$classes['Trait_Action_Helpers']       = UA_ABSPATH . 'src/core/lib/recipe-parts/actions/trait-action-helpers.php';
-		$classes['Actions']                    = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-actions.php';
-
-		// Webhooks
-		$classes['Webhooks'] = UA_ABSPATH . 'src/core/lib/recipe-parts/trait-webhooks.php';
-
-		if ( empty( $classes ) ) {
-			return;
-		}
-		// TODO: Generate Class names by filenames
-		foreach ( $classes as $file ) {
-			require_once $file;
-		}
-
-		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/abstract-integration.php';
-		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/actions/abstract-action.php';
-		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/triggers/abstract-trigger.php';
-
-		// Load global custom name field for all recipe parts
-		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/global-custom-name-field.php';
-
 		do_action( 'automator_after_traits' );
 	}
 
@@ -996,13 +933,11 @@ class Automator_Load {
 	 */
 	public function initiate_setup_wizard() {
 		if ( self::$is_admin_sect && ! defined( 'DOING_AJAX' ) ) {
-			include_once UA_ABSPATH . 'src/core/admin/setup-wizard/setup-wizard.php';
 			$setup_wizard = new Setup_Wizard();
 		}
 
 		if ( defined( 'DOING_AJAX' ) ) {
 			// Add the ajax listener.
-			include_once UA_ABSPATH . 'src/core/admin/setup-wizard/setup-wizard.php';
 			add_action(
 				'wp_ajax_uo_setup_wizard_set_tried_connecting',
 				array(

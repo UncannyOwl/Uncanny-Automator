@@ -33,6 +33,24 @@ class Affwp_Tokens {
 			20,
 			2
 		);
+		add_filter(
+			'automator_maybe_trigger_affwp_affwpvisitcount_tokens',
+			array(
+				$this,
+				'affwp_possible_visit_count_tokens',
+			),
+			20,
+			2
+		);
+		add_filter(
+			'automator_maybe_trigger_affwp_affwpunpaidreferralcount_tokens',
+			array(
+				$this,
+				'affwp_possible_referral_count_tokens',
+			),
+			20,
+			2
+		);
 	}
 
 	/**
@@ -50,7 +68,7 @@ class Affwp_Tokens {
 		$trigger_integration = $args['integration'];
 		$trigger_meta        = $args['triggers_meta']['code'];
 
-		$metas = array( 'APPROVEDAFFILIATE', 'NEWAFFILIATE', 'APPROVALWAITING' );
+		$metas = array( 'APPROVEDAFFILIATE', 'NEWAFFILIATE', 'APPROVALWAITING', 'AFFWPVISITCOUNT', 'AFFWPUNPAIDREFERRALCOUNT' );
 
 		if ( 'AFFWP' === $trigger_integration && in_array( $trigger_meta, $metas, true ) ) {
 			$fields = array(
@@ -132,7 +150,13 @@ class Affwp_Tokens {
 
 		return $tokens;
 	}
-
+	/**
+	 * Affwp possible affiliate ref tokens.
+	 *
+	 * @param mixed $tokens The destination.
+	 * @param mixed $args The arguments.
+	 * @return mixed
+	 */
 	public function affwp_possible_affiliate_ref_tokens( $tokens = array(), $args = array() ) {
 		if ( ! automator_do_identify_tokens() ) {
 			return $tokens;
@@ -264,6 +288,62 @@ class Affwp_Tokens {
 	}
 
 	/**
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array|mixed
+	 */
+	public function affwp_possible_visit_count_tokens( $tokens = array(), $args = array() ) {
+
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
+
+		$trigger_meta = $args['meta'];
+
+		$fields = array(
+			array(
+				'tokenId'         => 'AFFWPVISITCOUNT',
+				'tokenName'       => esc_html_x( 'Visit count', 'AffiliateWP token', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_meta,
+			),
+		);
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
+
+	/**
+	 * @param $tokens
+	 * @param $args
+	 *
+	 * @return array|mixed
+	 */
+	public function affwp_possible_referral_count_tokens( $tokens = array(), $args = array() ) {
+
+		if ( ! automator_do_identify_tokens() ) {
+			return $tokens;
+		}
+
+		$trigger_meta = $args['meta'];
+
+		$fields = array(
+			array(
+				'tokenId'         => 'AFFWPUNPAIDREFERRALCOUNT',
+				'tokenName'       => esc_html_x( 'Unpaid referral count', 'AffiliateWP token', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				'tokenIdentifier' => $trigger_meta,
+			),
+		);
+
+		$tokens = array_merge( $tokens, $fields );
+
+		return $tokens;
+	}
+
+	/**
 	 * @param     $value
 	 * @param     $pieces
 	 * @param     $recipe_id
@@ -284,7 +364,11 @@ class Affwp_Tokens {
 				in_array( 'NEWAFFILIATE', $pieces, true ) ||
 				in_array( 'ACCOUNTAPPROVED', $pieces, true ) ||
 				in_array( 'AFFWPREJECTREFERRAL', $pieces, true ) ||
-				in_array( 'AFFWPPAIDREFERRAL', $pieces, true )
+				in_array( 'AFFWPPAIDREFERRAL', $pieces, true ) ||
+				in_array( 'AFFWPVISITCOUNTREACHES', $pieces, true ) ||
+				in_array( 'AFFWPVISITCOUNT', $pieces, true ) ||
+				in_array( 'AFFWPREFERRALCOUNTREACHES', $pieces, true ) ||
+				in_array( 'AFFWPUNPAIDREFERRALCOUNT', $pieces, true )
 			) {
 
 				if ( 'SPECIFICETYPEREF' === $pieces[1] || 'AFFWPREFERRAL' === $pieces[1] ) {

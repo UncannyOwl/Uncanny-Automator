@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\Api\Presentation\Condition;
 
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
+
 /**
  * Condition_Title_Composer.
  */
@@ -127,12 +129,12 @@ class Condition_Title_Composer {
 				continue;
 			}
 
-			if ( str_ends_with( $key, '_label' ) ) {
+			if ( Str::ends_with( $key, '_label' ) ) {
 				$field_codes[] = substr( $key, 0, -6 );
 				continue;
 			}
 
-			if ( str_ends_with( $key, '_readable' ) ) {
+			if ( Str::ends_with( $key, '_readable' ) ) {
 				$field_codes[] = substr( $key, 0, -9 );
 				continue;
 			}

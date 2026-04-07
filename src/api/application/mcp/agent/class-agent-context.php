@@ -249,7 +249,7 @@ class Agent_Context {
 
 		$post = $this->get_current_post();
 
-		if ( ! $post instanceof WP_Post || 'uo-recipe' !== $post->post_type ) {
+		if ( ! $post instanceof WP_Post || AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
 			return false;
 		}
 

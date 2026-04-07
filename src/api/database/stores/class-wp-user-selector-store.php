@@ -5,6 +5,7 @@ namespace Uncanny_Automator\Api\Database\Stores;
 use Uncanny_Automator\Api\Database\Interfaces\User_Selector_Store;
 use Uncanny_Automator\Api\Components\User_Selector\User_Selector;
 use Uncanny_Automator\Api\Components\User_Selector\User_Selector_Config;
+use Uncanny_Automator\Api\Database\Recipe_Cache;
 
 /**
  * WordPress User Selector Store.
@@ -59,6 +60,8 @@ class WP_User_Selector_Store implements User_Selector_Store {
 		update_post_meta( $recipe_id, self::META_FIELDS, $fields );
 		update_post_meta( $recipe_id, self::META_REQUIRES_USER, true );
 
+		Recipe_Cache::invalidate( $recipe_id );
+
 		// Return refreshed user selector.
 		return $this->get_by_recipe_id( $recipe_id );
 	}
@@ -103,6 +106,8 @@ class WP_User_Selector_Store implements User_Selector_Store {
 		delete_post_meta( $recipe_id, self::META_SOURCE );
 		delete_post_meta( $recipe_id, self::META_FIELDS );
 		delete_post_meta( $recipe_id, self::META_REQUIRES_USER );
+
+		Recipe_Cache::invalidate( $recipe_id );
 	}
 
 	/**

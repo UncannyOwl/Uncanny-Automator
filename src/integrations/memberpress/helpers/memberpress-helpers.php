@@ -56,10 +56,6 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Product', 'uncanny-automator' );
@@ -118,10 +114,6 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products_onetime( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Product', 'uncanny-automator' );
@@ -195,10 +187,6 @@ class Memberpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_memberpress_products_recurring( $label = null, $option_code = 'MPPRODUCT', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Product', 'uncanny-automator' );

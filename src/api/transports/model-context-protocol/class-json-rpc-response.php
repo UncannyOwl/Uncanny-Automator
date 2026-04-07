@@ -20,29 +20,26 @@ class Json_Rpc_Response {
 	 */
 	public static function create_success_response( string $message, ?array $data = null ): array {
 
-		$content = array(
-			'type' => 'text',
-			'text' => wp_json_encode(
-				array(
-					'message' => $message,
-				)
-			),
-		);
+		$structured = array( 'message' => $message );
 
-		if ( $data ) {
-			$content['text'] = wp_json_encode(
-				array(
-					'message' => $message,
-					'data'    => $data,
-				)
-			);
+		if ( null !== $data ) {
+			$structured['data'] = $data;
 		}
 
-		return array(
+		$result = array(
 			'content' => array(
-				$content,
+				array(
+					'type' => 'text',
+					'text' => wp_json_encode( $structured ),
+				),
 			),
 		);
+
+		// MCP 2025-06-18: When outputSchema is defined, structuredContent MUST be returned.
+		// Always include it — harmless for tools without outputSchema, required for those with it.
+		$result['structuredContent'] = $structured;
+
+		return $result;
 	}
 
 	/**
@@ -63,7 +60,7 @@ class Json_Rpc_Response {
 			),
 		);
 
-		if ( $data ) {
+		if ( null !== $data ) {
 			$content['text'] = wp_json_encode(
 				array(
 					'message' => $message,

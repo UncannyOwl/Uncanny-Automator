@@ -154,6 +154,15 @@ abstract class Action {
 	 * @return void
 	 */
 	final public function __construct( ...$args ) {
+
+		// Prevent double-instantiation — Free and Pro may both try to load the same action.
+		static $instantiated = array();
+		$fqcn                = static::class;
+		if ( isset( $instantiated[ $fqcn ] ) ) {
+			return;
+		}
+		$instantiated[ $fqcn ] = true;
+
 		$this->dependencies = $args;
 
 		// Automatically set up helpers from dependencies

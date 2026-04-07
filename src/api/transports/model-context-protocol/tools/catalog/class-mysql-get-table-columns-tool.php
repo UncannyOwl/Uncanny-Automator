@@ -21,6 +21,8 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  */
 class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 
+	use Information_Schema_Query;
+
 	/**
 	 * Get tool name.
 	 *
@@ -51,6 +53,48 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 				'tables' => array(
 					'type'        => 'string',
 					'description' => 'Comma-separated table names (e.g., "wp_posts, wp_postmeta, wp_users"). Accepts one or many tables for bulk schema introspection in a single call.',
+				),
+			),
+			'required'   => array( 'tables' ),
+		);
+	}
+
+	/**
+	 * Define output schema.
+	 *
+	 * @return array|null
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'tables' => array(
+					'type'                 => 'object',
+					'additionalProperties' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'columns'      => array(
+								'type'  => 'array',
+								'items' => array(
+									'type'       => 'object',
+									'properties' => array(
+										'name'      => array( 'type' => 'string' ),
+										'type'      => array( 'type' => 'string' ),
+										'full_type' => array( 'type' => 'string' ),
+										'nullable'  => array( 'type' => 'boolean' ),
+										'key'       => array( 'type' => 'string' ),
+										'default'   => array( 'type' => array( 'string', 'null' ) ),
+										'extra'     => array( 'type' => 'string' ),
+									),
+								),
+							),
+							'primary_keys' => array(
+								'type' => 'array',
+								'items' => array( 'type' => 'string' ),
+							),
+							'column_count' => array( 'type' => 'integer' ),
+						),
+					),
 				),
 			),
 			'required'   => array( 'tables' ),
@@ -92,16 +136,14 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'Maximum 20 tables per request.' );
 		}
 
-		// Verify all tables exist in one query.
-		$placeholders = implode( ', ', array_fill( 0, count( $table_names ), '%s' ) );
-
-		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- The query string is prepared inside prepare_information_schema_query().
 		$existing_tables = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				array_merge( array( DB_NAME ), $table_names )
+			$this->prepare_information_schema_query(
+				'SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({table_placeholders})',
+				$table_names
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		$missing = array_diff( $table_names, $existing_tables );
 
@@ -111,17 +153,17 @@ class Mysql_Get_Table_Columns_Tool extends Abstract_MCP_Tool {
 			);
 		}
 
-		// Get column information for all tables in one query.
-		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- The query string is prepared inside prepare_information_schema_query().
 		$columns = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA
-				 FROM information_schema.COLUMNS
-				 WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({$placeholders})
-				 ORDER BY TABLE_NAME, ORDINAL_POSITION", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				array_merge( array( DB_NAME ), $table_names )
+			$this->prepare_information_schema_query(
+				'SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY, COLUMN_DEFAULT, EXTRA
+				FROM information_schema.COLUMNS
+				WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({table_placeholders})
+				ORDER BY TABLE_NAME, ORDINAL_POSITION',
+				$table_names
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( null === $columns ) {
 			return Json_Rpc_Response::create_error_response( 'Failed to retrieve columns: ' . $wpdb->last_error );

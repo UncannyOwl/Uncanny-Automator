@@ -86,6 +86,20 @@ trait App_Helpers_Option_Data {
 	}
 
 	/**
+	 * Delete App Option.
+	 *
+	 * Removes a cached option entirely. Useful for cache invalidation
+	 * when the underlying data has changed (e.g. after creating a new tag).
+	 *
+	 * @param string $suffix The option key suffix (e.g. 'tags', 'custom_fields').
+	 *
+	 * @return void
+	 */
+	public function delete_prefixed_app_option( $suffix ) {
+		automator_delete_option( $this->get_option_key( $suffix ) );
+	}
+
+	/**
 	 * Save App Option.
 	 *
 	 * Saves data with current timestamp for cache expiration tracking.
@@ -123,6 +137,32 @@ trait App_Helpers_Option_Data {
 			? automator_filter_input( 'context', INPUT_POST )
 			: '';
 		return 'refresh-button' === $context;
+	}
+
+	/**
+	 * Get the AJAX POST values.
+	 *
+	 * @return array
+	 */
+	public function get_values_from_ajax() {
+		return automator_filter_has_var( 'values', INPUT_POST )
+			? automator_filter_input_array( 'values', INPUT_POST )
+			: array();
+	}
+
+	/**
+	 * Get a field value from the AJAX POST values.
+	 *
+	 * @param string $key The field key.
+	 *
+	 * @return string
+	 */
+	public function get_values_field_from_ajax( $key ) {
+		$values = $this->get_values_from_ajax();
+
+		return isset( $values[ $key ] )
+			? sanitize_text_field( wp_unslash( $values[ $key ] ) )
+			: '';
 	}
 
 	/**

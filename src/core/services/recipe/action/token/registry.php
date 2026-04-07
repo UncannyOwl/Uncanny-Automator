@@ -90,7 +90,7 @@ class Registry {
 
 			$action_token = new Entity(); // @suggestion, use DI for more robust implementation.
 
-			$type = $props['type'] ?? 'int';
+			$type = $props['type'] ?? 'text';
 
 			try {
 				$action_token->set_id( $key );

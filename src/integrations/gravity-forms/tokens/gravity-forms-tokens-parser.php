@@ -4,7 +4,13 @@ namespace Uncanny_Automator\Integrations\Gravity_Forms;
 
 class Gravity_Forms_Tokens_Parser {
 
+	/**
+	 * Form entry data.
+	 *
+	 * @var mixed
+	 */
 	protected $entry;
+
 	/**
 	 * Token id.
 	 *
@@ -24,6 +30,7 @@ class Gravity_Forms_Tokens_Parser {
 	public function token_id( $form_id, $input_id ) {
 		return $form_id . '|' . $input_id;
 	}
+
 	/**
 	 * Parsed fields tokens.
 	 *
@@ -68,6 +75,7 @@ class Gravity_Forms_Tokens_Parser {
 		// If no method exists, use the default method
 		return $this->parse_default_tokens( $tokens, $field );
 	}
+
 	/**
 	 * Parse default tokens.
 	 *
@@ -83,6 +91,7 @@ class Gravity_Forms_Tokens_Parser {
 
 		return $tokens;
 	}
+
 	/**
 	 * Parse parent input token.
 	 *
@@ -98,6 +107,7 @@ class Gravity_Forms_Tokens_Parser {
 
 		return $tokens;
 	}
+
 	/**
 	 * Parse child input tokens.
 	 *
@@ -121,6 +131,23 @@ class Gravity_Forms_Tokens_Parser {
 
 		return $tokens;
 	}
+
+	/**
+	 * Parse radio tokens.
+	 *
+	 * @param mixed $tokens The destination.
+	 * @param mixed $field The field.
+	 * @return mixed
+	 */
+	public function parse_radio_tokens( $tokens, $field ) {
+
+		$tokens = $this->parse_parent_input_token( $tokens, $field );
+
+		$tokens = $this->parse_label_token( $tokens, $field );
+
+		return $tokens;
+	}
+
 	/**
 	 * Parse select tokens.
 	 *
@@ -136,6 +163,7 @@ class Gravity_Forms_Tokens_Parser {
 
 		return $tokens;
 	}
+
 	/**
 	 * Parse label token.
 	 *
@@ -164,7 +192,7 @@ class Gravity_Forms_Tokens_Parser {
 	public function parse_multi_choice_tokens( $tokens, $field ) {
 
 		// Check if single selection (radio) or multi selection (checkbox)
-		if ( 'radio' === $field['inputType'] || 'single' === $field->choiceLimit ) {
+		if ( 'radio' === $field['inputType'] || 'single' === $field->choiceLimit ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			// Single selection mode - value stored in parent field
 			$field_value = isset( $this->entry[ $field['id'] ] ) ? $this->entry[ $field['id'] ] : '';
 			$label_value = $field_value;
@@ -180,14 +208,14 @@ class Gravity_Forms_Tokens_Parser {
 			}
 
 			// Set parent field tokens
-			$tokens[ $this->token_id( $this->form['id'], $field['id'] ) ] = $field_value;
+			$tokens[ $this->token_id( $this->form['id'], $field['id'] ) ]            = $field_value;
 			$tokens[ $this->token_id( $this->form['id'], $field['id'] ) . '|label' ] = $label_value;
 
 			// Parse child input tokens - only the selected one will have a value
 			if ( ! empty( $field['inputs'] ) ) {
 				foreach ( $field['inputs'] as $input ) {
-					$token_id              = $this->token_id( $this->form['id'], $input['id'] );
-					$token_id_label        = $token_id . '|label';
+					$token_id       = $this->token_id( $this->form['id'], $input['id'] );
+					$token_id_label = $token_id . '|label';
 
 					// Check if this input matches the selected value
 					$matching_choice = null;
@@ -243,14 +271,14 @@ class Gravity_Forms_Tokens_Parser {
 			}
 
 			// Set parent field tokens
-			$tokens[ $this->token_id( $this->form['id'], $field['id'] ) ] = $field_value;
+			$tokens[ $this->token_id( $this->form['id'], $field['id'] ) ]            = $field_value;
 			$tokens[ $this->token_id( $this->form['id'], $field['id'] ) . '|label' ] = $label_value;
 
 			// Parse child input tokens - only the selected one will have a value
 			if ( ! empty( $field['inputs'] ) ) {
 				foreach ( $field['inputs'] as $input ) {
-					$token_id              = $this->token_id( $this->form['id'], $input['id'] );
-					$token_id_label        = $token_id . '|label';
+					$token_id       = $this->token_id( $this->form['id'], $input['id'] );
+					$token_id_label = $token_id . '|label';
 
 					// Check if this input matches the selected value
 					$matching_choice = null;
@@ -307,7 +335,7 @@ class Gravity_Forms_Tokens_Parser {
 				}
 			}
 			$field_value = implode( ', ', $choice_labels );
-		} else if ( 'rank' === $field['inputType'] ) {
+		} elseif ( 'rank' === $field['inputType'] ) {
 			// Ranking fields return comma-separated values
 			$field_value = isset( $this->entry[ $field['id'] ] ) ? $this->entry[ $field['id'] ] : '';
 
@@ -320,7 +348,7 @@ class Gravity_Forms_Tokens_Parser {
 					foreach ( $field['choices'] as $choice ) {
 						if ( $choice['value'] === $rank_value ) {
 							$ranked_labels[] = $rank_position . '. ' . $choice['text'];
-							$rank_position++;
+							++$rank_position;
 							break;
 						}
 					}
@@ -423,14 +451,14 @@ class Gravity_Forms_Tokens_Parser {
 	public function parsed_common_tokens( $form ) {
 
 		return array(
-			'GFFORMS'       => $form['title'], // Form title.
-			'FORM_TITLE'    => $form['title'], // Form title.
-			'ANONGFFORMS'   => $form['title'], // Form title.
-			'GK_ENTRY_METADATA' => $form['title'],
+			'GFFORMS'              => $form['title'], // Form title.
+			'FORM_TITLE'           => $form['title'], // Form title.
+			'ANONGFFORMS'          => $form['title'], // Form title.
+			'GK_ENTRY_METADATA'    => $form['title'],
 			'GK_ENTRY_METADATA_ID' => $form['id'],
-			'GFFORMS_ID'    => $form['id'], // Form ID.
-			'FORM_ID'       => $form['id'], // Form ID.
-			'ANONGFFORMS_ID' => $form['id'], // Form ID.
+			'GFFORMS_ID'           => $form['id'], // Form ID.
+			'FORM_ID'              => $form['id'], // Form ID.
+			'ANONGFFORMS_ID'       => $form['id'], // Form ID.
 		);
 	}
 }

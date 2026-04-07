@@ -92,7 +92,6 @@ final class Loop implements \JsonSerializable {
 		$this->hydrate_tokens();
 		$this->hydrate_filters();
 		$this->hydrate_items( $recipe );
-
 	}
 
 	/**
@@ -151,7 +150,7 @@ final class Loop implements \JsonSerializable {
 	 */
 	private function hydrate_items() {
 
-		$actions = Automator()->get_recipe_data( 'uo-action', self::$loop_id );
+		$actions = Automator()->get_recipe_data( AUTOMATOR_POST_TYPE_ACTION, self::$loop_id );
 
 		$config = self::$recipe->get_config();
 
@@ -190,7 +189,5 @@ final class Loop implements \JsonSerializable {
 				'type' => 'users',
 			)
 		);
-
 	}
-
 }

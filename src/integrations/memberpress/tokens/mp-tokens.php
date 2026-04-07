@@ -164,6 +164,9 @@ class Mp_Tokens {
 			return $value;
 		}
 		foreach ( $trigger_data as $trigger ) {
+			if ( empty( $trigger['ID'] ) ) {
+				continue;
+			}
 			// all memberpress values will be saved in usermeta.
 			$trigger_id     = absint( $trigger['ID'] );
 			$trigger_log_id = absint( $replace_args['trigger_log_id'] );

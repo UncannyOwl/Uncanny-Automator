@@ -191,39 +191,35 @@ class Automator_Utilities {
 	 */
 	public function recipes_number_times_completed( $recipe_ids = null, $recipes_completed_times = 0 ) {
 		global $wpdb;
-		$times_to_complete = array();
-		$post_metas        = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value, post_id FROM $wpdb->postmeta WHERE meta_key = %s LIMIT 0, 99999", 'recipe_completions_allowed' ) );
-		if ( $post_metas && is_array( $recipe_ids ) ) {
-			foreach ( $recipe_ids as $recipe_id ) {
-				$complete = 1;
-				$found    = false;
-				foreach ( $post_metas as $p ) {
-					if ( (int) $recipe_id === (int) $p->post_id ) {
-						$found    = true;
-						$complete = $p->meta_value;
-						break;
-					} else {
-						$found = false;
-					}
-				}
 
-				if ( $found ) {
-					$times_to_complete[ $recipe_id ] = $complete;
-				} else {
-					$times_to_complete[ $recipe_id ] = 1; //Complete recipe once
-				}
-			}
-		} elseif ( is_array( $recipe_ids ) ) {
-			//Fallback to mark each recipe to be completed only once
-			foreach ( $recipe_ids as $recipe_id ) {
-				$times_to_complete[ $recipe_id ] = 1;
-			}
+		if ( ! is_array( $recipe_ids ) || empty( $recipe_ids ) ) {
+			return array();
+		}
+
+		// Scope query to only the requested recipe IDs — avoids fetching up to 99,999 rows site-wide.
+		$ids_sanitized = array_map( 'intval', $recipe_ids );
+		$placeholders  = implode( ',', array_fill( 0, count( $ids_sanitized ), '%d' ) );
+		$post_metas    = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT meta_value, post_id FROM $wpdb->postmeta WHERE meta_key = %s AND post_id IN ($placeholders)",
+				array_merge( array( 'recipe_completions_allowed' ), $ids_sanitized )
+			)
+		);
+
+		// Build a hash map for O(1) lookup; replaces the previous O(n × m) nested loop.
+		$meta_map = array();
+		foreach ( (array) $post_metas as $row ) {
+			$meta_map[ (int) $row->post_id ] = $row->meta_value;
+		}
+
+		$times_to_complete = array();
+		foreach ( $recipe_ids as $recipe_id ) {
+			$times_to_complete[ $recipe_id ] = $meta_map[ (int) $recipe_id ] ?? 1;
 		}
 
 		$results = array();
 		foreach ( $times_to_complete as $recipe_id => $recipe_completions_allowed ) {
 			$time_to_complete = false;
-			//Only added condition that changes value to true.
 			if ( is_array( $recipes_completed_times ) && key_exists( $recipe_id, $recipes_completed_times ) && (int) $recipes_completed_times[ $recipe_id ] === (int) $recipe_completions_allowed ) {
 				$time_to_complete = true;
 			}
@@ -363,7 +359,7 @@ class Automator_Utilities {
 
 		if ( empty( $this->recipe_types ) ) {
 			global $wpdb;
-			$this->recipe_types = $wpdb->get_results( $wpdb->prepare( "SELECT pm.meta_value, pm.post_id FROM $wpdb->postmeta pm JOIN $wpdb->posts p ON p.ID = pm.post_id WHERE p.post_type = %s AND pm.meta_key = %s", 'uo-recipe', 'uap_recipe_type' ) );
+			$this->recipe_types = $wpdb->get_results( $wpdb->prepare( "SELECT pm.meta_value, pm.post_id FROM $wpdb->postmeta pm JOIN $wpdb->posts p ON p.ID = pm.post_id WHERE p.post_type = %s AND pm.meta_key = %s", AUTOMATOR_POST_TYPE_RECIPE, 'uap_recipe_type' ) );
 		}
 
 		return $this->recipe_types;
@@ -851,7 +847,7 @@ class Automator_Utilities {
 				'integration',
 				$integration_code,
 				'publish',
-				'uo-action'
+				AUTOMATOR_POST_TYPE_ACTION
 			),
 			ARRAY_A
 		);
@@ -885,7 +881,7 @@ class Automator_Utilities {
 				",
 				'integration',
 				$integration_code,
-				'uo-action'
+				AUTOMATOR_POST_TYPE_ACTION
 			),
 			ARRAY_A
 		);

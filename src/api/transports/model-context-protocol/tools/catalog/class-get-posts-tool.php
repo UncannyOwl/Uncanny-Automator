@@ -131,6 +131,33 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'post_type' => array( 'type' => 'string' ),
+				'items'     => array(
+					'type'  => 'array',
+					'items' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'id'          => array( 'type' => 'integer' ),
+							'title'       => array( 'type' => 'string' ),
+							'slug'        => array( 'type' => 'string' ),
+							'post_parent' => array( 'type' => 'integer' ),
+						),
+					),
+				),
+				'total'     => array( 'type' => 'integer' ),
+				'has_more'  => array( 'type' => 'boolean' ),
+			),
+			'required'   => array( 'post_type', 'items', 'total', 'has_more' ),
+		);
+	}
+
+	/**
 	 * Execute tool.
 	 *
 	 * @param User_Context $user_context User context.

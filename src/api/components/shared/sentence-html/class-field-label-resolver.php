@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\Api\Components\Shared\Sentence_Html;
 
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
 use Uncanny_Automator\Services\Integrations\Fields;
 
 /**
@@ -130,7 +131,7 @@ class Field_Label_Resolver {
 			}
 
 			// Skip keys that end with _readable or _custom (already processed).
-			if ( str_ends_with( $key, '_readable' ) || str_ends_with( $key, '_custom' ) ) {
+			if ( Str::ends_with( $key, '_readable' ) || Str::ends_with( $key, '_custom' ) ) {
 				continue;
 			}
 
@@ -293,7 +294,7 @@ class Field_Label_Resolver {
 			}
 
 			// Skip _readable suffix keys.
-			if ( str_ends_with( $key, '_readable' ) ) {
+			if ( Str::ends_with( $key, '_readable' ) ) {
 				continue;
 			}
 

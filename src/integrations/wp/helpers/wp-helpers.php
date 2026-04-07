@@ -157,10 +157,6 @@ class Wp_Helpers {
 	 */
 	public function all_posts( $label = null, $option_code = 'WPPOST', $any_option = true ) {
 
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
 		if ( ! $label ) {
 			/* translators: Noun */
 			$label = esc_attr_x( 'Post', 'WordPress', 'uncanny-automator' );
@@ -213,9 +209,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function all_pages( $label = null, $option_code = 'WPPAGE', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Page', 'WordPress', 'uncanny-automator' );
@@ -266,10 +259,6 @@ class Wp_Helpers {
 	 * @return mixed
 	 */
 	public function wp_user_roles( $label = null, $option_code = 'WPROLE', $is_any = false ) {
-
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			/* translators: WordPress role */
@@ -530,8 +519,6 @@ class Wp_Helpers {
 	 * @return array The options array
 	 */
 	private function get_posts_by_post_type_options( $post_type, $group_id = '' ) {
-		global $uncanny_automator;
-
 		$fields = array();
 
 		$args       = array(
@@ -544,7 +531,7 @@ class Wp_Helpers {
 			'suppress_filters' => true,
 			'fields'           => array( 'ids', 'titles' ),
 		);
-		$posts_list = $uncanny_automator->helpers->recipe->options->wp_query( $args, false, esc_html_x( 'Any post', 'WordPress', 'uncanny-automator' ) );
+		$posts_list = Automator()->helpers->recipe->options->wp_query( $args, false, esc_html_x( 'Any post', 'WordPress', 'uncanny-automator' ) );
 
 		if ( 'CREATEPOST' === $group_id ) {
 			$fields[] = array(
@@ -986,78 +973,107 @@ class Wp_Helpers {
 	 *
 	 * @return void
 	 */
+	/**
+	 * Roles removed within the current request, keyed by user_id → role slug.
+	 *
+	 * Used to detect the remove-then-re-add no-op cycle that plugins such as
+	 * User Role Editor perform on every profile save, so we do not fire the
+	 * internal hook when the net result is no change.
+	 *
+	 * @var array<int,array<string,bool>>
+	 */
+	private static $pending_role_removals = array();
+	/**
+	 * Setup role change handlers.
+	 */
 	public function setup_role_change_handlers() {
-		// WordPress core set_role() - replaces all roles
-		add_action( 'set_user_role', array( $this, 'handle_set_user_role' ), 10, 3 );
+		// Track explicit removals so handle_add_user_role can detect no-op re-adds.
+		add_action( 'remove_user_role', array( $this, 'track_role_removal' ), 5, 2 );
 
-		// WordPress core add_role() - adds a single role (used by User Role Editor)
+		// add_user_role fires from BOTH WP_User::add_role() AND WP_User::set_role()
+		// (only when the role was not previously in old_roles — see WP core line 648).
+		// This makes it the correct single hook for "a role was genuinely added".
 		add_action( 'add_user_role', array( $this, 'handle_add_user_role' ), 10, 2 );
+
+		// set_user_role fires from WP_User::set_role() only.
+		// When set_role() adds a new role it fires add_user_role first, then
+		// set_user_role. We use this hook only for the case where add_user_role
+		// did NOT fire (role was already present in old_roles), so we avoid
+		// double-dispatching automator_user_role_changed.
+		add_action( 'set_user_role', array( $this, 'handle_set_user_role' ), 10, 3 );
 	}
 
 	/**
-	 * Handle set_user_role hook (WordPress core WP_User::set_role method)
+	 * Records that a role was explicitly removed in this request.
 	 *
-	 * This hook fires when a user's role is SET (replacing all existing roles).
-	 * This is used by WordPress core, profile update screens, and some plugins.
-	 *
-	 * @param int    $user_id   The user ID.
-	 * @param string $role      The new role being set.
-	 * @param array  $old_roles Array of the user's previous roles.
+	 * @param int    $user_id The user ID.
+	 * @param string $role    The role that was removed.
 	 *
 	 * @return void
 	 */
-	public function handle_set_user_role( $user_id, $role, $old_roles ) {
-		/**
-		 * Fires when a user's role is changed via any WordPress method.
-		 *
-		 * This internal hook normalizes both set_user_role and add_user_role
-		 * into a single consistent hook for Automator triggers.
-		 *
-		 * @param int    $user_id   The user ID.
-		 * @param string $role      The role that was set or added.
-		 * @param array  $old_roles Array of the user's roles before this change.
-		 */
-		do_action( 'automator_user_role_changed', $user_id, $role, $old_roles );
+	public function track_role_removal( $user_id, $role ) {
+		self::$pending_role_removals[ $user_id ][ $role ] = true;
 	}
 
 	/**
-	 * Handle add_user_role hook (WordPress core WP_User::add_role method)
+	 * Handles WP_User::add_role() and the add_user_role path inside WP_User::set_role().
 	 *
-	 * This hook fires when a role is ADDED to a user (keeping existing roles).
-	 * This is used by User Role Editor plugin and other role management tools.
-	 *
-	 * Note: This hook fires AFTER the role has been added to the user.
-	 * We reconstruct old_roles by removing the newly added role from current roles.
+	 * WordPress only fires add_user_role when the role was not already present in
+	 * $this->roles, so this covers every genuine role addition regardless of which
+	 * WP method triggered it.
 	 *
 	 * @param int    $user_id The user ID.
-	 * @param string $role    The role being added.
+	 * @param string $role    The role that was added.
 	 *
 	 * @return void
 	 */
 	public function handle_add_user_role( $user_id, $role ) {
-		// Get the user object
+		// If this role was removed earlier in the same request and is now being
+		// re-added, the net result is no change. Consume the pending entry and bail.
+		// This prevents false positives from plugins that do a remove-then-re-add
+		// sync on every profile save (e.g. User Role Editor).
+		if ( isset( self::$pending_role_removals[ $user_id ][ $role ] ) ) {
+			unset( self::$pending_role_removals[ $user_id ][ $role ] );
+			return;
+		}
+
 		$user = get_user_by( 'ID', $user_id );
 		if ( ! $user ) {
 			return;
 		}
 
-		// Get current roles (after the role was added)
-		$current_roles = $user->roles;
+		// WordPress saves the updated caps before firing this hook, so $user->roles
+		// already includes the new role. Reconstruct old_roles by subtracting it.
+		$old_roles = array_values( array_diff( $user->roles, array( $role ) ) );
 
-		// Reconstruct old_roles by removing the newly added role
-		// This works because the add_user_role hook fires AFTER the role is added
-		$old_roles = array_diff( $current_roles, array( $role ) );
+		do_action( 'automator_user_role_changed', $user_id, $role, $old_roles );
+	}
 
-		/**
-		 * Fires when a user's role is changed via any WordPress method.
-		 *
-		 * This internal hook normalizes both set_user_role and add_user_role
-		 * into a single consistent hook for Automator triggers.
-		 *
-		 * @param int    $user_id   The user ID.
-		 * @param string $role      The role that was set or added.
-		 * @param array  $old_roles Array of the user's roles before this change.
-		 */
+	/**
+	 * Handles WP_User::set_role() via the set_user_role hook.
+	 *
+	 * When set_role() sets a role that was NOT previously held, WordPress fires
+	 * add_user_role BEFORE set_user_role (WP core lines 648-651 vs 653+).
+	 * handle_add_user_role will have already dispatched automator_user_role_changed
+	 * for that case, so we skip it here to prevent double-firing.
+	 *
+	 * We only dispatch when the role WAS already in old_roles, meaning add_user_role
+	 * did not fire. Triggers listening to automator_user_role_changed will receive
+	 * accurate WP-provided old_roles and can apply their own guards.
+	 *
+	 * @param int      $user_id   The user ID.
+	 * @param string   $role      The new role.
+	 * @param string[] $old_roles The user's roles before the change (provided by WP).
+	 *
+	 * @return void
+	 */
+	public function handle_set_user_role( $user_id, $role, $old_roles ) {
+		// add_user_role already fired (and handle_add_user_role dispatched the hook)
+		// for this role addition. Bail to avoid double-firing automator_user_role_changed.
+		if ( ! in_array( $role, (array) $old_roles, true ) ) {
+			return;
+		}
+
 		do_action( 'automator_user_role_changed', $user_id, $role, $old_roles );
 	}
 }

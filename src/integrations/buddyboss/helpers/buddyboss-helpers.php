@@ -53,10 +53,6 @@ class Buddyboss_Helpers {
 	 * @return mixed
 	 */
 	public function all_buddyboss_groups( $label = null, $option_code = 'BDBGROUPS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		$args = wp_parse_args(
 			$args,
@@ -120,10 +116,6 @@ class Buddyboss_Helpers {
 	 * @return mixed
 	 */
 	public function all_buddyboss_users( $label = null, $option_code = 'BDBUSERS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'User', 'uncanny-automator' );
@@ -170,10 +162,6 @@ class Buddyboss_Helpers {
 	 * @return mixed
 	 */
 	public function list_buddyboss_forums( $label = null, $option_code = 'BDBFORUMS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! function_exists( 'bbp_get_forum_post_type' ) ) {
 

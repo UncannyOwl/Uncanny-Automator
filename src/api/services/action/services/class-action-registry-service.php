@@ -19,6 +19,7 @@ use Uncanny_Automator\Api\Services\Plan\Plan_Service;
 use Uncanny_Automator\Services\Integrations\Fields;
 use Uncanny_Automator\Api\Services\Availability\Availability_Data;
 use Uncanny_Automator\Api\Services\Availability\Availability_Checker;
+use Uncanny_Automator\Api\Components\Field\Field_Json_Schema;
 use Uncanny_Automator\Api\Services\Integration\Integration_Registry_Service;
 use WP_Error;
 
@@ -175,8 +176,7 @@ class Action_Registry_Service {
 			$rag_response = $this->call_rag_search( $query, 'action', $integration, $limit );
 
 			if ( is_wp_error( $rag_response ) ) {
-				// Fallback to keyword search if RAG fails.
-				return $this->find_actions_fallback( $query, $integration, $limit );
+				return array();
 			}
 
 			// Extract results from RAG response.
@@ -190,26 +190,10 @@ class Action_Registry_Service {
 			return $rag_results;
 
 		} catch ( \Exception $e ) {
-			return $this->find_actions_fallback( $query, $integration, $limit );
-		}
-	}
-
-	/**
-	 * Fallback to keyword-based search if RAG fails.
-	 *
-	 * @since 7.0.0
-	 * @param string $query Search query.
-	 * @param string $integration Integration filter.
-	 * @param int    $limit Result limit.
-	 * @return array Search results.
-	 */
-	private function find_actions_fallback( string $query, string $integration = '', int $limit = 10 ) {
-		$all_actions = $this->get_available_actions( $integration );
-
-		if ( is_wp_error( $all_actions ) ) {
 			return array();
 		}
 	}
+
 
 	/**
 	 * Get detailed action definition by action code.
@@ -256,8 +240,9 @@ class Action_Registry_Service {
 			);
 			$configuration_fields = $fields->get();
 
-			// Convert to JSON Schema format
-			$input_schema = $this->convert_fields_to_schema( $configuration_fields );
+			// Convert to JSON Schema format.
+			$converter    = new Field_Json_Schema();
+			$input_schema = $converter->convert_fields_to_schema( $configuration_fields );
 
 			return array(
 				'name'        => $action_code,
@@ -370,223 +355,5 @@ class Action_Registry_Service {
 			'blockers'     => $checker->get_blockers( $availability_data ),
 			'feature_data' => $availability_data->to_array(), // Added for debugging/context
 		);
-	}
-
-	/**
-	 * Convert Automator fields to JSON Schema format.
-	 *
-	 * @since 7.0.0
-	 * @param array $fields Fields array from Automator\\Services\\Integrations\\Fields->get()
-	 * @return array JSON Schema representation.
-	 */
-	private function convert_fields_to_schema( array $fields ): array {
-		$schema = array(
-			'type'       => 'object',
-			'properties' => array(),
-			'required'   => array(),
-		);
-
-		foreach ( $fields as $field_group ) {
-			if ( ! is_array( $field_group ) ) {
-				continue;
-			}
-
-			foreach ( $field_group as $field ) {
-				if ( ! is_array( $field ) || ! isset( $field['option_code'] ) ) {
-					continue;
-				}
-
-				$option_code  = $field['option_code'];
-				$field_schema = $this->convert_single_field_to_schema( $field );
-
-				$schema['properties'][ $option_code ] = $field_schema;
-
-				if ( ! empty( $field['required'] ) ) {
-					$schema['required'][] = $option_code;
-				}
-			}
-		}
-
-		return $schema;
-	}
-
-	/**
-	 * Convert a single Automator field to JSON Schema format.
-	 *
-	 * @since 7.0.0
-	 * @param array $field Single field configuration.
-	 * @return array JSON Schema for this field.
-	 */
-	private function convert_single_field_to_schema( array $field ): array {
-		$type_mapping = array(
-			'text'     => 'string',
-			'email'    => 'string',
-			'url'      => 'string',
-			'textarea' => 'string',
-			'select'   => 'string',
-			'checkbox' => 'boolean',
-			'int'      => 'integer',
-			'float'    => 'number',
-			'repeater' => 'array',
-			'file'     => 'string',
-			'date'     => 'string',
-			'time'     => 'string',
-			'datetime' => 'string',
-			'color'    => 'string',
-			'password' => 'string',
-		);
-
-		$input_type = $field['input_type'] ?? 'text';
-		$schema     = array(
-			'type' => $type_mapping[ $input_type ] ?? 'string',
-		);
-
-		// Build description
-		$description_parts = array_filter(
-			array(
-				$field['label'] ?? '',
-				$field['description'] ?? '',
-				$field['custom_value_description'] ?? '',
-			)
-		);
-
-		if ( $description_parts ) {
-			$schema['description'] = implode( '. ', $description_parts );
-		}
-
-		// Add format for specific types
-		$format_map = array(
-			'email'    => 'email',
-			'url'      => 'uri',
-			'date'     => 'date',
-			'time'     => 'time',
-			'datetime' => 'date-time',
-		);
-
-		if ( isset( $format_map[ $input_type ] ) ) {
-			$schema['format'] = $format_map[ $input_type ];
-		}
-
-		// Handle select field options using JSON Schema anyOf + const + title pattern.
-		// This provides human-readable labels alongside values for AI consumption.
-		if ( 'select' === $input_type && ! empty( $field['options'] ) ) {
-			$any_of = array();
-
-			foreach ( $field['options'] as $key => $option ) {
-				// Modern format: ['value' => x, 'text' => 'Label']
-				if ( is_array( $option ) && isset( $option['value'] ) ) {
-					$any_of[] = array(
-						'const' => $option['value'],
-						'title' => $option['text'] ?? (string) $option['value'],
-					);
-				} elseif ( is_string( $option ) || is_numeric( $option ) ) {
-					// Legacy format: [id => 'Label'] (e.g., WPForms uses this)
-					$any_of[] = array(
-						'const' => $key,
-						'title' => (string) $option,
-					);
-				}
-			}
-
-			if ( $any_of ) {
-				$schema['anyOf'] = $any_of;
-			}
-		}
-
-		// Add default value
-		if ( isset( $field['default_value'] ) && null !== $field['default_value'] ) {
-			$schema['default'] = $field['default_value'];
-		}
-
-		// Add numeric constraints
-		if ( in_array( $schema['type'], array( 'integer', 'number' ), true ) ) {
-			if ( isset( $field['min_number'] ) && null !== $field['min_number'] ) {
-				$schema['minimum'] = $field['min_number'];
-			}
-			if ( isset( $field['max_number'] ) && null !== $field['max_number'] ) {
-				$schema['maximum'] = $field['max_number'];
-			}
-		}
-
-		// Add placeholder as example
-		if ( ! empty( $field['placeholder'] ) ) {
-			$schema['examples'] = array( $field['placeholder'] );
-		}
-
-		// Handle dropdown fields with dynamic options
-		// Empty enum signals "constrained field, but options must be fetched via get_field_options"
-		if ( 'select' === $input_type ) {
-			$has_ajax_options   = ! empty( $field['ajax'] );
-			$has_static_options = ! empty( $field['options'] );
-
-			// Dynamic options: use empty enum to signal "call get_field_options"
-			if ( $has_ajax_options && ! $has_static_options ) {
-				$schema['enum']        = array();
-				$schema['description'] = ( $schema['description'] ?? '' ) .
-					' [DROPDOWN: enum is empty because options are loaded dynamically. Call get_field_options with this field code to get valid values.]';
-			}
-		}
-
-		// Handle repeater fields - define the structure of each row.
-		if ( 'repeater' === $input_type && ! empty( $field['fields'] ) ) {
-			$item_properties = array();
-			$item_required   = array();
-
-			// Check for AJAX dependency on the repeater (e.g., Google Sheets columns depend on worksheet).
-			$ajax_config    = $field['ajax'] ?? array();
-			$mapping_column = $ajax_config['mapping_column'] ?? '';
-			$listen_fields  = $ajax_config['listen_fields'] ?? array();
-
-			foreach ( $field['fields'] as $sub_field ) {
-				if ( ! is_array( $sub_field ) || ! isset( $sub_field['option_code'] ) ) {
-					continue;
-				}
-
-				$sub_code   = $sub_field['option_code'];
-				$sub_schema = $this->convert_single_field_to_schema( $sub_field );
-
-				// If this sub-field is the mapping column for AJAX options, mark it as dynamic.
-				if ( $sub_code === $mapping_column && ! empty( $listen_fields ) ) {
-					$parent_field              = $listen_fields[0];
-					$sub_schema['enum']        = array(); // Empty enum signals dynamic options.
-					$sub_schema['description'] = ( $sub_schema['description'] ?? $sub_field['label'] ?? '' ) .
-						' [DYNAMIC: Valid values depend on the selected ' . $parent_field . '. ' .
-						'Call get_field_options with field_code="' . $sub_code . '" and parent_field="' . $parent_field . '" to get valid values after selecting ' . $parent_field . '.]';
-				}
-
-				$item_properties[ $sub_code ] = $sub_schema;
-
-				if ( ! empty( $sub_field['required'] ) ) {
-					$item_required[] = $sub_code;
-				}
-			}
-
-			if ( ! empty( $item_properties ) ) {
-				$schema['items'] = array(
-					'type'       => 'object',
-					'properties' => $item_properties,
-				);
-
-				if ( ! empty( $item_required ) ) {
-					$schema['items']['required'] = $item_required;
-				}
-
-				// Build list of field names for description.
-				$field_names = array_keys( $item_properties );
-			}
-
-			// Enhance description to explain repeater behavior.
-			$base_description      = $schema['description'] ?? $field['label'] ?? '';
-			$field_list            = ! empty( $field_names ) ? implode( ', ', $field_names ) : 'fields';
-			$schema['description'] = $base_description . ' [REPEATER: This is an array - include multiple objects to add multiple rows. Each object needs: ' . $field_list . ']';
-
-			// Add repeater-level description about the AJAX dependency.
-			if ( ! empty( $mapping_column ) && ! empty( $listen_fields ) ) {
-				$parent_field           = $listen_fields[0];
-				$schema['description'] .= ' [WORKFLOW: First select ' . $parent_field . ', then call get_field_options for ' . $mapping_column . ' to get available options.]';
-			}
-		}
-
-		return $schema;
 	}
 }

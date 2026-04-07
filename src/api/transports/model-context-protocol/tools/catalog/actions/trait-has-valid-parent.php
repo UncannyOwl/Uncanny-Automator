@@ -42,7 +42,7 @@ trait HasValidParent {
 			);
 		}
 
-		$expected_post_type = 'recipe' === $parent_type ? 'uo-recipe' : 'uo-loop';
+		$expected_post_type = 'recipe' === $parent_type ? AUTOMATOR_POST_TYPE_RECIPE : AUTOMATOR_POST_TYPE_LOOP;
 		$actual_post_type   = $post->post_type;
 
 		if ( $actual_post_type !== $expected_post_type ) {

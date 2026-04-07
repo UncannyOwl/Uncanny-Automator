@@ -134,9 +134,6 @@ class Memberpress_Courses_Helpers {
 	 * @return mixed
 	 */
 	public function all_mp_courses( $label = null, $option_code = 'MPCOURSE', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Course', 'uncanny-automator' );
