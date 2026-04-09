@@ -217,6 +217,17 @@ class Integration_Loader {
 		add_action( 'automator_show_internal_admin_notice', array( Load_Error_Handler::class, 'display_notice' ) );
 
 		Load_Error_Handler::register_dismiss_handler();
+
+		// Auto-clear the load-errors transient at the end of every clean
+		// bootstrap. Fires after all helpers, triggers, and actions have been
+		// loaded; if no Load_Error_Handler::handle() call ran during this
+		// request, the transient is wiped so the admin notice disappears as
+		// soon as the underlying issue is fixed — no manual dismiss required.
+		add_action(
+			'automator_add_integration_recipe_parts',
+			array( Load_Error_Handler::class, 'maybe_clear_on_clean_load' ),
+			PHP_INT_MAX
+		);
 	}
 
 	/**

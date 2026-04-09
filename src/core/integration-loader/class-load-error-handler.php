@@ -35,6 +35,26 @@ class Load_Error_Handler {
 	const DISMISS_ACTION = 'automator_dismiss_load_errors';
 
 	/**
+	 * How long to keep batched load errors before they expire on their own.
+	 *
+	 * Short window so a fix (plugin update, dependency restored) clears the
+	 * notice quickly without requiring an explicit dismissal.
+	 *
+	 * @var int
+	 */
+	const TTL = 5 * MINUTE_IN_SECONDS;
+
+	/**
+	 * Whether the current request recorded any new load errors.
+	 *
+	 * Used by maybe_clear_on_clean_load() to wipe the transient when a
+	 * subsequent request bootstraps cleanly.
+	 *
+	 * @var bool
+	 */
+	private static $recorded_error = false;
+
+	/**
 	 * Handle an error encountered during integration class loading.
 	 *
 	 * Logs the error and stores it in a transient array for batched admin notice display.
@@ -63,6 +83,10 @@ class Load_Error_Handler {
 
 		$error_hash = md5( $class . '|' . $message . '|' . $file . '|' . $line );
 
+		// Mark this request as having produced a load error so the
+		// post-bootstrap auto-clear hook leaves the transient in place.
+		self::$recorded_error = true;
+
 		// Deduplicate by hash.
 		if ( ! isset( $errors[ $error_hash ] ) ) {
 			$errors[ $error_hash ] = array(
@@ -72,8 +96,31 @@ class Load_Error_Handler {
 				'line'    => $line,
 				'time'    => gmdate( 'Y-m-d H:i:s' ) . ' UTC',
 			);
-			set_transient( self::TRANSIENT_KEY, $errors, HOUR_IN_SECONDS );
+			set_transient( self::TRANSIENT_KEY, $errors, self::TTL );
 		}
+	}
+
+	/**
+	 * Clear the load-errors transient if the current request bootstrapped
+	 * cleanly. Called after all integrations have been loaded.
+	 *
+	 * Hooked from Integration_Loader once bootstrap is complete. The early
+	 * exit on $recorded_error means we never wipe a transient that the
+	 * current request just populated.
+	 *
+	 * @return void
+	 */
+	public static function maybe_clear_on_clean_load() {
+
+		if ( self::$recorded_error ) {
+			return;
+		}
+
+		if ( false === get_transient( self::TRANSIENT_KEY ) ) {
+			return;
+		}
+
+		delete_transient( self::TRANSIENT_KEY );
 	}
 
 	/**

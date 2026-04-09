@@ -53,7 +53,14 @@ class Recipe_Part_Loader {
 	 * Load helpers for all active integrations.
 	 *
 	 * Applies integration-level gating: skips the entire integration's helpers
-	 * if the manifest says no published recipe uses that integration.
+	 * if the manifest says no published recipe uses that integration. This is
+	 * safe because the same gating is applied to triggers/actions in
+	 * load_recipe_parts() — if no recipe part for an integration is loaded,
+	 * nothing at runtime can dereference its helper chain. Cross-integration
+	 * helper references in the codebase are virtually all same-integration
+	 * lookups (`Automator()->helpers->recipe->{own slug}->options`), so
+	 * gating helpers does not break the chains restored by the Pro-pairing
+	 * logic in the inner callback below.
 	 *
 	 * @param array $active_directories     Active integration instances by directory name.
 	 * @param array $directories_to_include Subdirectory inclusion map.
@@ -88,8 +95,46 @@ class Recipe_Part_Loader {
 					false,
 					'automator_helpers_class_name',
 					function ( $instance, $class ) use ( $dir_name ) {
-						$mod = str_replace( '-', '_', $dir_name );
-						Utilities::add_helper_instance( $mod, $instance );
+						$mod         = str_replace( '-', '_', $dir_name );
+						$is_pro      = ( 0 === strpos( ltrim( $class, '\\' ), 'Uncanny_Automator_Pro' ) );
+						$all         = Utilities::automator_get_all_helper_instances();
+						$existing    = isset( $all[ $mod ] ) ? $all[ $mod ] : null;
+						$existing_is_pro = ( null !== $existing )
+							&& ( 0 === strpos( get_class( $existing ), 'Uncanny_Automator_Pro' ) );
+
+						// Pairing rules — order-independent.
+						//
+						// The Free helper owns `Automator()->helpers->recipe->{slug}` and
+						// exposes `->options` plus the `->all_*` methods that both Free
+						// and Pro recipe parts call. The Pro helper attaches via
+						// setPro() and lives at `->pro`. Two cases need handling:
+						//
+						//  1. Pro arrives first, then Free: promote Free to $mod, move
+						//     the previously-stored Pro instance to {$mod}_pro, and
+						//     wire it via setPro() on Free.
+						//  2. Free arrives first, then Pro: keep Free at $mod, store
+						//     Pro at {$mod}_pro, wire via setPro() on Free.
+						//
+						// In both cases load_hooks() still runs on the new instance so
+						// nothing relying on the side effects is lost.
+						if ( ! $is_pro && $existing_is_pro ) {
+							// Case 1: Free arriving after Pro — swap slots.
+							Utilities::add_helper_instance( $mod, $instance );
+							Utilities::add_helper_instance( $mod . '_pro', $existing );
+							if ( method_exists( $instance, 'setPro' ) ) {
+								$instance->setPro( $existing );
+							}
+						} elseif ( $is_pro && null !== $existing && ! $existing_is_pro ) {
+							// Case 2: Pro arriving after Free — leave Free in $mod, park Pro alongside.
+							if ( method_exists( $existing, 'setPro' ) ) {
+								$existing->setPro( $instance );
+							}
+							Utilities::add_helper_instance( $mod . '_pro', $instance );
+						} else {
+							// First helper for this slot, or same-tier replacement.
+							Utilities::add_helper_instance( $mod, $instance );
+						}
+
 						if ( method_exists( $instance, 'load_hooks' ) ) {
 							$instance->load_hooks();
 						}
