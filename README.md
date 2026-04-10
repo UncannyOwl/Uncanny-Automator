@@ -5,7 +5,7 @@
 **Requires at least:** 5.8 \
 **Tested up to:** 6.9.4 \
 **Requires PHP:** 7.4 \
-**Stable tag:** 7.2.0 \
+**Stable tag:** 7.2.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -410,38 +410,60 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ### 1. Set up your first recipe in 5 minutes
 
-[missing image]
+![Set up your first recipe in 5 minutes](https://ps.w.org/uncanny-automator/assets/screenshot-1.gif)
 
 ### 2. Add one or more triggers from dozens of plugins and thousands of apps
 
-[missing image]
+![Add one or more triggers from dozens of plugins and thousands of apps](https://ps.w.org/uncanny-automator/assets/screenshot-2.png)
 
 ### 3. Identify what starts the recipe, like a purchase or form submission
 
-[missing image]
+![Identify what starts the recipe, like a purchase or form submission](https://ps.w.org/uncanny-automator/assets/screenshot-3.png)
 
 ### 4. Set conditions and options for the trigger(s)
 
-[missing image]
+![Set conditions and options for the trigger(s)](https://ps.w.org/uncanny-automator/assets/screenshot-4.png)
 
 ### 5. Add one or more actions from any of the available integrations
 
-[missing image]
+![Add one or more actions from any of the available integrations](https://ps.w.org/uncanny-automator/assets/screenshot-5.png)
 
 ### 6. When the triggers are completed, actions run automatically
 
-[missing image]
+![When the triggers are completed, actions run automatically](https://ps.w.org/uncanny-automator/assets/screenshot-6.png)
 
 ### 7. Customize your actions to do exactly what you need
 
-[missing image]
+![Customize your actions to do exactly what you need](https://ps.w.org/uncanny-automator/assets/screenshot-7.png)
 
 ### 8. Create powerful recipes that just work, all with one plugin
 
-[missing image]
+![Create powerful recipes that just work, all with one plugin](https://ps.w.org/uncanny-automator/assets/screenshot-8.png)
 
 
 ## Changelog
+
+### 7.2.1 [2026-04-09]
+
+**Fixed:**
+
+* Microsoft Teams - Some integration items were missing from v7.2.0 release, so the integration has been re-pushed to ensure everything is available.
+
+**Under the hood:**
+
+* Legacy Helper chaining - Added a defensive code guard to method and property handling. #7125
+* Switched to the new framework:
+    * Facebook Lead Ads #6642
+    * Facebook Page #6563
+    * Instagram #6563
+    * Ontraport #6303
+    * Trello #6831
+
+### 7.2.0.1 [2026-04-09]
+
+**Fixed:**
+
+* Pro integration helpers overwriting Free helpers, causing fatal "undefined property $options" on trigger/action load. #7123
 
 ### 7.2.0 [2026-04-07]
 
