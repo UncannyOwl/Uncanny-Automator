@@ -59,20 +59,13 @@ trait Premium_Integration_Items {
 	}
 
 	/**
-	 * Get items (actions or triggers) for this integration from Automator's
-	 * global registry.
+	 * Get items (actions or triggers) for this integration from the
+	 * Integration_Query_Service, which merges the CDN feed with locally
+	 * registered integrations and caches the result per request.
 	 *
-	 * Previously this scanned the integration's `actions/`/`triggers/` directories
-	 * and instantiated each class to read its readable sentence. That approach
-	 * stopped working once `Abstract_Action::__construct()` and
-	 * `Abstract_Trigger::__construct()` gained a static double-instantiation
-	 * guard: by the time the settings page renders, every action/trigger class
-	 * has already been instantiated during plugin boot, so re-instantiating from
-	 * here short-circuits before `setup_action()`/`setup_trigger()` runs and
-	 * `readable_sentence` is never set.
-	 *
-	 * Reading from the registry avoids that pitfall and is also independent of
-	 * on-disk file layout.
+	 * Using the query service means items are present regardless of
+	 * requirements_met() status, so disconnected integrations (e.g. Facebook
+	 * Lead Ads) still show their available items on the settings page.
 	 *
 	 * @param string $type Either 'actions' or 'triggers'
 	 * @return array
@@ -83,45 +76,34 @@ trait Premium_Integration_Items {
 		// Validate type.
 		$this->validate_item_type( $type );
 
-		$registered = 'actions' === $type
-			? Automator()->get_actions()
-			: Automator()->get_triggers();
+		$query_service = \Uncanny_Automator\Api\Services\Integration\Integration_Query_Service::get_instance();
+		$integration   = $query_service->get_integration( $this->get_integration() );
 
-		if ( empty( $registered ) ) {
+		if ( null === $integration ) {
 			return array();
 		}
 
-		$integration_code = strtoupper( $this->get_id() );
-		$items            = array();
+		$integration_items = 'actions' === $type
+			? $integration->get_items()->get_actions()
+			: $integration->get_items()->get_triggers();
 
-		foreach ( $registered as $registered_item ) {
-			if ( ! isset( $registered_item['integration'] ) ) {
+		$items = array();
+		foreach ( $integration_items as $item ) {
+			$data = $item->to_array();
+
+			if ( ! empty( $data['is_deprecated'] ) ) {
 				continue;
 			}
-			if ( strtoupper( $registered_item['integration'] ) !== $integration_code ) {
-				continue;
-			}
-			$sentence = isset( $registered_item['select_option_name'] )
-				? $registered_item['select_option_name']
-				: '';
+
+			$sentence = $data['sentence']['short'] ?? '';
 			if ( '' === $sentence ) {
 				continue;
 			}
-			$items[] = $this->format_readable_sentence( $sentence );
+
+			$items[] = $sentence;
 		}
 
 		return $items;
-	}
-
-	/**
-	 * Format the readable sentence by replacing placeholders
-	 *
-	 * @param string $sentence
-	 * @return string
-	 */
-	protected function format_readable_sentence( $sentence ) {
-		// Replace {{text}} with "text"
-		return preg_replace( '/\{\{([^}]+)\}\}/', '$1', $sentence );
 	}
 
 	/**

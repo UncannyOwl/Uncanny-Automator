@@ -1065,19 +1065,24 @@ return array(
 	),
 	'FACEBOOK' => array(
 		'actions' => array(
+			'FACEBOOK_FACEBOOK_PAGE_CREATE_DRAFT' => array(
+				'code'  => 'FACEBOOK_PAGE_CREATE_DRAFT',
+				'class' => 'Uncanny_Automator\\Integrations\\Facebook\\FACEBOOK_PAGE_CREATE_DRAFT',
+				'file'  => $baseDir . '/src/integrations/facebook/actions/facebook-page-create-draft.php',
+			),
 			'FACEBOOK_FACEBOOK_PAGE_PUBLISH_LINK' => array(
 				'code'  => 'FACEBOOK_PAGE_PUBLISH_LINK',
-				'class' => 'Uncanny_Automator\\FACEBOOK_PAGE_PUBLISH_LINK',
+				'class' => 'Uncanny_Automator\\Integrations\\Facebook\\FACEBOOK_PAGE_PUBLISH_LINK',
 				'file'  => $baseDir . '/src/integrations/facebook/actions/facebook-page-publish-link.php',
 			),
 			'FACEBOOK_FACEBOOK_PAGE_PUBLISH_PHOTO' => array(
 				'code'  => 'FACEBOOK_PAGE_PUBLISH_PHOTO',
-				'class' => 'Uncanny_Automator\\FACEBOOK_PAGE_PUBLISH_PHOTO',
+				'class' => 'Uncanny_Automator\\Integrations\\Facebook\\FACEBOOK_PAGE_PUBLISH_PHOTO',
 				'file'  => $baseDir . '/src/integrations/facebook/actions/facebook-page-publish-photo.php',
 			),
 			'FACEBOOK_FACEBOOK_PAGE_PUBLISH_POST' => array(
 				'code'  => 'FACEBOOK_PAGE_PUBLISH_POST',
-				'class' => 'Uncanny_Automator\\FACEBOOK_PAGE_PUBLISH_POST',
+				'class' => 'Uncanny_Automator\\Integrations\\Facebook\\FACEBOOK_PAGE_PUBLISH_POST',
 				'file'  => $baseDir . '/src/integrations/facebook/actions/facebook-page-publish-post.php',
 			),
 		),
@@ -1105,7 +1110,7 @@ return array(
 		'triggers' => array(
 			'FACEBOOK_LEAD_ADS_FB_LEAD_ADS_CODE' => array(
 				'code'  => 'FB_LEAD_ADS_CODE',
-				'class' => 'Uncanny_Automator\\Integrations\\Facebook_Lead_Ads\\Triggers\\Lead_Created',
+				'class' => 'Uncanny_Automator\\Integrations\\Facebook_Lead_Ads\\Lead_Created',
 				'file'  => $baseDir . '/src/integrations/facebook-lead-ads/triggers/lead-created.php',
 			),
 		),
@@ -1675,7 +1680,7 @@ return array(
 		'actions' => array(
 			'INSTAGRAM_INSTAGRAM_PUBLISH_PHOTO' => array(
 				'code'  => 'INSTAGRAM_PUBLISH_PHOTO',
-				'class' => 'Uncanny_Automator\\INSTAGRAM_PUBLISH_PHOTO',
+				'class' => 'Uncanny_Automator\\Integrations\\Instagram\\INSTAGRAM_PUBLISH_PHOTO',
 				'file'  => $baseDir . '/src/integrations/instagram/actions/instagram-publish-photo.php',
 			),
 		),
@@ -2287,6 +2292,56 @@ return array(
 				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\MICROSOFT_TEAMS_SEND_DM',
 				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php',
 			),
+			'MICROSOFT_TEAMS_TEAMS_ADD_MEMBER_CODE' => array(
+				'code'  => 'TEAMS_ADD_MEMBER_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_ADD_MEMBER',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-add-member.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_ADD_TAG_MEMBER_CODE' => array(
+				'code'  => 'TEAMS_ADD_TAG_MEMBER_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_ADD_TAG_MEMBER',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-add-tag-member.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_ARCHIVE_TEAM_CODE' => array(
+				'code'  => 'TEAMS_ARCHIVE_TEAM_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_ARCHIVE_TEAM',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-archive-team.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_CREATE_GROUP_CHAT_CODE' => array(
+				'code'  => 'TEAMS_CREATE_GROUP_CHAT_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_CREATE_GROUP_CHAT',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-create-group-chat.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_CREATE_MEETING_CODE' => array(
+				'code'  => 'TEAMS_CREATE_MEETING_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_CREATE_MEETING',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-create-meeting.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_CREATE_TAG_CODE' => array(
+				'code'  => 'TEAMS_CREATE_TAG_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_CREATE_TAG',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-create-tag.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_DELETE_CHANNEL_CODE' => array(
+				'code'  => 'TEAMS_DELETE_CHANNEL_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_DELETE_CHANNEL',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-delete-channel.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_REMOVE_MEMBER_CODE' => array(
+				'code'  => 'TEAMS_REMOVE_MEMBER_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_REMOVE_MEMBER',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-remove-member.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_REPLY_CHANNEL_MSG_CODE' => array(
+				'code'  => 'TEAMS_REPLY_CHANNEL_MSG_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_REPLY_CHANNEL_MESSAGE',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-reply-channel-message.php',
+			),
+			'MICROSOFT_TEAMS_TEAMS_UPDATE_TEAM_CODE' => array(
+				'code'  => 'TEAMS_UPDATE_TEAM_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Microsoft_Teams\\TEAMS_UPDATE_TEAM',
+				'file'  => $baseDir . '/src/integrations/microsoft-teams/actions/teams-update-team.php',
+			),
 		),
 	),
 	'MISTRAL' => array(
@@ -2466,6 +2521,11 @@ return array(
 				'code'  => 'ONTRAPORT_ADD_CONTACT_TAG_CODE',
 				'class' => 'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Add_Contact_Tag',
 				'file'  => $baseDir . '/src/integrations/ontraport/actions/ontraport-add-contact-tag.php',
+			),
+			'ONTRAPORT_ONTRAPORT_ADD_UPDATE_CONTACT_CODE' => array(
+				'code'  => 'ONTRAPORT_ADD_UPDATE_CONTACT_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Ontraport\\Ontraport_Add_Update_Contact',
+				'file'  => $baseDir . '/src/integrations/ontraport/actions/ontraport-add-update-contact.php',
 			),
 			'ONTRAPORT_ONTRAPORT_CREATE_TAG_CODE' => array(
 				'code'  => 'ONTRAPORT_CREATE_TAG_CODE',
@@ -3242,32 +3302,32 @@ return array(
 		'actions' => array(
 			'TRELLO_ADD_CARD_COMMENT' => array(
 				'code'  => 'ADD_CARD_COMMENT',
-				'class' => 'Uncanny_Automator\\TRELLO_ADD_CARD_COMMENT',
+				'class' => 'Uncanny_Automator\\Integrations\\Trello\\TRELLO_ADD_CARD_COMMENT',
 				'file'  => $baseDir . '/src/integrations/trello/actions/trello-add-card-comment.php',
 			),
 			'TRELLO_ADD_CARD_LABEL' => array(
 				'code'  => 'ADD_CARD_LABEL',
-				'class' => 'Uncanny_Automator\\TRELLO_ADD_CARD_LABEL',
+				'class' => 'Uncanny_Automator\\Integrations\\Trello\\TRELLO_ADD_CARD_LABEL',
 				'file'  => $baseDir . '/src/integrations/trello/actions/trello-add-card-label.php',
 			),
 			'TRELLO_ADD_CARD_MEMBER' => array(
 				'code'  => 'ADD_CARD_MEMBER',
-				'class' => 'Uncanny_Automator\\TRELLO_ADD_CARD_MEMBER',
+				'class' => 'Uncanny_Automator\\Integrations\\Trello\\TRELLO_ADD_CARD_MEMBER',
 				'file'  => $baseDir . '/src/integrations/trello/actions/trello-add-card-member.php',
 			),
 			'TRELLO_ADD_CHECKLIST_ITEM' => array(
 				'code'  => 'ADD_CHECKLIST_ITEM',
-				'class' => 'Uncanny_Automator\\TRELLO_ADD_CHECKLIST_ITEM',
+				'class' => 'Uncanny_Automator\\Integrations\\Trello\\TRELLO_ADD_CHECKLIST_ITEM',
 				'file'  => $baseDir . '/src/integrations/trello/actions/trello-add-checklist-item.php',
 			),
 			'TRELLO_CREATE_CARD' => array(
 				'code'  => 'CREATE_CARD',
-				'class' => 'Uncanny_Automator\\TRELLO_CREATE_CARD',
+				'class' => 'Uncanny_Automator\\Integrations\\Trello\\TRELLO_CREATE_CARD',
 				'file'  => $baseDir . '/src/integrations/trello/actions/trello-create-card.php',
 			),
 			'TRELLO_UPDATE_CARD' => array(
 				'code'  => 'UPDATE_CARD',
-				'class' => 'Uncanny_Automator\\TRELLO_UPDATE_CARD',
+				'class' => 'Uncanny_Automator\\Integrations\\Trello\\TRELLO_UPDATE_CARD',
 				'file'  => $baseDir . '/src/integrations/trello/actions/trello-update-card.php',
 			),
 		),

@@ -646,14 +646,16 @@ return array(
 		),
 	),
 	'facebook' => array(
-		'main' => $baseDir . '/src/integrations/facebook/add-facebook-integration.php',
 		'actions' => array(
+			$baseDir . '/src/integrations/facebook/actions/facebook-page-create-draft.php',
 			$baseDir . '/src/integrations/facebook/actions/facebook-page-publish-link.php',
 			$baseDir . '/src/integrations/facebook/actions/facebook-page-publish-photo.php',
 			$baseDir . '/src/integrations/facebook/actions/facebook-page-publish-post.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/facebook/helpers/facebook-helpers.php',
+			$baseDir . '/src/integrations/facebook/helpers/facebook-api-caller.php',
+			$baseDir . '/src/integrations/facebook/helpers/facebook-app-helpers.php',
+			$baseDir . '/src/integrations/facebook/helpers/facebook-bridge.php',
 		),
 	),
 	'facebook-groups' => array(
@@ -669,7 +671,9 @@ return array(
 	),
 	'facebook-lead-ads' => array(
 		'helpers' => array(
-			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-helpers.php',
+			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php',
+			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-app-helpers.php',
+			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-webhooks.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/facebook-lead-ads/triggers/lead-created.php',
@@ -992,12 +996,12 @@ return array(
 		),
 	),
 	'instagram' => array(
-		'main' => $baseDir . '/src/integrations/instagram/add-instagram-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/instagram/actions/instagram-publish-photo.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/instagram/helpers/instagram-helpers.php',
+			$baseDir . '/src/integrations/instagram/helpers/instagram-api-caller.php',
+			$baseDir . '/src/integrations/instagram/helpers/instagram-app-helpers.php',
 		),
 	),
 	'integrately' => array(
@@ -1332,9 +1336,20 @@ return array(
 			$baseDir . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php',
 			$baseDir . '/src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php',
 			$baseDir . '/src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-add-member.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-add-tag-member.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-archive-team.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-create-group-chat.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-create-meeting.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-create-tag.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-delete-channel.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-remove-member.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-reply-channel-message.php',
+			$baseDir . '/src/integrations/microsoft-teams/actions/teams-update-team.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php',
+			$baseDir . '/src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php',
+			$baseDir . '/src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php',
 		),
 	),
 	'mistral' => array(
@@ -1397,12 +1412,15 @@ return array(
 	'ontraport' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/ontraport/actions/ontraport-add-contact-tag.php',
+			$baseDir . '/src/integrations/ontraport/actions/ontraport-add-update-contact.php',
 			$baseDir . '/src/integrations/ontraport/actions/ontraport-create-tag.php',
 			$baseDir . '/src/integrations/ontraport/actions/ontraport-delete-contact.php',
 			$baseDir . '/src/integrations/ontraport/actions/ontraport-upsert-contact.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/ontraport/helpers/ontraport-helpers.php',
+			$baseDir . '/src/integrations/ontraport/helpers/ontraport-api-caller.php',
+			$baseDir . '/src/integrations/ontraport/helpers/ontraport-app-helpers.php',
+			$baseDir . '/src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php',
 		),
 	),
 	'open-ai' => array(
@@ -1809,7 +1827,6 @@ return array(
 		),
 	),
 	'trello' => array(
-		'main' => $baseDir . '/src/integrations/trello/add-trello-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/trello/actions/trello-add-card-comment.php',
 			$baseDir . '/src/integrations/trello/actions/trello-add-card-label.php',
@@ -1819,7 +1836,9 @@ return array(
 			$baseDir . '/src/integrations/trello/actions/trello-update-card.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/trello/helpers/trello-helpers.php',
+			$baseDir . '/src/integrations/trello/helpers/trait-trello-card-data.php',
+			$baseDir . '/src/integrations/trello/helpers/trello-api-caller.php',
+			$baseDir . '/src/integrations/trello/helpers/trello-app-helpers.php',
 		),
 	),
 	'tutorlms' => array(

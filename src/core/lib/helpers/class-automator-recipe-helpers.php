@@ -686,7 +686,7 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 				if ( isset( $this->$integration ) && $this->$integration instanceof $class ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
 					//Already defined, ignore
 				} else {
-					if ( property_exists( $class, 'options' ) ) {
+					if ( property_exists( $class, 'options' ) && method_exists( $class, 'setOptions' ) ) {
 						$this->$integration = $class;
 						$this->$integration->setOptions( $class );
 					} else {
