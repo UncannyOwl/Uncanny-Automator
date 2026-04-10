@@ -1,19 +1,21 @@
 <?php
-namespace Uncanny_Automator\Integrations\Facebook_Lead_Ads\Triggers;
+namespace Uncanny_Automator\Integrations\Facebook_Lead_Ads;
 
-use Uncanny_Automator\Integrations\Facebook_Lead_Ads\Helpers\Facebook_Lead_Ads_Helpers;
-use Uncanny_Automator\Integrations\Facebook_Lead_Ads\Utilities\Client;
-use Uncanny_Automator\Integrations\Facebook_Lead_Ads\Utilities\Credentials_Manager;
-use Uncanny_Automator\Integrations\Facebook_Lead_Ads\Utilities\Tokens_Handler;
+use Uncanny_Automator\Integrations\Facebook_Lead_Ads\Facebook_Lead_Ads_App_Helpers;
 
 /**
  * Class Lead_Created
  *
  * Represents a trigger for when a new lead is created in Facebook Lead Ads.
+ * Extends App_Trigger for clean access to helpers, api, and webhooks dependencies.
  *
  * @package Uncanny_Automator\Integrations\Facebook_Lead_Ads\Triggers
+ *
+ * @property Facebook_Lead_Ads_App_Helpers $helpers
+ * @property Facebook_Lead_Ads_Api_Caller $api
+ * @property Facebook_Lead_Ads_Webhooks $webhooks
  */
-class Lead_Created extends \Uncanny_Automator\Recipe\Trigger {
+class Lead_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
 	 * Sets up the trigger properties.
@@ -29,13 +31,13 @@ class Lead_Created extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_integration( 'FACEBOOK_LEAD_ADS' );
 		$this->set_trigger_code( 'FB_LEAD_ADS_CODE' );
-		$this->set_trigger_meta( 'FB_LEAD_ADS_META' );
+		$this->set_trigger_meta( $this->helpers->get_const( 'TRIGGER_META' ) );
 		$this->set_trigger_type( 'anonymous' );
 		$this->set_uses_api( true );
 
 		$this->set_sentence(
 			sprintf(
-				/* translators: Trigger sentence */
+				// translators: Trigger sentence
 				esc_attr_x( 'A new lead from {{Page:%1$s}} is created', 'Facebook Lead Ads', 'uncanny-automator' ),
 				$this->get_trigger_meta() // Returns string 'REDIRECT_TYPE'.
 			)
@@ -45,44 +47,46 @@ class Lead_Created extends \Uncanny_Automator\Recipe\Trigger {
 			esc_attr_x( '{{A new lead}} is created', 'Facebook Lead Ads', 'uncanny-automator' )
 		);
 
-		$this->add_action( 'automator_facebook_lead_ads_rest_api_handle_request_after', 10, 1 );
+		$this->add_action( Facebook_Lead_Ads_Webhooks::TRIGGER_ACTION_NAME, 10, 1 );
+	}
+
+	/**
+	 * Check if trigger requirements are met.
+	 *
+	 * @return bool
+	 */
+	public function requirements_met() {
+		return $this->helpers->has_connection();
 	}
 
 	/**
 	 * Returns options for configuring the trigger.
 	 *
-	 * Provides options for selecting pages associated with Facebook Lead Ads.
-	 *
 	 * @return array[] An array of configuration options.
 	 */
 	public function options() {
-
-		$pages = array(
-			'option_code'     => $this->get_trigger_meta(),
-			'input_type'      => 'select',
-			'label'           => esc_html_x( 'Page', 'Facebook Lead Ads', 'uncanny-automator' ),
-			'required'        => true,
-			'options'         => Facebook_Lead_Ads_Helpers::get_pages(),
-			'relevant_tokens' => array(),
-		);
-
-		$forms = array(
-			'option_code'     => 'FORMS',
-			'input_type'      => 'select',
-			'label'           => esc_html_x( 'Form', 'Facebook Lead Ads', 'uncanny-automator' ),
-			'description'     => esc_html_x( 'Updating a form in Facebook generates a new form ID, requiring you to reselect it from the dropdown.', 'Facebook Lead Ads', 'uncanny-automator' ),
-			'required'        => true,
-			'ajax'            => array(
-				'endpoint'      => 'automator_facebook_lead_ads_forms_handler',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $this->get_trigger_meta() ),
-			),
-			'relevant_tokens' => array(),
-		);
-
 		return array(
-			$pages,
-			$forms,
+			array(
+				'option_code'     => $this->get_trigger_meta(),
+				'input_type'      => 'select',
+				'label'           => esc_html_x( 'Page', 'Facebook Lead Ads', 'uncanny-automator' ),
+				'required'        => true,
+				'options'         => $this->helpers->get_pages_options(),
+				'relevant_tokens' => array(),
+			),
+			array(
+				'option_code'     => 'FORMS',
+				'input_type'      => 'select',
+				'label'           => esc_html_x( 'Form', 'Facebook Lead Ads', 'uncanny-automator' ),
+				'description'     => esc_html_x( 'Updating a form in Facebook generates a new form ID, requiring you to reselect it from the dropdown.', 'Facebook Lead Ads', 'uncanny-automator' ),
+				'required'        => true,
+				'ajax'            => array(
+					'endpoint'      => 'automator_facebook_lead_ads_forms_handler',
+					'event'         => 'parent_fields_change',
+					'listen_fields' => array( $this->get_trigger_meta() ),
+				),
+				'relevant_tokens' => array(),
+			),
 		);
 	}
 
@@ -121,7 +125,7 @@ class Lead_Created extends \Uncanny_Automator\Recipe\Trigger {
 			'tokenName' => esc_html_x( 'Page ID', 'Facebook Lead Ads', 'uncanny-automator' ),
 		);
 
-		$form_fields = (array) maybe_unserialize( $trigger['meta']['meta_form_fields'] );
+		$form_fields = (array) maybe_unserialize( $trigger['meta'][ $this->helpers->get_const( 'FORM_FIELDS_META_KEY' ) ] ?? '' );
 
 		foreach ( $form_fields as $fields ) {
 			$tokens[] = array(
@@ -156,20 +160,16 @@ class Lead_Created extends \Uncanny_Automator\Recipe\Trigger {
 			'FORM_ID'      => $payload['form_id'] ?? '',
 		);
 
-		$client = new Client();
-
 		$page_id = absint( $trigger['meta'][ $this->trigger_meta ] ?? 0 );
 
-		$credentials       = new Credentials_Manager();
-		$page_access_token = $credentials->get_page_access_token( $page_id );
-		$the_lead          = $client->get_lead( $page_id, $leadgen_id, $page_access_token );
+		// Use injected dependencies instead of direct class instantiation.
+		$the_lead = $this->api->get_lead( $page_id, $leadgen_id );
 
 		if ( is_wp_error( $the_lead ) ) {
 			return $token_values;
 		}
 
-		$field_reference   = maybe_unserialize( $trigger['meta'][ Tokens_Handler::POST_META_KEY ] ?? '' );
-		$lead_field_values = Tokens_Handler::map_lead_data( (array) $the_lead, (array) $field_reference );
+		$lead_field_values = $this->helpers->map_lead_data( (array) $the_lead );
 
 		if ( ! empty( $lead_field_values ) ) {
 			return array_merge( $token_values, $lead_field_values );

@@ -1,47 +1,16 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Instagram;
 
-// Load the retry trait.
-require_once __DIR__ . '/../traits/trait-instagram-publish-retry.php';
+use Exception;
 
 /**
  * Class INSTAGRAM_PUBLISH_PHOTO
  *
  * @package Uncanny_Automator
+ * @property Instagram_App_Helpers $helpers
+ * @property Instagram_Api_Caller $api
  */
-class INSTAGRAM_PUBLISH_PHOTO {
-
-	use Recipe\Actions;
-	use Instagram_Publish_Retry;
-
-	const PAGES_ENDPOINT = 'ig_pages_wp_ajax_endpoint_post_link';
-
-	/**
-	 * Constructor.
-	 *
-	 * @return void.
-	 */
-	public function __construct() {
-
-		add_action( 'wp_ajax_' . self::PAGES_ENDPOINT, array( $this, self::PAGES_ENDPOINT ) );
-
-		// Register retry hooks from trait.
-		$this->register_retry_hooks();
-
-		$this->setup_action();
-	}
-
-	/**
-	 * Instagram pages AJAX endpoint.
-	 *
-	 * @return void.
-	 */
-	public function ig_pages_wp_ajax_endpoint_post_link() {
-
-		$pages = Automator()->helpers->recipe->facebook->options->get_user_pages_from_options_table();
-
-		wp_send_json( $pages );
-	}
+class INSTAGRAM_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Setup Action.
@@ -49,168 +18,149 @@ class INSTAGRAM_PUBLISH_PHOTO {
 	 * @return void.
 	 */
 	protected function setup_action() {
-
-		$instagram = Automator()->helpers->recipe->instagram->options;
-
 		$this->set_integration( 'INSTAGRAM' );
-
 		$this->set_action_code( 'INSTAGRAM_PUBLISH_PHOTO' );
-
 		$this->set_action_meta( 'INSTAGRAM_PUBLISH_PHOTO_ACCOUNT_ID' );
-
 		$this->set_is_pro( false );
-
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/instagram/' ) );
-
 		$this->set_requires_user( false );
-
-		/* translators: Action - WordPress */
-		$this->set_sentence( sprintf( esc_attr_x( 'Publish a photo to {{an Instagram Business account:%1$s}}', 'Instagram', 'uncanny-automator' ), $this->get_action_meta() ) );
-
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr_x( 'Publish a photo to {{an Instagram Business account}}', 'Instagram', 'uncanny-automator' ) );
-
-		$options_group = array(
-			$this->get_action_meta() => array(
-				// The facebook page dropdown.
-				array(
-					'option_code'           => $this->get_action_meta(),
-					/* translators: Email field */
-					'label'                 => esc_attr_x( 'Instagram account', 'Instagram', 'uncanny-automator' ),
-					'input_type'            => 'select',
-					'supports_custom_value' => false,
-					'required'              => true,
-					'options'               => $instagram->get_ig_accounts(),
-				),
-				// The image url.
-				array(
-					'option_code' => 'INSTAGRAM_IMAGE_URL',
-					'label'       => esc_attr_x( 'Image URL or Media library ID', 'Instagram', 'uncanny-automator' ),
-					'input_type'  => 'url',
-					'required'    => true,
-					'placeholder' => esc_attr_x( 'https://pathtoimage/image.jpg', 'Instagram', 'uncanny-automator' ),
-					'description' => esc_attr_x( 'The image must be in a JPG, JPEG or PNG format. The file name must not contain spaces and extended JPEG formats (such as MPO and JPS) are not supported.', 'Instagram', 'uncanny-automator' ),
-				),
-				// The hashtags.
-				array(
-					'option_code' => 'INSTAGRAM_HASHTAGS',
-					'label'       => esc_attr_x( 'Caption', 'Instagram', 'uncanny-automator' ),
-					'input_type'  => 'textarea',
-					'required'    => false,
-					'placeholder' => esc_attr_x( 'My image #description', 'Instagram', 'uncanny-automator' ),
-					'description' => esc_attr_x( 'Enter the description and/or hashtags that should be posted with the image.', 'Instagram', 'uncanny-automator' ),
-				),
-			),
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s is the name of the Instagram Business account.
+				esc_attr_x( 'Publish a photo to {{an Instagram Business account:%1$s}}', 'Instagram', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
 		);
-
+		$this->set_readable_sentence( esc_attr_x( 'Publish a photo to {{an Instagram Business account}}', 'Instagram', 'uncanny-automator' ) );
 		$this->set_wpautop( false );
-
-		$this->set_options_group( $options_group );
-
 		$this->set_background_processing( true );
-
-		$this->register_action();
 	}
 
+	/**
+	 * Define the action options.
+	 *
+	 * @return array
+	 */
+	public function options() {
+		return array(
+			// The facebook page dropdown.
+			array(
+				'option_code'           => $this->get_action_meta(),
+				'label'                 => esc_attr_x( 'Instagram account', 'Instagram', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'supports_custom_value' => false,
+				'required'              => true,
+				'options'               => $this->helpers->get_instagram_accounts_options(),
+			),
+			// The image url.
+			array(
+				'option_code' => 'INSTAGRAM_IMAGE_URL',
+				'label'       => esc_html_x( 'Image URL or Media library ID', 'Instagram', 'uncanny-automator' ),
+				'input_type'  => 'url',
+				'required'    => true,
+				'placeholder' => esc_html_x( 'https://pathtoimage/image.jpg', 'Instagram', 'uncanny-automator' ),
+				'description' => esc_html_x( 'The image must be in a JPG, JPEG or PNG format. The file name must not contain spaces and extended JPEG formats (such as MPO and JPS) are not supported.', 'Instagram', 'uncanny-automator' ),
+			),
+			// The hashtags.
+			array(
+				'option_code' => 'INSTAGRAM_HASHTAGS',
+				'label'       => esc_html_x( 'Caption', 'Instagram', 'uncanny-automator' ),
+				'input_type'  => 'textarea',
+				'required'    => false,
+				'placeholder' => esc_html_x( 'My image #description', 'Instagram', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter the description and/or hashtags that should be posted with the image.', 'Instagram', 'uncanny-automator' ),
+			),
+		);
+	}
 
 	/**
 	 * Process the Instagram action.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        Additional arguments.
+	 * @param array $parsed      Parsed values.
 	 *
-	 * @return void.
+	 * @return bool True on success.
+	 * @throws \Exception When the action fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$instagram = Automator()->helpers->recipe->instagram->options;
-
-		$page_id = sanitize_text_field( $parsed['INSTAGRAM_PUBLISH_PHOTO_ACCOUNT_ID'] );
-
+		$page_id   = sanitize_text_field( $parsed['INSTAGRAM_PUBLISH_PHOTO_ACCOUNT_ID'] );
 		$image_uri = sanitize_text_field( $parsed['INSTAGRAM_IMAGE_URL'] );
+		$caption   = sanitize_textarea_field( $parsed['INSTAGRAM_HASHTAGS'] );
+		$image_uri = $this->resolve_image_url( $image_uri );
 
-		$hashtags = sanitize_textarea_field( $parsed['INSTAGRAM_HASHTAGS'] );
-
-		$page_props = $instagram->get_user_page_connected_ig( $page_id );
-
-		if ( is_numeric( trim( $image_uri ) ) ) {
-			$image_uri = wp_get_attachment_url( intval( $image_uri ) );
-		}
-
-		// Bailout if no facebook account connected.
-		if ( empty( $page_props ) ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_attr_x( 'Cound not find any settings for Facebook Authentication.', 'Instagram', 'uncanny-automator' ) );
-
-			return;
-
-		}
-
-		// Bailout if no instagram account connected.
-		if ( empty( $page_props['ig_account'] ) ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_attr_x( 'Cannot find any Instagram account connected to the Facebook page.', 'Instagram', 'uncanny-automator' ) );
-
-			return;
-
-		}
-
-		$page_ig_account = (array) end( $page_props['ig_account']->data );
-
-		// Get the business account id.
-		$business_account_id = $page_ig_account['instagram_business_account'];
-
-		if ( ! empty( $hashtags ) ) {
+		if ( ! empty( $caption ) ) {
 			// Replace new lines with double new lines.
-			$hashtags = str_replace( "\r\n", "\n\n", $hashtags );
+			$caption = str_replace( "\r\n", "\n\n", $caption );
 		}
 
-		// Pass as arguments to body.
-		$body = array(
-			'action'                 => 'page-ig-media-publish',
-			'access_token'           => $page_props['page_access_token'],
-			'ig_business_account_id' => $business_account_id,
-			'image_uri'              => $image_uri,
-			'caption'                => $hashtags,
-		);
-
-		// Try sending the data to our API.
 		try {
-
-			$response = $instagram->api_request( $body, $action_data );
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
+			$this->api->publish_photo( $page_id, $image_uri, $caption, '', $action_data );
+		} catch ( Exception $e ) {
 			// Check for retryable error (Media ID not available - code 9007).
-			if ( $this->is_media_unavailable_error( $e->getMessage() ) ) {
+			if ( $this->helpers->is_media_unavailable_error( $e->getMessage() ) ) {
+				// Build retry body with params needed by publish_photo().
+				$retry_body = array(
+					'page_id'   => $page_id,
+					'image_uri' => $image_uri,
+					'caption'   => $caption,
+				);
+
 				// Try to extract container_id from the response for retry optimization.
-				$container_id = $this->extract_container_id_from_last_response();
+				$container_id = $this->helpers->extract_container_id_from_last_response();
 				if ( ! empty( $container_id ) ) {
-					$body['container_id'] = $container_id;
+					$retry_body['container_id'] = $container_id;
 				}
 
-				$this->schedule_retry( $user_id, $action_data, $recipe_id, $body, 1 );
-				Automator()->complete->action( $user_id, $action_data, $recipe_id );
-				return;
+				// Use $this->action_data so changes persist to do_action() completion call.
+				$this->helpers->schedule_retry( $user_id, $this->action_data, $recipe_id, $retry_body, 1 );
+
+				// Return true - the await flag will trigger COMPLETED_AWAITING via filter.
+				return true;
 			}
 
-			// Log all other errors.
-			$action_data['complete_with_errors'] = true;
-
-			$error_message = $this->get_beautified_error_message( $e->getMessage() );
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-
+			$message = $this->get_beautified_error_message( $e->getMessage() );
+			throw new Exception( esc_html( $message ) );
 		}
+
+		return true;
+	}
+
+	/**
+	 * Resolves the image URL from either a direct URL or media library ID.
+	 *
+	 * @param string $image_uri The image URI or media library ID.
+	 * @return string The resolved image URL.
+	 * @throws \Exception When the image URL cannot be resolved.
+	 */
+	private function resolve_image_url( $image_uri ) {
+		// Check if it's a proper URL with protocol and domain
+		if ( preg_match( '/^https?:\/\/[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/', $image_uri ) ) {
+			return esc_url_raw( $image_uri );
+		}
+
+		// If not a proper URL, remove protocol that might have been added by the UI.
+		$image_uri = str_replace( array( 'http://', 'https://' ), '', $image_uri );
+
+		// Now check if it's a numeric ID
+		if ( is_numeric( $image_uri ) ) {
+			$attachment_url = wp_get_attachment_url( intval( $image_uri ) );
+			if ( ! empty( $attachment_url ) ) {
+				return $attachment_url;
+			}
+			throw new Exception(
+				sprintf(
+					// translators: %s is the media library ID
+					esc_html_x( 'Media library image with ID %s not found.', 'Instagram', 'uncanny-automator' ),
+					absint( $image_uri )
+				)
+			);
+		}
+
+		throw new Exception( esc_html_x( 'Invalid image URL or media library ID provided.', 'Instagram', 'uncanny-automator' ) );
 	}
 
 	/**
@@ -221,13 +171,10 @@ class INSTAGRAM_PUBLISH_PHOTO {
 	 * @return string The error message.
 	 */
 	protected function get_beautified_error_message( $error_message = '' ) {
-
+		// TODO REVIEW : We could adjust this at the Facebook_Api_Caller and provide link to KB article.
 		if ( false !== strpos( $error_message, 'cannot be loaded due to missing permissions' ) ) {
-
-			return esc_attr_x( 'Instagram account not found. Check that the requested account is connected to the associated Facebook page.', 'Instagram', 'uncanny-automator' );
-
+			return esc_html_x( 'Instagram account not found. Check that the requested account is connected to the associated Facebook page.', 'Instagram', 'uncanny-automator' );
 		}
-
 		return $error_message;
 	}
 }

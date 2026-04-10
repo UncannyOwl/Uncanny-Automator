@@ -8,5 +8,4 @@ if ( ! class_exists( 'Uncanny_Automator\Integrations\Microsoft_Teams\Microsoft_T
 	return;
 }
 
-
 new Uncanny_Automator\Integrations\Microsoft_Teams\Microsoft_Teams_Integration();

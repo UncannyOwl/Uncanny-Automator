@@ -6,10 +6,12 @@
  * when the "Media ID is not available" (error 9007) occurs.
  *
  * @package Uncanny_Automator
- * @since 6.14
  */
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Instagram;
+
+use Uncanny_Automator\Api_Server;
+use Uncanny_Automator\Automator_Status;
 
 /**
  * Trait Instagram_Publish_Retry
@@ -61,7 +63,7 @@ trait Instagram_Publish_Retry {
 	}
 
 	/**
-	 * Check if error is the "Media ID not available" error (code 9007).
+	 * Check if error is a retryable "media not ready" error (code 9007).
 	 *
 	 * @param string $message The error message.
 	 *
@@ -88,12 +90,7 @@ trait Instagram_Publish_Retry {
 
 		$response_body = json_decode( wp_remote_retrieve_body( $last_response ), true );
 
-		// The API proxy adds container_id to the response object, which gets wrapped in 'data' by respondWithData().
-		if ( ! empty( $response_body['data']['container_id'] ) ) {
-			return $response_body['data']['container_id'];
-		}
-
-		return null;
+		return $response_body['data']['container_id'] ?? null;
 	}
 
 	/**
@@ -131,9 +128,15 @@ trait Instagram_Publish_Retry {
 	 * @return void
 	 */
 	public function handle_retry( $retry_data ) {
+		$body = $retry_data['body'];
+
 		try {
-			// Make API request (implementation differs per framework).
-			$this->execute_retry_api_request( $retry_data['body'] );
+			$this->api->publish_photo(
+				$body['page_id'],
+				$body['image_uri'],
+				$body['caption'],
+				$body['container_id'] ?? ''
+			);
 
 			// Success - mark completed.
 			Automator()->db->action->mark_complete(
@@ -208,21 +211,6 @@ trait Instagram_Publish_Retry {
 	}
 
 	/**
-	 * Execute the API request for retry.
-	 *
-	 * Override this method in the using class to provide framework-specific API call.
-	 *
-	 * @param array $body The API request body.
-	 *
-	 * @return array The API response.
-	 * @throws \Exception On API error.
-	 */
-	protected function execute_retry_api_request( $body ) {
-		$instagram = Automator()->helpers->recipe->instagram->options;
-		return $instagram->api_request( $body, null );
-	}
-
-	/**
 	 * Filter: Set completed status to COMPLETED_AWAITING during retry.
 	 *
 	 * @param int    $completed      The completion status.
@@ -239,9 +227,11 @@ trait Instagram_Publish_Retry {
 		if ( ( $action_data['meta']['code'] ?? '' ) !== $this->retry_action_code ) {
 			return $completed;
 		}
+
 		if ( isset( $args['await']['instagram_retry'] ) ) {
 			return Automator_Status::COMPLETED_AWAITING;
 		}
+
 		return $completed;
 	}
 

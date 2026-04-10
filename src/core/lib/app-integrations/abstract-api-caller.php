@@ -304,7 +304,8 @@ abstract class Api_Caller {
 	 * @throws Exception If an error occurs
 	 */
 	public function check_for_errors( $response, $args = array() ) {
-		if ( isset( $response['statusCode'] ) && 400 === $response['statusCode'] ) {
+		$status = $response['statusCode'] ?? 0;
+		if ( $status >= 400 && $status < 500 ) {
 			$this->handle_400_error( $response, $args );
 		}
 	}

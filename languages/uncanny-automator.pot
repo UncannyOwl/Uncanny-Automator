@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.2.0.1\n"
+"Project-Id-Version: Uncanny Automator 7.2.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-09T15:03:06+00:00\n"
+"POT-Creation-Date: 2026-04-10T02:26:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -473,12 +473,10 @@ msgstr ""
 
 #: src/assets/build/main.js:1
 #: src/core/admin/class-admin-menu.php:642
-#: src/integrations/facebook/settings/view-facebook.php:35
 msgid "Facebook Pages"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/integrations/instagram/settings/view-instagram.php:30
 msgid "Instagram"
 msgstr ""
 
@@ -2048,8 +2046,6 @@ msgstr ""
 #: src/integrations/aweber/actions/aweber-subscriber-update.php:104
 #: src/integrations/aweber/actions/aweber-subscriber-update.php:110
 #: src/integrations/rafflepress/helpers/rafflepress-helpers.php:46
-#: src/integrations/trello/actions/trello-create-card.php:112
-#: src/integrations/trello/actions/trello-update-card.php:114
 #: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:62
 #: src/integrations/wp/actions/wp-add-reply-to-comment.php:88
 msgid "Name"
@@ -2065,8 +2061,6 @@ msgstr ""
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:193
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:232
 #: src/integrations/jetformbuilder/helpers/jetfb-helpers.php:74
-#: src/integrations/trello/actions/trello-create-card.php:238
-#: src/integrations/trello/actions/trello-update-card.php:240
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:246
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:262
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:287
@@ -4793,7 +4787,6 @@ msgstr ""
 #: src/core/admin/api-log/class-api-log.php:67
 #: src/core/views/html-admin-status.php:972
 #: src/integrations/keap/actions/keap-add-note-contact.php:79
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:62
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:120
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:239
 msgid "Type"
@@ -6438,7 +6431,7 @@ msgctxt "API error message"
 msgid "Your connection has expired or is invalid. [reconnect your account](%s)"
 msgstr ""
 
-#: src/core/lib/app-integrations/abstract-api-caller.php:413
+#: src/core/lib/app-integrations/abstract-api-caller.php:414
 msgctxt "API error message"
 msgid "This action may only be used in an Automator action context."
 msgstr ""
@@ -11732,12 +11725,6 @@ msgstr ""
 #: src/integrations/autonami/helpers/autonami-helpers.php:52
 #: src/integrations/mailpoet/actions/mailpoet-addsubscribertolist-a.php:117
 #: src/integrations/mailpoet/actions/mailpoet-adduser-a.php:64
-#: src/integrations/trello/actions/trello-add-card-comment.php:83
-#: src/integrations/trello/actions/trello-add-card-label.php:69
-#: src/integrations/trello/actions/trello-add-card-member.php:70
-#: src/integrations/trello/actions/trello-add-checklist-item.php:79
-#: src/integrations/trello/actions/trello-create-card.php:96
-#: src/integrations/trello/actions/trello-update-card.php:82
 msgid "List"
 msgstr ""
 
@@ -11777,12 +11764,6 @@ msgid "User already has the %s tag"
 msgstr ""
 
 #: src/integrations/autonami/tokens/autonami-tokens.php:90
-#: src/integrations/trello/actions/trello-add-card-comment.php:89
-#: src/integrations/trello/actions/trello-add-card-label.php:70
-#: src/integrations/trello/actions/trello-add-card-member.php:71
-#: src/integrations/trello/actions/trello-add-checklist-item.php:80
-#: src/integrations/trello/actions/trello-create-card.php:97
-#: src/integrations/trello/actions/trello-update-card.php:83
 msgid "List ID"
 msgstr ""
 
@@ -11928,8 +11909,6 @@ msgstr ""
 
 #: src/integrations/aweber/actions/aweber-subscriber-add.php:91
 #: src/integrations/aweber/actions/aweber-subscriber-update.php:92
-#: src/integrations/trello/actions/trello-create-card.php:209
-#: src/integrations/trello/actions/trello-update-card.php:211
 msgid "Custom fields"
 msgstr ""
 
@@ -18517,20 +18496,14 @@ msgstr ""
 #: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:77
 #: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:75
 #: src/integrations/facebook-groups/actions/facebook-group-publish-post.php:72
-#: src/integrations/facebook/actions/facebook-page-publish-link.php:96
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:93
-#: src/integrations/facebook/actions/facebook-page-publish-post.php:93
 msgid "Link to Facebook post"
 msgstr ""
 
-#. translators: Email field
 #: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:150
-#: src/integrations/facebook/actions/facebook-page-publish-link.php:69
 msgid "External link URL"
 msgstr ""
 
 #: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:151
-#: src/integrations/facebook/actions/facebook-page-publish-link.php:70
 msgid "https://"
 msgstr ""
 
@@ -18542,11 +18515,6 @@ msgstr ""
 #: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:159
 #: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:110
 #: src/integrations/facebook-groups/actions/facebook-group-publish-post.php:95
-#: src/integrations/facebook/actions/facebook-page-publish-link.php:80
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:81
-#: src/integrations/facebook/actions/facebook-page-publish-post.php:75
-#: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:63
-#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:65
 #: src/integrations/whatsapp/tokens/wa-message-delivery-tokens.php:160
 msgid "Message"
 msgstr ""
@@ -18576,7 +18544,6 @@ msgid "Enter the URL of the image you wish to share. The URL must be publicly ac
 msgstr ""
 
 #: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:111
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:82
 msgid "The context of the image or description."
 msgstr ""
 
@@ -18592,7 +18559,6 @@ msgid "Publish a post to {{a Facebook group}}"
 msgstr ""
 
 #: src/integrations/facebook-groups/actions/facebook-group-publish-post.php:96
-#: src/integrations/facebook/actions/facebook-page-publish-post.php:76
 msgid "Enter the message that you want to post on Facebook. Please take note that this action might fail when posting the same messages within short intervals."
 msgstr ""
 
@@ -18677,11 +18643,8 @@ msgid "Use Uncanny Automator to automatically share updates, news and blog posts
 msgstr ""
 
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:52
-#: src/integrations/facebook/settings/view-facebook.php:52
 #: src/integrations/gototraining/settings/view-gototraining.php:61
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:61
-#: src/integrations/instagram/settings/view-instagram.php:46
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:59
 #: src/integrations/whatsapp/settings/view-whatsapp.php:64
 msgid "Activating this integration will enable the following for use in your recipes:"
 msgstr ""
@@ -18689,22 +18652,10 @@ msgstr ""
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:57
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:60
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:63
-#: src/integrations/facebook/settings/view-facebook.php:57
-#: src/integrations/facebook/settings/view-facebook.php:60
-#: src/integrations/facebook/settings/view-facebook.php:63
 #: src/integrations/gototraining/settings/view-gototraining.php:66
 #: src/integrations/gototraining/settings/view-gototraining.php:69
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:66
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:69
-#: src/integrations/instagram/settings/view-instagram.php:51
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:64
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:67
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:70
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:73
-#: src/integrations/ontraport/settings/ontraport-settings.php:180
-#: src/integrations/ontraport/settings/ontraport-settings.php:185
-#: src/integrations/ontraport/settings/ontraport-settings.php:190
-#: src/integrations/ontraport/settings/ontraport-settings.php:195
 #: src/integrations/whatsapp/settings/view-whatsapp.php:105
 #: src/integrations/whatsapp/settings/view-whatsapp.php:112
 msgid "Action:"
@@ -18733,12 +18684,10 @@ msgid "Error %s"
 msgstr ""
 
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:84
-#: src/integrations/facebook/settings/view-facebook.php:75
 msgid "An error has occured"
 msgstr ""
 
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:86
-#: src/integrations/facebook/settings/view-facebook.php:76
 msgid "Permission was denied, or an unexpected error was encountered while authenticating. Please try again later."
 msgstr ""
 
@@ -18771,8 +18720,6 @@ msgid "An unexpected error has occurred"
 msgstr ""
 
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:136
-#: src/integrations/facebook/settings/view-facebook.php:108
-#: src/integrations/instagram/settings/view-instagram.php:108
 msgid "Connect Facebook account"
 msgstr ""
 
@@ -18782,325 +18729,413 @@ msgstr ""
 
 #. translators: 1. ID
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:183
-#: src/integrations/facebook/settings/view-facebook.php:142
-#: src/integrations/instagram/settings/view-instagram.php:145
 #, php-format
 msgid "ID: %1$d"
 msgstr ""
 
 #: src/integrations/facebook-groups/settings/view-facebook-groups.php:205
-#: src/integrations/facebook/settings/view-facebook.php:162
 #: src/integrations/gototraining/settings/view-gototraining.php:168
 #: src/integrations/gotowebinar/settings/view-gotowebinar.php:165
-#: src/integrations/instagram/settings/view-instagram.php:163
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:143
-#: src/integrations/ontraport/settings/ontraport-settings.php:310
 #: src/integrations/whatsapp/settings/view-whatsapp.php:247
 msgid "Disconnect"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:104
-msgctxt "Facebook_Lead_Ads"
-msgid "Connection established"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:105
-msgctxt "Facebook_Lead_Ads"
-msgid "You are successfully connected."
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:121
-msgctxt "Facebook_Lead_Ads"
-msgid "An error exception has occurred"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-bottom-left.php:10
+#. translators: %s: Settings page URL.
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php:37
+#, php-format
 msgctxt "Facebook Lead Ads"
-msgid "Connect Facebook Lead Ads account"
+msgid "Your Facebook session has expired. Please [reconnect your account](%s)."
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/views/output-content-bottom-right.php:9
+#. translators: %s: Settings page URL.
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php:42
+#, php-format
 msgctxt "Facebook Lead Ads"
-msgid "Disconnect"
+msgid "Your Facebook authorization is invalid. Please [reconnect your account](%s)."
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:15
-msgctxt "Facebook_Lead_Ads"
-msgid "Connect Uncanny Automator to Facebook Lead Ads"
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php:238
+msgctxt "Facebook Lead Ads"
+msgid "No access token found for the provided page ID."
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:20
-msgctxt "Facebook_Lead_Ads"
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php:250
+msgctxt "Facebook Lead Ads"
+msgid "Ready"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php:267
+msgctxt "Facebook Lead Ads"
+msgid "The provided URL is invalid."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-app-helpers.php:144
+msgctxt "Facebook Lead Ads"
+msgid "The provided page ID is invalid."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-app-helpers.php:264
+msgctxt "Facebook Lead Ads"
+msgid "Please select a page first."
+msgstr ""
+
+#. translators: Error message
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-app-helpers.php:273
+#, php-format
+msgctxt "Facebook Lead Ads"
+msgid "An error has occurred while fetching the forms: %s"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-webhooks.php:117
+msgctxt "Facebook Lead Ads"
+msgid "Webhook received but not processed. Integration is not connected."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-webhooks.php:130
+msgctxt "Facebook Lead Ads"
+msgid "Webhook received but not processed. No data provided."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-webhooks.php:197
+msgctxt "Facebook Lead Ads"
+msgid "Data processed successfully."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:132
+msgctxt "Facebook Lead Ads"
+msgid "Missing user access token."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:164
+msgctxt "Facebook Lead Ads"
+msgid "Connection incomplete. Please try again."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:182
+msgctxt "Facebook Lead Ads"
 msgid "Connect Uncanny Automator with Facebook Lead Ads to automate workflows every time a new lead is created. Instantly trigger actions across your favorite apps, saving time and ensuring you never miss a chance to engage with your audience."
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:31
-msgctxt "Facebook_Lead_Ads"
-msgid "Activating this integration will enable the following for use in your recipes:"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:43
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:204
 msgctxt "Facebook Lead Ads"
-msgid "Trigger:"
+msgid "Connected pages"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:44
-msgctxt "Facebook Lead Ads"
-msgid "A lead is created"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:60
-msgctxt "Facebook Lead Ads"
-msgid "Name"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:61
-msgctxt "Facebook Lead Ads"
-msgid "ID"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:62
-msgctxt "Facebook Lead Ads"
-msgid "Status"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:63
-msgctxt "Facebook Lead Ads"
-msgid "Actions"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:74
-msgctxt "Facebook Lead Ads"
-msgid "Verifying..."
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:99
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:230
 msgctxt "Facebook Lead Ads"
 msgid "The following pages were selected during the OAuth process. Disconnect and reconnect if there are any pages missing and make sure those pages are selected."
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:130
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:252
+msgctxt "Facebook Lead Ads"
+msgid "No pages found"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:253
+msgctxt "Facebook Lead Ads"
+msgid "No Facebook pages are connected. Please disconnect and reconnect to select pages."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:372
+msgctxt "Facebook Lead Ads"
+msgid "Reverify"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:387
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:125
+msgctxt "Facebook Lead Ads"
+msgid "Page ID"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:440
 msgctxt "Facebook Lead Ads"
 msgid "Test your webhook connection"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:134
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:445
 msgctxt "Facebook Lead Ads"
-msgid "Click the button below to test your website’s accessibility and confirm API support for your WordPress site."
+msgid "Click the button below to test your website's accessibility and confirm API support for your WordPress site."
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:144
-msgctxt "Facebook Lead Ads"
-msgid "Sends a test payload from our server to your site to confirm it can receive webhooks for Facebook Lead Ads."
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/settings/views/output-content-partial.php:146
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:454
 msgctxt "Facebook Lead Ads"
 msgid "Check webhook delivery"
 msgstr ""
 
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:459
+msgctxt "Facebook Lead Ads"
+msgid "Sends a test payload from our server to your site to confirm it can receive webhooks for Facebook Lead Ads."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:492
+msgctxt "Facebook Lead Ads"
+msgid "Your website has received a webhook, confirming it supports external requests needed for Facebook Lead Ads."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:497
+msgctxt "Facebook Lead Ads"
+msgid "Webhook test successful"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:504
+msgctxt "Facebook Lead Ads"
+msgid "Webhook test failed"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:531
+msgctxt "Facebook Lead Ads"
+msgid "Page ID is required."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:574
+msgctxt "Facebook Lead Ads"
+msgid "Page verification failed"
+msgstr ""
+
+#. translators: %s: Status message.
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:580
+#, php-format
+msgctxt "Facebook Lead Ads"
+msgid "Page status: %s"
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/settings/facebook-lead-ads-settings.php:583
+msgctxt "Facebook Lead Ads"
+msgid "Page verified"
+msgstr ""
+
 #. translators: Trigger sentence
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:39
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:41
 #, php-format
 msgctxt "Facebook Lead Ads"
 msgid "A new lead from {{Page:%1$s}} is created"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:45
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:47
 msgctxt "Facebook Lead Ads"
 msgid "{{A new lead}} is created"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:63
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:72
 msgctxt "Facebook Lead Ads"
 msgid "Page"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:72
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:80
 msgctxt "Facebook Lead Ads"
 msgid "Form"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:73
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:81
 msgctxt "Facebook Lead Ads"
 msgid "Updating a form in Facebook generates a new form ID, requiring you to reselect it from the dropdown."
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:101
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:105
 msgctxt "Facebook Lead Ads"
 msgid "Raw payload (JSON)"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:106
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:110
 msgctxt "Facebook Lead Ads"
 msgid "Created time (timestamp)"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:111
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:115
 msgctxt "Facebook Lead Ads"
 msgid "Form ID"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:116
+#: src/integrations/facebook-lead-ads/triggers/lead-created.php:120
 msgctxt "Facebook Lead Ads"
 msgid "Lead Gen ID"
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/triggers/lead-created.php:121
-msgctxt "Facebook Lead Ads"
-msgid "Page ID"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/utilities/connections-manager.php:91
-msgctxt "Facebook Lead Ads"
-msgid "The provided URL is invalid."
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/utilities/connections-manager.php:122
-msgctxt "Facebook Lead Ads"
-msgid "The provided page ID is invalid."
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/utilities/page-connection-verifier.php:114
-msgctxt "Facebook Lead Ads"
-msgid "No access token found for the provided page ID."
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/utilities/page-connection-verifier.php:125
-msgctxt "Facebook Lead Ads"
-msgid "Ready"
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/utilities/rest-api.php:112
-msgctxt "Facebook Lead Ads"
-msgid "No data provided."
-msgstr ""
-
-#: src/integrations/facebook-lead-ads/utilities/rest-api.php:138
-msgctxt "Facebook Lead Ads"
-msgid "Data processed successfully."
-msgstr ""
-
-#. translators: Action - WordPress
-#: src/integrations/facebook/actions/facebook-page-publish-link.php:47
+#: src/integrations/facebook/actions/facebook-page-create-draft.php:33
 #, php-format
-msgid "Share a link with a message to {{a Facebook page:%1$s}}"
+msgctxt "Facebook"
+msgid "Create a draft post on {{a Facebook page:%1$s}}"
 msgstr ""
 
-#. translators: Action - WordPress
-#: src/integrations/facebook/actions/facebook-page-publish-link.php:50
-msgid "Share a link with a message to {{a Facebook page}}"
+#: src/integrations/facebook/actions/facebook-page-create-draft.php:38
+msgctxt "Facebook"
+msgid "Create a draft post on {{a Facebook page}}"
+msgstr ""
+
+#: src/integrations/facebook/actions/facebook-page-create-draft.php:43
+msgctxt "Facebook"
+msgid "Draft post ID"
 msgstr ""
 
 #. translators: Email field
-#: src/integrations/facebook/actions/facebook-page-publish-link.php:58
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:61
-#: src/integrations/facebook/actions/facebook-page-publish-post.php:65
-msgid "Facebook Page"
+#: src/integrations/facebook/actions/facebook-page-create-draft.php:65
+#: src/integrations/facebook/actions/facebook-page-publish-link.php:68
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:70
+#: src/integrations/facebook/actions/facebook-page-publish-post.php:60
+msgctxt "Facebook"
+msgid "Message"
 msgstr ""
 
-#: src/integrations/facebook/actions/facebook-page-publish-link.php:71
+#: src/integrations/facebook/actions/facebook-page-create-draft.php:66
+msgctxt "Facebook"
+msgid "Enter the message for your draft post. The draft will be saved to the Facebook Page's Publishing Tools where it can be reviewed and published later."
+msgstr ""
+
+#: src/integrations/facebook/actions/facebook-page-create-draft.php:90
+msgctxt "Facebook"
+msgid "Message is required to create a draft post."
+msgstr ""
+
+#: src/integrations/facebook/actions/facebook-page-publish-link.php:30
+#, php-format
+msgctxt "Facebook"
+msgid "Share a link with a message to {{a Facebook page:%1$s}}"
+msgstr ""
+
+#: src/integrations/facebook/actions/facebook-page-publish-link.php:35
+msgctxt "Facebook"
+msgid "Share a link with a message to {{a Facebook page}}"
+msgstr ""
+
+#: src/integrations/facebook/actions/facebook-page-publish-link.php:58
+msgctxt "Facebook"
+msgid "External link URL"
+msgstr ""
+
+#: src/integrations/facebook/actions/facebook-page-publish-link.php:59
+msgctxt "Facebook"
+msgid "https://"
+msgstr ""
+
+#: src/integrations/facebook/actions/facebook-page-publish-link.php:60
+msgctxt "Facebook"
 msgid "Enter the URL of the site you want to share to Facebook. Start with 'https://' to share an external link."
 msgstr ""
 
-#. translators: Action - WordPress
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:50
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:33
 #, php-format
+msgctxt "Facebook"
 msgid "Publish a post with an image to {{a Facebook page:%1$s}}"
 msgstr ""
 
-#. translators: Action - WordPress
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:53
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:38
+msgctxt "Facebook"
 msgid "Publish a post with an image to {{a Facebook page}}"
 msgstr ""
 
 #. translators: Email field
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:72
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:61
+msgctxt "Facebook"
 msgid "Image URL or Media library ID"
 msgstr ""
 
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:75
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:64
+msgctxt "Facebook"
 msgid "Enter the URL or the Media library ID of the image you wish to share. The image must be publicly accessible."
 msgstr ""
 
-#. translators: Action - WordPress
-#: src/integrations/facebook/actions/facebook-page-publish-post.php:56
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:71
+msgctxt "Facebook"
+msgid "The context of the image or description."
+msgstr ""
+
+#: src/integrations/facebook/actions/facebook-page-publish-post.php:33
 #, php-format
+msgctxt "Facebook"
 msgid "Publish a post to {{a Facebook page:%1$s}}"
 msgstr ""
 
-#. translators: Action - WordPress
-#: src/integrations/facebook/actions/facebook-page-publish-post.php:59
+#: src/integrations/facebook/actions/facebook-page-publish-post.php:38
+msgctxt "Facebook"
 msgid "Publish a post to {{a Facebook page}}"
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:252
+#: src/integrations/facebook/actions/facebook-page-publish-post.php:61
 msgctxt "Facebook"
-msgid "Nonce Verification Failed"
+msgid "Enter the message that you want to post on Facebook. Please take note that this action might fail when posting the same messages within short intervals."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:257
+#: src/integrations/facebook/helpers/facebook-app-helpers.php:54
+#: src/integrations/facebook/helpers/facebook-bridge.php:414
 msgctxt "Facebook"
-msgid "Unauthorized"
+msgid "Facebook is not connected. Please connect your account in Automator settings."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:320
+#: src/integrations/facebook/helpers/facebook-app-helpers.php:132
 msgctxt "Facebook"
-msgid "Forbidden. User access token is required but empty."
+msgid "Facebook Page"
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:333
+#: src/integrations/facebook/helpers/facebook-app-helpers.php:157
+msgctxt "Facebook"
+msgid "Facebook page is required"
+msgstr ""
+
+#: src/integrations/facebook/helpers/facebook-app-helpers.php:171
+msgctxt "Facebook"
+msgid "Link to Facebook post"
+msgstr ""
+
+#: src/integrations/facebook/helpers/facebook-bridge.php:47
+msgctxt "Facebook"
+msgid "Connect Facebook Pages account"
+msgstr ""
+
+#. translators: %1$d is the user's Facebook ID.
+#: src/integrations/facebook/helpers/facebook-bridge.php:76
+#, php-format
+msgctxt "Facebook"
+msgid "ID: %1$d"
+msgstr ""
+
+#: src/integrations/facebook/helpers/facebook-bridge.php:257
 msgctxt "Facebook"
 msgid "Invalid status code."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-helpers.php:345
-msgctxt "Facebook"
-msgid "Pages are fetched successfully"
-msgstr ""
-
-#: src/integrations/facebook/helpers/facebook-helpers.php:361
+#: src/integrations/facebook/helpers/facebook-bridge.php:268
 msgctxt "Facebook"
 msgid "No Facebook Pages were found linked to this account. Please click the button below to re-authenticate and ensure the correct pages and permissions are selected."
 msgstr ""
 
-#. translators: Error exception message
-#: src/integrations/facebook/helpers/facebook-helpers.php:549
-#, php-format
-msgctxt "Facebook pages"
-msgid "Unable to locate a valid access token for the specified Facebook Page. Please edit the recipe and ensure that you have selected the correct Facebook page, then resave the action. Additionally, you can attempt to reconnect the account by navigating to Automator > App Integrations > Facebook Pages. %s"
+#: src/integrations/facebook/helpers/facebook-bridge.php:343
+msgctxt "Facebook"
+msgid "Missing credentials"
 msgstr ""
 
-#: src/integrations/facebook/settings/view-facebook.php:44
-msgid "Connect Uncanny Automator to Facebook Pages"
+#: src/integrations/facebook/helpers/facebook-bridge.php:349
+msgctxt "Facebook"
+msgid "Missing Facebook user ID in OAuth response."
 msgstr ""
 
-#: src/integrations/facebook/settings/view-facebook.php:48
-msgid "Use Uncanny Automator to automatically share updates, news and blog posts from your WordPress site to your organization's Facebook Page(s) in the form of posts, images and links."
+#: src/integrations/facebook/settings/settings-facebook.php:113
+msgctxt "Facebook"
+msgid "Your linked Facebook pages have been updated."
 msgstr ""
 
-#: src/integrations/facebook/settings/view-facebook.php:57
-msgid "Publish a post with an image to a Facebook page"
+#: src/integrations/facebook/settings/settings-facebook.php:114
+msgctxt "Facebook"
+msgid "Pages updated"
 msgstr ""
 
-#: src/integrations/facebook/settings/view-facebook.php:60
-msgid "Publish a post to a Facebook page"
+#: src/integrations/facebook/settings/settings-facebook.php:166
+msgctxt "Facebook Pages"
+msgid "Use Uncanny Automator to automatically share updates, news and blog posts from your WordPress site to your organization's Facebook Page(s) in the form of posts, images and links"
 msgstr ""
 
-#: src/integrations/facebook/settings/view-facebook.php:63
-msgid "Share a link with a message to a Facebook page"
-msgstr ""
-
-#: src/integrations/facebook/settings/view-facebook.php:70
-msgid "Your Facebook pages have been connected successfully."
-msgstr ""
-
-#: src/integrations/facebook/settings/view-facebook.php:84
+#: src/integrations/facebook/settings/settings-facebook.php:184
+msgctxt "Facebook"
 msgid "Linked pages"
 msgstr ""
 
-#: src/integrations/facebook/settings/view-facebook.php:92
+#: src/integrations/facebook/settings/settings-facebook.php:194
+msgctxt "Facebook"
 msgid "Update linked pages"
+msgstr ""
+
+#: src/integrations/facebook/settings/settings-facebook.php:212
+msgctxt "Facebook"
+msgid "Error retrieving linked pages"
 msgstr ""
 
 #. translators: 1: Event name
@@ -19134,8 +19169,6 @@ msgstr ""
 
 #: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:92
 #: src/integrations/rafflepress/helpers/rafflepress-helpers.php:51
-#: src/integrations/trello/actions/trello-create-card.php:155
-#: src/integrations/trello/actions/trello-update-card.php:157
 msgid "Start date"
 msgstr ""
 
@@ -23718,143 +23751,191 @@ msgstr ""
 msgid "Send data to IFTTT {{webhook}}"
 msgstr ""
 
-#. translators: Action - WordPress
-#: src/integrations/instagram/actions/instagram-publish-photo.php:68
+#. translators: %1$s is the name of the Instagram Business account.
+#: src/integrations/instagram/actions/instagram-publish-photo.php:30
 #, php-format
 msgctxt "Instagram"
 msgid "Publish a photo to {{an Instagram Business account:%1$s}}"
 msgstr ""
 
-#. translators: Action - WordPress
-#: src/integrations/instagram/actions/instagram-publish-photo.php:71
+#: src/integrations/instagram/actions/instagram-publish-photo.php:34
 msgctxt "Instagram"
 msgid "Publish a photo to {{an Instagram Business account}}"
 msgstr ""
 
-#. translators: Email field
-#: src/integrations/instagram/actions/instagram-publish-photo.php:79
+#: src/integrations/instagram/actions/instagram-publish-photo.php:49
 msgctxt "Instagram"
 msgid "Instagram account"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:88
+#: src/integrations/instagram/actions/instagram-publish-photo.php:58
 msgctxt "Instagram"
 msgid "Image URL or Media library ID"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:91
+#: src/integrations/instagram/actions/instagram-publish-photo.php:61
 msgctxt "Instagram"
 msgid "https://pathtoimage/image.jpg"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:92
+#: src/integrations/instagram/actions/instagram-publish-photo.php:62
 msgctxt "Instagram"
 msgid "The image must be in a JPG, JPEG or PNG format. The file name must not contain spaces and extended JPEG formats (such as MPO and JPS) are not supported."
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:97
+#: src/integrations/instagram/actions/instagram-publish-photo.php:67
 msgctxt "Instagram"
 msgid "Caption"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:100
+#: src/integrations/instagram/actions/instagram-publish-photo.php:70
 msgctxt "Instagram"
 msgid "My image #description"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:101
+#: src/integrations/instagram/actions/instagram-publish-photo.php:71
 msgctxt "Instagram"
 msgid "Enter the description and/or hashtags that should be posted with the image."
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:148
+#. translators: %s is the media library ID
+#: src/integrations/instagram/actions/instagram-publish-photo.php:157
+#, php-format
 msgctxt "Instagram"
-msgid "Cound not find any settings for Facebook Authentication."
+msgid "Media library image with ID %s not found."
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:159
+#: src/integrations/instagram/actions/instagram-publish-photo.php:163
 msgctxt "Instagram"
-msgid "Cannot find any Instagram account connected to the Facebook page."
+msgid "Invalid image URL or media library ID provided."
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:227
+#: src/integrations/instagram/actions/instagram-publish-photo.php:176
 msgctxt "Instagram"
 msgid "Instagram account not found. Check that the requested account is connected to the associated Facebook page."
 msgstr ""
 
-#: src/integrations/instagram/helpers/instagram-helpers.php:120
+#: src/integrations/instagram/helpers/instagram-api-caller.php:98
 msgctxt "Instagram"
-msgid "Successful"
+msgid "Could not find any settings for Facebook Authentication. Please reconnect your account."
 msgstr ""
 
-#: src/integrations/instagram/helpers/instagram-helpers.php:238
+#: src/integrations/instagram/helpers/instagram-api-caller.php:106
 msgctxt "Instagram"
-msgid "There was an error connecting to your Instagram account.  Please ensure you check the box next to the desired Instagram account during the authentication process."
+msgid "Cannot find any Instagram account connected to the Facebook page. Please ensure you select the correct Instagram account during authentication."
 msgstr ""
 
-#: src/integrations/instagram/helpers/instagram-helpers.php:320
+#: src/integrations/instagram/helpers/instagram-api-caller.php:154
 msgctxt "Instagram"
-msgid "Error fetching pages."
+msgid "No Instagram accounts found for the given page."
 msgstr ""
 
-#: src/integrations/instagram/helpers/instagram-helpers.php:327
+#: src/integrations/instagram/helpers/instagram-app-helpers.php:75
 msgctxt "Instagram"
-msgid "No data found."
+msgid "Facebook is not connected. Instagram requires a connected Facebook account."
 msgstr ""
 
-#: src/integrations/instagram/helpers/instagram-helpers.php:343
+#: src/integrations/instagram/settings/settings-instagram.php:115
 msgctxt "Instagram"
-msgid "Pages are fetched successfully"
+msgid "Your linked Instagram accounts have been updated."
 msgstr ""
 
-#: src/integrations/instagram/settings/view-instagram.php:38
-msgid "Connect Uncanny Automator to Instagram Business"
+#: src/integrations/instagram/settings/settings-instagram.php:116
+msgctxt "Instagram"
+msgid "Accounts updated"
 msgstr ""
 
-#: src/integrations/instagram/settings/view-instagram.php:42
+#: src/integrations/instagram/settings/settings-instagram.php:122
+msgctxt "Instagram"
+msgid "Your Facebook account has been connected. Instagram accounts linked to your Facebook pages are now available."
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:123
+msgctxt "Instagram"
+msgid "Connected"
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:159
+msgctxt "Instagram"
+msgid "No Facebook pages found."
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:185
+msgctxt "Instagram"
+msgid "Page ID is required"
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:206
+msgctxt "Instagram"
+msgid "There was an error connecting to your Instagram account. Please ensure you check the box next to the desired Instagram account during the authentication process."
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:281
+msgctxt "Instagram"
+msgid "No Instagram Business or Professional account connected to this Facebook page."
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:288
+msgctxt "Instagram"
+msgid "Account linked to Facebook Page:"
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:310
+msgctxt "Instagram"
+msgid "Refresh"
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:343
+msgctxt "Instagram"
 msgid "Automatically post photos, hashtags and text to Instagram when a new blog post is published, or when users perform any other supported actions on your site."
 msgstr ""
 
-#: src/integrations/instagram/settings/view-instagram.php:51
-msgid "Publish a photo to an Instagram account"
+#: src/integrations/instagram/settings/settings-instagram.php:349
+msgctxt "Instagram"
+msgid "Instagram Business"
 msgstr ""
 
-#: src/integrations/instagram/settings/view-instagram.php:59
+#: src/integrations/instagram/settings/settings-instagram.php:362
+msgctxt "Instagram"
 msgid "To connect Uncanny Automator to Instagram Business, you must first connect Facebook Pages."
 msgstr ""
 
-#: src/integrations/instagram/settings/view-instagram.php:63
+#: src/integrations/instagram/settings/settings-instagram.php:363
+msgctxt "Instagram"
 msgid "Due to Instagram limitations, to use Uncanny Automator with Instagram you'll first need to connect a Facebook Page that's associated with your Instagram Professional or Business Account."
 msgstr ""
 
-#: src/integrations/instagram/settings/view-instagram.php:71
-msgid "Connect Facebook Pages"
-msgstr ""
-
-#: src/integrations/instagram/settings/view-instagram.php:79
+#: src/integrations/instagram/settings/settings-instagram.php:376
+msgctxt "Instagram"
 msgid "Linked Instagram accounts"
 msgstr ""
 
-#: src/integrations/instagram/settings/view-instagram.php:90
-msgid "Update linked Facebook pages"
+#: src/integrations/instagram/settings/settings-instagram.php:386
+msgctxt "Instagram"
+msgid "Update linked accounts"
+msgstr ""
+
+#: src/integrations/instagram/settings/settings-instagram.php:407
+msgctxt "Instagram"
+msgid "Error retrieving linked accounts"
 msgstr ""
 
 #. translators: 1: Max attempts, 2: Error message
-#: src/integrations/instagram/traits/trait-instagram-publish-retry.php:166
+#: src/integrations/instagram/traits/trait-instagram-publish-retry.php:169
 #, php-format
 msgctxt "Instagram"
 msgid "Failed after %1$d retry attempts. Last error: %2$s"
 msgstr ""
 
 #. translators: 1: Current attempt number, 2: Max attempts
-#: src/integrations/instagram/traits/trait-instagram-publish-retry.php:203
+#: src/integrations/instagram/traits/trait-instagram-publish-retry.php:206
 #, php-format
 msgctxt "Instagram"
 msgid "Publishing in progress. Retry attempt %1$d of %2$d."
 msgstr ""
 
 #. translators: 1: Current attempt number, 2: Max attempts
-#: src/integrations/instagram/traits/trait-instagram-publish-retry.php:269
+#: src/integrations/instagram/traits/trait-instagram-publish-retry.php:259
 #, php-format
 msgctxt "Instagram"
 msgid "Publishing in progress. Retry attempt %1$d of %2$d scheduled."
@@ -24421,11 +24502,7 @@ msgid "Website"
 msgstr ""
 
 #: src/integrations/keap/actions/keap-add-update-company.php:115
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:76
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:52
 #: src/integrations/mycred/actions/mycred-awardpoints-a.php:81
-#: src/integrations/trello/actions/trello-create-card.php:122
-#: src/integrations/trello/actions/trello-update-card.php:124
 #: src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php:77
 msgid "Description"
 msgstr ""
@@ -28029,8 +28106,6 @@ msgid "Bundle"
 msgstr ""
 
 #: src/integrations/membermouse/helpers/membermouse-helpers.php:22
-#: src/integrations/trello/actions/trello-add-card-member.php:104
-#: src/integrations/trello/actions/trello-add-checklist-item.php:147
 msgid "Member ID"
 msgstr ""
 
@@ -28556,190 +28631,669 @@ msgstr ""
 msgid "A user is removed from {{a recurring subscription product}}"
 msgstr ""
 
-#. translators: channel name
-#: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:26
-#, php-format
-msgid "Send a message to {{a channel:%1$s}}"
-msgstr ""
-
-#: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:27
+#: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:28
+msgctxt "Microsoft Teams"
 msgid "Send a message to {{a channel}}"
 msgstr ""
 
-#: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:40
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:54
-#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:41
-msgid "Team"
-msgstr ""
-
-#: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:52
-msgid "Channel"
-msgstr ""
-
-#. translators: channel name
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:26
+#. translators: %1$s is the channel name
+#: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:32
 #, php-format
-msgid "Create {{a channel:%1$s}}"
+msgctxt "Microsoft Teams"
+msgid "Send a message to {{a channel:%1$s}}"
 msgstr ""
 
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:27
+#: src/integrations/microsoft-teams/actions/microsoft-teams-channel-message.php:40
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:81
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:111
+msgctxt "Microsoft Teams"
+msgid "Message ID"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:28
+msgctxt "Microsoft Teams"
 msgid "Create {{a channel}}"
 msgstr ""
 
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:33
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:110
+#. translators: %1$s is the channel name
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Create {{a channel:%1$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:40
+msgctxt "Microsoft Teams"
 msgid "Channel ID"
 msgstr ""
 
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:37
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:114
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:44
+msgctxt "Microsoft Teams"
 msgid "Channel URL"
 msgstr ""
 
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:65
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:81
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:127
+msgctxt "Microsoft Teams"
 msgid "Channel name"
 msgstr ""
 
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:86
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:83
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:140
+msgctxt "Microsoft Teams"
 msgid "Privacy"
 msgstr ""
 
-#. translators: channel name
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:26
-#, php-format
-msgid "Create {{a team:%1$s}}"
-msgstr ""
-
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:27
-msgid "Create {{a team}}"
-msgstr ""
-
-#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:41
-msgid "Team name"
-msgstr ""
-
-#. translators: channel name
-#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:26
-#, php-format
-msgid "Send a direct message to {{a team member:%1$s}}"
-msgstr ""
-
-#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:27
-msgid "Send a direct message to {{a team member}}"
-msgstr ""
-
-#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:54
-#: src/integrations/trello/actions/trello-add-card-member.php:103
-#: src/integrations/trello/actions/trello-add-checklist-item.php:146
-msgid "Member"
-msgstr ""
-
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:151
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:98
 msgctxt "Microsoft Teams"
-msgid "Something went wrong while capturing the tokens"
+msgid "The channel was created but no ID was returned."
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:157
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:141
 msgctxt "Microsoft Teams"
-msgid "Automator message was not found"
+msgid "Select a privacy level"
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:246
-msgctxt "Microsoft Teams"
-msgid "Microsoft Teams client is invalid. Please reconnect or contact support."
-msgstr ""
-
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:353
-msgctxt "Microsoft Teams"
-msgid "Something went wrong"
-msgstr ""
-
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:472
-msgctxt "Microsoft Teams"
-msgid "No teams were found"
-msgstr ""
-
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:535
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:637
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:157
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:126
 msgctxt "Microsoft Teams"
 msgid "Standard"
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:536
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:158
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:130
 msgctxt "Microsoft Teams"
 msgid "Private"
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:537
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-channel.php:159
 msgctxt "Microsoft Teams"
 msgid "Shared"
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:561
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:28
 msgctxt "Microsoft Teams"
-msgid "No members were found"
+msgid "Create {{a team}}"
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:638
+#. translators: %1$s is the team name
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Create {{a team:%1$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:66
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:113
+msgctxt "Microsoft Teams"
+msgid "Team name"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:68
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:96
+msgctxt "Microsoft Teams"
+msgid "Type"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:127
 msgctxt "Microsoft Teams"
 msgid "Education - Class Team"
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:639
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:128
 msgctxt "Microsoft Teams"
 msgid "Education - Staff Team"
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:640
+#: src/integrations/microsoft-teams/actions/microsoft-teams-create-team.php:129
 msgctxt "Microsoft Teams"
 msgid "Education - Professional Learning Community"
 msgstr ""
 
-#: src/integrations/microsoft-teams/helpers/microsoft-teams-helpers.php:707
+#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:28
+msgctxt "Microsoft Teams"
+msgid "Send a direct message to {{a team member}}"
+msgstr ""
+
+#. translators: %1$s is the team member
+#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Send a direct message to {{a team member:%1$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:67
+#: src/integrations/microsoft-teams/actions/microsoft-teams-send-dm.php:84
+#: src/integrations/microsoft-teams/actions/teams-add-member.php:108
+msgctxt "Microsoft Teams"
+msgid "Member"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-member.php:28
+msgctxt "Microsoft Teams"
+msgid "Add {{a user}} to {{a team}} as {{a role}}"
+msgstr ""
+
+#. translators: 1: User, 2: Team, 3: Role
+#: src/integrations/microsoft-teams/actions/teams-add-member.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Add {{a user:%1$s}} to {{a team:%2$s}} as {{a role:%3$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-member.php:42
+msgctxt "Microsoft Teams"
+msgid "Membership ID"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-member.php:82
+#: src/integrations/microsoft-teams/actions/teams-add-member.php:113
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:148
+msgctxt "Microsoft Teams"
+msgid "Role"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-member.php:109
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:128
+msgctxt "Microsoft Teams"
+msgid "Owner"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-tag-member.php:28
+msgctxt "Microsoft Teams"
+msgid "Add {{a user}} to {{a tag}} in {{a team}}"
+msgstr ""
+
+#. translators: 1: User, 2: Tag, 3: Team
+#: src/integrations/microsoft-teams/actions/teams-add-tag-member.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Add {{a user:%1$s}} to {{a tag:%2$s}} in {{a team:%3$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-tag-member.php:41
+msgctxt "Microsoft Teams"
+msgid "Tag member ID"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-tag-member.php:45
+#: src/integrations/microsoft-teams/actions/teams-create-tag.php:79
+#: src/integrations/microsoft-teams/actions/teams-create-tag.php:111
+msgctxt "Microsoft Teams"
+msgid "Tag name"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-tag-member.php:80
+#: src/integrations/microsoft-teams/actions/teams-add-tag-member.php:116
+#: src/integrations/microsoft-teams/actions/teams-create-tag.php:40
+msgctxt "Microsoft Teams"
+msgid "Tag ID"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-tag-member.php:111
+msgctxt "Microsoft Teams"
+msgid "Tag"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-add-tag-member.php:112
+msgctxt "Microsoft Teams"
+msgid "Select a tag"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-archive-team.php:28
+msgctxt "Microsoft Teams"
+msgid "Archive {{a team}}"
+msgstr ""
+
+#. translators: %1$s is the team name
+#: src/integrations/microsoft-teams/actions/teams-archive-team.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Archive {{a team:%1$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-archive-team.php:92
+msgctxt "Microsoft Teams"
+msgid "Set SharePoint site to read-only for members"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-archive-team.php:93
+msgctxt "Microsoft Teams"
+msgid "When enabled, the team's associated SharePoint site will become read-only for members after archiving."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:28
+msgctxt "Microsoft Teams"
+msgid "Create a group chat"
+msgstr ""
+
+#. translators: 1: Group chat
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Create {{a group chat:%1$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:40
+msgctxt "Microsoft Teams"
+msgid "Chat ID"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:44
+msgctxt "Microsoft Teams"
+msgid "Chat URL"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:115
+msgctxt "Microsoft Teams"
+msgid "Chat topic (name)"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:116
+msgctxt "Microsoft Teams"
+msgid "Optional display name for the group chat."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:129
+msgctxt "Microsoft Teams"
+msgid "Guest"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:135
+msgctxt "Microsoft Teams"
+msgid "Members"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:136
+msgctxt "Microsoft Teams"
+msgid "The connected Microsoft Teams account is automatically included in the chat. Add at least 1 additional member using their email address or AAD Object ID."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:142
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:82
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:388
+msgctxt "Microsoft Teams"
+msgid "User (email or AAD Object ID)"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:174
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:198
+msgctxt "Microsoft Teams"
+msgid "A group chat requires at least 1 member in addition to the connected account."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-group-chat.php:215
+msgctxt "Microsoft Teams"
+msgid "Invalid chat member role. Must be \"owner\" or \"guest\"."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:28
+msgctxt "Microsoft Teams"
+msgid "Create an online meeting titled {{a subject}}"
+msgstr ""
+
+#. translators: 1: Meeting subject
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Create an online meeting titled {{a subject:%1$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:40
+msgctxt "Microsoft Teams"
+msgid "Join URL"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:44
+msgctxt "Microsoft Teams"
+msgid "Meeting ID"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:81
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:124
+msgctxt "Microsoft Teams"
+msgid "Meeting subject"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:82
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:138
+msgctxt "Microsoft Teams"
+msgid "Start date/time"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:83
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:153
+msgctxt "Microsoft Teams"
+msgid "End date/time"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:139
+msgctxt "Microsoft Teams"
+msgid "ISO 8601 format, UTC. Example: 2026-03-15T14:00:00Z"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:154
+msgctxt "Microsoft Teams"
+msgid "ISO 8601 format, UTC. Example: 2026-03-15T15:00:00Z"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:166
+msgctxt "Microsoft Teams"
+msgid "People in my organization"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:167
+msgctxt "Microsoft Teams"
+msgid "Only the organizer"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:168
+msgctxt "Microsoft Teams"
+msgid "Everyone"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:172
+msgctxt "Microsoft Teams"
+msgid "Who can bypass the lobby?"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:173
+msgctxt "Microsoft Teams"
+msgid "Select an option"
+msgstr ""
+
+#. translators: %s is the invalid datetime string.
+#: src/integrations/microsoft-teams/actions/teams-create-meeting.php:203
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "\"%s\" is not a valid date/time. Expected ISO 8601 format, e.g. 2026-03-15T14:00:00Z"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-tag.php:28
+msgctxt "Microsoft Teams"
+msgid "Create a tag in {{a team}}"
+msgstr ""
+
+#. translators: 1: Tag name, 2: Team
+#: src/integrations/microsoft-teams/actions/teams-create-tag.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Create a tag {{a tag name:%1$s}} in {{a team:%2$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-tag.php:112
+msgctxt "Microsoft Teams"
+msgid "Maximum 40 characters."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-tag.php:126
+msgctxt "Microsoft Teams"
+msgid "Initial member (email or AAD Object ID)"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-create-tag.php:127
+msgctxt "Microsoft Teams"
+msgid "At least one member is required to create a tag."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-delete-channel.php:28
+msgctxt "Microsoft Teams"
+msgid "Delete {{a channel}} from {{a team}}"
+msgstr ""
+
+#. translators: 1: Channel, 2: Team
+#: src/integrations/microsoft-teams/actions/teams-delete-channel.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Delete {{a channel:%1$s}} from {{a team:%2$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-delete-channel.php:47
+msgctxt "Microsoft Teams"
+msgid "Note: the General channel cannot be deleted."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-remove-member.php:28
+msgctxt "Microsoft Teams"
+msgid "Remove {{a user}} from {{a team}}"
+msgstr ""
+
+#. translators: 1: User, 2: Team
+#: src/integrations/microsoft-teams/actions/teams-remove-member.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Remove {{a user:%1$s}} from {{a team:%2$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:28
+msgctxt "Microsoft Teams"
+msgid "Reply to a channel message"
+msgstr ""
+
+#. translators: 1: Message ID, 2: Channel
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Reply to message {{a message ID:%1$s}} in {{a channel:%2$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:41
+msgctxt "Microsoft Teams"
+msgid "Reply message ID"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:83
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:129
+msgctxt "Microsoft Teams"
+msgid "Content type"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:112
+msgctxt "Microsoft Teams"
+msgid "The numeric message ID, e.g. 1616990032035"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:124
+msgctxt "Microsoft Teams"
+msgid "Plain text"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:125
+msgctxt "Microsoft Teams"
+msgid "HTML"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-reply-channel-message.php:147
+msgctxt "Microsoft Teams"
+msgid "Reply content"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:28
+msgctxt "Microsoft Teams"
+msgid "Update settings for {{a team}}"
+msgstr ""
+
+#. translators: %1$s is the team name
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:32
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Update settings for {{a team:%1$s}}"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:86
+msgctxt "Microsoft Teams"
+msgid "At least one setting must be provided."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:116
+msgctxt "Microsoft Teams"
+msgid "Display name"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:117
+msgctxt "Microsoft Teams"
+msgid "Leave blank to keep the current name. Maximum 256 characters."
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:129
+msgctxt "Microsoft Teams"
+msgid "No change"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:131
+msgctxt "Microsoft Teams"
+msgid "Public"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:135
+msgctxt "Microsoft Teams"
+msgid "Visibility"
+msgstr ""
+
+#: src/integrations/microsoft-teams/actions/teams-update-team.php:136
+msgctxt "Microsoft Teams"
+msgid "Leave as 'No change' to keep the current visibility."
+msgstr ""
+
+#. translators: %s: Settings page URL.
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php:34
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php:39
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Your Microsoft Teams account is missing required permissions. Please [reconnect your account](%s) to authorize the additional permissions needed."
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php:58
+msgctxt "Microsoft Teams"
+msgid "Invalid credentials"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php:80
+msgctxt "Microsoft Teams"
+msgid "No teams were found"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php:92
+msgctxt "Microsoft Teams"
+msgid "No active teams were found"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php:118
+msgctxt "Microsoft Teams"
+msgid "No members were found"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php:153
+msgctxt "Microsoft Teams"
+msgid "No tags were found"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-api-caller.php:178
 msgctxt "Microsoft Teams"
 msgid "No channels were found"
 msgstr ""
 
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:51
-msgid "Connect Uncanny Automator to Microsoft Teams"
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:33
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:325
+msgctxt "Microsoft Teams"
+msgid "Team"
 msgstr ""
 
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:55
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:34
+msgctxt "Microsoft Teams"
+msgid "Select a team"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:58
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:342
+msgctxt "Microsoft Teams"
+msgid "Channel"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:59
+msgctxt "Microsoft Teams"
+msgid "Select a channel"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:83
+msgctxt "Microsoft Teams"
+msgid "Enter the user's email address (UPN) or Azure AD Object ID."
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:97
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:357
+msgctxt "Microsoft Teams"
+msgid "Message"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:117
+msgctxt "Microsoft Teams"
+msgid "Invite external users as guests"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:118
+msgctxt "Microsoft Teams"
+msgid "When enabled, if a user is not found in your Azure AD tenant, they will automatically be invited as a B2B guest."
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:133
+msgctxt "Microsoft Teams"
+msgid "Description"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:146
+msgctxt "Microsoft Teams"
+msgid "Learn more"
+msgstr ""
+
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:280
+msgctxt "Microsoft Teams"
+msgid "Please select a team"
+msgstr ""
+
+#. translators: %s is the field label
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:303
+#: src/integrations/microsoft-teams/helpers/microsoft-teams-app-helpers.php:363
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "%s is required."
+msgstr ""
+
+#: src/integrations/microsoft-teams/settings/microsoft-teams-settings.php:45
+msgctxt "Microsoft Teams"
+msgid "Microsoft Teams Account"
+msgstr ""
+
+#. translators: %s: Account email
+#: src/integrations/microsoft-teams/settings/microsoft-teams-settings.php:50
+#, php-format
+msgctxt "Microsoft Teams"
+msgid "Account email: %s"
+msgstr ""
+
+#: src/integrations/microsoft-teams/settings/microsoft-teams-settings.php:101
+msgctxt "Microsoft Teams"
 msgid "Connect Uncanny Automator to Microsoft Teams to send messages, create channels and more when people perform WordPress actions like submitting forms, making purchases and joining groups. Turn Microsoft Teams into a communications hub that's tightly integrated with everything that happens on your WordPress site and beyond."
 msgstr ""
 
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:64
-msgid "Send a message to a team member"
-msgstr ""
-
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:67
-msgid "Send a message to a channel"
-msgstr ""
-
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:70
-msgid "Create a team"
-msgstr ""
-
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:73
-msgid "Create a channel in a team"
-msgstr ""
-
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:79
-msgid "Uncanny Automator only supports connecting to one Microsoft Teams account at a time."
-msgstr ""
-
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:80
+#: src/integrations/microsoft-teams/settings/microsoft-teams-settings.php:115
+msgctxt "Microsoft Teams"
 msgid "You can only connect to a Microsoft Teams account for which you have read and write access."
 msgstr ""
 
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:97
-msgid "Sign in with Microsoft"
+#: src/integrations/microsoft-teams/settings/microsoft-teams-settings.php:123
+msgctxt "Microsoft Teams"
+msgid "Reconnection required"
 msgstr ""
 
-#. translators: 1. Email address
-#: src/integrations/microsoft-teams/settings/settings-microsoft-teams.php:119
-#, php-format
-msgid "Account email: %1$s"
+#: src/integrations/microsoft-teams/settings/microsoft-teams-settings.php:124
+msgctxt "Microsoft Teams"
+msgid "Please reconnect your account to grant additional permissions required by newly available actions."
+msgstr ""
+
+#: src/integrations/microsoft-teams/settings/microsoft-teams-settings.php:127
+msgctxt "Microsoft Teams"
+msgid "Reconnect Microsoft Teams"
 msgstr ""
 
 #. translators: 1: Prompt field placeholder, 2: Model field placeholder
@@ -29129,310 +29683,348 @@ msgctxt "Notion"
 msgid "If you create recipes and then change the connected Notion account, your previous recipes may no longer work."
 msgstr ""
 
-#. translators: Action sentence
-#: src/integrations/ontraport/actions/ontraport-add-contact-tag.php:39
+#: src/integrations/ontraport/actions/ontraport-add-contact-tag.php:28
+msgctxt "Ontraport"
+msgid "Add {{a tag}} to {{a contact}}"
+msgstr ""
+
+#. translators: %1$s: Tag name, %2$s: Email address
+#: src/integrations/ontraport/actions/ontraport-add-contact-tag.php:32
 #, php-format
 msgctxt "Ontraport"
 msgid "Add {{a tag:%1$s}} to {{a contact:%2$s}}"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-add-contact-tag.php:45
-msgctxt "Ontraport"
-msgid "Add {{a tag}} to {{a contact}}"
-msgstr ""
-
-#: src/integrations/ontraport/actions/ontraport-add-contact-tag.php:58
+#: src/integrations/ontraport/actions/ontraport-add-contact-tag.php:48
 msgctxt "Ontraport"
 msgid "Tags"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-add-contact-tag.php:72
-#: src/integrations/ontraport/actions/ontraport-delete-contact.php:52
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:83
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:44
+#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:31
 msgctxt "Ontraport"
-msgid "Email"
+msgid "Create or update {{a contact}}"
 msgstr ""
 
-#. translators: %s: Email address
-#: src/integrations/ontraport/actions/ontraport-add-contact-tag.php:101
-#: src/integrations/ontraport/actions/ontraport-delete-contact.php:79
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:204
-#, php-format
-msgid "Invalid email provided: %s"
-msgstr ""
-
-#. translators: Action sentence
-#: src/integrations/ontraport/actions/ontraport-create-tag.php:34
-#, php-format
-msgctxt "Ontraport"
-msgid "Create {{a tag:%1$s}}"
-msgstr ""
-
-#: src/integrations/ontraport/actions/ontraport-create-tag.php:39
-msgctxt "Ontraport"
-msgid "Create {{a tag}}"
-msgstr ""
-
-#: src/integrations/ontraport/actions/ontraport-create-tag.php:53
-msgctxt "Ontraport"
-msgid "Tag"
-msgstr ""
-
-#: src/integrations/ontraport/actions/ontraport-create-tag.php:54
-msgctxt "Ontraport"
-msgid "Tag name"
-msgstr ""
-
-#. translators: Action sentence
-#: src/integrations/ontraport/actions/ontraport-delete-contact.php:34
-#, php-format
-msgctxt "Ontraport"
-msgid "Delete {{a contact:%1$s}}"
-msgstr ""
-
-#: src/integrations/ontraport/actions/ontraport-delete-contact.php:39
-msgctxt "Ontraport"
-msgid "Delete {{a contact}}"
-msgstr ""
-
-#. translators: Action sentence
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:34
+#. translators: %1$s: Email address
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:48
+#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:35
 #, php-format
 msgctxt "Ontraport"
 msgid "Create or update {{a contact:%1$s}}"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:39
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:134
 msgctxt "Ontraport"
-msgid "Create or update {{a contact}}"
+msgid "Contact information"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:52
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:140
 msgctxt "Ontraport"
-msgid "Closed - Lost"
+msgid "Key"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:56
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:148
 msgctxt "Ontraport"
-msgid "Closed - Won"
+msgid "Field"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:60
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:155
 msgctxt "Ontraport"
-msgid "Committed"
+msgid "Value"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:64
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:161
 msgctxt "Ontraport"
-msgid "Consideration"
+msgid "Update"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:68
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:166
 msgctxt "Ontraport"
-msgid "Demo Scheduled"
+msgid "Enable to update this field"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:72
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:185
 msgctxt "Ontraport"
-msgid "Qualified Lead"
+msgid "Custom fields"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:76
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:193
 msgctxt "Ontraport"
-msgid "New Prospect"
+msgid "Leave empty to skip or use [DELETE] to clear a value"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:90
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:278
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:177
 msgctxt "Ontraport"
-msgid "First name"
+msgid "Select option"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:97
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:292
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:218
 msgctxt "Ontraport"
-msgid "Last name"
+msgid "Delete value"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:104
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:314
 msgctxt "Ontraport"
-msgid "Address"
+msgid "Checked"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:111
+#: src/integrations/ontraport/actions/ontraport-add-update-contact.php:318
 msgctxt "Ontraport"
-msgid "SMS Number"
+msgid "Unchecked"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:118
+#: src/integrations/ontraport/actions/ontraport-create-tag.php:28
 msgctxt "Ontraport"
-msgid "Status"
+msgid "Create {{a tag}}"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:127
+#. translators: %1$s: Tag name
+#: src/integrations/ontraport/actions/ontraport-create-tag.php:32
+#, php-format
 msgctxt "Ontraport"
-msgid "Facebook link"
+msgid "Create {{a tag:%1$s}}"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:128
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:136
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:144
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:152
+#: src/integrations/ontraport/actions/ontraport-create-tag.php:47
 msgctxt "Ontraport"
-msgid "https://"
+msgid "Tag"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:135
+#: src/integrations/ontraport/actions/ontraport-create-tag.php:48
 msgctxt "Ontraport"
-msgid "Instagram link"
+msgid "Tag name"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:143
+#: src/integrations/ontraport/actions/ontraport-delete-contact.php:28
 msgctxt "Ontraport"
-msgid "LinkedIn link"
+msgid "Delete {{a contact}}"
 msgstr ""
 
-#: src/integrations/ontraport/actions/ontraport-upsert-contact.php:151
+#. translators: %1$s: Email address
+#: src/integrations/ontraport/actions/ontraport-delete-contact.php:32
+#, php-format
 msgctxt "Ontraport"
-msgid "Twitter link"
+msgid "Delete {{a contact:%1$s}}"
 msgstr ""
 
-#: src/integrations/ontraport/helpers/ontraport-helpers.php:73
-#: src/integrations/ontraport/helpers/ontraport-helpers.php:111
-msgctxt "Ontraport"
-msgid "API Exception: "
-msgstr ""
-
-#: src/integrations/ontraport/helpers/ontraport-helpers.php:209
-msgctxt "Ontraport"
-msgid "Nonce Verification Failed"
-msgstr ""
-
-#: src/integrations/ontraport/helpers/ontraport-helpers.php:214
-msgctxt "Ontraport"
-msgid "Unauthorized"
-msgstr ""
-
-#. translators: 1: Status code
-#: src/integrations/ontraport/helpers/ontraport-helpers.php:299
+#. translators: 1: Status code.
+#: src/integrations/ontraport/helpers/ontraport-api-caller.php:35
 #, php-format
 msgctxt "Ontraport"
 msgid "Ontraport API error: Received unexpected status code %1$s."
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:89
+#: src/integrations/ontraport/helpers/ontraport-app-helpers.php:38
 msgctxt "Ontraport"
-msgid "API credentials incorrect"
+msgid "Ontraport is not connected"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:102
+#: src/integrations/ontraport/helpers/ontraport-app-helpers.php:94
 msgctxt "Ontraport"
-msgid "Connection established"
+msgid "Email"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:103
+#. translators: %s: Email address
+#: src/integrations/ontraport/helpers/ontraport-app-helpers.php:113
+#, php-format
 msgctxt "Ontraport"
-msgid "You are successfully connected."
+msgid "Invalid email provided: %s"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:120
+#: src/integrations/ontraport/helpers/ontraport-app-helpers.php:139
+#: src/integrations/ontraport/helpers/ontraport-app-helpers.php:163
 msgctxt "Ontraport"
-msgid "An error exception has occured"
+msgid "API Exception: "
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:164
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:36
 msgctxt "Ontraport"
-msgid "Connect Uncanny Automator to Ontraport"
+msgid "First name"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:168
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:42
 msgctxt "Ontraport"
-msgid "Integrate Uncanny Automator with Ontraport to elevate workflow automation and turbocharge productivity for businesses. Seamlessly connecting these platforms empowers users to effortlessly transfer data and ignite actions, slashing manual tasks and boosting efficiency."
+msgid "Last name"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:173
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:51
 msgctxt "Ontraport"
-msgid "Activating this integration will enable the following for use in your recipes:"
+msgid "Title"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:181
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:57
 msgctxt "Ontraport"
-msgid "Add a tag to a contact"
+msgid "Company"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:186
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:65
 msgctxt "Ontraport"
-msgid "Create a tag"
+msgid "Address"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:191
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:73
 msgctxt "Ontraport"
-msgid "Create or update a contact"
+msgid "Office phone"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:196
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:81
 msgctxt "Ontraport"
-msgid "Delete a contact"
+msgid "SMS number"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:200
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:87
 msgctxt "Ontraport"
-msgid "Setup instructions"
+msgid "Facebook link"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:203
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:89
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:96
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:103
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:110
 msgctxt "Ontraport"
-msgid "Part 1: Obtaining Your API Key and App ID"
+msgid "https://"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:208
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:94
 msgctxt "Ontraport"
-msgid "Find out how to obtain your own Ontraport API Key and App ID"
+msgid "Instagram link"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:213
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:101
 msgctxt "Ontraport"
-msgid "Part 2: Completing the Form"
+msgid "LinkedIn link"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:219
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:108
 msgctxt "Ontraport"
-msgid "Copy and paste the acquired API Key and App ID into the designated fields below."
+msgid "Twitter link"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:222
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:155
 msgctxt "Ontraport"
-msgid "Click the \"Connect Ontraport Account\" button to proceed."
+msgid "Status"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:230
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:185
 msgctxt "Ontraport"
-msgid "App ID"
+msgid "Closed - Lost"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:238
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:189
 msgctxt "Ontraport"
-msgid "API Key"
+msgid "Closed - Won"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:247
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:193
 msgctxt "Ontraport"
-msgid "Uncanny Automator only supports connecting to one Ontraport account at a time."
+msgid "Committed"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:264
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:197
 msgctxt "Ontraport"
-msgid "Connect Ontraport account"
+msgid "Consideration"
 msgstr ""
 
-#: src/integrations/ontraport/settings/ontraport-settings.php:280
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:201
+msgctxt "Ontraport"
+msgid "Demo Scheduled"
+msgstr ""
+
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:205
+msgctxt "Ontraport"
+msgid "Qualified Lead"
+msgstr ""
+
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:209
+msgctxt "Ontraport"
+msgid "New Prospect"
+msgstr ""
+
+#. translators: 1: Field key, 2: Invalid value.
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:364
+#, php-format
+msgctxt "Ontraport"
+msgid "%1$s: invalid date \"%2$s\""
+msgstr ""
+
+#. translators: 1: Field key, 2: Invalid value.
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:377
+#, php-format
+msgctxt "Ontraport"
+msgid "%1$s: invalid number \"%2$s\""
+msgstr ""
+
+#. translators: 1: Field key, 2: Invalid value.
+#: src/integrations/ontraport/helpers/ontraport-contact-fields-trait.php:388
+#, php-format
+msgctxt "Ontraport"
+msgid "%1$s: invalid email \"%2$s\""
+msgstr ""
+
+#: src/integrations/ontraport/settings/ontraport-settings.php:61
 msgctxt "Ontraport"
 msgid "Ontraport account"
 msgstr ""
 
 #. translators: %s: Ontraport APP ID
-#: src/integrations/ontraport/settings/ontraport-settings.php:287
+#: src/integrations/ontraport/settings/ontraport-settings.php:64
 #, php-format
 msgctxt "Ontraport"
 msgid "APP ID: %s"
+msgstr ""
+
+#: src/integrations/ontraport/settings/ontraport-settings.php:95
+msgctxt "Ontraport"
+msgid "Please double-check your API Key and App ID"
+msgstr ""
+
+#: src/integrations/ontraport/settings/ontraport-settings.php:127
+msgctxt "Ontraport"
+msgid "Integrate Uncanny Automator with Ontraport to elevate workflow automation and turbocharge productivity for businesses. Seamlessly connecting these platforms empowers users to effortlessly transfer data and ignite actions, slashing manual tasks and boosting efficiency."
+msgstr ""
+
+#: src/integrations/ontraport/settings/ontraport-settings.php:135
+msgctxt "Ontraport"
+msgid "To connect your Ontraport account, follow these steps:"
+msgstr ""
+
+#. translators: %1$s: link to Ontraport support article, %2$s: opening strong tag, %3$s: closing strong tag.
+#: src/integrations/ontraport/settings/ontraport-settings.php:139
+#, php-format
+msgctxt "Ontraport"
+msgid "Visit the %1$s to learn how to obtain your %2$sAPI Key%3$s and %2$sApp ID%3$s"
+msgstr ""
+
+#: src/integrations/ontraport/settings/ontraport-settings.php:142
+msgctxt "Ontraport"
+msgid "Ontraport support article"
+msgstr ""
+
+#. translators: %1$s: opening strong tag, %2$s: closing strong tag.
+#: src/integrations/ontraport/settings/ontraport-settings.php:149
+#, php-format
+msgctxt "Ontraport"
+msgid "Copy and paste the acquired %1$sAPI Key%2$s and %1$sApp ID%2$s into the designated fields below."
+msgstr ""
+
+#. translators: %1$s: opening strong tag, %2$s: closing strong tag.
+#: src/integrations/ontraport/settings/ontraport-settings.php:155
+#, php-format
+msgctxt "Ontraport"
+msgid "Click the %1$sConnect Ontraport account%2$s button to proceed."
+msgstr ""
+
+#: src/integrations/ontraport/settings/ontraport-settings.php:167
+msgctxt "Ontraport"
+msgid "App ID"
+msgstr ""
+
+#: src/integrations/ontraport/settings/ontraport-settings.php:178
+msgctxt "Ontraport"
+msgid "API Key"
 msgstr ""
 
 #: src/integrations/open-ai/actions/fields/image-generate-fields.php:33
@@ -35863,393 +36455,421 @@ msgctxt "Thrive Ultimatum"
 msgid "A user triggers an evergreen campaign"
 msgstr ""
 
-#. translators: card name
-#: src/integrations/trello/actions/trello-add-card-comment.php:42
+#. translators: %1$s is the card name
+#: src/integrations/trello/actions/trello-add-card-comment.php:32
 #, php-format
+msgctxt "Trello"
 msgid "Add a comment to {{a card:%1$s}}"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-add-card-comment.php:43
+#: src/integrations/trello/actions/trello-add-card-comment.php:36
+msgctxt "Trello"
 msgid "Add a comment to {{a card}}"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-add-card-comment.php:50
-#: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:170
-#: src/integrations/wp/actions/wp-add-reply-to-comment.php:41
+#: src/integrations/trello/actions/trello-add-card-comment.php:41
+msgctxt "Trello"
 msgid "Comment ID"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-add-card-comment.php:54
-#: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:195
+#: src/integrations/trello/actions/trello-add-card-comment.php:45
+msgctxt "Trello"
 msgid "Comment URL"
 msgstr ""
 
-#: src/integrations/trello/actions/trello-add-card-comment.php:73
-#: src/integrations/trello/actions/trello-add-card-label.php:59
-#: src/integrations/trello/actions/trello-add-card-member.php:59
-#: src/integrations/trello/actions/trello-add-checklist-item.php:69
-#: src/integrations/trello/actions/trello-create-card.php:85
-#: src/integrations/trello/actions/trello-update-card.php:71
-msgid "Board"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-card-comment.php:78
-#: src/integrations/trello/actions/trello-add-card-label.php:60
-#: src/integrations/trello/actions/trello-add-card-member.php:60
-#: src/integrations/trello/actions/trello-add-checklist-item.php:70
-#: src/integrations/trello/actions/trello-create-card.php:86
-#: src/integrations/trello/actions/trello-update-card.php:72
-msgid "Board ID"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-card-comment.php:99
-#: src/integrations/trello/actions/trello-add-card-label.php:84
-#: src/integrations/trello/actions/trello-add-card-member.php:85
-#: src/integrations/trello/actions/trello-add-checklist-item.php:94
-#: src/integrations/trello/actions/trello-update-card.php:98
-msgid "Card"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-card-comment.php:104
-#: src/integrations/trello/actions/trello-add-card-label.php:85
-#: src/integrations/trello/actions/trello-add-card-member.php:86
-#: src/integrations/trello/actions/trello-add-checklist-item.php:95
-#: src/integrations/trello/actions/trello-create-card.php:50
-#: src/integrations/trello/actions/trello-update-card.php:99
-msgid "Card ID"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-card-comment.php:115
+#: src/integrations/trello/actions/trello-add-card-comment.php:72
+msgctxt "Trello"
 msgid "Comment"
 msgstr ""
 
-#. translators: card name
-#: src/integrations/trello/actions/trello-add-card-label.php:42
-#, php-format
-msgid "Add a label to {{a card:%1$s}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-card-label.php:43
-msgid "Add a label to {{a card}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-card-label.php:101
-msgid "Label"
-msgstr ""
-
-#. translators: card name
-#: src/integrations/trello/actions/trello-add-card-member.php:42
-#, php-format
-msgid "Add a member to {{a card:%1$s}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-card-member.php:43
-msgid "Add a member to {{a card}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-card-member.php:105
-msgid "Select a member"
-msgstr ""
-
-#. translators: card name
-#: src/integrations/trello/actions/trello-add-checklist-item.php:42
-#, php-format
-msgid "Create a checklist item in {{a card:%1$s}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:43
-msgid "Create a checklist item in {{a card}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:50
-msgid "Checklist item ID"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:109
-msgid "Checklist"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:110
-msgid "Checklist ID"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:125
-msgid "Checklist item name"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:135
-#: src/integrations/trello/actions/trello-create-card.php:165
-#: src/integrations/trello/actions/trello-update-card.php:167
-msgid "Due date"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:148
-#: src/integrations/trello/actions/trello-create-card.php:178
-#: src/integrations/trello/actions/trello-update-card.php:180
-msgid "No member"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:162
-msgid "Checked"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-add-checklist-item.php:171
-#: src/integrations/trello/actions/trello-create-card.php:132
-#: src/integrations/trello/actions/trello-update-card.php:134
-msgid "Position"
-msgstr ""
-
-#. translators: card name
-#: src/integrations/trello/actions/trello-create-card.php:42
-#, php-format
-msgid "Create {{a card:%1$s}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-create-card.php:43
-msgid "Create {{a card}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-create-card.php:54
-msgid "Card URL"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-create-card.php:65
-#: src/integrations/trello/actions/trello-update-card.php:51
-msgid "Get custom fields"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-create-card.php:177
-#: src/integrations/trello/actions/trello-update-card.php:179
-msgid "Members"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-create-card.php:193
-#: src/integrations/trello/actions/trello-update-card.php:195
-msgid "Labels"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-create-card.php:222
-#: src/integrations/trello/actions/trello-update-card.php:224
-msgid "Field name"
-msgstr ""
-
-#. translators: card name
-#: src/integrations/trello/actions/trello-update-card.php:42
-#, php-format
-msgid "Update {{a card:%1$s}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-update-card.php:43
-msgid "Update {{a card}}"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-update-card.php:196
-msgid "No label"
-msgstr ""
-
-#: src/integrations/trello/actions/trello-update-card.php:212
-msgid "Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:73
-msgid "Unable to fetch user info."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:96
-msgid "Unable to fetch user boards."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:120
-msgid "Unable to fetch board lists."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:144
-msgid "Unable to fetch board members."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:168
-msgid "Unable to fetch board lables."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:195
-msgid "Unable to create a card."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:217
-msgid "Unable to get custom fields."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:241
-msgid "Unable to fetch list cards."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:265
-msgid "Unable to fetch checklists."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:291
-msgid "Unable to create a checklist item."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:315
-msgid "Unable to add card label."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:342
-msgid "Unable to update a card."
-msgstr ""
-
-#: src/integrations/trello/functions/trello-api.php:366
+#: src/integrations/trello/actions/trello-add-card-comment.php:104
+msgctxt "Trello"
 msgid "Unable to add card comment."
 msgstr ""
 
-#: src/integrations/trello/functions/trello-api.php:390
+#. translators: %1$s is the card name
+#: src/integrations/trello/actions/trello-add-card-label.php:32
+#, php-format
+msgctxt "Trello"
+msgid "Add a label to {{a card:%1$s}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-card-label.php:36
+msgctxt "Trello"
+msgid "Add a label to {{a card}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-card-label.php:85
+msgctxt "Trello"
+msgid "Unable to add card label."
+msgstr ""
+
+#. translators: %1$s is the card name
+#: src/integrations/trello/actions/trello-add-card-member.php:32
+#, php-format
+msgctxt "Trello"
+msgid "Add a member to {{a card:%1$s}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-card-member.php:36
+msgctxt "Trello"
+msgid "Add a member to {{a card}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-card-member.php:59
+msgctxt "Trello"
+msgid "Select a member"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-card-member.php:60
+#: src/integrations/trello/helpers/trello-app-helpers.php:210
+msgctxt "Trello"
+msgid "Member ID"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-card-member.php:89
+msgctxt "Trello"
 msgid "Unable to add card member."
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:167
+#. translators: %1$s is the card name
+#: src/integrations/trello/actions/trello-add-checklist-item.php:32
+#, php-format
 msgctxt "Trello"
-msgid "Unable to verify security nonce"
+msgid "Create a checklist item in {{a card:%1$s}}"
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:288
+#: src/integrations/trello/actions/trello-add-checklist-item.php:36
+msgctxt "Trello"
+msgid "Create a checklist item in {{a card}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-checklist-item.php:41
+msgctxt "Trello"
+msgid "Checklist item ID"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-checklist-item.php:70
+msgctxt "Trello"
+msgid "Checklist item name"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-checklist-item.php:77
+#: src/integrations/trello/helpers/trait-trello-card-data.php:95
+msgctxt "Trello"
+msgid "Due date"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-checklist-item.php:85
+msgctxt "Trello"
+msgid "Checked"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-checklist-item.php:91
+#: src/integrations/trello/helpers/trait-trello-card-data.php:65
+msgctxt "Trello"
+msgid "Position"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-add-checklist-item.php:139
+msgctxt "Trello"
+msgid "Unable to create checklist item."
+msgstr ""
+
+#. translators: %1$s is the card name
+#: src/integrations/trello/actions/trello-create-card.php:41
+#, php-format
+msgctxt "Trello"
+msgid "Create {{a card:%1$s}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-create-card.php:45
+msgctxt "Trello"
+msgid "Create {{a card}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-create-card.php:85
+msgctxt "Trello"
+msgid "Unable to create card."
+msgstr ""
+
+#. translators: %1$s is the card name
+#: src/integrations/trello/actions/trello-update-card.php:41
+#, php-format
+msgctxt "Trello"
+msgid "Update {{a card:%1$s}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-update-card.php:45
+msgctxt "Trello"
+msgid "Update {{a card}}"
+msgstr ""
+
+#: src/integrations/trello/actions/trello-update-card.php:87
+msgctxt "Trello"
+msgid "Unable to update card."
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:43
+msgctxt "Trello"
+msgid "Name"
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:54
+msgctxt "Trello"
+msgid "Description"
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:86
+msgctxt "Trello"
+msgid "Start date"
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:111
+msgctxt "Trello"
+msgid "Custom fields"
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:116
+msgctxt "Trello"
+msgid "Field name"
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:132
+msgctxt "Trello"
+msgid "Value"
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:148
+msgctxt "Trello"
+msgid "Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets."
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:224
+#: src/integrations/trello/helpers/trello-app-helpers.php:136
+msgctxt "Trello"
+msgid "Card ID"
+msgstr ""
+
+#: src/integrations/trello/helpers/trait-trello-card-data.php:228
+msgctxt "Trello"
+msgid "Card URL"
+msgstr ""
+
+#. translators: %s is the error message from the Trello API
+#: src/integrations/trello/helpers/trello-api-caller.php:56
+#, php-format
+msgctxt "Trello"
+msgid "Error: %s"
+msgstr ""
+
+#. translators: %d is the HTTP status code
+#: src/integrations/trello/helpers/trello-api-caller.php:62
+#, php-format
+msgctxt "Trello"
+msgid "Failed with status code: %d"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:85
+msgctxt "Trello"
+msgid "Unable to fetch user info."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:103
+msgctxt "Trello"
+msgid "Unable to verify Trello account."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:132
+msgctxt "Trello"
+msgid "Trello account info not found. Please reconnect."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:142
+msgctxt "Trello"
+msgid "Unable to fetch user boards."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:164
+msgctxt "Trello"
+msgid "Unable to fetch board lists."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:186
+msgctxt "Trello"
+msgid "Unable to fetch board members."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:217
+msgctxt "Trello"
+msgid "Unable to fetch board labels."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:254
+msgctxt "Trello"
+msgid "Unable to fetch list cards."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:276
+msgctxt "Trello"
+msgid "Unable to fetch checklists."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-api-caller.php:298
+msgctxt "Trello"
+msgid "Unable to get custom fields."
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:79
+msgctxt "Trello"
+msgid "Board"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:80
+msgctxt "Trello"
+msgid "Board ID"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:84
+msgctxt "Trello"
+msgid "Select a board"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:107
+msgctxt "Trello"
+msgid "List"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:108
+msgctxt "Trello"
+msgid "List ID"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:112
+msgctxt "Trello"
+msgid "Select a list"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:135
+msgctxt "Trello"
+msgid "Card"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:140
+msgctxt "Trello"
+msgid "Select a card"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:162
+msgctxt "Trello"
+msgid "Checklist"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:163
+msgctxt "Trello"
+msgid "Checklist ID"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:167
+msgctxt "Trello"
+msgid "Select a checklist"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:191
+msgctxt "Trello"
+msgid "Member"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:192
+msgctxt "Trello"
+msgid "No member"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:208
+msgctxt "Trello"
+msgid "Members"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:230
+msgctxt "Trello"
+msgid "Label"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:231
+msgctxt "Trello"
+msgid "No label"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:248
+msgctxt "Trello"
+msgid "Labels"
+msgstr ""
+
+#: src/integrations/trello/helpers/trello-app-helpers.php:286
 msgctxt "Trello"
 msgid "No boards were found"
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:323
-#: src/integrations/trello/functions/trello-functions.php:329
-#: src/integrations/trello/functions/trello-functions.php:378
-#: src/integrations/trello/functions/trello-functions.php:426
-msgctxt "Trello"
-msgid "Please select a board"
-msgstr ""
-
-#: src/integrations/trello/functions/trello-functions.php:335
+#: src/integrations/trello/helpers/trello-app-helpers.php:311
 msgctxt "Trello"
 msgid "No lists were found"
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:386
+#: src/integrations/trello/helpers/trello-app-helpers.php:334
 msgctxt "Trello"
 msgid "No members were found in the given board"
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:434
+#: src/integrations/trello/helpers/trello-app-helpers.php:357
 msgctxt "Trello"
 msgid "No labels were found"
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:507
+#: src/integrations/trello/helpers/trello-app-helpers.php:381
 msgctxt "Trello"
 msgid "Please select a list"
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:515
+#: src/integrations/trello/helpers/trello-app-helpers.php:387
 msgctxt "Trello"
 msgid "No cards were found in the given list"
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:557
+#: src/integrations/trello/helpers/trello-app-helpers.php:411
 msgctxt "Trello"
 msgid "Please select a card"
 msgstr ""
 
-#: src/integrations/trello/functions/trello-functions.php:565
+#: src/integrations/trello/helpers/trello-app-helpers.php:417
 msgctxt "Trello"
 msgid "No checklists were found on the given card"
 msgstr ""
 
-#: src/integrations/trello/settings/settings-trello.php:55
-msgid "Your Trello account has been connected successfully!"
-msgstr ""
-
-#. translators: %s: Error message
-#: src/integrations/trello/settings/settings-trello.php:65
-#, php-format
-msgid "There was an error connecting your Trello account: %s"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:31
+#: src/integrations/trello/helpers/trello-app-helpers.php:440
 msgctxt "Trello"
-msgid "Trello"
+msgid "No custom fields defined for this board"
 msgstr ""
 
-#: src/integrations/trello/settings/view-trello.php:42
+#: src/integrations/trello/helpers/trello-app-helpers.php:491
 msgctxt "Trello"
-msgid "Connect Uncanny Automator to Trello"
+msgid "Please select a board"
 msgstr ""
 
-#: src/integrations/trello/settings/view-trello.php:46
+#: src/integrations/trello/settings/trello-settings.php:38
 msgctxt "Trello"
-msgid "Connect Uncanny Automator to Trello to automatically manage your projects from inside your WordPress site. Have form submissions create new checklist items or new comments in a forum discussion automatically update a Trello card; you might even have new group members automatically added to a card."
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:50
-msgctxt "Trello"
-msgid "Activating this integration will enable the following for use in your recipes:"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:55
-#: src/integrations/trello/settings/view-trello.php:58
-#: src/integrations/trello/settings/view-trello.php:61
-#: src/integrations/trello/settings/view-trello.php:64
-#: src/integrations/trello/settings/view-trello.php:67
-#: src/integrations/trello/settings/view-trello.php:70
-msgctxt "Trello"
-msgid "Action:"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:55
-msgctxt "Trello"
-msgid "Create a card"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:58
-msgctxt "Trello"
-msgid "Create a checklist item in a card"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:61
-msgctxt "Trello"
-msgid "Add a label to your card"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:64
-msgctxt "Trello"
-msgid "Update a card"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:67
-msgctxt "Trello"
-msgid "Add a comment to a card"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:70
-msgctxt "Trello"
-msgid "Add a member to a card"
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:76
-msgctxt "Trello"
-msgid "Uncanny Automator only supports connecting to one Trello account at a time."
-msgstr ""
-
-#: src/integrations/trello/settings/view-trello.php:96
-msgctxt "Trello"
-msgid "Connect Trello account"
+msgid "Missing access token in credentials."
 msgstr ""
 
 #. translators: 1. Username
-#: src/integrations/trello/settings/view-trello.php:128
+#: src/integrations/trello/settings/trello-settings.php:84
 #, php-format
 msgctxt "Trello"
 msgid "Username: %1$s"
 msgstr ""
 
-#: src/integrations/trello/settings/view-trello.php:142
+#: src/integrations/trello/settings/trello-settings.php:130
 msgctxt "Trello"
-msgid "Disconnect"
+msgid "Connect Uncanny Automator to Trello to automatically manage your projects from inside your WordPress site. Have form submissions create new checklist items or new comments in a forum discussion automatically update a Trello card; you might even have new group members automatically added to a card."
 msgstr ""
 
 #. translators: %1$s: Phone number
@@ -39444,6 +40064,11 @@ msgstr ""
 msgid "Post author ID"
 msgstr ""
 
+#: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:170
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:41
+msgid "Comment ID"
+msgstr ""
+
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:175
 msgid "Commenter name"
 msgstr ""
@@ -39458,6 +40083,10 @@ msgstr ""
 
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:190
 msgid "Comment content"
+msgstr ""
+
+#: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:195
+msgid "Comment URL"
 msgstr ""
 
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:200
