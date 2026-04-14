@@ -1,134 +1,74 @@
 <?php
-namespace Uncanny_Automator;
+
+namespace Uncanny_Automator\Integrations\Linkedin;
+
+use Uncanny_Automator\Automator;
 
 /**
  * Class LINKEDIN_POST_PUBLISH
  *
  * @package Uncanny_Automator
+ *
+ * @property Linkedin_App_Helpers $helpers
+ * @property Linkedin_Api_Caller $api
  */
-class LINKEDIN_POST_PUBLISH {
-
-	use \Uncanny_Automator\Recipe\Actions;
-
-	public function __construct() {
-
-		$this->setup_action();
-
-	}
+class LINKEDIN_POST_PUBLISH extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * Setup Action.
-	 *
-	 * @return void.
-	 */
-	protected function setup_action() {
-
-		$this->set_integration( 'LINKEDIN' );
-
-		$this->set_action_code( 'LINKEDIN_POST_PUBLISH' );
-
-		$this->set_action_meta( 'LINKEDIN_POST_PUBLISH_META' );
-
-		$this->set_is_pro( false );
-
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/linkedin/' ) );
-
-		$this->set_requires_user( false );
-
-		/* translators: tag name */
-		$this->set_sentence( sprintf( esc_attr__( 'Publish a post to {{a LinkedIn page:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
-
-		$this->set_readable_sentence( esc_attr__( 'Publish a post to {{a LinkedIn page}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		$this->set_wpautop( false );
-
-		$this->register_action();
-
-	}
-
-	/**
-	 * Method load_options
+	 * Setup the action.
 	 *
 	 * @return void
 	 */
-	public function load_options() {
+	public function setup_action() {
 
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options_group' => array(
-					$this->get_action_meta() => array(
-						array(
-							'option_code'           => $this->get_action_meta(),
-							'label'                 => esc_attr__( 'LinkedIn Page', 'uncanny-automator' ),
-							'input_type'            => 'select',
-							'is_ajax'               => true,
-							'endpoint'              => 'automator_linkedin_get_pages',
-							'supports_custom_value' => false,
-							'required'              => true,
-						),
-						array(
-							'option_code'     => 'BODY',
-							'label'           => esc_attr__( 'Message', 'uncanny-automator' ),
-							'input_type'      => 'textarea',
-							'supports_tokens' => true,
-							'required'        => true,
-						),
-					),
-				),
+		$this->set_integration( 'LINKEDIN' );
+		$this->set_action_code( 'LINKEDIN_POST_PUBLISH' );
+		$this->set_action_meta( 'LINKEDIN_POST_PUBLISH_META' );
+		$this->set_is_pro( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/linkedin/' ) );
+		$this->set_requires_user( false );
+		$this->set_wpautop( false );
+		$this->set_readable_sentence( esc_attr_x( 'Publish a post to {{a LinkedIn page}}', 'LinkedIn', 'uncanny-automator' ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s is the LinkedIn page name
+				esc_attr_x( 'Publish a post to {{a LinkedIn page:%1$s}}', 'LinkedIn', 'uncanny-automator' ),
+				$this->get_action_meta()
 			)
 		);
-
 	}
 
 	/**
-	 * Method process_action.
+	 * Define options.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
-	 *
-	 * @return void.
+	 * @return array
 	 */
-	public function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-
-		$helper = new Linkedin_Helpers( false );
-
-		$message = isset( $parsed['BODY'] ) ? $this->format( $parsed['BODY'] ) : '';
-
-		$urn = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
-
-		try {
-
-			$body = array(
-				'access_token' => $helper->get_client()['access_token'],
-				'message'      => $message,
-				'urn'          => $urn,
-				'action'       => 'post_publish',
-			);
-
-			$helper->api_call( $body, $action_data );
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-		}
-
+	public function options() {
+		return array(
+			$this->helpers->get_page_option_config( $this->get_action_meta() ),
+			$this->helpers->get_message_option_config( 'BODY' ),
+		);
 	}
 
-	public function format( $string = '' ) {
+	/**
+	 * Process the action.
+	 *
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        Additional args.
+	 * @param array $parsed      Parsed token values.
+	 *
+	 * @return bool
+	 * @throws \Exception If API call fails.
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		return sanitize_textarea_field( str_replace( array( '<br />', '<br/>', '<br>' ), PHP_EOL, $string ) );
+		$content = $this->helpers->format_post_content( $parsed['BODY'] ?? '' );
+		$urn     = sanitize_text_field( $parsed[ $this->get_action_meta() ] ?? '' );
 
+		$this->api->publish_post( $content, $urn, $action_data );
+
+		return true;
 	}
-
-
 }

@@ -33,7 +33,7 @@ class Loop_Db {
 			$this->db->prepare(
 				"SELECT * FROM {$this->db->posts} WHERE post_parent = %d AND post_type = %s",
 				absint( $recipe_id ),
-				'uo-loop'
+				AUTOMATOR_POST_TYPE_LOOP
 			),
 			ARRAY_A
 		);
@@ -64,8 +64,8 @@ class Loop_Db {
 					)
 					AND post_type = %s
 				",
-				'uo-recipe',
-				'uo-loop'
+				AUTOMATOR_POST_TYPE_RECIPE,
+				AUTOMATOR_POST_TYPE_LOOP
 			),
 			ARRAY_A
 		);
@@ -78,7 +78,6 @@ class Loop_Db {
 		Automator()->cache->set( $cache_key, $all_loops );
 
 		return $all_loops;
-
 	}
 
 	/**
@@ -92,7 +91,6 @@ class Loop_Db {
 	public function find_recipe_loops_from_recipes_loops( $recipe_id, $recipes_loops ) {
 
 		return isset( $recipes_loops[ $recipe_id ] ) ? $recipes_loops[ $recipe_id ] : array();
-
 	}
 
 	/**
@@ -159,7 +157,6 @@ class Loop_Db {
 		$default_action_tokens[] = $status->toArray();
 
 		return apply_filters( "automator_action_{$action_code}_tokens_renderable", $default_action_tokens, $action_id, $recipe_id );
-
 	}
 
 	/**
@@ -175,13 +172,12 @@ class Loop_Db {
 			$this->db->prepare(
 				"SELECT * FROM {$this->db->posts} WHERE post_parent = %d AND post_type = %s ORDER BY menu_order ASC",
 				absint( $loop_id ),
-				'uo-loop-filter'
+				AUTOMATOR_POST_TYPE_LOOP_FILTER
 			),
 			ARRAY_A
 		);
 
 		return (array) $filters;
-
 	}
 
 	/**
@@ -197,13 +193,12 @@ class Loop_Db {
 			$this->db->prepare(
 				"SELECT * FROM {$this->db->posts} WHERE post_parent = %d AND post_type = %s ORDER BY menu_order ASC",
 				absint( $loop_id ),
-				'uo-action'
+				AUTOMATOR_POST_TYPE_ACTION
 			),
 			ARRAY_A
 		);
 
 		return (array) $actions;
-
 	}
 
 	/**
@@ -240,7 +235,6 @@ class Loop_Db {
 		);
 
 		return absint( $num_processed_users );
-
 	}
 
 	/**
@@ -274,7 +268,5 @@ class Loop_Db {
 		);
 
 		return ! empty( $results );
-
 	}
-
 }

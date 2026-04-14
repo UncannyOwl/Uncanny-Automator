@@ -37,6 +37,7 @@ class Token_Data_Types_Helper {
 			Token_Data_Types::DATETIME,
 			Token_Data_Types::BOOLEAN,
 			Token_Data_Types::ARRAY,
+			Token_Data_Types::JSON,
 		);
 	}
 

@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\Api\Presentation\Loop\Filters;
 
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
+
 /**
  * Loop_Filter_Sentence_Composer
  *
@@ -59,7 +61,7 @@ class Loop_Filter_Sentence_Composer {
 
 		foreach ( $segments as $index => $segment ) {
 			// First segment is always plain text before any pills.
-			if ( 0 === $index && ! str_contains( $segment, '}}' ) ) {
+			if ( 0 === $index && ! Str::contains( $segment, '}}' ) ) {
 				$html .= $this->render_plain_segment( $segment );
 				continue;
 			}

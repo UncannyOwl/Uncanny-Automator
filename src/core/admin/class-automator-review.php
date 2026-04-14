@@ -408,7 +408,7 @@ class Automator_Review {
 				// Check only Automator related pages.
 				global $typenow;
 
-				if ( empty( $typenow ) || 'uo-recipe' !== $typenow ) {
+				if ( empty( $typenow ) || AUTOMATOR_POST_TYPE_RECIPE !== $typenow ) {
 					return;
 				}
 
@@ -935,7 +935,7 @@ class Automator_Review {
 		// Get current page
 		$page = automator_filter_input( 'page' );
 
-		if ( ( 'uncanny-automator-dashboard' !== $page ) && ( empty( $typenow ) || 'uo-recipe' !== $typenow ) ) {
+		if ( ( 'uncanny-automator-dashboard' !== $page ) && ( empty( $typenow ) || AUTOMATOR_POST_TYPE_RECIPE !== $typenow ) ) {
 			return false;
 		}
 

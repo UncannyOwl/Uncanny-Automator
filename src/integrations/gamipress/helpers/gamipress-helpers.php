@@ -61,10 +61,6 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_award_types( $label = null, $option_code = 'GPAWARDTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Achievement type', 'uncanny-automator' );
@@ -128,10 +124,6 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_points_types( $label = null, $option_code = 'GPPOINTSTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Point type', 'uncanny-automator' );
@@ -190,10 +182,6 @@ class Gamipress_Helpers {
 	 * @return mixed
 	 */
 	public function list_gp_rank_types( $label = null, $option_code = 'GPRANKTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Rank type', 'uncanny-automator' );

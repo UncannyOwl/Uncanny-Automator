@@ -111,6 +111,11 @@ class Trigger_Engine {
 	/**
 	 * Register a single trigger hook with WordPress.
 	 *
+	 * All hooks share the same callback — on_hook_fired() — instead of allocating
+	 * a new closure per hook. With 200+ unique hooks registered, closures add up:
+	 * each one captures $this and $hook_name and persists in $wp_filter for the
+	 * entire request. A single method reference avoids that overhead entirely.
+	 *
 	 * @param array $trigger The trigger configuration.
 	 *
 	 * @return void
@@ -132,15 +137,27 @@ class Trigger_Engine {
 
 		$this->registered_hooks[ $hook_name ] = array( $trigger_code );
 
-		// Register WordPress hook that publishes to our event system.
-		add_action(
-			$hook_name,
-			function ( ...$args ) use ( $hook_name ) {
-				$this->publish_event( $hook_name, $args );
-			},
-			10,
-			99
-		);
+		// One shared method handles every hook. current_action() identifies which
+		// hook fired — safe because on_hook_fired() is invoked directly by WP's
+		// hook dispatcher, before any $wp_current_filter manipulation in the queue.
+		add_action( $hook_name, array( $this, 'on_hook_fired' ), 10, 99 );
+	}
+
+	/**
+	 * Shared callback registered for every automation hook.
+	 *
+	 * Called directly by WordPress when a monitored hook fires.
+	 * current_action() reliably returns the correct hook name at this point
+	 * because we are inside WordPress's own dispatcher — our queue's
+	 * call_with_filter_context() manipulation only happens later, during
+	 * process_queue(), after this method has already returned.
+	 *
+	 * @param mixed ...$args Hook arguments passed by WordPress.
+	 *
+	 * @return void
+	 */
+	public function on_hook_fired( ...$args ) {
+		$this->publish_event( current_action(), $args );
 	}
 
 	/**
@@ -166,7 +183,9 @@ class Trigger_Engine {
 
 		foreach ( $triggers as $group ) {
 			if ( isset( $group[0] ) ) {
-				$result = array_merge( $result, $group );
+				foreach ( $group as $item ) {
+					$result[] = $item;
+				}
 				continue;
 			}
 

@@ -173,7 +173,7 @@ function automator_get_trigger_crud_service(): Trigger_CRUD_Service {
  * @return Trigger_Registry_Service
  */
 function automator_get_trigger_registry_service(): Trigger_Registry_Service {
-	return Trigger_Registry_Service::get_instance();
+	return Trigger_Registry_Service::instance();
 }
 
 /**
@@ -200,7 +200,7 @@ function automator_get_action_registry_service(): Action_Registry_Service {
  * @return Condition_Registry_Service
  */
 function automator_get_condition_registry_service(): Condition_Registry_Service {
-	return Condition_Registry_Service::get_instance();
+	return Condition_Registry_Service::instance();
 }
 
 /**

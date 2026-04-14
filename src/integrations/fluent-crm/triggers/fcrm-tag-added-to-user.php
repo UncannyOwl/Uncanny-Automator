@@ -38,7 +38,6 @@ class FCRM_TAG_ADDED_TO_USER {
 	public function __construct() {
 
 		$this->define_trigger();
-
 	}
 
 	/**
@@ -77,11 +76,10 @@ class FCRM_TAG_ADDED_TO_USER {
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags(),
+					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->trigger_meta, array( 'is_any' => true ) ),
 				),
 			)
 		);
-
 	}
 
 	/**
@@ -166,5 +164,4 @@ class FCRM_TAG_ADDED_TO_USER {
 			}
 		}
 	}
-
 }

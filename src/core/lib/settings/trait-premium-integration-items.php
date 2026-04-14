@@ -2,7 +2,6 @@
 namespace Uncanny_Automator\Settings;
 
 use Exception;
-use ReflectionClass;
 
 /**
  * Trait for discovering available actions and triggers in premium integrations
@@ -60,7 +59,13 @@ trait Premium_Integration_Items {
 	}
 
 	/**
-	 * Get items by instantiating classes and getting readable sentences
+	 * Get items (actions or triggers) for this integration from the
+	 * Integration_Query_Service, which merges the CDN feed with locally
+	 * registered integrations and caches the result per request.
+	 *
+	 * Using the query service means items are present regardless of
+	 * requirements_met() status, so disconnected integrations (e.g. Facebook
+	 * Lead Ads) still show their available items on the settings page.
 	 *
 	 * @param string $type Either 'actions' or 'triggers'
 	 * @return array
@@ -71,83 +76,34 @@ trait Premium_Integration_Items {
 		// Validate type.
 		$this->validate_item_type( $type );
 
-		$items     = array();
-		$directory = $this->get_items_directory( $type );
+		$query_service = \Uncanny_Automator\Api\Services\Integration\Integration_Query_Service::get_instance();
+		$integration   = $query_service->get_integration( $this->get_integration() );
 
-		if ( ! is_dir( $directory ) ) {
-			return $items;
+		if ( null === $integration ) {
+			return array();
 		}
 
-		// Get all PHP files in the directory
-		$files = glob( $directory . '/*.php' );
+		$integration_items = 'actions' === $type
+			? $integration->get_items()->get_actions()
+			: $integration->get_items()->get_triggers();
 
-		foreach ( $files as $file ) {
-			$class_name = $this->get_class_name_from_file( $file );
-			if ( $class_name && class_exists( $class_name ) ) {
-				$item     = new $class_name( $this->dependencies );
-				$sentence = $item->get_readable_sentence();
-				if ( $sentence ) {
-					$items[] = $this->format_readable_sentence( $sentence );
-				}
+		$items = array();
+		foreach ( $integration_items as $item ) {
+			$data = $item->to_array();
+
+			if ( ! empty( $data['is_deprecated'] ) ) {
+				continue;
 			}
+
+			$sentence = $data['sentence']['short'] ?? '';
+			if ( '' === $sentence ) {
+				continue;
+			}
+
+			$items[] = $sentence;
 		}
 
 		return $items;
-	}
-
-	/**
-	 * Get the full path to the items directory
-	 *
-	 * @param string $type Either 'actions' or 'triggers'
-	 * @return string
-	 * @throws Exception If invalid item type.
-	 */
-	protected function get_items_directory( $type ) {
-
-		// Validate type.
-		$this->validate_item_type( $type );
-
-		// Get the current class's directory
-		$reflection = new ReflectionClass( get_class( $this ) );
-		$dir        = dirname( $reflection->getFileName() );
-
-		// Go up one level and into type directory
-		return dirname( $dir ) . '/' . $type;
-	}
-
-	/**
-	 * Get class name from file path
-	 *
-	 * @param string $file_path
-	 * @return string|null
-	 */
-	protected function get_class_name_from_file( $file_path ) {
-		// Get the file contents
-		$content = file_get_contents( $file_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-
-		// Extract namespace
-		if ( preg_match( '/namespace\s+([^;]+);/', $content, $matches ) ) {
-			$namespace = $matches[1];
-		}
-
-		// Extract class name
-		if ( preg_match( '/class\s+(\w+)/', $content, $matches ) ) {
-			$class_name = $matches[1];
-			return isset( $namespace ) ? $namespace . '\\' . $class_name : $class_name;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Format the readable sentence by replacing placeholders
-	 *
-	 * @param string $sentence
-	 * @return string
-	 */
-	protected function format_readable_sentence( $sentence ) {
-		// Replace {{text}} with "text"
-		return preg_replace( '/\{\{([^}]+)\}\}/', '$1', $sentence );
 	}
 
 	/**

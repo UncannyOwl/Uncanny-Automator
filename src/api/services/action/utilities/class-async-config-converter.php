@@ -39,7 +39,8 @@ class Async_Config_Converter {
 		switch ( $async_config['mode'] ) {
 			case 'delay':
 				if ( isset( $async_config['delay_number'] ) ) {
-					$meta['async_delay_number'] = (int) $async_config['delay_number'];
+					// Enforce positive delay.
+					$meta['async_delay_number'] = max( 1, (int) $async_config['delay_number'] );
 				}
 				if ( isset( $async_config['delay_unit'] ) ) {
 					$meta['async_delay_unit'] = $async_config['delay_unit'];
@@ -57,10 +58,18 @@ class Async_Config_Converter {
 
 			case 'schedule':
 				if ( isset( $async_config['schedule_date'] ) ) {
-					$meta['async_schedule_date'] = $async_config['schedule_date'];
+					$meta['async_schedule_date'] = $this->parse_schedule_value(
+						$async_config['schedule_date'],
+						'Y-m-d',
+						gmdate( 'Y-m-d' )
+					);
 				}
 				if ( isset( $async_config['schedule_time'] ) ) {
-					$meta['async_schedule_time'] = $async_config['schedule_time'];
+					$meta['async_schedule_time'] = $this->parse_schedule_value(
+						$async_config['schedule_time'],
+						'h:i A',
+						'12:00 PM'
+					);
 				}
 
 				// Generate sentence for schedule
@@ -96,5 +105,32 @@ class Async_Config_Converter {
 		);
 
 		return $number * ( $multipliers[ $unit ] ?? 1 );
+	}
+
+	/**
+	 * Parse a schedule date or time value.
+	 *
+	 * Tokens pass through untouched. Parseable strings are normalized
+	 * to the given format via strtotime. Anything else gets the fallback.
+	 *
+	 * @param string $raw      Raw input value.
+	 * @param string $format   PHP date format to normalize to.
+	 * @param string $fallback Default value when parsing fails.
+	 *
+	 * @return string Normalized value.
+	 */
+	private function parse_schedule_value( string $raw, string $format, string $fallback ): string {
+
+		if ( false !== strpos( $raw, '{{' ) ) {
+			return $raw;
+		}
+
+		$timestamp = strtotime( $raw );
+
+		if ( false === $timestamp ) {
+			return $fallback;
+		}
+
+		return gmdate( $format, $timestamp );
 	}
 }

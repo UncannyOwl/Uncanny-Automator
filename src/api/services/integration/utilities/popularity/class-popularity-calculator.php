@@ -224,7 +224,7 @@ class Popularity_Calculator {
 					AND pm.meta_value != ''
 				GROUP BY pm.meta_value
 				ORDER BY usage_count DESC",
-				'uo-recipe',
+				AUTOMATOR_POST_TYPE_RECIPE,
 				Recipe_Status::PUBLISH,
 				$post_type,
 				Recipe_Status::PUBLISH,
@@ -265,10 +265,10 @@ class Popularity_Calculator {
 	 */
 	private function scope_to_post_type( $scope ) {
 		$map = array(
-			Integration_Item_Types::TRIGGER     => 'uo-trigger',
-			Integration_Item_Types::ACTION      => 'uo-action',
-			Integration_Item_Types::LOOP_FILTER => 'uo-loop-filter',
-			Integration_Item_Types::CLOSURE     => 'uo-closure',
+			Integration_Item_Types::TRIGGER     => AUTOMATOR_POST_TYPE_TRIGGER,
+			Integration_Item_Types::ACTION      => AUTOMATOR_POST_TYPE_ACTION,
+			Integration_Item_Types::LOOP_FILTER => AUTOMATOR_POST_TYPE_LOOP_FILTER,
+			Integration_Item_Types::CLOSURE     => AUTOMATOR_POST_TYPE_CLOSURE,
 		);
 
 		return isset( $map[ $scope ] ) ? $map[ $scope ] : '';

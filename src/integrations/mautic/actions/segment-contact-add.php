@@ -1,29 +1,31 @@
 <?php
+
 namespace Uncanny_Automator\Integrations\Mautic;
 
-use Uncanny_Automator\Api_Server;
-
 /**
- * Class SEGMENT_CONTACT_ADD
+ * Adds a contact (identified by email) to a Mautic segment.
  *
  * @since 5.0
+ *
+ * @property Mautic_App_Helpers $helpers
+ * @property Mautic_Api_Caller $api
  */
-class SEGMENT_CONTACT_ADD extends \Uncanny_Automator\Recipe\Action {
+class SEGMENT_CONTACT_ADD extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * Setups the action.
+	 * Configure the action code, meta key, sentence templates, action tokens, and user requirement.
 	 *
 	 * @return void
 	 */
 	protected function setup_action() {
-
-		$this->set_integration( Mautic_Integration::ID );
+		$this->set_integration( 'MAUTIC' );
 		$this->set_action_code( 'SEGMENT_CONTACT_ADD' );
 		$this->set_action_meta( 'SEGMENT_CONTACT_ADD_META' );
 		$this->set_requires_user( false );
+		$this->set_readable_sentence( esc_attr_x( 'Add {{a contact}} to {{a segment}}', 'Mautic', 'uncanny-automator' ) );
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
+				// translators: %1$s is the email option code, %2$s is the segment option code
 				esc_attr_x(
 					'Add {{a contact:%1$s}} to {{a segment:%2$s}}',
 					'Mautic',
@@ -37,88 +39,49 @@ class SEGMENT_CONTACT_ADD extends \Uncanny_Automator\Recipe\Action {
 		$this->set_action_tokens(
 			array(
 				'SEGMENT_NAME' => array(
-					'name' => _x( 'Segment name', 'Mautic', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Segment name', 'Mautic', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
 			$this->get_action_code()
 		);
-
-		$this->set_readable_sentence( esc_attr_x( 'Add {{a contact}} to {{a segment}}', 'Mautic', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * Options definitions.
+	 * Define the option fields for the action.
 	 *
-	 * @return mixed[]
+	 * @return array
 	 */
 	public function options() {
-
-		$email = array(
-			'option_code' => 'EMAIL',
-			'input_type'  => 'email',
-			'label'       => _x( 'Email', 'Mautic', 'uncanny-automator' ),
-			'required'    => true,
-		);
-
-		$segment = array(
-			'option_code' => 'SEGMENT',
-			'input_type'  => 'select',
-			'label'       => _x( 'Segment', 'Mautic', 'uncanny-automator' ),
-			'token_name'  => _x( 'Segment ID', 'Mautic', 'uncanny-automator' ),
-			'required'    => true,
-			'ajax'        => array(
-				'endpoint' => 'automator_mautic_segment_fetch',
-				'event'    => 'on_load',
-			),
-		);
-
 		return array(
-			$email,
-			$segment,
+			$this->helpers->get_email_option_config(),
+			$this->helpers->get_segment_option_config(),
 		);
 	}
 
 	/**
-	 * Processes the action.
+	 * Add the contact to the specified Mautic segment via the API proxy.
+	 * Hydrates the SEGMENT_NAME action token on success.
 	 *
-	 * @param int $user_id
-	 * @param mixed[] $action_data
-	 * @param int $recipe_id
-	 * @param mixed[] $args
-	 * @param array{FIELDS:string,EMAIL:string} $parsed
+	 * @param int     $user_id     The WordPress user ID.
+	 * @param mixed[] $action_data The action configuration data.
+	 * @param int     $recipe_id   The recipe ID.
+	 * @param mixed[] $args        Additional arguments including action_meta.
+	 * @param mixed[] $parsed      The parsed token values keyed by option code.
 	 *
-	 * @throws \Exception
-	 *
-	 * @return bool True if the action is successful. Returns false, otherwise.
+	 * @return bool True on success.
+	 * @throws \Exception For invalid params, or if the API request fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$auth = new Mautic_Client_Auth( Api_Server::get_instance() );
+		$segment = $this->helpers->validate_segment( $parsed['SEGMENT'] ?? '' );
+		$email   = $this->helpers->validate_email( $parsed['EMAIL'] ?? '' );
 
-		$credentials = $auth->get_credentials();
-
-		$segment = ! empty( $parsed['SEGMENT'] ) ? absint( $parsed['SEGMENT'] ) : '';
-		$email   = ! empty( $parsed['EMAIL'] ) ? $parsed['EMAIL'] : '';
-
-		// Invalid email. Complete with error.
-		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception(
-				sprintf(
-				/* translators: %s: Email address */
-					esc_html__( 'Invalid email: "%s"', 'uncanny-automator' ),
-					esc_html( $email )
-				),
-				500
-			);
-		}
-
-		$auth->api_call(
+		$this->api->api_request(
 			array(
-				'action'      => 'segment_contact_add',
-				'segment_id'  => $segment,
-				'contact'     => rawurlencode( $email ),
-				'credentials' => $credentials,
+				'action'     => 'segment_contact_add',
+				'segment_id' => $segment,
+				'contact'    => rawurlencode( $email ),
 			),
 			$action_data
 		);

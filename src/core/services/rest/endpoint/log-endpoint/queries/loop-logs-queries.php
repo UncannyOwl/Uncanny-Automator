@@ -108,17 +108,55 @@ class Loop_Logs_Queries {
 	}
 
 	/**
-	 * @param $action_id
-	 * @param $status
-	 * @param $params
+	 * @param int    $action_id
+	 * @param string $status
+	 * @param array  $params
+	 * @param int    $limit  Maximum number of items. 0 = unlimited.
+	 * @param int    $offset Offset for pagination.
 	 *
 	 * @return array
 	 */
-	public function get_entry_items( $action_id, $status, $params ) {
+	public function get_entry_items( $action_id, $status, $params, $limit = 0, $offset = 0 ) {
 
-		$results = $this->db->get_results(
+		$sql = $this->db->prepare(
+			"SELECT *
+			FROM {$this->db->prefix}uap_loop_entries_items
+			WHERE `status` = %s
+			AND action_id = %d
+			AND recipe_id = %d
+			AND recipe_log_id = %d
+			AND recipe_run_number = %d
+			ORDER BY id ASC",
+			$status,
+			$action_id,
+			$params['recipe_id'],
+			$params['recipe_log_id'],
+			$params['run_number']
+		);
+
+		if ( $limit > 0 ) {
+			$sql .= $this->db->prepare( ' LIMIT %d OFFSET %d', $limit, $offset );
+		}
+
+		$results = $this->db->get_results( $sql, self::QUERY_RESULTS_FORMAT );
+
+		return (array) $results;
+	}
+
+	/**
+	 * Get total count of entry items for a given action/status/params combination.
+	 *
+	 * @param int    $action_id
+	 * @param string $status
+	 * @param array  $params
+	 *
+	 * @return int
+	 */
+	public function get_entry_items_count( $action_id, $status, $params ) {
+
+		$count = $this->db->get_var(
 			$this->db->prepare(
-				"SELECT *
+				"SELECT COUNT(*)
 				FROM {$this->db->prefix}uap_loop_entries_items
 				WHERE `status` = %s
 				AND action_id = %d
@@ -130,11 +168,10 @@ class Loop_Logs_Queries {
 				$params['recipe_id'],
 				$params['recipe_log_id'],
 				$params['run_number']
-			),
-			self::QUERY_RESULTS_FORMAT
+			)
 		);
 
-		return (array) $results;
+		return absint( $count );
 	}
 
 	/**

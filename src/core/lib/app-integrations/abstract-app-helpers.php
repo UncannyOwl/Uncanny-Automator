@@ -317,9 +317,14 @@ abstract class App_Helpers {
 	 * @return bool True if credentials were stored, false otherwise.
 	 */
 	public function store_credentials( $credentials ) {
+		// Check if this is a first-time connection (no prior credentials).
+		$had_credentials = ! empty( automator_get_option( $this->get_credentials_option_name(), '' ) );
+
 		// Prepare credentials for storage.
 		$credentials = $this->prepare_credentials_for_storage( $credentials );
-		return automator_update_option( $this->get_credentials_option_name(), $credentials );
+		$result      = automator_update_option( $this->get_credentials_option_name(), $credentials );
+
+		return $result;
 	}
 
 	/**
@@ -339,7 +344,9 @@ abstract class App_Helpers {
 	 * @return bool True if credentials were deleted, false otherwise.
 	 */
 	public function delete_credentials() {
-		return automator_delete_option( $this->get_credentials_option_name() );
+		$result = automator_delete_option( $this->get_credentials_option_name() );
+
+		return $result;
 	}
 
 	/**
@@ -496,8 +503,10 @@ abstract class App_Helpers {
 		$decrypted = $encrypted ^ str_repeat( $key, ceil( strlen( $encrypted ) / strlen( $key ) ) );
 
 		// Unserialize and return original data
+		// Note: Do NOT change serialize/unserialize to json — existing user data is stored in serialized format.
+		// allowed_classes => false prevents object injection while preserving backward compatibility.
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Safe unserialization for data at rest decryption
-		$data = unserialize( $decrypted );
+		$data = unserialize( $decrypted, array( 'allowed_classes' => false ) );
 		return is_array( $data ) ? $data : array();
 	}
 }

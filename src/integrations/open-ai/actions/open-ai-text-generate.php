@@ -1,86 +1,64 @@
 <?php
-namespace Uncanny_Automator;
 
-use Uncanny_Automator\OpenAI\HTTP_Client;
+namespace Uncanny_Automator\Integrations\OpenAI;
+
+use Uncanny_Automator\Recipe\App_Action;
 
 /**
  * @since 4.10
  * @package Uncanny_Automator
+ *
+ * @property OpenAI_App_Helpers $helpers
+ * @property OpenAI_Api_Caller $api
  */
-class OPEN_AI_TEXT_GENERATE {
-
-	use Recipe\Actions, Recipe\Action_Tokens;
-
-	public function __construct() {
-
-		$this->setup_action();
-
-		$this->set_helpers( new Open_AI_Helpers( false ) );
-
-	}
+class OPEN_AI_TEXT_GENERATE extends App_Action {
 
 	/**
-	 * Setup Action.
-	 *
-	 * @return void.
+	 * @return void
 	 */
 	protected function setup_action() {
 
 		$this->set_integration( 'OPEN_AI' );
-
 		$this->set_action_code( 'OPEN_AI_TEXT_GENERATE' );
-
 		$this->set_action_meta( 'OPEN_AI_TEXT_GENERATE_META' );
-
 		$this->set_is_pro( false );
-
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/open-ai/' ) );
-
 		$this->set_requires_user( false );
+		$this->set_wpautop( false );
+		$this->set_background_processing( true );
 
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
-				esc_attr__( 'Use {{a prompt:%1$s}} to generate text', 'uncanny-automator' ),
+				// translators: %1$s is the input field name
+				esc_attr_x( 'Use {{a prompt:%1$s}} to generate text', 'OpenAI', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
 		);
 
-		/* translators: Action sentence */
-		$this->set_readable_sentence( esc_attr__( 'Use {{a prompt}} to generate text', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		$this->set_wpautop( false );
-
-		$this->set_background_processing( true );
+		$this->set_readable_sentence( esc_attr_x( 'Use {{a prompt}} to generate text', 'OpenAI', 'uncanny-automator' ) );
 
 		$this->set_action_tokens(
 			array(
 				'RESPONSE' => array(
-					'name' => esc_html__( 'Response', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Response', 'OpenAI', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
 			$this->get_action_code()
 		);
-
-		$this->register_action();
-
 	}
 
 	/**
-	 * Loads options.
-	 *
-	 * @return array The list of option fields.
+	 * @return array
 	 */
-	public function load_options() {
+	public function options() {
 
 		$description = wp_kses_post(
 			sprintf(
-				/* translators: Action field description */
-				__(
+				/* translators: 1: Opening anchor tag. 2: Closing anchor tag. */
+				esc_html_x(
 					'The maximum number of tokens. Tokens are shared between the prompt and the response. %1$sLearn more about tokens%2$s.',
+					'OpenAI',
 					'uncanny-automator'
 				),
 				'<a href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them" target="_blank">',
@@ -88,127 +66,63 @@ class OPEN_AI_TEXT_GENERATE {
 			)
 		);
 
-		return Automator()->utilities->keep_order_of_options(
+		return array(
 			array(
-				'options_group' => array(
-					$this->get_action_meta() => array(
-						array(
-							'option_code'     => 'MODEL',
-							/* translators: Action field */
-							'label'           => esc_attr__( 'Model', 'uncanny-automator' ),
-							'input_type'      => 'select',
-							'required'        => true,
-							'options'         => $this->load_models(),
-							'options_show_id' => false,
-						),
-						array(
-							'option_code' => 'TEMPERATURE',
-							/* translators: Action field */
-							'label'       => esc_attr__( 'Temperature', 'uncanny-automator' ),
-							'input_type'  => 'text',
-							'placeholder' => '0.7',
-							'description' => esc_html__( 'Higher values mean the model will take more risks. Try 0.9 for more creative applications and a value closer to 0 for a well-defined answer.', 'uncanny-automator' ),
-						),
-						array(
-							'option_code' => 'MAX_LEN',
-							/* translators: Action field */
-							'label'       => esc_attr__( 'Maximum length', 'uncanny-automator' ),
-							'description' => $description,
-							'input_type'  => 'text',
-							'placeholder' => '256',
-						),
-						array(
-							'option_code'       => $this->get_action_meta(),
-							/* translators: Action field */
-							'label'             => esc_attr__( 'Prompt', 'uncanny-automator' ),
-							'input_type'        => 'textarea',
-							'supports_markdown' => true,
-							'required'          => true,
-						),
-					),
-				),
-
-			)
+				'option_code'     => 'MODEL',
+				'label'           => esc_attr_x( 'Model', 'OpenAI', 'uncanny-automator' ),
+				'input_type'      => 'select',
+				'required'        => true,
+				'options'         => $this->load_models(),
+				'options_show_id' => false,
+			),
+			array(
+				'option_code' => 'TEMPERATURE',
+				'label'       => esc_attr_x( 'Temperature', 'OpenAI', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'placeholder' => '0.7',
+				'description' => esc_html_x( 'Higher values mean the model will take more risks. Try 0.9 for more creative applications and a value closer to 0 for a well-defined answer.', 'OpenAI', 'uncanny-automator' ),
+			),
+			array(
+				'option_code' => 'MAX_LEN',
+				'label'       => esc_attr_x( 'Maximum length', 'OpenAI', 'uncanny-automator' ),
+				'description' => $description,
+				'input_type'  => 'text',
+				'placeholder' => '256',
+			),
+			$this->helpers->get_prompt_field( $this->get_action_meta() ),
 		);
 	}
 
 	/**
-	 * Processes action.
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
-	 *
-	 * @return void.
+	 * @return bool
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$this->get_helpers()->migrate_text_models( $recipe_id );
+		$this->helpers->migrate_text_models( $recipe_id );
 
+		// Read from post meta (not $parsed) because migrate_text_models() may have just updated it.
 		$model       = get_post_meta( $action_data['ID'], 'MODEL', true );
-		$temperature = ! empty( $parsed['TEMPERATURE'] ) ? sanitize_text_field( $parsed['TEMPERATURE'] ) : 0.7;
-		$max_tokens  = ! empty( $parsed['MAX_LEN'] ) ? sanitize_text_field( $parsed['MAX_LEN'] ) : 256;
-		$prompt      = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
+		$temperature = ! empty( $parsed['TEMPERATURE'] ) ? sanitize_text_field( $parsed['TEMPERATURE'] ) : '0.7';
+		$max_tokens  = ! empty( $parsed['MAX_LEN'] ) ? sanitize_text_field( $parsed['MAX_LEN'] ) : '256';
+		$prompt      = sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ?? '' );
 
-		try {
+		$body = array(
+			'prompt'      => $prompt,
+			'temperature' => floatval( $temperature ),
+			'max_tokens'  => intval( $max_tokens ),
+			'model'       => $model,
+		);
 
-			$body = array(
-				'prompt'      => $prompt,
-				'temperature' => floatval( $temperature ),
-				'max_tokens'  => intval( $max_tokens ),
-				'model'       => $model,
-			);
+		$body = apply_filters( 'automator_open_ai_text_generate', $body );
 
-			$body = apply_filters( 'automator_open_ai_text_generate', $body );
-
-			require_once dirname( __DIR__ ) . '/client/http-client.php';
-
-			$client = new HTTP_Client( Api_Server::get_instance() );
-			$client->set_endpoint( 'v1/completions' );
-			$client->set_api_key( (string) automator_get_option( 'automator_open_ai_secret', '' ) );
-			$client->set_request_body( $body );
-
-			try {
-
-				$client->send_request();
-				$this->hydrate_tokens_from_response( $client->get_response() );
-
-			} catch ( \Exception $e ) {
-
-				$action_data['complete_with_errors'] = true;
-				return Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-			}
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-		}
-
-	}
-
-	/**
-	 * Hydrates this specific action tokens.
-	 *
-	 * @param array $response.
-	 *
-	 * @return self
-	 */
-	private function hydrate_tokens_from_response( $response = array() ) {
-
-		$response_text = isset( $response['choices'][0]['text'] )
-			? $response['choices'][0]['text'] :
-			''; // Defaults to empty string.
-
-		if ( 0 === strlen( $response_text ) ) {
-			throw new \Exception( 'The model predicted a completion that results in no output. Consider adjusting your prompt.', 400 );
-		}
+		$response      = $this->api->openai_request( 'v1/completions', $body );
+		$response_text = $this->api->get_completion_text( $response );
 
 		$this->hydrate_tokens(
 			array(
@@ -216,21 +130,33 @@ class OPEN_AI_TEXT_GENERATE {
 			)
 		);
 
-		return $this;
-
+		return true;
 	}
 
+	/**
+	 * Load available text models.
+	 *
+	 * @return array
+	 */
 	private function load_models() {
 
 		$recipe_id = automator_filter_input( 'post' );
 
-		$this->get_helpers()->migrate_text_models( $recipe_id );
+		$this->helpers->migrate_text_models( $recipe_id );
 
 		return array(
-			'babbage-002'            => 'babbage-002',
-			'davinci-002'            => 'davinci-002',
-			'gpt-3.5-turbo-instruct' => 'gpt-3.5-turbo-instruct',
+			array(
+				'value' => 'babbage-002',
+				'text'  => 'babbage-002',
+			),
+			array(
+				'value' => 'davinci-002',
+				'text'  => 'davinci-002',
+			),
+			array(
+				'value' => 'gpt-3.5-turbo-instruct',
+				'text'  => 'gpt-3.5-turbo-instruct',
+			),
 		);
 	}
-
 }

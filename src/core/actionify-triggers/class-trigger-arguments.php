@@ -16,6 +16,13 @@ use SplObjectStorage;
 class Trigger_Arguments {
 
 	/**
+	 * Maximum recursion depth for object cleaning.
+	 *
+	 * @var int
+	 */
+	const MAX_CLEAN_DEPTH = 10;
+
+	/**
 	 * Object storage for cycle detection during cleaning.
 	 *
 	 * @var SplObjectStorage
@@ -69,7 +76,7 @@ class Trigger_Arguments {
 				return $data;
 			}
 			return false;
-		} catch ( \Error $e ) {
+		} catch ( \Throwable $e ) {
 			$this->log( 'Packager error (unpack): ' . $e->getMessage() );
 			return false;
 		}
@@ -117,22 +124,28 @@ class Trigger_Arguments {
 	 * - Cycles are broken
 	 * - Resources are removed
 	 *
-	 * @param mixed $val The value to clean.
+	 * @param mixed $val   The value to clean.
+	 * @param int   $depth Current recursion depth.
 	 *
 	 * @return mixed The cleaned value safe for serialization.
 	 */
-	private function clean( $val ) {
+	private function clean( $val, $depth = 0 ) {
 
 		// Scalars & null.
 		if ( is_scalar( $val ) || null === $val ) {
 			return $val;
 		}
 
+		// Prevent excessive recursion on deeply nested objects.
+		if ( $depth >= self::MAX_CLEAN_DEPTH ) {
+			return null;
+		}
+
 		// Arrays -> recurse.
 		if ( is_array( $val ) ) {
 			$out = array();
 			foreach ( $val as $k => $v ) {
-				$out[ $k ] = $this->clean( $v );
+				$out[ $k ] = $this->clean( $v, $depth + 1 );
 			}
 			return $out;
 		}
@@ -158,13 +171,13 @@ class Trigger_Arguments {
 					$prop->setAccessible( true );
 					$v = $prop->getValue( $val );
 					if ( is_array( $v ) || is_object( $v ) ) {
-						$prop->setValue( $clone, $this->clean( $v ) );
+						$prop->setValue( $clone, $this->clean( $v, $depth + 1 ) );
 					}
 					// Scalars left untouched.
 				}
 				return $clone;
-			} catch ( \Exception $e ) {
-				// If we can't clone/access, just drop it.
+			} catch ( \Throwable $e ) {
+				// If we can't clone/access (e.g. readonly properties on PHP 8.1+), drop it.
 				return null;
 			}
 		}

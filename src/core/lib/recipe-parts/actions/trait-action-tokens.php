@@ -32,6 +32,14 @@ trait Action_Tokens {
 	/**
 	 * Use this method to set tokens per action.
 	 *
+	 * Accepts both action-format and trigger-format token definitions:
+	 *
+	 * Action format: [ 'TOKEN_ID' => [ 'name' => 'Label', 'type' => 'text' ], ... ]
+	 * Trigger format: [ [ 'tokenId' => 'TOKEN_ID', 'tokenName' => 'Label', 'tokenType' => 'text' ], ... ]
+	 *
+	 * Trigger-format arrays are auto-converted so that shared token definitions
+	 * (e.g. Wp_Shared_Tokens::post_tokens()) work in both triggers and actions.
+	 *
 	 * @param array  $tokens      Tokens to be registered.
 	 * @param string $action_code Action code associated with tokens.
 	 *
@@ -39,11 +47,64 @@ trait Action_Tokens {
 	 */
 	public function set_action_tokens( $tokens = array(), $action_code = '' ) {
 
+		$tokens = $this->normalize_token_definitions( $tokens );
+
 		$registry = new Registry();
 		$registry->register_hooks();
 		$registry->register( $tokens, $action_code );
 
 		return $this;
+	}
+
+	/**
+	 * Normalize token definitions to action-format.
+	 *
+	 * Detects trigger-format arrays (sequential arrays with 'tokenId' key)
+	 * and converts them to action-format (associative arrays keyed by ID).
+	 *
+	 * If the input is already in action-format, it passes through unchanged.
+	 *
+	 * @since 7.2
+	 *
+	 * @param array $tokens Token definitions in either format.
+	 *
+	 * @return array Action-format token definitions.
+	 */
+	private function normalize_token_definitions( array $tokens ) {
+
+		if ( empty( $tokens ) ) {
+			return $tokens;
+		}
+
+		// Check the first element only to determine format. Mixed arrays
+		// (some trigger-format, some action-format) are a developer error
+		// and are not supported — the first element is representative.
+		$first = reset( $tokens );
+
+		// Already in action-format if the first element is keyed by a string
+		// (associative array) and does NOT contain 'tokenId'.
+		if ( ! is_array( $first ) || ! isset( $first['tokenId'] ) ) {
+			return $tokens;
+		}
+
+		// Convert trigger-format to action-format.
+		$out = array();
+
+		foreach ( $tokens as $t ) {
+			$id = $t['tokenId'] ?? '';
+
+			if ( '' === $id ) {
+				_doing_it_wrong( __METHOD__, 'Action token is missing a tokenId and was skipped.', '7.2' );
+				continue;
+			}
+
+			$out[ $id ] = array(
+				'name' => $t['tokenName'] ?? $id,
+				'type' => $t['tokenType'] ?? 'text',
+			);
+		}
+
+		return $out;
 	}
 
 	/**

@@ -44,6 +44,18 @@ class Discord_Integration extends App_Integration {
 	}
 
 	/**
+	 * Shared hooks that must run whenever Discord is needed.
+	 *
+	 * Universal tokens, shortcodes, and migrations are required at runtime
+	 * even when only specific actions are loaded via targeted mode.
+	 *
+	 * @return void
+	 */
+	protected function load_shared_hooks() {
+		$this->maybe_load_connected_components();
+	}
+
+	/**
 	 * Bootstrap actions, triggers, settings page, etc.
 	 *
 	 * @return void

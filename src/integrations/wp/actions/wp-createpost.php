@@ -743,18 +743,20 @@ class WP_CREATEPOST {
 
 		global $wpdb;
 
-		$title = sanitize_title( $title );
-
-		// Execute the query
+		// Match on post_title (not post_name/slug). The previous implementation
+		// queried post_name with sanitize_title($title), which silently failed
+		// whenever the inserted post had an empty post_name (drafts) or a
+		// user-supplied slug that didn't match the title — letting duplicates
+		// through inside token loops. Exclude trashed posts so a user who has
+		// trashed the old duplicate isn't permanently blocked.
 		$post_id = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT ID FROM {$wpdb->posts} WHERE post_name = %s AND post_type = %s",
+				"SELECT ID FROM {$wpdb->posts} WHERE post_title = %s AND post_type = %s AND post_status != 'trash' LIMIT 1",
 				$title,
 				$post_type
 			)
 		);
 
-		// Check if a post ID was returned
 		return ! empty( $post_id );
 	}
 }

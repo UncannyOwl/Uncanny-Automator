@@ -48,7 +48,6 @@ class Actionify_Triggers {
 		if ( $run_automator_actions ) {
 			add_action( 'plugins_loaded', array( $this, 'actionify_triggers' ), AUTOMATOR_ACTIONIFY_TRIGGERS_PRIORITY );
 		}
-
 	}
 
 	/**
@@ -92,7 +91,6 @@ class Actionify_Triggers {
 		}
 
 		do_action( 'automator_actionify_triggers_after', self::$actionified_triggers );
-
 	}
 
 	/**
@@ -134,7 +132,6 @@ class Actionify_Triggers {
 		}
 
 		Automator()->cache->set( 'automator_actionified_triggers', self::$actionified_triggers, 'automator', Automator()->cache->long_expires );
-
 	}
 
 	/**
@@ -201,7 +198,6 @@ class Actionify_Triggers {
 		}
 
 		return apply_filters( 'actionified_triggers', $actionified_triggers, $this );
-
 	}
 
 	/**
@@ -261,13 +257,15 @@ class Actionify_Triggers {
 					FROM $wpdb->postmeta pm
 					JOIN $wpdb->posts trigger_details ON trigger_details.ID = pm.post_id
 						AND trigger_details.post_status = %s
-						AND trigger_details.post_type = 'uo-trigger'
+						AND trigger_details.post_type = %s
 					JOIN $wpdb->posts recipe_details ON recipe_details.ID = trigger_details.post_parent
 						AND recipe_details.post_status = %s
-						AND recipe_details.post_type = 'uo-recipe'
+						AND recipe_details.post_type = %s
 					WHERE pm.meta_key = 'add_action'",
 				'publish',
-				'publish'
+				AUTOMATOR_POST_TYPE_TRIGGER,
+				'publish',
+				AUTOMATOR_POST_TYPE_RECIPE
 			)
 		);
 
@@ -289,7 +287,5 @@ class Actionify_Triggers {
 		}
 
 		return array_unique( $active_add_actions );
-
 	}
-
 }

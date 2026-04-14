@@ -2,46 +2,76 @@
 
 namespace Uncanny_Automator\Integrations\Ontraport;
 
+use Uncanny_Automator\App_Integrations\App_Integration;
+use Exception;
+
 /**
  * Class Ontraport_Integration
  *
  * @package Uncanny_Automator
  */
-class Ontraport_Integration extends \Uncanny_Automator\Integration {
+class Ontraport_Integration extends App_Integration {
 
 	/**
-	 * Spins up new integration.
+	 * Get the integration config.
+	 *
+	 * @return array
+	 */
+	public static function get_config() {
+		return array(
+			'integration'  => 'ONTRAPORT',
+			'name'         => 'Ontraport',
+			'api_endpoint' => 'v2/ontraport',
+			'settings_id'  => 'ontraport',
+		);
+	}
+
+	/**
+	 * Setup Automator integration.
 	 *
 	 * @return void
 	 */
 	protected function setup() {
-
-		$this->helpers = new Ontraport_Helpers();
-
-		$this->set_integration( 'ONTRAPORT' );
-		$this->set_name( 'Ontraport' );
+		// Define helpers with common config values.
+		$this->helpers = new Ontraport_App_Helpers( self::get_config() );
+		// Set the icon URL.
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/ontraport-icon.svg' );
-		$this->set_connected( $this->helpers->integration_status() );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'ontraport' ) );
-
-		// Register wp-ajax callbacks.
-		$this->register_hooks();
+		// Finalize setup via the parent class with the common config.
+		$this->setup_app_integration( self::get_config() );
 	}
 
 	/**
-	 * Bootstrap actions, triggers, settings page, etc.
+	 * Load Integration Classes.
 	 *
 	 * @return void
 	 */
 	public function load() {
+		// Load settings page.
+		new Ontraport_Settings(
+			$this->dependencies,
+			$this->get_settings_config()
+		);
 
-		new Ontraport_Settings( $this->helpers );
-		new Ontraport_Upsert_Contact( $this->helpers );
-		new Ontraport_Create_Tag( $this->helpers );
-		new Ontraport_Delete_Contact( $this->helpers );
-		new Ontraport_Add_Contact_Tag( $this->helpers );
+		// Load actions.
+		new Ontraport_Upsert_Contact( $this->dependencies );
+		new Ontraport_Add_Update_Contact( $this->dependencies );
+		new Ontraport_Create_Tag( $this->dependencies );
+		new Ontraport_Delete_Contact( $this->dependencies );
+		new Ontraport_Add_Contact_Tag( $this->dependencies );
+	}
 
-		# Disabled - Needs clarification. new Ontraport_Subscribe_Contact_Campaign( $this->helpers );
+	/**
+	 * Check if app is connected.
+	 *
+	 * @return bool
+	 */
+	protected function is_app_connected() {
+		try {
+			$this->helpers->get_credentials();
+			return true;
+		} catch ( Exception $e ) {
+			return false;
+		}
 	}
 
 	/**
@@ -49,12 +79,10 @@ class Ontraport_Integration extends \Uncanny_Automator\Integration {
 	 *
 	 * @return void
 	 */
-	public function register_hooks() {
-		// Disconnect handler.
-		add_action( 'wp_ajax_automator_ontraport_disconnect_account', array( $this->helpers, 'disconnect' ) );
+	protected function register_hooks() {
 		// List tags handler.
-		add_action( 'wp_ajax_automator_ontraport_list_tags', array( $this->helpers, 'list_tags_handler' ) );
-		// List campaign handler.
-		add_action( 'wp_ajax_automator_ontraport_list_campaigns', array( $this->helpers, 'list_campaigns_handler' ) );
+		add_action( 'wp_ajax_automator_ontraport_list_tags', array( $this->helpers, 'ajax_get_tags' ) );
+		// Custom fields handler.
+		add_action( 'wp_ajax_automator_ontraport_get_custom_fields', array( $this->helpers, 'ajax_get_custom_fields' ) );
 	}
 }

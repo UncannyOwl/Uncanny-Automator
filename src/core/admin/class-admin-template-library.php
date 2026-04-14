@@ -156,7 +156,7 @@ class Admin_Template_Library {
 			'integrations'       => $this->library()->integrations,
 			'addNewTemplate'     => array(
 				'id'  => 'add-new-template',
-				'url' => add_query_arg( 'post_type', 'uo-recipe', admin_url( 'post-new.php' ) ),
+				'url' => add_query_arg( 'post_type', AUTOMATOR_POST_TYPE_RECIPE, admin_url( 'post-new.php' ) ),
 			),
 			// Search keys for fuse.js
 			'searchKeys'         => array(
@@ -249,7 +249,7 @@ class Admin_Template_Library {
 	public function get_url( $args = array() ) {
 
 		$defaults = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => self::PAGE_SLUG,
 		);
 

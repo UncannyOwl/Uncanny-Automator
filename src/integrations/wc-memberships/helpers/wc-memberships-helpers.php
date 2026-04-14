@@ -33,10 +33,6 @@ class Wc_Memberships_Helpers {
 	}
 
 	public function wcm_get_all_membership_plans( $label = null, $option_code = 'WCMEMBERSHIPPLANS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_html__( 'Membership plan', 'uncanny-automator' );

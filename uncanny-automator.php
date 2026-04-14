@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             7.1.0.1
+ * Version:             7.2.1
  * Requires at least:   5.8
  * Requires PHP:        7.4
  */
@@ -24,7 +24,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '7.1.0.1' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '7.2.1' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -72,28 +72,6 @@ if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 	return;
 }
 
-/**
- * @param string $class
- *
- * @return void
- */
-function automator_autoloader( $class_name ) {
-
-	$class_name = strtolower( $class_name );
-
-	global $automator_class_map;
-
-	if ( ! $automator_class_map ) {
-		$automator_class_map = include __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'autoload_classmap.php';
-		$automator_class_map = array_change_key_case( $automator_class_map, CASE_LOWER );
-	}
-
-	if ( isset( $automator_class_map[ $class_name ] ) ) {
-		include_once $automator_class_map[ $class_name ];
-	}
-}
-
-spl_autoload_register( 'automator_autoloader' );
 
 if ( ! defined( 'UA_ABSPATH' ) ) {
 	/**
@@ -111,10 +89,68 @@ DB_Tables::register_tables();
 
 // Autoload files
 require UA_ABSPATH . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
-// Add global functions.
-require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'global-functions.php';
-// Add other global variables for plugin.
-require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'globals.php';
+
+// Strict load order: tier 1 constants → tier 2 functions → tier 3 runtime constants.
+// See src/constants.php, src/global-functions.php, src/globals.php for the rules
+// each tier must obey. Don't reorder these without understanding the dependency chain.
+// constants.php is intentionally NOT in composer's files autoload — that would beat
+// mu-plugins to the punch and break legitimate constant overrides like
+// AUTOMATOR_STORE_URL / AUTOMATOR_LICENSING_URL / AUTOMATOR_API_URL.
+require_once UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'constants.php';
+require_once UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'global-functions.php';
+require_once UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'globals.php';
+
+/*
+ * Eager schema install — runs once on first request.
+ *
+ * On a brand-new install WordPress's plugin_sandbox_scrape() includes this file
+ * BEFORE the activation hook executes, so anything downstream that touches
+ * uap_options would error out. We install the full schema up-front from the
+ * single source of truth (Automator_DB::get_schema). dbDelta is idempotent, so
+ * the activation hook's later create_tables() call is a safe no-op.
+ *
+ * Hot path: a single autoloaded wp_option lookup, then early return.
+ * The marker is prefixed with `automator_` so uninstall.php sweeps it up
+ * automatically alongside the rest of the plugin's options.
+ */
+( static function () {
+	if ( get_option( 'automator_schema_installed' ) ) {
+		return;
+	}
+	\Uncanny_Automator\Automator_DB::create_tables();
+	update_option( 'automator_schema_installed', AUTOMATOR_DATABASE_VERSION, true );
+} )();
+
+/**
+ * Case-insensitive fallback autoloader.
+ *
+ * Appended after Composer's autoloader so it only fires when Composer's
+ * case-sensitive classmap lookup misses. Builds a lowercase → file map from
+ * the classmap once (static property) giving O(1) lookup on every subsequent
+ * call. Handles legacy class-name capitalisation inconsistencies across
+ * 200+ integrations without requiring individual per-class fixes.
+ *
+ * @param string $class Fully-qualified class name requested by PHP.
+ * @return void
+ */
+function automator_autoloader( $class ) {
+	static $ci_map = null;
+	if ( null === $ci_map ) {
+		$ci_map        = array();
+		$classmap_file = UA_ABSPATH . 'vendor' . DIRECTORY_SEPARATOR . 'composer' . DIRECTORY_SEPARATOR . 'autoload_classmap.php';
+		if ( file_exists( $classmap_file ) ) {
+			foreach ( require $classmap_file as $fqcn => $file ) {
+				$ci_map[ strtolower( $fqcn ) ] = $file;
+			}
+		}
+	}
+	$file = $ci_map[ strtolower( $class ) ] ?? null;
+	if ( null !== $file ) {
+		require_once $file;
+	}
+}
+spl_autoload_register( 'automator_autoloader' );
+
 // Add API functions.
 require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'functions.php';
 // Add InitializePlugin class for other plugins checking for version.
@@ -130,7 +166,11 @@ function Automator() { // phpcs:ignore WordPress.NamingConventions.ValidFunction
 	return Automator_Functions::get_instance();
 }
 
-// fallback for < 3.0 Automator plugin (Pro).
+/**
+ * @deprecated 7.2 — Backward compatibility for third-party plugins that reference `global $uncanny_automator`.
+ *             Will be removed in a future major version. Use `Automator()` function instead.
+ * @global Automator_Functions $uncanny_automator
+ */
 global $uncanny_automator;
 $uncanny_automator = Automator();
 
@@ -138,6 +178,9 @@ if ( AUTOMATOR_PLUGIN_VERSION !== automator_get_option( 'AUTOMATOR_PLUGIN_VERSIO
 	automator_update_option( 'AUTOMATOR_PLUGIN_VERSION', AUTOMATOR_PLUGIN_VERSION );
 
 	Automator()->cache->reset_integrations_directory( null, null );
+
+	// Pre-build the recipe manifest during plugin update so gating logic has data on first request.
+	\Uncanny_Automator\Recipe_Manifest::reset();
 }
 
 // Include the Automator_Load class and kickstart Automator.

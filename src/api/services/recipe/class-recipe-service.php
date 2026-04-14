@@ -191,6 +191,23 @@ class Recipe_Service {
 	}
 
 
+	/**
+	 * Assign categories and tags to a recipe.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @param int        $recipe_id  Recipe post ID.
+	 * @param array|null $categories Category slugs to assign (replaces existing). Null to skip.
+	 * @param array|null $tags       Tag slugs to assign (replaces existing). Null to skip.
+	 *
+	 * @return void
+	 */
+	public function assign_taxonomies( int $recipe_id, ?array $categories, ?array $tags ): void {
+
+		$this->get_crud_service()->assign_taxonomies( $recipe_id, $categories, $tags );
+	}
+
+
 	// =========================================
 	// Query Methods (delegate to Query service)
 	// =========================================

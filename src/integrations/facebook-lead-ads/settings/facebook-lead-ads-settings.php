@@ -2,226 +2,604 @@
 /**
  * Settings page for Facebook Lead Ads integration.
  *
- * Provides functionalities for managing the settings, connections, and credentials of the
- * Facebook Lead Ads integration within Uncanny Automator.
- *
  * @package Uncanny_Automator
  */
 
 namespace Uncanny_Automator\Integrations\Facebook_Lead_Ads;
 
-use Uncanny_Automator\Integrations\Facebook_Lead_Ads\Helpers\Facebook_Lead_Ads_Helpers;
-use Uncanny_Automator\Integrations\Facebook_Lead_Ads\Utilities\Connections_Manager;
-use Uncanny_Automator\Integrations\Facebook_Lead_Ads\Utilities\Credentials_Manager;
+use Uncanny_Automator\Settings\App_Integration_Settings;
+use Uncanny_Automator\Settings\OAuth_App_Integration;
+use Uncanny_Automator\Settings\Premium_Integration_Webhook_Settings;
+use Exception;
 
 /**
- * Manages the settings page for Facebook Lead Ads integration.
+ * Facebook Lead Ads Settings
+ *
+ * Extends the App_Integration_Settings framework class to provide
+ * the settings page for the Facebook Lead Ads integration.
  *
  * @package Uncanny_Automator\Integrations\Facebook_Lead_Ads
+ *
+ * @property Facebook_Lead_Ads_App_Helpers $helpers
+ * @property Facebook_Lead_Ads_Api_Caller $api
+ * @property Facebook_Lead_Ads_Webhooks $webhooks
  */
-class Facebook_Lead_Ads_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
+class Facebook_Lead_Ads_Settings extends App_Integration_Settings {
+
+	// Use OAuth trait for standardized OAuth flow.
+	use OAuth_App_Integration;
+
+	// Use webhook settings trait for webhook instructions templating.
+	use Premium_Integration_Webhook_Settings;
 
 	/**
-	 * Indicates if the account is connected.
-	 *
-	 * @var bool
-	 */
-	protected $is_account_connected = false;
-
-	/**
-	 * URL for disconnecting the account.
-	 *
-	 * @var string
-	 */
-	protected $disconnect_url = '';
-
-	/**
-	 * URL for connecting the account.
-	 *
-	 * @var string
-	 */
-	protected $connect_url = '';
-
-	/**
-	 * Handles connection management.
-	 *
-	 * @var Connections_Manager
-	 */
-	protected $connections = null;
-
-	/**
-	 * Renders HTML partials.
-	 *
-	 * @var Html_Partial_Renderer
-	 */
-	protected $html_renderer = null;
-
-	/**
-	 * Manages API credentials.
-	 *
-	 * @var Credentials_Manager
-	 */
-	protected $credentials = null;
-
-	/**
-	 * Sets up the properties of the settings page.
-	 *
-	 * Initializes integration settings, assigns dependencies, and sets the initial status.
+	 * Set properties.
 	 *
 	 * @return void
 	 */
 	public function set_properties() {
-
-		$this->set_id( 'facebook_lead_ads' );
-		$this->set_icon( 'FACEBOOK_LEAD_ADS' );
-		$this->set_name( 'Facebook Lead Ads' );
-
-		$this->connections   = $this->dependencies[0];
-		$this->html_renderer = $this->dependencies[1];
-		$this->credentials   = $this->dependencies[2];
-
-		$this->set_status( $this->connections->has_connection() ? 'success' : '' );
-
-		$this->html_renderer->set_html_partial_root_path( trailingslashit( __DIR__ ) );
-
-		if ( automator_filter_has_var( 'error_message' ) ) {
-			$this->display_errors( automator_filter_input( 'error_message' ) );
-		}
+		$this->oauth_action = 'authorization';
 	}
 
-	/**
-	 * Updates the settings and verifies the API credentials.
-	 *
-	 * Displays a success alert upon successful connection.
-	 *
-	 * @return void
-	 */
-	public function settings_updated() {
+	/////////////////////////////////////////////////////////////
+	// Required abstract method.
+	/////////////////////////////////////////////////////////////
 
-		$this->add_alert(
-			array(
-				'type'    => 'success',
-				'heading' => esc_html_x( 'Connection established', 'Facebook_Lead_Ads', 'uncanny-automator' ),
-				'content' => esc_html_x( 'You are successfully connected.', 'Facebook_Lead_Ads', 'uncanny-automator' ),
-			)
+	/**
+	 * Get formatted account information for connected user info display.
+	 *
+	 * @return array Formatted account information for UI display.
+	 */
+	protected function get_formatted_account_info() {
+		$user = $this->helpers->get_account_info();
+
+		return array(
+			'avatar_type'  => 'icon',
+			'avatar_value' => 'FACEBOOK_LEAD_ADS',
+			'main_info'    => ! empty( $user['name'] ) ? esc_html( $user['name'] ) : '',
+			'additional'   => ! empty( $user['id'] ) ? esc_html( $user['id'] ) : '',
 		);
 	}
 
-	/**
-	 * Displays error messages as alerts.
-	 *
-	 * @param mixed $error_message The error message to display.
-	 * @return void
-	 */
-	public function display_errors( $error_message ) {
+	/////////////////////////////////////////////////////////////
+	// OAuth trait overrides.
+	/////////////////////////////////////////////////////////////
 
-		$this->add_alert(
-			array(
-				'type'    => 'error',
-				'heading' => esc_html_x( 'An error exception has occurred', 'Facebook_Lead_Ads', 'uncanny-automator' ),
-				'content' => $error_message,
-			)
-		);
+	/**
+	 * Filter OAuth args for Facebook-specific parameters.
+	 *
+	 * Facebook Lead Ads uses a different URL structure than the standard OAuth flow:
+	 * - user_url: The site base URL (used to build full URLs and for vault storage)
+	 * - redirect_url: Relative path to settings page callback
+	 * - user_api_url: Relative path to webhook endpoint
+	 *
+	 * URLs are sent as relative paths (without site URL prefix) to:
+	 * 1. Keep the auth URL shorter
+	 * 2. Allow the API to identify framework vs legacy requests (redirect_url presence)
+	 *
+	 * The API combines user_url + relative paths to build full URLs.
+	 *
+	 * @param array $args The default OAuth args.
+	 * @param array $data The data from the request.
+	 *
+	 * @return array Modified OAuth args.
+	 */
+	protected function maybe_filter_oauth_args( $args, $data ) {
+		$site_url = trailingslashit( get_site_url() );
+
+		// The redirect_url from trait is already URL encoded, so decode first.
+		$callback_url = rawurldecode( $args[ $this->redirect_param ] );
+
+		// Convert to relative path and re-encode.
+		$args[ $this->redirect_param ] = rawurlencode( str_replace( $site_url, '', $callback_url ) );
+
+		// Add Facebook-specific params with relative webhook path.
+		$args['user_url']     = rtrim( $site_url, '/' );
+		$args['user_api_url'] = rawurlencode( str_replace( $site_url, '', $this->webhooks->get_webhook_url() ) );
+
+		// Add basic auth if configured.
+		if ( $this->api->site_has_basic_auth() ) {
+			$creds = wp_json_encode( $this->api->get_basic_auth_credentials() );
+
+			$args['basic_auth'] = rawurlencode(
+				base64_encode( $creds ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+			);
+		}
+
+		return $args;
 	}
 
 	/**
-	 * Outputs the settings panel.
+	 * Validate integration-specific credentials.
+	 * Facebook uses vault_signatures (plural) per page, not a single vault_signature.
 	 *
-	 * Displays the main settings panel with top, content, and bottom sections.
+	 * @param array $credentials The decoded credentials from OAuth.
+	 *
+	 * @return array The validated credentials.
+	 * @throws Exception If credentials are invalid.
+	 */
+	protected function validate_integration_credentials( $credentials ) {
+		// Build the credentials structure expected by the helpers.
+		$formatted_credentials = array(
+			'user_access_token' => $credentials['user_token'] ?? '',
+			'vault_signatures'  => $credentials['vault_signatures'] ?? array(),
+			'user'              => $credentials['user'] ?? array(),
+		);
+
+		// Validate required fields.
+		if ( empty( $formatted_credentials['user_access_token'] ) ) {
+			throw new Exception(
+				esc_html_x( 'Missing user access token.', 'Facebook Lead Ads', 'uncanny-automator' )
+			);
+		}
+
+		return $formatted_credentials;
+	}
+
+	/**
+	 * Authorize account after OAuth credentials are stored.
+	 * Fetches page access tokens to complete the connection.
+	 *
+	 * @param array $response    The current response array.
+	 * @param array $credentials The stored credentials.
+	 *
+	 * @return array The modified response.
+	 * @throws Exception If page tokens cannot be fetched.
+	 */
+	protected function authorize_account( $response, $credentials ) {
+		// Fetch page access tokens.
+		$page_tokens = $this->api->get_page_access_tokens();
+
+		if ( is_wp_error( $page_tokens ) ) {
+			throw new Exception( esc_html( $page_tokens->get_error_message() ) );
+		}
+
+		// Update credentials with page tokens.
+		$credentials['pages_access_tokens'] = $page_tokens['data']['data'] ?? array();
+		$this->helpers->store_credentials( $credentials );
+
+		// Verify connection was successful.
+		if ( ! $this->helpers->has_connection() ) {
+			throw new Exception(
+				esc_html_x( 'Connection incomplete. Please try again.', 'Facebook Lead Ads', 'uncanny-automator' )
+			);
+		}
+
+		return $response;
+	}
+
+	/////////////////////////////////////////////////////////////
+	// Templating methods.
+	/////////////////////////////////////////////////////////////
+
+	/**
+	 * Display - Main disconnected content.
 	 *
 	 * @return void
 	 */
-	public function output_panel() {
+	public function output_main_disconnected_content() {
+		$this->output_disconnected_header(
+			esc_html_x(
+				'Connect Uncanny Automator with Facebook Lead Ads to automate workflows every time a new lead is created. Instantly trigger actions across your favorite apps, saving time and ensuring you never miss a chance to engage with your audience.',
+				'Facebook Lead Ads',
+				'uncanny-automator'
+			)
+		);
 
-		if ( 'mock' === automator_filter_input( 'mode' ) ) {
-			include trailingslashit( __DIR__ ) . 'views/mock.html';
-			return;
-		}
+		$this->output_available_items();
 
-		$has_connection = Facebook_Lead_Ads_Helpers::create_connection_manager()->has_connection();
+		// Webhook test section.
+		$this->output_panel_separator( 'uap-spacing-top' );
+		$this->output_webhook_test_content();
+	}
+
+	/**
+	 * Display - Main connected content.
+	 *
+	 * @return void
+	 */
+	public function output_main_connected_content() {
+		// Pages section.
+		$this->output_panel_subtitle(
+			esc_html_x( 'Connected pages', 'Facebook Lead Ads', 'uncanny-automator' ),
+			'uap-spacing-bottom'
+		);
+
+		$this->output_pages_info();
+		$this->output_pages_table();
+
+		// Webhook test section.
+		$this->output_panel_separator( 'uap-spacing-top' );
+		$this->output_webhook_test_content();
+	}
+
+
+	/////////////////////////////////////////////////////////////
+	// Connected content sections.
+	/////////////////////////////////////////////////////////////
+
+	/**
+	 * Output pages info message.
+	 *
+	 * @return void
+	 */
+	private function output_pages_info() {
 		?>
-		<div class="uap-settings-panel">
-			<div class="uap-settings-panel-top">
-				<?php $this->output_panel_top(); ?>
-				<?php $this->display_alerts(); ?>
-				<div class="uap-settings-panel-content">
-					<?php $this->output_panel_content(); ?>
-				</div>
-			</div>
-			<div class="uap-settings-panel-bottom" <?php echo esc_attr( ! $has_connection ? 'has-arrow' : '' ); ?>>
-				<?php $this->output_panel_bottom(); ?>
-			</div>
-		</div>
+		<p class="uap-spacing-bottom">
+			<?php
+			echo esc_html_x(
+				'The following pages were selected during the OAuth process. Disconnect and reconnect if there are any pages missing and make sure those pages are selected.',
+				'Facebook Lead Ads',
+				'uncanny-automator'
+			);
+			?>
+		</p>
 		<?php
 	}
 
 	/**
-	 * Outputs the main content of the panel.
+	 * Output the pages table.
 	 *
-	 * Loads required assets and renders the HTML partial for the panel content.
-	 *
-	 * @return string HTML content.
+	 * @return void
 	 */
-	public function output_panel_content() {
+	private function output_pages_table() {
+		$pages = $this->helpers->get_pages_credentials();
 
-		// Loads CSS files.
-		$this->load_css( '/facebook-lead-ads/settings/assets/style.css' );
+		if ( empty( $pages ) ) {
+			$this->alert_html(
+				array(
+					'type'    => 'warning',
+					'heading' => esc_html_x( 'No pages found', 'Facebook Lead Ads', 'uncanny-automator' ),
+					'content' => esc_html_x( 'No Facebook pages are connected. Please disconnect and reconnect to select pages.', 'Facebook Lead Ads', 'uncanny-automator' ),
+					'class'   => 'uap-spacing-bottom',
+				)
+			);
+			return;
+		}
 
-		// Loads JS files.
-		$this->load_js( '/facebook-lead-ads/settings/assets/test-connection.js' );
-		$this->load_js( '/facebook-lead-ads/settings/assets/pages.js', '_fbla-pages' );
+		// Get table columns and rows.
+		$columns = $this->get_pages_table_columns();
+		$rows    = $this->get_pages_table_rows( $pages );
 
-		wp_localize_script(
-			'uap-premium-integration-facebook_lead_ads_fbla-pages',
-			'fbLeadAdsConfig',
+		// Queue config for auto-verification on page load.
+		$queue_config = array(
+			'postValues' => array(
+				'automator_action' => 'refresh_page',
+				'is_queue'         => true,
+			),
+			'rateLimit'  => 100, // 100ms delay between verifications.
+		);
+
+		$this->output_settings_table( $columns, $rows, 'card', false, $queue_config );
+	}
+
+	/**
+	 * Get the pages table columns.
+	 *
+	 * @return array
+	 */
+	private function get_pages_table_columns() {
+		return array(
+			array( 'key' => 'page' ),
+			array( 'key' => 'action' ),
+		);
+	}
+
+	/**
+	 * Get the pages table rows.
+	 *
+	 * Respects cached statuses - only queues pages without a cached status.
+	 * This avoids unnecessary API calls on every settings page load.
+	 *
+	 * @param array $pages The pages credentials.
+	 *
+	 * @return array
+	 */
+	private function get_pages_table_rows( $pages ) {
+		$rows = array();
+		foreach ( $pages as $page ) {
+			$page_id = $page['id'] ?? '';
+
+			// Check for cached status WITHOUT triggering a fetch.
+			$cached_status = $this->helpers->get_cached_page_status( $page_id );
+
+			// If we have a cached status, use it and don't queue.
+			// If no cache (null), queue for verification.
+			$has_cache    = null !== $cached_status;
+			$should_queue = ! $has_cache;
+
+			$rows[] = $this->get_page_table_row( $page, $cached_status, $should_queue );
+		}
+		return $rows;
+	}
+
+	/**
+	 * Get a single page table row.
+	 *
+	 * @param array       $page      The page data.
+	 * @param string|null $status    Optional status string (null = pending verification).
+	 * @param bool        $for_queue Whether this row should be queued for verification.
+	 *
+	 * @return array
+	 */
+	private function get_page_table_row( $page, $status = null, $for_queue = true ) {
+		$page_id   = $page['id'] ?? '';
+		$page_name = $page['name'] ?? '';
+
+		// Determine status display.
+		$status_info = $this->get_page_status_display( $status );
+
+		// Build page column components.
+		$page_components = array(
 			array(
-				'nonce' => wp_create_nonce( 'fbLeadsNonce' ),
+				'type' => 'icon',
+				'data' => array(
+					'integration' => 'FACEBOOK_LEAD_ADS',
+				),
+			),
+			array(
+				'type' => 'text',
+				'data' => sprintf(
+					'**%s** %s',
+					esc_html( $page_name ),
+					$status_info['message']
+				),
+			),
+		);
+
+		// Add status icon if available.
+		if ( ! empty( $status_info['icon'] ) ) {
+			$page_components[] = array(
+				'type'  => 'icon',
+				'data'  => array( 'id' => $status_info['icon']['id'] ),
+				'style' => $status_info['icon']['style'] ?? '',
+			);
+		}
+
+		return array(
+			'id'          => $page_id,
+			'queue'       => $for_queue, // Only queue if not yet verified.
+			'columns'     => array(
+				'page'   => array(
+					'layout'  => 'horizontal',
+					'options' => $page_components,
+				),
+				'action' => array(
+					'options' => array(
+						array(
+							'type' => 'button',
+							'data' => array(
+								'label'          => esc_html_x( 'Reverify', 'Facebook Lead Ads', 'uncanny-automator' ),
+								'icon'           => array( 'id' => 'rotate' ),
+								'color'          => 'secondary',
+								'size'           => 'extra-small',
+								'type'           => 'button',
+								'name'           => 'automator_action',
+								'value'          => 'refresh_page',
+								'row-submission' => true,
+							),
+						),
+					),
+				),
+			),
+			'description' => sprintf(
+				'%s: %s',
+				esc_html_x( 'Page ID', 'Facebook Lead Ads', 'uncanny-automator' ),
+				esc_html( $page_id )
+			),
+		);
+	}
+
+	/**
+	 * Get page status display info.
+	 *
+	 * @param string|null $status The status string or null for pending.
+	 *
+	 * @return array
+	 */
+	private function get_page_status_display( $status = null ) {
+		// Default: verifying state (shown before queue processes).
+		// Note: The list component handles loading state, so no icon needed here.
+		if ( null === $status ) {
+			return array(
+				'message' => '',
+				'icon'    => null,
+			);
+		}
+
+		// Success state.
+		if ( false !== strpos( $status, 'Ready' ) ) {
+			return array(
+				'message' => '*' . esc_html( $status ) . '*',
+				'icon'    => array(
+					'id'    => 'check',
+					'style' => 'color: var(--uap-success-color, #2ecc40);',
+				),
+			);
+		}
+
+		// Error state.
+		return array(
+			'message' => '*' . esc_html( $status ) . '*',
+			'icon'    => array(
+				'id'    => 'xmark',
+				'style' => 'color: var(--uap-error-color, #ff4136);',
+			),
+		);
+	}
+
+	/**
+	 * Output the webhook test content.
+	 * Displayed in both connected and disconnected states.
+	 *
+	 * @return void
+	 */
+	private function output_webhook_test_content() {
+		$this->output_webhook_instructions(
+			array(
+				'heading'  => esc_html_x( 'Test your webhook connection', 'Facebook Lead Ads', 'uncanny-automator' ),
+				'class'    => 'uap-spacing-top',
+				'sections' => array(
+					array(
+						'type'    => 'text',
+						'content' => esc_html_x(
+							"Click the button below to test your website's accessibility and confirm API support for your WordPress site.",
+							'Facebook Lead Ads',
+							'uncanny-automator'
+						),
+					),
+					array(
+						'type'   => 'button',
+						'action' => 'test_webhook',
+						'label'  => esc_html_x( 'Check webhook delivery', 'Facebook Lead Ads', 'uncanny-automator' ),
+						'args'   => array(
+							'color'   => 'secondary',
+							'icon'    => 'rotate',
+							'class'   => 'uap-spacing-top',
+							'tooltip' => esc_html_x(
+								'Sends a test payload from our server to your site to confirm it can receive webhooks for Facebook Lead Ads.',
+								'Facebook Lead Ads',
+								'uncanny-automator'
+							),
+						),
+					),
+				),
 			)
 		);
+	}
 
-		$args = array(
-			'has_connection' => $this->connections->has_connection(),
-			'credentials'    => $this->credentials->get_credentials(),
-		);
+	/////////////////////////////////////////////////////////////
+	// Form handlers.
+	/////////////////////////////////////////////////////////////
 
-		$this->html_renderer->render_html_partial( 'views/output-content-partial.php', $args );
+	/**
+	 * Handle webhook test action.
+	 *
+	 * @param array $response The current response array.
+	 * @param array $data     The data posted to the settings page.
+	 *
+	 * @return array
+	 */
+	protected function handle_test_webhook( $response = array(), $data = array() ) {
+		try {
+			$result = $this->api->verify_connection( $this->webhooks->get_webhook_url() );
+
+			if ( is_wp_error( $result ) ) {
+				throw new Exception( $result->get_error_message() );
+			}
+
+			$response['alert'] = $this->get_success_alert(
+				esc_html_x(
+					'Your website has received a webhook, confirming it supports external requests needed for Facebook Lead Ads.',
+					'Facebook Lead Ads',
+					'uncanny-automator'
+				),
+				esc_html_x( 'Webhook test successful', 'Facebook Lead Ads', 'uncanny-automator' )
+			);
+
+		} catch ( Exception $e ) {
+			$response['success'] = false;
+			$response['alert']   = $this->get_error_alert(
+				$e->getMessage(),
+				esc_html_x( 'Webhook test failed', 'Facebook Lead Ads', 'uncanny-automator' )
+			);
+		}
+
+		return $response;
 	}
 
 	/**
-	 * Outputs the bottom-left content of the panel.
+	 * Handle page refresh/verification action.
 	 *
-	 * Renders the partial for the bottom-left content using connection and user data.
+	 * Verifies the page connection status and returns updated row data.
+	 * Used both by the queue (on page load) and manual refresh button.
 	 *
-	 * @return string HTML content.
+	 * @param array $response The current response array.
+	 * @param array $data     The data posted to the settings page.
+	 *
+	 * @return array
 	 */
-	public function output_panel_bottom_left() {
+	protected function handle_refresh_page( $response = array(), $data = array() ) {
+		$page_id  = $this->maybe_get_posted_row_id( $data );
+		$is_queue = ! empty( $data['is_queue'] );
 
-		$credentials = ( new Credentials_Manager() )->get_credentials();
-		$fb_user     = $credentials['user'] ?? null;
+		// Validate page ID.
+		if ( empty( $page_id ) ) {
+			return array(
+				'success' => false,
+				'alert'   => $this->get_error_alert(
+					esc_html_x( 'Page ID is required.', 'Facebook Lead Ads', 'uncanny-automator' )
+				),
+			);
+		}
 
-		$args = array(
-			'connection_url' => Facebook_Lead_Ads_Helpers::get_connect_url(),
-			'has_connection' => $this->connections->has_connection(),
-			'user'           => $fb_user,
+		// Verify the page connection (force fresh check) - this also caches the status.
+		$status = $this->helpers->verify_page_connection( $page_id, true );
+
+		// Get status string for the verified page.
+		$verified_status = is_wp_error( $status )
+			? $status->get_error_message()
+			: $status;
+
+		// Build ALL rows with their current statuses.
+		$pages = $this->helpers->get_pages_credentials();
+		$rows  = array();
+
+		foreach ( $pages as $page ) {
+			$current_page_id = (string) $page['id'];
+
+			if ( $current_page_id === (string) $page_id ) {
+				// This is the page we just verified - use fresh status.
+				$rows[] = $this->get_page_table_row( $page, $verified_status, false );
+
+				continue;
+			}
+
+			// Other pages - get cached status only (don't trigger fetch).
+			$cached_status = $this->helpers->get_cached_page_status( $current_page_id );
+			$rows[]        = $this->get_page_table_row( $page, $cached_status, false );
+		}
+
+		// Return ALL rows with their current statuses.
+		$response = array(
+			'success' => true,
+			'data'    => $rows,
 		);
 
-		$this->html_renderer->render_html_partial( 'views/output-content-bottom-left.php', $args );
+		// Show alert only for manual refresh (not queue).
+		if ( ! $is_queue ) {
+			if ( is_wp_error( $status ) ) {
+				$response['alert'] = $this->get_error_alert(
+					$status->get_error_message(),
+					esc_html_x( 'Page verification failed', 'Facebook Lead Ads', 'uncanny-automator' )
+				);
+			} else {
+				$response['alert'] = $this->get_success_alert(
+					sprintf(
+						// translators: %s: Status message.
+						esc_html_x( 'Page status: %s', 'Facebook Lead Ads', 'uncanny-automator' ),
+						esc_html( $status )
+					),
+					esc_html_x( 'Page verified', 'Facebook Lead Ads', 'uncanny-automator' )
+				);
+			}
+		}
+
+		return $response;
 	}
 
 	/**
-	 * Outputs the bottom-right content of the panel.
+	 * Cleanup after disconnect.
 	 *
-	 * Renders the partial for the bottom-right content using connection and disconnect URL data.
+	 * @param array $response The current response array.
+	 * @param array $data     The posted data.
 	 *
-	 * @return string HTML content.
+	 * @return array
 	 */
-	public function output_panel_bottom_right() {
+	protected function after_disconnect( $response = array(), $data = array() ) {
+		// Clear page status cache.
+		delete_transient( $this->helpers->get_const( 'PAGE_STATUS_TRANSIENT_KEY' ) );
 
-		$args = array(
-			'disconnect_url' => Facebook_Lead_Ads_Helpers::get_disconnect_url(),
-			'has_connection' => $this->connections->has_connection(),
-		);
-
-		$this->html_renderer->render_html_partial( 'views/output-content-bottom-right.php', $args );
+		return $response;
 	}
 }

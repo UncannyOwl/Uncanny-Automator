@@ -21,9 +21,6 @@ use Uncanny_Automator\Api\Services\Dependency\Resolvers\Abstract_Resolver;
  *
  * NOTE: This resolver is Integration-specific and will not evaluate for other entity types.
  *
- * @todo Review - Should we handle webhook triggers here - if not enabled
- * - Would check check if app integration has webhooks and add it true false up the line
- *
  * @since 7.0.0
  *
  * @property Integration $entity

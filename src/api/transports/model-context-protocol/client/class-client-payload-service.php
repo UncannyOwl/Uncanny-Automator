@@ -99,7 +99,6 @@ class Client_Payload_Service {
 
 		$payload = array(
 			'email'                  => isset( $user->user_email ) ? sanitize_email( (string) $user->user_email ) : '',
-			'active_integrations'    => $this->get_active_integrations(),
 			'user_firstname'         => isset( $user->user_firstname ) ? sanitize_text_field( (string) $user->user_firstname ) : '',
 			'site_domain'            => sanitize_text_field( (string) wp_parse_url( get_site_url(), PHP_URL_HOST ) ),
 			'page_url'               => $this->resolve_page_url( $overrides ),

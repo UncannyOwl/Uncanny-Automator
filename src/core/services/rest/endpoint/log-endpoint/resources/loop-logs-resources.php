@@ -14,6 +14,13 @@ use Uncanny_Automator\Rest\Endpoint\Log_Endpoint\Utils\Formatters_Utils;
 class Loop_Logs_Resources {
 
 	/**
+	 * Default maximum number of runs (loop entry items) returned per status group.
+	 *
+	 * @var int
+	 */
+	const DEFAULT_RUNS_PER_PAGE = 250;
+
+	/**
 	 * @var Formatters_Utils
 	 */
 	protected $utils;
@@ -29,6 +36,27 @@ class Loop_Logs_Resources {
 	protected $automator_factory;
 
 	/**
+	 * In-memory cache for resolved action fields keyed by action_id.
+	 *
+	 * @var array<int,array>
+	 */
+	private $resolved_fields_cache = array();
+
+	/**
+	 * Pagination: max items per status group.
+	 *
+	 * @var int
+	 */
+	private $runs_per_page = 0;
+
+	/**
+	 * Pagination: current page (1-indexed).
+	 *
+	 * @var int
+	 */
+	private $runs_page = 1;
+
+	/**
 	 * @param Loop_Logs_Queries $loop_logs_queries
 	 * @param Formatters_Utils $utils
 	 * @param Automator_Factory $automator_factory
@@ -42,6 +70,20 @@ class Loop_Logs_Resources {
 		$this->utils             = $utils;
 		$this->loop_logs_queries = $loop_logs_queries;
 		$this->automator_factory = $automator_factory;
+		$this->runs_per_page     = (int) apply_filters( 'automator_loop_logs_runs_per_page', self::DEFAULT_RUNS_PER_PAGE );
+	}
+
+	/**
+	 * Set pagination parameters for loop entry item runs.
+	 *
+	 * @param int $per_page Max items per status group.
+	 * @param int $page     Current page (1-indexed).
+	 *
+	 * @return void
+	 */
+	public function set_runs_pagination( $per_page, $page ) {
+		$this->runs_per_page = max( 0, (int) $per_page );
+		$this->runs_page     = max( 1, (int) $page );
 	}
 
 	/**
@@ -188,8 +230,10 @@ class Loop_Logs_Resources {
 				'id'                  => $loop_id,
 				'status'              => $status,
 				'date_next_process'   => $date_next_process,
-				'start_date'          => $utils::date_time_format( $datetime_started ),
-				'end_date'            => $utils::date_time_format( $datetime_ended ),
+				'start_date'          => $utils::date_time_format_relative( $datetime_started ),
+				'start_date_full'     => $utils::date_time_format( $datetime_started ),
+				'end_date'            => $utils::date_time_format_relative( $datetime_ended ),
+				'end_date_full'       => $utils::date_time_format( $datetime_ended ),
 				'date_elapsed'        => $utils::get_date_elapsed( $datetime_started, $datetime_ended ),
 				'_timestamp'          => $utils::strtotime( $datetime_ended ),
 				'iterable_expression' => array(
@@ -337,18 +381,19 @@ class Loop_Logs_Resources {
 	}
 
 	/**
-	 * Retrieves the specific action run
+	 * Retrieves the specific action run with pagination support.
 	 *
 	 * @param mixed[] $loop
 	 * @param mixed[] $item The loop item.
 	 * @param mixed[] $params
 	 * @param int $action_id
+	 * @param mixed[] $log
 	 *
 	 * @return mixed[]
 	 */
 	public function get_runs( $loop, $item, $params, $action_id, $log ) {
 
-		// Ability to disable to loop runs.
+		// Ability to disable loop runs.
 		if ( true === apply_filters( 'automator_rest_endpoint_loops_logs_resources_disable_run', false ) ) {
 			return array();
 		}
@@ -364,16 +409,22 @@ class Loop_Logs_Resources {
 
 		$entities = json_decode( $log['entity_ids'], true );
 
+		// Pagination.
+		$limit  = $this->runs_per_page;
+		$offset = ( $this->runs_page - 1 ) * $limit;
+
 		foreach ( $distinct_statuses as $status ) {
 
 			$runs_items = array();
 
-			// Retieve those entries that are in the specific status.
-			$entries = $this->loop_logs_queries->get_entry_items( $action_id, $status['status'], $params );
+			$total_count = $this->loop_logs_queries->get_entry_items_count( $action_id, $status['status'], $params );
+
+			// Retrieve entries with pagination when limit is set.
+			$entries = $this->loop_logs_queries->get_entry_items( $action_id, $status['status'], $params, $limit, $offset );
 
 			foreach ( $entries as $entry ) {
 
-				$entity_id = $entry['entity_id'];
+				$entity_id = $entry['entity_id'] ?? 0;
 
 				$identifier = '#' . $entity_id;
 
@@ -382,7 +433,8 @@ class Loop_Logs_Resources {
 				}
 
 				if ( 'users' === $type ) {
-					$identifier = sprintf( '#%d %s', $entity_id, get_userdata( $entity_id )->display_name );
+					$user_data  = get_userdata( $entity_id );
+					$identifier = sprintf( '#%d %s', $entity_id, false !== $user_data ? $user_data->display_name : '(deleted)' );
 				}
 
 				$properties = $this->build_loop_properties_from_entry( $entry );
@@ -401,19 +453,31 @@ class Loop_Logs_Resources {
 				}
 
 				$structure = array(
+					'id'             => (int) ( $entry['id'] ?? 0 ),
 					'run_identifier' => $identifier,
-					'date'           => Formatters_Utils::date_time_format( $entry['date_added'] ),
-					'result_message' => $entry['error_message'],
+					'date'           => Formatters_Utils::date_time_format_relative( $entry['date_added'] ?? '' ),
+					'date_full'      => Formatters_Utils::date_time_format( $entry['date_added'] ?? '' ),
+					'result_message' => $entry['error_message'] ?? '',
 					'properties'     => $properties,
 				);
 
 				$runs_items[] = $structure;
 			}
 
-			$statuses[] = array(
+			$status_entry = array(
 				'status_id' => $status['status'],
 				'runs'      => $runs_items,
+				'total'     => $total_count,
 			);
+
+			// Include pagination metadata when a limit is applied.
+			if ( $limit > 0 ) {
+				$status_entry['page']        = $this->runs_page;
+				$status_entry['per_page']    = $limit;
+				$status_entry['total_pages'] = (int) ceil( $total_count / $limit );
+			}
+
+			$statuses[] = $status_entry;
 
 		}
 
@@ -436,6 +500,27 @@ class Loop_Logs_Resources {
 	}
 
 	/**
+	 * Retrieve action fields with in-memory caching per action_id.
+	 *
+	 * Fields_Resolver returns identical results for the same action_id across
+	 * all loop entries. Caching avoids resolving 3000x for 3000 entries.
+	 *
+	 * @param array $entry
+	 *
+	 * @return array
+	 */
+	private function get_cached_action_fields( $entry ) {
+
+		$action_id = absint( $entry['action_id'] );
+
+		if ( ! isset( $this->resolved_fields_cache[ $action_id ] ) ) {
+			$this->resolved_fields_cache[ $action_id ] = self::get_loop_action_fields_by_entry( $entry );
+		}
+
+		return $this->resolved_fields_cache[ $action_id ];
+	}
+
+	/**
 	 * @param $entry
 	 *
 	 * @return array
@@ -452,7 +537,7 @@ class Loop_Logs_Resources {
 			return array();
 		}
 
-		$fields = self::get_loop_action_fields_by_entry( $entry );
+		$fields = $this->get_cached_action_fields( $entry );
 
 		$parsed_data = $this->create_parse_data( $action_data, $entry );
 

@@ -53,10 +53,7 @@ class Mycred_Helpers {
 	 * @return mixed
 	 */
 	public function list_mycred_points_types( $label = null, $option_code = 'MYCREDPOINTSTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
 
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 		if ( ! $label ) {
 			$label = esc_attr__( 'Point type', 'uncanny-automator' );
 		}
@@ -108,10 +105,7 @@ class Mycred_Helpers {
 	 * @return mixed|void
 	 */
 	public function list_mycred_rank_types( $label = null, $option_code = 'MYCREDRANKTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
 
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 		if ( ! $label ) {
 			$label = esc_attr__( 'Ranks', 'uncanny-automator' );
 		}
@@ -167,10 +161,7 @@ class Mycred_Helpers {
 	}
 
 	public function list_mycred_badges( $label = null, $option_code = 'MYCREDBADGETYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
 
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 		if ( ! $label ) {
 			$label = esc_attr__( 'Badges', 'uncanny-automator' );
 		}

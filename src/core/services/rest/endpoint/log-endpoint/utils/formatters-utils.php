@@ -111,6 +111,47 @@ class Formatters_Utils {
 	}
 
 	/**
+	 * Formats date with relative time appended for same-day timestamps.
+	 *
+	 * For same-day dates: "March 26, 2026 11:45 AM (17 minutes ago)"
+	 * For older dates: standard WP date/time format.
+	 *
+	 * @param string $date_string Any valid date in Y-m-d H:i:s format.
+	 *
+	 * @return false|null|string
+	 */
+	public static function date_time_format_relative( $date_string = '' ) {
+
+		$formatted = self::date_time_format( $date_string );
+
+		if ( empty( $formatted ) || false === $formatted ) {
+			return $formatted;
+		}
+
+		$timezone = new \DateTimeZone( Automator()->get_timezone_string() );
+		$dt       = \DateTime::createFromFormat( 'Y-m-d H:i:s', trim( $date_string ), $timezone );
+		$now      = new \DateTime( 'now', $timezone );
+
+		if ( false === $dt ) {
+			return $formatted;
+		}
+
+		// Same calendar day and in the past — append relative time.
+		if ( $dt->format( 'Y-m-d' ) === $now->format( 'Y-m-d' ) && $dt <= $now ) {
+			$diff_seconds = $now->getTimestamp() - $dt->getTimestamp();
+
+			if ( $diff_seconds < DAY_IN_SECONDS ) {
+				/* translators: %s is a human-readable time difference, e.g. "17 minutes" */
+				$relative = sprintf( __( '%s ago', 'uncanny-automator' ), human_time_diff( $dt->getTimestamp(), $now->getTimestamp() ) );
+
+				return sprintf( '%s (%s)', $formatted, $relative );
+			}
+		}
+
+		return $formatted;
+	}
+
+	/**
 	 * Wrapper function for WordPress' human_time_diff function.
 	 *
 	 * @param string $from - A valid datetime string from which the difference begins.

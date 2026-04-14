@@ -33,7 +33,6 @@ final class Actions implements \JsonSerializable {
 		$this->fill_run_on( $meta );
 
 		$this->fill_items();
-
 	}
 
 	/**
@@ -63,7 +62,7 @@ final class Actions implements \JsonSerializable {
 
 		$loop_db = new Loop_Db();
 
-		$actions = Automator()->get_recipe_data( 'uo-action', $recipe_id );
+		$actions = Automator()->get_recipe_data( AUTOMATOR_POST_TYPE_ACTION, $recipe_id );
 
 		$loops = $loop_db->find_recipe_loops( $recipe_id );
 
@@ -127,7 +126,6 @@ final class Actions implements \JsonSerializable {
 		}
 
 		return ( $a['_ui_order'] < $b['_ui_order'] ) ? -1 : 1;
-
 	}
 
 	/**
@@ -159,6 +157,4 @@ final class Actions implements \JsonSerializable {
 
 		return false;
 	}
-
 }
-

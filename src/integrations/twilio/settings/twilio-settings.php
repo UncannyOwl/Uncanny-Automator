@@ -216,6 +216,7 @@ class Twilio_Settings extends App_Integration_Settings {
 			$response['reload'] = true;
 
 		} catch ( Exception $e ) {
+			$response['reload']  = false;
 			$response['success'] = false;
 			$response['alert']   = $this->get_error_alert( $e->getMessage() );
 		}

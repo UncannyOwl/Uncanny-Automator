@@ -30,6 +30,31 @@ class Fields_Shared_Callable {
 	protected static $shared_callables = array();
 
 	/**
+	 * Override trait get_instance() to register the cleanup hook on first instantiation.
+	 *
+	 * @return static
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+			add_action( 'automator_recipe_completed', array( self::$instance, 'clear' ) );
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Clears all cached callable results.
+	 *
+	 * Called on `automator_recipe_completed` to prevent unbounded growth
+	 * in long-running processes (WP-CLI, Action Scheduler batch workers).
+	 *
+	 * @return void
+	 */
+	public function clear() {
+		self::$shared_callables = array();
+	}
+
+	/**
 	 * Sets up which field is currently loaded.
 	 *
 	 * @param string $type Either 'action' or 'trigger'.
@@ -43,7 +68,6 @@ class Fields_Shared_Callable {
 		$this->code = $code;
 
 		return $this;
-
 	}
 
 	/**
@@ -71,7 +95,6 @@ class Fields_Shared_Callable {
 		self::$shared_callables[ $key ] = call_user_func( $callback );
 
 		return self::$shared_callables[ $key ];
-
 	}
 
 	/**
@@ -84,15 +107,14 @@ class Fields_Shared_Callable {
 	 */
 	protected function resolve_type( $type ) {
 
-		if ( $type === 'actions' ) {
+		if ( 'actions' === $type ) {
 			return 'action';
 		}
-		if ( $type === 'triggers' ) {
+		if ( 'triggers' === $type ) {
 			return 'trigger';
 		}
 
 		throw new \InvalidArgumentException( 'Invalid type provided. Must be "actions" or "triggers".' );
-
 	}
 
 	/**
@@ -105,7 +127,6 @@ class Fields_Shared_Callable {
 	protected function has_loaded( $key ) {
 
 		return isset( self::$shared_callables[ $key ] );
-
 	}
 
 	/**
@@ -116,6 +137,5 @@ class Fields_Shared_Callable {
 	protected function generate_key() {
 
 		return strtolower( $this->type . '_' . $this->code );
-
 	}
 }

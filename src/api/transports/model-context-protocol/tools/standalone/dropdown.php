@@ -242,6 +242,35 @@ class Dropdown_Controller extends WP_REST_Controller {
 				);
 			}
 
+			// Handle repeater field definitions (e.g., Notion database columns).
+			// Returns a row_template where compound keys ARE the JSON keys so the
+			// agent can copy them directly into its payload without confusion.
+			if ( is_array( $options ) && ! empty( $options['__repeater_fields'] ) ) {
+				$row_template = $this->build_row_template( $options['fields'] );
+				$field_data['row_template'] = $row_template;
+
+				// Build a concrete usage example from the first text field.
+				$first_key = ! empty( $row_template ) ? array_keys( $row_template )[0] : 'FIELD_KEY';
+				$usage     = sprintf(
+					'FIELD_COLUMN_VALUE = [{"%s": "your value", ...}]',
+					$first_key
+				);
+
+				return new WP_REST_Response(
+					array(
+						'success'  => true,
+						'field'    => $field_data,
+						'metadata' => $metadata,
+						'type'     => 'repeater_fields',
+						'usage'    => $usage,
+						'message'  => 'This field expects a JSON array with one object. '
+							. 'Copy the keys from row_template into your object and fill in values. '
+							. 'For select fields, use one of the option values (not the text).',
+					),
+					200
+				);
+			}
+
 			$field_data['options'] = $this->normalize_options( $options );
 
 			return new WP_REST_Response(
@@ -358,6 +387,14 @@ class Dropdown_Controller extends WP_REST_Controller {
 		// Set the combined values array.
 		if ( ! empty( $values_array ) ) {
 			$body['values'] = $values_array;
+
+			// Send group_id for AJAX handlers that use it to look up a parent value
+			// (e.g. Notion's automator_notion_get_database reads values[group_id]).
+			if ( null !== $parent_code && '' !== $parent_code ) {
+				$body['group_id'] = $parent_code;
+			} elseif ( ! empty( $all_parent_values ) ) {
+				$body['group_id'] = array_key_first( $all_parent_values );
+			}
 		}
 
 		// Make HTTP request to admin-ajax.php.
@@ -413,12 +450,12 @@ class Dropdown_Controller extends WP_REST_Controller {
 			);
 		}
 
-		// Check for field_properties response (repeater fields via AJAX).
-		if ( isset( $data['field_properties'] ) ) {
-			return new WP_Error(
-				'unsupported_ajax_response',
-				'This field returns a complex data structure that cannot be handled as dropdown options.',
-				array( 'status' => 400 )
+		// Repeater field definitions (e.g. Notion database columns).
+		// Return sub-field definitions so the agent knows the correct keys and types.
+		if ( isset( $data['field_properties']['fields'] ) && is_array( $data['field_properties']['fields'] ) ) {
+			return array(
+				'__repeater_fields' => true,
+				'fields'            => $data['field_properties']['fields'],
 			);
 		}
 
@@ -473,8 +510,24 @@ class Dropdown_Controller extends WP_REST_Controller {
 				// Check for repeater fields - might contain the target sub-field.
 				$input_type = $field['input_type'] ?? 'select';
 				if ( 'repeater' === $input_type ) {
-					// If asking for the repeater itself, mark as unsupported.
+					// If asking for the repeater itself:
 					if ( strtoupper( $field_code ) === strtoupper( $option_code ) ) {
+						// If the repeater has an AJAX endpoint, return it so the
+						// handler can fetch sub-field definitions (e.g. Notion columns).
+						if ( ! empty( $field['ajax']['endpoint'] ) ) {
+							$listen = $field['ajax']['listen_fields'] ?? array();
+							return array(
+								'label'        => $field['label'] ?? $field_code,
+								'options'      => array(),
+								'endpoint'     => $field['ajax']['endpoint'],
+								'is_parent'    => false,
+								'parent_codes' => $listen,
+								'populates'    => null,
+								'is_repeater'  => true,
+							);
+						}
+
+						// No AJAX endpoint — truly unsupported.
 						return array(
 							'unsupported'        => true,
 							'unsupported_reason' => 'repeater_field',
@@ -623,6 +676,54 @@ class Dropdown_Controller extends WP_REST_Controller {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Build a row template for repeater fields.
+	 *
+	 * Returns an associative array where compound keys (e.g.
+	 * NOTION||__||FIELD||__||id||__||type) ARE the JSON keys. Each value
+	 * describes the field (label, type, options). This format lets the agent
+	 * copy the keys directly into its payload without confusion.
+	 *
+	 * @param array $fields Raw sub-field definitions from AJAX handler.
+	 * @return array Row template keyed by compound field codes.
+	 */
+	private function build_row_template( array $fields ): array {
+		$template = array();
+
+		foreach ( $fields as $field ) {
+			if ( ! is_array( $field ) ) {
+				continue;
+			}
+
+			$option_code = $field['option_code'] ?? '';
+			$label       = $field['label'] ?? '';
+			$input_type  = $field['input_type'] ?? 'text';
+
+			// Skip _readable fields.
+			if ( false !== strpos( $option_code, '_readable' ) ) {
+				continue;
+			}
+
+			if ( '' === $option_code ) {
+				continue;
+			}
+
+			$entry = array(
+				'label' => $label,
+				'type'  => $input_type,
+			);
+
+			// Include options for select fields.
+			if ( ! empty( $field['options'] ) && is_array( $field['options'] ) ) {
+				$entry['options'] = $this->normalize_options( $field['options'] );
+			}
+
+			$template[ $option_code ] = $entry;
+		}
+
+		return $template;
 	}
 
 	/**

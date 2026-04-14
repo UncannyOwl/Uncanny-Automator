@@ -1,11 +1,11 @@
 <?php
 
-use Uncanny_Automator\Integrations\OpenAI_Integration;
-
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+	return;
 }
 
-if ( class_exists( '\Uncanny_Automator\Integrations\OpenAI_Integration' ) ) {
-	new OpenAI_Integration();
+if ( ! class_exists( 'Uncanny_Automator\Integrations\OpenAI\OpenAI_Integration' ) ) {
+	return;
 }
+
+new Uncanny_Automator\Integrations\OpenAI\OpenAI_Integration();

@@ -35,6 +35,18 @@ class Automator_Cache_Handler {
 	public $recipes = 'automator_recipes';
 
 	/**
+	 * Cached result of is_cache_enabled() for this request.
+	 *
+	 * The cache enabled setting can only change via a settings form save,
+	 * which ends the request. Within a single request the value is constant,
+	 * so we resolve it once and reuse it — avoiding a repeated automator_get_option()
+	 * call on every cache->get() invocation.
+	 *
+	 * @var bool|null  null = not yet resolved, bool = resolved value.
+	 */
+	private $cache_enabled = null;
+
+	/**
 	 * Cache_Handler constructor.
 	 */
 	public function __construct() {
@@ -54,6 +66,35 @@ class Automator_Cache_Handler {
 		add_action( 'deleted_post_meta', array( $this, 'handle_condition_meta_delete' ), 10, 4 );
 		add_action( 'automator_recipe_status_updated', array( $this, 'handle_condition_status_update' ), 10, 4 );
 		add_action( 'automator_cache_recipe_post_status_changed', array( $this, 'handle_condition_status_update_legacy' ), 10, 1 );
+
+		// Integration directory reset must always run on plugin activation/deactivation.
+		add_action(
+			'activated_plugin',
+			array(
+				$this,
+				'reset_integrations_directory',
+			),
+			99999,
+			2
+		);
+		add_action(
+			'deactivated_plugin',
+			array(
+				$this,
+				'reset_integrations_directory',
+			),
+			99999,
+			2
+		);
+		add_action(
+			'upgrader_process_complete',
+			array(
+				$this,
+				'upgrader_process_completed',
+			),
+			999,
+			0
+		);
 
 		if ( false === $this->is_cache_enabled() ) {
 			return;
@@ -98,24 +139,6 @@ class Automator_Cache_Handler {
 			),
 			99999,
 			4
-		);
-		add_action(
-			'activated_plugin',
-			array(
-				$this,
-				'reset_integrations_directory',
-			),
-			99999,
-			2
-		);
-		add_action(
-			'deactivated_plugin',
-			array(
-				$this,
-				'reset_integrations_directory',
-			),
-			99999,
-			2
 		);
 		add_action(
 			'delete_post',
@@ -180,16 +203,6 @@ class Automator_Cache_Handler {
 				'enqueue_admin_bar_assets',
 			)
 		);
-
-		add_action(
-			'upgrader_process_complete',
-			array(
-				$this,
-				'upgrader_process_completed',
-			),
-			999,
-			0
-		);
 	}
 
 	/**
@@ -218,7 +231,7 @@ class Automator_Cache_Handler {
 		}
 
 		// If it's Automator post type, return
-		if ( 'uo-recipe' === $post->post_type || 'uo-trigger' === $post->post_type || 'uo-action' === $post->post_type || 'uo-closure' === $post->post_type ) {
+		if ( in_array( $post->post_type, \automator_get_recipe_post_types(), true ) ) {
 			return;
 		}
 
@@ -241,8 +254,10 @@ class Automator_Cache_Handler {
 	 */
 	public function maybe_clear_cache_for_recipes( $post_id, $post, $update, $post_before ) {
 
-		// If it's Automator post type, return
-		if ( 'uo-recipe' !== $post->post_type || 'uo-trigger' !== $post->post_type || 'uo-action' !== $post->post_type || 'uo-closure' !== $post->post_type ) {
+		$automator_types = \automator_get_recipe_post_types();
+
+		// If it's not an Automator post type, return.
+		if ( ! in_array( $post->post_type, $automator_types, true ) ) {
 			return;
 		}
 
@@ -400,6 +415,8 @@ class Automator_Cache_Handler {
 	 */
 	public function remove( $key, $group = 'automator' ) {
 		wp_cache_delete( $key, $group );
+		// Also clear the matching transient if one exists (e.g., trigger query cache).
+		delete_transient( $key );
 	}
 
 	/**
@@ -412,6 +429,9 @@ class Automator_Cache_Handler {
 		$this->remove( 'automator_actionified_triggers' );
 		$this->remove( $this->recipes_data );
 		$this->remove( 'get_recipe_type' );
+
+		// Rebuild the recipe manifest (active codes cache for demand-driven loading).
+		Recipe_Manifest::reset();
 
 		automator_cache_delete_group( 'automator' );
 
@@ -563,20 +583,35 @@ class Automator_Cache_Handler {
 	}
 
 	/**
-	 * @return mixed|void
+	 * Whether the Automator object cache is enabled.
+	 *
+	 * Result is cached in $this->cache_enabled for the lifetime of the request.
+	 * The setting can only change via a form save (new request), so resolving
+	 * once per request is safe and avoids repeated automator_get_option() calls
+	 * on every cache->get() invocation.
+	 *
+	 * @param string $key Optional — passed to the automator_disable_object_cache filter.
+	 *
+	 * @return bool
 	 */
 	public function is_cache_enabled( $key = '' ) {
+		if ( null !== $this->cache_enabled ) {
+			return $this->cache_enabled;
+		}
+
 		$value = automator_get_option( self::OPTION_NAME, '' );
 
 		if ( '' === (string) $value ) {
 			// Use filter to check if user has disabled object cache previously.
-			// Once the value is saved, no need to run the filter, since it's redundant and inverse
+			// Once the value is saved, no need to run the filter, since it's redundant and inverse.
 			// Since the filter is to 'Disable' the cache,
-			// We need to inverse the value, true is false in this case
+			// we need to inverse the value — true means cache is active.
 			$value = ! apply_filters( 'automator_disable_object_cache', false, $key );
 		}
 
-		return '0' === $value || false === $value ? false : true;
+		$this->cache_enabled = '0' === $value || false === $value ? false : true;
+
+		return $this->cache_enabled;
 	}
 
 	/**
@@ -699,7 +734,7 @@ class Automator_Cache_Handler {
 			return;
 		}
 
-		if ( 'uo-recipe' !== $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
 			return;
 		}
 

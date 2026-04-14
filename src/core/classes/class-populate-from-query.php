@@ -82,7 +82,7 @@ class Populate_From_Query {
 	 */
 	protected static function is_new_recipe() {
 
-		if ( 'uo-recipe' !== self::$post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== self::$post->post_type ) {
 
 			return false;
 		}
@@ -229,7 +229,7 @@ class Populate_From_Query {
 	public static function add_trigger() {
 		$integration_param = automator_filter_input( 'integration' );
 		$item_code         = automator_filter_input( 'item_code' );
-		
+
 		// Fallback integration mapping for known trigger codes when integration is not provided
 		if ( empty( $integration_param ) && ! empty( $item_code ) ) {
 			$integration_fallbacks = array(
@@ -237,14 +237,14 @@ class Populate_From_Query {
 				'ANONWPFSUBMITFIELD' => 'WPF',
 				'UCBATCH'            => 'UNCANNYCODE',
 			);
-			
+
 			if ( isset( $integration_fallbacks[ $item_code ] ) ) {
 				$integration_param = $integration_fallbacks[ $item_code ];
 			}
 		}
-		
+
 		$integration_param = ! empty( $integration_param ) ? $integration_param : '';
-		
+
 		$request = new WP_REST_Request( 'POST', '', '' );
 		$request->set_body_params(
 			array(

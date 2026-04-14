@@ -94,10 +94,6 @@ class Fluent_Crm_Helpers {
 	 * @return mixed
 	 */
 	public function fluent_crm_lists( $label = null, $option_code = 'FCRMLIST', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'List', 'FluentCRM', 'uncanny-automator' );
@@ -157,12 +153,6 @@ class Fluent_Crm_Helpers {
 	 * @return mixed
 	 */
 	public function fluent_crm_tags( $label = null, $option_code = 'FCRMTAG', $args = array() ) {
-
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Tag', 'FluentCRM', 'uncanny-automator' );

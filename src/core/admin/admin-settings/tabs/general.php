@@ -48,7 +48,7 @@ class Admin_Settings_General {
 		// Add the tab using the filter
 		add_filter(
 			'automator_settings_sections',
-			function( $tabs ) {
+			function ( $tabs ) {
 				// General
 				$tabs['general'] = (object) array(
 					'name'     => esc_html__( 'General', 'uncanny-automator' ),
@@ -108,7 +108,7 @@ class Admin_Settings_General {
 	public static function utility_get_general_page_link( $selected_tab = '' ) {
 		// Define the list of URL parameters
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-config',
 			'tab'       => 'general',
 		);

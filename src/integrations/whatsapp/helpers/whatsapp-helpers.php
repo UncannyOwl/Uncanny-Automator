@@ -619,7 +619,7 @@ class WhatsApp_Helpers {
 	 */
 	public function regenerate_webhook_key() {
 
-		$new_key = md5( uniqid( wp_rand(), true ) );
+		$new_key = bin2hex( random_bytes( 24 ) );
 
 		automator_update_option( self::WEBHOOK_KEY, $new_key );
 

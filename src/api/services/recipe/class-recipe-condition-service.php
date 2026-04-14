@@ -228,4 +228,37 @@ class Recipe_Condition_Service {
 	public function remove_condition_from_group( string $condition_id, string $group_id, int $recipe_id ) {
 		return $this->management_service->remove_condition_from_group( $condition_id, $group_id, $recipe_id );
 	}
+
+	/**
+	 * Remove a deleted action from all condition groups and delete empty groups.
+	 *
+	 * @param int $action_id Deleted action post ID.
+	 * @param int $recipe_id Recipe post ID.
+	 */
+	public function cleanup_groups_for_deleted_action( int $action_id, int $recipe_id ): void {
+
+		$conditions_result = $this->get_recipe_conditions( $recipe_id );
+
+		if ( is_wp_error( $conditions_result ) ) {
+			return;
+		}
+
+		$groups = $conditions_result['condition_groups'] ?? array();
+
+		foreach ( $groups as $group ) {
+			$group_id   = (string) ( $group['group_id'] ?? $group['id'] ?? '' );
+			$action_ids = array_map( 'intval', $group['actions'] ?? $group['action_ids'] ?? array() );
+
+			if ( ! in_array( $action_id, $action_ids, true ) ) {
+				continue;
+			}
+
+			$this->remove_actions_from_condition_group( $recipe_id, $group_id, array( $action_id ) );
+
+			$remaining = array_diff( $action_ids, array( $action_id ) );
+			if ( empty( $remaining ) ) {
+				$this->remove_condition_group( $recipe_id, $group_id );
+			}
+		}
+	}
 }

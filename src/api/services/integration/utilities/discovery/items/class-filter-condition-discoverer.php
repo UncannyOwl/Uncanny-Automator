@@ -32,7 +32,7 @@ class Filter_Condition_Discoverer extends Integration_Item_Discoverer {
 	 * @param Condition_Registry_Service|null $condition_registry Optional registry for DI/testing.
 	 */
 	public function __construct( ?Condition_Registry_Service $condition_registry = null ) {
-		$this->condition_registry = $condition_registry ?? Condition_Registry_Service::get_instance();
+		$this->condition_registry = $condition_registry ?? Condition_Registry_Service::instance();
 	}
 
 	/**

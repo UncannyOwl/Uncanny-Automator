@@ -55,10 +55,6 @@ class Upsell_Plugin_Helpers {
 	 * @return mixed
 	 */
 	public function all_upsell_products( $label = null, $option_code = 'USPRODUCT' ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Product', 'uncanny-automator' );

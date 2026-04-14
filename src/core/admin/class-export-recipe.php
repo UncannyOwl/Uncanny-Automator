@@ -56,6 +56,10 @@ class Export_Recipe {
 
 		$recipe_id = absint( automator_filter_input( 'post' ) );
 
+		if ( ! current_user_can( 'edit_post', $recipe_id ) ) {
+			$this->die_with_error( _x( 'You do not have permission to export this recipe.', 'Export Recipe', 'uncanny-automator' ) );
+		}
+
 		$json = $this->fetch_recipe_as_json( $recipe_id );
 		$json = apply_filters( 'automator_recipe_export_json', $json, $recipe_id );
 
@@ -167,7 +171,7 @@ class Export_Recipe {
 	 */
 	public function add_export_action_rows( $actions, $post ) {
 
-		if ( 'uo-recipe' !== $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
 			return $actions;
 		}
 
@@ -211,7 +215,7 @@ class Export_Recipe {
 		}
 
 		// Check if the post type is valid
-		if ( 'uo-recipe' !== get_post_type( $recipe_id ) ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== get_post_type( $recipe_id ) ) {
 			return new WP_Error(
 				'invalid_post_type',
 				sprintf(
@@ -245,10 +249,10 @@ class Export_Recipe {
 				'post' => get_post( $recipe_id ),
 				'meta' => $this->fetch_post_meta( $recipe_id ),
 			),
-			'triggers' => $this->fetch_recipe_parts( $recipe_id, 'uo-trigger' ),
-			'actions'  => $this->fetch_recipe_parts( $recipe_id, 'uo-action' ),
-			'loops'    => $this->fetch_recipe_parts( $recipe_id, 'uo-loop' ),
-			'closure'  => $this->fetch_recipe_parts( $recipe_id, 'uo-closure' ),
+			'triggers' => $this->fetch_recipe_parts( $recipe_id, AUTOMATOR_POST_TYPE_TRIGGER ),
+			'actions'  => $this->fetch_recipe_parts( $recipe_id, AUTOMATOR_POST_TYPE_ACTION ),
+			'loops'    => $this->fetch_recipe_parts( $recipe_id, AUTOMATOR_POST_TYPE_LOOP ),
+			'closure'  => $this->fetch_recipe_parts( $recipe_id, AUTOMATOR_POST_TYPE_CLOSURE ),
 		);
 
 		$recipe = apply_filters( 'automator_recipe_export_object', $recipe );
@@ -302,10 +306,10 @@ class Export_Recipe {
 				'meta' => $this->fetch_post_meta( $recipe_part->ID ),
 			);
 
-			if ( 'uo-loop' === $post_type ) {
+			if ( AUTOMATOR_POST_TYPE_LOOP === $post_type ) {
 				$parts[ $r ]->loops = array(
-					'filters' => $this->fetch_recipe_parts( $recipe_part->ID, 'uo-loop-filter' ),
-					'actions' => $this->fetch_recipe_parts( $recipe_part->ID, 'uo-action' ),
+					'filters' => $this->fetch_recipe_parts( $recipe_part->ID, AUTOMATOR_POST_TYPE_LOOP_FILTER ),
+					'actions' => $this->fetch_recipe_parts( $recipe_part->ID, AUTOMATOR_POST_TYPE_ACTION ),
 				);
 			}
 		}

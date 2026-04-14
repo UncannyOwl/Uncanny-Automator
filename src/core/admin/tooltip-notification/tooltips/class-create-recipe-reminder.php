@@ -3,7 +3,7 @@
 namespace Uncanny_Automator;
 
 // Include the base class file
-require_once dirname( __FILE__ ) . '/../trait-tooltip-notification.php';
+require_once __DIR__ . '/../trait-tooltip-notification.php';
 
 /**
  * Class Automator_Tooltip_48hr
@@ -62,7 +62,7 @@ class Automator_Tooltip_48hr {
 	 */
 	private function is_recipe_creation_pending() {
 		$args  = array(
-			'post_type'      => 'uo-recipe',
+			'post_type'      => AUTOMATOR_POST_TYPE_RECIPE,
 			'posts_per_page' => 1,
 		);
 		$query = new \WP_Query( $args );

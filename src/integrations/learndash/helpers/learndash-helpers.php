@@ -105,10 +105,6 @@ class Learndash_Helpers {
 	 * @return mixed
 	 */
 	public function all_ld_courses( $label = null, $option_code = 'LDCOURSE', $any_option = true, $include_relevant_tokens = true, $relevant_tokens = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Course', 'Learndash', 'uncanny-automator' );
@@ -259,10 +255,6 @@ class Learndash_Helpers {
 	 * @return mixed
 	 */
 	public function all_ld_lessons( $label = null, $any_lesson = true, $option_code = 'LDLESSON' ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Lesson', 'Learndash', 'uncanny-automator' );
@@ -372,10 +364,6 @@ class Learndash_Helpers {
 	 * @return mixed
 	 */
 	public function all_ld_topics( $label = null, $option_code = 'LDTOPIC' ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Topic', 'Learndash', 'uncanny-automator' );
@@ -489,10 +477,6 @@ class Learndash_Helpers {
 	 * @return mixed
 	 */
 	public function all_ld_groups( $label = null, $option_code = 'LDGROUP', $all_label = false, $any_option = true, $multiple_values = false, $relevant_tokens = true, $supports_multi_custom = false ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Group', 'Learndash', 'uncanny-automator' );
@@ -614,9 +598,6 @@ class Learndash_Helpers {
 	 * @return mixed
 	 */
 	public function all_ld_quiz( $label = null, $option_code = 'LDQUIZ', $any_option = true ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr_x( 'Quiz', 'Learndash', 'uncanny-automator' );

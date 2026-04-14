@@ -271,7 +271,9 @@ class Action_Logs_Resources {
 			$properties = (array) maybe_unserialize( Automator()->db->action->get_meta( $action_log['ID'], 'properties' ) );
 
 			$action_runs[] = array(
-				'date'           => $this->utils->date_time_format( $action_log['date_time'] ),
+				'date'           => $this->utils->date_time_format_relative( $action_log['date_time'] ),
+				'date_full'      => $this->utils->date_time_format( $action_log['date_time'] ),
+				'_raw_date'      => $action_log['date_time'],
 				'_timestamp'     => $this->utils->strtotime( $action_log['date_time'] ),
 				'used_credit'    => $this->has_api_log( $params['action_log_id'] ),
 				'status_id'      => $status_id,
@@ -296,7 +298,9 @@ class Action_Logs_Resources {
 			);
 
 			$action_runs[] = array(
-				'date'           => $this->utils->date_time_format( $item['date_time'] ),
+				'date'           => $this->utils->date_time_format_relative( $item['date_time'] ),
+				'date_full'      => $this->utils->date_time_format( $item['date_time'] ),
+				'_raw_date'      => $item['date_time'],
 				'_timestamp'     => $this->utils->strtotime( $item['date_time'] ),
 				'used_credit'    => true,
 				'status_id'      => $item['result'],
@@ -383,8 +387,8 @@ class Action_Logs_Resources {
 		$action_meta = $this->resolve_action_meta( $action_meta, $params, $action_id, $action_log_record );
 
 		$action_log = array(
-			'action_log_id'    => $action_log_record['ID'],
-			'action_completed' => $action_log_record['completed'],
+			'action_log_id'    => $action_log_record['ID'] ?? null,
+			'action_completed' => $action_log_record['completed'] ?? null,
 		);
 
 		$status = $this->automator_factory->status();
@@ -415,8 +419,14 @@ class Action_Logs_Resources {
 		$end_date = isset( $action_runs[ count( $action_runs ) - 1 ]['date'] ) /** @phpstan-ignore-line False positive. */
 			? $action_runs[ count( $action_runs ) - 1 ]['date'] /** @phpstan-ignore-line False positive. */
 			: null;
+		$end_date_full = isset( $action_runs[ count( $action_runs ) - 1 ]['date_full'] ) /** @phpstan-ignore-line False positive. */
+			? $action_runs[ count( $action_runs ) - 1 ]['date_full'] /** @phpstan-ignore-line False positive. */
+			: null;
 
-		$start_date = isset( $action_runs[0]['date'] ) ? $action_runs[0]['date'] : null;
+		$start_date      = isset( $action_runs[0]['date'] ) ? $action_runs[0]['date'] : null;
+		$start_date_full = isset( $action_runs[0]['date_full'] ) ? $action_runs[0]['date_full'] : null;
+		$raw_start_date  = isset( $action_runs[0]['_raw_date'] ) ? $action_runs[0]['_raw_date'] : null;
+		$raw_end_date    = isset( $action_runs[ count( $action_runs ) - 1 ]['_raw_date'] ) ? $action_runs[ count( $action_runs ) - 1 ]['_raw_date'] : null;
 		/** @phpstan-ignore-line False positive. */
 		$_ts = isset( $action_runs[0]['_timestamp'] ) ? $action_runs[0]['_timestamp'] : null;
 
@@ -445,8 +455,10 @@ class Action_Logs_Resources {
 			'item_log_id'       => $action_log['action_log_id'],
 			'fields'            => $this->get_fields_values( $params, $action_id, $action_log['action_log_id'] ),
 			'start_date'        => $start_date,
+			'start_date_full'   => $start_date_full,
 			'end_date'          => $end_date, // Defaults to null.
-			'date_elapsed'      => $utils::get_date_elapsed( $start_date, $end_date ),
+			'end_date_full'     => $end_date_full,
+			'date_elapsed'      => $utils::get_date_elapsed( $raw_start_date, $raw_end_date ),
 			'_timestamp'        => $_ts,
 			'runs'              => $action_runs,
 		);
@@ -603,10 +615,13 @@ class Action_Logs_Resources {
 
 			$date->format( 'Y-m-d H:i:s' ); // Return formatted timestamp
 
+			$formatted_date = $date->format( 'Y-m-d H:i:s' );
+
 			return array(
-				'status_id'  => $status_id,
-				'start_date' => $this->utils->date_time_format( $date->format( 'Y-m-d H:i:s' ) ),
-				'_timestamp' => $date->getTimestamp(),
+				'status_id'       => $status_id,
+				'start_date'      => $this->utils->date_time_format_relative( $formatted_date ),
+				'start_date_full' => $this->utils->date_time_format( $formatted_date ),
+				'_timestamp'      => $date->getTimestamp(),
 				'end_date'   => null,
 			);
 
@@ -735,13 +750,15 @@ class Action_Logs_Resources {
 				)
 			);
 
-			$date_time      = $this->utils->date_time_format( $closure_log['date_time'] );
+			$date_time      = $this->utils->date_time_format_relative( $closure_log['date_time'] );
+			$date_time_full = $this->utils->date_time_format( $closure_log['date_time'] );
 			$timestamp      = $this->utils->strtotime( $closure_log['date_time'] );
 			$status_id      = 'completed';
 			$root_status_id = 'completed';
 
 			if ( true === $closure_log['mock'] ) {
 				$date_time      = 'When triggers are completed';
+				$date_time_full = null;
 				$timestamp      = time();
 				$status_id      = 'not-completed';
 				$root_status_id = 'not-completed';
@@ -775,8 +792,10 @@ class Action_Logs_Resources {
 				'code'             => $log_entry['meta']['code'],
 				'status_id'        => $root_status_id,
 				'start_date'       => $date_time,
+				'start_date_full'  => $date_time_full,
 				'_timestamp'       => $timestamp,
 				'end_date'         => $date_time,
+				'end_date_full'    => $date_time_full,
 				'title_html'       => htmlentities( $log_entry['meta']['sentence_human_readable_html'], ENT_QUOTES ),
 				'can_rerun'        => false,
 				'can_run_now'      => false,

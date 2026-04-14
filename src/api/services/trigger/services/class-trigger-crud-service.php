@@ -83,9 +83,9 @@ class Trigger_CRUD_Service {
 		?Item_Sentence_Composer $sentence_composer = null
 	) {
 		global $wpdb;
-		$this->recipe_store     = $recipe_store ?? new WP_Recipe_Store();
-		$this->trigger_store    = $trigger_store ?? new WP_Recipe_Trigger_Store( $wpdb );
-		$this->label_resolver   = $label_resolver ?? new Field_Label_Resolver();
+		$this->recipe_store      = $recipe_store ?? new WP_Recipe_Store();
+		$this->trigger_store     = $trigger_store ?? new WP_Recipe_Trigger_Store( $wpdb );
+		$this->label_resolver    = $label_resolver ?? new Field_Label_Resolver();
 		$this->sentence_composer = $sentence_composer ?? new Item_Sentence_Composer();
 	}
 
@@ -118,7 +118,7 @@ class Trigger_CRUD_Service {
 	 * @return bool|\WP_Error True if valid, WP_Error if invalid.
 	 */
 	public function validate_trigger_code( string $trigger_code ) {
-		$trigger_registry_service = Trigger_Registry_Service::get_instance();
+		$trigger_registry_service = Trigger_Registry_Service::instance();
 		$trigger_validation       = $trigger_registry_service->get_trigger_definition( $trigger_code, false );
 
 		if ( is_wp_error( $trigger_validation ) ) {
@@ -223,6 +223,11 @@ class Trigger_CRUD_Service {
 	 */
 	public function add_to_recipe( int $recipe_id, string $trigger_code, array $config = array() ) {
 
+		$trashed_error = $this->validate_recipe_writable( $recipe_id );
+		if ( is_wp_error( $trashed_error ) ) {
+			return $trashed_error;
+		}
+
 		try {
 			// Validate recipe exists
 			$recipe = $this->validate_recipe_exists( $recipe_id );
@@ -249,17 +254,33 @@ class Trigger_CRUD_Service {
 			// Create trigger instance - domain validation happens here
 			$trigger = new Trigger( $trigger_config );
 
+			// Validate trigger type matches recipe type (user vs anonymous).
+			$recipe_type  = $recipe->get_recipe_type()->get_value();
+			$trigger_type = $trigger->get_trigger_type()->get_value();
+
+			$type_validation = $this->validate_trigger_type_match( $recipe_type, $trigger_type );
+			if ( is_wp_error( $type_validation ) ) {
+				return $type_validation;
+			}
+
 			// Get the targetted recipe triggers.
-			$trigger_logic = User_Type::USER === $recipe->get_recipe_type()->get_value()
+			$trigger_logic = User_Type::USER === $recipe_type
 			? $recipe->get_recipe_trigger_logic()->get_value()
 			: null;
 
-			// Create Recipe Triggers to enforce invariance.
-			$collection = $this->trigger_store->get_recipe_triggers( new Recipe_Id( $recipe_id ) );
+			// Validate anonymous recipe trigger limit.
+			$collection    = $this->trigger_store->get_recipe_triggers( new Recipe_Id( $recipe_id ) );
+			$current_count = count( $collection->get_triggers() );
 
+			$limit_validation = $this->validate_anonymous_trigger_limit( $recipe_type, $current_count );
+			if ( is_wp_error( $limit_validation ) ) {
+				return $limit_validation;
+			}
+
+			// Create Recipe Triggers to enforce invariance.
 			( new Recipe_Triggers(
 				$collection->get_triggers(),
-				$recipe->get_recipe_type()->get_value(),
+				$recipe_type,
 				$trigger_logic
 			) );
 
@@ -269,7 +290,21 @@ class Trigger_CRUD_Service {
 
 			// Return success response with saved trigger data
 			$trigger_data = $saved_trigger->to_array();
-			return $this->build_add_trigger_response( $recipe_id, $trigger_data );
+			$response     = $this->build_add_trigger_response( $recipe_id, $trigger_data );
+
+			// Fire the generic post-save extension points. Pro (or any other
+			// consumer) uses these to run side effects and enrich the response —
+			// the CRUD service stays oblivious to what they do.
+			$saved_trigger_id = $saved_trigger->get_trigger_id()
+				? (int) $saved_trigger->get_trigger_id()->get_value()
+				: 0;
+
+			if ( $saved_trigger_id > 0 ) {
+				do_action( 'automator_trigger_saved', $recipe_id, $saved_trigger_id, $trigger_code );
+				$response = apply_filters( 'automator_trigger_response', $response, $recipe_id, $saved_trigger_id, $trigger_code );
+			}
+
+			return $response;
 
 		} catch ( \Throwable $e ) {
 			return new WP_Error(
@@ -400,7 +435,15 @@ class Trigger_CRUD_Service {
 				throw new \RuntimeException( esc_html_x( 'Trigger was saved but no ID was returned', 'Trigger CRUD error', 'uncanny-automator' ) );
 			}
 
-			return $this->build_trigger_entity_response( $recipe_id, $saved_trigger_id, $trigger_data );
+			$response = $this->build_trigger_entity_response( $recipe_id, $saved_trigger_id, $trigger_data );
+
+			// Fire the generic post-save extension points — see the add_to_recipe
+			// path above for the rationale. Core stays ignorant of Pro concerns.
+			$trigger_code = $trigger->get_trigger_code()->get_value();
+			do_action( 'automator_trigger_saved', $recipe_id, (int) $saved_trigger_id, $trigger_code );
+			$response = apply_filters( 'automator_trigger_response', $response, $recipe_id, (int) $saved_trigger_id, $trigger_code );
+
+			return $response;
 
 		} catch ( \Throwable $e ) {
 			return new WP_Error(
@@ -552,7 +595,7 @@ class Trigger_CRUD_Service {
 	 * @param array $config Updated trigger configuration.
 	 * @return array|\WP_Error Success data or error.
 	 */
-	public function update_trigger( int $trigger_id, array $config = array() ) {
+	public function update_trigger( int $trigger_id, array $config = array(), ?int $expected_recipe_id = null, ?string $requested_code = null ) {
 		try {
 			// Get existing trigger instance
 			$existing_trigger = $this->get_individual_trigger( $trigger_id );
@@ -569,11 +612,26 @@ class Trigger_CRUD_Service {
 
 			// Get recipe ID from trigger post
 			$trigger_post = get_post( $trigger_id );
-			if ( ! $trigger_post || 'uo-trigger' !== $trigger_post->post_type ) {
+			if ( ! $trigger_post || AUTOMATOR_POST_TYPE_TRIGGER !== $trigger_post->post_type ) {
 				return new WP_Error(
 					'invalid_trigger',
 					esc_html_x( 'Invalid trigger post', 'Trigger CRUD error', 'uncanny-automator' )
 				);
+			}
+
+			$trashed_error = $this->validate_recipe_writable( (int) $trigger_post->post_parent );
+			if ( is_wp_error( $trashed_error ) ) {
+				return $trashed_error;
+			}
+
+			$ownership_error = $this->validate_ownership( $trigger_id, $trigger_post, $expected_recipe_id );
+			if ( is_wp_error( $ownership_error ) ) {
+				return $ownership_error;
+			}
+
+			$code_error = $this->validate_code_unchanged( $trigger_id, $requested_code );
+			if ( is_wp_error( $code_error ) ) {
+				return $code_error;
 			}
 
 			$recipe_id      = new Recipe_Id( $trigger_post->post_parent );
@@ -596,11 +654,21 @@ class Trigger_CRUD_Service {
 			// Save updated trigger using recipe store operations and get persisted version
 			$saved_trigger = $this->trigger_store->update_recipe_trigger( $recipe_id, $trigger_obj_id, $updated_trigger );
 
-			return array(
+			$response = array(
 				'success' => true,
 				'message' => 'Trigger successfully updated',
 				'trigger' => $saved_trigger->to_array(),
 			);
+
+			// Fire the generic post-save extension points. Any listener can
+			// react to a trigger save here and enrich the response shape
+			// without the CRUD service knowing what it's for.
+			$trigger_code  = $existing_trigger->get_trigger_code()->get_value();
+			$int_recipe_id = (int) $recipe_id->get_value();
+			do_action( 'automator_trigger_saved', $int_recipe_id, $trigger_id, $trigger_code );
+			$response = apply_filters( 'automator_trigger_response', $response, $int_recipe_id, $trigger_id, $trigger_code );
+
+			return $response;
 
 		} catch ( \Throwable $e ) {
 			return new WP_Error(
@@ -985,7 +1053,7 @@ class Trigger_CRUD_Service {
 		$trigger_post = get_post( $trigger_id );
 
 		// Validate it's a trigger post
-		if ( ! $trigger_post || 'uo-trigger' !== $trigger_post->post_type ) {
+		if ( ! $trigger_post || AUTOMATOR_POST_TYPE_TRIGGER !== $trigger_post->post_type ) {
 			return null;
 		}
 
@@ -1042,5 +1110,88 @@ class Trigger_CRUD_Service {
 		);
 
 		return $config;
+	}
+
+	/**
+	 * Validate that the trigger belongs to the expected recipe.
+	 *
+	 * @param int      $trigger_id         Trigger post ID.
+	 * @param \WP_Post $trigger_post       Trigger post object.
+	 * @param int|null $expected_recipe_id Expected parent recipe ID, or null to skip.
+	 *
+	 * @return \WP_Error|null WP_Error on mismatch, null when OK.
+	 */
+	private function validate_ownership( int $trigger_id, \WP_Post $trigger_post, ?int $expected_recipe_id ) {
+
+		if ( null === $expected_recipe_id ) {
+			return null;
+		}
+
+		if ( (int) $trigger_post->post_parent === $expected_recipe_id ) {
+			return null;
+		}
+
+		return new WP_Error(
+			'trigger_ownership_mismatch',
+			sprintf(
+				/* translators: %1$d Trigger ID, %2$d Recipe ID. */
+				esc_html_x( 'Trigger %1$d does not belong to recipe %2$d.', 'Trigger CRUD error', 'uncanny-automator' ),
+				$trigger_id,
+				$expected_recipe_id
+			)
+		);
+	}
+
+	/**
+	 * Validate that the component code has not changed.
+	 *
+	 * @param int         $trigger_id     Trigger post ID.
+	 * @param string|null $requested_code Code the caller wants to set, or null to skip.
+	 *
+	 * @return \WP_Error|null WP_Error when the code differs, null when OK.
+	 */
+	private function validate_code_unchanged( int $trigger_id, ?string $requested_code ) {
+
+		if ( null === $requested_code || '' === $requested_code ) {
+			return null;
+		}
+
+		$stored_code = get_post_meta( $trigger_id, 'code', true );
+
+		if ( ! $stored_code || $requested_code === $stored_code ) {
+			return null;
+		}
+
+		return new WP_Error(
+			'trigger_code_change_rejected',
+			sprintf(
+				/* translators: %1$s Current code, %2$s Requested code. */
+				esc_html_x( 'Cannot change trigger_code from "%1$s" to "%2$s" on an existing trigger. Delete and recreate instead.', 'Trigger CRUD error', 'uncanny-automator' ),
+				$stored_code,
+				$requested_code
+			)
+		);
+	}
+
+	/**
+	 * Validate that a recipe is writable (not trashed).
+	 *
+	 * @param int $recipe_id Recipe post ID.
+	 *
+	 * @return \WP_Error|null WP_Error if trashed, null when writable.
+	 */
+	private function validate_recipe_writable( int $recipe_id ) {
+		$recipe = $this->recipe_store->get( $recipe_id );
+		if ( $recipe && ! $recipe->get_recipe_status()->is_writable() ) {
+			return new WP_Error(
+				'recipe_trashed',
+				sprintf(
+					/* translators: %d Recipe ID. */
+					esc_html_x( 'Recipe %d is trashed. Restore it to draft status before making changes.', 'Trigger CRUD error', 'uncanny-automator' ),
+					$recipe_id
+				)
+			);
+		}
+		return null;
 	}
 }

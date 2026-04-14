@@ -8,6 +8,7 @@ use Uncanny_Automator\Api\Components\Loop\Loop_Config;
 use Uncanny_Automator\Api\Components\Loop\Enums\Loop_Status;
 use Uncanny_Automator\Api\Database\Interfaces\Loop\Loop_Store;
 use Uncanny_Automator\Api\Database\Interfaces\Loop\Filter_Store;
+use Uncanny_Automator\Api\Database\Recipe_Cache;
 
 /**
  * WordPress Loop Store.
@@ -23,7 +24,7 @@ class WP_Loop_Store implements Loop_Store {
 	/**
 	 * Post type for loops.
 	 */
-	const POST_TYPE = 'uo-loop';
+	const POST_TYPE = AUTOMATOR_POST_TYPE_LOOP;
 
 	/**
 	 * WordPress database object.
@@ -110,7 +111,8 @@ class WP_Loop_Store implements Loop_Store {
 			throw new Exception( esc_html_x( 'Cannot delete unsaved loop', 'Loop store delete error', 'uncanny-automator' ) );
 		}
 
-		$loop_id = $loop->get_loop_id()->get_value();
+		$loop_id   = $loop->get_loop_id()->get_value();
+		$recipe_id = (int) wp_get_post_parent_id( $loop_id );
 
 		// Delete all filters first via filter store
 		$this->filter_store->delete_loop_filters( $loop_id );
@@ -122,6 +124,8 @@ class WP_Loop_Store implements Loop_Store {
 			// translators: %s is the loop ID.
 			throw new Exception( sprintf( esc_html_x( 'Failed to delete loop with ID: %s', 'Loop store delete error with ID', 'uncanny-automator' ), absint( $loop_id ) ) );
 		}
+
+		Recipe_Cache::invalidate( $recipe_id );
 	}
 
 	/**
@@ -233,6 +237,8 @@ class WP_Loop_Store implements Loop_Store {
 			++$order;
 		}
 
+		Recipe_Cache::invalidate( $loop_data['recipe_id'] );
+
 		// Reload and return the persisted loop
 		$persisted_loop = $this->get( $loop_id );
 
@@ -278,6 +284,8 @@ class WP_Loop_Store implements Loop_Store {
 
 		// Sync filters via filter store
 		$this->filter_store->sync( $loop_id, $loop->get_filters() );
+
+		Recipe_Cache::invalidate( $loop_data['recipe_id'] );
 
 		// Reload and return the updated loop
 		$updated_loop = $this->get( $loop_id );
@@ -343,7 +351,7 @@ class WP_Loop_Store implements Loop_Store {
 	private function get_loop_items( int $loop_id ): array {
 		$action_posts = get_posts(
 			array(
-				'post_type'      => 'uo-action',
+				'post_type'      => AUTOMATOR_POST_TYPE_ACTION,
 				'post_parent'    => $loop_id,
 				'post_status'    => array( 'publish', 'draft' ),
 				'posts_per_page' => -1,
@@ -398,4 +406,5 @@ class WP_Loop_Store implements Loop_Store {
 	public function get_post_type(): string {
 		return self::POST_TYPE;
 	}
+
 }

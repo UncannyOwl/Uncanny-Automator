@@ -1307,7 +1307,7 @@ class Mailchimp_Helpers {
 	 */
 	public function regenerate_webhook_key() {
 
-		$new_key = md5( uniqid( wp_rand(), true ) );
+		$new_key = bin2hex( random_bytes( 24 ) );
 
 		automator_update_option( 'uap_mailchimp_webhook_key', $new_key );
 

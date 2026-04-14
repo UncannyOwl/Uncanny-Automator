@@ -203,7 +203,7 @@ class Setup_Wizard {
 	public function get_dashboard_uri( $step = 1, $is_method = false ) {
 
 		$args = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-setup-wizard',
 			'state'     => wp_create_nonce( 'automator_setup_wizard_redirect_nonce' ),
 			'step'      => absint( $step ),
@@ -241,7 +241,7 @@ class Setup_Wizard {
 		$post_type = automator_filter_input( 'post_type' );
 
 		// Pull data from licensing server if user is from set-up wizard.
-		if ( 'uo-recipe' === $post_type && 'uncanny-automator-setup-wizard' === $page ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE === $post_type && 'uncanny-automator-setup-wizard' === $page ) {
 			return Api_Server::is_automator_connected( true ); // Pass force refresh to true.
 		}
 
@@ -301,7 +301,7 @@ class Setup_Wizard {
 	public function get_automator_dashboard_uri() {
 		return add_query_arg(
 			array(
-				'post_type' => 'uo-recipe',
+				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 				'page'      => 'uncanny-automator-dashboard',
 			),
 			admin_url( 'edit.php' )

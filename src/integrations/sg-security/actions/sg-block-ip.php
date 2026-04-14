@@ -23,12 +23,12 @@ class Sg_Block_Ip extends \Uncanny_Automator\Recipe\Action {
 		$this->set_requires_user( false );
 		$this->set_background_processing( true );
 		// translators: %1$s is the IP address.
-		$this->set_sentence( sprintf( esc_html_x( 'Block {{an IP address:%1$s}}', 'SG Security', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_html_x( 'Block {{an IP address}}', 'SG Security', 'uncanny-automator' ) );
+		$this->set_sentence( sprintf( esc_html_x( 'Block {{an IP address:%1$s}}', 'Security Optimizer', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Block {{an IP address}}', 'Security Optimizer', 'uncanny-automator' ) );
 		$this->set_action_tokens(
 			array(
 				'IP_ADDRESS' => array(
-					'name' => esc_html_x( 'IP address', 'SG Security', 'uncanny-automator' ),
+					'name' => esc_html_x( 'IP address', 'Security Optimizer', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -45,11 +45,11 @@ class Sg_Block_Ip extends \Uncanny_Automator\Recipe\Action {
 		return array(
 			array(
 				'option_code' => $this->get_action_meta(),
-				'label'       => esc_html_x( 'IP address', 'SG Security', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'IP address', 'Security Optimizer', 'uncanny-automator' ),
 				'input_type'  => 'text',
 				'required'    => true,
 				'tokens'      => true,
-				'description' => esc_html_x( 'Enter a valid IPv4 or IPv6 address.', 'SG Security', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter a valid IPv4 or IPv6 address.', 'Security Optimizer', 'uncanny-automator' ),
 			),
 		);
 	}
@@ -70,7 +70,7 @@ class Sg_Block_Ip extends \Uncanny_Automator\Recipe\Action {
 		$ip = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
 
 		if ( empty( $ip ) || false === filter_var( $ip, FILTER_VALIDATE_IP ) ) {
-			$this->add_log_error( esc_html_x( 'Invalid IP address provided.', 'SG Security', 'uncanny-automator' ) );
+			$this->add_log_error( esc_html_x( 'Invalid IP address provided.', 'Security Optimizer', 'uncanny-automator' ) );
 			return false;
 		}
 

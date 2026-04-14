@@ -48,7 +48,7 @@ class ANON_WPFF_SUBFORM {
 			'sentence'            => sprintf( esc_html_x( '{{A form:%1$s}} is submitted', 'Wp Fluent Forms', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Anonymous trigger - Fluent Forms */
 			'select_option_name'  => esc_html_x( '{{A form}} is submitted', 'Wp Fluent Forms', 'uncanny-automator' ),
-			'action'              => 'fluentform_before_insert_submission',
+			'action'              => 'fluentform/before_insert_submission',
 			'type'                => 'anonymous',
 			'priority'            => 20,
 			'accepted_args'       => 3,

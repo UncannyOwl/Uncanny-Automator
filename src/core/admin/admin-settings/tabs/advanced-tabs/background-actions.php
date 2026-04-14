@@ -22,7 +22,6 @@ class Admin_Settings_Advanced_Background_Actions {
 		add_filter( 'automator_settings_advanced_tabs', array( $this, 'create_tab' ), 99, 1 );
 
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-
 	}
 
 	/**
@@ -38,13 +37,13 @@ class Admin_Settings_Advanced_Background_Actions {
 		);
 
 		return $tabs;
-
 	}
-
+	/**
+	 * Register settings.
+	 */
 	public function register_settings() {
 
 		register_setting( self::SETTINGSGROUP, self::SETTINGSGROUP . '_settings_timestamp' ); // phpcs:ignore PluginCheck.CodeAnalysis.SettingSanitization.register_settingMissing
-
 	}
 
 	/**
@@ -54,11 +53,15 @@ class Admin_Settings_Advanced_Background_Actions {
 		// Load the view
 		include Utilities::automator_get_view( 'admin-settings/tab/advanced/background-actions.php' );
 	}
-
+	/**
+	 * Get advanced settings url.
+	 *
+	 * @return mixed
+	 */
 	public function get_advanced_settings_url() {
 		return add_query_arg(
 			array(
-				'post_type' => 'uo-recipe',
+				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 				'page'      => 'uncanny-automator-config',
 				'tab'       => 'advanced',
 				'advanced'  => 'background_actions',
@@ -66,7 +69,6 @@ class Admin_Settings_Advanced_Background_Actions {
 			admin_url( 'edit.php' )
 		);
 	}
-
 }
 
 new Admin_Settings_Advanced_Background_Actions();

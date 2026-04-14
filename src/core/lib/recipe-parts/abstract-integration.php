@@ -14,6 +14,8 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Integration_Loader\Load_Error_Handler;
+
 /**
  * Abstract Integrations
  *
@@ -101,10 +103,134 @@ abstract class Integration {
 		$plugin_active = apply_filters( 'automator_integration_plugin_active', $plugin_active, $this );
 		if ( $plugin_active ) {
 			Set_Up_Automator::set_active_integration_code( $this->get_integration() );
-			$this->load();
+
+			$this->load_recipe_parts();
+
 			add_action( 'automator_integrations', array( $this, 'register_integration' ) );
 			add_filter( 'uncanny_automator_maybe_add_integration', array( $this, 'override_plugin_status' ), 10, 2 );
 		}
+	}
+
+	/**
+	 * Load recipe parts with per-item gating via the item map.
+	 *
+	 * In full-load mode (recipe editor, escape hatches): calls $this->load() as-is.
+	 * In targeted mode: runs load_shared_hooks() first (tokens, filters, AJAX, migrations),
+	 * then only instantiates triggers/actions/closures whose codes appear in the manifest.
+	 * Falls back to $this->load() for integrations not in the item map (third-party addons).
+	 *
+	 * @return void
+	 */
+	private function load_recipe_parts() {
+
+		$manifest = Recipe_Manifest::get_instance();
+
+		// Recipe editor, escape hatch, or Automator admin page — load everything.
+		if ( $manifest->should_load_all() ) {
+			try {
+				$this->load();
+			} catch ( \Throwable $e ) {
+				( new Load_Error_Handler() )->handle( get_class( $this ), $e );
+			}
+			return;
+		}
+
+		// Unconnected App_Integration — can't execute on frontend, skip entirely.
+		if ( $this instanceof \Uncanny_Automator\App_Integrations\App_Integration
+			&& false === $this->get_connected() ) {
+			return;
+		}
+
+		$item_map         = $manifest->get_item_map();
+		$integration_code = $this->get_integration();
+
+		// Token-only integrations (e.g., COMMON) have no triggers/actions, so they
+		// never appear in the manifest. They ARE in the item map with empty type arrays
+		// or absent entirely. Always call load() so their tokens register.
+		if ( empty( $item_map[ $integration_code ] ) ) {
+			try {
+				$this->load();
+			} catch ( \Throwable $e ) {
+				( new Load_Error_Handler() )->handle( get_class( $this ), $e );
+			}
+			return;
+		}
+
+		// Integration not needed by any published recipe.
+		if ( ! $manifest->is_integration_needed( $integration_code ) ) {
+			return;
+		}
+
+		// Shared hooks run whenever the integration is needed — tokens, filters, AJAX, migrations.
+		$this->load_shared_hooks();
+
+		// Targeted mode — only instantiate items whose codes are active.
+		$integration_items = $item_map[ $integration_code ];
+		$args              = $this->get_load_arguments();
+
+		foreach ( array( 'triggers', 'actions', 'closures', 'conditions', 'loop_filters' ) as $type ) {
+
+			if ( empty( $integration_items[ $type ] ) ) {
+				continue;
+			}
+
+			foreach ( $integration_items[ $type ] as $composite_key => $entry ) {
+
+				if ( ! $manifest->is_code_active( $composite_key ) ) {
+					continue;
+				}
+
+				$class = $entry['class'];
+
+				// Skip if already instantiated (e.g. Free loaded it, Pro re-encounters it).
+				if ( false !== Utilities::get_class_instance( $class ) ) {
+					continue;
+				}
+
+				if ( class_exists( $class ) ) {
+					try {
+						$instance = new $class( ...$args );
+						Utilities::add_class_instance( $class, $instance );
+					} catch ( \Throwable $e ) {
+						( new Load_Error_Handler() )->handle( $class, $e );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Arguments to pass to trigger/action constructors in targeted loading mode.
+	 *
+	 * Plain Integration subclasses pass $this->helpers (set in setup()).
+	 * App_Integration overrides this to return $this->dependencies (stdClass).
+	 *
+	 * @return array Constructor arguments.
+	 */
+	protected function get_load_arguments() {
+		return null !== $this->helpers ? array( $this->helpers ) : array();
+	}
+
+	/**
+	 * Shared hooks that must run whenever the integration is needed.
+	 *
+	 * Override this method to register non-class side effects that are required
+	 * for execution — universal tokens, dynamic filters, AJAX handlers, migrations,
+	 * and shared dependencies that triggers/actions rely on at runtime.
+	 *
+	 * This runs in targeted mode BEFORE per-item gating. In full-load mode,
+	 * load() handles everything, so this is NOT called.
+	 *
+	 * DOWNSTREAM: If your integration registers WP hooks (add_action/add_filter)
+	 * inside load() that must fire even when only a subset of triggers/actions are
+	 * loaded, move those registrations into this method. Without the override,
+	 * targeted mode will skip them silently. This applies to Pro integrations and
+	 * third-party addons extending this class — Free integrations were audited at
+	 * the time this method was introduced.
+	 *
+	 * @return void
+	 */
+	protected function load_shared_hooks() {
 	}
 
 	/**

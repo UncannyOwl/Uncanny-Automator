@@ -8,7 +8,7 @@ namespace Uncanny_Automator\Integrations\Mailster;
  */
 class MAILSTER_SUBSCRIBER_ADDED_TO_LIST extends \Uncanny_Automator\Recipe\Trigger {
 
-	protected $helper;
+	protected $helpers;
 
 	/**
 	 * @return mixed|void

@@ -25,6 +25,11 @@ class Legacy_Integrations {
 	public $class_map;
 
 	/**
+	 * @var array
+	 */
+	public $default_directories;
+
+	/**
 	 * __construct
 	 *
 	 * @return void
@@ -105,16 +110,11 @@ class Legacy_Integrations {
 			return;
 		}
 
-		$default_directories = apply_filters(
-			'automator_integration_default_directories',
-			array(
-				'actions',
-				'helpers',
-				'tokens',
-				'triggers',
-				'closures',
-			)
-		);
+		if ( ! isset( $this->default_directories ) ) {
+			$this->default_directories = \automator_get_default_directories();
+		}
+
+		$default_directories = $this->default_directories;
 
 		if ( ! in_array( $folder, $default_directories, true ) ) {
 			return;

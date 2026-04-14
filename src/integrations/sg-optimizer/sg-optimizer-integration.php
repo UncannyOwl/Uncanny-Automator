@@ -17,7 +17,7 @@ class Sg_Optimizer_Integration extends \Uncanny_Automator\Integration {
 	protected function setup() {
 		$this->helpers = new Sg_Optimizer_Helpers();
 		$this->set_integration( 'SG_OPTIMIZER' );
-		$this->set_name( 'SG Optimizer' );
+		$this->set_name( 'Speed Optimizer' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/sg-optimizer-icon.svg' );
 	}
 
@@ -32,7 +32,7 @@ class Sg_Optimizer_Integration extends \Uncanny_Automator\Integration {
 	}
 
 	/**
-	 * Check if SG Optimizer is active.
+	 * Check if Speed Optimizer is active.
 	 *
 	 * @return bool
 	 */

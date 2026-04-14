@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace Uncanny_Automator\Api\Services\Condition\Utilities;
 
 use Uncanny_Automator\Api\Components\Condition\Dtos\Condition_Backup_Info;
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
 use Uncanny_Automator\Api\Components\Condition\Registry\WP_Action_Condition_Registry;
 use Uncanny_Automator\Api\Presentation\Condition\Condition_Title_Composer;
 use Uncanny_Automator\Api\Services\Action\Services\Action_CRUD_Service;
@@ -208,9 +209,9 @@ class Condition_Validator {
 				continue;
 			}
 
-			if ( str_ends_with( $key, '_readable' ) ) {
+			if ( Str::ends_with( $key, '_readable' ) ) {
 				$codes[] = substr( $key, 0, -9 );
-			} elseif ( str_ends_with( $key, '_label' ) ) {
+			} elseif ( Str::ends_with( $key, '_label' ) ) {
 				$codes[] = substr( $key, 0, -6 );
 			} else {
 				$codes[] = $key;

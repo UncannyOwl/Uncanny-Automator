@@ -57,10 +57,6 @@ class Ninja_Forms_Helpers {
 	 * @return mixed
 	 */
 	public function list_ninja_forms( $label = null, $option_code = 'NFFORMS', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Form', 'uncanny-automator' );

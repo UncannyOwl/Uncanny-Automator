@@ -118,7 +118,7 @@ class Admin_Settings_Uncanny_Agent {
 
 		// Define the list of URL parameters
 		$url_parameters = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-config',
 			'tab'       => 'uncanny-agent',
 		);

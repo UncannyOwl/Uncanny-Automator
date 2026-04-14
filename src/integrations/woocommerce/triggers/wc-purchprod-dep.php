@@ -71,13 +71,10 @@ class WC_PURCHPROD_DEP {
 	public function load_options() {
 		Automator()->helpers->recipe->woocommerce->options->load_options = true;
 
-		$options = Automator()->helpers->recipe->woocommerce->options->all_wc_products( esc_attr__( 'Product', 'uncanny-automator' ) );
-
-		$options['options'] = array( '-1' => esc_attr__( 'Any product', 'uncanny-automator' ) ) + $options['options'];
-		$options_array      = array(
+		$options_array = array(
 			'options' => array(
 				Automator()->helpers->recipe->options->number_of_times(),
-				$options,
+				Woocommerce_Helpers::get_ajax_product_select_field( 'WOOPRODUCT' ),
 			),
 		);
 

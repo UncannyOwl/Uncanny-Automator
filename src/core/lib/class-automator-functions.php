@@ -41,7 +41,13 @@ class Automator_Functions {
 	 * @since    4.2.0
 	 * @access   public
 	 */
-	public $recipe_part_post_types = array( 'uo-trigger', 'uo-action', 'uo-closure', 'uo-loop', 'uo-loop-filter' );
+	public $recipe_part_post_types = array(
+		AUTOMATOR_POST_TYPE_TRIGGER,
+		AUTOMATOR_POST_TYPE_ACTION,
+		AUTOMATOR_POST_TYPE_CLOSURE,
+		AUTOMATOR_POST_TYPE_LOOP,
+		AUTOMATOR_POST_TYPE_LOOP_FILTER,
+	);
 	/**
 	 * Collection of all recipe items
 	 *
@@ -784,8 +790,27 @@ class Automator_Functions {
 			return $recipes_data;
 		}
 
+		// Transient fallback for non-persistent object cache environments.
+		if ( empty( $recipes_data ) && false === $force_new_data_load && null === $recipe_id
+			&& ! wp_using_ext_object_cache() && $this->cache->is_cache_enabled() ) {
+			$recipes_data = get_transient( $this->cache->recipes_data );
+			if ( ! empty( $recipes_data ) ) {
+				// completed_by_current_user stripped on write; rehydrate fresh for this user.
+				$transient_recipe_ids = array_keys( $recipes_data );
+				$recipes_completed    = $this->are_recipes_completed( null, $transient_recipe_ids );
+				$recipes_completed    = empty( $recipes_completed ) ? array() : $recipes_completed;
+				foreach ( $recipes_data as $rid => $recipe ) {
+					$recipes_data[ $rid ]['completed_by_current_user'] = array_key_exists( $rid, $recipes_completed )
+						? $recipes_completed[ $rid ]
+						: false;
+				}
+				$this->recipes_data = $recipes_data;
+				return $this->recipes_data;
+			}
+		}
+
 		// Accidentally sent recipe post instead of id?
-		if ( $recipe_id instanceof \WP_Post && 'uo-recipe' === (string) $recipe_id->post_type ) {
+		if ( $recipe_id instanceof \WP_Post && AUTOMATOR_POST_TYPE_RECIPE === (string) $recipe_id->post_type ) {
 			$recipe_id = $recipe_id->ID;
 		}
 
@@ -795,6 +820,8 @@ class Automator_Functions {
 
 		global $wpdb;
 
+		$recipe_limit = (int) apply_filters( 'automator_get_recipes_data_limit', 9999 );
+
 		$recipes = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT ID, post_title, post_type, post_status, post_parent
@@ -802,9 +829,10 @@ class Automator_Functions {
 					WHERE post_type = %s
 					AND post_status NOT LIKE %s
 					ORDER BY ID DESC
-					LIMIT 0, 99999",
-				'uo-recipe',
-				'trash'
+					LIMIT 0, %d",
+				AUTOMATOR_POST_TYPE_RECIPE,
+				'trash',
+				$recipe_limit
 			)
 		);
 
@@ -896,6 +924,19 @@ class Automator_Functions {
 
 		Automator()->cache->set( $this->cache->recipes_data, $this->recipes_data );
 
+		// Persist to transient for non-persistent object cache environments.
+		if ( ! wp_using_ext_object_cache() && $this->cache->is_cache_enabled() ) {
+			$cacheable_data = array_map(
+				static function ( $recipe ) {
+					unset( $recipe['completed_by_current_user'] );
+					return $recipe;
+				},
+				$this->recipes_data
+			);
+			$ttl            = $this->cache->expires ?: 30 * MINUTE_IN_SECONDS;
+			set_transient( $this->cache->recipes_data, $cacheable_data, $ttl );
+		}
+
 		return $this->recipes_data;
 	}
 
@@ -934,11 +975,11 @@ class Automator_Functions {
 		$recipe[ $key ]['recipe_type'] = isset( $cached[ $recipe_id ] ) ? $cached[ $recipe_id ] : $this->utilities->get_recipe_type( $recipe_id );
 
 		$triggers_array             = array();
-		$triggers                   = $this->get_recipe_data( 'uo-trigger', $recipe_id, $triggers_array );
+		$triggers                   = $this->get_recipe_data( AUTOMATOR_POST_TYPE_TRIGGER, $recipe_id, $triggers_array );
 		$recipe[ $key ]['triggers'] = $triggers;
 
 		$action_array = array();
-		$actions      = $this->get_recipe_data( 'uo-action', $recipe_id, $action_array );
+		$actions      = $this->get_recipe_data( AUTOMATOR_POST_TYPE_ACTION, $recipe_id, $action_array );
 
 		/**
 		 * Add loops inside the actions. This is a temporary solution and must be removed in the future.
@@ -956,12 +997,22 @@ class Automator_Functions {
 		$recipe[ $key ]['actions'] = $actions;
 
 		$closure_array              = array();
-		$closures                   = $this->get_recipe_data( 'uo-closure', $recipe_id, $closure_array );
+		$closures                   = $this->get_recipe_data( AUTOMATOR_POST_TYPE_CLOSURE, $recipe_id, $closure_array );
 		$recipe[ $key ]['closures'] = $closures;
 
 		$recipe[ $key ]['completed_by_current_user'] = $is_recipe_completed;
 
-		$recipe[ $key ]['extra_options'] = $this->load_extra_options( $recipe[ $key ] );
+		// extra_options is consumed only by the recipe editor JS to populate static
+		// dropdowns. At execution time, the Fields Resolver reads the stored copy from
+		// uap_options (written during the last editor load). Skip the expensive callbacks
+		// on non-admin requests to avoid unnecessary API calls and DB queries.
+		// Note: is_admin() is false for REST API requests, so we also check for Automator
+		// REST requests to ensure newly added actions get their options cached.
+		// On the frontend execution path the Fields_Resolver lazy-builds any missing
+		// per-item schema cache directly — see Fields_Resolver::get_cached_extra_options().
+		$recipe[ $key ]['extra_options'] = ( is_admin() || \is_automator_rest_request() || is_mcp_rest_request() )
+			? $this->load_extra_options( $recipe[ $key ] )
+			: array();
 
 		$recipe = apply_filters( 'automator_get_recipe_data_by_recipe_id', $recipe, $key );
 
@@ -973,20 +1024,22 @@ class Automator_Functions {
 	/**
 	 * load_extra_options
 	 *
-	 * @param mixed $type
-	 * @param mixed $item_code
+	 * Executes every registered options_callback and writes the result to
+	 * uap_options so the execution-time resolver can read field schema
+	 * without re-running the callbacks itself.
 	 *
-	 * @return void
+	 * The callback is intentionally called on every invocation (no read-cache
+	 * guard). This ensures the editor and execution path always see fresh
+	 * schema data regardless of prior cached state — plugin updates, MCP
+	 * writes, or any other out-of-band change take effect immediately.
+	 *
+	 * @param array $recipe The recipe data array (triggers + actions).
+	 *
+	 * @return array
 	 */
 	public function load_extra_options( $recipe ) {
 
-		// Get the extra options meta. This one should only exists during REST calls. In all other cases, this meta should nor exist
-		$extra_options_meta = get_post_meta( $recipe['ID'], 'extra_options', true );
-
-		// If the meta doesn't exist (initial recipe page load), replace it with an empty array
-		$extra_options = empty( $extra_options_meta ) ? array() : $extra_options_meta;
-
-		// We will loop through triggers and actions to see if any of them have extra optiosn to load
+		$extra_options    = array();
 		$types_to_process = array( 'actions', 'triggers' );
 
 		foreach ( $types_to_process as $type ) {
@@ -995,35 +1048,117 @@ class Automator_Functions {
 				$item_code   = $item['meta']['code'] ?? '';
 				$integration = $item['meta']['integration'] ?? '';
 
-				// If extra options were already loaded for this item, bail
-				if ( isset( $extra_options[ $integration ][ $item_code ] ) ) {
+				if ( ! $item_code || ! $integration ) {
 					continue;
 				}
 
-				// Otherwise, get the options callback from the integration definition
+				$cache_key = 'uap_extra_options_' . $integration . '_' . $item_code;
+
+				// Get the options callback from the integration definition
+				$callback = null;
 				if ( 'actions' === $type ) {
 					$callback = Automator()->get->value_from_action_meta( $item_code, 'options_callback' );
 				} elseif ( 'triggers' === $type ) {
 					$callback = Automator()->get->value_from_trigger_meta( $item_code, 'options_callback' );
 				}
 
-				// If there is no callback found, bail
 				if ( ! $callback ) {
 					continue;
 				}
 
-				// If the callback is found, execute it
 				$callback_response = $this->get_options_from_callable( $type, $item_code, $callback );
 
-				// If the callback is found, execute it
-				$extra_options[ $integration ][ $item_code ] = apply_filters( 'automator_options_callback_response', $callback_response, $callback, $item, $recipe, $type );
+				$response = apply_filters( 'automator_options_callback_response', $callback_response, $callback, $item, $recipe, $type );
+
+				// Deduplicate and cap before storing. The full response is still
+				// returned to the editor via $extra_options below — the stored
+				// value is only read by the execution-time resolver for label resolution.
+				$to_store = $this->strip_oversized_options( $this->strip_duplicate_options_from_group( $response ) );
+				automator_update_option( $cache_key, $to_store, false );
+
+				$extra_options[ $integration ][ $item_code ] = $response;
 			}
 		}
 
-		// Store all the extra options in the post meta so that subsequent REST API calls won't need to load the options again
-		update_post_meta( $recipe['ID'], 'extra_options', $extra_options );
-
 		return $extra_options;
+	}
+
+	/**
+	 * Strip the options (choices) list from options_group items whose option_code also
+	 * exists in the top-level options array. The top-level options copy is the single source
+	 * of truth; the duplicate inside options_group is only needed by the frontend editor, not
+	 * by the execution-time resolver.
+	 *
+	 * Only strips when the SAME option_code is present in BOTH arrays. Fields that exist
+	 * solely in options_group (e.g. new-framework fields) are left completely untouched.
+	 *
+	 * @param array $data Raw callback response.
+	 *
+	 * @return array Deduplicated data safe for storage.
+	 */
+	protected function strip_duplicate_options_from_group( array $data ) {
+
+		if ( empty( $data['options'] ) || empty( $data['options_group'] ) ) {
+			return $data;
+		}
+
+		$options_index = array();
+		foreach ( $data['options'] as $field ) {
+			$code = $field['option_code'] ?? '';
+			if ( $code ) {
+				$options_index[ $code ] = true;
+			}
+		}
+
+		foreach ( $data['options_group'] as $group_key => $group_fields ) {
+			foreach ( $group_fields as $i => $field ) {
+				$code = $field['option_code'] ?? '';
+				if ( $code && isset( $options_index[ $code ] ) ) {
+					unset( $data['options_group'][ $group_key ][ $i ]['options'] );
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Cap the number of stored choices per field before writing to uap_options.
+	 *
+	 * Fields with more than the threshold (default 200, filterable via
+	 * automator_extra_options_max_items) have their options list sliced to
+	 * the first N entries. The editor always receives the full live list from
+	 * the callback — this cap only applies to the stored resolver cache.
+	 * Any field regularly exceeding 200 choices should use search_options
+	 * AJAX instead of a static list.
+	 *
+	 * @param array $data Raw callback response.
+	 *
+	 * @return array Data with oversized options lists capped.
+	 */
+	protected function strip_oversized_options( array $data ) {
+
+		$limit = (int) apply_filters( 'automator_extra_options_max_items', 200 );
+
+		if ( isset( $data['options'] ) && is_array( $data['options'] ) ) {
+			foreach ( $data['options'] as $i => $field ) {
+				if ( isset( $field['options'] ) && count( $field['options'] ) > $limit ) {
+					$data['options'][ $i ]['options'] = array_slice( $field['options'], 0, $limit );
+				}
+			}
+		}
+
+		if ( isset( $data['options_group'] ) && is_array( $data['options_group'] ) ) {
+			foreach ( $data['options_group'] as $group_key => $group_fields ) {
+				foreach ( $group_fields as $i => $field ) {
+					if ( isset( $field['options'] ) && count( $field['options'] ) > $limit ) {
+						$data['options_group'][ $group_key ][ $i ]['options'] = array_slice( $field['options'], 0, $limit );
+					}
+				}
+			}
+		}
+
+		return $data;
 	}
 
 	/**
@@ -1084,8 +1219,18 @@ class Automator_Functions {
 		if ( ! empty( $recipes ) ) {
 
 			global $wpdb;
-			// Fetch uo-trigger, uo-action, uo-closure.
-			$recipe_children = $wpdb->get_results( "SELECT ID, post_status, post_type, menu_order, post_parent FROM $wpdb->posts WHERE post_parent IN (SELECT ID FROM $wpdb->posts WHERE post_type = 'uo-recipe')" );
+
+			// Fetch uo-trigger, uo-action, uo-closure — scoped to the recipes already in PHP.
+			$recipe_ids      = array_column( (array) $recipes, 'ID' );
+			$placeholders    = implode( ',', array_fill( 0, count( $recipe_ids ), '%d' ) );
+			$recipe_children = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT ID, post_status, post_type, menu_order, post_parent
+					   FROM $wpdb->posts
+					  WHERE post_parent IN ($placeholders)",
+					...$recipe_ids
+				)
+			);
 
 			if ( $recipe_children ) {
 				foreach ( $recipe_children as $p ) {
@@ -1095,7 +1240,7 @@ class Automator_Functions {
 					$m_o         = $p->menu_order;
 					$post_parent = $p->post_parent;
 					switch ( $p_t ) {
-						case 'uo-trigger':
+						case AUTOMATOR_POST_TYPE_TRIGGER:
 							$triggers[ $child_id ] = array(
 								'ID'          => $child_id,
 								'post_status' => $p_s,
@@ -1103,7 +1248,7 @@ class Automator_Functions {
 								'post_parent' => $post_parent,
 							);
 							break;
-						case 'uo-action':
+						case AUTOMATOR_POST_TYPE_ACTION:
 							$actions[ $child_id ] = array(
 								'ID'          => $child_id,
 								'post_status' => $p_s,
@@ -1111,7 +1256,7 @@ class Automator_Functions {
 								'post_parent' => $post_parent,
 							);
 							break;
-						case 'uo-closure':
+						case AUTOMATOR_POST_TYPE_CLOSURE:
 							$closures[ $child_id ] = array(
 								'ID'          => $child_id,
 								'post_status' => $p_s,
@@ -1119,22 +1264,26 @@ class Automator_Functions {
 								'post_parent' => $post_parent,
 							);
 							break;
+						default:
+							break;
 					}
 				}
 			}
 
-			// Fetch metas for uo-trigger, uo-action, uo-closure
-			$related_metas = $wpdb->get_results(
-				$wpdb->prepare(
-					"SELECT pm.post_id, pm.meta_key, pm.meta_value, p.post_parent, p.post_type, p.menu_order
-FROM $wpdb->postmeta pm
-    LEFT JOIN $wpdb->posts p
-        ON p.ID = pm.post_id
-WHERE pm.post_id
-          IN (SELECT ID FROM $wpdb->posts WHERE post_parent IN (SELECT ID FROM $wpdb->posts WHERE post_type = %s))",
-					'uo-recipe'
-				)
-			);
+			// Fetch metas only for known child IDs — avoids the double subquery and JOIN.
+			$related_metas = array();
+			$child_ids     = array_keys( $triggers + $actions + $closures );
+			if ( ! empty( $child_ids ) ) {
+				$placeholders  = implode( ',', array_fill( 0, count( $child_ids ), '%d' ) );
+				$related_metas = $wpdb->get_results(
+					$wpdb->prepare(
+						"SELECT post_id, meta_key, meta_value
+						   FROM $wpdb->postmeta
+						  WHERE post_id IN ($placeholders)",
+						...$child_ids
+					)
+				);
+			}
 
 			if ( $related_metas ) {
 				foreach ( $related_metas as $p ) {
@@ -1169,30 +1318,15 @@ WHERE pm.post_id
 				}
 			}
 
-			//Build old recipe array style
-			foreach ( $related_metas as $r ) {
-				$recipe_id     = absint( $r->post_parent );
-				$non_recipe_id = absint( $r->post_id );
-				switch ( $r->post_type ) {
-					case 'uo-trigger':
-						if ( array_key_exists( $non_recipe_id, $triggers ) ) {
-							$metas[ $recipe_id ]['triggers'][] = $triggers[ $non_recipe_id ];
-							unset( $triggers[ $non_recipe_id ] );
-						}
-						break;
-					case 'uo-action':
-						if ( array_key_exists( $non_recipe_id, $actions ) ) {
-							$metas[ $recipe_id ]['actions'][] = $actions[ $non_recipe_id ];
-							unset( $actions[ $non_recipe_id ] );
-						}
-						break;
-					case 'uo-closure':
-						if ( array_key_exists( $non_recipe_id, $closures ) ) {
-							$metas[ $recipe_id ]['closures'][] = $closures[ $non_recipe_id ];
-							unset( $closures[ $non_recipe_id ] );
-						}
-						break;
-				}
+			// Build recipe array from bucketed arrays — avoids re-iterating the large meta result set.
+			foreach ( $triggers as $trigger ) {
+				$metas[ absint( $trigger['post_parent'] ) ]['triggers'][] = $trigger;
+			}
+			foreach ( $actions as $action ) {
+				$metas[ absint( $action['post_parent'] ) ]['actions'][] = $action;
+			}
+			foreach ( $closures as $closure ) {
+				$metas[ absint( $closure['post_parent'] ) ]['closures'][] = $closure;
 			}
 		}
 
@@ -1372,7 +1506,7 @@ WHERE pm.post_id
 	public function get_recipe_children_query( $recipe_id, $type ) {
 		global $wpdb;
 		$q = $wpdb->prepare( "SELECT ID, post_status, menu_order, post_parent FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", $recipe_id, $type );
-		if ( 'uo-action' === $type ) {
+		if ( AUTOMATOR_POST_TYPE_ACTION === $type ) {
 			$q = "$q ORDER BY menu_order ASC";
 		}
 		$q = apply_filters_deprecated(
@@ -1399,13 +1533,13 @@ WHERE pm.post_id
 	 *
 	 * @return mixed[]
 	 */
-	public function get_recipe_data( $type = null, $recipe_id = null, $recipe_children = array() ) {
+	public function get_recipe_data( $type = null, $recipe_id = null, $recipe_children = array(), $skip_tokens = false ) {
 
 		if ( null === $type ) {
 			return null;
 		}
 
-		if ( ! in_array( $type, array( 'uo-trigger', 'uo-action', 'uo-closure' ), true ) ) {
+		if ( ! in_array( $type, \automator_get_direct_recipe_child_types(), true ) ) {
 			return null;
 		}
 
@@ -1477,12 +1611,15 @@ WHERE pm.post_id
 				$recipe_children_data[ $key ]['menu_order'] = $child['menu_order'];
 			}
 
-			if ( 'uo-trigger' === $type ) {
-				$recipe_children_data[ $key ]['tokens'] = $this->tokens->trigger_tokens( $child_meta_single, $recipe_id );
-			}
+			// Skip token resolution during completion stages where only IDs/status/meta are needed.
+			if ( ! $skip_tokens ) {
+				if ( AUTOMATOR_POST_TYPE_TRIGGER === $type ) {
+					$recipe_children_data[ $key ]['tokens'] = $this->tokens->trigger_tokens( $child_meta_single, $recipe_id );
+				}
 
-			if ( 'uo-action' === $type ) {
-				$recipe_children_data[ $key ]['tokens'] = $this->tokens->get_action_tokens_renderable( $child_meta_single, absint( $child['ID'] ), $recipe_id );
+				if ( AUTOMATOR_POST_TYPE_ACTION === $type ) {
+					$recipe_children_data[ $key ]['tokens'] = $this->tokens->get_action_tokens_renderable( $child_meta_single, absint( $child['ID'] ), $recipe_id );
+				}
 			}
 		}
 
@@ -1523,7 +1660,7 @@ WHERE pm.post_id
 					LIMIT 100
 					",
 					$recipe_id,
-					'uo-action'
+					AUTOMATOR_POST_TYPE_ACTION
 				),
 				ARRAY_A
 			);
@@ -1538,7 +1675,7 @@ WHERE pm.post_id
 					LIMIT 100
 					",
 					$recipe_id,
-					'uo-action'
+					AUTOMATOR_POST_TYPE_ACTION
 				),
 				ARRAY_A
 			);
@@ -1591,7 +1728,7 @@ WHERE pm.post_id
 	public function child_item_not_found_handle( $type, $code ) {
 		$item_not_found = true;
 
-		if ( 'uo-trigger' === $type ) {
+		if ( AUTOMATOR_POST_TYPE_TRIGGER === $type ) {
 			$system_triggers = $this->triggers;
 			if ( ! empty( $system_triggers ) ) {
 				foreach ( $system_triggers as $trigger ) {
@@ -1604,7 +1741,7 @@ WHERE pm.post_id
 			}
 		}
 
-		if ( 'uo-action' === $type ) {
+		if ( AUTOMATOR_POST_TYPE_ACTION === $type ) {
 			$system_actions = $this->actions;
 			if ( ! empty( $system_actions ) ) {
 				foreach ( $system_actions as $action ) {
@@ -1617,7 +1754,7 @@ WHERE pm.post_id
 			}
 		}
 
-		if ( 'uo-closure' === $type ) {
+		if ( AUTOMATOR_POST_TYPE_CLOSURE === $type ) {
 			$system_closures = $this->closures;
 			if ( ! empty( $system_closures ) ) {
 				foreach ( $system_closures as $closure ) {
@@ -1646,7 +1783,7 @@ WHERE pm.post_id
 	 * @author Saad S.
 	 */
 	public function get_trigger_data( $recipe_id = 0, $trigger_id = 0 ) {
-		$recipe_data = $this->get_recipe_data( 'uo-trigger', $recipe_id );
+		$recipe_data = $this->get_recipe_data( AUTOMATOR_POST_TYPE_TRIGGER, $recipe_id );
 		if ( ! $recipe_data ) {
 			return array();
 		}
@@ -2240,7 +2377,8 @@ WHERE pm.post_id
 
 		$closure = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM $wpdb->posts WHERE post_type='uo-closure' AND post_parent = %d",
+				"SELECT * FROM $wpdb->posts WHERE post_type = %s AND post_parent = %d",
+				AUTOMATOR_POST_TYPE_CLOSURE,
 				$recipe_id
 			)
 		);
@@ -2373,20 +2511,20 @@ WHERE pm.post_id
 		// Get the integration code if not set.
 		if ( empty( $integration_code ) ) {
 			switch ( $post_type ) {
-				case 'uo-trigger':
+				case AUTOMATOR_POST_TYPE_TRIGGER:
 					$integration_code = Automator()->get->trigger_integration_from_trigger_code( $item_code );
 					break;
-				case 'uo-action':
+				case AUTOMATOR_POST_TYPE_ACTION:
 					$integration_code = Automator()->get->action_integration_from_action_code( $item_code );
 					break;
-				case 'uo-closure':
+				case AUTOMATOR_POST_TYPE_CLOSURE:
 					$integration_code = Automator()->get->closure_integration_from_closure_code( $item_code );
 					break;
-				case 'uo-loop':
+				case AUTOMATOR_POST_TYPE_LOOP:
 					// TODO : REVIEW
 					$integration_code = in_array( $item_code, array( 'LOOP_POSTS', 'LOOP_USERS', 'LOOP_TOKEN' ), true ) ? 'WP' : 'UNKNOWN';
 					break;
-				case 'uo-loop-filter':
+				case AUTOMATOR_POST_TYPE_LOOP_FILTER:
 					$integration_code = Automator()->get->loop_filter_integration_from_loop_filter_code( $item_code );
 					break;
 			}
@@ -2429,10 +2567,10 @@ WHERE pm.post_id
 
 			$requires_user = isset( $config['requires_user'] ) ? (bool) $config['requires_user'] : false;
 			$type          = $requires_user ? 'user' : 'anonymous';
-			if ( 'uo-trigger' === $post_type ) {
+			if ( AUTOMATOR_POST_TYPE_TRIGGER === $post_type ) {
 				$type = isset( $config['type'] ) ? $config['type'] : $type;
 			}
-			if ( 'uo-loop' === $post_type ) {
+			if ( AUTOMATOR_POST_TYPE_LOOP === $post_type ) {
 				$expression = get_post_meta( $post_id, 'iterable_expression', true );
 				if ( isset( $expression['type'] ) && 'users' === $expression['type'] ) {
 					$type = $expression['type'];
@@ -2461,16 +2599,16 @@ WHERE pm.post_id
 
 		$config = null;
 		switch ( $part_post_type ) {
-			case 'uo-trigger':
+			case AUTOMATOR_POST_TYPE_TRIGGER:
 				$config = $this->get_trigger( $item_code );
 				break;
-			case 'uo-action':
+			case AUTOMATOR_POST_TYPE_ACTION:
 				$config = $this->get_action( $item_code );
 				break;
-			case 'uo-closure':
+			case AUTOMATOR_POST_TYPE_CLOSURE:
 				$config = $this->get_closure( $item_code, $integration_code );
 				break;
-			case 'uo-loop':
+			case AUTOMATOR_POST_TYPE_LOOP:
 				// TODO : REVIEW Elite loop settings?
 				$config = array(
 					'requires_user' => false,
@@ -2478,7 +2616,7 @@ WHERE pm.post_id
 					'is_elite'      => false,
 				);
 				break;
-			case 'uo-loop-filter':
+			case AUTOMATOR_POST_TYPE_LOOP_FILTER:
 				$config    = $this->get_loop_filter( $item_code, $integration_code );
 				$config    = ! empty( $config ) ? $config : array();
 				$loop_type = isset( $config['loop_type'] ) ? $config['loop_type'] : 'posts';

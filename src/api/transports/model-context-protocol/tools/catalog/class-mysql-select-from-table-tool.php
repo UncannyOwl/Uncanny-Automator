@@ -21,10 +21,25 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  */
 class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
+	use Information_Schema_Query;
+
 	/**
 	 * Maximum rows to return.
 	 */
 	private const MAX_LIMIT = 100;
+
+	/**
+	 * Columns redacted from all query results.
+	 *
+	 * These contain sensitive authentication data the agent never needs.
+	 * The agent should use the dedicated `list_users` tool for user lookups.
+	 *
+	 * @var string[]
+	 */
+	private const REDACTED_COLUMNS = array(
+		'user_pass',
+		'user_activation_key',
+	);
 
 	/**
 	 * Get tool name.
@@ -107,11 +122,33 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 				'limit'   => array(
 					'type'        => 'integer',
 					'default'     => 20,
+					'minimum'     => 1,
 					'maximum'     => 100,
-					'description' => 'Maximum rows to return (max 100).',
+					'description' => 'Maximum rows to return (1–100).',
 				),
 			),
 			'required'   => array( 'table' ),
+		);
+	}
+
+	/**
+	 * Define output schema.
+	 *
+	 * @return array|null
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'table'       => array( 'type' => 'string' ),
+				'rows'        => array(
+					'type' => 'array',
+					'items' => array( 'type' => 'object' ),
+				),
+				'row_count'   => array( 'type' => 'integer' ),
+				'has_more'    => array( 'type' => 'boolean' ),
+			),
+			'required'   => array( 'table', 'rows', 'row_count', 'has_more' ),
 		);
 	}
 
@@ -132,7 +169,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		$groupby = $params['groupby'] ?? '';
 		$orderby = $params['orderby'] ?? '';
 		$order   = strtoupper( $params['order'] ?? 'ASC' ) === 'DESC' ? 'DESC' : 'ASC';
-		$limit   = min( (int) ( $params['limit'] ?? 20 ), self::MAX_LIMIT );
+		$limit   = max( 1, min( (int) ( $params['limit'] ?? 20 ), self::MAX_LIMIT ) );
 
 		if ( empty( $table ) ) {
 			return Json_Rpc_Response::create_error_response( 'Table name is required.' );
@@ -160,16 +197,14 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 		$all_tables = array_unique( $all_tables );
 
-		// Verify all tables exist in one query.
-		$placeholders = implode( ', ', array_fill( 0, count( $all_tables ), '%s' ) );
-
-		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- The query string is prepared inside prepare_information_schema_query().
 		$existing = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				array_merge( array( DB_NAME ), array_values( $all_tables ) )
+			$this->prepare_information_schema_query(
+				'SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME IN ({table_placeholders})',
+				$all_tables
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		$missing = array_diff( $all_tables, $existing );
 
@@ -219,9 +254,9 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			}
 		}
 
-		// Add ORDER BY if provided.
+		// Add ORDER BY if provided (single column only — no commas).
 		if ( ! empty( $orderby ) ) {
-			$orderby_clean = $this->sanitize_identifier( $orderby );
+			$orderby_clean = $this->sanitize_orderby( $orderby );
 
 			if ( ! empty( $orderby_clean ) ) {
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -240,14 +275,16 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'Query failed: ' . $wpdb->last_error );
 		}
 
+		// Strip sensitive columns from results (covers SELECT * on wp_users, etc.).
+		$results = $this->redact_sensitive_columns( $results );
+
 		return Json_Rpc_Response::create_success_response(
 			sprintf( 'Retrieved %d rows', count( $results ) ),
 			array(
-				'table'       => $table,
-				'rows'        => $results,
-				'row_count'   => count( $results ),
-				'has_more'    => count( $results ) === $limit,
-				'query_debug' => WP_DEBUG ? $query : null,
+				'table'    => $table,
+				'rows'     => $results,
+				'row_count' => count( $results ),
+				'has_more' => count( $results ) === $limit,
 			)
 		);
 	}
@@ -315,7 +352,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 		// Optional alias.
 		if ( ! empty( $parts[1] ) ) {
-			$alias  = preg_replace( '/[^a-zA-Z0-9_]/', '', $parts[1] );
+			$alias   = preg_replace( '/[^a-zA-Z0-9_]/', '', $parts[1] );
 			$result .= ' ' . $alias;
 		}
 
@@ -384,6 +421,19 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * Sanitize ORDER BY identifier (single column only — no commas).
+	 *
+	 * Unlike sanitize_identifier(), this strips commas to prevent
+	 * multi-column ORDER BY injection.
+	 *
+	 * @param string $orderby Raw ORDER BY value.
+	 * @return string Sanitized single column identifier.
+	 */
+	private function sanitize_orderby( string $orderby ): string {
+		return preg_replace( '/[^a-zA-Z0-9_.\s]/', '', $orderby );
+	}
+
+	/**
 	 * Sanitize SELECT column list.
 	 *
 	 * @param string $columns Raw columns string.
@@ -404,7 +454,21 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 				}
 
 				// Allow: letters, numbers, underscore, parentheses, asterisk, dot, space (for AS aliases).
-				return preg_replace( '/[^a-zA-Z0-9_(),*.\s]/', '', $col );
+				$col = preg_replace( '/[^a-zA-Z0-9_(),*.\s]/', '', $col );
+
+				// Block subqueries and DML keywords in column expressions.
+				if ( preg_match( '/\b(select|insert|update|delete|drop|union|into)\b/i', $col ) ) {
+					return '';
+				}
+
+				// Block redacted column names (sensitive auth data).
+				foreach ( self::REDACTED_COLUMNS as $blocked ) {
+					if ( preg_match( '/\b' . preg_quote( $blocked, '/' ) . '\b/i', $col ) ) {
+						return '';
+					}
+				}
+
+				return $col;
 			},
 			explode( ',', $columns )
 		);
@@ -429,5 +493,43 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 				$column_list
 			)
 		);
+	}
+
+	/**
+	 * Remove sensitive columns from query result rows.
+	 *
+	 * Catches SELECT * on tables like wp_users where redacted columns
+	 * would otherwise be returned. The agent never needs password hashes
+	 * or activation keys — the dedicated list_users tool covers user lookups.
+	 *
+	 * @param array $rows Query result rows.
+	 *
+	 * @return array Rows with sensitive columns stripped.
+	 */
+	private function redact_sensitive_columns( array $rows ): array {
+
+		if ( empty( $rows ) ) {
+			return $rows;
+		}
+
+		// Check first row for redacted columns to avoid per-row overhead.
+		$columns_to_strip = array_filter(
+			self::REDACTED_COLUMNS,
+			function ( $col ) use ( $rows ) {
+				return array_key_exists( $col, $rows[0] );
+			}
+		);
+
+		if ( empty( $columns_to_strip ) ) {
+			return $rows;
+		}
+
+		foreach ( $rows as &$row ) {
+			foreach ( $columns_to_strip as $col ) {
+				unset( $row[ $col ] );
+			}
+		}
+
+		return $rows;
 	}
 }

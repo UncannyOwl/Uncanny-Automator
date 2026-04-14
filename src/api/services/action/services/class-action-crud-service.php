@@ -20,6 +20,8 @@ use Uncanny_Automator\Api\Database\Stores\WP_Recipe_Store;
 use Uncanny_Automator\Api\Components\Action\Action;
 use Uncanny_Automator\Api\Components\Action\Registry\WP_Action_Registry;
 use Uncanny_Automator\Api\Components\Action\Value_Objects\Action_Code;
+use Uncanny_Automator\Api\Events\Dispatcher;
+use Uncanny_Automator\Api\Events\Dtos\Event;
 use Uncanny_Automator\Api\Services\Action\Utilities\Action_Builder;
 use Uncanny_Automator\Api\Services\Action\Utilities\Action_Validator;
 use Uncanny_Automator\Api\Services\Action\Utilities\Action_Response_Formatter;
@@ -204,6 +206,28 @@ class Action_CRUD_Service {
 	}
 
 	/**
+	 * Validate that a recipe is writable (not trashed).
+	 *
+	 * @param int $recipe_id Recipe post ID.
+	 *
+	 * @return \WP_Error|null WP_Error if trashed, null when writable.
+	 */
+	private function validate_recipe_writable( int $recipe_id ) {
+		$recipe = $this->recipe_store->get( $recipe_id );
+		if ( $recipe && ! $recipe->get_recipe_status()->is_writable() ) {
+			return new WP_Error(
+				'recipe_trashed',
+				sprintf(
+					/* translators: %d Recipe ID. */
+					esc_html_x( 'Recipe %d is trashed. Restore it to draft status before making changes.', 'Action CRUD error', 'uncanny-automator' ),
+					$recipe_id
+				)
+			);
+		}
+		return null;
+	}
+
+	/**
 	 * Validate action code and get definition from registry.
 	 *
 	 * @param string $action_code Action code to validate.
@@ -266,6 +290,11 @@ class Action_CRUD_Service {
 	 */
 	public function add_to_recipe( int $recipe_id, string $action_code, array $config = array(), array $async_config = array(), ?int $parent_id = null ) {
 
+		$trashed = $this->validate_recipe_writable( $recipe_id );
+		if ( is_wp_error( $trashed ) ) {
+			return $trashed;
+		}
+
 		// Validate recipe exists.
 		if ( ! $this->validate_recipe_exists( $recipe_id ) ) {
 			return new WP_Error(
@@ -301,7 +330,6 @@ class Action_CRUD_Service {
 		// Save action instance.
 		try {
 			$saved_action = $this->action_store->save( $action );
-			return $this->build_add_action_response( $saved_action );
 		} catch ( \Exception $e ) {
 			return new WP_Error(
 				'action_save_failed',
@@ -312,6 +340,30 @@ class Action_CRUD_Service {
 				)
 			);
 		}
+
+		try {
+			Dispatcher::dispatch(
+				'action_saved_via_api',
+				new Event(
+					array(
+						'action'      => $saved_action,
+						'recipe_id'   => $recipe_id,
+						'action_code' => $action_code,
+						'meta_code'   => (string) ( $action_definition['meta_code'] ?? '' ),
+						'parent_id'   => $parent_id,
+					)
+				)
+			);
+		} catch ( \Throwable $e ) {
+			automator_log(
+				'Dispatching action_saved_via_api failed: ' . $e->getMessage(),
+				'Action CRUD event dispatch',
+				true,
+				'debug'
+			);
+		}
+
+		return $this->build_add_action_response( $saved_action );
 	}
 
 	/**
@@ -408,7 +460,7 @@ class Action_CRUD_Service {
 	 * @param int|null    $parent_id Optional new parent ID (recipe or loop) to move action to.
 	 * @return array|\WP_Error Updated action data or error.
 	 */
-	public function update_action( $action_id, array $config = array(), array $async_config = array(), ?string $status = null, ?int $parent_id = null ) {
+	public function update_action( $action_id, array $config = array(), array $async_config = array(), ?string $status = null, ?int $parent_id = null, ?string $requested_code = null ) {
 		// Get existing action instance
 		$existing_action = $this->action_store->get( $this->coerce_action_id( $action_id ) );
 		if ( ! $existing_action ) {
@@ -420,6 +472,25 @@ class Action_CRUD_Service {
 					$action_id
 				)
 			);
+		}
+
+		$trashed = $this->validate_recipe_writable( $existing_action->get_action_recipe_id()->get_value() );
+		if ( is_wp_error( $trashed ) ) {
+			return $trashed;
+		}
+
+		$code_error = $this->validate_code_unchanged( (int) $action_id, $requested_code );
+		if ( is_wp_error( $code_error ) ) {
+			return $code_error;
+		}
+
+		// Validate provided fields against schema (partial — skip required checks on update).
+		if ( ! empty( $config ) ) {
+			$action_code       = $existing_action->get_action_code()->get_value();
+			$config_validation = $this->validator->validate( $action_code, $config, 'action', true );
+			if ( is_wp_error( $config_validation ) ) {
+				return $config_validation;
+			}
 		}
 
 		try {
@@ -459,6 +530,37 @@ class Action_CRUD_Service {
 	}
 
 	/**
+	 * Validate that the component code has not changed.
+	 *
+	 * @param int         $action_id      Action post ID.
+	 * @param string|null $requested_code Code the caller wants to set, or null to skip.
+	 *
+	 * @return \WP_Error|null WP_Error when the code differs, null when OK.
+	 */
+	private function validate_code_unchanged( int $action_id, ?string $requested_code ) {
+
+		if ( null === $requested_code || '' === $requested_code ) {
+			return null;
+		}
+
+		$stored_code = get_post_meta( $action_id, 'code', true );
+
+		if ( ! $stored_code || $requested_code === $stored_code ) {
+			return null;
+		}
+
+		return new WP_Error(
+			'action_code_change_rejected',
+			sprintf(
+				/* translators: %1$s Current code, %2$s Requested code. */
+				esc_html_x( 'Cannot change action_code from "%1$s" to "%2$s" on an existing action. Delete and recreate instead.', 'Action CRUD error', 'uncanny-automator' ),
+				$stored_code,
+				$requested_code
+			)
+		);
+	}
+
+	/**
 	 * Validate deletion confirmation.
 	 *
 	 * @param bool $confirmed Confirmation flag.
@@ -494,6 +596,14 @@ class Action_CRUD_Service {
 	/**
 	 * Delete an action from a recipe.
 	 *
+	 * Skips the pre-delete domain-object fetch intentionally. Previously this
+	 * method called `action_store->get()` before deleting, which re-queried
+	 * `get_post()` and applied a `post_type === 'uo-action'` filter. Any
+	 * stale WP object cache on `wp_posts` could report the wrong post_type
+	 * and surface as a spurious `action_not_found` even though the delete
+	 * transport had already verified ownership moments earlier. We trust the
+	 * transport's ownership check and delete directly via `wp_delete_post`.
+	 *
 	 * @since 7.0.0
 	 * @param int|string $action_id Action instance ID.
 	 * @param bool       $confirmed Confirmation flag for safety.
@@ -506,24 +616,18 @@ class Action_CRUD_Service {
 			return $confirmation;
 		}
 
-		// Get existing action instance
-		$action = $this->action_store->get( $this->coerce_action_id( $action_id ) );
-		if ( ! $action ) {
-			return new WP_Error(
-				'action_not_found',
-				'Action instance not found with ID: ' . $action_id
-			);
-		}
+		$coerced = $this->coerce_action_id( $action_id );
+
+		// Snapshot what we know about the action before deletion. These calls
+		// hit the postmeta cache, not the post cache, so they stay informative
+		// even when the post cache is stale. Missing values fall through as
+		// empty strings / 0, which the response formatter tolerates.
+		$action_code = (string) get_post_meta( $coerced, 'code', true );
+		$integration = (string) get_post_meta( $coerced, 'integration', true );
+		$recipe_id   = $this->resolve_action_recipe_id( $coerced );
 
 		try {
-			// Get action data for response before deletion
-			$action_data = $action->to_array();
-
-			// Delete the action instance
-			$this->action_store->delete( $action );
-
-			return $this->build_delete_action_response( $action_data );
-
+			$this->action_store->delete_by_id( $coerced, $recipe_id );
 		} catch ( \Exception $e ) {
 			return new WP_Error(
 				'delete_action_failed',
@@ -534,6 +638,45 @@ class Action_CRUD_Service {
 				)
 			);
 		}
+
+		return $this->build_delete_action_response(
+			array(
+				'action_id'   => $coerced,
+				'action_code' => $action_code,
+				'integration' => $integration,
+				'recipe_id'   => $recipe_id,
+			)
+		);
+	}
+
+	/**
+	 * Resolve the recipe_id that owns an action post.
+	 *
+	 * Loop-nested actions live under a `uo-loop` whose own parent is the
+	 * recipe, so we walk one extra hop when the direct parent is a loop.
+	 * Returns 0 when the post is gone or has no resolvable parent — callers
+	 * treat that as "unknown" and skip cache invalidation.
+	 *
+	 * @param int $action_id Action post ID.
+	 * @return int Recipe ID, or 0 when unresolvable.
+	 */
+	private function resolve_action_recipe_id( int $action_id ): int {
+		$post = get_post( $action_id );
+		if ( ! $post instanceof \WP_Post ) {
+			return 0;
+		}
+
+		$parent_id = (int) $post->post_parent;
+		if ( $parent_id <= 0 ) {
+			return 0;
+		}
+
+		$parent = get_post( $parent_id );
+		if ( $parent instanceof \WP_Post && AUTOMATOR_POST_TYPE_LOOP === $parent->post_type ) {
+			return (int) $parent->post_parent;
+		}
+
+		return $parent_id;
 	}
 
 	/**

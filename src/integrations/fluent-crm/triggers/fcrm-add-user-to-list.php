@@ -65,7 +65,7 @@ class FCRM_ADD_USER_TO_LIST {
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists(),
+					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_lists( null, $this->trigger_meta, array( 'is_any' => true ) ),
 				),
 			)
 		);
@@ -154,5 +154,4 @@ class FCRM_ADD_USER_TO_LIST {
 			}
 		}
 	}
-
 }

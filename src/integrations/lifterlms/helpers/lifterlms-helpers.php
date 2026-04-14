@@ -56,10 +56,6 @@ class Lifterlms_Helpers {
 	 * @return mixed
 	 */
 	public function all_lf_courses( $label = null, $option_code = 'LFCOURSE', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Course', 'uncanny-automator' );
@@ -102,10 +98,6 @@ class Lifterlms_Helpers {
 	 * @return mixed
 	 */
 	public function all_lf_lessons( $label = null, $option_code = 'LFLESSON', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Lesson', 'uncanny-automator' );
@@ -150,10 +142,6 @@ class Lifterlms_Helpers {
 	 * @return mixed
 	 */
 	public function all_lf_sections( $label = null, $option_code = 'LFSECTION', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Section', 'uncanny-automator' );
@@ -196,9 +184,6 @@ class Lifterlms_Helpers {
 	 * @return mixed
 	 */
 	public function all_lf_memberships( $label = null, $option_code = 'LFMEMBERSHIP', $any_option = true, $is_all_label = false ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Membership', 'uncanny-automator' );
@@ -245,10 +230,6 @@ class Lifterlms_Helpers {
 	 * @return mixed
 	 */
 	public function all_lf_quizs( $label = null, $option_code = 'LFQUIZ', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Quiz', 'uncanny-automator' );

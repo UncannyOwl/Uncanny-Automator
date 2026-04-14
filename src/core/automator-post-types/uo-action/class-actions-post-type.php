@@ -83,6 +83,6 @@ class Actions_Post_Type {
 			),
 		);
 
-		register_post_type( 'uo-action', apply_filters( 'automator_post_type_action_args', $args ) );
+		register_post_type( AUTOMATOR_POST_TYPE_ACTION, apply_filters( 'automator_post_type_action_args', $args ) );
 	}
 }

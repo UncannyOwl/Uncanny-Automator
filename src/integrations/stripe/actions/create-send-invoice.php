@@ -150,12 +150,21 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 		);
 
 		$auto_send = array(
-			'option_code' => 'AUTO_SEND',
-			'label'       => esc_html_x( 'Send invoice immediately', 'Stripe', 'uncanny-automator' ),
-			'input_type'  => 'checkbox',
-			'required'    => false,
+			'option_code'   => 'AUTO_SEND',
+			'label'         => esc_html_x( 'Send invoice immediately', 'Stripe', 'uncanny-automator' ),
+			'input_type'    => 'checkbox',
+			'required'      => false,
 			'default_value' => true,
-			'description' => esc_html_x( 'When enabled, the invoice will be finalized and sent to the customer immediately. When disabled, the invoice will be created as a draft. Note: Invoice URL, PDF, and number tokens are only populated when sending immediately.', 'Stripe', 'uncanny-automator' ),
+			'description'   => esc_html_x( 'When enabled, the invoice will be finalized and sent to the customer immediately. When disabled, the invoice will be created as a draft. Note: Invoice URL, PDF, and number tokens are only populated when sending immediately.', 'Stripe', 'uncanny-automator' ),
+		);
+
+		$skip_empty_items = array(
+			'option_code'   => 'SKIP_EMPTY_ITEMS',
+			'label'         => esc_html_x( 'Skip empty line items', 'Stripe', 'uncanny-automator' ),
+			'input_type'    => 'checkbox',
+			'required'      => false,
+			'default_value' => false,
+			'description'   => esc_html_x( 'When enabled, line items with a quantity less than 1, or where both the description and amount are empty, will be automatically skipped instead of causing an error. Useful when line item values are dynamically populated using tokens.', 'Stripe', 'uncanny-automator' ),
 		);
 
 		$metadata = array(
@@ -197,6 +206,7 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 			$memo,
 			$footer,
 			$auto_send,
+			$skip_empty_items,
 			$metadata,
 		);
 	}
@@ -300,9 +310,10 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		// Resolve auto_send before building the payload so unset_empty_recursively
-		// cannot silently drop it when the checkbox is unchecked (value = '').
-		$auto_send = ! empty( $this->get_parsed_meta_value( 'AUTO_SEND', '' ) );
+		// Resolve checkbox values before building the payload so unset_empty_recursively
+		// cannot silently drop them when unchecked (value = '').
+		$auto_send        = ! empty( $this->get_parsed_meta_value( 'AUTO_SEND', '' ) );
+		$skip_empty_items = ! empty( $this->get_parsed_meta_value( 'SKIP_EMPTY_ITEMS', '' ) );
 
 		// Build the invoice data
 		$invoice_data = array(
@@ -347,9 +358,16 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 
 		foreach ( $line_items as $item ) {
 
-			$description = isset( $item['ITEM_DESCRIPTION'] ) ? trim( $item['ITEM_DESCRIPTION'] ) : '';
-			$amount      = isset( $item['ITEM_AMOUNT'] ) ? $item['ITEM_AMOUNT'] : '';
-			$quantity    = isset( $item['ITEM_QUANTITY'] ) ? $item['ITEM_QUANTITY'] : '1';
+			$description      = isset( $item['ITEM_DESCRIPTION'] ) ? trim( $item['ITEM_DESCRIPTION'] ) : '';
+			$amount           = isset( $item['ITEM_AMOUNT'] ) ? trim( $item['ITEM_AMOUNT'] ) : '';
+			$quantity_default = $skip_empty_items ? '0' : '1';
+			$quantity         = isset( $item['ITEM_QUANTITY'] ) ? trim( $item['ITEM_QUANTITY'] ) : $quantity_default;
+
+			// When enabled, skip line items with no quantity or where both description and amount are empty.
+			// This allows users to control which items appear on the invoice via quantity fields alone.
+			if ( $skip_empty_items && ( intval( $quantity ) < 1 || ( '' === $description && '' === $amount ) ) ) {
+				continue;
+			}
 
 			if ( empty( $description ) ) {
 				throw new \Exception(
@@ -381,6 +399,13 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 			);
 		}
 
+		if ( empty( $invoice_data['line_items'] ) ) {
+			$message = $skip_empty_items
+				? esc_html_x( 'All line items were empty and skipped. At least one valid line item is required.', 'Stripe', 'uncanny-automator' )
+				: esc_html_x( 'At least one line item is required', 'Stripe', 'uncanny-automator' );
+			throw new \Exception( $message ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+		}
+
 		// Parse metadata
 		$metadata = json_decode( $this->get_parsed_meta_value( 'METADATA', '[]' ), true );
 
@@ -403,7 +428,7 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 
 		if ( empty( $response['data']['invoice']['id'] ) ) {
 			$error_message = $response['data']['error'] ?? esc_html_x( 'Invoice could not be created', 'Stripe', 'uncanny-automator' );
-			throw new \Exception( $error_message );
+			throw new \Exception( esc_html( $error_message ) );
 		}
 
 		$invoice = $response['data']['invoice'];

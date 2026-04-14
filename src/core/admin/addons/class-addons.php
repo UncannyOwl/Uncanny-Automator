@@ -35,13 +35,13 @@ class Addons {
 		$parent_slug = 'edit.php?post_type=uo-recipe';
 		$page_title  = esc_attr__( 'Addons', 'uncanny-automator' );
 
-		// Check if 'automator' is in the page parameter or post_type is 'uo-recipe'
+		// Check if 'automator' is in the page parameter or post_type is AUTOMATOR_POST_TYPE_RECIPE
 		$current_page = automator_filter_input( 'page' );
 		$post_type    = automator_filter_input( 'post_type' );
 		$menu_title   = esc_attr__( 'Addons', 'uncanny-automator' );
 
-		// Add the chip if 'automator' is in the page parameter or post_type is 'uo-recipe'
-		if ( ( null !== $current_page && false !== strpos( $current_page, 'automator' ) ) || 'uo-recipe' === $post_type ) {
+		// Add the chip if 'automator' is in the page parameter or post_type is AUTOMATOR_POST_TYPE_RECIPE
+		if ( ( null !== $current_page && false !== strpos( $current_page, 'automator' ) ) || AUTOMATOR_POST_TYPE_RECIPE === $post_type ) {
 			$menu_title = sprintf(
 				'%s<uo-chip color="error" size="xsmall" filled style="margin-left: 3px">%s</uo-chip>',
 				$menu_title,
@@ -106,7 +106,7 @@ class Addons {
 	public static function get_addon_admin_url( $args = array() ) {
 
 		$defaults = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-addons',
 		);
 

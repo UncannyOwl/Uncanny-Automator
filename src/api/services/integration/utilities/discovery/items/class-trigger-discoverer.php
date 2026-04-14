@@ -32,7 +32,7 @@ class Trigger_Discoverer extends Integration_Item_Discoverer {
 	 * @param Trigger_Registry_Service|null $trigger_registry Optional registry for DI/testing.
 	 */
 	public function __construct( ?Trigger_Registry_Service $trigger_registry = null ) {
-		$this->trigger_registry = $trigger_registry ?? Trigger_Registry_Service::get_instance();
+		$this->trigger_registry = $trigger_registry ?? Trigger_Registry_Service::instance();
 	}
 
 	/**

@@ -1,25 +1,31 @@
 <?php
+
 namespace Uncanny_Automator\Integrations\Mautic;
 
-use Uncanny_Automator\Api_Server;
-
 /**
+ * Creates or updates a Mautic contact with the specified email and custom fields.
+ *
  * @since 5.0
+ *
+ * @property Mautic_App_Helpers $helpers
+ * @property Mautic_Api_Caller $api
  */
-class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
+class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
+	 * Configure the action code, meta key, sentence templates, and user requirement.
+	 *
 	 * @return void
 	 */
 	protected function setup_action() {
-
-		$this->set_integration( Mautic_Integration::ID );
+		$this->set_integration( 'MAUTIC' );
 		$this->set_action_code( 'CONTACT_UPSERT' );
 		$this->set_action_meta( 'CONTACT_UPSERT_META' );
 		$this->set_requires_user( false );
+		$this->set_readable_sentence( esc_attr_x( 'Create or update {{a contact}}', 'Mautic', 'uncanny-automator' ) );
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
+				// translators: %1$s is the contact email
 				esc_attr_x(
 					'Create or update {{a contact:%1$s}}',
 					'Mautic',
@@ -28,97 +34,36 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 				'NON_EXISTING:' . $this->get_action_meta()
 			)
 		);
-		$this->set_readable_sentence( esc_attr_x( 'Create or update {{a contact}}', 'Mautic', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * @return mixed[]
+	 * Define the option fields for the action.
+	 *
+	 * @return array
 	 */
 	public function options() {
-
-		$email = array(
-			'option_code' => 'EMAIL',
-			'input_type'  => 'email',
-			'label'       => _x( 'Email', 'Mautic', 'uncanny-automator' ),
-			'required'    => true,
-		);
-
-		$fields = array(
-			'option_code'     => 'FIELDS',
-			'input_type'      => 'repeater',
-			'relevant_tokens' => array(),
-			'label'           => _x( 'Field', 'Mautic', 'uncanny-automator' ),
-			'description'     => '',
-			'required'        => true,
-			'default_value'   => array(
-				array(
-					'ALIAS' => _x( 'Loading fields...', 'Mautic', 'uncanny-automator' ),
-					'VALUE' => _x( 'Loading values...', 'Mautic', 'uncanny-automator' ),
-				),
-			),
-			'fields'          => array(
-				array(
-					'option_code' => 'ALIAS',
-					'label'       => _x( 'Field', 'Mautic', 'uncanny-automator' ),
-					'input_type'  => 'text',
-					'read_only'   => true,
-				),
-				array(
-					'option_code' => 'VALUE',
-					'label'       => _x( 'Value', 'Mautic', 'uncanny-automator' ),
-					'input_type'  => 'text',
-				),
-			),
-			'ajax'            => array(
-				'event'          => 'on_load',
-				'endpoint'       => 'automator_mautic_render_contact_fields',
-				'mapping_column' => 'ALIAS',
-			),
-			'hide_actions'    => true,
-		);
-
 		return array(
-			$email,
-			$fields,
+			$this->helpers->get_email_option_config(),
+			$this->get_fields_repeater_config(),
 		);
 	}
 
 	/**
-	 * @param int $user_id
-	 * @param mixed[] $action_data
-	 * @param int $recipe_id
-	 * @param mixed[] $args
-	 * @param array{FIELDS:string,EMAIL:string} $parsed
+	 * Execute the upsert contact API call with the parsed email and field values.
 	 *
-	 * @throws \Exception
+	 * @param int                              $user_id     The WordPress user ID.
+	 * @param mixed[]                          $action_data The action configuration data.
+	 * @param int                              $recipe_id   The recipe ID.
+	 * @param mixed[]                          $args        Additional arguments including action_meta.
+	 * @param array{FIELDS:string,EMAIL:string} $parsed     The parsed token values.
 	 *
-	 * @return bool True if the action is successful. Returns false, otherwise.
+	 * @return bool True on success.
+	 * @throws \Exception For invalid params, or if the API request fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$auth = new Mautic_Client_Auth( Api_Server::get_instance() );
-
-		$credentials = $auth->get_credentials();
-
-		$fields = ! empty( $parsed['FIELDS'] ) ? (array) json_decode( $parsed['FIELDS'], true ) : array();
-		$email  = ! empty( $parsed['EMAIL'] ) ? $parsed['EMAIL'] : '';
-
-		// Invalid email. Complete with error.
-		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception(
-				sprintf(
-				/* translators: %s: Email address */
-					esc_html__( 'Invalid email: "%s"', 'uncanny-automator' ),
-					esc_html( $email )
-				),
-				500
-			);
-		}
-
-		// Empty fields. Complete with error.
-		if ( empty( $fields ) ) {
-			throw new \Exception( 'Fields should not be empty', 500 );
-		}
+		$email  = $this->helpers->validate_email( $parsed['EMAIL'] ?? '' );
+		$fields = $this->validate_fields( $parsed['FIELDS'] ?? '' );
 
 		$fields_item = array(
 			'email'              => $email,
@@ -132,17 +77,75 @@ class CONTACT_UPSERT extends \Uncanny_Automator\Recipe\Action {
 			}
 		}
 
-		$fields_item_json = wp_json_encode( $fields_item );
-
-		$auth->api_call(
+		$this->api->api_request(
 			array(
-				'action'      => 'upsert',
-				'fields'      => $fields_item_json,
-				'credentials' => $credentials,
+				'action' => 'upsert',
+				'fields' => wp_json_encode( $fields_item ),
 			),
 			$action_data
 		);
 
 		return true;
+	}
+
+	/**
+	 * Get the repeater config for the fields option.
+	 *
+	 * @return array
+	 */
+	private function get_fields_repeater_config() {
+		return array(
+			'option_code'     => 'FIELDS',
+			'input_type'      => 'repeater',
+			'relevant_tokens' => array(),
+			'label'           => esc_html_x( 'Field', 'Mautic', 'uncanny-automator' ),
+			'description'     => '',
+			'required'        => true,
+			'default_value'   => array(
+				array(
+					'ALIAS' => esc_html_x( 'Loading fields...', 'Mautic', 'uncanny-automator' ),
+					'VALUE' => esc_html_x( 'Loading values...', 'Mautic', 'uncanny-automator' ),
+				),
+			),
+			'fields'          => array(
+				array(
+					'option_code' => 'ALIAS',
+					'label'       => esc_html_x( 'Field', 'Mautic', 'uncanny-automator' ),
+					'input_type'  => 'text',
+					'read_only'   => true,
+				),
+				array(
+					'option_code' => 'VALUE',
+					'label'       => esc_html_x( 'Value', 'Mautic', 'uncanny-automator' ),
+					'input_type'  => 'text',
+				),
+			),
+			'ajax'            => array(
+				'event'          => 'on_load',
+				'endpoint'       => 'automator_mautic_render_contact_fields',
+				'mapping_column' => 'ALIAS',
+			),
+			'hide_actions'    => true,
+		);
+	}
+
+	/**
+	 * Validate the fields.
+	 *
+	 * @param string $fields The fields to validate.
+	 *
+	 * @return array The validated fields.
+	 * @throws \Exception If the fields are empty.
+	 */
+	private function validate_fields( $fields ) {
+		if ( ! empty( $fields ) ) {
+			$fields = (array) json_decode( $fields, true );
+		}
+
+		if ( empty( $fields ) ) {
+			throw new \Exception( 'Fields should not be empty', 500 );
+		}
+
+		return $fields;
 	}
 }

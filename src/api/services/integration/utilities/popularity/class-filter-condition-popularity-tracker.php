@@ -214,7 +214,7 @@ class Filter_Condition_Popularity_Tracker {
 					AND p.post_status = %s
 					AND pm.meta_key = %s
 					AND pm.meta_value != ''",
-				'uo-recipe',
+				AUTOMATOR_POST_TYPE_RECIPE,
 				Recipe_Status::PUBLISH,
 				self::ACTION_META_KEY
 			),
@@ -384,6 +384,6 @@ class Filter_Condition_Popularity_Tracker {
 	 * @return bool True if post is a recipe
 	 */
 	private function is_recipe_post_type( $post_id ) {
-		return 'uo-recipe' === get_post_type( $post_id );
+		return AUTOMATOR_POST_TYPE_RECIPE === get_post_type( $post_id );
 	}
 }

@@ -66,7 +66,7 @@ class Copy_Recipe_Parts {
 	 * @return mixed
 	 */
 	public function add_copy_recipe_action_rows( $actions, $post ) {
-		if ( 'uo-recipe' !== $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
 			return $actions;
 		}
 		$post_type_object = get_post_type_object( $post->post_type );
@@ -109,7 +109,11 @@ class Copy_Recipe_Parts {
 
 		$recipe_id = absint( automator_filter_input( 'post' ) );
 
-		if ( 'uo-recipe' !== get_post_type( $recipe_id ) ) {
+		if ( ! current_user_can( 'edit_post', $recipe_id ) ) {
+			return;
+		}
+
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== get_post_type( $recipe_id ) ) {
 			wp_die( esc_attr( sprintf( '%s %s', esc_html__( 'Copy creation failed, could not find original recipe:', 'uncanny-automator' ), htmlspecialchars( $recipe_id ) ) ) );
 		}
 
@@ -148,16 +152,16 @@ class Copy_Recipe_Parts {
 		}
 
 		// Copy triggers
-		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-trigger' );
+		$this->copy_recipe_part( $recipe_id, $new_recipe_id, AUTOMATOR_POST_TYPE_TRIGGER );
 
 		// Copy actions
-		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-action' );
+		$this->copy_recipe_part( $recipe_id, $new_recipe_id, AUTOMATOR_POST_TYPE_ACTION );
 
 		// Copy loops
 		$this->copy_recipe_loops( $recipe_id, $new_recipe_id );
 
 		// Copy closures
-		$this->copy_recipe_part( $recipe_id, $new_recipe_id, 'uo-closure' );
+		$this->copy_recipe_part( $recipe_id, $new_recipe_id, AUTOMATOR_POST_TYPE_CLOSURE );
 
 		// Fallback to update tokens for Anonymous recipes that is stored in recipe's post meta itself
 		$this->copy_recipe_metas( $recipe_id, $new_recipe_id );
@@ -216,7 +220,7 @@ class Copy_Recipe_Parts {
 	 */
 	public function copy_recipe_loops( $recipe_id, $new_recipe_id ) {
 		// Check if recipe has loops
-		$recipe_loops = $this->get_recipe_parts_posts( 'uo-loop', $recipe_id );
+		$recipe_loops = $this->get_recipe_parts_posts( AUTOMATOR_POST_TYPE_LOOP, $recipe_id );
 		if ( empty( $recipe_loops ) ) {
 			return;
 		}
@@ -226,13 +230,13 @@ class Copy_Recipe_Parts {
 			$new_loop_id = $this->copy( $loop->ID, $new_recipe_id, '', $loop );
 
 			// Copy loop filters.
-			$loop_filters = $this->get_recipe_parts_posts( 'uo-loop-filter', $loop->ID );
+			$loop_filters = $this->get_recipe_parts_posts( AUTOMATOR_POST_TYPE_LOOP_FILTER, $loop->ID );
 			foreach ( $loop_filters as $filter ) {
 				$this->copy( $filter->ID, $new_loop_id, '', $filter );
 			}
 
 			// Copy loop actions.
-			$loop_actions = $this->get_recipe_parts_posts( 'uo-action', $loop->ID );
+			$loop_actions = $this->get_recipe_parts_posts( AUTOMATOR_POST_TYPE_ACTION, $loop->ID );
 			foreach ( $loop_actions as $action ) {
 				$this->copy( $action->ID, $new_loop_id, '', $action );
 			}
@@ -263,12 +267,12 @@ class Copy_Recipe_Parts {
 		// Keep the same status of triggers and actions as original recipe, but draft the recipe
 		$status = ! empty( $status ) ? $status : $post->post_status;
 
-		if ( 'uo-recipe' === $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
 			$status = 'draft';
 		}
 
 		$post_title = $post->post_title;
-		if ( 'uo-recipe' === $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
 			$post_title = $this->is_import
 				/* translators: Original Post title */
 				? sprintf( esc_html__( '%1$s (Imported)', 'uncanny-automator' ), $post->post_title )
@@ -303,22 +307,22 @@ class Copy_Recipe_Parts {
 		if ( ! empty( $this->store_duplicated_id( $new_post_id, $post_id ) ) ) {
 
 			// Store previous => new recipe ID to replace in action conditions
-			if ( 'uo-recipe' === $post->post_type ) {
+			if ( AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
 				$this->condition_parent_ids[ $post->ID ] = $new_post_id;
 			}
 
 			// Store previous => new trigger ID to replace in trigger tokens
-			if ( 'uo-trigger' === $post->post_type ) {
+			if ( AUTOMATOR_POST_TYPE_TRIGGER === $post->post_type ) {
 				$this->trigger_tokens[ $post->ID ] = $new_post_id;
 			}
 
 			// Store previous => new action ID to replace in action tokens
-			if ( 'uo-action' === $post->post_type ) {
+			if ( AUTOMATOR_POST_TYPE_ACTION === $post->post_type ) {
 				$this->action_tokens[ $post->ID ] = $new_post_id;
 			}
 
 			// Store previous => new loop ID to replace in loop tokens
-			if ( 'uo-loop' === $post->post_type ) {
+			if ( AUTOMATOR_POST_TYPE_LOOP === $post->post_type ) {
 				$this->loop_tokens[ $post->ID ]          = $new_post_id;
 				$this->condition_parent_ids[ $post->ID ] = $new_post_id;
 			}
@@ -413,7 +417,6 @@ class Copy_Recipe_Parts {
 		update_post_meta( $new_post_id, self::ACTION_CONDITIONS_META_KEY, $conditions );
 
 		do_action( 'automator_recipe_copy_action_conditions', $conditions, $post_id, $new_post_id );
-
 	}
 
 
@@ -432,7 +435,7 @@ class Copy_Recipe_Parts {
 		//Check if it's a webhook URL
 		if ( 0 !== $new_post_id && ! is_array( $content ) && ! is_object( $content ) && preg_match( '/\/wp-json\/uap\/v2\/uap-/', $content ) ) {
 			// Only modify webhook URL of the trigger. We are leaving webhook URL of action alone.
-			if ( 'uo-trigger' === get_post_type( $new_post_id ) ) {
+			if ( AUTOMATOR_POST_TYPE_TRIGGER === get_post_type( $new_post_id ) ) {
 				$new     = sprintf( 'uap/v2/uap-%d-%d', wp_get_post_parent_id( $new_post_id ), $new_post_id );
 				$content = preg_replace( '/uap\/v2\/uap-.+/', $new, $content );
 			}

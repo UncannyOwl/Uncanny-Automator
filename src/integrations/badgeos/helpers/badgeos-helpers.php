@@ -61,10 +61,6 @@ class Badgeos_Helpers {
 	 * @return mixed
 	 */
 	public function list_bo_award_types( $label = null, $option_code = 'BOAWARDTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Achievement type', 'uncanny-automator' );
@@ -123,10 +119,6 @@ class Badgeos_Helpers {
 	 * @return mixed
 	 */
 	public function list_bo_points_types( $label = null, $option_code = 'BOPOINTSTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Point type', 'uncanny-automator' );
@@ -187,10 +179,6 @@ class Badgeos_Helpers {
 	 * @return mixed
 	 */
 	public function list_bo_rank_types( $label = null, $option_code = 'BORANKTYPES', $args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Rank type', 'uncanny-automator' );

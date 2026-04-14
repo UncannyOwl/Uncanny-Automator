@@ -76,7 +76,7 @@ class SURECART_ORDER_CONFIRMED extends Trigger {
 
 		// Fall back to current user if no user found in hook data
 		if ( empty( $user_id ) ) {
-			$user_id = wp_get_current_user_id();
+			$user_id = get_current_user_id();
 		}
 
 		// Set the user_id for the trigger

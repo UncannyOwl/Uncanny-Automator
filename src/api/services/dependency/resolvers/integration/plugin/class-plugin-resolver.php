@@ -12,6 +12,7 @@ namespace Uncanny_Automator\Api\Services\Dependency\Resolvers\Integration\Plugin
 
 use Uncanny_Automator\Api\Components\Integration\Enums\Distribution_Type;
 use Uncanny_Automator\Api\Components\Integration\Integration;
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
 use Uncanny_Automator\Api\Services\Dependency\Dependency_Evaluatable;
 use Uncanny_Automator\Api\Services\Integration\Integration_Registry_Service;
 use Uncanny_Automator\Api\Services\Dependency\Resolvers\Abstract_Resolver;
@@ -227,7 +228,7 @@ class Plugin_Resolver extends Abstract_Resolver {
 
 		foreach ( $dependency_ids as $dep_id ) {
 			// Check if installable dependency is met.
-			if ( str_starts_with( $dep_id, 'installable-' ) ) {
+			if ( Str::starts_with( $dep_id, 'installable-' ) ) {
 				$required_code = str_replace( 'installable-', '', $dep_id );
 				if ( ! $this->is_active_integration( $required_code ) ) {
 					return true;

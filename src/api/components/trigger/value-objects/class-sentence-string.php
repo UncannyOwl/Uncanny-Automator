@@ -3,6 +3,8 @@
 declare(strict_types=1);
 namespace Uncanny_Automator\Api\Components\Trigger\Value_Objects;
 
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
+
 /**
  * Sentence String Value Object.
  *
@@ -68,7 +70,7 @@ class Sentence_String {
 	 * @return bool True if sentence ends with question mark.
 	 */
 	public function is_question(): bool {
-		return str_ends_with( $this->value, '?' );
+		return Str::ends_with( $this->value, '?' );
 	}
 
 	/**

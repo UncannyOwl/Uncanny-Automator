@@ -130,6 +130,12 @@ class Filter_CRUD_Service {
 			return $definition;
 		}
 
+		// Reject filters incompatible with the loop's iteration type.
+		$type_mismatch = $this->check_iteration_type_mismatch( $loop_id, $definition );
+		if ( is_wp_error( $type_mismatch ) ) {
+			return $type_mismatch;
+		}
+
 		try {
 			// Hydrate entity with registry data.
 			$config = $this->build_hydrated_config( $filter_code, $integration_code, $fields, $backup, $definition );
@@ -460,5 +466,45 @@ class Filter_CRUD_Service {
 	 */
 	private function determine_user_type( array $iteration_types ): string {
 		return User_Type_Value::from_iteration_types( $iteration_types )->get_value();
+	}
+
+	/**
+	 * Check if a filter's iteration types are compatible with the loop.
+	 *
+	 * @param int   $loop_id    Loop post ID.
+	 * @param array $definition Filter registry definition.
+	 *
+	 * @return \WP_Error|null WP_Error on mismatch, null when compatible.
+	 */
+	private function check_iteration_type_mismatch( int $loop_id, array $definition ) {
+
+		$filter_types = $definition['iteration_types'] ?? array();
+
+		if ( empty( $filter_types ) ) {
+			return null;
+		}
+
+		$loop = $this->loop_store->get( $loop_id );
+
+		if ( ! $loop ) {
+			return null;
+		}
+
+		$loop_type = $loop->to_array()['iterable_expression']['type'] ?? 'users';
+
+		if ( in_array( $loop_type, $filter_types, true ) ) {
+			return null;
+		}
+
+		return new WP_Error(
+			'filter_type_mismatch',
+			sprintf(
+				/* translators: %1$s Filter code, %2$s Filter types, %3$s Loop type. */
+				esc_html__( 'Filter "%1$s" supports iteration types [%2$s] but the loop is type "%3$s".', 'uncanny-automator' ),
+				$definition['code'] ?? '',
+				implode( ', ', $filter_types ),
+				$loop_type
+			)
+		);
 	}
 }

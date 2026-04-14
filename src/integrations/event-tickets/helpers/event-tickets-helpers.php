@@ -200,10 +200,6 @@ class Event_Tickets_Helpers {
 	 * @return mixed
 	 */
 	public function all_ec_events( $label = null, $option_code = 'ECEVENTS', $extra_args = array() ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Event', 'uncanny-automator' );
@@ -252,10 +248,6 @@ class Event_Tickets_Helpers {
 	 * @return mixed
 	 */
 	public function all_ec_rsvp_events( $label = null, $option_code = 'ECEVENTS' ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Event', 'uncanny-automator' );

@@ -31,7 +31,107 @@ class Woocommerce_Helpers {
 	 *
 	 */
 	public function __construct() {
+		add_action(
+			'wp_ajax_search_wc_products_for_trigger',
+			array(
+				$this,
+				'search_wc_products_for_trigger',
+			)
+		);
+	}
 
+	/**
+	 * AJAX handler for searching WC products. Used with `search_options` ajax event.
+	 *
+	 * @return void
+	 */
+	public function search_wc_products_for_trigger() {
+
+		Automator()->utilities->ajax_auth_check();
+
+		$search_term = isset( $_POST['q'] ) ? sanitize_text_field( wp_unslash( $_POST['q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+		$args = array(
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => apply_filters( 'automator_wc_product_search_limit', 50 ),
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+			's'              => $search_term,
+		);
+
+		// Allow searching by product ID directly.
+		if ( is_numeric( $search_term ) ) {
+			$args['post__in'] = array( absint( $search_term ) );
+			unset( $args['s'] );
+		}
+
+		$products = get_posts( $args );
+		$options  = array();
+
+		$options[] = array(
+			'value' => '-1',
+			'text'  => __( 'Any product', 'uncanny-automator' ),
+		);
+
+		foreach ( $products as $product ) {
+			$title = ! empty( $product->post_title )
+				? $product->post_title
+				: sprintf( /* translators: %d is the product ID */ __( 'ID: %d (no title)', 'uncanny-automator' ), $product->ID );
+
+			$options[] = array(
+				'value' => $product->ID,
+				'text'  => $title,
+			);
+		}
+
+		echo wp_json_encode(
+			array(
+				'success' => true,
+				'options' => $options,
+			)
+		);
+
+		wp_die();
+	}
+
+	/**
+	 * Returns a product select field configured with AJAX search.
+	 *
+	 * @param string $option_code     The option code for the field.
+	 * @param array  $relevant_tokens Optional. Override the default relevant tokens.
+	 *
+	 * @return array
+	 */
+	public static function get_ajax_product_select_field( $option_code = 'WOOPRODUCT', $relevant_tokens = null ) {
+		if ( null === $relevant_tokens ) {
+			$relevant_tokens = array(
+				$option_code                                     => esc_attr__( 'Product title', 'uncanny-automator' ),
+				$option_code . '_ID'                             => esc_attr__( 'Product ID', 'uncanny-automator' ),
+				$option_code . '_URL'                            => esc_attr__( 'Product URL', 'uncanny-automator' ),
+				$option_code . '_THUMB_ID'                       => esc_attr__( 'Product featured image ID', 'uncanny-automator' ),
+				$option_code . '_THUMB_URL'                      => esc_attr__( 'Product featured image URL', 'uncanny-automator' ),
+				$option_code . '_PRODUCT_PRICE'                  => esc_attr__( 'Product price', 'uncanny-automator' ),
+				$option_code . '_PRODUCT_PRICE_UNFORMATTED'      => esc_attr__( 'Product price (unformatted)', 'uncanny-automator' ),
+				$option_code . '_PRODUCT_SALE_PRICE'             => esc_attr__( 'Product sale price', 'uncanny-automator' ),
+				$option_code . '_PRODUCT_SALE_PRICE_UNFORMATTED' => esc_attr__( 'Product sale price (unformatted)', 'uncanny-automator' ),
+				$option_code . '_ORDER_QTY'                      => esc_attr__( 'Product quantity', 'uncanny-automator' ),
+			);
+		}
+
+		return Automator()->helpers->recipe->field->select_field_args(
+			array(
+				'option_code'     => $option_code,
+				'label'           => esc_attr__( 'Product', 'uncanny-automator' ),
+				'required'        => true,
+				'options'         => array(),
+				'relevant_tokens' => $relevant_tokens,
+				'ajax'            => array(
+					'endpoint' => 'search_wc_products_for_trigger',
+					'event'    => 'search_options',
+				),
+			)
+		);
 	}
 
 	/**
@@ -138,9 +238,6 @@ class Woocommerce_Helpers {
 	 * @return mixed
 	 */
 	public function wc_order_statuses( $label = null, $option_code = 'WCORDERSTATUS' ) {
-		if ( ! $this->load_options ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = 'Status';

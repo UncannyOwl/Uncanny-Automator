@@ -27,7 +27,6 @@ class Add_Mailchimp_Integration {
 	 * Add_Integration constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -73,21 +72,18 @@ class Add_Mailchimp_Integration {
 	 */
 	public function add_integration_directory_func( $directory ) {
 
-		$directory[] = dirname( __FILE__ ) . '/helpers';
-		$directory[] = dirname( __FILE__ ) . '/tokens';
-		$directory[] = dirname( __FILE__ ) . '/actions';
-		$directory[] = dirname( __FILE__ ) . '/triggers';
+		$directory[] = __DIR__ . '/helpers';
+		$directory[] = __DIR__ . '/tokens';
+		$directory[] = __DIR__ . '/actions';
+		$directory[] = __DIR__ . '/triggers';
 
 		return $directory;
-
 	}
 
 	/**
 	 * Register the integration by pushing it into the global automator object
 	 */
 	public function add_integration_func() {
-
-		global $uncanny_automator;
 
 		// check if Consumer Key and Consumer Secret available
 		$gtw_options = automator_get_option( '_uncannyowl_mailchimp_settings', array() );
@@ -96,7 +92,7 @@ class Add_Mailchimp_Integration {
 			$this->connected = true;
 		}
 
-		$uncanny_automator->register->integration(
+		Automator()->register->integration(
 			self::$integration,
 			array(
 				'name'         => 'Mailchimp',
@@ -105,6 +101,5 @@ class Add_Mailchimp_Integration {
 				'settings_url' => automator_get_premium_integrations_settings_url( 'mailchimp_api' ),
 			)
 		);
-
 	}
 }

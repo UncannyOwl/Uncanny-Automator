@@ -7,6 +7,7 @@ use Uncanny_Automator\Api\Components\Action\Action;
 use Uncanny_Automator\Api\Components\Action\Action_Config;
 use Uncanny_Automator\Api\Components\Action\Enums\Action_Status;
 use Uncanny_Automator\Api\Database\Interfaces\Action_Store;
+use Uncanny_Automator\Api\Database\Recipe_Cache;
 
 /**
  * WordPress Action Store.
@@ -21,7 +22,7 @@ class WP_Action_Store implements Action_Store {
 	/**
 	 * Post type for actions.
 	 */
-	const POST_TYPE = 'uo-action';
+	const POST_TYPE = AUTOMATOR_POST_TYPE_ACTION;
 
 	/**
 	 * WordPress database object.
@@ -99,12 +100,40 @@ class WP_Action_Store implements Action_Store {
 			throw new Exception( esc_html_x( 'Cannot delete unsaved action', 'Action store delete error', 'uncanny-automator' ) );
 		}
 
-		$action_id = $action->get_action_id()->get_value();
-		$result    = wp_delete_post( $action_id, true );
+		$this->delete_by_id(
+			(int) $action->get_action_id()->get_value(),
+			(int) $action->get_action_recipe_id()->get_value()
+		);
+	}
+
+	/**
+	 * Delete action by ID.
+	 *
+	 * Primitive delete that bypasses the post_type filter in `get()`. Use this
+	 * from call sites that have already verified ownership and do not want a
+	 * redundant cache round-trip — notably the delete transport, which is
+	 * where stale WP post caches have previously surfaced as false negatives.
+	 *
+	 * @param int $action_id Action post ID.
+	 * @param int $recipe_id Owning recipe ID, used for cache invalidation. Pass 0 to skip.
+	 * @return void
+	 * @throws \Exception If wp_delete_post fails.
+	 */
+	public function delete_by_id( int $action_id, int $recipe_id = 0 ): void {
+		$result = wp_delete_post( $action_id, true );
 
 		if ( ! $result ) {
-			// translators: %s is the action ID.
-			throw new Exception( sprintf( esc_html_x( 'Failed to delete action with ID: %s', 'Action store delete error with ID', 'uncanny-automator' ), absint( $action_id ) ) );
+			throw new Exception(
+				sprintf(
+					/* translators: %s is the action ID. */
+					esc_html_x( 'Failed to delete action with ID: %s', 'Action store delete error with ID', 'uncanny-automator' ),
+					absint( $action_id )
+				)
+			);
+		}
+
+		if ( $recipe_id > 0 ) {
+			Recipe_Cache::invalidate( $recipe_id );
 		}
 	}
 
@@ -130,12 +159,13 @@ class WP_Action_Store implements Action_Store {
 			$parent_ids = array( $recipe_id );
 
 			// Find loops belonging to this recipe — actions inside loops have post_parent = loop_id.
+			// A recipe is not expected to contain anywhere near 100 loops; the cap is a safety ceiling.
 			$loop_posts = get_posts(
 				array(
-					'post_type'      => 'uo-loop',
+					'post_type'      => AUTOMATOR_POST_TYPE_LOOP,
 					'post_parent'    => $recipe_id,
 					'post_status'    => 'any',
-					'posts_per_page' => 100,
+					'posts_per_page' => 100, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page -- Loops per recipe are bounded by the builder UI and never reach this cap.
 					'fields'         => 'ids',
 				)
 			);
@@ -239,6 +269,9 @@ class WP_Action_Store implements Action_Store {
 			throw new Exception( esc_html_x( 'Failed to create action: unknown error', 'Action store creation unknown error', 'uncanny-automator' ) );
 		}
 
+		// Clear recipe cache so the recipe builder picks up the new values.
+		Recipe_Cache::invalidate( $action->get_action_recipe_id()->get_value() );
+
 		// Reload and return the persisted action with all values
 		$persisted_action = $this->get( $action_id );
 
@@ -286,6 +319,9 @@ class WP_Action_Store implements Action_Store {
 		foreach ( $meta_data as $key => $value ) {
 			update_post_meta( $action_id, $key, $value );
 		}
+
+		// Clear recipe cache so the recipe builder picks up the new values.
+		Recipe_Cache::invalidate( $action->get_action_recipe_id()->get_value() );
 
 		// Reload and return the updated action
 		$updated_action = $this->get( $action_id );
@@ -342,9 +378,18 @@ class WP_Action_Store implements Action_Store {
 		$parent_id        = get_post_meta( $post->ID, 'parent_id', true );
 		$status           = get_post_meta( $post->ID, 'status', true );
 
+		// Resolve the recipe_id by walking the parent chain.
+		// Actions nested inside a loop have post_parent = loop_id, not recipe_id.
+		// When nested, the real recipe is the loop's own parent.
+		$recipe_id   = (int) $post->post_parent;
+		$parent_post = get_post( $recipe_id );
+		if ( $parent_post instanceof \WP_Post && AUTOMATOR_POST_TYPE_LOOP === $parent_post->post_type ) {
+			$recipe_id = (int) $parent_post->post_parent;
+		}
+
 		$config = ( new Action_Config() )
 			->id( (int) $post->ID )
-			->recipe_id( $post->post_parent )
+			->recipe_id( $recipe_id )
 			->integration_code( ! empty( $integration_code ) ? $integration_code : '' )
 			->code( ! empty( $code ) ? $code : '' )
 			->meta_code( ! empty( $meta_code ) ? $meta_code : '' )

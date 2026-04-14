@@ -103,6 +103,9 @@ class Closure_Redirect {
 	/**
 	 * Enqueue redirect script if redirect closures are configured.
 	 *
+	 * Reads X-Automator-Redirect response header from AJAX responses.
+	 * Regular page loads use direct JavaScript injection (no script needed).
+	 *
 	 * @return void
 	 */
 	public function add_script() {
@@ -127,53 +130,85 @@ class Closure_Redirect {
 	}
 
 	/**
-	 * @param $redirect_url
+	 * Execute redirect using hybrid session-only approach.
+	 *
+	 * GDPR Compliance:
+	 * - Regular page loads: Zero cookies (direct JavaScript injection)
+	 * - AJAX requests: Session-only cookie (deleted on browser close, no persistent tracking)
+	 *
+	 * @param string $redirect_url Validated redirect URL.
 	 *
 	 * @return void
 	 */
 	public function set_cookie( $redirect_url ) {
 
-		$cookie_name     = 'automator_closure_redirect';
-		$cookie_lifetime = time() + ( 86400 * 30 ); // 86400 = 1 day * 30 = 30 days
+		$strategy = $this->get_redirect_strategy();
 
-		// If this is an AJAX or REST request, store in option for client-side to pick up.
+		switch ( $strategy ) {
+			case 'direct':
+				// Strategy 1: Direct PHP redirect. Only works if headers not sent AND not AJAX/REST.
+				wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- External URLs are valid closure redirect targets.
+				exit;
+
+			case 'transient':
+				// Strategy 2: For AJAX/REST requests, use transient + response header signal.
+				$identifier = $this->get_redirect_identifier();
+				if ( ! empty( $identifier ) ) {
+					$this->store_pending_redirect( $identifier, $redirect_url );
+				}
+				return;
+
+			case 'javascript':
+			default:
+				// Strategy 3: For regular page loads with headers sent, output JavaScript immediately.
+				$this->output_redirect_script( $redirect_url );
+				return;
+		}
+	}
+
+	/**
+	 * Determine which redirect strategy to use based on the current request context.
+	 *
+	 * - 'direct': Headers not sent, not AJAX, not REST — can use wp_redirect().
+	 * - 'transient': AJAX or REST request — store in transient for polling script.
+	 * - 'javascript': Headers already sent on a regular page load — inline JS redirect.
+	 *
+	 * @return string One of 'direct', 'transient', or 'javascript'.
+	 */
+	protected function get_redirect_strategy() {
+
+		if ( ! headers_sent() && ! wp_doing_ajax() && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			return 'direct';
+		}
+
 		$is_ajax = wp_doing_ajax() || ( defined( 'DOING_AJAX' ) && DOING_AJAX );
 		$is_rest = defined( 'REST_REQUEST' ) && REST_REQUEST;
 
 		if ( $is_ajax || $is_rest ) {
-			$identifier = $this->get_redirect_identifier();
-			// Only store if we have a valid identifier.
-			if ( ! empty( $identifier ) ) {
-				$this->store_pending_redirect( $identifier, $redirect_url );
-			}
-			return;
+			return 'transient';
 		}
 
-		// If headers have already been sent, add cookie via inline JavaScript.
-		if ( headers_sent() ) {
-			// LAST RESORT FALLBACK: Inline script output after page render.
-			//
-			// This code path executes when:
-			// - Recipe triggered on regular page load (not AJAX/REST)
-			// - Trigger fires late in request lifecycle (after wp_loaded)
-			// - Recipe completes during shutdown hook
-			// - Headers already sent, page HTML already output
-			//
-			// Known Limitations:
-			// 1. Outputs <script> after </html> (invalid HTML, but browsers handle it)
-			// 2. Blocked by strict CSP without 'unsafe-inline' directive
-			// 3. Cannot use wp_add_inline_script() (wp_footer already fired)
-			// 4. Not ideal, but only option when trigger queue processes at shutdown
-			//
-			// Most real-world scenarios use AJAX/REST path (option-based).
-			// This path is rare edge case for late-firing triggers on regular page loads.
-			$expiry_date = gmdate( 'D, d M Y H:i:s', $cookie_lifetime ) . ' GMT';
-			echo '<script>document.cookie = "' . esc_js( $cookie_name ) . '=" + encodeURIComponent(' . wp_json_encode( $redirect_url ) . ') + "; expires=' . esc_js( $expiry_date ) . '; path=/";</script>';
-			return;
-		}
+		return 'javascript';
+	}
 
-		// Set cookie.
-		setcookie( $cookie_name, $redirect_url, $cookie_lifetime, '/' );
+	/**
+	 * Output JavaScript redirect script.
+	 *
+	 * Zero-cookie redirect using direct JavaScript injection.
+	 * Used for regular page loads (non-AJAX scenarios).
+	 * Handles both parent window (iframe) and current window redirects.
+	 *
+	 * @param string $redirect_url Validated redirect URL.
+	 *
+	 * @return void
+	 */
+	private function output_redirect_script( $redirect_url ) {
+		// Output JavaScript that performs immediate redirect.
+		// Handles iframe scenarios where redirect should happen in parent window.
+		printf(
+			'<!-- Uncanny Automator Closure Redirect (Session-Only) --><script>(function(){var url=%s;try{if(window.parent&&window.parent!==window&&!window.parent.location.href.match(/\/wp-admin\//)){window.parent.location.href=url;}else{window.location.href=url;}}catch(e){window.location.href=url;}})();</script>',
+			wp_json_encode( $redirect_url )
+		);
 	}
 
 	/**
@@ -184,9 +219,7 @@ class Closure_Redirect {
 	 * @return void
 	 */
 	public function ajax_check_closure_redirect() {
-		// Verify nonce for security.
-		$nonce = automator_filter_input( 'nonce', INPUT_GET );
-		if ( ! wp_verify_nonce( $nonce, 'automator_closure_redirect' ) ) {
+		if ( ! $this->verify_ajax_nonce() ) {
 			wp_send_json_error();
 		}
 
@@ -202,6 +235,18 @@ class Closure_Redirect {
 		}
 
 		wp_send_json_error();
+	}
+
+	/**
+	 * Verify the AJAX nonce for closure redirect requests.
+	 *
+	 * Extracted to allow test subclasses to bypass filter_input() limitations in CLI.
+	 *
+	 * @return bool True if nonce is valid.
+	 */
+	protected function verify_ajax_nonce() {
+		$nonce = automator_filter_input( 'nonce', INPUT_GET );
+		return (bool) wp_verify_nonce( $nonce, 'automator_closure_redirect' );
 	}
 
 	/**

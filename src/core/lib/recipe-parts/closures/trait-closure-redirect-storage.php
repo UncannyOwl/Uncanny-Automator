@@ -53,6 +53,24 @@ trait Closure_Redirect_Storage {
 	protected $max_redirect_transients = 1000;
 
 	/**
+	 * Whether a redirect was stored during the current request.
+	 *
+	 * Used by REST response filters to know when to add the header.
+	 *
+	 * @var bool
+	 */
+	protected $redirect_stored_this_request = false;
+
+	/**
+	 * The last redirect URL stored during this request.
+	 *
+	 * Needed by REST response filters which can't access the URL from the header.
+	 *
+	 * @var string
+	 */
+	protected $last_stored_redirect_url = '';
+
+	/**
 	 * Register WordPress hooks.
 	 *
 	 * @return void
@@ -61,6 +79,12 @@ trait Closure_Redirect_Storage {
 		add_action( 'save_post_uo-recipe', array( $this, 'clear_redirect_cache' ) );
 		add_action( 'save_post_uo-closure', array( $this, 'clear_redirect_cache' ) );
 		add_action( 'delete_post', array( $this, 'clear_redirect_cache' ) );
+
+		// Add redirect header to REST API responses (WP_REST_Response objects).
+		add_filter( 'rest_post_dispatch', array( $this, 'maybe_add_redirect_header_to_rest' ), 9999, 3 );
+
+		// Expose custom header to fetch() API via Access-Control-Expose-Headers.
+		add_filter( 'rest_pre_serve_request', array( $this, 'maybe_expose_redirect_header' ), 10, 4 );
 	}
 
 	/**
@@ -102,9 +126,51 @@ trait Closure_Redirect_Storage {
 	}
 
 	/**
+	 * Get the tab ID from the request header.
+	 *
+	 * Each browser tab sends a unique tab ID via X-Automator-Tab-Id header.
+	 * This scopes redirect transients to the originating tab, preventing
+	 * wrong-tab redirects when multiple tabs are open.
+	 *
+	 * @return string Validated tab ID (32 lowercase hex chars) or empty string.
+	 */
+	protected function get_tab_id() {
+		$tab_id = isset( $_SERVER['HTTP_X_AUTOMATOR_TAB_ID'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_AUTOMATOR_TAB_ID'] ) )
+			: '';
+
+		// Validate format: 32 lowercase hex chars (matches JS generateClientId output).
+		if ( '' !== $tab_id && 1 === preg_match( '/^[a-f0-9]{32}$/', $tab_id ) ) {
+			return $tab_id;
+		}
+
+		return '';
+	}
+
+	/**
+	 * Build the full transient key for a redirect, optionally scoped to a tab.
+	 *
+	 * @param string $identifier User/client identifier.
+	 * @param string $tab_id     Tab ID (empty string for legacy/non-tab-scoped keys).
+	 *
+	 * @return string Transient key.
+	 */
+	private function build_redirect_transient_key( $identifier, $tab_id = '' ) {
+		$key = $this->redirects_transient_prefix . $identifier;
+
+		if ( '' !== $tab_id ) {
+			$key .= '_tab_' . $tab_id;
+		}
+
+		return $key;
+	}
+
+	/**
 	 * Store pending redirect in individual transient.
 	 *
 	 * Each user/client gets their own transient to prevent race conditions.
+	 * When a tab ID is available, the transient is scoped to that specific tab,
+	 * preventing wrong-tab redirects in multi-tab scenarios.
 	 * Implements safety cap to prevent database flooding during attacks.
 	 *
 	 * @param string $identifier User/client identifier.
@@ -127,31 +193,60 @@ trait Closure_Redirect_Storage {
 			return;
 		}
 
-		// Store in individual transient (no race condition possible, auto-expires).
-		$transient_key = $this->redirects_transient_prefix . $identifier;
+		// Include tab ID in the transient key for per-tab isolation.
+		$tab_id        = $this->get_tab_id();
+		$transient_key = $this->build_redirect_transient_key( $identifier, $tab_id );
 
 		set_transient( $transient_key, $redirect_url, $this->redirect_expiry );
+
+		// Signal the redirect URL to the client via HTTP response header.
+		// This piggybacks on the triggering AJAX/REST response — zero extra requests.
+		// Safe for POST to admin-ajax.php and REST endpoints (never cached by CDNs).
+		if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
+			header( 'X-Automator-Redirect: ' . esc_url_raw( $redirect_url ) );
+		}
+
+		$this->last_stored_redirect_url     = $redirect_url;
+		$this->redirect_stored_this_request = true;
 	}
 
 	/**
 	 * Get pending redirect for identifier.
 	 *
-	 * Retrieves redirect from individual transient and deletes it (one-time use).
+	 * Tries the tab-scoped transient first (per-tab isolation), then falls back
+	 * to the legacy key (no tab suffix) for backward compatibility with redirects
+	 * stored without a tab ID (non-jQuery requests, regular form POSTs).
+	 *
+	 * Deletes the transient after retrieval (one-time use).
 	 *
 	 * @param string $identifier User/client identifier.
 	 *
 	 * @return string|false Redirect URL or false if not found.
 	 */
 	private function get_pending_redirect( $identifier ) {
-		$transient_key = $this->redirects_transient_prefix . $identifier;
-		$redirect_url  = get_transient( $transient_key );
+		$tab_id = $this->get_tab_id();
+
+		// Try tab-scoped key first (exact tab match).
+		if ( '' !== $tab_id ) {
+			$tab_key      = $this->build_redirect_transient_key( $identifier, $tab_id );
+			$redirect_url = get_transient( $tab_key );
+
+			if ( false !== $redirect_url ) {
+				delete_transient( $tab_key );
+
+				return $redirect_url;
+			}
+		}
+
+		// Fallback: legacy key without tab ID (graceful degradation).
+		$legacy_key   = $this->build_redirect_transient_key( $identifier );
+		$redirect_url = get_transient( $legacy_key );
 
 		if ( false === $redirect_url ) {
 			return false;
 		}
 
-		// Delete transient (one-time use).
-		delete_transient( $transient_key );
+		delete_transient( $legacy_key );
 
 		return $redirect_url;
 	}
@@ -206,13 +301,14 @@ trait Closure_Redirect_Storage {
 			AND p.post_status = 'publish'
 			AND p.post_parent IN (
 				SELECT ID FROM {$wpdb->posts}
-				WHERE post_type = 'uo-recipe'
+				WHERE post_type = %s
 				AND post_status = 'publish'
 			)
 			AND pm.meta_key = 'code'
 			AND pm.meta_value = %s
 			LIMIT 1",
-			'uo-closure',
+			AUTOMATOR_POST_TYPE_CLOSURE,
+			AUTOMATOR_POST_TYPE_RECIPE,
 			$this->get_closure_code()
 		);
 
@@ -233,5 +329,50 @@ trait Closure_Redirect_Storage {
 	 */
 	public function clear_redirect_cache() {
 		automator_delete_option( $this->cache_option_key );
+	}
+
+	/**
+	 * Add redirect header to WP REST API responses.
+	 *
+	 * Uses WP_REST_Response::header() so the header is included
+	 * even when WordPress builds the response object internally.
+	 *
+	 * @param \WP_REST_Response $response REST response object.
+	 * @param \WP_REST_Server   $server   REST server instance.
+	 * @param \WP_REST_Request  $request  REST request object.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function maybe_add_redirect_header_to_rest( $response, $server, $request ) {
+		if ( $this->redirect_stored_this_request && $response instanceof \WP_REST_Response ) {
+			$response->header( 'X-Automator-Redirect', esc_url_raw( $this->last_stored_redirect_url ) );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Expose the custom redirect header to fetch() API consumers.
+	 *
+	 * By default, fetch() only exposes CORS-safelisted headers.
+	 * This adds X-Automator-Redirect to Access-Control-Expose-Headers
+	 * so client-side JavaScript can read it from fetch responses.
+	 *
+	 * The `false` second argument to header() appends rather than replaces,
+	 * preserving WordPress's own exposed headers (X-WP-Total, etc.).
+	 *
+	 * @param bool             $served  Whether the request has been served.
+	 * @param \WP_REST_Response $result  REST response object.
+	 * @param \WP_REST_Request  $request REST request object.
+	 * @param \WP_REST_Server   $server  REST server instance.
+	 *
+	 * @return bool
+	 */
+	public function maybe_expose_redirect_header( $served, $result, $request, $server ) {
+		if ( $this->redirect_stored_this_request ) {
+			header( 'Access-Control-Expose-Headers: X-Automator-Redirect', false );
+		}
+
+		return $served;
 	}
 }

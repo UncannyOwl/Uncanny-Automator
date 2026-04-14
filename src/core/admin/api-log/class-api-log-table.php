@@ -83,8 +83,10 @@ class Api_Log_Table extends WP_List_Table {
 		}
 
 		// /* -- Ordering parameters -- */
-		$orderby = ! empty( automator_filter_input( 'orderby' ) ) ? $wpdb->_real_escape( automator_filter_input( 'orderby' ) ) : 'date';
-		$order   = ! empty( automator_filter_input( 'order' ) ) ? $wpdb->_real_escape( automator_filter_input( 'order' ) ) : 'DESC';
+		$allowed_orderby = array( 'date', 'type', 'title', 'completed', 'error_message', 'recipe_title', 'status', 'time_spent', 'endpoint' );
+		$raw_orderby     = automator_filter_input( 'orderby' );
+		$orderby         = in_array( $raw_orderby, $allowed_orderby, true ) ? $raw_orderby : 'date';
+		$order           = 'ASC' === strtoupper( (string) automator_filter_input( 'order' ) ) ? 'ASC' : 'DESC';
 
 		$query .= " ORDER BY $orderby $order";
 
@@ -159,11 +161,25 @@ class Api_Log_Table extends WP_List_Table {
 		$search_conditions = ' 1=1 ';
 
 		if ( automator_filter_has_var( 'search_key' ) && '' !== automator_filter_input( 'search_key' ) ) {
-			$search_key = sanitize_text_field( automator_filter_input( 'search_key' ) );
+			$search_key = '%' . $wpdb->esc_like( sanitize_text_field( automator_filter_input( 'search_key' ) ) ) . '%';
 			if ( $view_exists ) {
-				$search_conditions .= " AND ( (recipe_title LIKE '%$search_key%') OR (title LIKE '%$search_key%') OR (display_name LIKE '%$search_key%' ) OR (user_email LIKE '%$search_key%' ) OR (error_message LIKE '%$search_key%' ) ) ";
+				$search_conditions .= $wpdb->prepare(
+					' AND ( (recipe_title LIKE %s) OR (title LIKE %s) OR (display_name LIKE %s) OR (user_email LIKE %s) OR (error_message LIKE %s) ) ',
+					$search_key,
+					$search_key,
+					$search_key,
+					$search_key,
+					$search_key
+				);
 			} else {
-				$search_conditions .= " AND ( (p.post_title LIKE '%$search_key%') OR (pa.post_title LIKE '%$search_key%') OR (u.display_name LIKE '%$search_key%' ) OR (u.user_email LIKE '%$search_key%' ) OR (al.error_message LIKE '%$search_key%' ) ) ";
+				$search_conditions .= $wpdb->prepare(
+					' AND ( (p.post_title LIKE %s) OR (pa.post_title LIKE %s) OR (u.display_name LIKE %s) OR (u.user_email LIKE %s) OR (al.error_message LIKE %s) ) ',
+					$search_key,
+					$search_key,
+					$search_key,
+					$search_key,
+					$search_key
+				);
 			}
 		}
 

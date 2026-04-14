@@ -156,9 +156,10 @@ class Automator_Recipe_Process_Complete {
 	 */
 	public function add_backtrace_property( $args ) {
 
-		$is_enabled = apply_filters( 'automator_log_backtrace_property_enabled', true, $args );
+		$default    = defined( 'AUTOMATOR_DEBUG_MODE' ) && AUTOMATOR_DEBUG_MODE;
+		$is_enabled = apply_filters( 'automator_log_backtrace_property_enabled', $default, $args );
 
-		// Bail if disabled.
+		// Only run backtrace when debug mode is on — it's expensive in production.
 		if ( false === $is_enabled ) {
 			return;
 		}
@@ -204,7 +205,7 @@ class Automator_Recipe_Process_Complete {
 			$user_id = get_current_user_id();
 		}
 
-		$recipe_triggers  = Automator()->get_recipe_data( 'uo-trigger', $recipe_id );
+		$recipe_triggers  = Automator()->get_recipe_data( AUTOMATOR_POST_TYPE_TRIGGER, $recipe_id, array(), true );
 		$trigger_statuses = array();
 		foreach ( $recipe_triggers as $recipe_trigger ) {
 			if ( 'publish' === (string) $recipe_trigger['post_status'] ) {
@@ -295,16 +296,16 @@ class Automator_Recipe_Process_Complete {
 	 */
 	public function complete_actions( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array() ) {
 
-		$actions = (array) Automator()->get_recipe_data( 'uo-action', $recipe_id );
+		$actions = (array) Automator()->get_recipe_data( AUTOMATOR_POST_TYPE_ACTION, $recipe_id );
 
 		// No recipe actions found.
 		if ( empty( $actions ) ) {
 
 			// Check for closures.
-			$has_closure = (array) Automator()->get_recipe_data( 'uo-closure', $recipe_id );
+			$closure_data = (array) Automator()->get_recipe_data( AUTOMATOR_POST_TYPE_CLOSURE, $recipe_id, array(), true );
 
 			// No actions and no closures - complete the recipe with errors.
-			if ( empty( $has_closure ) ) {
+			if ( empty( $closure_data ) ) {
 				Automator()->db->recipe->mark_complete( $recipe_log_id, Automator_Status::COMPLETED_WITH_ERRORS );
 
 				return false;
@@ -315,7 +316,7 @@ class Automator_Recipe_Process_Complete {
 			// This action hook is fired just before the closures are run.
 			do_action( 'automator_recipe_process_complete_complete_actions_before_closures', $recipe_id, $user_id, $recipe_log_id, $args );
 
-			$this->closures( $recipe_id, $user_id, $recipe_log_id, $args );
+			$this->closures( $recipe_id, $user_id, $recipe_log_id, $args, $closure_data );
 
 			return true;
 		}
@@ -1086,7 +1087,7 @@ class Automator_Recipe_Process_Complete {
 	public static function is_user_selector_user_creation_message( $error_message ) {
 
 		$error_message = strtolower( $error_message );
-		$substrings    = array( 'new user created', 'creating a new user failed' );
+		$substrings    = array( 'new user created', 'new user was created', 'creating a new user failed' );
 
 		return self::substring_exists( $substrings, $error_message );
 	}
@@ -1138,12 +1139,15 @@ class Automator_Recipe_Process_Complete {
 	 * @param null $user_id
 	 * @param null $recipe_log_id
 	 * @param array $args
+	 * @param array|null $recipe_closure_data Pre-fetched closure data to avoid redundant DB query.
 	 *
 	 * @return bool
 	 */
-	public function closures( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array() ) {
+	public function closures( $recipe_id = null, $user_id = null, $recipe_log_id = null, $args = array(), $recipe_closure_data = null ) {
 
-		$recipe_closure_data = Automator()->get_recipe_data( 'uo-closure', $recipe_id );
+		if ( null === $recipe_closure_data ) {
+			$recipe_closure_data = Automator()->get_recipe_data( AUTOMATOR_POST_TYPE_CLOSURE, $recipe_id, array(), true );
+		}
 
 		$log_args = array();
 
@@ -1275,7 +1279,7 @@ class Automator_Recipe_Process_Complete {
 
 		global $wpdb;
 
-		if ( ! empty( $wpdb->get_row( $wpdb->prepare( "SELECT recipe_id FROM {$wpdb->prefix}uap_recipe_count WHERE recipe_id = %d", $recipe_id ) ) ) ) {
+		if ( null !== $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM {$wpdb->prefix}uap_recipe_count WHERE recipe_id = %d LIMIT 1", $recipe_id ) ) ) {
 			return;
 		}
 

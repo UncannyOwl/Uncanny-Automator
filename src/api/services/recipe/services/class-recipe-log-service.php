@@ -187,19 +187,26 @@ class Recipe_Log_Service {
 	/**
 	 * Build detailed log response.
 	 *
+	 * Unwraps the legacy endpoint's `{success, data}` envelope and returns the
+	 * log fields directly. The outer response envelope is the caller's concern.
+	 *
+	 * Also strips admin URLs that embed WordPress nonces — a machine API has no
+	 * use for session-bound URLs, and emitting them needlessly widens surface area.
+	 *
 	 * @param array $detailed_log Log data from endpoint.
-	 * @return array Formatted response or error.
+	 * @return array|\WP_Error Flat log data or error.
 	 */
 	public function build_detailed_log_response( array $detailed_log ) {
-		if ( ! empty( $detailed_log['success'] ) ) {
-			return array(
-				'success' => true,
-				'message' => 'Detailed recipe log retrieved successfully',
-				'log'     => $detailed_log,
-			);
-		} else {
+
+		if ( empty( $detailed_log['success'] ) ) {
 			return $this->formatter->error_response( 'recipe_log_not_found', $detailed_log['error']['message'] ?? 'Log not found' );
 		}
+
+		$data = $detailed_log['data'] ?? array();
+
+		unset( $data['log_delete_url'], $data['recipe_edit_url'] );
+
+		return $data;
 	}
 
 	/**

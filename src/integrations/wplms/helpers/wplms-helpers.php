@@ -54,10 +54,6 @@ class Wplms_Helpers {
 	 * @return mixed
 	 */
 	public function all_wplms_quizs( $label = null, $option_code = 'WPLMS_QUIZ', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Quiz', 'uncanny-automator' );
@@ -102,10 +98,6 @@ class Wplms_Helpers {
 	 * @return mixed
 	 */
 	public function all_wplms_courses( $label = null, $option_code = 'WPLMS_COURSE', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Course', 'uncanny-automator' );
@@ -149,10 +141,6 @@ class Wplms_Helpers {
 	 * @return mixed
 	 */
 	public function all_wplms_units( $label = null, $option_code = 'WPLMS_UNIT', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_attr__( 'Unit', 'uncanny-automator' );

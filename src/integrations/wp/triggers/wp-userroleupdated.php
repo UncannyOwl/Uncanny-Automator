@@ -86,6 +86,14 @@ class WP_USERROLEUPDATED {
 	 */
 	public function set_user_role( $user_id, $role, $old_roles ) {
 
+		// Bail if the role was already assigned to the user. wp_update_user() re-applies
+		// the existing role on every profile save, which would re-fire this trigger.
+		// This check works regardless of how many roles the user holds: if the role
+		// being set was already one of their roles, no genuine transition occurred.
+		if ( in_array( $role, (array) $old_roles, true ) ) {
+			return;
+		}
+
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_user_role = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
 

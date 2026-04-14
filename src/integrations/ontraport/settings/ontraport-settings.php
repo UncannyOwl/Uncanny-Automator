@@ -7,310 +7,178 @@
 
 namespace Uncanny_Automator\Integrations\Ontraport;
 
+use Uncanny_Automator\Settings\App_Integration_Settings;
 use Exception;
 
 /**
  * Ontraport_Settings
+ *
+ * @property Ontraport_App_Helpers $helpers
+ * @property Ontraport_Api_Caller $api
  */
-class Ontraport_Settings extends \Uncanny_Automator\Settings\Premium_Integration_Settings {
-
+class Ontraport_Settings extends App_Integration_Settings {
 
 	/**
-	 * Is Account Connected.
+	 * The temporary option key for the API key.
 	 *
-	 * @var bool $is_account_connected
-	 */
-	protected $is_account_connected;
-
-	/**
-	 * Disconnect URL.
-	 *
-	 * @var string $disconnect_url
-	 */
-	protected $disconnect_url;
-
-	/**
 	 * @var string
 	 */
 	const OPT_API_KEY = 'automator_ontraport_api_key';
 
 	/**
+	 * The temporary option key for the App ID.
+	 *
 	 * @var string
 	 */
 	const OPT_APP_ID_KEY = 'automator_ontraport_app_id';
 
-	/**
-	 * Integration status.
-	 *
-	 * @return string - 'success' or empty string
-	 */
-	public function get_status() {
-
-		return true === $this->helpers->integration_status() ? 'success' : '';
-	}
+	////////////////////////////////////////////////////////////
+	// Abstract Methods
+	////////////////////////////////////////////////////////////
 
 	/**
-	 * Sets up the properties of the settings page
+	 * Register disconnected options.
 	 *
 	 * @return void
 	 */
-	public function set_properties() {
-
-		$this->set_id( 'ontraport' );
-		$this->set_icon( 'ONTRAPORT' );
-		$this->set_name( 'Ontraport' );
+	protected function register_disconnected_options() {
 		$this->register_option( self::OPT_API_KEY );
 		$this->register_option( self::OPT_APP_ID_KEY );
-
-		if ( automator_filter_has_var( 'error_message' ) ) {
-			$this->display_errors( automator_filter_input( 'error_message' ) );
-		}
 	}
 
 	/**
-	 * Updates the Ontraport settings and checks the API credentials.
+	 * Get formatted account information for connected user info display.
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public function settings_updated() {
+	protected function get_formatted_account_info() {
 
-		$api_key = automator_get_option( self::OPT_API_KEY, false );
-		$app_id  = automator_get_option( self::OPT_APP_ID_KEY, false );
+		$credentials = $this->helpers->get_credentials();
 
-		$validated = $this->helpers->check_credentials( $api_key, $app_id );
-
-		if ( is_wp_error( $validated ) ) {
-
-			Ontraport_Helpers::remove_credentials();
-
-			$this->add_alert(
-				array(
-					'type'    => 'error',
-					'heading' => _x( 'API credentials incorrect', 'Ontraport', 'uncanny-automator' ),
-					'content' => $validated->get_error_message(),
-				)
-			);
-
-			return;
-		}
-
-		automator_update_option( Ontraport_Helpers::CREDENTIALS_KEY, time() );
-
-		$this->add_alert(
-			array(
-				'type'    => 'success',
-				'heading' => _x( 'Connection established', 'Ontraport', 'uncanny-automator' ),
-				'content' => _x( 'You are successfully connected.', 'Ontraport', 'uncanny-automator' ),
-			)
-		);
-
-		return;
-	}
-
-	/**
-	 * Display errors.
-	 *
-	 * @param mixed $error_message
-	 * @return void
-	 */
-	public function display_errors( $error_message ) {
-		$this->add_alert(
-			array(
-				'type'    => 'error',
-				'heading' => _x( 'An error exception has occured', 'Ontraport', 'uncanny-automator' ),
-				'content' => $error_message,
-			)
+		return array(
+			'avatar_type'  => 'icon',
+			'avatar_value' => 'ONTRAPORT',
+			'main_info'    => esc_html_x( 'Ontraport account', 'Ontraport', 'uncanny-automator' ),
+			'additional'   => sprintf(
+				// translators: %s: Ontraport APP ID
+				esc_html_x( 'APP ID: %s', 'Ontraport', 'uncanny-automator' ),
+				esc_html( $credentials['id'] )
+			),
 		);
 	}
 
 	/**
+	 * Authorize account after settings have been validated and saved.
+	 *
+	 * @param array $response The current response array for REST.
+	 * @param array $options  The stored option data.
+	 *
+	 * @return array
+	 * @throws Exception If authorization fails.
+	 */
+	protected function authorize_account( $response = array(), $options = array() ) {
+
+		// Store credentials first so send_request may verify and use them.
+		$this->helpers->store_credentials(
+			array(
+				'key' => $options[ self::OPT_API_KEY ] ?? '',
+				'id'  => $options[ self::OPT_APP_ID_KEY ] ?? '',
+			)
+		);
+
+		try {
+			// Verify credentials with the proxy server.
+			$check_response = $this->api->send_request( 'check_credentials' );
+			$result         = strtolower( $check_response['data']['result'] ?? '' );
+
+			if ( false !== strpos( $result, 'do not authenticate' ) ) {
+				throw new Exception( esc_html_x( 'Please double-check your API Key and App ID', 'Ontraport', 'uncanny-automator' ) );
+			}
+
+			// Delete the individual options now that credentials are consolidated and verified.
+			automator_delete_option( self::OPT_API_KEY );
+			automator_delete_option( self::OPT_APP_ID_KEY );
+
+			// Register a success alert.
+			$this->register_connected_alert();
+
+		} catch ( Exception $e ) {
+			// Clean up stored credentials on failure.
+			$this->helpers->delete_credentials();
+			throw $e;
+		}
+
+		return $response;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Templating Methods
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Output main disconnected content.
+	 *
 	 * @return void
-	 * @throws Exception
 	 */
-	public function output_panel() {
-		// Account connected.
-		$this->is_account_connected = ! empty( Ontraport_Helpers::get_credentials() );
+	public function output_main_disconnected_content() {
 
-		?>
-		<div class="uap-settings-panel">
-			<div class="uap-settings-panel-top">
-				<?php $this->output_panel_top(); ?>
-				<?php $this->display_alerts(); ?>
-				<div class="uap-settings-panel-content">
-					<?php $this->output_panel_content(); ?>
-				</div>
-			</div>
-			<div class="uap-settings-panel-bottom">
-				<?php $this->output_panel_bottom(); ?>
-			</div>
-		</div>
-		<?php
-	}
+		// Output the standard disconnected integration header with description.
+		$this->output_disconnected_header(
+			esc_html_x( 'Integrate Uncanny Automator with Ontraport to elevate workflow automation and turbocharge productivity for businesses. Seamlessly connecting these platforms empowers users to effortlessly transfer data and ignite actions, slashing manual tasks and boosting efficiency.', 'Ontraport', 'uncanny-automator' )
+		);
 
-	/**
-	 * Main panel content.
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_content() {
+		// Output available recipe items (actions list).
+		$this->output_available_items();
 
-		// Disconnect URL.
-		$this->disconnect_url = Ontraport_Helpers::get_disconnect_url();
+		// Output setup instructions.
+		$this->output_setup_instructions(
+			esc_html_x( 'To connect your Ontraport account, follow these steps:', 'Ontraport', 'uncanny-automator' ),
+			array(
+				sprintf(
+					// translators: %1$s: link to Ontraport support article, %2$s: opening strong tag, %3$s: closing strong tag.
+					esc_html_x( 'Visit the %1$s to learn how to obtain your %2$sAPI Key%3$s and %2$sApp ID%3$s', 'Ontraport', 'uncanny-automator' ),
+					$this->get_escaped_link(
+						'https://ontraport.com/support/integrations/obtain-ontraport-api-key-and-app-id/',
+						esc_html_x( 'Ontraport support article', 'Ontraport', 'uncanny-automator' )
+					),
+					'<strong>',
+					'</strong>'
+				),
+				sprintf(
+					// translators: %1$s: opening strong tag, %2$s: closing strong tag.
+					esc_html_x( 'Copy and paste the acquired %1$sAPI Key%2$s and %1$sApp ID%2$s into the designated fields below.', 'Ontraport', 'uncanny-automator' ),
+					'<strong>',
+					'</strong>'
+				),
+				sprintf(
+					// translators: %1$s: opening strong tag, %2$s: closing strong tag.
+					esc_html_x( 'Click the %1$sConnect Ontraport account%2$s button to proceed.', 'Ontraport', 'uncanny-automator' ),
+					'<strong>',
+					'</strong>'
+				),
+			)
+		);
 
-		?>
-		<?php if ( ! $this->is_account_connected ) { ?>
+		// Show App ID field.
+		$this->text_input_html(
+			array(
+				'id'       => self::OPT_APP_ID_KEY,
+				'value'    => automator_get_option( self::OPT_APP_ID_KEY, '' ),
+				'label'    => esc_html_x( 'App ID', 'Ontraport', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
 
-			<div class="uap-settings-panel-content-subtitle">
-				<?php echo esc_html_x( 'Connect Uncanny Automator to Ontraport', 'Ontraport', 'uncanny-automator' ); ?>
-			</div>
-
-			<div class="uap-settings-panel-content-paragraph uap-settings-panel-content-paragraph--subtle">
-				<?php echo esc_html_x( 'Integrate Uncanny Automator with Ontraport to elevate workflow automation and turbocharge productivity for businesses. Seamlessly connecting these platforms empowers users to effortlessly transfer data and ignite actions, slashing manual tasks and boosting efficiency.', 'Ontraport', 'uncanny-automator' ); ?>
-			</div>
-
-			<p>
-				<strong>
-					<?php echo esc_html_x( 'Activating this integration will enable the following for use in your recipes:', 'Ontraport', 'uncanny-automator' ); ?>
-				</strong>
-			</p>
-
-			<ul>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
-						<?php echo esc_html_x( 'Add a tag to a contact', 'Ontraport', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
-						<?php echo esc_html_x( 'Create a tag', 'Ontraport', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
-						<?php echo esc_html_x( 'Create or update a contact', 'Ontraport', 'uncanny-automator' ); ?>
-				</li>
-				<li>
-					<uo-icon id="bolt"></uo-icon> <strong>
-						<?php esc_html_e( 'Action:', 'uncanny-automator' ); ?></strong>
-						<?php echo esc_html_x( 'Delete a contact', 'Ontraport', 'uncanny-automator' ); ?>
-				</li>
-			</ul>
-			<hr/>
-			<h5 style="margin-top: 10px;"><?php echo esc_html_x( 'Setup instructions', 'Ontraport', 'uncanny-automator' ); ?></h5>
-			<h5 style="margin-top: 10px;">
-				<small>
-					<?php echo esc_html_x( 'Part 1: Obtaining Your API Key and App ID', 'Ontraport', 'uncanny-automator' ); ?>
-				</small>
-			</h5>
-			<p>
-				<a href="https://ontraport.com/support/integrations/obtain-ontraport-api-key-and-app-id/" target="_blank">
-					<?php echo esc_html_x( 'Find out how to obtain your own Ontraport API Key and App ID', 'Ontraport', 'uncanny-automator' ); ?>
-				</a>
-			</p>
-			<h5 style="margin-top: 10px;">
-				<small>
-					<?php echo esc_html_x( 'Part 2: Completing the Form', 'Ontraport', 'uncanny-automator' ); ?>
-				</small>
-			</h5>
-			<p>
-				<ol>
-					<li>
-						<?php echo esc_html_x( 'Copy and paste the acquired API Key and App ID into the designated fields below.', 'Ontraport', 'uncanny-automator' ); ?>
-					</li>
-					<li>
-						<?php echo esc_html_x( 'Click the "Connect Ontraport Account" button to proceed.', 'Ontraport', 'uncanny-automator' ); ?>
-					</li>
-				</ol>
-			</p>
-			<p>
-				<uo-text-field
-					id="automator_ontraport_app_id"
-					value="<?php echo esc_attr( automator_get_option( self::OPT_APP_ID_KEY, '' ) ); ?>"
-					label="<?php echo esc_attr_x( 'App ID', 'Ontraport', 'uncanny-automator' ); ?>"
-					required
-					class="uap-spacing-top"
-				></uo-text-field>
-
-				<uo-text-field
-					id="automator_ontraport_api_key"
-					value="<?php echo esc_attr( automator_get_option( self::OPT_API_KEY, '' ) ); ?>"
-					label="<?php echo esc_attr_x( 'API Key', 'Ontraport', 'uncanny-automator' ); ?>"
-					required
-					class="uap-spacing-top"
-				></uo-text-field>
-
-			</p>
-
-		<?php } else { ?>
-
-			<uo-alert heading="<?php echo esc_attr_x( 'Uncanny Automator only supports connecting to one Ontraport account at a time.', 'Ontraport', 'uncanny-automator' ); ?>" class="uap-spacing-bottom"></uo-alert>
-
-			<?php
-		}
-	}
-
-	/**
-	 * Bottom left panel content.
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_bottom_left() {
-
-		// Show the connect message if not connected.
-		if ( ! $this->is_account_connected ) {
-			?>
-			<uo-button type="submit">
-				<?php echo esc_html_x( 'Connect Ontraport account', 'Ontraport', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
-		} else {
-			// Show Account details & connection status
-			?>
-
-			<div class="uap-settings-panel-user">
-
-				<div class="uap-settings-panel-user__avatar">
-					<uo-icon integration="ONTRAPORT"></uo-icon>
-				</div>
-
-				<div class="uap-settings-panel-user-info">
-					<div class="uap-settings-panel-user-info__main">
-						<?php echo esc_html_x( 'Ontraport account', 'Ontraport', 'uncanny-automator' ); ?>
-					</div>
-
-					<div class="uap-settings-panel-user-info__additional">
-						<?php
-						printf(
-						/* translators: %s: Ontraport APP ID */
-							esc_html_x( 'APP ID: %s', 'Ontraport', 'uncanny-automator' ),
-							esc_html( automator_get_option( self::OPT_APP_ID_KEY, '' ) )
-						);
-						?>
-					</div>
-				</div>
-			</div>
-
-			<?php
-		}
-	}
-
-	/**
-	 * Bottom right panel content.
-	 *
-	 * @return string - HTML
-	 */
-	public function output_panel_bottom_right() {
-
-		if ( $this->is_account_connected ) {
-			?>
-			<uo-button color="danger" href="<?php echo esc_url( $this->disconnect_url ); ?>">
-				<uo-icon id="right-from-bracket"></uo-icon>
-				<?php esc_html_e( 'Disconnect', 'uncanny-automator' ); ?>
-			</uo-button>
-			<?php
-
-		}
+		// Show API Key field.
+		$this->text_input_html(
+			array(
+				'id'       => self::OPT_API_KEY,
+				'value'    => automator_get_option( self::OPT_API_KEY, '' ),
+				'label'    => esc_html_x( 'API Key', 'Ontraport', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
 	}
 }

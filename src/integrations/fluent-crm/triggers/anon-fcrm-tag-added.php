@@ -65,7 +65,6 @@ class ANON_FCRM_TAG_ADDED {
 		);
 
 		Automator()->register->trigger( $trigger );
-
 	}
 
 	/**
@@ -75,7 +74,7 @@ class ANON_FCRM_TAG_ADDED {
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->trigger_meta ),
+					Automator()->helpers->recipe->fluent_crm->options->fluent_crm_tags( null, $this->trigger_meta, array( 'is_any' => true ) ),
 				),
 			)
 		);
@@ -143,7 +142,5 @@ class ANON_FCRM_TAG_ADDED {
 				}// endif.
 			}//endfor.
 		}// endif.
-
 	}
-
 }

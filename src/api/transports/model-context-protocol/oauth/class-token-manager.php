@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\OAuth;
 
+use Uncanny_Automator\Api\Components\Shared\Polyfill\Str;
+
 /**
  * Token Manager.
  *
@@ -170,7 +172,7 @@ class Token_Manager {
 	 * @return array|false Token data on success, false on failure.
 	 */
 	public function validate_token( $token ) {
-		if ( empty( $token ) || ! str_starts_with( $token, self::TOKEN_PREFIX ) ) {
+		if ( empty( $token ) || ! Str::starts_with( $token, self::TOKEN_PREFIX ) ) {
 			return false;
 		}
 

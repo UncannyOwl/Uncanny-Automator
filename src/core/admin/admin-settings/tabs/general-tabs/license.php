@@ -103,7 +103,7 @@ class Admin_Settings_General_License {
 				// Get the URL to connect the site
 				$connect_site_url = add_query_arg(
 					array(
-						'post_type' => 'uo-recipe',
+						'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 						'page'      => 'uncanny-automator-setup-wizard',
 					),
 					admin_url( 'edit.php' )

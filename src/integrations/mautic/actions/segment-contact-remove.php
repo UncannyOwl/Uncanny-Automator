@@ -1,25 +1,31 @@
 <?php
+
 namespace Uncanny_Automator\Integrations\Mautic;
 
-use Uncanny_Automator\Api_Server;
-
 /**
+ * Removes a contact (identified by email) from a Mautic segment.
+ *
  * @since 5.0
+ *
+ * @property Mautic_App_Helpers $helpers
+ * @property Mautic_Api_Caller $api
  */
-class SEGMENT_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\Action {
+class SEGMENT_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
+	 * Configure the action code, meta key, sentence templates, action tokens, and user requirement.
+	 *
 	 * @return void
 	 */
 	protected function setup_action() {
-
-		$this->set_integration( Mautic_Integration::ID );
+		$this->set_integration( 'MAUTIC' );
 		$this->set_action_code( 'SEGMENT_CONTACT_REMOVE' );
 		$this->set_action_meta( 'SEGMENT_CONTACT_REMOVE_META' );
 		$this->set_requires_user( false );
+		$this->set_readable_sentence( esc_attr_x( 'Remove {{a contact}} from {{a segment}}', 'Mautic', 'uncanny-automator' ) );
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
+				// translators: %1$s is the contact option code, %2$s is the segment option code
 				esc_attr_x(
 					'Remove {{a contact:%1$s}} from {{a segment:%2$s}}',
 					'Mautic',
@@ -29,12 +35,11 @@ class SEGMENT_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\Action {
 				'SEGMENT:' . $this->get_action_meta()
 			)
 		);
-		$this->set_readable_sentence( esc_attr_x( 'Remove {{a contact}} from {{a segment}}', 'Mautic', 'uncanny-automator' ) );
 
 		$this->set_action_tokens(
 			array(
 				'SEGMENT_NAME' => array(
-					'name' => _x( 'Segment name', 'Mautic', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Segment name', 'Mautic', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
@@ -43,81 +48,48 @@ class SEGMENT_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\Action {
 	}
 
 	/**
-	 * @return mixed[]
+	 * Define the option fields for the action.
+	 *
+	 * @return array
 	 */
 	public function options() {
-
-		$email = array(
-			'option_code' => $this->get_action_meta(),
-			'input_type'  => 'email',
-			'label'       => _x( 'Email', 'Mautic', 'uncanny-automator' ),
-			'required'    => true,
-		);
-
-		$segment = array(
-			'option_code' => 'SEGMENT',
-			'input_type'  => 'select',
-			'label'       => _x( 'Segment', 'Mautic', 'uncanny-automator' ),
-			'token_name'  => _x( 'Segment ID', 'Mautic', 'uncanny-automator' ),
-			'required'    => true,
-			'ajax'        => array(
-				'endpoint' => 'automator_mautic_segment_fetch',
-				'event'    => 'on_load',
-			),
-		);
-
 		return array(
-			$email,
-			$segment,
+			$this->helpers->get_email_option_config( $this->get_action_meta() ),
+			$this->helpers->get_segment_option_config(),
 		);
 	}
 
 	/**
-	 * @param int $user_id
-	 * @param mixed[] $action_data
-	 * @param int $recipe_id
-	 * @param mixed[] $args
-	 * @param array{FIELDS:string,EMAIL:string} $parsed
+	 * Remove the contact from the specified Mautic segment via the API proxy.
+	 * Hydrates the SEGMENT_NAME action token on success.
 	 *
-	 * @throws \Exception
+	 * @param int     $user_id     The WordPress user ID.
+	 * @param mixed[] $action_data The action configuration data.
+	 * @param int     $recipe_id   The recipe ID.
+	 * @param mixed[] $args        Additional arguments including action_meta.
+	 * @param mixed[] $parsed      The parsed token values keyed by option code.
 	 *
-	 * @return bool True if the action is successful. Returns false, otherwise.
+	 * @return bool True on success.
+	 * @throws \Exception For invalid params, or if the API request fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$auth = new Mautic_Client_Auth( Api_Server::get_instance() );
+		$segment = $this->helpers->validate_segment( $parsed['SEGMENT'] ?? '' );
+		$email   = $this->helpers->validate_email( $parsed[ $this->get_action_meta() ] ?? '' );
 
-		$credentials = $auth->get_credentials();
-
-		$segment = ! empty( $parsed['SEGMENT'] ) ? absint( $parsed['SEGMENT'] ) : '';
-		$email   = ! empty( $parsed[ $this->get_action_meta() ] ) ? $parsed[ $this->get_action_meta() ] : '';
-
-		// Invalid email. Complete with error.
-		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new \Exception(
-				sprintf(
-				/* translators: %s: Email address */
-					esc_html__( 'Invalid email: "%s"', 'uncanny-automator' ),
-					esc_html( $email )
-				),
-				500
-			);
-		}
-
-		$auth->api_call(
+		$this->api->api_request(
 			array(
-				'action'      => 'segment_contact_remove',
-				'segment_id'  => $segment,
-				'contact'     => rawurlencode( $email ),
-				'credentials' => $credentials,
-			)
+				'action'     => 'segment_contact_remove',
+				'segment_id' => $segment,
+				'contact'    => rawurlencode( $email ),
+			),
+			$action_data
 		);
 
 		$this->hydrate_tokens(
 			array(
 				'SEGMENT_NAME' => $args['action_meta']['SEGMENT_readable'],
-			),
-			$action_data
+			)
 		);
 
 		return true;

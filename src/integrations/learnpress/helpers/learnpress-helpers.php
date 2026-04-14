@@ -78,10 +78,6 @@ class Learnpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_lp_courses( $label = null, $option_code = 'LPCOURSE', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_html_x( 'Course', 'Learnpress', 'uncanny-automator' );
@@ -123,10 +119,6 @@ class Learnpress_Helpers {
 	 * @return mixed
 	 */
 	public function all_lp_lessons( $label = null, $option_code = 'LPLESSON', $any_option = true ) {
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( ! $label ) {
 			$label = esc_html_x( 'Lesson', 'Learnpress', 'uncanny-automator' );

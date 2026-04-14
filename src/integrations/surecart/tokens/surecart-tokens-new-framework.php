@@ -73,7 +73,7 @@ class SureCart_Tokens_New_Framework {
 			}
 			// Fallback to WordPress gallery IDs from metadata
 			elseif ( isset( $fresh_product->metadata->gallery_ids ) && ! empty( $fresh_product->metadata->gallery_ids ) ) {
-				$gallery_ids = json_decode( $fresh_product->metadata->gallery_ids, true );
+				$gallery_ids = is_array( $fresh_product->metadata->gallery_ids ) ? $fresh_product->metadata->gallery_ids : json_decode( $fresh_product->metadata->gallery_ids, true );
 				if ( is_array( $gallery_ids ) && ! empty( $gallery_ids ) ) {
 					// Use the first gallery ID as the featured image
 					$wp_media_id       = $gallery_ids[0];
@@ -199,7 +199,7 @@ class SureCart_Tokens_New_Framework {
 			),
 			array(
 				'tokenId'   => 'PAYMENT_METHOD',
-				'tokenName' => esc_html_x( 'Payment metho', 'Surecart', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Payment method', 'Surecart', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 			array(
@@ -439,7 +439,7 @@ class SureCart_Tokens_New_Framework {
 
 		$shipping_tokens = $this->hydrate_shipping_tokens( $parsed, $purchase_data );
 		$tokens          = array_merge( $tokens, $shipping_tokens );
-		$billing_tokens  = $this->hydrate_billing_tokens( $parsed, $purchase_data );
+		$billing_tokens  = $this->hydrate_billing_tokens( $chekout );
 		$tokens          = array_merge( $tokens, $billing_tokens );
 
 		return apply_filters( 'automator_surecart_hydrate_product_tokens_v2', $tokens, $purchase );
@@ -641,7 +641,7 @@ class SureCart_Tokens_New_Framework {
 			$interval = $this->get_interval_string( $price->recurring_interval, $price->recurring_interval_count );
 
 			// translators: 1. recurring count 2. recurring interval.
-			$amount .= sprintf( esc_html_x( 'every %1$d %2$s', 'Surecart', 'uncanny-automator' ), $price->recurring_interval_count, $interval );
+			$amount .= ' ' . sprintf( esc_html_x( 'every %1$d %2$s', 'Surecart', 'uncanny-automator' ), $price->recurring_interval_count, $interval );
 		}
 
 		if ( ! empty( $price->recurring_period_count ) ) {

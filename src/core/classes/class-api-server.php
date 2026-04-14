@@ -88,12 +88,12 @@ class Api_Server {
 	/**
 	 * get_instance
 	 *
-	 * @return Api_server
+	 * @return Api_Server
 	 */
 	public static function get_instance() {
 
 		if ( null === self::$instance ) {
-			self::set_instance( new Api_server() );
+			self::set_instance( new Api_Server() );
 		}
 
 		return self::$instance;

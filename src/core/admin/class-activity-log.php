@@ -33,9 +33,7 @@ class Activity_Log {
 	public function __construct() {
 
 		add_action( 'wp_ajax_recipe-triggers', array( $this, 'load_recipe_triggers' ), 50 );
-		add_action( 'wp_ajax_nopriv_recipe-triggers', array( $this, 'load_recipe_triggers' ), 50 );
 		add_action( 'wp_ajax_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
-		add_action( 'wp_ajax_nopriv_recipe-actions', array( $this, 'load_recipe_actions' ), 50 );
 		add_action( 'admin_head', array( $this, 'load_minimal_admin' ) );
 		add_action( 'admin_init', array( $this, 'close_window_on_load' ) );
 		// Remove all admin notices in recipe details log modal.
@@ -56,6 +54,10 @@ class Activity_Log {
 	public function remove_specific_run() {
 
 		if ( ! automator_filter_has_var( 'delete_specific_activity' ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 			return;
 		}
 
@@ -122,7 +124,7 @@ class Activity_Log {
 			exit;
 		}
 
-		wp_safe_redirect( sprintf( '%s?post_type=%s&page=%s&recipe_activity_run_success=1', admin_url( 'edit.php' ), 'uo-recipe', $page ) );
+		wp_safe_redirect( sprintf( '%s?post_type=%s&page=%s&recipe_activity_run_success=1', admin_url( 'edit.php' ), AUTOMATOR_POST_TYPE_RECIPE, $page ) );
 
 		exit;
 	}
@@ -134,6 +136,9 @@ class Activity_Log {
 	 */
 	public function remove_specific_recipe_runs() {
 		if ( ! automator_filter_has_var( 'clear_recipe_activity' ) ) {
+			return;
+		}
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 			return;
 		}
 		if ( ! automator_filter_has_var( 'wpnonce' ) ) {
@@ -151,7 +156,7 @@ class Activity_Log {
 		}
 		// clear logs
 		clear_recipe_logs( $recipe_id );
-		wp_safe_redirect( sprintf( '%s?post_type=%s&recipe_activity_clear_success=1', admin_url( 'edit.php' ), 'uo-recipe' ) );
+		wp_safe_redirect( sprintf( '%s?post_type=%s&recipe_activity_clear_success=1', admin_url( 'edit.php' ), AUTOMATOR_POST_TYPE_RECIPE ) );
 		exit;
 	}
 
@@ -195,7 +200,7 @@ class Activity_Log {
 	 * @return mixed
 	 */
 	public function add_delete_recipe_run_row( $actions, $post ) {
-		if ( 'uo-recipe' !== $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== $post->post_type ) {
 			return $actions;
 		}
 		$post_type_object = get_post_type_object( $post->post_type );
@@ -203,7 +208,7 @@ class Activity_Log {
 		if ( ! $can_edit_post ) {
 			return $actions;
 		}
-		$delete_url                         = sprintf( '%s?post_type=%s&recipe_id=%d&clear_recipe_activity=1&wpnonce=%s', admin_url( 'edit.php' ), 'uo-recipe', $post->ID, wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ) );
+		$delete_url                         = sprintf( '%s?post_type=%s&recipe_id=%d&clear_recipe_activity=1&wpnonce=%s', admin_url( 'edit.php' ), AUTOMATOR_POST_TYPE_RECIPE, $post->ID, wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ) );
 		$actions['clear_recipe_runs trash'] = sprintf( '<a href="%s" class="submitdelete" onclick="javascript: return confirm(\'%s\')">%s</a>', $delete_url, esc_attr__( 'Are you sure you want to delete all run data associated with this recipe? This will reset recipe runs to zero for all users, cancel any scheduled actions, and is irreversible.', 'uncanny-automator' ), esc_attr__( 'Clear activity logs', 'uncanny-automator' ) );
 
 		return $actions;
@@ -316,6 +321,11 @@ class Activity_Log {
 	 */
 	public function load_recipe_triggers() {
 		global $wpdb;
+
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
+			wp_send_json( array() );
+		}
+
 		check_ajax_referer( 'load-recipes-ref', 'ajax_nonce' );
 
 		$recipe_id     = absint( automator_filter_input( 'recipe_id', INPUT_POST ) );
@@ -331,11 +341,12 @@ class Activity_Log {
 
 		$triggers = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT DISTINCT (r.automator_trigger_id) AS id, p.post_title as trigger_title
+				"SELECT DISTINCT r.automator_trigger_id AS id, p.post_title as trigger_title
 FROM {$wpdb->prefix}uap_trigger_log r
-    JOIN $wpdb->posts p on p.ID = r.automator_trigger_id
+    JOIN $wpdb->posts p ON p.ID = r.automator_trigger_id AND p.post_type = %s
 WHERE r.automator_recipe_id = %d
 ORDER BY trigger_title ASC",
+				AUTOMATOR_POST_TYPE_TRIGGER,
 				$recipe_id
 			),
 			ARRAY_A
@@ -358,6 +369,11 @@ ORDER BY trigger_title ASC",
 	 */
 	public function load_recipe_actions() {
 		global $wpdb;
+
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
+			wp_send_json( array() );
+		}
+
 		check_ajax_referer( 'load-recipes-ref', 'ajax_nonce' );
 
 		$recipe_id     = absint( automator_filter_input( 'recipe_id', INPUT_POST ) );
@@ -372,12 +388,12 @@ ORDER BY trigger_title ASC",
 		}
 		$actions = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT
-    DISTINCT (r.automator_action_id) AS id, p.post_title AS action_title
+				"SELECT DISTINCT r.automator_action_id AS id, p.post_title AS action_title
 FROM {$wpdb->prefix}uap_action_log r
-    JOIN $wpdb->posts p ON p.ID = r.automator_action_id
+    JOIN $wpdb->posts p ON p.ID = r.automator_action_id AND p.post_type = %s
 WHERE r.automator_recipe_id = %d
 ORDER BY action_title",
+				AUTOMATOR_POST_TYPE_ACTION,
 				$recipe_id
 			),
 			ARRAY_A

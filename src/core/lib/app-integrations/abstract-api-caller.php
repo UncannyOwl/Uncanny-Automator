@@ -53,6 +53,15 @@ abstract class Api_Caller {
 	protected $credential_request_key = 'credentials';
 
 	/**
+	 * Default request timeout in seconds.
+	 * - When set, all api_request calls will include this timeout.
+	 * - Individual requests may still override via $args['include_timeout'].
+	 *
+	 * @var int|null
+	 */
+	protected $request_timeout = null;
+
+	/**
 	 * __construct
 	 *
 	 * @param  mixed $helpers
@@ -134,6 +143,26 @@ abstract class Api_Caller {
 	}
 
 	/**
+	 * Get the default request timeout.
+	 *
+	 * @return int|null
+	 */
+	protected function get_request_timeout() {
+		return $this->request_timeout;
+	}
+
+	/**
+	 * Set the default request timeout in seconds.
+	 *
+	 * @param int|null $timeout The timeout in seconds, or null to disable.
+	 *
+	 * @return void
+	 */
+	protected function set_request_timeout( $timeout ) {
+		$this->request_timeout = $timeout;
+	}
+
+	/**
 	 * Set webhooks dependency.
 	 *
 	 * @param stdClass $dependencies The dependencies object.
@@ -170,7 +199,7 @@ abstract class Api_Caller {
 			array(
 				'exclude_credentials' => false,
 				'exclude_error_check' => false,
-				'include_timeout'     => null,
+				'include_timeout'     => $this->request_timeout,
 			)
 		);
 
@@ -275,7 +304,8 @@ abstract class Api_Caller {
 	 * @throws Exception If an error occurs
 	 */
 	public function check_for_errors( $response, $args = array() ) {
-		if ( isset( $response['statusCode'] ) && 400 === $response['statusCode'] ) {
+		$status = $response['statusCode'] ?? 0;
+		if ( $status >= 400 && $status < 500 ) {
 			$this->handle_400_error( $response, $args );
 		}
 	}

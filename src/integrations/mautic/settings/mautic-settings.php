@@ -1,147 +1,263 @@
 <?php
+
 namespace Uncanny_Automator\Integrations\Mautic;
 
-use Uncanny_Automator\Api_Server;
-use Uncanny_Automator\Settings\Premium_Integration_Settings;
+use Uncanny_Automator\Settings\App_Integration_Settings;
+use Exception;
 
 /**
+ * Renders the Mautic settings page in the Automator premium integrations tab.
+ *
+ * Manages the connection flow: displays credential input fields when disconnected,
+ * validates credentials via the API proxy, and shows connected account info when
+ * authenticated. Uses the App_Integration_Settings framework for templating and
+ * REST-based authorization.
+ *
  * @package Uncanny_Automator\Integrations\Mautic
+ *
+ * @property Mautic_App_Helpers $helpers
+ * @property Mautic_Api_Caller $api
  *
  * @since 5.0
  */
-class Mautic_Settings extends Premium_Integration_Settings {
+class Mautic_Settings extends App_Integration_Settings {
 
 	/**
-	 * @var Mautic_Client_Auth
-	 */
-	protected $client_auth = null;
-
-	/**
+	 * Temporary option key for Base URL.
+	 *
 	 * @var string
 	 */
-	const SETTINGS_ERROR = 'automator_mautic_connection_alerts';
+	const BASE_URL_KEY = 'automator_mautic_base_url';
 
 	/**
-	 * @param Mautic_Client_Auth $client_auth
+	 * Temporary option key for Username.
 	 *
-	 * @return self
+	 * @var string
 	 */
-	public function set_client_auth( Mautic_Client_Auth $client_auth ) {
+	const USERNAME_KEY = 'automator_mautic_username';
 
-		$this->client_auth = $client_auth;
+	/**
+	 * Temporary option key for Password.
+	 *
+	 * @var string
+	 */
+	const PASSWORD_KEY = 'automator_mautic_password';
 
-		return $this;
+	////////////////////////////////////////////////////////////
+	// Required abstract methods
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Retrieve and format the connected Mautic account info for the settings UI.
+	 *
+	 * @return array{avatar_type: string, avatar_value?: string, main_info: string, additional?: string}
+	 */
+	protected function get_formatted_account_info() {
+
+		$account_info = $this->helpers->get_account_info();
+		$account_info = (array) json_decode( $account_info, true );
+
+		$username = $account_info['username'] ?? '';
+		$email    = $account_info['email'] ?? '';
+
+		return array(
+			'avatar_type'  => 'text',
+			'avatar_value' => ! empty( $username ) ? substr( $username, 0, 1 ) : 'M',
+			'main_info'    => $username,
+			'additional'   => ! empty( $email ) ? sprintf(
+				// translators: %1$s is the email address
+				esc_html_x( 'Email: %1$s', 'Mautic', 'uncanny-automator' ),
+				esc_html( $email )
+			) : '',
+		);
 	}
 
-	/**
-	 * Returns the helper class.
-	 *
-	 * @return Mautic_Helpers The helper object.
-	 */
-	public function get_helper() {
-
-		return $this->helpers;
-
-	}
+	////////////////////////////////////////////////////////////
+	// Abstract method overrides
+	////////////////////////////////////////////////////////////
 
 	/**
-	 * Retrieves the integration status.
-	 *
-	 * @return string Returns 'success' if there is a agent. Returns empty string otherwise.
-	 */
-	public function get_status() {
-
-		$resource_owner = automator_get_option( 'automator_mautic_resource_owner', false );
-
-		return ! empty( $resource_owner ) ? 'success' : '';
-
-	}
-
-	/**
-	 * Basic settings page props.
+	 * Register the temporary options used to capture Base URL, Username,
+	 * and Password from the user before authorization. These are deleted
+	 * after successful connection.
 	 *
 	 * @return void
 	 */
-	public function set_properties() {
-
-		$this->set_id( 'mautic' );
-		$this->set_icon( 'MAUTIC' );
-		$this->set_name( 'Mautic' );
-
-		$this->register_option( 'automator_mautic_base_url' );
-		$this->register_option( 'automator_mautic_username' );
-		$this->register_option( 'automator_mautic_password' );
-		$this->register_option( 'automator_mautic_credentials' );
-
-		// Validate credentials.
-		$this->set_client_auth( new Mautic_Client_Auth( Api_Server::get_instance() ) );
-
-		add_filter( 'sanitize_option_automator_mautic_credentials', array( $this, 'validate_input' ), 40, 3 );
-
+	protected function register_disconnected_options() {
+		$this->register_option( self::BASE_URL_KEY );
+		$this->register_option( self::USERNAME_KEY );
+		$this->register_option( self::PASSWORD_KEY );
 	}
 
 	/**
-	 * @param string $sanitized_input
-	 * @param string $option_name
-	 * @param string $original_input
+	 * Authorize the Mautic account using the submitted credentials.
 	 *
-	 * @return string|false
+	 * Reads the Base URL, Username, and Password from the stored temp options,
+	 * validates them against the Mautic API via the proxy, and on success stores
+	 * both the credentials and the resource owner account info. Temporary options
+	 * are cleaned up after a successful connection.
+	 *
+	 * @param array $response The current REST response array.
+	 * @param array $options  The stored option data keyed by option name.
+	 *
+	 * @throws Exception If required fields are missing.
+	 *
+	 * @return array The (potentially modified) REST response array.
 	 */
-	public function validate_input( $sanitized_input, $option_name, $original_input ) {
+	protected function authorize_account( $response = array(), $options = array() ) {
 
-		return $this->client_auth->validate_credentials( $sanitized_input, $option_name, $original_input );
+		$base_url = $options[ self::BASE_URL_KEY ] ?? '';
+		$username = $options[ self::USERNAME_KEY ] ?? '';
+		$password = $options[ self::PASSWORD_KEY ] ?? '';
 
-	}
+		if ( empty( $base_url ) || empty( $username ) || empty( $password ) ) {
+			throw new Exception( esc_html_x( 'Please enter your Base URL, Username, and Password.', 'Mautic', 'uncanny-automator' ) );
+		}
 
-	/**
-	 * @return string
-	 */
-	public function disconnect_url() {
-
-		return add_query_arg(
+		// Build credentials as a JSON string — the same format used by the
+		// API proxy and stored in the database throughout the integration.
+		$credentials = wp_json_encode(
 			array(
-				'nonce'  => wp_create_nonce( 'mautic-disconnect' ),
-				'action' => 'automator_mautic_disconnect_client',
-			),
-			admin_url( 'admin-ajax.php' )
+				'baseUrl'      => esc_url_raw( rtrim( $base_url, '/' ) ),
+				'userName'     => $username,
+				'userPassword' => $password,
+			)
 		);
 
+		// Store consolidated credentials.
+		$this->helpers->store_credentials( $credentials );
+
+		try {
+			// Validate credentials by calling the API.
+			$api_response = $this->api->api_request( 'validate_credentials' );
+			$account_info = $api_response['data'] ?? array();
+
+			if ( empty( $account_info ) ) {
+				throw new Exception( esc_html_x( 'Unable to retrieve account information. Please verify your credentials and try again.', 'Mautic', 'uncanny-automator' ) );
+			}
+
+			// Store account info as a JSON string (legacy format).
+			$this->helpers->store_account_info( wp_json_encode( $account_info ) );
+
+			// Delete temporary options.
+			automator_delete_option( self::BASE_URL_KEY );
+			automator_delete_option( self::USERNAME_KEY );
+			automator_delete_option( self::PASSWORD_KEY );
+
+			// Register a success alert.
+			$this->register_connected_alert();
+
+		} catch ( Exception $e ) {
+			// Connection failed — remove credentials and show the error.
+			$this->helpers->delete_credentials();
+			$this->helpers->delete_account_info();
+			$this->register_error_alert( $e->getMessage() );
+			$response['success'] = false;
+		}
+
+		return $response;
 	}
 
 	/**
-	 * Creates the output of the settings page
+	 * After disconnect — delete all cached option data for this integration.
 	 *
-	 * @return void.
+	 * @param array $response The current response array.
+	 * @param array $data The posted data.
+	 *
+	 * @return array
 	 */
-	public function output() {
-
-		$this->load_js( '/mautic/settings/scripts/settings.js' );
-
-		$resource_owner = automator_get_option( 'automator_mautic_resource_owner', false );
-
-		$vars = array(
-			'alerts'         => (array) get_settings_errors( self::SETTINGS_ERROR ),
-			'disconnect_url' => $this->disconnect_url(),
-			'is_connected'   => ! empty( $resource_owner ),
-			'resource_owner' => ! empty( $resource_owner ) ? json_decode( $resource_owner, true ) : false,
-			'fields'         => array(
-				'base_url'    => automator_get_option( 'automator_mautic_base_url', '' ),
-				'username'    => automator_get_option( 'automator_mautic_username', '' ),
-				'password'    => automator_get_option( 'automator_mautic_password', '' ),
-				'credentials' => automator_get_option( 'automator_mautic_credentials', '' ),
-			),
-		);
-
-		// Actions.
-		$vars['actions'] = array(
-			_x( 'Create or update a contact', 'Mautic', 'uncanny-automator' ),
-			_x( 'Create a segment', 'Mautic', 'uncanny-automator' ),
-			_x( 'Add a contact to a segment', 'Mautic', 'uncanny-automator' ),
-			_x( 'Remove a contact from a segment', 'Mautic', 'uncanny-automator' ),
-		);
-
-		include_once 'mautic-settings-view.php';
-
+	protected function after_disconnect( $response = array(), $data = array() ) {
+		$this->delete_option_data( $this->helpers->get_option_prefix() );
+		return $response;
 	}
 
+	////////////////////////////////////////////////////////////////////
+	// Template method overrides
+	////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Render the settings page content shown when Mautic is not connected.
+	 *
+	 * Outputs a header with description, the list of available actions,
+	 * setup instructions, and three credential input fields (Base URL,
+	 * Username, Password).
+	 *
+	 * @return void
+	 */
+	public function output_main_disconnected_content() {
+
+		// Output the standard disconnected integration header.
+		$this->output_disconnected_header(
+			esc_html_x( "Connect Uncanny Automator to Mautic to create or update contacts, manage segments, and more. With this integration, it's easy to automate your Mautic workflows from WordPress.", 'Mautic', 'uncanny-automator' )
+		);
+
+		// Automatically generated list of available triggers and actions.
+		$this->output_available_items();
+
+		// Output setup instructions.
+		$this->output_setup_instructions(
+			esc_html_x( 'To connect your Mautic account, follow these steps:', 'Mautic', 'uncanny-automator' ),
+			array(
+				esc_html_x( 'Enter the Base URL of your Mautic installation (e.g. https://yourdomain.com).', 'Mautic', 'uncanny-automator' ),
+				esc_html_x( 'Enter the username and password you use to log into your Mautic admin panel.', 'Mautic', 'uncanny-automator' ),
+				sprintf(
+					/* translators: %1$s Opening strong tag, %2$s Closing strong tag */
+					esc_html_x( 'Click the %1$sConnect Mautic account%2$s button to enable the integration.', 'Mautic', 'uncanny-automator' ),
+					'<strong>',
+					'</strong>'
+				),
+				sprintf(
+					/* translators: %1$s Opening strong tag, %2$s Closing strong tag */
+					esc_html_x( 'If you have trouble connecting, verify that the API and HTTP basic auth are enabled in your Mautic instance under %1$sSettings > Configuration > API Settings%2$s.', 'Mautic', 'uncanny-automator' ),
+					'<strong>',
+					'</strong>'
+				),
+			)
+		);
+
+		// Base URL field.
+		$this->text_input_html(
+			array(
+				'id'          => self::BASE_URL_KEY,
+				'value'       => esc_attr( automator_get_option( self::BASE_URL_KEY, '' ) ),
+				'label'       => esc_attr_x( 'Base URL', 'Mautic', 'uncanny-automator' ),
+				'placeholder' => esc_attr_x( 'https://yourdomain.com', 'Mautic', 'uncanny-automator' ),
+				'required'    => true,
+				'class'       => 'uap-spacing-top',
+			)
+		);
+
+		// Username field.
+		$this->text_input_html(
+			array(
+				'id'       => self::USERNAME_KEY,
+				'value'    => esc_attr( automator_get_option( self::USERNAME_KEY, '' ) ),
+				'label'    => esc_attr_x( 'Username', 'Mautic', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
+
+		// Password field.
+		$this->text_input_html(
+			array(
+				'id'       => self::PASSWORD_KEY,
+				'value'    => esc_attr( automator_get_option( self::PASSWORD_KEY, '' ) ),
+				'label'    => esc_attr_x( 'Password', 'Mautic', 'uncanny-automator' ),
+				'required' => true,
+				'class'    => 'uap-spacing-top',
+			)
+		);
+	}
+
+	/**
+	 * Display - Main connected content
+	 *
+	 * @return void - Outputs HTML directly
+	 */
+	public function output_main_connected_content() {
+		$this->output_single_account_message(
+			esc_html_x( 'If you create recipes and then change the connected Mautic account, your previous recipes may no longer work.', 'Mautic', 'uncanny-automator' )
+		);
+	}
 }

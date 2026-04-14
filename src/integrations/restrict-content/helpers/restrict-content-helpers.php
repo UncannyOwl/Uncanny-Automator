@@ -53,10 +53,6 @@ class Restrict_Content_Helpers {
 	 */
 	public function get_membership_levels( $label = null, $option_code = null, $args = array() ) {
 
-		if ( ! $this->load_options ) {
-
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
 
 		if ( null === $label ) {
 			$label = esc_attr_x( 'Membership level', 'Restrict Content', 'uncanny-automator' );

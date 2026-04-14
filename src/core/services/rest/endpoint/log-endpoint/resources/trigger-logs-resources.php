@@ -105,7 +105,9 @@ class Trigger_Logs_Resources {
 			}
 
 			$trigger_runs[] = array(
-				'date'        => $utils::date_time_format( $result['trigger_run_time'] ),
+				'date'        => $utils::date_time_format_relative( $result['trigger_run_time'] ),
+				'date_full'   => $utils::date_time_format( $result['trigger_run_time'] ),
+				'_raw_date'   => $result['trigger_run_time'],
 				'used_credit' => $has_api_log,
 				'status_id'   => $status_id,
 				'properties'  => (array) $properties_items,
@@ -186,8 +188,12 @@ class Trigger_Logs_Resources {
 				)
 			);
 
-			$start_date = isset( $trigger_runs[0]['date'] ) ? $trigger_runs[0]['date'] : null;
-			$end_date   = isset( $trigger_runs_last['date'] ) ? $trigger_runs_last['date'] : null;
+			$start_date      = isset( $trigger_runs[0]['date'] ) ? $trigger_runs[0]['date'] : null;
+			$start_date_full = isset( $trigger_runs[0]['date_full'] ) ? $trigger_runs[0]['date_full'] : null;
+			$end_date        = isset( $trigger_runs_last['date'] ) ? $trigger_runs_last['date'] : null;
+			$end_date_full   = isset( $trigger_runs_last['date_full'] ) ? $trigger_runs_last['date_full'] : null;
+			$raw_start_date  = isset( $trigger_runs[0]['_raw_date'] ) ? $trigger_runs[0]['_raw_date'] : null;
+			$raw_end_date    = isset( $trigger_runs_last['_raw_date'] ) ? $trigger_runs_last['_raw_date'] : null;
 			// Retrieve the user ID from recipe log.
 			$user_id = apply_filters( 'automator_field_resolver_condition_result_user_id', null );
 
@@ -209,8 +215,12 @@ class Trigger_Logs_Resources {
 				'is_deleted'        => $is_deleted,
 				'status_id'         => $status_id,
 				'start_date'        => $start_date,
+				'start_date_full'   => $start_date_full,
 				'end_date'          => $end_date,
-				'date_elapsed'      => $utils::get_date_elapsed( $start_date, $end_date ),
+				'end_date_full'     => $end_date_full,
+				'date_elapsed'      => $utils::get_date_elapsed( $raw_start_date, $raw_end_date ),
+				'_raw_start_date'   => $raw_start_date,
+				'_raw_end_date'     => $raw_end_date,
 				'code'              => $trigger_meta['code'],
 				'title_html'        => htmlspecialchars( $this->resolve_trigger_title( $trigger_meta ), ENT_QUOTES ),
 				'title_custom_name' => sanitize_text_field( $trigger_meta[ \Uncanny_Automator\Global_Custom_Name_Field::FIELD_CODE ] ?? '' ),
@@ -294,7 +304,9 @@ class Trigger_Logs_Resources {
 					'is_deleted'       => null, // Trigger didn't even run yet.
 					'status_id'        => 'not-completed',
 					'start_date'       => null,
+					'start_date_full'  => null,
 					'end_date'         => null,
+					'end_date_full'    => null,
 					'code'             => isset( $trigger_meta['code'] ) ? $trigger_meta['code'] : 'NOT_FOUND',
 					'title_html'       => $this->resolve_trigger_title( $trigger_meta, absint( $recipe_trigger ) ),
 					'runs'             => array(),

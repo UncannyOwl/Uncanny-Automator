@@ -42,7 +42,7 @@ class Get_Component_Schema_Tool extends Abstract_MCP_Tool {
 	 * {@inheritDoc}
 	 */
 	public function get_description() {
-		return 'Get field schema for a trigger, action, or condition using code or instance ID. Shows required fields and defaults. After getting schema, use get_field_options for any fields with supports_custom_value: false.';
+		return 'Get field schema for a trigger, action, or condition using code or instance ID. Shows required fields and defaults. If a field has supports_custom_value: false, use get_field_options to resolve its dropdown choices.';
 	}
 
 	/**
@@ -73,6 +73,32 @@ class Get_Component_Schema_Tool extends Abstract_MCP_Tool {
 				),
 			),
 			'required'   => array( 'component_type' ),
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'component_type' => array( 'type' => 'string' ),
+				'component'      => array( 'type' => 'object' ),
+				'meta'           => array(
+					'type'       => 'object',
+					'properties' => array(
+						'source'           => array( 'type' => 'string' ),
+						'trigger_code'     => array( 'type' => 'string' ),
+						'trigger_id'       => array( 'type' => 'integer' ),
+						'action_code'      => array( 'type' => 'string' ),
+						'action_id'        => array( 'type' => 'integer' ),
+						'condition_code'   => array( 'type' => 'string' ),
+						'integration_code' => array( 'type' => 'string' ),
+					),
+				),
+			),
+			'required'   => array( 'component_type', 'component', 'meta' ),
 		);
 	}
 
@@ -177,7 +203,7 @@ class Get_Component_Schema_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'Trigger code is required when trigger_id is not supplied.' );
 		}
 
-		$result = Trigger_Registry_Service::get_instance()->get_trigger_definition( $code, true );
+		$result = Trigger_Registry_Service::instance()->get_trigger_definition( $code, true );
 
 		if ( is_wp_error( $result ) ) {
 			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
@@ -192,7 +218,7 @@ class Get_Component_Schema_Tool extends Abstract_MCP_Tool {
 				'required_tier'  => $definition['required_tier'] ?? 'lite',
 			);
 
-			$definition['availability'] = Trigger_Registry_Service::get_instance()->check_trigger_integration_availability(
+			$definition['availability'] = Trigger_Registry_Service::instance()->check_trigger_integration_availability(
 				$availability_input
 			);
 		}
@@ -265,7 +291,7 @@ class Get_Component_Schema_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'Condition code is required.' );
 		}
 
-		$registry_service = Condition_Registry_Service::get_instance();
+		$registry_service = Condition_Registry_Service::instance();
 
 		// Resolve integration code via service layer
 		$integration_code = $registry_service->get_integration_by_condition_code( $code );

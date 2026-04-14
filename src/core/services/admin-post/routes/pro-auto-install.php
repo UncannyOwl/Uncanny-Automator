@@ -108,7 +108,7 @@ class Pro_Auto_Install {
 	 */
 	public function get_license_settings_url( $error = '', $status = '' ) {
 		$args = array(
-			'post_type' => 'uo-recipe',
+			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 			'page'      => 'uncanny-automator-config',
 		);
 

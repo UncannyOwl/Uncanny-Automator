@@ -2,16 +2,15 @@
 
 namespace Uncanny_Automator\Integrations\Ontraport;
 
-use Exception;
-
 /**
  * Class Ontraport_Delete_Contact
  *
  * @package Uncanny_Automator
+ *
+ * @property Ontraport_App_Helpers $helpers
+ * @property Ontraport_Api_Caller $api
  */
-class Ontraport_Delete_Contact extends \Uncanny_Automator\Recipe\Action {
-
-	public $prefix = 'ONTRAPORT_DELETE_CONTACT';
+class Ontraport_Delete_Contact extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Spins up new action inside "ONTRAPORT" integration.
@@ -19,25 +18,21 @@ class Ontraport_Delete_Contact extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'ONTRAPORT' );
-		$this->set_action_code( $this->prefix . '_CODE' );
-		$this->set_action_meta( $this->prefix . '_META' );
+		$this->set_action_code( 'ONTRAPORT_DELETE_CONTACT_CODE' );
+		$this->set_action_meta( 'ONTRAPORT_DELETE_CONTACT_META' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/ontraport/' ) );
 		$this->set_requires_user( false );
-
-		$sentence = sprintf(
-			/* translators: Action sentence */
-			esc_attr_x( 'Delete {{a contact:%1$s}}', 'Ontraport', 'uncanny-automator' ),
-			$this->get_action_meta()
-		);
-
-		$this->set_sentence( $sentence );
-		$this->set_readable_sentence( esc_attr_x( 'Delete {{a contact}}', 'Ontraport', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
+		$this->set_readable_sentence( esc_attr_x( 'Delete {{a contact}}', 'Ontraport', 'uncanny-automator' ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s: Email address
+				esc_attr_x( 'Delete {{a contact:%1$s}}', 'Ontraport', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
+		);
 	}
 
 	/**
@@ -46,15 +41,9 @@ class Ontraport_Delete_Contact extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	public function options() {
-
-		$email = array(
-			'option_code' => $this->get_action_meta(),
-			'label'       => _x( 'Email', 'Ontraport', 'uncanny-automator' ),
-			'input_type'  => 'text',
-			'required'    => true,
+		return array(
+			$this->helpers->get_email_field( $this->get_action_meta() ),
 		);
-
-		return array( $email );
 	}
 
 	/**
@@ -70,23 +59,14 @@ class Ontraport_Delete_Contact extends \Uncanny_Automator\Recipe\Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$email = $this->get_parsed_meta_value( $this->get_action_meta(), '' );
-
-		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-			throw new Exception(
-				sprintf(
-				/* translators: %s: Email address */
-					esc_html__( 'Invalid email provided: %s', 'uncanny-automator' ),
-					esc_html( $email )
-				),
-				400
-			);
-		}
+		$email = $this->helpers->validate_email( $this->get_parsed_meta_value( $this->get_action_meta(), '' ) );
 
 		$body = array(
 			'contact_email' => $email,
 		);
 
-		$this->helpers->api_request( 'contact_delete', $body, $action_data );
+		$this->api->send_request( 'contact_delete', $body, $action_data );
+
+		return true;
 	}
 }

@@ -1,37 +1,31 @@
 <?php
-namespace Uncanny_Automator;
 
-use Uncanny_Automator\OpenAI\HTTP_Client;
-use Uncanny_Automator\Recipe;
+namespace Uncanny_Automator\Integrations\OpenAI;
+
+use Uncanny_Automator\Recipe\App_Action;
 
 /**
  * @package Uncanny_Automator
  * @since 4.15
+ *
+ * @property OpenAI_App_Helpers $helpers
+ * @property OpenAI_Api_Caller $api
  */
-class OPEN_AI_INSTAGRAM_EXCERPT_GENERATE {
-
-	use Recipe\Actions, Recipe\Action_Tokens;
+class OPEN_AI_INSTAGRAM_EXCERPT_GENERATE extends App_Action {
 
 	const PROMPT = "Generate an Instagram post of the following content in 1000 characters or less:\n{{content}}";
 
 	protected $model = 'gpt-4';
 
-	public function __construct() {
-
-		$this->set_helpers( new Open_AI_Helpers( false ) );
-
-		if ( ! $this->get_helpers()->has_gpt4_access() ) {
-			return;
-		}
-
-		$this->setup_action();
-
+	/**
+	 * @return bool
+	 */
+	public function requirements_met() {
+		return $this->helpers->has_gpt4_access();
 	}
 
 	/**
-	 * Setup Action.
-	 *
-	 * @return void.
+	 * @return void
 	 */
 	protected function setup_action() {
 
@@ -40,104 +34,62 @@ class OPEN_AI_INSTAGRAM_EXCERPT_GENERATE {
 		$this->set_action_meta( 'OPEN_AI_INSTAGRAM_EXCERPT_GENERATE_META' );
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/open-ai/' ) );
 		$this->set_requires_user( false );
-		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->set_wpautop( false );
 		$this->set_background_processing( false );
 
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
-				esc_attr__( 'Generate {{an excerpt:%1$s}} suitable for Instagram with GPT-4', 'uncanny-automator' ),
+				// translators: %1$s is the input field name
+				esc_attr_x( 'Generate {{an excerpt:%1$s}} suitable for Instagram with GPT-4', 'OpenAI', 'uncanny-automator' ),
 				'FILLER:' . $this->get_action_meta()
 			)
 		);
 
-		/* translators: Action sentence */
-		$this->set_readable_sentence( esc_attr__( 'Generate {{an excerpt}} suitable for Instagram with GPT-4', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Generate {{an excerpt}} suitable for Instagram with GPT-4', 'OpenAI', 'uncanny-automator' ) );
 
 		$this->set_action_tokens(
 			array(
 				'GENERATED_EXCERPT' => array(
-					'name' => esc_html__( 'Generated excerpt', 'uncanny-automator' ),
+					'name' => esc_html_x( 'Generated excerpt', 'OpenAI', 'uncanny-automator' ),
 					'type' => 'text',
 				),
 			),
 			$this->get_action_code()
 		);
-
-		$this->register_action();
-
 	}
 
 	/**
-	 * Loads options.
-	 *
-	 * @return array The list of option fields.
+	 * @return array
 	 */
-	public function load_options() {
-
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options_group' => array(
-					$this->get_action_meta() => array(
-						array(
-							'option_code' => $this->get_action_meta(),
-							/* translators: Action field */
-							'label'       => esc_attr__( 'Content', 'uncanny-automator' ),
-							'input_type'  => 'textarea',
-							'required'    => true,
-						),
-					),
-				),
-			)
+	public function options() {
+		return array(
+			$this->helpers->get_content_field( $this->get_action_meta() ),
 		);
-
 	}
 
-
 	/**
-	 * Processes action.
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
-	 *
-	 * @return void.
+	 * @return bool
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$helper = $this->get_helpers();
-
 		$content = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : '';
 
-		$replace_pairs = array(
-			'{{content}}' => $content,
+		$prompt = strtr( self::PROMPT, array( '{{content}}' => $content ) );
+
+		$response_text = $this->api->process_chat_completion( $prompt, $this->model, $this->get_action_code() );
+
+		$this->hydrate_tokens(
+			array(
+				'GENERATED_EXCERPT' => $response_text,
+			)
 		);
 
-		$prompt = strtr( self::PROMPT, $replace_pairs );
-
-		try {
-
-			$response_text = $helper->process_openai_chat_completions( $prompt, $this->model, $this->get_action_code() );
-
-			$this->hydrate_tokens(
-				array(
-					'GENERATED_EXCERPT' => $response_text,
-				)
-			);
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			return Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-		}
-
-		return Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
+		return true;
 	}
-
 }

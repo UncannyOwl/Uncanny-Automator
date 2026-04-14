@@ -118,6 +118,35 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	protected function output_schema_definition(): ?array {
+		return array(
+			'type'       => 'object',
+			'properties' => array(
+				'taxonomy' => array( 'type' => 'string' ),
+				'items'    => array(
+					'type'  => 'array',
+					'items' => array(
+						'type'       => 'object',
+						'properties' => array(
+							'id'          => array( 'type' => 'integer' ),
+							'name'        => array( 'type' => 'string' ),
+							'slug'        => array( 'type' => 'string' ),
+							'description' => array( 'type' => 'string' ),
+							'parent'      => array( 'type' => 'integer' ),
+							'count'       => array( 'type' => 'integer' ),
+						),
+					),
+				),
+				'total'    => array( 'type' => 'integer' ),
+				'has_more' => array( 'type' => 'boolean' ),
+			),
+			'required'   => array( 'taxonomy', 'items', 'total', 'has_more' ),
+		);
+	}
+
+	/**
 	 * Execute tool.
 	 *
 	 * @param User_Context $user_context User context.

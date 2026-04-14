@@ -456,7 +456,7 @@ abstract class App_Webhooks {
 	 * @return string
 	 */
 	public function regenerate_webhook_key() {
-		$new_key = md5( uniqid( wp_rand(), true ) );
+		$new_key = bin2hex( random_bytes( 24 ) );
 		automator_update_option( $this->get_webhook_key_option_name(), $new_key );
 		return $new_key;
 	}
@@ -570,7 +570,7 @@ abstract class App_Webhooks {
 	 * @return bool
 	 */
 	protected function is_valid_webhook_key( $key ) {
-		return (string) $key === (string) $this->get_webhook_key( false );
+		return hash_equals( (string) $this->get_webhook_key( false ), (string) $key );
 	}
 
 	/**

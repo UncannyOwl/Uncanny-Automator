@@ -129,10 +129,11 @@ LIMIT 0, 1",
 						if ( null !== $answer_ids ) {
 
 							$answer_ids = maybe_unserialize( $answer_ids );
-							$ids        = join( "','", $answer_ids );
+							$safe_ids   = implode( ',', array_map( 'absint', (array) $answer_ids ) );
+							$poll_id    = absint( $poll_id );
 
 							// Get user's Poll Answers
-							$answers = $wpdb->get_results( "SELECT polla_answers FROM $wpdb->pollsa WHERE polla_qid = $poll_id AND polla_aid IN ('$ids') ORDER BY polla_aid DESC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+							$answers = $wpdb->get_results( "SELECT polla_answers FROM $wpdb->pollsa WHERE polla_qid = {$poll_id} AND polla_aid IN ({$safe_ids}) ORDER BY polla_aid DESC" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 							if ( null !== $answers ) {
 								$value = '';

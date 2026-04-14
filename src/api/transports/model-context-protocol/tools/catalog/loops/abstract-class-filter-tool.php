@@ -14,6 +14,8 @@ namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\
 
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
+use Uncanny_Automator\Api\Services\Field\Field_Mcp_Input_Resolver;
+use Uncanny_Automator\Api\Services\Field\Utilities\Field_Validator;
 use Uncanny_Automator\Api\Services\Loop\Filter\Services\Filter_Registry_Service;
 use Uncanny_Automator\Api\Components\Loop\Filter\Services\Field_Normalizer;
 use Uncanny_Automator\Api\Presentation\Loop\Filters\Loop_Filter_Sentence_Composer;
@@ -73,28 +75,6 @@ abstract class Abstract_Filter_Tool extends Abstract_MCP_Tool {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Convert MCP fields to flat structure for CRUD service.
-	 *
-	 * Converts {FIELD: {value, label}} to {FIELD: value, FIELD_readable: label}
-	 * for compatibility with existing CRUD service layer.
-	 *
-	 * Delegates to Field_Normalizer for the inverse operation.
-	 *
-	 * @param array $mcp_fields Fields from AI agent in MCP format.
-	 * @return array Flattened fields for service layer.
-	 */
-	protected function convert_mcp_to_flat( array $mcp_fields ): array {
-		$flat = array();
-
-		foreach ( $mcp_fields as $code => $field ) {
-			$flat[ $code ]              = $field['value'];
-			$flat[ "{$code}_readable" ] = $field['label'];
-		}
-
-		return $flat;
 	}
 
 	/**
@@ -165,6 +145,34 @@ abstract class Abstract_Filter_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * Validate filter field values against the filter's meta_structure schema.
+	 *
+	 * Converts meta_structure to WordPress field format and delegates to Field_Validator.
+	 * Tokens and custom values are handled by Field_Validator's built-in rules.
+	 *
+	 * @since 7.2.0
+	 *
+	 * @param array $definition    Filter definition from registry (must include 'meta_structure').
+	 * @param array $field_values  Field values to validate (code => value).
+	 * @return bool|\WP_Error True if valid, WP_Error if invalid.
+	 */
+	protected function validate_filter_fields( array $definition, array $field_values ) {
+
+		$meta_structure = $definition['meta_structure'] ?? array();
+
+		if ( empty( $meta_structure ) ) {
+			return true;
+		}
+
+		$field_definitions = Field_Validator::convert_meta_structure_to_fields( $meta_structure );
+		$filter_code       = $definition['code'] ?? '';
+
+		$validator = new Field_Validator();
+
+		return $validator->validate_fields( $field_definitions, $field_values, $filter_code, 'loop_filter' );
+	}
+
+	/**
 	 * Build field structure for the sentence composer.
 	 *
 	 * Converts MCP field structure {value, label} into composer structure
@@ -201,19 +209,5 @@ abstract class Abstract_Filter_Tool extends Abstract_MCP_Tool {
 		}
 
 		return $composer_fields;
-	}
-
-	/**
-	 * Parse JSON parameter that might be a string.
-	 *
-	 * @param mixed $param Parameter value.
-	 * @return array Parsed array.
-	 */
-	protected function parse_json_param( $param ): array {
-		if ( is_string( $param ) ) {
-			$decoded = json_decode( $param, true );
-			return ( json_last_error() === JSON_ERROR_NONE && is_array( $decoded ) ) ? $decoded : array();
-		}
-		return is_array( $param ) ? $param : array();
 	}
 }

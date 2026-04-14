@@ -345,7 +345,7 @@ class Recipe_Post_Rest_Api {
 		$return['data']    = $request;
 
 		$recipe_post = array(
-			'post_type'   => 'uo-recipe',
+			'post_type'   => AUTOMATOR_POST_TYPE_RECIPE,
 			'post_author' => get_current_user_id(),
 		);
 
@@ -433,19 +433,19 @@ class Recipe_Post_Rest_Api {
 		}
 
 		if ( 'add-new-trigger' === (string) $post_action ) {
-			$post_type = 'uo-trigger';
+			$post_type = AUTOMATOR_POST_TYPE_TRIGGER;
 			$action    = 'create_trigger';
 			$sentence  = Automator()->get->trigger_title_from_trigger_code( sanitize_text_field( $request->get_param( 'item_code' ) ) );
 		}
 
 		if ( 'add-new-action' === (string) $post_action ) {
-			$post_type = 'uo-action';
+			$post_type = AUTOMATOR_POST_TYPE_ACTION;
 			$action    = 'create_action';
 			$sentence  = Automator()->get->action_title_from_action_code( sanitize_text_field( $request->get_param( 'item_code' ) ) );
 		}
 
 		if ( 'add-new-closure' === (string) $post_action ) {
-			$post_type = 'uo-closure';
+			$post_type = AUTOMATOR_POST_TYPE_CLOSURE;
 			$action    = 'create_closure';
 		}
 
@@ -617,7 +617,7 @@ class Recipe_Post_Rest_Api {
 
 				$recipe_id = absint( $request->get_param( 'recipe_id' ) );
 
-				if ( 'uo-recipe' !== get_post_type( $recipe_id ) ) {
+				if ( AUTOMATOR_POST_TYPE_RECIPE !== get_post_type( $recipe_id ) ) {
 					$ancestors = get_post_ancestors( $recipe_id );
 					$recipe_id = array_pop( $ancestors );
 				}
@@ -900,7 +900,7 @@ class Recipe_Post_Rest_Api {
 
 					if ( ! $request->has_param( 'recipe_id' ) ) {
 						$recipe_id = $post_id;
-						if ( 'uo-recipe' !== get_post_type( $post_id ) ) {
+						if ( AUTOMATOR_POST_TYPE_RECIPE !== get_post_type( $post_id ) ) {
 							$ancestors = get_post_ancestors( $post_id );
 							$recipe_id = array_pop( $ancestors );
 						}
@@ -1664,7 +1664,7 @@ class Recipe_Post_Rest_Api {
 			return new WP_REST_Response( $return, 400 );
 		}
 
-		if ( 'uo-action' !== $action_post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_ACTION !== $action_post->post_type ) {
 			$return['message'] = 'Action is not of the correct post type';
 			$return['success'] = false;
 			$return['action']  = 'show_error';
@@ -1891,7 +1891,7 @@ class Recipe_Post_Rest_Api {
 	 * @return void
 	 */
 	public function has_action_token( $item, $meta_value ) {
-		if ( 'uo-action' !== $item->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_ACTION !== $item->post_type ) {
 			return;
 		}
 
@@ -1940,7 +1940,7 @@ class Recipe_Post_Rest_Api {
 		// Check the current post type.
 		$object = get_post( $post_id );
 
-		if ( 'uo-action' === $object->post_type || 'uo-trigger' === $object->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_ACTION === $object->post_type || AUTOMATOR_POST_TYPE_TRIGGER === $object->post_type ) {
 
 			$post_id = wp_get_post_parent_id( $post_id );
 
@@ -1977,14 +1977,13 @@ class Recipe_Post_Rest_Api {
 				ON posts.ID = pm.post_id and pm.meta_key = 'code'
 				WHERE posts.post_type = %s
 				AND posts.post_parent = %d
-				AND posts.post_type = 'uo-trigger'
 				AND NOT EXISTS (
 						SELECT * FROM $wpdb->postmeta
 						WHERE $wpdb->postmeta.meta_key = 'add_action'
 						AND $wpdb->postmeta.post_id=posts.ID
 					)
 				",
-				'uo-trigger',
+				AUTOMATOR_POST_TYPE_TRIGGER,
 				$recipe_id
 			),
 			ARRAY_A

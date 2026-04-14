@@ -141,7 +141,7 @@ class Trigger_Rest extends Recipe_Item_Rest {
 	 * @return array|null
 	 */
 	private function build_trigger_config(): ?array {
-		$registry = Trigger_Registry_Service::get_instance()->get_trigger_by_code( $this->get_item_code() );
+		$registry = Trigger_Registry_Service::instance()->get_trigger_by_code( $this->get_item_code() );
 		if ( empty( $registry ) ) {
 			return null;
 		}

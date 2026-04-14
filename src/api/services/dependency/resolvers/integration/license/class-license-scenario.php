@@ -342,7 +342,7 @@ class License_Scenario extends Abstract_Scenario {
 			'label' => esc_html_x( 'Create free account', 'Dependency CTA', 'uncanny-automator' ),
 			'url'   => add_query_arg(
 				array(
-					'post_type' => 'uo-recipe',
+					'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 					'page'      => 'uncanny-automator-setup-wizard',
 				),
 				admin_url( 'edit.php' )
@@ -398,7 +398,7 @@ class License_Scenario extends Abstract_Scenario {
 			'label' => esc_html( $label ),
 			'url'   => add_query_arg(
 				array(
-					'post_type' => 'uo-recipe',
+					'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 					'page'      => 'uncanny-automator-config',
 					'tab'       => 'general',
 					'general'   => 'license',

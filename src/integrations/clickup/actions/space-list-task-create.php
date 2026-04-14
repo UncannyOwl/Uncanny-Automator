@@ -1,62 +1,42 @@
 <?php
-namespace Uncanny_Automator;
 
-use Uncanny_Automator\Integrations\ClickUp\Utilities\Time_Utility;
-use Uncanny_Automator\Recipe\Action_Tokens;
+namespace Uncanny_Automator\Integrations\ClickUp;
+
+use Uncanny_Automator\Integrations\ClickUp\Time_Utility;
 
 /**
- * Class Space_List_Task_Create
+ * Action: Create a task.
  *
- * Handles the creation of tasks within a specified space list in ClickUp.
+ * @package Uncanny_Automator\Integrations\ClickUp
  *
- * @package Uncanny_Automator
+ * @property ClickUp_App_Helpers $helpers
+ * @property ClickUp_Api_Caller $api
  */
-class Space_List_Task_Create {
+class Space_List_Task_Create extends \Uncanny_Automator\Recipe\App_Action {
 
-	use Action_Tokens;
-	use Recipe\Actions;
-
-	/**
-	 * Constructor.
-	 *
-	 * Initializes the action setup and helper functions for task creation.
-	 *
-	 * @return void
-	 */
-	public function __construct() {
-
-		$this->setup_action();
-		$this->set_helpers( new ClickUp_Helpers( false ) );
-
-	}
+	use ClickUp_Hierarchy_Options;
 
 	/**
-	 * Sets up the ClickUp task creation action.
-	 *
-	 * Configures metadata, integration, sentences, tokens, and processing for the action.
+	 * Setup the action.
 	 *
 	 * @return void
 	 */
 	public function setup_action() {
-
 		$this->set_integration( 'CLICKUP' );
 		$this->set_action_code( 'CLICKUP_SPACE_LIST_TASK_CREATE' );
 		$this->set_action_meta( 'CLICKUP_SPACE_LIST_TASK_CREATE_META' );
-		$this->set_is_pro( false );
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/clickup/' ) );
 		$this->set_requires_user( false );
-
+		$this->set_is_pro( false );
+		$this->set_background_processing( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/clickup/' ) );
+		$this->set_readable_sentence( esc_html_x( 'Create a {{task}}', 'ClickUp', 'uncanny-automator' ) );
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
-				esc_html__( 'Create a {{task:%1$s}}', 'uncanny-automator' ),
+				// translators: %1$s: Task name
+				esc_html_x( 'Create a {{task:%1$s}}', 'ClickUp', 'uncanny-automator' ),
 				'NAME:' . $this->get_action_meta()
 			)
 		);
-
-		$this->set_readable_sentence( esc_html__( 'Create a {{task}}', 'uncanny-automator' ) );
-		$this->set_options_callback( array( $this, 'load_options' ) );
-		$this->set_background_processing( true );
 
 		$this->set_action_tokens(
 			array(
@@ -67,126 +47,148 @@ class Space_List_Task_Create {
 			),
 			$this->get_action_code()
 		);
-
-		$this->register_action();
-
 	}
 
 	/**
-	 * Loads options for the action.
+	 * Define options.
 	 *
-	 * Retrieves the options group for the ClickUp task creation action.
-	 *
-	 * @return void
+	 * @return array
 	 */
-	public function load_options() {
-
-		return Automator()->utilities->keep_order_of_options(
+	public function options() {
+		return array(
+			$this->get_team_option_config(),
+			$this->get_space_option_config(),
+			$this->get_folder_option_config(),
+			$this->helpers->get_list_option_config( $this->get_action_meta() ),
+			$this->helpers->get_name_option_config(),
 			array(
-				'options_group' => array(
-					$this->get_action_meta() => $this->get_helpers()->get_action_fields( $this, 'space-list-task-create-fields' ),
-				),
+				'option_code' => 'DESCRIPTION',
+				'label'       => esc_html_x( 'Description', 'ClickUp', 'uncanny-automator' ),
+				'input_type'  => 'textarea',
+				'required'    => true,
+			),
+			$this->helpers->get_assignee_option_config( $this->helpers->get_const( 'META_ASSIGNEE' ), $this->get_action_meta() ),
+			array(
+				'option_code' => 'TAGS',
+				'label'       => esc_html_x( 'Tag', 'ClickUp', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => false,
+			),
+			$this->helpers->get_status_option_config(),
+			$this->helpers->get_priority_option_config(),
+			array(
+				'option_code'           => 'DATE_DUE',
+				'label'                 => esc_html_x( 'Date due', 'ClickUp', 'uncanny-automator' ),
+				'input_type'            => 'date',
+				'supports_custom_value' => true,
+				'supports_tokens'       => true,
+				'required'              => false,
+			),
+			array(
+				'option_code'           => 'DATE_DUE_TIME',
+				'label'                 => esc_html_x( 'Date due time', 'ClickUp', 'uncanny-automator' ),
+				'description'           => esc_html_x( 'Date due time is ignored if Date due is empty.', 'ClickUp', 'uncanny-automator' ),
+				'input_type'            => 'time',
+				'supports_custom_value' => true,
+				'supports_tokens'       => true,
+				'required'              => false,
+			),
+			array(
+				'option_code'           => 'TIME_ESTIMATE',
+				'label'                 => esc_html_x( 'Time estimate', 'ClickUp', 'uncanny-automator' ),
+				'description'           => esc_html_x( 'Provide the time estimate in hours.', 'ClickUp', 'uncanny-automator' ),
+				'input_type'            => 'int',
+				'supports_custom_value' => true,
+				'supports_tokens'       => true,
+				'required'              => false,
+			),
+			array(
+				'option_code'           => 'START_DATE',
+				'label'                 => esc_html_x( 'Start date', 'ClickUp', 'uncanny-automator' ),
+				'input_type'            => 'date',
+				'supports_custom_value' => true,
+				'supports_tokens'       => true,
+				'required'              => false,
+			),
+			array(
+				'option_code'           => 'START_TIME',
+				'label'                 => esc_html_x( 'Start time', 'ClickUp', 'uncanny-automator' ),
+				'description'           => esc_html_x( 'Start time is ignored if Start date is empty.', 'ClickUp', 'uncanny-automator' ),
+				'input_type'            => 'time',
+				'supports_custom_value' => true,
+				'supports_tokens'       => true,
+				'required'              => false,
+			),
+			array(
+				'option_code' => 'NOTIFY_ALL',
+				'label'       => esc_html_x( 'Notify all', 'ClickUp', 'uncanny-automator' ),
+				'input_type'  => 'checkbox',
+				'required'    => false,
+			),
+			array(
+				'option_code' => 'PARENT',
+				'label'       => esc_html_x( 'Parent', 'ClickUp', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter an existing Task ID. Task must be in the same List.', 'ClickUp', 'uncanny-automator' ),
+				'input_type'  => 'text',
+			),
+			array(
+				'option_code' => 'LINKS_TO',
+				'label'       => esc_html_x( 'Links to', 'ClickUp', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter an existing Task ID. Task must be in the same List.', 'ClickUp', 'uncanny-automator' ),
+				'input_type'  => 'text',
+			),
+		);
+	}
+
+	/**
+	 * Process the action.
+	 *
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        Additional arguments.
+	 * @param array $parsed      Parsed action data.
+	 *
+	 * @return bool
+	 * @throws \Exception If the action fails.
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$time_utility = new Time_Utility(
+			Automator()->get_date_format(),
+			Automator()->get_time_format(),
+			Automator()->get_timezone_string()
+		);
+
+		$start_date = sanitize_text_field( $parsed['START_DATE'] ?? '' );
+		$start_time = sanitize_text_field( $parsed['START_TIME'] ?? '' );
+		$due_date   = sanitize_text_field( $parsed['DATE_DUE'] ?? '' );
+		$due_time   = sanitize_text_field( $parsed['DATE_DUE_TIME'] ?? '' );
+
+		$body = array(
+			'action'               => 'create_task',
+			'start_date_timestamp' => $time_utility->to_timestamp( $start_date, $start_time ),
+			'due_date_timestamp'   => $time_utility->to_timestamp( $due_date, $due_time ),
+			'name'                 => sanitize_text_field( $parsed['NAME'] ?? '' ),
+			'description'          => sanitize_textarea_field( $parsed['DESCRIPTION'] ?? '' ),
+			'time_estimate'        => absint( $parsed['TIME_ESTIMATE'] ?? 0 ),
+			'status'               => sanitize_text_field( $parsed['STATUS'] ?? '' ),
+			'tags'                 => sanitize_text_field( $parsed['TAGS'] ?? '' ),
+			'priority'             => sanitize_text_field( $parsed['PRIORITY'] ?? '' ),
+			'assignees'            => sanitize_text_field( $parsed['ASSIGNEE'] ?? '' ),
+			'list_id'              => sanitize_text_field( $parsed[ $this->get_action_meta() ] ?? '' ),
+			'notify_all'           => sanitize_text_field( $parsed['NOTIFY_ALL'] ?? '' ),
+			'parent'               => sanitize_text_field( $parsed['PARENT'] ?? '' ),
+			'links_to'             => sanitize_text_field( $parsed['LINKS_TO'] ?? '' ),
+		);
+
+		$response = $this->api->api_request( $body, $action_data );
+
+		$this->hydrate_tokens(
+			array(
+				'TASK_ID' => $response['data']['id'] ?? null,
 			)
 		);
 
+		return true;
 	}
-
-	/**
-	 * Processes the task creation action.
-	 *
-	 * @param int    $user_id The ID of the user performing the action.
-	 * @param array  $action_data Data associated with the action.
-	 * @param int    $recipe_id The recipe ID the action belongs to.
-	 * @param array  $args Additional arguments.
-	 * @param array  $parsed Parsed data for the action.
-	 * @return void
-	 */
-	public function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-
-		try {
-
-			$start_date = $this->read_from_parsed( $parsed, 'start_date' );
-			$start_time = $this->read_from_parsed( $parsed, 'start_time' );
-			$due_date   = $this->read_from_parsed( $parsed, 'date_due' );
-			$due_time   = $this->read_from_parsed( $parsed, 'date_due_time' );
-
-			// Closure function to format time estimate.
-			$time_estimate = function( $time ) {
-				return absint( sanitize_text_field( $time ) );
-			};
-
-			// Patch ready. Can be removed in the future once built.
-			if ( ! class_exists( '\Uncanny_Automator\Integrations\ClickUp\Utilities\Time_Utility' ) ) {
-				require_once trailingslashit( UA_ABSPATH ) . 'src/integrations/clickup/utilities/time-utility.php';
-			}
-
-			// Initiate the time utility class base on the customer's wp settings.
-			$time_utility = new Time_Utility(
-				Automator()->get_date_format(),
-				Automator()->get_time_format(),
-				Automator()->get_timezone_string()
-			);
-
-			$start_datetime = $time_utility->to_timestamp( $start_date, $start_time );
-			$due_datetime   = $time_utility->to_timestamp( $due_date, $due_time );
-
-			$body = array(
-				'action'               => 'create_task',
-				'start_date_timestamp' => $start_datetime,
-				'due_date_timestamp'   => $due_datetime,
-				'name'                 => $this->read_from_parsed( $parsed, 'name' ),
-				'description'          => $this->read_from_parsed( $parsed, 'description', '', 'sanitize_textarea_field' ),
-				'time_estimate'        => $this->read_from_parsed( $parsed, 'time_estimate', 0, $time_estimate ),
-				'status'               => $this->read_from_parsed( $parsed, 'status' ),
-				'tags'                 => $this->read_from_parsed( $parsed, 'tags' ),
-				'priority'             => $this->read_from_parsed( $parsed, 'priority' ),
-				'assignees'            => $this->read_from_parsed( $parsed, 'assignee' ),
-				'list_id'              => $this->read_from_parsed( $parsed, $this->get_action_meta() ),
-				'notify_all'           => $this->read_from_parsed( $parsed, 'notify_all' ),
-				'parent'               => $this->read_from_parsed( $parsed, 'parent' ),
-				'links_to'             => $this->read_from_parsed( $parsed, 'links_to' ),
-			);
-
-			$client   = $this->get_helpers()->get_client();
-			$response = $this->get_helpers()->api_request( $client, $body, $action_data );
-
-			$this->hydrate_tokens(
-				array(
-					'TASK_ID' => $response['data']['id'] ?? null,
-				)
-			);
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-		}
-
-	}
-
-	/**
-	 * Reads and sanitizes input from parsed data.
-	 *
-	 * @param array    $parsed Parsed data array.
-	 * @param string   $key The key to fetch.
-	 * @param mixed    $default Default value if key not found.
-	 * @param callable $cb A callable for sanitization.
-	 * @return mixed The sanitized value.
-	 */
-	private function read_from_parsed( $parsed = array(), $key = '', $default = '', callable $cb = null ) {
-
-		$key = strtoupper( $key );
-
-		if ( null === $cb ) {
-			$cb = 'sanitize_text_field';
-		}
-
-		return isset( $parsed[ $key ] ) ? $cb( $parsed[ $key ] ) : $default;
-
-	}
-
 }

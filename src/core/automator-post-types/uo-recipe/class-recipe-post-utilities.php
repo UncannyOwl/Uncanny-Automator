@@ -43,7 +43,11 @@ class Recipe_Post_Utilities {
 			999
 		);
 
-		// Change to before delete post.
+		// Deprecated in 4.15.2 (commit 4cd86c47ca). The delete_post hook was
+		// intentionally disabled by renaming it to a non-existent action.
+		// Log cleanup on permanent recipe deletion is handled by the admin
+		// "purge logs" utility and uninstall.php. The callback is retained
+		// for backwards compatibility only — it never fires.
 		add_action(
 			'_DEPRECATED_delete_post',
 			array(
@@ -153,7 +157,7 @@ class Recipe_Post_Utilities {
 
 		global $current_screen;
 
-		if ( $current_screen && 'add' === $current_screen->action && 'uo-recipe' === $current_screen->post_type ) {
+		if ( $current_screen && 'add' === $current_screen->action && AUTOMATOR_POST_TYPE_RECIPE === $current_screen->post_type ) {
 			wp_safe_redirect( admin_url( 'post.php?post=' . $post->ID . '&action=edit' ) );
 			die();
 		}
@@ -165,7 +169,7 @@ class Recipe_Post_Utilities {
 	 * Remove the WP standard Post publish metabox
 	 */
 	public function remove_publish_box() {
-		remove_meta_box( 'submitdiv', 'uo-recipe', 'side' );
+		remove_meta_box( 'submitdiv', AUTOMATOR_POST_TYPE_RECIPE, 'side' );
 	}
 
 	/**
@@ -175,7 +179,7 @@ class Recipe_Post_Utilities {
 	 */
 	public function change_default_post_status( $post_ID, $post, $update ) {
 
-		if ( 'uo-recipe' !== (string) $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== (string) $post->post_type ) {
 			return;
 		}
 		if ( 'auto-draft' !== (string) $post->post_status ) {
@@ -209,7 +213,7 @@ class Recipe_Post_Utilities {
 		if ( 'post-new.php' !== $hook && 'post.php' !== $hook ) {
 			return;
 		}
-		if ( 'uo-recipe' !== (string) get_post_type() ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE !== (string) get_post_type() ) {
 			return;
 		}
 
@@ -435,7 +439,38 @@ class Recipe_Post_Utilities {
 			$roles[ $role_key ] = $role_data['name'];
 		}
 
-		// Remove any cached extra options
+		// Invalidate cached extra options for all triggers and actions in this recipe.
+		// Single JOIN query fetches post ID + both meta values in one round-trip.
+		// Intentionally avoids get_recipes_data(): that path calls load_extra_options()
+		// which fires every options_callback only for us to immediately delete the result.
+		global $wpdb;
+
+		$recipe_items = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare(
+				"SELECT p.ID,
+				        pm_code.meta_value        AS code,
+				        pm_integration.meta_value AS integration
+				FROM {$wpdb->posts} p
+				LEFT JOIN {$wpdb->postmeta} pm_code
+				       ON pm_code.post_id = p.ID AND pm_code.meta_key = 'code'
+				LEFT JOIN {$wpdb->postmeta} pm_integration
+				       ON pm_integration.post_id = p.ID AND pm_integration.meta_key = 'integration'
+				WHERE p.post_parent = %d
+				  AND p.post_type IN (%s,%s)
+				  AND p.post_status != 'trash'",
+				$post_id,
+				AUTOMATOR_POST_TYPE_TRIGGER,
+				AUTOMATOR_POST_TYPE_ACTION
+			)
+		);
+
+		foreach ( $recipe_items as $item ) {
+			if ( $item->code && $item->integration ) {
+				automator_delete_option( 'uap_extra_options_' . $item->integration . '_' . $item->code );
+			}
+		}
+
+		// Lazy cleanup: remove the legacy wp_postmeta blob left by older versions.
 		delete_post_meta( $post_id, 'extra_options' );
 
 		Automator()->automator_load_textdomain();
@@ -457,6 +492,40 @@ class Recipe_Post_Utilities {
 		add_filter( 'automator_get_user_walkthroughs', array( $this, 'should_show_create_recipe_walkthrough' ), 10, 3 );
 		$_integrations   = Automator()->get_integrations();
 		$_pro_only_items = Utilities::get_pro_only_items();
+
+		// Ensure every integration has a default `items` structure so the JS
+		// integration grid never encounters an undefined `items` property,
+		// even if `groupItemsByIntegration()` fails or runs out of order.
+		$default_items = array(
+			'items' => array(
+				'triggers' => array(
+					'available'           => array(),
+					'unavailable'         => array(),
+					'hasAvailableItems'   => false,
+					'hasUnavailableItems' => false,
+					'hasTriggers'         => false,
+					'allItemsArePro'      => false,
+					'allItemsAreElite'    => false,
+				),
+				'actions'  => array(
+					'available'           => array(),
+					'unavailable'         => array(),
+					'hasAvailableItems'   => false,
+					'hasUnavailableItems' => false,
+					'hasActions'          => false,
+					'allItemsArePro'      => false,
+					'allItemsAreElite'    => false,
+				),
+			),
+		);
+
+		$_merged_integrations = automator_array_merge( $_integrations, $_pro_only_items );
+
+		foreach ( $_merged_integrations as $code => $integration ) {
+			if ( ! isset( $integration['items'] ) ) {
+				$_merged_integrations[ $code ] = array_merge( $integration, $default_items );
+			}
+		}
 
 		$api_setup = array(
 			// UncannyAutomator._recipe
@@ -550,13 +619,13 @@ class Recipe_Post_Utilities {
 						'plugin_required_missing' => 'https://automatorplugin.com/knowledge-base/the-action-trigger-requires-a-plugin-that-is-not-installed-or-active-message/',
 
 						// UncannyAutomator._site.automator.links.all_recipes
-						'all_recipes'             => admin_url( 'edit.php?post_type=uo-recipe' ),
+						'all_recipes'             => admin_url( 'edit.php?post_type=' . AUTOMATOR_POST_TYPE_RECIPE ),
 
 						// UncannyAutomator._site.automator.links.tools
-						'tools'                   => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-tools' ),
+						'tools'                   => admin_url( 'edit.php?post_type=' . AUTOMATOR_POST_TYPE_RECIPE . '&page=uncanny-automator-tools' ),
 
 						// UncannyAutomator._site.automator.links.manage_license
-						'manage_license'          => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config&tab=general&general=license' ),
+						'manage_license'          => admin_url( 'edit.php?post_type=' . AUTOMATOR_POST_TYPE_RECIPE . '&page=uncanny-automator-config&tab=general&general=license' ),
 
 						// UncannyAutomator._site.automator.links.styles_for_tinymce
 						// TinyMCE needs the Automator styles to be loaded again inside the iframe
@@ -597,7 +666,7 @@ class Recipe_Post_Utilities {
 			'pro_items'      => $this->get_pro_items(),
 
 			// UncannyAutomator.integrations
-			'integrations'   => automator_array_merge( $_integrations, $_pro_only_items ),
+			'integrations'   => $_merged_integrations,
 
 			// TODO Remove once the JS stops using both `recipes_object` and `recipe` objects
 			'recipes_object' => Automator()->get_recipes_data( true, $post_id ),
@@ -679,7 +748,7 @@ class Recipe_Post_Utilities {
 		// Check if current user has any published recipes.
 		$user_recipes = get_posts(
 			array(
-				'post_type' => 'uo-recipe',
+				'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 				'author'    => $user_id,
 				'status'    => 'publish',
 				'fields'    => 'ids',
@@ -715,21 +784,21 @@ class Recipe_Post_Utilities {
 			return;
 		}
 
-		if ( 'uo-recipe' === $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
 
 			// delete recipe logs
 			self::delete_recipe_logs( $post_ID );
 		}
 
-		if ( 'uo-action' === (string) $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_ACTION === (string) $post->post_type ) {
 			Automator()->db->action->delete( $post_ID );
 		}
 
-		if ( 'uo-trigger' === (string) $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_TRIGGER === (string) $post->post_type ) {
 			Automator()->db->trigger->delete( $post_ID );
 		}
 
-		if ( 'uo-closure' === (string) $post->post_type ) {
+		if ( AUTOMATOR_POST_TYPE_CLOSURE === (string) $post->post_type ) {
 			Automator()->db->closure->delete( $post_ID );
 		}
 	}
@@ -745,7 +814,7 @@ class Recipe_Post_Utilities {
 		$args = array(
 			'post_parent'    => $post_ID,
 			'post_status'    => 'any',
-			'post_type'      => 'uo-trigger',
+			'post_type'      => AUTOMATOR_POST_TYPE_TRIGGER,
 			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		);
 
@@ -765,7 +834,7 @@ class Recipe_Post_Utilities {
 		$args = array(
 			'post_parent'    => $post_ID,
 			'post_status'    => 'any',
-			'post_type'      => 'uo-action',
+			'post_type'      => AUTOMATOR_POST_TYPE_ACTION,
 			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		);
 
@@ -785,7 +854,7 @@ class Recipe_Post_Utilities {
 		$args = array(
 			'post_parent'    => $post_ID,
 			'post_status'    => 'any',
-			'post_type'      => 'uo-closure',
+			'post_type'      => AUTOMATOR_POST_TYPE_CLOSURE,
 			'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 		);
 
@@ -812,12 +881,12 @@ class Recipe_Post_Utilities {
 
 		$post = get_post( $post_ID );
 
-		if ( $post && 'uo-recipe' === $post->post_type ) {
+		if ( $post && AUTOMATOR_POST_TYPE_RECIPE === $post->post_type ) {
 
 			$args = array(
 				'post_parent'    => $post->ID,
 				'post_status'    => 'any',
-				'post_type'      => 'uo-trigger',
+				'post_type'      => AUTOMATOR_POST_TYPE_TRIGGER,
 				'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			);
 
@@ -840,7 +909,7 @@ class Recipe_Post_Utilities {
 			$args = array(
 				'post_parent'    => $post->ID,
 				'post_status'    => 'any',
-				'post_type'      => 'uo-action',
+				'post_type'      => AUTOMATOR_POST_TYPE_ACTION,
 				'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			);
 
@@ -863,7 +932,7 @@ class Recipe_Post_Utilities {
 			$args = array(
 				'post_parent'    => $post->ID,
 				'post_status'    => 'any',
-				'post_type'      => 'uo-closure',
+				'post_type'      => AUTOMATOR_POST_TYPE_CLOSURE,
 				'posts_per_page' => 999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			);
 
@@ -897,7 +966,7 @@ class Recipe_Post_Utilities {
 
 		switch ( $column ) {
 			case 'triggers':
-				$trigger_titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_status, post_title FROM {$wpdb->posts} WHERE post_parent = %d AND post_type = %s", $post_id, 'uo-trigger' ) );
+				$trigger_titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_status, post_title FROM {$wpdb->posts} WHERE post_parent = %d AND post_type = %s", $post_id, AUTOMATOR_POST_TYPE_TRIGGER ) );
 				?>
 				<div class="uap">
 					<div class="uo-post-column__list">
@@ -915,7 +984,7 @@ class Recipe_Post_Utilities {
 
 				break;
 			case 'actions':
-				$action_titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_status, post_title FROM {$wpdb->posts} WHERE post_parent=%d AND post_type=%s ORDER BY `menu_order` ASC", $post_id, 'uo-action' ) );
+				$action_titles = $wpdb->get_results( $wpdb->prepare( "SELECT post_status, post_title FROM {$wpdb->posts} WHERE post_parent=%d AND post_type=%s ORDER BY `menu_order` ASC", $post_id, AUTOMATOR_POST_TYPE_ACTION ) );
 				?>
 				<div class="uap">
 					<div class="uo-post-column__list">
@@ -935,7 +1004,7 @@ class Recipe_Post_Utilities {
 
 				$url = add_query_arg(
 					array(
-						'post_type' => 'uo-recipe',
+						'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 						'page'      => 'uncanny-automator-admin-logs',
 						'recipe_id' => $post_id,
 					),

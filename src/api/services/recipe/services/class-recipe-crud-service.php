@@ -16,7 +16,10 @@ use Uncanny_Automator\Api\Components\Recipe\Recipe;
 use Uncanny_Automator\Api\Components\Recipe\Recipe_Config;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Trigger_Logic;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Status;
+use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Id;
+use Uncanny_Automator\Api\Database\Stores\WP_Action_Store;
 use Uncanny_Automator\Api\Database\Stores\WP_Recipe_Store;
+use Uncanny_Automator\Api\Database\Stores\WP_Recipe_Trigger_Store;
 use Uncanny_Automator\Api\Services\Recipe\Utilities\Recipe_Validator;
 use Uncanny_Automator\Api\Services\Recipe\Utilities\Recipe_Formatter;
 use Uncanny_Automator\Api\Services\Closure\Services\Closure_Service;
@@ -57,21 +60,54 @@ class Recipe_CRUD_Service {
 	 */
 	private $closure_service;
 
+	/**
+	 * @var WP_Recipe_Trigger_Store
+	 */
+	private $trigger_store;
+
+	/**
+	 * @var WP_Action_Store
+	 */
+	private $action_store;
+
+	/**
+	 * Singleton instance.
+	 *
+	 * @var self|null
+	 */
+	private static $instance = null;
+
+	/**
+	 * Get singleton instance.
+	 *
+	 * @return self
+	 */
+	public static function instance(): self {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 
 	/**
 	 * Constructor.
 	 *
-	 * @param WP_Recipe_Store|null  $recipe_store     Recipe storage implementation.
-	 * @param Recipe_Validator|null $validator        Recipe validator.
-	 * @param Recipe_Formatter|null $formatter        Recipe formatter.
-	 * @param Closure_Service|null  $closure_service  Closure service for handling redirects.
+	 * @param WP_Recipe_Store|null        $recipe_store   Recipe storage.
+	 * @param Recipe_Validator|null       $validator      Recipe validator.
+	 * @param Recipe_Formatter|null       $formatter      Recipe formatter.
+	 * @param Closure_Service|null        $closure_service Closure service.
+	 * @param WP_Recipe_Trigger_Store|null $trigger_store  Trigger storage.
+	 * @param WP_Action_Store|null        $action_store   Action storage.
 	 */
-	public function __construct( $recipe_store = null, $validator = null, $formatter = null, $closure_service = null ) {
+	public function __construct( $recipe_store = null, $validator = null, $formatter = null, $closure_service = null, $trigger_store = null, $action_store = null ) {
+		global $wpdb;
 
 		$this->recipe_store    = $recipe_store ?? new WP_Recipe_Store();
 		$this->validator       = $validator ?? new Recipe_Validator();
 		$this->formatter       = $formatter ?? new Recipe_Formatter();
 		$this->closure_service = $closure_service ?? Closure_Service::instance();
+		$this->trigger_store   = $trigger_store ?? new WP_Recipe_Trigger_Store();
+		$this->action_store    = $action_store ?? new WP_Action_Store( $wpdb );
 	}
 
 	/**
@@ -183,6 +219,23 @@ class Recipe_CRUD_Service {
 			return $this->formatter->error_response( 'recipe_not_found', 'Update recipe failed: Recipe not found with ID: ' . $recipe_id, array( 'recipe_id' => $recipe_id ) );
 		}
 
+		// Trashed recipes may only be untrashed via a status change. Reject every
+		// other mutation until the recipe is restored. The `id` key is transport
+		// plumbing, not a user-facing field, so ignore it when deciding whether
+		// this is a pure status change.
+		if ( ! $existing_recipe->get_recipe_status()->is_writable() ) {
+			$mutating_keys = array_diff( array_keys( $data ), array( 'id' ) );
+			$is_untrash    = array( 'status' ) === $mutating_keys
+				&& in_array( $data['status'] ?? null, array( 'draft', 'publish' ), true );
+			if ( ! $is_untrash ) {
+				return $this->formatter->error_response(
+					'recipe_trashed',
+					sprintf( 'Recipe %d is trashed. Restore it by setting status to "draft" before making other changes.', $this->coerce_recipe_id( $recipe_id ) ),
+					array( 'recipe_id' => $recipe_id )
+				);
+			}
+		}
+
 		// Business rule: Recipe type cannot be changed after creation.
 		if ( isset( $data['type'] ) && $data['type'] !== $existing_recipe->get_recipe_type()->get_value() ) {
 			return $this->formatter->error_response(
@@ -257,6 +310,37 @@ class Recipe_CRUD_Service {
 
 
 	/**
+	 * Assign categories and tags to a recipe.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @param int        $recipe_id  Recipe post ID.
+	 * @param array|null $categories Category slugs to assign (replaces existing). Null to skip.
+	 * @param array|null $tags       Tag slugs to assign (replaces existing). Null to skip.
+	 *
+	 * @return void
+	 */
+	public function assign_taxonomies( int $recipe_id, ?array $categories, ?array $tags ): void {
+
+		if ( $recipe_id <= 0 ) {
+			return;
+		}
+
+		// Assign categories if provided (replaces existing).
+		if ( is_array( $categories ) ) {
+			$sanitized_cats = array_map( 'sanitize_title', $categories );
+			wp_set_object_terms( $recipe_id, $sanitized_cats, 'recipe_category' );
+		}
+
+		// Assign tags if provided (replaces existing).
+		if ( is_array( $tags ) ) {
+			$sanitized_tags = array_map( 'sanitize_title', $tags );
+			wp_set_object_terms( $recipe_id, $sanitized_tags, 'recipe_tag' );
+		}
+	}
+
+
+	/**
 	 * Delete a recipe.
 	 *
 	 * @param int|string $recipe_id Recipe ID.
@@ -326,5 +410,56 @@ class Recipe_CRUD_Service {
 		$duplicate_data['status'] = $new_status;
 
 		return $this->create_recipe( $duplicate_data );
+	}
+
+	/**
+	 * Demote a published recipe to draft if it has no live triggers or actions.
+	 *
+	 * @param int $recipe_id Recipe post ID.
+	 *
+	 * @return string|null Message if demoted, null otherwise.
+	 */
+	public function demote_if_empty( int $recipe_id ): bool {
+
+		$recipe = $this->recipe_store->get( $recipe_id );
+
+		if ( ! $recipe || 'publish' !== $recipe->get_recipe_status()->get_value() ) {
+			return false;
+		}
+
+		$triggers         = $this->trigger_store->get_recipe_triggers( new Recipe_Id( $recipe_id ) )->get_triggers();
+		$has_live_trigger = $this->has_published_component( $triggers );
+
+		$actions         = $this->action_store->get_recipe_actions( $recipe_id );
+		$has_live_action = $this->has_published_component( $actions );
+
+		if ( $has_live_trigger && $has_live_action ) {
+			return false;
+		}
+
+		$this->update_recipe( $recipe_id, array( 'status' => 'draft' ) );
+
+		return true;
+	}
+
+	/**
+	 * Check if any component in the list is published.
+	 *
+	 * Works with both Trigger and Action objects (both expose get_status()->is_published()).
+	 *
+	 * @param array $components Array of Trigger or Action domain objects.
+	 *
+	 * @return bool
+	 */
+	private function has_published_component( array $components ): bool {
+
+		foreach ( $components as $component ) {
+			$status = $component->get_status();
+			if ( $status && $status->is_published() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

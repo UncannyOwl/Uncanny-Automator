@@ -48,7 +48,7 @@ class WPFF_SUBFORM {
 			'sentence'            => sprintf( esc_attr_x( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'Wp Fluent Forms', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - Ninja Forms */
 			'select_option_name'  => esc_attr_x( 'A user submits {{a form}}', 'Wp Fluent Forms', 'uncanny-automator' ),
-			'action'              => 'fluentform_before_insert_submission',
+			'action'              => 'fluentform/before_insert_submission',
 			'priority'            => 20,
 			'accepted_args'       => 3,
 			'validation_function' => array( $this, 'wpffform_submit' ),

@@ -1,113 +1,76 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\HubSpot;
+
+use Uncanny_Automator\Recipe\App_Action;
+use Exception;
 
 /**
  * Class HUBSPOT_REMOVEUSERFROMLIST
  *
  * @package Uncanny_Automator
+ *
+ * @property HubSpot_App_Helpers $helpers
+ * @property HubSpot_Api_Caller $api
  */
-class HUBSPOT_REMOVEUSERFROMLIST {
+class HUBSPOT_REMOVEUSERFROMLIST extends App_Action {
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'HUBSPOT';
-
-	/**
-	 *
-	 * @var string
-	 */
-	private $action_code;
-
-	/**
-	 *
-	 * @var string
-	 */
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'HUBSPOTREMOVEUSERFROMLIST';
-		$this->action_meta = 'HUBSPOTLIST';
-		$this->define_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object.
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'integration/hubspot/' ),
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			'sentence'              => sprintf( esc_html__( "Remove the user's HubSpot contact from {{a static list:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( "Remove the user's HubSpot contact from {{a static list}}", 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'requires_user'         => true,
-			'execution_function'    => array( $this, 'remove_contact_from_list' ),
-			'options_callback'      => array( $this, 'load_options' ),
-			'background_processing' => true,
-		);
-
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * load_options
+	 * Set up action
 	 *
 	 * @return void
 	 */
-	public function load_options() {
-		return array(
-			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->field->select(
-						array(
-							'option_code'           => $this->action_meta,
-							'label'                 => esc_attr__( 'HubSpot List', 'uncanny-automator' ),
-							'required'              => true,
-							'supports_tokens'       => false,
-							'supports_custom_value' => false,
-							'options'               => Automator()->helpers->recipe->hubspot->get_lists(),
-						)
-					),
-				),
-			),
+	protected function setup_action() {
+		$this->set_integration( 'HUBSPOT' );
+		$this->set_action_code( 'HUBSPOTREMOVEUSERFROMLIST' );
+		$this->set_action_meta( 'HUBSPOTLIST' );
+		$this->set_requires_user( true );
+		$this->set_sentence(
+			sprintf(
+				// translators: %s: segment field name
+				esc_html_x( "Remove the user's HubSpot contact from {{a static segment:%s}}", 'HubSpot', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
+		);
+		$this->set_readable_sentence( esc_html_x( "Remove the user's HubSpot contact from {{a static segment}}", 'HubSpot', 'uncanny-automator' ) );
+		$this->set_background_processing( true );
+	}
 
+	/**
+	 * Load options
+	 *
+	 * @return array
+	 */
+	public function options() {
+		return array(
+			$this->helpers->get_list_option_config( $this->get_action_meta() ),
 		);
 	}
 
 	/**
-	 * Action validation function.
+	 * Process action
 	 *
-	 * @return mixed
+	 * @param int $user_id
+	 * @param array $action_data
+	 * @param int $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool
+	 * @throws Exception If the action fails.
 	 */
-	public function remove_contact_from_list( $user_id, $action_data, $recipe_id, $args ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$helpers = Automator()->helpers->recipe->hubspot->options;
+		$user = get_userdata( $user_id );
 
-		$user_data = get_userdata( $user_id );
-
-		$email = $user_data->user_email;
-
-		$list = trim( Automator()->parse->text( $action_data['meta']['HUBSPOTLIST'], $recipe_id, $user_id, $args ) );
-
-		try {
-
-			$response = $helpers->remove_contact_from_list( $list, $email, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-			$helpers->log_action_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
+		if ( ! $user ) {
+			throw new Exception( esc_html_x( 'User not found.', 'HubSpot', 'uncanny-automator' ) );
 		}
+
+		$list_id = $this->get_parsed_meta_value( $this->get_action_meta(), '' );
+
+		$this->api->remove_contact_from_list( $list_id, $user->user_email, $action_data );
+
+		return true;
 	}
 }

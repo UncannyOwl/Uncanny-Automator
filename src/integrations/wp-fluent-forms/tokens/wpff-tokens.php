@@ -59,13 +59,17 @@ class Wpff_Tokens {
 		if ( true === $fluent_active && ! empty( $form_id ) && 0 !== $form_id && is_numeric( $form_id ) ) {
 
 			$form = wpFluent()->table( 'fluentform_forms' )->where( 'id', '=', $form_id )
-							  ->select( array( 'id', 'title', 'form_fields' ) )
-							  ->orderBy( 'id', 'DESC' )
-							  ->get();
+				->select( array( 'id', 'title', 'form_fields' ) )
+				->orderBy( 'id', 'DESC' )
+				->get();
 
-			if ( $form ) {
-				$form               = array_pop( $form );
-				$forms[ $form->id ] = json_decode( $form->form_fields, true );
+			// Fluent Forms 6.2.0 upgraded its internal framework and `->get()` now
+			// returns a FluentForm\Framework\Support\Collection instead of a plain
+			// array. Handle both so we remain compatible with older and newer FF.
+			$row = $this->resolve_first_row( $form );
+
+			if ( $row && isset( $row->form_fields ) ) {
+				$forms[ $row->id ] = json_decode( $row->form_fields, true );
 			}
 		}
 
@@ -182,6 +186,44 @@ class Wpff_Tokens {
 		}
 
 		return $tokens;
+	}
+
+	/**
+	 * Resolve the first row from a wpFluent query result.
+	 *
+	 * Fluent Forms < 6.2.0 returns a plain array from `->get()`. 6.2.0+ returns a
+	 * FluentForm\Framework\Support\Collection. This helper normalizes both to a
+	 * single row object (or null).
+	 *
+	 * @param mixed $result
+	 *
+	 * @return object|null
+	 */
+	protected function resolve_first_row( $result ) {
+		if ( empty( $result ) ) {
+			return null;
+		}
+
+		if ( is_array( $result ) ) {
+			return array_pop( $result );
+		}
+
+		if ( is_object( $result ) && method_exists( $result, 'first' ) ) {
+			return $result->first();
+		}
+
+		if ( $result instanceof \Traversable ) {
+			foreach ( $result as $row ) {
+				return $row;
+			}
+		}
+
+		// Already a single row object.
+		if ( is_object( $result ) && isset( $result->id ) ) {
+			return $result;
+		}
+
+		return null;
 	}
 
 	/**

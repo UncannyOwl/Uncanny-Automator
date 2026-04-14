@@ -1,95 +1,71 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Drip;
+
+use Exception;
 
 /**
  * Class DRIP_UNSUBSCRIBE_ALL
  *
  * @package Uncanny_Automator
+ *
+ * @property Drip_App_Helpers $helpers
+ * @property Drip_Api_Caller $api
  */
-class DRIP_UNSUBSCRIBE_ALL {
-
-	use Recipe\Actions;
+class DRIP_UNSUBSCRIBE_ALL extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * @var Drip_Functions
-	 */
-	private $functions;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-
-		$this->functions = new Drip_Functions();
-
-		$this->setup_action();
-	}
-
-
-	/**
-	 * Define and register the action by pushing it into the Automator object.
+	 * Setup the action.
+	 *
+	 * @return void
 	 */
 	public function setup_action() {
-
 		$this->set_integration( 'DRIP' );
 		$this->set_action_code( 'UNSUBSCRIBE_ALL' );
 		$this->set_action_meta( 'EMAIL' );
 		$this->set_is_pro( false );
-		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/drip/' ) );
 		$this->set_requires_user( false );
-		/* translators: 1. tag, 2. email address */
-		$this->set_sentence( sprintf( esc_attr__( 'Unsubscribe {{a subscriber:%1$s}} from all the mailings', 'uncanny-automator' ), $this->get_action_meta() ) );
-		$this->set_readable_sentence( esc_attr__( 'Unsubscribe {{a subscriber}} from all the mailings', 'uncanny-automator' ) );
-		$this->set_options_callback( array( $this, 'load_options' ) );
 		$this->set_background_processing( true );
-		$this->register_action();
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/drip/' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Unsubscribe {{a subscriber}} from all the mailings', 'Drip', 'uncanny-automator' ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s: email
+				esc_attr_x( 'Unsubscribe {{a subscriber:%1$s}} from all the mailings', 'Drip', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
+		);
 	}
 
 	/**
-	 * load_options
+	 * Define options.
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public function load_options() {
-
-		$email = array(
-			'option_code' => 'EMAIL',
-			'label'       => esc_html__( 'Email', 'uncanny-automator' ),
-			'input_type'  => 'email',
-			'required'    => true,
-		);
-
+	public function options() {
 		return array(
-			'options_group' => array(
-				$this->action_meta => array(
-					$email,
-				),
-			),
+			$this->helpers->get_email_option_config(),
 		);
 	}
 
 	/**
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
+	 * Process the action.
+	 *
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool
+	 * @throws Exception If the API request fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$email = Automator()->parse->text( $action_data['meta']['EMAIL'], $recipe_id, $user_id, $args );
+		$email = $this->helpers->validate_email( $parsed['EMAIL'] ?? '' );
 
-		$error_msg = '';
+		$this->api->unsubscribe_all( $email, $action_data );
 
-		try {
-
-			$response = $this->functions->unsubscribe_all( $email );
-
-		} catch ( \Exception $e ) {
-			$error_msg                           = $e->getMessage();
-			$action_data['complete_with_errors'] = true;
-		}
-
-		return Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_msg );
+		return true;
 	}
 }

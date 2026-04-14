@@ -238,13 +238,13 @@ class Validator {
 	 *
 	 * @param int $bytes
 	 *
-	 * @return int|float
+	 * @return int
 	 */
 	public static function to_megabytes( $bytes ) {
 
 		$mb = $bytes / ( 1024 * 1024 );
 
-		return floor( $mb );
+		return (int) floor( $mb );
 
 	}
 

@@ -18,7 +18,7 @@ if ( $dashboard->has_site_connected ) {
 
 $setup_wizard_link = add_query_arg(
 	array(
-		'post_type' => 'uo-recipe',
+		'post_type' => AUTOMATOR_POST_TYPE_RECIPE,
 		'page'      => 'uncanny-automator-setup-wizard',
 	),
 	admin_url( 'edit.php' )
@@ -318,18 +318,18 @@ $setup_wizard_link = add_query_arg(
 								<uo-accordion-item>
 
 									<div slot="summary">
-										<?php echo esc_html( $category[ 'title' ] ); ?>
+										<?php echo esc_html( $category['title'] ); ?>
 										<em style="opacity: .7; font-size: .8em">
-											<?php echo sprintf( esc_html__( '%s articles', 'uncanny-automator' ), count( $category[ 'articles' ] ) ); ?>
+											<?php echo sprintf( esc_html__( '%s articles', 'uncanny-automator' ), count( $category['articles'] ) ); ?>
 										</em>
 									</div>
 
-									<?php foreach ( $category[ 'articles' ] as $article ) { ?>
+									<?php foreach ( $category['articles'] as $article ) { ?>
 										<uo-accordion-item-li>
-											<a href="<?php echo esc_url( $article[ 'url' ] ); ?>"
+											<a href="<?php echo esc_url( $article['url'] ); ?>"
 											   target="_blank"
 											>
-												<?php echo esc_html( $article[ 'title' ] ); ?>
+												<?php echo esc_html( $article['title'] ); ?>
 											</a>
 										</uo-accordion-item-li>
 									<?php } ?>
@@ -556,10 +556,10 @@ $setup_wizard_link = add_query_arg(
 								<uo-accordion-item>
 
 									<div slot="summary">
-										<?php echo esc_html( $faq_question[ 'question' ] ); ?>
+										<?php echo esc_html( $faq_question['question'] ); ?>
 									</div>
 
-									<?php echo esc_html( $faq_question[ 'answer' ] ); ?>									
+									<?php echo esc_html( $faq_question['answer'] ); ?>									
 									
 								</uo-accordion-item>
 

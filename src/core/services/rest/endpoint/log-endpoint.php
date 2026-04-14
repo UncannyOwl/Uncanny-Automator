@@ -187,9 +187,13 @@ class Log_Endpoint {
 		$triggered_by_user = absint( $recipe['user_id'] );
 		$run_number        = absint( $recipe['run_number'] );
 		$start_date        = isset( $triggers_items[0]['start_date'] ) ? $triggers_items[0]['start_date'] : null;
+		$start_date_full   = isset( $triggers_items[0]['start_date_full'] ) ? $triggers_items[0]['start_date_full'] : null;
+		$raw_start_date    = isset( $triggers_items[0]['_raw_start_date'] ) ? $triggers_items[0]['_raw_start_date'] : null;
 		$status_id         = $this->determine_status_id( $this->automator_factory->status(), $recipe['completed'], $flow_items );
 		$recipe_id         = absint( $recipe['automator_recipe_id'] );
 		$end_date          = $this->resolve_end_date( $flow_items );
+		$end_date_full     = $this->resolve_end_date( $flow_items, false );
+		$raw_end_date      = $this->resolve_end_date_raw( $flow_items );
 		$title             = trim( $recipe['recipe_title'] );
 		$logic             = strtoupper( $this->logs_factory->trigger()->get_logic( $recipe ) );
 
@@ -199,7 +203,9 @@ class Log_Endpoint {
 		$triggers_num_times_not_completed = in_array( 'in-progress', $triggers_statuses, true );
 
 		if ( $has_triggers_not_completed || $triggers_num_times_not_completed ) {
-			$end_date = null;
+			$end_date      = null;
+			$end_date_full = null;
+			$raw_end_date  = null;
 		}
 
 		$json = array(
@@ -208,8 +214,10 @@ class Log_Endpoint {
 			'title'             => ! empty( $title ) ? $title : sprintf( 'ID: %d (no title)', $recipe_id ),
 			'status_id'         => $status_id,
 			'start_date'        => $start_date,
+			'start_date_full'   => $start_date_full,
 			'end_date'          => $end_date,
-			'date_elapsed'      => $formatter::get_date_elapsed( $start_date, $end_date ),
+			'end_date_full'     => $end_date_full,
+			'date_elapsed'      => $formatter::get_date_elapsed( $raw_start_date, $raw_end_date ),
 			'triggered_by_user' => $triggered_by_user,
 			'triggers'          => array(
 				'logic' => $logic,
@@ -268,7 +276,7 @@ class Log_Endpoint {
 	 *
 	 * @return string|null|false
 	 */
-	protected function resolve_end_date( $flow_items ) {
+	protected function resolve_end_date( $flow_items, $relative = true ) {
 
 		if ( ! isset( $flow_items[ count( $flow_items ) - 1 ]['_timestamp'] ) ) {
 			return null;
@@ -283,11 +291,33 @@ class Log_Endpoint {
 			$dt = new \DateTime( $date );
 			$dt->setTimezone( new \DateTimeZone( Automator()->get_timezone_string() ) );
 
-			return Formatters_Utils::date_time_format( $dt->format( 'Y-m-d H:i:s' ) );
+			$formatted_date = $dt->format( 'Y-m-d H:i:s' );
+
+			return $relative
+				? Formatters_Utils::date_time_format_relative( $formatted_date )
+				: Formatters_Utils::date_time_format( $formatted_date );
 
 		} catch ( \Exception $e ) {
 			return 'Cannot identify date from the given timestamp.';
 		}
+	}
+
+	/**
+	 * Resolves the raw (unformatted) end date from flow items for elapsed time calculation.
+	 *
+	 * @param mixed[] $flow_items
+	 *
+	 * @return string|null
+	 */
+	protected function resolve_end_date_raw( $flow_items ) {
+
+		if ( ! isset( $flow_items[ count( $flow_items ) - 1 ]['_timestamp'] ) ) {
+			return null;
+		}
+
+		$max = $flow_items[ count( $flow_items ) - 1 ]['_timestamp']; // @phpstan-ignore-line False positive for indexed array.
+
+		return gmdate( 'Y-m-d H:i:s', absint( $max ) );
 	}
 
 	/**
@@ -324,7 +354,7 @@ class Log_Endpoint {
 			'%s?post_type=%s&page=%s&recipe_id=%d&run_number=%d&recipe_log_id=%d&delete_specific_activity=1&wpnonce='
 			. wp_create_nonce( AUTOMATOR_FREE_ITEM_NAME ),
 			admin_url( 'edit.php' ),
-			'uo-recipe',
+			AUTOMATOR_POST_TYPE_RECIPE,
 			'uncanny-automator-admin-logs',
 			absint( $this->params['recipe_id'] ),
 			absint( $this->params['run_number'] ),

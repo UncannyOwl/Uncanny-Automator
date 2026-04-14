@@ -426,7 +426,17 @@ class Utilities {
 	 * @since    1.0.0
 	 */
 	public static function get_pro_items_list() {
-		require_once self::automator_get_include( 'pro-items-list.php' );
+		$pro_items_file = UA_ABSPATH . 'vendor/composer/pro-items-list.php';
+
+		if ( ! is_readable( $pro_items_file ) ) {
+			return array();
+		}
+
+		require_once $pro_items_file;
+
+		if ( ! function_exists( 'automator_pro_items_list' ) ) {
+			return array();
+		}
 
 		return automator_pro_items_list();
 	}

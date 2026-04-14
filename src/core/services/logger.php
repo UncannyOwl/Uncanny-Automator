@@ -66,7 +66,6 @@ function trigger_fields_logger( $hook_args = array() ) {
 	// Log the fields using the Trigger_Fields_Logger.
 	$trigger_fields_logger = new Trigger_Fields_Logger();
 	$trigger_fields_logger->log( $args, $fields );
-
 }
 
 /**
@@ -160,7 +159,7 @@ function recipe_triggers_logger( $hook_args = array() ) {
 		if ( is_array( $recipe['triggers'] ) && ! empty( $recipe['triggers'] ) ) {
 			$triggers_live    = array_filter(
 				$recipe['triggers'],
-				function( $trigger_item ) {
+				function ( $trigger_item ) {
 					return 'publish' === $trigger_item['post_status'];
 				}
 			);
@@ -199,7 +198,6 @@ function recipe_triggers_logger( $hook_args = array() ) {
 		$trigger_ids = '';
 	}
 	$recipe_objects_logger->log_triggers( $args, $trigger_ids );
-
 }
 
 /**
@@ -231,7 +229,6 @@ function recipe_actions_flow_logger( $hook_args = array() ) {
 	if ( empty( $recorded ) ) {
 		$recipe_objects_logger->log_actions_flow( $args, $resolver->resolve_recipe_actions() );
 	}
-
 }
 
 /**
@@ -259,9 +256,10 @@ function closure_logger( $hook_args ) {
 			ON post.ID = meta.post_id
 			WHERE meta.meta_key = 'REDIRECTURL'
 			AND post.post_parent = %d
-			AND post.post_type = 'uo-closure'
+			AND post.post_type = %s
 			",
-			$args['recipe_id']
+			$args['recipe_id'],
+			AUTOMATOR_POST_TYPE_CLOSURE
 		),
 		ARRAY_A
 	);
@@ -280,7 +278,6 @@ function closure_logger( $hook_args ) {
 			);
 		}
 	}
-
 }
 
 /**
@@ -348,7 +345,6 @@ function recipe_actions_conditions_logger( $action = array(), $code = '', $messa
 			break;
 		}
 	}
-
 }
 
 /**
@@ -377,7 +373,6 @@ function conditions_errors_logger( $recipe_id = 0, $user_id = 0, $recipe_log_id 
 
 	// Add the errors to the recipe objects logger as meta data.
 	$recipe_objects_logger->add_meta( $args, 'conditions_failed', $error_registry->get_errors() );
-
 }
 
 /**
@@ -424,7 +419,6 @@ function tokens_logger( $hook_args = array() ) {
 			)
 		);
 	}
-
 }
 
 /**
@@ -467,7 +461,6 @@ function log_async_actions( $recipe_id = 0, $user_id = 0, $recipe_log_id = 0, $a
 
 	// Add the evaluated conditions to the recipe objects logger as meta data.
 	$recipe_objects_logger->add_meta( $args, 'action_delays', $entries );
-
 }
 
 /**
@@ -508,7 +501,6 @@ function collect_async_actions( $action = array() ) {
 	}
 
 	Automator()->async_action_logger()->add_entry( $action_id, wp_json_encode( $data ) );
-
 }
 
 /**
@@ -544,7 +536,6 @@ function recipe_triggers_logic_logger( $args ) {
 		),
 		true // <-- Upserts
 	);
-
 }
 
 /**
@@ -582,5 +573,4 @@ function fields_logger_register_listeners() {
 
 	// Collects the async actions.
 	add_action( 'automator_action_been_process_further', '\Uncanny_Automator\Logger\collect_async_actions' );
-
 };

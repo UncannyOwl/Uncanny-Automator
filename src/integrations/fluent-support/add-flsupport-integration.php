@@ -20,7 +20,6 @@ class Add_Flsupport_Integration {
 	 * Add_Integration constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -44,13 +43,12 @@ class Add_Flsupport_Integration {
 	 */
 	public function add_integration_directory_func( $directory ) {
 
-		$directory[] = dirname( __FILE__ ) . '/helpers';
-		$directory[] = dirname( __FILE__ ) . '/tokens';
-		$directory[] = dirname( __FILE__ ) . '/actions';
-		$directory[] = dirname( __FILE__ ) . '/triggers';
+		$directory[] = __DIR__ . '/helpers';
+		$directory[] = __DIR__ . '/tokens';
+		$directory[] = __DIR__ . '/actions';
+		$directory[] = __DIR__ . '/triggers';
 
 		return $directory;
-
 	}
 
 	/**
@@ -58,15 +56,12 @@ class Add_Flsupport_Integration {
 	 */
 	public function add_integration_func() {
 
-		global $uncanny_automator;
-
-		$uncanny_automator->register->integration(
+		Automator()->register->integration(
 			self::$integration,
 			array(
 				'name'     => 'Fluent Support',
 				'icon_svg' => Utilities::automator_get_integration_icon( __DIR__ . '/img/fluent-support-icon.svg' ),
 			)
 		);
-
 	}
 }
