@@ -67,10 +67,13 @@ class Class_Resolver {
 		}
 
 		// Check if it's an internal Automator file.
-		$esc_characters = apply_filters( 'automator_esc_with_slash_characters', '/-:\\()_,.' );
-		$pattern        = '/(' . addcslashes( $this->integrations_directory_path, $esc_characters ) . ')/';
+		// Normalize path separators — Windows uses backslashes which break the regex. See: UncannyOwl/Automator#7194
+		$normalized_file = wp_normalize_path( $file );
+		$normalized_dir  = wp_normalize_path( $this->integrations_directory_path );
+		$esc_characters  = apply_filters( 'automator_esc_with_slash_characters', '/-:\\()_,.' );
+		$pattern         = '/(' . addcslashes( $normalized_dir, $esc_characters ) . ')/';
 
-		if ( preg_match( $pattern, $file ) ) {
+		if ( preg_match( $pattern, $normalized_file ) ) {
 			$class_name = 'Uncanny_Automator\\' . $class_name;
 		} else {
 			$custom_namespace = isset( Set_Up_Automator::$external_integrations_namespace[ $integration_name ] )
@@ -154,20 +157,20 @@ class Class_Resolver {
 	 *   'Uncanny_Automator_Pro\BDB_IS_USER_IN_GROUP'
 	 *   → 'Uncanny_Automator_Pro\Loop_Filters\BDB_IS_USER_IN_GROUP'
 	 *
-	 * @param string $class The fully qualified class name.
+	 * @param string $class_name The fully qualified class name.
 	 *
 	 * @return string The class name with Loop_Filters sub-namespace inserted.
 	 */
-	public static function prepend_loop_filter_namespace( $class ) {
+	public static function prepend_loop_filter_namespace( $class_name ) {
 
-		$last_slash = strrpos( $class, '\\' );
+		$last_slash = strrpos( $class_name, '\\' );
 
 		if ( false === $last_slash ) {
-			return 'Loop_Filters\\' . $class;
+			return 'Loop_Filters\\' . $class_name;
 		}
 
-		$namespace  = substr( $class, 0, $last_slash );
-		$class_name = substr( $class, $last_slash + 1 );
+		$namespace  = substr( $class_name, 0, $last_slash );
+		$class_name = substr( $class_name, $last_slash + 1 );
 
 		return $namespace . '\\Loop_Filters\\' . $class_name;
 	}

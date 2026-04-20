@@ -130,8 +130,8 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				'recipe_id'  => array( 'type' => 'integer' ),
-				'trigger'    => array(
+				'recipe_id' => array( 'type' => 'integer' ),
+				'trigger'   => array(
 					'type'       => 'object',
 					'properties' => array(
 						'trigger_id'                   => array( 'type' => 'integer' ),
@@ -143,9 +143,9 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 						'recipe_id'                    => array( 'type' => 'integer' ),
 					),
 				),
-				'links'      => array( 'type' => 'object' ),
-				'notes'      => array(
-					'type' => 'array',
+				'links'     => array( 'type' => 'object' ),
+				'notes'     => array(
+					'type'  => 'array',
 					'items' => array( 'type' => 'string' ),
 				),
 			),
@@ -190,11 +190,22 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 		$recipe_id      = (int) ( $params['recipe_id'] ?? 0 );
 		$requested_code = $params['trigger_code'] ?? null;
 
+		// Bail early if the fields already carry a validation error from the caller.
+		$validation_error = $this->extract_validation_error( $fields );
+		if ( null !== $validation_error ) {
+			return Json_Rpc_Response::create_error_response( $validation_error );
+		}
+
 		// Normalize MCP field input (multi-select JSON encoding, _readable suffixes, etc.).
 		$trigger_code = get_post_meta( $trigger_id, 'code', true );
 		if ( ! empty( $trigger_code ) && ! empty( $fields ) ) {
 			$resolver = new Field_Mcp_Input_Resolver();
 			$fields   = $resolver->normalize( 'triggers', $trigger_code, $fields );
+		}
+
+		$validation_error = $this->extract_validation_error( $fields );
+		if ( null !== $validation_error ) {
+			return Json_Rpc_Response::create_error_response( $validation_error );
 		}
 
 		// Map status to post_status for the service layer.
@@ -274,10 +285,21 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'Trigger definition not found: ' . $trigger_code );
 		}
 
+		// Bail early if the fields already carry a validation error from the caller.
+		$validation_error = $this->extract_validation_error( $fields );
+		if ( null !== $validation_error ) {
+			return Json_Rpc_Response::create_error_response( $validation_error );
+		}
+
 		// Normalize MCP field input (multi-select JSON encoding, _readable suffixes, etc.).
 		$resolver = new Field_Mcp_Input_Resolver();
 		$fields   = $resolver->normalize( 'triggers', $trigger_code, $fields );
 		$fields   = $this->strip_sentence_artifacts( $fields );
+
+		$validation_error = $this->extract_validation_error( $fields );
+		if ( null !== $validation_error ) {
+			return Json_Rpc_Response::create_error_response( $validation_error );
+		}
 
 		$fields['added_by_llm'] = true;
 
@@ -325,4 +347,21 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 		return $fields;
 	}
 
+	/**
+	 * Extract and clear field normalization errors.
+	 *
+	 * @param array<string, mixed> $fields Normalized fields.
+	 *
+	 * @return string|null
+	 */
+	private function extract_validation_error( array &$fields ): ?string {
+		if ( empty( $fields['__validation_error'] ) || ! is_string( $fields['__validation_error'] ) ) {
+			return null;
+		}
+
+		$error_message = $fields['__validation_error'];
+		unset( $fields['__validation_error'] );
+
+		return $error_message;
+	}
 }

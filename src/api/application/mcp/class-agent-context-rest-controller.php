@@ -73,7 +73,7 @@ class Agent_Context_Rest_Controller {
 			$token = $matches[1];
 			$user  = $this->token_manager->get_user_from_token( $token );
 
-			if ( $user && user_can( $user, automator_get_capability() ) ) {
+			if ( $user && user_can( $user, 'manage_options' ) ) {
 				wp_set_current_user( $user->ID );
 				return true;
 			}

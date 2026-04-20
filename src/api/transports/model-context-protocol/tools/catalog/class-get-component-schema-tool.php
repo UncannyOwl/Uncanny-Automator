@@ -42,7 +42,11 @@ class Get_Component_Schema_Tool extends Abstract_MCP_Tool {
 	 * {@inheritDoc}
 	 */
 	public function get_description() {
-		return 'Get field schema for a trigger, action, or condition using code or instance ID. Shows required fields and defaults. If a field has supports_custom_value: false, use get_field_options to resolve its dropdown choices.';
+		return 'Get field schema for a trigger, action, or condition by code or instance ID. '
+			. 'Shows required fields, types, and defaults. If a field has supports_custom_value: false, '
+			. 'use get_field_options to resolve its dropdown choices. '
+			. 'Note: Required fields may have token-based defaults (e.g., {{admin_email}}). '
+			. 'For one-time executions, replace these tokens with absolute values; for recipes, tokens are resolved at runtime.';
 	}
 
 	/**

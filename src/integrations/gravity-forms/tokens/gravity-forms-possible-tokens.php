@@ -190,7 +190,6 @@ class Gravity_Forms_Possible_Tokens {
 	public function excluded_fields() {
 
 		$excluded_field_types = array(
-			'hidden',
 			'html',
 			'section',
 			'page',

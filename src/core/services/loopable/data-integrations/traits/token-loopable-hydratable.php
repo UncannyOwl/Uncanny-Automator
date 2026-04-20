@@ -78,55 +78,78 @@ trait Token_Loopable_Hydratable {
 	/**
 	 * Retrieves a value from a nested array using dot notation.
 	 *
-	 * @param array  $array         The array to search through.
-	 * @param string $dot_notation  The dot notation string representing the keys.
+	 * @param mixed  $data         The array to search through.
+	 * @param string $dot_notation The dot notation string representing the keys.
 	 *
 	 * @return mixed The value found by the dot notation, or null if not found.
 	 */
-	public static function get_value_by_dot_notation( $array, $dot_notation ) {
-		// Split the dot notation into an array of keys.
+	public static function get_value_by_dot_notation( $data, $dot_notation ) {
+
 		$keys = explode( '.', $dot_notation );
 
-		// Traverse the array using the keys.
 		foreach ( $keys as $key ) {
 
-			if ( isset( $array[ $key ] ) ) {
-				$array = $array[ $key ]; // Move deeper into the array.
+			if ( isset( $data[ $key ] ) ) {
+				$data = $data[ $key ];
+			} elseif ( is_array( $data ) && 1 === count( $data ) && isset( $data[0][ $key ] ) ) {
+				// Unwrap single-element indexed arrays so nested keys such as '@attributes'
+				// can be reached via paths like 'media:thumbnail.@attributes.url'.
+				$data = $data[0][ $key ];
 			}
 
-			// Handle special case for XML structures.
-			if ( isset( $array[0]['_loopable_xml_text'] ) ) {
-				$array = $array[0]['_loopable_xml_text'];
-			}
+			$data = self::resolve_xml_node( $data, $key );
 
-			// Stop processing if the key does not exist.
-			if ( ! isset( $array ) ) {
-				return null; // Return null if the value is not found.
+			if ( ! isset( $data ) ) {
+				return null;
 			}
 		}
 
-		return $array; // Return the final value.
+		return $data;
+	}
+
+	/**
+	 * Resolves the scalar value of a single XML node during dot-notation traversal.
+	 *
+	 * @param mixed  $node The current traversal value.
+	 * @param string $key  The dot-notation key just processed.
+	 *
+	 * @return mixed
+	 */
+	private static function resolve_xml_node( $node, $key ) {
+
+		if ( isset( $node[0]['_loopable_xml_text'] ) ) {
+			return $node[0]['_loopable_xml_text'];
+		}
+
+		// Attribute-only XML elements (e.g. <media:thumbnail url="..."/>) carry no text
+		// node. Resolve '.element_value' to the 'url' attribute when present, otherwise
+		// fall back to the first attribute value.
+		if ( 'element_value' === $key && isset( $node[0]['@attributes'] ) ) {
+			$attrs = $node[0]['@attributes'];
+			return $attrs['url'] ?? (string) reset( $attrs );
+		}
+
+		return $node;
 	}
 
 	/**
 	 * Extracts the loopable item index number from a string if it matches a specific pattern.
 	 *
-	 * @param string $string The string potentially containing the loopable item index.
+	 * @param mixed $value The value potentially containing the loopable item index.
 	 *
 	 * @return int|null The extracted index number, or null if not found.
 	 */
-	public static function extract_loopable_item_index_number( $string ) {
-		// Return null if the provided string is not a valid string.
-		if ( ! is_string( $string ) ) {
+	public static function extract_loopable_item_index_number( $value ) {
+		// Return null if the provided value is not a valid string.
+		if ( ! is_string( $value ) ) {
 			return null;
 		}
 
 		// Check if the string matches the pattern 'loopable_item_index_#'.
-		if ( preg_match( '/^loopable_item_index_(\d+)$/', $string, $matches ) ) {
+		if ( preg_match( '/^loopable_item_index_(\d+)$/', $value, $matches ) ) {
 			return (int) $matches[1]; // Return the extracted number as an integer.
 		}
 
 		return null; // Return null if the pattern does not match.
 	}
-
 }

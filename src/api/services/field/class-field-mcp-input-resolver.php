@@ -84,6 +84,7 @@ class Field_Mcp_Input_Resolver {
 					$decoded = json_decode( $repeater_value, true );
 					if ( is_array( $decoded ) ) {
 						$repeater_value = $decoded;
+						$fields[ $field_code ] = $repeater_value;
 					} else {
 						// Non-JSON string is invalid for a repeater field.
 						$fields['__validation_error'] = sprintf(
@@ -94,6 +95,12 @@ class Field_Mcp_Input_Resolver {
 					}
 				}
 				$error = $this->detect_repeater_garbage( $repeater_value, $field_code );
+				if ( null !== $error ) {
+					$fields['__validation_error'] = $error;
+					continue;
+				}
+
+				$error = $this->validate_repeater_row_keys( $repeater_value, $def['fields'] ?? array(), $field_code );
 				if ( null !== $error ) {
 					$fields['__validation_error'] = $error;
 				}
@@ -256,14 +263,14 @@ class Field_Mcp_Input_Resolver {
 	 *     ACCEPT
 	 *
 	 * WHAT PASSES (all values flat, correct structure):
-	 *   [{"NOTION||__||FIELD||__||id||__||title": "value"}]     compound keys
-	 *   [{"Name": "val", "desc:rich_text": "val"}]              simplified keys
+	 *   [{"GS_COLUMN_NAME": "Source", "GS_COLUMN_VALUE": "x"}] schema option codes
 	 *   [{"field": "{{user_email}}"}]                           tokens
 	 *   [{"field": ["opt1", "opt2"]}]                           multi-select
 	 *
-	 * WHAT FAILS (nested values or wrong structure):
+	 * WHAT FAILS (nested values, wrong structure, or label-based keys):
 	 *   [{"COLUMN": {"title": [...]}, "VALUE": {...}}]          nested objects
 	 *   [{"key": "code", "value": {"text": {...}}}]             nested value
+	 *   [{"Column": "x", "Value": "y"}]                        display labels, not option codes
 	 *   [{"Name": "x"}, {"Date": "y"}]                         split columns
 	 *   [{"f": {"nested": {"deep": "v"}}}]                     nested value
 	 *
@@ -350,6 +357,84 @@ class Field_Mcp_Input_Resolver {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Validate repeater row keys against the schema option codes.
+	 *
+	 * MCP callers must use the actual repeater sub-field option_code values,
+	 * not display labels such as "Column" or "Value".
+	 *
+	 * @param array  $rows       Repeater rows.
+	 * @param array  $sub_fields Repeater sub-field definitions.
+	 * @param string $field_code Parent repeater field code.
+	 *
+	 * @return string|null Error message when invalid keys are present, null otherwise.
+	 */
+	private function validate_repeater_row_keys( array $rows, array $sub_fields, string $field_code ): ?string {
+
+		if ( empty( $rows ) || empty( $sub_fields ) ) {
+			return null;
+		}
+
+		$allowed_keys = $this->get_allowed_repeater_row_keys( $sub_fields );
+		if ( empty( $allowed_keys ) ) {
+			return null;
+		}
+
+		foreach ( $rows as $row_index => $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+
+			foreach ( array_keys( $row ) as $row_key ) {
+				if ( in_array( $row_key, $allowed_keys, true ) ) {
+					continue;
+				}
+
+				return sprintf(
+					'%1$s row %2$d contains unknown sub-field "%3$s". Expected repeater keys: %4$s. '
+					. 'Use repeater sub-field option_code values from get_component_schema, not display labels.',
+					$field_code,
+					$row_index + 1,
+					$row_key,
+					implode( ', ', $allowed_keys )
+				);
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the allowed key set for a repeater row.
+	 *
+	 * Each sub-field accepts its option code, plus optional _readable and
+	 * _custom companion keys used by the builder.
+	 *
+	 * @param array $sub_fields Repeater sub-field definitions.
+	 *
+	 * @return string[]
+	 */
+	private function get_allowed_repeater_row_keys( array $sub_fields ): array {
+
+		$allowed_keys = array();
+
+		foreach ( $sub_fields as $sub_field ) {
+			if ( ! is_array( $sub_field ) || empty( $sub_field['option_code'] ) ) {
+				continue;
+			}
+
+			$option_code     = (string) $sub_field['option_code'];
+			$allowed_keys[]  = $option_code;
+			$allowed_keys[]  = $option_code . '_readable';
+
+			if ( ! empty( $sub_field['supports_custom_value'] ) ) {
+				$allowed_keys[] = $option_code . '_custom';
+			}
+		}
+
+		return array_values( array_unique( $allowed_keys ) );
 	}
 
 	/**

@@ -100,7 +100,7 @@ trait Premium_Integration_Items {
 				continue;
 			}
 
-			$items[] = $sentence;
+			$items[] = preg_replace( '/\{\{([^}]+)\}\}/', '$1', $sentence );
 		}
 
 		return $items;

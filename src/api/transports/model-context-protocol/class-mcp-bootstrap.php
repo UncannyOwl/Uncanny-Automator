@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol;
 
 use Uncanny_Automator\Api\Application\Mcp\Mcp_Client;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\OAuth\Rest_Bearer_Authenticator;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Standalone\Dropdown_Controller;
 
 // Include tool framework classes
@@ -45,6 +46,14 @@ class Mcp_Bootstrap {
 	private $dropdown_controller;
 
 	/**
+	 * REST bearer authenticator.
+	 *
+	 * @since 7.1.0
+	 * @var Rest_Bearer_Authenticator
+	 */
+	private $rest_bearer_authenticator;
+
+	/**
 	 * Initialize MCP transport layer.
 	 *
 	 * @since 7.0.0
@@ -57,9 +66,13 @@ class Mcp_Bootstrap {
 		$this->rest_controller = new Mcp_Rest_Controller();
 		// Initialize dropdown controller.
 		$this->dropdown_controller = new Dropdown_Controller();
+		$this->rest_bearer_authenticator = new Rest_Bearer_Authenticator();
 
 		// Initialize the chat client.
 		$this->client = Mcp_Client::get_instance();
+
+		// Let valid MCP bearer tokens authenticate standard WordPress REST requests.
+		$this->rest_bearer_authenticator->init();
 
 		// Register REST routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );

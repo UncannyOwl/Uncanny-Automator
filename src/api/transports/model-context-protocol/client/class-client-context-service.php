@@ -24,7 +24,7 @@ class Client_Context_Service {
 	 * @return bool
 	 */
 	public function can_access_client(): bool {
-		return is_admin() && current_user_can( automator_get_capability() );
+		return is_admin() && current_user_can( 'manage_options' );
 	}
 
 	/**

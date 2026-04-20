@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Api\Database\Stores;
 
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Id;
 use Uncanny_Automator\Api\Components\Recipe\Value_Objects\Recipe_Triggers;
+use Uncanny_Automator\Json_String_Repair;
 use Uncanny_Automator\Api\Components\Trigger\Trigger;
 use Uncanny_Automator\Api\Components\Trigger\Trigger_Config;
 use Uncanny_Automator\Api\Components\Trigger\Value_Objects\Trigger_Id;
@@ -454,7 +455,9 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 		);
 
 		// Add dynamic field values (CAPSLOCK fields).
-		$meta = array_merge( $meta, $this->convert_configuration_to_legacy_meta( $config, $trigger_code ) );
+		foreach ( $this->convert_configuration_to_legacy_meta( $config, $trigger_code ) as $meta_key => $meta_value ) {
+			$meta[ $meta_key ] = Json_String_Repair::slash_for_storage( $meta_value );
+		}
 
 		// Generate title: prefer plain text from HTML (filled-in values), fallback to template.
 		$title = $this->generate_trigger_title( $trigger_data, $config );
@@ -649,14 +652,24 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 			// Match CAPSLOCK field names (letters, numbers, underscores only)
 			// This also matches preserved-case keys (e.g., _AUTOMATOR_CUSTOM_ITEM_NAME_)
 			if ( preg_match( '/^[A-Z][A-Z0-9_]*$/', $meta_key ) && strlen( $meta_key ) > 0 ) {
-				$field_name                   = $meta_key; // Keep original case (CAPSLOCK or preserved)
-				$field_value                  = is_array( $meta_value ) ? $meta_value[0] : $meta_value;
+				$field_name  = $meta_key; // Keep original case (CAPSLOCK or preserved)
+				$field_value = is_array( $meta_value ) ? $meta_value[0] : $meta_value;
+
+				if ( Json_String_Repair::looks_like_structured_json( $field_value ) ) {
+					$field_value = Json_String_Repair::repair( $field_value );
+				}
+
 				$configuration[ $field_name ] = $field_value;
 
 				// Look for readable label
 				$readable_key = $meta_key . '_readable';
 				if ( isset( $all_meta[ $readable_key ] ) ) {
-					$readable_value                           = is_array( $all_meta[ $readable_key ] ) ? $all_meta[ $readable_key ][0] : $all_meta[ $readable_key ];
+					$readable_value = is_array( $all_meta[ $readable_key ] ) ? $all_meta[ $readable_key ][0] : $all_meta[ $readable_key ];
+
+					if ( Json_String_Repair::looks_like_structured_json( $readable_value ) ) {
+						$readable_value = Json_String_Repair::repair( $readable_value );
+					}
+
 					$configuration[ $meta_key . '_readable' ] = $readable_value;
 				}
 			}
@@ -690,5 +703,4 @@ class WP_Recipe_Trigger_Store implements Recipe_Trigger_Store {
 	public function get_post_type(): string {
 		return self::POST_TYPE;
 	}
-
 }

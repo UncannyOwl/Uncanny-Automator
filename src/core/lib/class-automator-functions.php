@@ -1576,7 +1576,13 @@ class Automator_Functions {
 			// Get post custom return an array for each meta_key as there maybe more than one value per key.. we only store and need one value
 			$child_meta_single = array();
 			foreach ( $child_meta as $meta_key => $meta_value ) {
-				$child_meta_single[ $meta_key ] = reset( $meta_value );
+				$value = reset( $meta_value );
+
+				if ( Json_String_Repair::looks_like_structured_json( $value ) ) {
+					$value = Json_String_Repair::repair( $value );
+				}
+
+				$child_meta_single[ $meta_key ] = $value;
 			}
 			$code = array_key_exists( 'code', $child_meta_single ) ? $child_meta_single['code'] : '';
 

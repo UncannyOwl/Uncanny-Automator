@@ -210,7 +210,7 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 			// Validate token using Token_Manager.
 			$user = $this->token_manager->get_user_from_token( $token );
 
-			if ( $user && user_can( $user, automator_get_capability() ) ) {
+			if ( $user && user_can( $user, 'manage_options' ) ) {
 				// Set current user for the request.
 				wp_set_current_user( $user->ID );
 				return true;
@@ -224,7 +224,7 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 		}
 
 		// Fall back to WordPress native authentication (Application Passwords).
-		return current_user_can( automator_get_capability() );
+		return current_user_can( 'manage_options' );
 	}
 
 	/**

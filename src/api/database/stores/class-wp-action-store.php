@@ -8,6 +8,7 @@ use Uncanny_Automator\Api\Components\Action\Action_Config;
 use Uncanny_Automator\Api\Components\Action\Enums\Action_Status;
 use Uncanny_Automator\Api\Database\Interfaces\Action_Store;
 use Uncanny_Automator\Api\Database\Recipe_Cache;
+use Uncanny_Automator\Json_String_Repair;
 
 /**
  * WordPress Action Store.
@@ -364,6 +365,10 @@ class WP_Action_Store implements Action_Store {
 			// WordPress stores meta as arrays, get first value
 			$meta[ $key ] = $value_array[0] ?? '';
 
+			if ( Json_String_Repair::looks_like_structured_json( $meta[ $key ] ) ) {
+				$meta[ $key ] = Json_String_Repair::repair( $meta[ $key ] );
+			}
+
 			// Convert recipe_id to integer
 			if ( 'recipe_id' === $key && is_numeric( $meta[ $key ] ) ) {
 				$meta[ $key ] = (int) $meta[ $key ];
@@ -444,7 +449,7 @@ class WP_Action_Store implements Action_Store {
 		if ( ! empty( $action_data['config'] ) && is_array( $action_data['config'] ) ) {
 			foreach ( $action_data['config'] as $key => $value ) {
 				// Save all config fields as individual post meta entries
-				$meta_data[ $key ] = $value;
+				$meta_data[ $key ] = Json_String_Repair::slash_for_storage( $value );
 			}
 		}
 
@@ -453,7 +458,7 @@ class WP_Action_Store implements Action_Store {
 			foreach ( $action_data['async'] as $key => $value ) {
 				// Save async fields with 'async_' prefix to maintain flat structure
 				// e.g., async_mode, async_delay_number, async_schedule_date, etc.
-				$meta_data[ $key ] = $value;
+				$meta_data[ $key ] = Json_String_Repair::slash_for_storage( $value );
 			}
 		}
 

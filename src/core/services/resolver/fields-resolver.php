@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator\Resolver;
 
+use Uncanny_Automator\Json_String_Repair;
+
 /**
  * Given a Recipe ID, Object ID, and Object Type (e.g 'trigger') resolve all the fields that are in the following:
  *
@@ -235,6 +237,9 @@ class Fields_Resolver {
 
 		// Repeater fields handling.
 		if ( 'repeater' === $field['type'] ) {
+			if ( Json_String_Repair::looks_like_structured_json( $saved_field_value ) ) {
+				$saved_field_value = Json_String_Repair::repair( $saved_field_value );
+			}
 
 			// We'll use this to tag labels with option code later.
 			$rep_fields = array();

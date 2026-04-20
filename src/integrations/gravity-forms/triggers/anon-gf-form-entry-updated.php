@@ -122,7 +122,7 @@ class ANON_GF_FORM_ENTRY_UPDATED extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function define_tokens( $trigger, $tokens ) {
 
-		$form_id = $trigger['meta'][ $this->get_trigger_meta() ];
+		$form_id = $trigger['meta'][ $this->get_trigger_meta() ] ?? null;
 
 		$form_tokens = $this->gf->tokens->possible_tokens->form_tokens( $form_id );
 

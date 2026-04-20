@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.2.1\n"
+"Project-Id-Version: Uncanny Automator 7.2.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-10T02:26:22+00:00\n"
+"POT-Creation-Date: 2026-04-20T18:01:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -2746,53 +2746,53 @@ msgid ""
 "\t\t\t  - Triggering workflows based on **historical purchase data**."
 msgstr ""
 
-#: src/api/database/stores/class-wp-action-store.php:100
+#: src/api/database/stores/class-wp-action-store.php:101
 msgctxt "Action store delete error"
 msgid "Cannot delete unsaved action"
 msgstr ""
 
 #. translators: %s is the action ID.
-#: src/api/database/stores/class-wp-action-store.php:129
+#: src/api/database/stores/class-wp-action-store.php:130
 #, php-format
 msgctxt "Action store delete error with ID"
 msgid "Failed to delete action with ID: %s"
 msgstr ""
 
 #. translators: %s is the error message.
-#: src/api/database/stores/class-wp-action-store.php:265
+#: src/api/database/stores/class-wp-action-store.php:266
 #, php-format
 msgctxt "Action store creation error with message"
 msgid "Failed to create action: %s"
 msgstr ""
 
-#: src/api/database/stores/class-wp-action-store.php:269
+#: src/api/database/stores/class-wp-action-store.php:270
 msgctxt "Action store creation unknown error"
 msgid "Failed to create action: unknown error"
 msgstr ""
 
 #. translators: %s is the action ID.
-#: src/api/database/stores/class-wp-action-store.php:280
+#: src/api/database/stores/class-wp-action-store.php:281
 #, php-format
 msgctxt "Action store reload error"
 msgid "Failed to reload action after creation: %s"
 msgstr ""
 
 #. translators: %s is the error message.
-#: src/api/database/stores/class-wp-action-store.php:314
+#: src/api/database/stores/class-wp-action-store.php:315
 #, php-format
 msgctxt "Action store update error with message"
 msgid "Failed to update action: %s"
 msgstr ""
 
 #. translators: %s is the action ID.
-#: src/api/database/stores/class-wp-action-store.php:331
+#: src/api/database/stores/class-wp-action-store.php:332
 #, php-format
 msgctxt "Action store reload error"
 msgid "Failed to reload action after update: %s"
 msgstr ""
 
 #. translators: %s is the action code.
-#: src/api/database/stores/class-wp-action-store.php:475
+#: src/api/database/stores/class-wp-action-store.php:480
 #, php-format
 msgctxt "Default action title with code"
 msgid "Action: %s"
@@ -2924,28 +2924,28 @@ msgid "Total allowed runs"
 msgstr ""
 
 #. translators: %s is the trigger ID.
-#: src/api/database/stores/class-wp-recipe-trigger-store.php:199
+#: src/api/database/stores/class-wp-recipe-trigger-store.php:200
 #, php-format
 msgctxt "Trigger store reload error"
 msgid "Failed to reload trigger after creation: %s"
 msgstr ""
 
 #. translators: %s is the error message.
-#: src/api/database/stores/class-wp-recipe-trigger-store.php:228
+#: src/api/database/stores/class-wp-recipe-trigger-store.php:229
 #, php-format
 msgctxt "Trigger store update error with message"
 msgid "Failed to update trigger: %s"
 msgstr ""
 
 #. translators: %s is the trigger ID.
-#: src/api/database/stores/class-wp-recipe-trigger-store.php:242
+#: src/api/database/stores/class-wp-recipe-trigger-store.php:243
 #, php-format
 msgctxt "Trigger store reload error"
 msgid "Failed to reload trigger after update: %s"
 msgstr ""
 
 #. translators: %s is the error message.
-#: src/api/database/stores/class-wp-recipe-trigger-store.php:421
+#: src/api/database/stores/class-wp-recipe-trigger-store.php:422
 #, php-format
 msgctxt "Trigger store save error with message"
 msgid "Unexpected error saving trigger: %s"

@@ -138,7 +138,7 @@ class Token_Cleanup {
 	 * @return int Number of tokens cleaned up.
 	 */
 	public function manual_cleanup(): int {
-		if ( ! current_user_can( automator_get_admin_capability() ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			return 0;
 		}
 

@@ -364,8 +364,21 @@ class Field_Validator {
 		$field_label = $field['label'] ?? $field_code;
 
 		// Repeater fields: validate array structure and required sub-fields.
-		if ( 'repeater' === $input_type && is_array( $value ) ) {
-			return $this->validate_repeater_value( $field, $value, $field_label );
+		if ( 'repeater' === $input_type ) {
+			if ( is_string( $value ) ) {
+				$decoded = json_decode( $value, true );
+				if ( is_array( $decoded ) ) {
+					return $this->validate_repeater_value( $field, $decoded, $field_label );
+				}
+
+				return array( sprintf( '"%s" must be an array of row objects or a JSON array string.', $field_label ) );
+			}
+
+			if ( is_array( $value ) ) {
+				return $this->validate_repeater_value( $field, $value, $field_label );
+			}
+
+			return array( sprintf( '"%s" must be an array of row objects, got %s.', $field_label, gettype( $value ) ) );
 		}
 
 		// Reject non-scalar values for non-repeater, non-multi-select fields.
@@ -540,14 +553,29 @@ class Field_Validator {
 			}
 
 			// Validate sub-field values against their type/format/enum definitions.
-			foreach ( $row as $sub_code => $sub_value ) {
-				// Skip _readable suffix fields — display-only metadata.
-				if ( Str::ends_with( $sub_code, '_readable' ) ) {
-					continue;
-				}
+				foreach ( $row as $sub_code => $sub_value ) {
+					// Skip _readable suffix fields — display-only metadata.
+					if ( Str::ends_with( $sub_code, '_readable' ) ) {
+						continue;
+					}
 
-				// No definition for this sub-field — skip (caught by field code validation).
-				if ( ! isset( $sub_field_map[ $sub_code ] ) ) {
+					if ( Str::ends_with( $sub_code, '_custom' ) ) {
+						$base_sub_code = substr( $sub_code, 0, -7 );
+						if ( isset( $sub_field_map[ $base_sub_code ] ) && ! empty( $sub_field_map[ $base_sub_code ]['supports_custom_value'] ) ) {
+							continue;
+						}
+					}
+
+					// Reject unknown sub-fields instead of silently accepting display labels
+					// such as "Column" / "Value" in place of option codes.
+					if ( ! isset( $sub_field_map[ $sub_code ] ) ) {
+					$errors[] = sprintf(
+						'"%s" row %d contains unknown sub-field "%s". Expected keys: %s.',
+						$field_label,
+						$row_index + 1,
+						$sub_code,
+						implode( ', ', array_keys( $sub_field_map ) )
+					);
 					continue;
 				}
 

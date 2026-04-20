@@ -88,7 +88,7 @@ class GF_SUBFORM_GROUPS extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function define_tokens( $trigger, $tokens ) {
 
-		$form_id = $trigger['meta'][ $this->get_trigger_meta() ];
+		$form_id = $trigger['meta'][ $this->get_trigger_meta() ] ?? null;
 
 		$form_tokens  = $this->gf->tokens->possible_tokens->form_tokens( $form_id, $this->trigger_meta );
 		$entry_tokens = $this->gf->tokens->possible_tokens->entry_tokens( 'GFENTRYTOKENS' );

@@ -73,7 +73,7 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function define_tokens( $trigger, $tokens ) {
 
-		$form_id = $trigger['meta'][ $this->get_trigger_meta() ];
+		$form_id = $trigger['meta'][ $this->get_trigger_meta() ] ?? null;
 
 		$tokens[] = array(
 			'tokenId'   => 'ANONGFFORMS',
