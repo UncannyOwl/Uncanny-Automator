@@ -427,7 +427,7 @@ class Automator_Input_Parser {
 		$run_number     = self::extract_int( 'run_number', $replace_args );
 		$user_id        = $replace_args['user_id'] ?? null;
 		$trigger        = $this->automator_functions()->get_trigger_data( $recipe_id, $trigger_id );
-		$trigger_data   = array( $trigger );
+		$trigger_data   = empty( $trigger ) ? array() : array( $trigger );
 		$retval         = '';
 
 		// save trigger ID in the $replace_args

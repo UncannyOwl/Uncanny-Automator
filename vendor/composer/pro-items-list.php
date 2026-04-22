@@ -1887,6 +1887,44 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'GH' => array(
+			'name'       => 'GroundHogg',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'A note is added to {{a contact}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A tag}} is added to a contact', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A tag}} is removed from a contact', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A tag}} is added to a user', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A tag}} is removed from a user', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(),
+		),
 		'GITHUB' => array(
 			'name'       => 'GitHub',
 			'pro_only'   => 'no',

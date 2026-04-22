@@ -673,6 +673,7 @@ return array(
     'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\Mcp_Version_Manager' => $baseDir . '/src/api/transports/model-context-protocol/class-mcp-version-manager.php',
     'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\Message_Router' => $baseDir . '/src/api/transports/model-context-protocol/class-message-router.php',
     'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\OAuth\\Rest_Bearer_Authenticator' => $baseDir . '/src/api/transports/model-context-protocol/oauth/class-rest-bearer-authenticator.php',
+    'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\OAuth\\Rest_Bearer_Route_Authorizer' => $baseDir . '/src/api/transports/model-context-protocol/oauth/class-rest-bearer-route-authorizer.php',
     'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\OAuth\\Token_Cleanup' => $baseDir . '/src/api/transports/model-context-protocol/oauth/class-token-cleanup.php',
     'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\OAuth\\Token_Manager' => $baseDir . '/src/api/transports/model-context-protocol/oauth/class-token-manager.php',
     'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\Schema_Validator' => $baseDir . '/src/api/transports/model-context-protocol/class-schema-validator.php',

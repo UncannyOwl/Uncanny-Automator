@@ -17,12 +17,28 @@ use WP_REST_Response;
 class Mcp_Rest_Controller extends WP_REST_Controller {
 
 	/**
+	 * MCP REST route namespace.
+	 *
+	 * @since 7.2.3
+	 * @var string
+	 */
+	public const ROUTE_NAMESPACE = 'automator/v1';
+
+	/**
+	 * MCP REST route base.
+	 *
+	 * @since 7.2.3
+	 * @var string
+	 */
+	public const ROUTE_BASE = 'mcp';
+
+	/**
 	 * Namespace for the REST API.
 	 *
 	 * @since 7.0.0
 	 * @var string
 	 */
-	protected $namespace = 'automator/v1';
+	protected $namespace = self::ROUTE_NAMESPACE;
 
 	/**
 	 * Rest base for the current object.
@@ -30,7 +46,7 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 	 * @since 7.0.0
 	 * @var string
 	 */
-	protected $rest_base = 'mcp';
+	protected $rest_base = self::ROUTE_BASE;
 
 	/**
 	 * Lifecycle manager instance.
@@ -65,6 +81,49 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 		$this->lifecycle_manager = new Lifecycle_Manager();
 		$this->message_router    = new Message_Router();
 		$this->token_manager     = new Token_Manager();
+	}
+
+	/**
+	 * Determine whether a request URI targets MCP routes.
+	 *
+	 * @since 7.2.3
+	 *
+	 * @param string $request_uri Current request URI.
+	 * @return bool
+	 */
+	public static function is_mcp_route( string $request_uri ): bool {
+
+		$rest_prefix = trim( (string) rest_get_url_prefix(), '/' );
+		$route       = strtolower( self::ROUTE_NAMESPACE . '/' . self::ROUTE_BASE );
+		$path        = '';
+		$query       = '';
+
+		if ( '' !== $request_uri ) {
+			$parsed = wp_parse_url( $request_uri );
+			if ( is_array( $parsed ) ) {
+				$path  = isset( $parsed['path'] ) && is_string( $parsed['path'] ) ? $parsed['path'] : '';
+				$query = isset( $parsed['query'] ) && is_string( $parsed['query'] ) ? $parsed['query'] : '';
+			}
+		}
+
+		if ( '' !== $path && '' !== $rest_prefix ) {
+			$path_pattern = '#/' . preg_quote( strtolower( $rest_prefix ), '#' ) . '/' . preg_quote( $route, '#' ) . '(?:/|$)#';
+			if ( 1 === preg_match( $path_pattern, strtolower( $path ) ) ) {
+				return true;
+			}
+		}
+
+		if ( '' !== $query ) {
+			$query_params = array();
+			parse_str( $query, $query_params );
+			$rest_route = $query_params['rest_route'] ?? '';
+			if ( is_string( $rest_route ) ) {
+				$route_pattern = '#^/?' . preg_quote( $route, '#' ) . '(?:/|$)#';
+				return 1 === preg_match( $route_pattern, strtolower( $rest_route ) );
+			}
+		}
+
+		return false;
 	}
 
 	/**

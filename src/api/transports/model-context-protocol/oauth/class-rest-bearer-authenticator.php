@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\OAuth;
 
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Mcp_Rest_Controller;
 use WP_Error;
 use WP_User;
 
@@ -12,7 +13,8 @@ use WP_User;
  * This lets authenticated MCP clients call standard wp/v2 endpoints as the
  * underlying WordPress user instead of only our custom MCP routes.
  *
- * @since 7.1.0
+ * @since 7.2.2
+ * @since 7.2.3 Invalid bearer-token 401 responses are scoped to MCP routes.
  */
 class Rest_Bearer_Authenticator {
 
@@ -35,7 +37,7 @@ class Rest_Bearer_Authenticator {
 	 *
 	 * @var WP_User|false|null
 	 */
-	private WP_User|false|null $resolved_user = null;
+	private $resolved_user = null;
 
 	/**
 	 * Whether the current request included a bearer token.
@@ -82,7 +84,9 @@ class Rest_Bearer_Authenticator {
 	}
 
 	/**
-	 * Return a 401 when a bearer token is present but invalid.
+	 * Return a 401 when a bearer token is present but invalid on MCP routes.
+	 *
+	 * @since 7.2.3 Restricts invalid bearer-token failures to MCP routes only.
 	 *
 	 * @param WP_Error|null|true $result Existing auth result.
 	 *
@@ -99,7 +103,7 @@ class Rest_Bearer_Authenticator {
 			return $result;
 		}
 
-		if ( $this->has_bearer_token ) {
+		if ( $this->has_bearer_token && Mcp_Rest_Controller::is_mcp_route( $this->get_request_uri() ) ) {
 			return new WP_Error(
 				'rest_forbidden',
 				'Invalid or expired Bearer token.',
@@ -162,16 +166,28 @@ class Rest_Bearer_Authenticator {
 	/**
 	 * Read a request header from PHP server globals.
 	 *
+	 * @since 7.2.3 Unslashes server-header input before use.
+	 *
 	 * @param string $key Server key, e.g. HTTP_AUTHORIZATION.
 	 *
 	 * @return string
 	 */
 	private function read_header( string $key ): string {
-		$value = $_SERVER[ $key ] ?? '';
-		if ( empty( $value ) && 'HTTP_AUTHORIZATION' === $key ) {
-			$value = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+		$value = '';
+		if ( isset( $_SERVER[ $key ] ) && is_string( $_SERVER[ $key ] ) ) {
+			// Header values are opaque credential strings and must not be mutated.
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Opaque bearer credentials are intentionally not text-sanitized.
+			$value = wp_unslash( $_SERVER[ $key ] );
 		}
-		return is_string( $value ) ? $value : '';
+
+		if ( '' === $value && 'HTTP_AUTHORIZATION' === $key ) {
+			if ( isset( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) && is_string( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ) ) {
+				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Opaque bearer credentials are intentionally not text-sanitized.
+				$value = wp_unslash( $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] );
+			}
+		}
+
+		return $value;
 	}
 
 	/**
@@ -185,5 +201,20 @@ class Rest_Bearer_Authenticator {
 		}
 
 		return defined( 'REST_REQUEST' ) && REST_REQUEST;
+	}
+
+	/**
+	 * Get the current request URI.
+	 *
+	 * @since 7.2.3
+	 *
+	 * @return string
+	 */
+	private function get_request_uri(): string {
+		if ( isset( $_SERVER['REQUEST_URI'] ) && is_string( $_SERVER['REQUEST_URI'] ) ) {
+			return sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+		}
+
+		return '';
 	}
 }

@@ -39,7 +39,6 @@ class Legacy_Token_Parser {
 
 		// Attach the new trigger tokens arch for actions that are scheduled.
 		add_filter( 'automator_pro_before_async_action_executed', array( $this, 'attach_trigger_tokens_hook' ), 10, 1 );
-
 	}
 
 	/**
@@ -222,7 +221,14 @@ class Legacy_Token_Parser {
 
 		return $field_text;
 	}
-
+	/**
+	 * Parse inner tokens.
+	 *
+	 * @param mixed $field_text The text.
+	 * @param mixed $args The arguments.
+	 * @param mixed $trigger_args The arguments.
+	 * @return mixed
+	 */
 	public function parse_inner_tokens( $field_text, $args, $trigger_args ) {
 
 		$meta_key       = $args['meta_key'];
@@ -490,7 +496,7 @@ class Legacy_Token_Parser {
 		$run_number     = $this->get_run_number( $replace_args );
 		$user_id        = $this->get_user_id( $replace_args );
 		$trigger        = Automator()->get_trigger_data( $recipe_id, $trigger_id );
-		$trigger_data   = array( $trigger );
+		$trigger_data   = empty( $trigger ) ? array() : array( $trigger );
 		$return         = '';
 
 		// save trigger ID in the $replace_args
@@ -503,13 +509,13 @@ class Legacy_Token_Parser {
 		foreach ( $pieces as $piece ) {
 			$is_relevant_token = false;
 			if ( strpos( $piece, '_ID' ) !== false
-				 || strpos( $piece, '_URL' ) !== false
-				 || strpos( $piece, '_EXCERPT' ) !== false
-				 || strpos( $piece, '_THUMB_URL' ) !== false
-				 || strpos( $piece, '_THUMB_ID' ) !== false ) {
-				$is_relevant_token = true;
-				$sub_piece         = explode( '_', $piece, 2 );
-				$piece             = $sub_piece[0];
+				|| strpos( $piece, '_URL' ) !== false
+				|| strpos( $piece, '_EXCERPT' ) !== false
+				|| strpos( $piece, '_THUMB_URL' ) !== false
+				|| strpos( $piece, '_THUMB_ID' ) !== false ) {
+					$is_relevant_token = true;
+					$sub_piece         = explode( '_', $piece, 2 );
+					$piece             = $sub_piece[0];
 			}
 
 			if ( ! isset( $trigger['meta'] ) ) {
@@ -736,23 +742,22 @@ class Legacy_Token_Parser {
 		);
 
 		return $pieces;
-
 	}
 
 	/**
-	 * @param $return
+	 * @param $return_value
 	 * @param $replace_args
 	 * @param array $args
 	 *
 	 * @return false|mixed
 	 */
-	public function v3_parser( $return, $replace_args, $args = array() ) {
+	public function v3_parser( $return_value, $replace_args, $args = array() ) {
 		$pieces     = $this->parse_inner_token( $replace_args['pieces'], $args );
 		$recipe_id  = $replace_args['recipe_id'];
 		$trigger_id = absint( $pieces[0] );
 		$trigger    = Automator()->get_trigger_data( $recipe_id, $trigger_id );
 		if ( empty( $trigger ) ) {
-			return $return;
+			return $return_value;
 		}
 		$trigger_code = $trigger['meta']['code'];
 		$token_parser = Automator()->get->value_from_trigger_meta( $trigger['meta']['code'], 'token_parser' );
@@ -764,10 +769,10 @@ class Legacy_Token_Parser {
 				'args'         => $args,
 			);
 
-			return call_user_func( $token_parser, $return, $token_args );
+			return call_user_func( $token_parser, $return_value, $token_args );
 		}
 
-		return $return;
+		return $return_value;
 	}
 
 	/**
@@ -799,7 +804,6 @@ class Legacy_Token_Parser {
 		}
 
 		return ''; // Returns empty string if user is not valid.
-
 	}
 
 	/**
@@ -824,7 +828,6 @@ class Legacy_Token_Parser {
 			. '</a>',
 			$user_id
 		);
-
 	}
 
 	/**
@@ -1079,7 +1082,6 @@ class Legacy_Token_Parser {
 
 		// Return true if source trigger does not match the token's trigger ID `and` recipe logic is equals to `any`.
 		return ! $is_source_trigger_matches_token_trigger && $is_recipe_logic_any;
-
 	}
 
 	/**
@@ -1109,7 +1111,6 @@ class Legacy_Token_Parser {
 		add_filter( $filter, array( $this, 'fetch_trigger_tokens' ), 20, 6 );
 
 		return $action;
-
 	}
 
 	/**
@@ -1139,7 +1140,5 @@ class Legacy_Token_Parser {
 		}
 
 		return $value;
-
 	}
-
 }

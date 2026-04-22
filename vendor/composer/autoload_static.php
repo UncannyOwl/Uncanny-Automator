@@ -684,6 +684,7 @@ class ComposerStaticInitef9c8a16a5cfc09c774f6f239c46cef5
         'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\Mcp_Version_Manager' => __DIR__ . '/../..' . '/src/api/transports/model-context-protocol/class-mcp-version-manager.php',
         'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\Message_Router' => __DIR__ . '/../..' . '/src/api/transports/model-context-protocol/class-message-router.php',
         'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\OAuth\\Rest_Bearer_Authenticator' => __DIR__ . '/../..' . '/src/api/transports/model-context-protocol/oauth/class-rest-bearer-authenticator.php',
+        'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\OAuth\\Rest_Bearer_Route_Authorizer' => __DIR__ . '/../..' . '/src/api/transports/model-context-protocol/oauth/class-rest-bearer-route-authorizer.php',
         'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\OAuth\\Token_Cleanup' => __DIR__ . '/../..' . '/src/api/transports/model-context-protocol/oauth/class-token-cleanup.php',
         'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\OAuth\\Token_Manager' => __DIR__ . '/../..' . '/src/api/transports/model-context-protocol/oauth/class-token-manager.php',
         'Uncanny_Automator\\Api\\Transports\\Model_Context_Protocol\\Schema_Validator' => __DIR__ . '/../..' . '/src/api/transports/model-context-protocol/class-schema-validator.php',
