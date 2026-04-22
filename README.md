@@ -5,7 +5,7 @@
 **Requires at least:** 5.8 \
 **Tested up to:** 6.9.4 \
 **Requires PHP:** 7.4 \
-**Stable tag:** 7.2.2 \
+**Stable tag:** 7.2.2.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -410,38 +410,46 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ### 1. Set up your first recipe in 5 minutes
 
-![Set up your first recipe in 5 minutes](https://ps.w.org/uncanny-automator/assets/screenshot-1.gif)
+[missing image]
 
 ### 2. Add one or more triggers from dozens of plugins and thousands of apps
 
-![Add one or more triggers from dozens of plugins and thousands of apps](https://ps.w.org/uncanny-automator/assets/screenshot-2.png)
+[missing image]
 
 ### 3. Identify what starts the recipe, like a purchase or form submission
 
-![Identify what starts the recipe, like a purchase or form submission](https://ps.w.org/uncanny-automator/assets/screenshot-3.png)
+[missing image]
 
 ### 4. Set conditions and options for the trigger(s)
 
-![Set conditions and options for the trigger(s)](https://ps.w.org/uncanny-automator/assets/screenshot-4.png)
+[missing image]
 
 ### 5. Add one or more actions from any of the available integrations
 
-![Add one or more actions from any of the available integrations](https://ps.w.org/uncanny-automator/assets/screenshot-5.png)
+[missing image]
 
 ### 6. When the triggers are completed, actions run automatically
 
-![When the triggers are completed, actions run automatically](https://ps.w.org/uncanny-automator/assets/screenshot-6.png)
+[missing image]
 
 ### 7. Customize your actions to do exactly what you need
 
-![Customize your actions to do exactly what you need](https://ps.w.org/uncanny-automator/assets/screenshot-7.png)
+[missing image]
 
 ### 8. Create powerful recipes that just work, all with one plugin
 
-![Create powerful recipes that just work, all with one plugin](https://ps.w.org/uncanny-automator/assets/screenshot-8.png)
+[missing image]
 
 
 ## Changelog
+
+### 7.2.2.1 [2026-04-22]
+
+**Fixed:**
+
+* MemberPress Courses – Banished the "Undefined array key 'ID'" gremlin. #7204
+* Uncanny Agent - Resolves authentication conflicts between Agent REST endpoints and JWT apps. #7202
+* Token Parser – Banished undefined "ID" warnings from empty `$trigger_data`. #7206
 
 ### 7.2.2 [2026-04-20]
 
@@ -449,11 +457,11 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * Gravity Forms - Triggers - Hidden fields now generate tokens. #7153
 * RSS - Process an RSS feed – Media thumbnails found their way; URL tokens resolved. #7191
+* Repeater fields with Uncanny Agent - Fixed an issue where meta unslashing was corrupting repeater JSON data. Data now stays intact. #7166
 
 **Under the hood:**
 
 * Core – Windows/IIS path drama solved; legacy integrations breathe easy again. #7194
-* JSON repeater corruption - Fixed an issue where WordPress meta unslashing was corrupting repeater JSON data. Data now stays intact. #7166
 
 ### 7.2.1 [2026-04-09]
 
