@@ -122,9 +122,6 @@ abstract class App_Integration extends Integration {
 	 * @return void
 	 */
 	protected function initialize_app_integration() {
-		// Check and set the connected status using the is_app_connected method.
-		$this->set_connected( $this->is_app_connected() );
-
 		// Set the settings URL.
 		$this->set_settings_url(
 			automator_get_premium_integrations_settings_url(
@@ -135,10 +132,19 @@ abstract class App_Integration extends Integration {
 		// Set core dependencies by creating instances directly.
 		$this->set_dependency( 'helpers', $this->helpers );
 		$this->set_dependency( 'api', $this->get_api_instance() );
-		$this->set_dependency( 'webhooks', $this->get_webhooks_instance() );
 
-		// Pass dependencies to helpers.
+		// Helpers must receive $this->api before is_app_connected() runs — some integrations
+		// refresh account data via the API client when stored account options are empty.
 		$this->helpers->set_dependencies( $this->dependencies );
+
+		// Evaluate the app connection status.
+		$app_connected = $this->is_app_connected();
+
+		$this->set_dependency( 'webhooks', $this->get_webhooks_instance( $app_connected ) );
+
+		// Webhooks were attached after the first helpers wiring; refresh helpers' deps.
+		$this->helpers->set_dependencies( $this->dependencies );
+
 		// Pass dependencies to api.
 		if ( $this->dependencies->api ) {
 			$this->dependencies->api->set_dependencies( $this->dependencies );
@@ -147,6 +153,9 @@ abstract class App_Integration extends Integration {
 		if ( $this->dependencies->webhooks ) {
 			$this->dependencies->webhooks->set_dependencies( $this->dependencies );
 		}
+
+		// Set the connected status.
+		$this->set_connected( $app_connected );
 
 		// Allow child classes to register custom dependencies.
 		$this->register_dependencies();
@@ -339,13 +348,19 @@ abstract class App_Integration extends Integration {
 	 * Webhooks are optional - returns null if the webhooks class doesn't exist.
 	 * Override in child classes to provide custom webhooks instances.
 	 *
+	 * @param bool|null $is_connected If null, calls is_app_connected(); pass a precomputed value from initialize_app_integration() to avoid duplicate work.
+	 *
 	 * @return App_Webhooks|null
 	 */
-	protected function get_webhooks_instance() {
+	protected function get_webhooks_instance( $is_connected = null ) {
 		$webhooks_class = $this->get_integration_class_name( 'Webhooks' );
-		return class_exists( $webhooks_class )
-			? new $webhooks_class( $this->helpers, $this->is_app_connected() )
-			: null;
+		if ( ! class_exists( $webhooks_class ) ) {
+			return null;
+		}
+		if ( null === $is_connected ) {
+			$is_connected = $this->is_app_connected();
+		}
+		return new $webhooks_class( $this->helpers, $is_connected );
 	}
 
 	/**

@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\Integrations\Learndash\Learndash_Quiz_Action_Migration;
 use Uncanny_Automator\Integrations\LearnDash\Tokens\Loopable\Universal\User_Completed_Courses;
 use Uncanny_Automator\Integrations\LearnDash\Tokens\Loopable\Universal\User_Enrolled_Courses;
 use Uncanny_Automator\Integrations\LearnDash\Tokens\Loopable\Universal\User_Enrolled_Groups;
@@ -29,6 +30,11 @@ class Add_Ld_Integration {
 		$this->setup();
 
 		$this->create_loopable_tokens();
+
+		// Register legacy quiz-trigger add_action migration. Self-schedules on
+		// `shutdown` via the Migration abstract; idempotent via automator_migrations.
+		require_once __DIR__ . '/migrations/learndash-quiz-action-migration.php';
+		new Learndash_Quiz_Action_Migration( 'learndash_quiz_action_v2' );
 	}
 
 	/**
@@ -42,7 +48,6 @@ class Add_Ld_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'sfwd-lms/sfwd_lms.php' );
 		$this->set_loopable_tokens( $this->create_loopable_tokens() );
-
 	}
 
 	/**
@@ -66,6 +71,5 @@ class Add_Ld_Integration {
 			'ENROLLED_GROUPS'  => User_Enrolled_Groups::class,
 			'COMPLETED_COURSE' => User_Completed_Courses::class,
 		);
-
 	}
 }

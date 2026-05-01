@@ -95,6 +95,16 @@ trait Token_Loopable_Hydratable {
 				// Unwrap single-element indexed arrays so nested keys such as '@attributes'
 				// can be reached via paths like 'media:thumbnail.@attributes.url'.
 				$data = $data[0][ $key ];
+			} elseif ( is_array( $data ) && ctype_digit( (string) $key ) ) {
+				// Out-of-range numeric index (e.g. `.1` against a single-entry
+				// collection). Stop traversal so the missing index can't
+				// silently fall through to the next segment — the single-element
+				// unwrap above would otherwise let a later named key resolve
+				// against $data[0], phantom-hydrating the missing index to the
+				// first entry's value. Non-numeric missing keys keep the
+				// documented pass-through behaviour (see the two "returns
+				// partial/original array" tests).
+				return null;
 			}
 
 			$data = self::resolve_xml_node( $data, $key );

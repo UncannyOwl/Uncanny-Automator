@@ -9,17 +9,15 @@ use Uncanny_Automator\Recipe\Log_Properties;
  * Class KEAP_ADD_UPDATE_COMPANY
  *
  * @package Uncanny_Automator
+ * @property Keap_App_Helpers $helpers
+ * @property Keap_Api_Caller $api
  */
-class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
+class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\App_Action {
 
 	use Log_Properties;
-
-	/**
-	 * Prefix for action code / meta.
-	 *
-	 * @var string
-	 */
-	public $prefix = 'KEAP_ADD_UPDATE_COMPANY';
+	use Keap_Field_Helpers;
+	use Keap_Address_Fields;
+	use Keap_Custom_Fields;
 
 	/**
 	 * Store the complete with notice messages.
@@ -34,13 +32,9 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		/** @var \Uncanny_Automator\Integrations\Keap\Keap_Helpers $helper */
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'KEAP' );
-		$this->set_action_code( $this->prefix . '_CODE' );
-		$this->set_action_meta( $this->prefix . '_META' );
+		$this->set_action_code( 'KEAP_ADD_UPDATE_COMPANY_CODE' );
+		$this->set_action_meta( 'KEAP_ADD_UPDATE_COMPANY_META' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/keap/' ) );
 		$this->set_requires_user( false );
@@ -67,55 +61,55 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 		// Required Company Name.
 		$fields[] = array(
 			'option_code' => $this->get_action_meta(),
-			'label'       => _x( 'Company name', 'Keap', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Company name', 'Keap', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => true,
 		);
 
 		// Allow user to update existing companies.
-		$fields[] = $this->helpers->get_update_existing_option_config( 'company' );
+		$fields[] = $this->get_update_existing_option_config( 'company' );
 
-		// Email
-		$fields[] = $this->helpers->get_email_field_config( 'EMAIL', false );
+		// Email.
+		$fields[] = $this->get_email_field_config( 'EMAIL', false );
 
-		// Phone
+		// Phone.
 		$fields[] = array(
 			'option_code' => 'PHONE',
-			'label'       => _x( 'Phone number', 'Keap', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Phone number', 'Keap', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
 		);
 
-		// Fax
+		// Fax.
 		$fields[] = array(
 			'option_code' => 'FAX',
-			'label'       => _x( 'Fax number', 'Keap', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Fax number', 'Keap', 'uncanny-automator' ),
 			'input_type'  => 'text',
 			'required'    => false,
 		);
 
-		// Website
+		// Website.
 		$fields[] = array(
 			'option_code' => 'WEBSITE',
-			'label'       => _x( 'Website', 'Keap', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Website', 'Keap', 'uncanny-automator' ),
 			'input_type'  => 'url',
 			'required'    => false,
 		);
 
-		// Address Fields
-		$address_fields = $this->helpers->get_address_fields_config( 'company' );
+		// Address Fields.
+		$address_fields = $this->get_address_fields_config( 'company' );
 		$fields         = array_merge( $fields, $address_fields );
 
-		// Custom Fields
-		$fields[] = $this->helpers->get_custom_fields_repeater_config( 'company' );
+		// Custom Fields.
+		$fields[] = $this->get_custom_fields_repeater_config( 'company' );
 
-		// Notes
+		// Notes.
 		$fields[] = array(
 			'option_code' => 'NOTES',
-			'label'       => esc_attr__( 'Description', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Description', 'Keap', 'uncanny-automator' ),
 			'input_type'  => 'textarea',
 			'required'    => false,
-			'description' => esc_attr__( 'Add a note about the company.', 'uncanny-automator' ),
+			'description' => esc_html_x( 'Add a note about the company.', 'Keap', 'uncanny-automator' ),
 		);
 
 		return $fields;
@@ -135,14 +129,14 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		// Required field
+		// Required field.
 		$company_name = $this->get_parsed_meta_value( $this->get_action_meta(), false );
 		if ( empty( $company_name ) ) {
 			throw new \Exception( esc_html_x( 'Missing company name', 'Keap', 'uncanny-automator' ) );
 		}
 
 		// Check if updating is allowed.
-		$update_existing = $this->helpers->get_bool_value_from_parsed( $parsed, 'UPDATE_EXISTING_COMPANY' );
+		$update_existing = $this->get_bool_value_from_parsed( $parsed, 'UPDATE_EXISTING_COMPANY' );
 
 		// Validate if we have the company ID.
 		$company_object = $this->helpers->get_valid_company_selection( $company_name );
@@ -152,7 +146,7 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 		if ( ! $update_existing && ! empty( $company_id ) ) {
 			throw new \Exception(
 				sprintf(
-				/* translators: %s: Company name */
+					// translators: %s: Company name
 					esc_html_x( 'Company with name %s already exists and Update existing company option is set to No.', 'Keap', 'uncanny-automator' ),
 					esc_html( $company_name )
 				)
@@ -171,13 +165,13 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 		$company = $this->add_optional_fields( $company );
 
 		// Build address.
-		$address = $this->helpers->get_address_fields_from_parsed( $parsed, 'company' );
+		$address = $this->get_address_fields_from_parsed( $parsed, 'company' );
 		if ( ! empty( $address ) ) {
 			$company['address'] = $address;
 		}
 
 		// Build custom fields.
-		$custom = $this->helpers->build_custom_fields_request_data( $custom, 'company' );
+		$custom = $this->build_custom_fields_request_data( $custom, 'company' );
 		// Add any custom field errors.
 		if ( ! empty( $custom['errors'] ) ) {
 			$this->complete_with_notice_messages[] = $custom['errors'];
@@ -188,17 +182,14 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 
 		// Build request body.
 		$body = array(
+			'action'     => 'add_update_company',
 			'company_id' => $company_id,
 			'update'     => $update_existing,
 			'company'    => wp_json_encode( $company ),
 		);
 
 		// Send request.
-		$response = $this->helpers->api_request(
-			'add_update_company',
-			$body,
-			$action_data
-		);
+		$response = $this->api->api_request( $body, $action_data );
 
 		// Maybe add new company ID to saved options.
 		$new_company_id = $response['data']['id'] ?? false;
@@ -242,12 +233,12 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 				continue;
 			}
 
-			// Validate field via helper methods if not delete value.
-			$validated = $this->helpers->is_delete_value( $value ) ? '' : $this->helpers->$validation_method( $value );
+			// Validate field via trait methods if not delete value.
+			$validated = $this->is_delete_value( $value ) ? '' : $this->$validation_method( $value );
 			if ( false === $validated ) {
 				$this->complete_with_notice_messages[] = sprintf(
 					// translators: 1: Field key, 2: Field value
-					_x( 'Invalid %1$s: "%2$s"', 'Keap', 'uncanny-automator' ),
+					esc_html_x( 'Invalid %1$s: "%2$s"', 'Keap', 'uncanny-automator' ),
 					strtolower( $key ),
 					$value
 				);
@@ -260,9 +251,6 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 					$company['email_address'] = (object) array(
 						'email' => $validated,
 						'field' => 'EMAIL1',
-						//'email_opt_status' =>
-						//'is_opt_in' => true,
-						//'opt_in_reason' => '',
 					);
 					break;
 				case 'PHONE':
@@ -285,11 +273,11 @@ class KEAP_ADD_UPDATE_COMPANY extends \Uncanny_Automator\Recipe\Action {
 			}
 		}
 
-		// Notes
+		// Notes.
 		$notes = $this->get_parsed_meta_value( 'NOTES', false );
 		$notes = ! empty( $notes ) ? sanitize_textarea_field( $notes ) : '';
 		if ( ! empty( $notes ) ) {
-			$company['notes'] = $this->helpers->maybe_remove_delete_value( $notes, false );
+			$company['notes'] = $this->maybe_remove_delete_value( $notes, false );
 		}
 
 		return $company;

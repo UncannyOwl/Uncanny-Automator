@@ -14,7 +14,8 @@ use WP_User;
  * underlying WordPress user instead of only our custom MCP routes.
  *
  * @since 7.2.2
- * @since 7.2.3 Invalid bearer-token 401 responses are scoped to MCP routes.
+ * @since 7.2.2.2 Invalid bearer-token 401 responses are scoped to MCP routes.
+ * @since 7.2.2.2 Prevents recursive bearer-token resolution during token metadata updates.
  */
 class Rest_Bearer_Authenticator {
 
@@ -45,6 +46,18 @@ class Rest_Bearer_Authenticator {
 	 * @var bool
 	 */
 	private bool $has_bearer_token = false;
+
+	/**
+	 * Whether bearer-token resolution is already running.
+	 *
+	 * Token validation updates token metadata. That update can fire WordPress
+	 * hooks that ask for the current user, which re-enters this authenticator.
+	 *
+	 * @since 7.2.2.2
+	 *
+	 * @var bool
+	 */
+	private bool $is_resolving_bearer_user = false;
 
 	/**
 	 * Constructor.
@@ -86,7 +99,7 @@ class Rest_Bearer_Authenticator {
 	/**
 	 * Return a 401 when a bearer token is present but invalid on MCP routes.
 	 *
-	 * @since 7.2.3 Restricts invalid bearer-token failures to MCP routes only.
+	 * @since 7.2.2.2 Restricts invalid bearer-token failures to MCP routes only.
 	 *
 	 * @param WP_Error|null|true $result Existing auth result.
 	 *
@@ -94,6 +107,10 @@ class Rest_Bearer_Authenticator {
 	 */
 	public function rest_authentication_errors( $result ) {
 		if ( ! $this->is_rest_request() || ! empty( $result ) ) {
+			return $result;
+		}
+
+		if ( $this->is_resolving_bearer_user ) {
 			return $result;
 		}
 
@@ -130,17 +147,27 @@ class Rest_Bearer_Authenticator {
 			return $this->resolved_user;
 		}
 
+		if ( $this->is_resolving_bearer_user ) {
+			return false;
+		}
+
 		$this->has_bearer_token = true;
 		$this->resolved_token   = $token;
 
-		$user = $this->token_manager->get_user_from_token( $token );
-		if ( $user instanceof WP_User && user_can( $user, 'manage_options' ) ) {
-			$this->resolved_user = $user;
-			return $user;
-		}
+		$this->is_resolving_bearer_user = true;
 
-		$this->resolved_user = false;
-		return false;
+		try {
+			$user = $this->token_manager->get_user_from_token( $token );
+			if ( $user instanceof WP_User && user_can( $user, 'manage_options' ) ) {
+				$this->resolved_user = $user;
+				return $user;
+			}
+
+			$this->resolved_user = false;
+			return false;
+		} finally {
+			$this->is_resolving_bearer_user = false;
+		}
 	}
 
 	/**
@@ -166,7 +193,7 @@ class Rest_Bearer_Authenticator {
 	/**
 	 * Read a request header from PHP server globals.
 	 *
-	 * @since 7.2.3 Unslashes server-header input before use.
+	 * @since 7.2.2.2 Unslashes server-header input before use.
 	 *
 	 * @param string $key Server key, e.g. HTTP_AUTHORIZATION.
 	 *
@@ -206,7 +233,7 @@ class Rest_Bearer_Authenticator {
 	/**
 	 * Get the current request URI.
 	 *
-	 * @since 7.2.3
+	 * @since 7.2.2.2
 	 *
 	 * @return string
 	 */

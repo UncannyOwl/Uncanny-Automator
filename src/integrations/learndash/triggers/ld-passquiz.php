@@ -27,15 +27,6 @@ class LD_PASSQUIZ {
 		$this->trigger_code = 'LD_PASSQUIZ';
 		$this->trigger_meta = 'LDQUIZ';
 
-		// Migrate saved add_action data.
-		add_action(
-			'admin_init',
-			function () {
-				Learndash_Helpers::migrate_trigger_learndash_quiz_submitted_action_data( $this->trigger_code );
-			},
-			99
-		);
-
 		$this->define_trigger();
 	}
 
@@ -50,9 +41,9 @@ class LD_PASSQUIZ {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - LearnDash */
-			'sentence'            => sprintf( esc_attr__( 'A user passes {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
+			'sentence'            => sprintf( esc_attr_x( 'A user passes {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'Learndash', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
 			/* translators: Logged-in trigger - LearnDash */
-			'select_option_name'  => esc_attr__( 'A user passes {{a quiz}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr_x( 'A user passes {{a quiz}}', 'Learndash', 'uncanny-automator' ),
 			'action'              => array(
 				'learndash_quiz_submitted',
 				'learndash_essay_quiz_data_updated',
@@ -106,7 +97,7 @@ class LD_PASSQUIZ {
 
 		} elseif ( did_action( 'learndash_essay_quiz_data_updated' ) ) {
 			list ( $pro_quiz_id, $question_id, $updated_scoring, $essay ) = $args;
-			$passed                                                       = $helpers->graded_quiz_passed( $essay, $pro_quiz_id );
+			$passed = $helpers->graded_quiz_passed( $essay, $pro_quiz_id );
 			if ( is_wp_error( $passed ) || empty( $passed ) ) {
 				return;
 			}
@@ -149,7 +140,5 @@ class LD_PASSQUIZ {
 				}
 			}
 		}
-
 	}
-
 }

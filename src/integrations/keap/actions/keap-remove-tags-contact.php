@@ -9,17 +9,15 @@ use Uncanny_Automator\Recipe\Log_Properties;
  * Class KEAP_REMOVE_TAGS_CONTACT
  *
  * @package Uncanny_Automator
+ * @property Keap_App_Helpers $helpers
+ * @property Keap_Api_Caller $api
  */
-class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
+class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 
 	use Log_Properties;
-
-	/**
-	 * Prefix for action code / meta.
-	 *
-	 * @var string
-	 */
-	public $prefix = 'KEAP_REMOVE_TAGS_CONTACT';
+	use Keap_Field_Helpers;
+	use Keap_Tag_Fields;
+	use Keap_Contact_Tokens;
 
 	/**
 	 * Set up action.
@@ -27,25 +25,21 @@ class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		/** @var \Uncanny_Automator\Integrations\Keap\Keap_Helpers $helper */
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'KEAP' );
-		$this->set_action_code( $this->prefix . '_CODE' );
-		$this->set_action_meta( $this->prefix . '_META' );
+		$this->set_action_code( 'KEAP_REMOVE_TAGS_CONTACT_CODE' );
+		$this->set_action_meta( 'KEAP_REMOVE_TAGS_CONTACT_META' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/keap/' ) );
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
-				// translators: %1$s Tag Name(s), Contact Email, %2$s
-				esc_attr_x( 'Remove {{a tag:%1$s}} from {{a contact:%2$s}}', 'Keap', 'uncanny-automator' ),
+				// translators: %1$s Tag field meta key, %2$s Contact field meta key
+				esc_html_x( 'Remove {{a tag:%1$s}} from {{a contact:%2$s}}', 'Keap', 'uncanny-automator' ),
 				'TAG:' . $this->get_action_meta(),
 				$this->get_action_meta()
 			)
 		);
-		$this->set_readable_sentence( esc_attr_x( 'Remove {{a tag}} from {{a contact}}', 'Keap', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'Remove {{a tag}} from {{a contact}}', 'Keap', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
 	}
 
@@ -56,10 +50,8 @@ class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 */
 	public function options() {
 		return array(
-			// Tags.
-			$this->helpers->get_tags_select_field_config(),
-			// Email.
-			$this->helpers->get_email_field_config( $this->get_action_meta() ),
+			$this->get_tags_select_field_config(),
+			$this->get_email_field_config( $this->get_action_meta() ),
 		);
 	}
 
@@ -69,8 +61,8 @@ class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	public function define_tokens() {
-		$contact   = $this->helpers->define_contact_action_tokens();
-		$tag_names = $this->helpers->define_tag_name_action_token();
+		$contact   = $this->define_contact_action_tokens();
+		$tag_names = $this->define_tag_name_action_token();
 		return array_merge( $contact, $tag_names );
 	}
 
@@ -89,13 +81,13 @@ class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		// Required fields - throws error if not set and valid.
-		$email = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
-		$tags  = $this->helpers->get_tags_from_parsed( $parsed );
+		$email = $this->get_email_from_parsed( $parsed, $this->get_action_meta() );
+		$tags  = $this->get_tags_from_parsed( $parsed );
 
 		// Send request.
-		$response = $this->helpers->api_request(
-			'remove_tags_from_contact',
+		$response = $this->api->api_request(
 			array(
+				'action'  => 'remove_tags_from_contact',
 				'email'   => $email,
 				'tag_ids' => $tags,
 			),
@@ -107,16 +99,16 @@ class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$results  = $data['results'] ?? array();
 		$contact  = $data['contact'] ?? 0;
 		$statuses = array(
-			// translators: %s Tag ID(s)
-			'DUPLICATE' => esc_attr__( 'Contact did not have tag(s) %s', 'uncanny-automator' ),
+			// translators: %s: Tag ID(s)
+			'DUPLICATE' => esc_html_x( 'Contact did not have tag(s) %s', 'Keap', 'uncanny-automator' ),
 		);
 
 		// Prepare any notices.
-		$notices = $this->helpers->prepare_tag_notices( $results, $statuses );
+		$notices = $this->prepare_tag_notices( $results, $statuses );
 
 		// Hydrate tokens.
-		$tokens             = $this->helpers->hydrate_contact_tokens( $contact );
-		$tokens['TAG_NAME'] = $this->helpers->get_tag_names_from_ids( $tags );
+		$tokens             = $this->hydrate_contact_tokens( $contact );
+		$tokens['TAG_NAME'] = $this->get_tag_names_from_ids( $tags );
 		$tokens['TAG']      = $tags;
 		$this->hydrate_tokens( $tokens );
 
@@ -129,5 +121,4 @@ class KEAP_REMOVE_TAGS_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		return true;
 	}
-
 }

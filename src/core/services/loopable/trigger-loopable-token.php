@@ -4,6 +4,7 @@ namespace Uncanny_Automator\Services\Loopable;
 
 use Uncanny_Automator\Services\Loopable\Data_Integrations\Traits\Token_Loopable_Hydratable;
 use Uncanny_Automator\Services\Loopable\Data_Integrations\Utils;
+use Uncanny_Automator_Pro\Loops\Loop\Model\Query\Loop_Entry_Query;
 
 /**
  * The abstract class representation for Trigger Iterabe Tokens.
@@ -105,8 +106,29 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	public function hydrate_tokens_children( $field_text = '', $match = array(), $args = array(), $process_args = array() ) {
 
 		$entity_id        = $process_args['loop']['entity_id'] ?? null;
+		$process_id       = $process_args['loop']['loop_item']['filter_id'] ?? null;
 		$extracted_tokens = $this->extract_token_children( $field_text );
-		$tokens_reference = (array) json_decode( Automator()->db->token->get( 'LOOPABLE_' . $this->get_id(), $process_args ), true );
+
+		// Resolve children against the loop entry's stored items (the post-loop-filter
+		// snapshot for this iteration), not the trigger's saved loopable meta which
+		// always holds the pre-filter list. Without this, indexing the unfiltered
+		// list by the iteration's post-filter sequential entity_id silently returns
+		// a different item once a loop filter (e.g. TOKEN_MEETS_CONDITION) culls
+		// any entries — bare-token outputs and in-body token outputs disagree.
+		$tokens_reference = array();
+		if ( ! empty( $process_id ) ) {
+			$loop_query = new Loop_Entry_Query();
+			$loop       = $loop_query->find_entry_by_process_id( $process_id );
+			if ( $loop ) {
+				$tokens_reference = (array) json_decode( $loop->get_user_ids(), true );
+			}
+		}
+
+		// Fallback to the legacy trigger-meta source for any non-loop caller
+		// so existing behaviour is preserved outside the loop runtime.
+		if ( empty( $tokens_reference ) ) {
+			$tokens_reference = (array) json_decode( Automator()->db->token->get( 'LOOPABLE_' . $this->get_id(), $process_args ), true );
+		}
 
 		if ( empty( $tokens_reference ) ) {
 			return $field_text;

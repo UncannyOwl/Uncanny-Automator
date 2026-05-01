@@ -136,19 +136,15 @@ class CONVERTKIT_BROADCAST_CREATE extends \Uncanny_Automator\Recipe\App_Action {
 	 */
 	public function define_tokens() {
 		return array(
-			'BROADCAST_ID'         => array(
+			'BROADCAST_ID'        => array(
 				'name' => esc_html_x( 'Broadcast ID', 'ConvertKit', 'uncanny-automator' ),
 				'type' => 'int',
 			),
-			'BROADCAST_PUBLIC_URL' => array(
-				'name' => esc_html_x( 'Broadcast public URL', 'ConvertKit', 'uncanny-automator' ),
-				'type' => 'url',
-			),
-			'BROADCAST_DRAFT_URL'  => array(
+			'BROADCAST_DRAFT_URL' => array(
 				'name' => esc_html_x( 'Broadcast draft URL', 'ConvertKit', 'uncanny-automator' ),
 				'type' => 'url',
 			),
-			'BROADCAST_SEND_AT'    => array(
+			'BROADCAST_SEND_AT'   => array(
 				'name' => esc_html_x( 'Broadcast send at', 'ConvertKit', 'uncanny-automator' ),
 				'type' => 'text',
 			),
@@ -231,12 +227,11 @@ class CONVERTKIT_BROADCAST_CREATE extends \Uncanny_Automator\Recipe\App_Action {
 
 		$this->hydrate_tokens(
 			array(
-				'BROADCAST_ID'         => $data['id'] ?? '',
-				'BROADCAST_PUBLIC_URL' => ! $is_draft ? ( $data['public_url'] ?? '' ) : '',
-				'BROADCAST_DRAFT_URL'  => $is_draft && ! empty( $data['id'] )
+				'BROADCAST_ID'        => $data['id'] ?? '',
+				'BROADCAST_DRAFT_URL' => $is_draft && ! empty( $data['id'] )
 					? 'https://app.kit.com/campaigns/' . $data['id'] . '/draft'
 					: '-',
-				'BROADCAST_SEND_AT'    => ! empty( $data['send_at'] )
+				'BROADCAST_SEND_AT'   => ! empty( $data['send_at'] )
 					? $this->helpers->get_formatted_time( $data['send_at'] )
 					: '-',
 			)

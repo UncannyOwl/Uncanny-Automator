@@ -60,6 +60,50 @@ class ConvertKit_Api_Caller extends Api_Caller {
 	}
 
 	/**
+	 * Authorize a v4 personal API key and store vault credentials.
+	 *
+	 * @param string $api_key The Kit v4 personal API key.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception If authorization fails.
+	 */
+	public function authorize_v4_api_key( $api_key ) {
+
+		$result = $this->api_request(
+			array(
+				'action'  => 'authorize_v4_api_key',
+				'api_key' => $api_key,
+			),
+			null,
+			array( 'exclude_credentials' => true )
+		);
+
+		$this->helpers->store_credentials( $result['data'] ?? array() );
+	}
+
+	/**
+	 * Fetch the current OAuth enablement status from the proxy.
+	 *
+	 * Used by the settings page to decide whether to surface the Quick
+	 * connect radio. Result is cached by the caller via transient.
+	 *
+	 * @return bool True if OAuth is currently enabled on the proxy.
+	 *
+	 * @throws Exception If the request fails.
+	 */
+	public function fetch_oauth_status() {
+
+		$result = $this->api_request(
+			array( 'action' => 'oauth_status' ),
+			null,
+			array( 'exclude_credentials' => true )
+		);
+
+		return ! empty( $result['data']['oauth_enabled'] );
+	}
+
+	/**
 	 * Check for errors in the API response.
 	 *
 	 * @param array $response The API response.

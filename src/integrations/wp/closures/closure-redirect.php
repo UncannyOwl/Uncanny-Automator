@@ -147,7 +147,7 @@ class Closure_Redirect {
 		switch ( $strategy ) {
 			case 'direct':
 				// Strategy 1: Direct PHP redirect. Only works if headers not sent AND not AJAX/REST.
-				wp_redirect( $redirect_url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- External URLs are valid closure redirect targets.
+				wp_redirect( $this->encode_for_core_redirect( $redirect_url ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- External URLs are valid closure redirect targets.
 				exit;
 
 			case 'transient':
@@ -177,7 +177,7 @@ class Closure_Redirect {
 	 */
 	protected function get_redirect_strategy() {
 
-		if ( ! headers_sent() && ! wp_doing_ajax() && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		if ( ! $this->are_headers_sent() && ! wp_doing_ajax() && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
 			return 'direct';
 		}
 
@@ -189,6 +189,16 @@ class Closure_Redirect {
 		}
 
 		return 'javascript';
+	}
+
+	/**
+	 * Wrapper around headers_sent() extracted to allow test subclasses to
+	 * stub it. The Codeception bootstrap emits deprecation notices before
+	 * any test runs, which flips headers_sent() to true for the rest of
+	 * the process and makes the 'direct' branch otherwise unreachable.
+	 */
+	protected function are_headers_sent() {
+		return headers_sent();
 	}
 
 	/**
@@ -286,5 +296,28 @@ class Closure_Redirect {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Percent-encode chars that wp_sanitize_redirect() drops.
+	 *
+	 * wp_redirect() runs wp_sanitize_redirect(), whose allowlist regex removes
+	 * $, |, and ' even though esc_url() permits them. Pre-encoding lets the
+	 * values survive the sanitizer; the browser decodes the percent-escapes
+	 * back to literal characters on the landing page.
+	 *
+	 * @param string $url Validated redirect URL.
+	 *
+	 * @return string URL with sanitize-unsafe characters percent-encoded.
+	 */
+	private function encode_for_core_redirect( $url ) {
+		return strtr(
+			$url,
+			array(
+				'$' => '%24',
+				'|' => '%7C',
+				"'" => '%27',
+			)
+		);
 	}
 }

@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 6.9.4
 Requires PHP: 7.4
-Stable tag: 7.2.2.1
+Stable tag: 7.2.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -417,6 +417,29 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 7.2.3 [2026-05-01] =
+
+**Updated:**
+
+* Kit - Added a v4 API key option. #7214
+
+**Fixed:**
+
+* Closure – Stopped removing `$` from URL queries during redirects. #7213
+* LearnDash - Pass/fail quiz triggers now respond to essay grades. #7210
+* Loopable tokens - Closed leaks in the Action Store to prevent recipe data issues. #7224
+* Loopable tokens - Fixed phantom results caused by out-of-bounds token hydration. #7222
+* Loopable tokens - Fixed trigger token child misindexing under loop filters. #7223
+
+**Under the hood:**
+
+* App Integrations - Improved app connected status load order. #7151
+* Loopable RSS - Added support for Atom feeds (requires the latest Automator Pro). #7200
+* Uncanny Agent - Bearer Auth - Fixed an infinite loop during token metadata update in a specific situation #7234
+* Switched to the new framework:
+    * AWeber #6564
+    * Keap #6284
 
 = 7.2.2.1 [2026-04-22] =
 

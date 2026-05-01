@@ -1056,12 +1056,15 @@ class Learndash_Helpers {
 	/**
 	 * Graded Essay - Quiz passed check.
 	 *
-	 * @param array $essay - essay post object.
-	 * @param int   $pro_quiz_id - quiz ID.
+	 * @param array $essay       essay post object.
+	 * @param int   $pro_quiz_id Retained for signature backward compatibility; no longer used
+	 *                           for matching. The quiz is resolved via the essay's own
+	 *                           `quiz_post_id` meta — same ID space as `$quiz['quiz']` in
+	 *                           user meta — to sidestep the LD hook argument's ambiguity.
 	 *
 	 * @return mixed - WP_Error || true if passed, false otherwise.
 	 */
-	public function graded_quiz_passed( $essay, $pro_quiz_id ) {
+	public function graded_quiz_passed( $essay, $pro_quiz_id ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 
 		if ( ! is_a( $essay, 'WP_Post' ) || 'sfwd-essays' !== $essay->post_type ) {
 			return new \WP_Error( 'essay', esc_html_x( 'Not an essay post.', 'Learndash', 'uncanny-automator' ) );
@@ -1073,9 +1076,8 @@ class Learndash_Helpers {
 		}
 
 		// Set vars to determine if the Quiz passed.
-		$course_id      = get_post_meta( $essay->ID, 'course_id', true );
-		$course_id      = absint( $course_id );
-		$pro_quiz_id    = absint( $pro_quiz_id );
+		$course_id      = absint( get_post_meta( $essay->ID, 'course_id', true ) );
+		$quiz_post_id   = absint( get_post_meta( $essay->ID, 'quiz_post_id', true ) );
 		$user_quiz_meta = get_user_meta( $essay->post_author, '_sfwd-quizzes', true );
 		$user_quiz_meta = maybe_unserialize( $user_quiz_meta );
 		if ( ! is_array( $user_quiz_meta ) ) {
@@ -1085,7 +1087,11 @@ class Learndash_Helpers {
 		$user_quiz_meta = array_reverse( $user_quiz_meta );
 
 		foreach ( $user_quiz_meta as $quiz ) {
-			if ( absint( $quiz['pro_quizid'] ) === absint( $pro_quiz_id ) && absint( $course_id ) === absint( $quiz['course'] ) ) {
+			// Match on the WP post ID of the quiz — derived from the essay's own quiz_post_id meta,
+			// which lives in the same ID space as $quiz['quiz']. Avoids the pro_quizid/post_id
+			// ambiguity in LD's hook signature.
+			if ( isset( $quiz['quiz'] ) && absint( $quiz['quiz'] ) === $quiz_post_id
+				&& absint( $quiz['course'] ?? 0 ) === $course_id ) {
 				$graded = isset( $quiz['graded'] ) ? $quiz['graded'] : false;
 				if ( ! empty( $graded ) && is_array( $graded ) ) {
 					// Ensure the currently graded quiz ID is in the Graded array.

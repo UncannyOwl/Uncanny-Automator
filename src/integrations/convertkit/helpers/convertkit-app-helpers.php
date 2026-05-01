@@ -321,17 +321,117 @@ class ConvertKit_App_Helpers extends App_Helpers {
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * Check if the current connection uses the legacy v3 API (API key).
+	 * Get the API version of the current connection.
 	 *
-	 * @return bool True if using v3, false otherwise (v4/OAuth is default).
+	 * Returns one of:
+	 *   'v3'         — legacy v3 API key + secret
+	 *   'v4-api-key' — v4 personal API key (X-Kit-Api-Key header)
+	 *   'v4-oauth'   — v4 OAuth (Bearer token)
+	 *   ''           — no connection / unknown
+	 *
+	 * @return string
 	 */
-	public function is_v3() {
+	public function get_api_version() {
 		try {
 			$credentials = $this->get_credentials();
-			return 'v3' === ( $credentials['version'] ?? null );
+			$version     = $credentials['version'] ?? '';
+
+			// Proxy stores OAuth connections with version: 'v4'. Map to
+			// 'v4-oauth' here so callers don't have to special-case it.
+			if ( 'v4' === $version ) {
+				return 'v4-oauth';
+			}
+
+			return (string) $version;
 		} catch ( Exception $e ) {
-			return false;
+			return '';
 		}
+	}
+
+	/**
+	 * Check if the current connection uses the legacy v3 API (API key).
+	 *
+	 * @return bool True if using v3, false otherwise.
+	 */
+	public function is_v3() {
+		return 'v3' === $this->get_api_version();
+	}
+
+	/**
+	 * Check if the current connection uses a v4 personal API key.
+	 *
+	 * @return bool
+	 */
+	public function is_v4_api_key() {
+		return 'v4-api-key' === $this->get_api_version();
+	}
+
+	/**
+	 * Check if the current connection uses v4 OAuth.
+	 *
+	 * @return bool
+	 */
+	public function is_v4_oauth() {
+		return 'v4-oauth' === $this->get_api_version();
+	}
+
+	/**
+	 * Check if the current connection uses either v4 variant.
+	 *
+	 * @return bool
+	 */
+	public function is_v4() {
+		return in_array( $this->get_api_version(), array( 'v4-api-key', 'v4-oauth' ), true );
+	}
+
+	/**
+	 * Transient key for the cached OAuth enablement status.
+	 *
+	 * @var string
+	 */
+	const OAUTH_STATUS_TRANSIENT = 'automator_convertkit_oauth_enabled';
+
+	/**
+	 * Transient expiry for the OAuth status cache (12 hours — polled twice daily).
+	 *
+	 * @var int
+	 */
+	const OAUTH_STATUS_TTL = 12 * HOUR_IN_SECONDS;
+
+	/**
+	 * Whether OAuth (Quick connect) is currently enabled on the proxy.
+	 *
+	 * Cached for 12 hours so we don't hit the proxy on every settings
+	 * page render. On cache miss, the result is fetched from the proxy
+	 * and stored. Any fetch failure falls back to false (hide the OAuth
+	 * radio) so a transient API outage doesn't leave users staring at
+	 * an option they can't actually use.
+	 *
+	 * @return bool
+	 */
+	public function is_oauth_enabled() {
+
+		$cached = get_transient( self::OAUTH_STATUS_TRANSIENT );
+
+		// Transient stores '1' / '0' so a genuine `false` (cache miss)
+		// can be told apart from a cached-false status.
+		if ( false !== $cached ) {
+			return '1' === $cached;
+		}
+
+		try {
+			$enabled = $this->api->fetch_oauth_status();
+		} catch ( Exception $e ) {
+			$enabled = false;
+		}
+
+		set_transient(
+			self::OAUTH_STATUS_TRANSIENT,
+			$enabled ? '1' : '0',
+			self::OAUTH_STATUS_TTL
+		);
+
+		return $enabled;
 	}
 
 	/**

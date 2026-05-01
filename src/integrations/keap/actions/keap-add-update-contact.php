@@ -9,17 +9,16 @@ use Uncanny_Automator\Recipe\Log_Properties;
  * Class KEAP_ADD_UPDATE_CONTACT
  *
  * @package Uncanny_Automator
+ * @property Keap_App_Helpers $helpers
+ * @property Keap_Api_Caller $api
  */
-class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
+class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 
 	use Log_Properties;
-
-	/**
-	 * Prefix for action code / meta.
-	 *
-	 * @var string
-	 */
-	public $prefix = 'KEAP_ADD_UPDATE_CONTACT';
+	use Keap_Field_Helpers;
+	use Keap_Address_Fields;
+	use Keap_Custom_Fields;
+	use Keap_Contact_Tokens;
 
 	/**
 	 * Store the complete with notice messages.
@@ -41,26 +40,21 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		/** @var \Uncanny_Automator\Integrations\Keap\Keap_Helpers $helper */
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'KEAP' );
-		$this->set_action_code( $this->prefix . '_CODE' );
-		$this->set_action_meta( $this->prefix . '_META' );
+		$this->set_action_code( 'KEAP_ADD_UPDATE_CONTACT_CODE' );
+		$this->set_action_meta( 'KEAP_ADD_UPDATE_CONTACT_META' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/keap/' ) );
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
-			/* translators: %1$s Contact Email */
-				esc_attr_x( 'Add/Update {{a contact:%1$s}}', 'Keap', 'uncanny-automator' ),
+				// translators: %s Contact field meta key
+				esc_html_x( 'Add/Update {{a contact:%s}}', 'Keap', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
 		);
-		$this->set_readable_sentence( esc_attr_x( 'Add/Update {{a contact}}', 'Keap', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'Add/Update {{a contact}}', 'Keap', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
-
 	}
 
 	/**
@@ -73,23 +67,23 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$fields = array();
 
 		// Required Email.
-		$fields[] = $this->helpers->get_email_field_config( $this->get_action_meta() );
+		$fields[] = $this->get_email_field_config( $this->get_action_meta() );
 
 		// Allow user to update existing contacts.
-		$fields[] = $this->helpers->get_update_existing_option_config( 'contact' );
+		$fields[] = $this->get_update_existing_option_config( 'contact' );
 
 		// Contact info repeater.
 		$fields[] = array(
 			'option_code'       => 'CONTACT_INFO',
 			'input_type'        => 'repeater',
-			'label'             => _x( 'Contact info', 'Keap', 'uncanny-automator' ),
-			'add_row_button'    => _x( 'Add a field', 'Keap', 'uncanny-automator' ),
-			'remove_row_button' => _x( 'Remove field', 'Keap', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Contact info', 'Keap', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add a field', 'Keap', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove field', 'Keap', 'uncanny-automator' ),
 			'required'          => false,
 			'fields'            => array(
 				array(
 					'option_code'           => 'FIELD',
-					'label'                 => _x( 'Field', 'Keap', 'uncanny-automator' ),
+					'label'                 => esc_html_x( 'Field', 'Keap', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'options'               => $this->get_contact_profile_options(),
 					'options_show_id'       => false,
@@ -98,7 +92,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 				),
 				array(
 					'option_code' => 'FIELD_VALUE',
-					'label'       => _x( 'Value', 'Keap', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Value', 'Keap', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 				),
@@ -110,14 +104,14 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$fields[] = array(
 			'option_code'       => 'PHONES',
 			'input_type'        => 'repeater',
-			'label'             => _x( 'Phone numbers', 'Keap', 'uncanny-automator' ),
-			'add_row_button'    => _x( 'Add phone number', 'Keap', 'uncanny-automator' ),
-			'remove_row_button' => _x( 'Remove phone number', 'Keap', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Phone numbers', 'Keap', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add phone number', 'Keap', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove phone number', 'Keap', 'uncanny-automator' ),
 			'required'          => false,
 			'fields'            => array(
 				array(
 					'option_code'           => 'FIELD_KEY',
-					'label'                 => _x( 'Field', 'Keap', 'uncanny-automator' ),
+					'label'                 => esc_html_x( 'Field', 'Keap', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'options'               => $this->get_phone_fields_options(),
 					'options_show_id'       => false,
@@ -126,19 +120,19 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 				),
 				array(
 					'option_code' => 'EXTENSION',
-					'label'       => _x( 'Extension', 'Keap', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Extension', 'Keap', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => false,
 				),
 				array(
 					'option_code' => 'NUMBER',
-					'label'       => _x( 'Number', 'Keap', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'Number', 'Keap', 'uncanny-automator' ),
 					'input_type'  => 'text',
 					'required'    => true,
 				),
 				array(
 					'option_code'           => 'TYPE_OF_NUMBER',
-					'label'                 => _x( 'Type', 'Keap', 'uncanny-automator' ),
+					'label'                 => esc_html_x( 'Type', 'Keap', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'options'               => $this->get_phone_types_options(),
 					'options_show_id'       => false,
@@ -153,14 +147,14 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		$fields[] = array(
 			'option_code'       => 'LINKS',
 			'input_type'        => 'repeater',
-			'label'             => _x( 'Links', 'Keap', 'uncanny-automator' ),
-			'add_row_button'    => _x( 'Add a link', 'Keap', 'uncanny-automator' ),
-			'remove_row_button' => _x( 'Remove link', 'Keap', 'uncanny-automator' ),
+			'label'             => esc_html_x( 'Links', 'Keap', 'uncanny-automator' ),
+			'add_row_button'    => esc_html_x( 'Add a link', 'Keap', 'uncanny-automator' ),
+			'remove_row_button' => esc_html_x( 'Remove link', 'Keap', 'uncanny-automator' ),
 			'required'          => false,
 			'fields'            => array(
 				array(
 					'option_code'           => 'TYPE',
-					'label'                 => _x( 'Type', 'Keap', 'uncanny-automator' ),
+					'label'                 => esc_html_x( 'Type', 'Keap', 'uncanny-automator' ),
 					'input_type'            => 'select',
 					'options'               => $this->get_link_types_options(),
 					'options_show_id'       => false,
@@ -169,32 +163,32 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 				),
 				array(
 					'option_code' => 'URL',
-					'label'       => _x( 'URL', 'Keap', 'uncanny-automator' ),
+					'label'       => esc_html_x( 'URL', 'Keap', 'uncanny-automator' ),
 					'input_type'  => 'url',
 					'required'    => true,
 				),
 			),
-			'description'       => _x( 'One of each link type supported', 'Keap', 'uncanny-automator' ),
+			'description'       => esc_html_x( 'One of each link type supported', 'Keap', 'uncanny-automator' ),
 			'relevant_tokens'   => array(),
 		);
 
 		// All Address type fields.
 		foreach ( $this->address_types as $type ) {
-			$address_fields = $this->helpers->get_address_fields_config( $type );
+			$address_fields = $this->get_address_fields_config( $type );
 			$fields         = array_merge( $fields, $address_fields );
 		}
 
 		// Custom Fields.
-		$fields[] = $this->helpers->get_custom_fields_repeater_config( 'contact' );
+		$fields[] = $this->get_custom_fields_repeater_config( 'contact' );
 
 		// Companies.
 		$fields[] = array(
 			'option_code' => 'COMPANY',
-			'label'       => _x( 'Company', 'Keap', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Company', 'Keap', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'options'     => array(),
 			'required'    => false,
-			'description' => _x( 'Select a company to assign to the contact. If using a custom value company ID or name will be excepted.', 'Keap', 'uncanny-automator' ),
+			'description' => esc_html_x( 'Select a company to assign to the contact. If using a custom value company ID or name will be excepted.', 'Keap', 'uncanny-automator' ),
 			'ajax'        => array(
 				'event'    => 'on_load',
 				'endpoint' => 'automator_keap_get_companies',
@@ -204,7 +198,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		// Contact Type.
 		$fields[] = array(
 			'option_code'           => 'CONTACT_TYPE',
-			'label'                 => _x( 'Contact type', 'Keap', 'uncanny-automator' ),
+			'label'                 => esc_html_x( 'Contact type', 'Keap', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'options'               => $this->get_contact_type_options(),
 			'options_show_id'       => false,
@@ -215,10 +209,10 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		// Owner ID.
 		$fields[] = array(
 			'option_code' => 'OWNER_ID',
-			'label'       => _x( 'Contact owner', 'Keap', 'uncanny-automator' ),
+			'label'       => esc_html_x( 'Contact owner', 'Keap', 'uncanny-automator' ),
 			'input_type'  => 'select',
 			'options'     => array(),
-			'description' => _x( 'Select the Keap account user to assign as the contact owner. If using a custom value emails are excepted.', 'Keap', 'uncanny-automator' ),
+			'description' => esc_html_x( 'Select the Keap account user to assign as the contact owner. If using a custom value emails are excepted.', 'Keap', 'uncanny-automator' ),
 			'required'    => false,
 			'ajax'        => array(
 				'endpoint' => 'automator_keap_get_account_users',
@@ -235,7 +229,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	public function define_tokens() {
-		$tokens                 = $this->helpers->define_contact_action_tokens();
+		$tokens                 = $this->define_contact_action_tokens();
 		$tokens['COMPANY_NAME'] = array(
 			'name' => esc_attr_x( 'Company name', 'Keap', 'uncanny-automator' ),
 			'type' => 'string',
@@ -258,7 +252,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		// Required field - throws error if not set and valid.
-		$email = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
+		$email = $this->get_email_from_parsed( $parsed, $this->get_action_meta() );
 
 		// Build contact request data.
 		$contact = array();
@@ -294,7 +288,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		// Build custom fields.
-		$custom = $this->helpers->build_custom_fields_request_data( $custom, 'contact' );
+		$custom = $this->build_custom_fields_request_data( $custom, 'contact' );
 		// Merge in any custom field errors.
 		if ( ! empty( $custom['errors'] ) ) {
 			$this->complete_with_notice_messages[] = $custom['errors'];
@@ -305,21 +299,18 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		// Build request body.
 		$body = array(
+			'action'  => 'add_update_contact',
 			'email'   => $email,
-			'update'  => $this->helpers->get_bool_value_from_parsed( $parsed, 'UPDATE_EXISTING_CONTACT' ),
+			'update'  => $this->get_bool_value_from_parsed( $parsed, 'UPDATE_EXISTING_CONTACT' ),
 			'contact' => wp_json_encode( $contact ),
 		);
 
 		// Send request.
-		$response = $this->helpers->api_request(
-			'add_update_contact',
-			$body,
-			$action_data
-		);
+		$response = $this->api->api_request( $body, $action_data );
 
 		// Hydrate contact tokens.
 		$results                = $response['data'] ?? array();
-		$tokens                 = $this->helpers->hydrate_contact_tokens( $results );
+		$tokens                 = $this->hydrate_contact_tokens( $results );
 		$tokens['COMPANY_NAME'] = isset( $contact['company'] ) && is_object( $contact['company'] ) ? $contact['company']->company_name : '';
 
 		$this->hydrate_tokens( $tokens );
@@ -340,79 +331,76 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	private function get_contact_profile_options() {
-
 		return array(
 			// Name fields.
 			array(
-				'text'  => _x( 'Name prefix', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Name prefix', 'Keap', 'uncanny-automator' ),
 				'value' => 'PREFIX',
 			),
 			array(
-				'text'  => _x( 'First name', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'First name', 'Keap', 'uncanny-automator' ),
 				'value' => 'GIVEN_NAME',
 			),
 			array(
-				'text'  => _x( 'Middle name', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Middle name', 'Keap', 'uncanny-automator' ),
 				'value' => 'MIDDLE_NAME',
 			),
 			array(
-				'text'  => _x( 'Last name', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Last name', 'Keap', 'uncanny-automator' ),
 				'value' => 'FAMILY_NAME',
 			),
 			array(
-				'text'  => _x( 'Name suffix', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Name suffix', 'Keap', 'uncanny-automator' ),
 				'value' => 'SUFFIX',
 			),
 			array(
-				'text'  => _x( 'Preferred name', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Preferred name', 'Keap', 'uncanny-automator' ),
 				'value' => 'PREFERRED_NAME',
 			),
 			array(
-				'text'  => _x( 'Job title', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Job title', 'Keap', 'uncanny-automator' ),
 				'value' => 'JOB_TITLE',
 			),
 			// Additional Emails.
 			array(
-				'text'  => _x( 'Personal email', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Personal email', 'Keap', 'uncanny-automator' ),
 				'value' => 'EMAIL2',
 			),
 			array(
-				'text'  => _x( 'Other email', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Other email', 'Keap', 'uncanny-automator' ),
 				'value' => 'EMAIL3',
 			),
 			// Dates.
 			array(
-				'text'  => _x( 'Anniversary', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Anniversary', 'Keap', 'uncanny-automator' ),
 				'value' => 'ANNIVERSARY_DATE',
 			),
 			array(
-				'text'  => _x( 'Birthday', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Birthday', 'Keap', 'uncanny-automator' ),
 				'value' => 'BIRTH_DATE',
 			),
 			// Additional info.
 			array(
-				'text'  => _x( 'Spouse name', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Spouse name', 'Keap', 'uncanny-automator' ),
 				'value' => 'SPOUSE_NAME',
 			),
 			array(
-				'text'  => _x( 'Preferred locale', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Preferred locale', 'Keap', 'uncanny-automator' ),
 				'value' => 'PREFERRED_LOCALE',
 			),
 			array(
-				'text'  => _x( 'Time zone', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Time zone', 'Keap', 'uncanny-automator' ),
 				'value' => 'TIME_ZONE',
 			),
 			array(
-				'text'  => _x( 'Referral code', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Referral code', 'Keap', 'uncanny-automator' ),
 				'value' => 'REFERRAL_CODE',
 			),
 			array(
-				'text'  => _x( 'Lead source ID', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Lead source ID', 'Keap', 'uncanny-automator' ),
 				'value' => 'LEAD_SOURCE_ID',
 			),
 		);
-
-		return $options;
 	}
 
 	/**
@@ -423,11 +411,11 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	private function get_phone_fields_options() {
 		$options = array();
 
-		for ( $i = 1; $i <= 5; $i ++ ) {
+		for ( $i = 1; $i <= 5; $i++ ) {
 			$options[] = array(
 				'text'  => sprintf(
-					/* translators: %d: phone field number priority */
-					_x( 'Phone %d', 'Keap', 'uncanny-automator' ),
+					// translators: %d: phone field number priority
+					esc_html_x( 'Phone %d', 'Keap', 'uncanny-automator' ),
 					$i
 				),
 				'value' => 'PHONE' . $i,
@@ -460,42 +448,40 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	private function get_link_types_options() {
-
 		return array(
 			array(
-				'text'  => _x( 'Website', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Website', 'Keap', 'uncanny-automator' ),
 				'value' => 'WEBSITE',
 			),
 			array(
-				'text'  => _x( 'Facebook', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Facebook', 'Keap', 'uncanny-automator' ),
 				'value' => 'FACEBOOK',
 			),
 			array(
-				'text'  => _x( 'LinkedIn', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'LinkedIn', 'Keap', 'uncanny-automator' ),
 				'value' => 'LINKED_IN',
 			),
 			array(
-				'text'  => _x( 'Twitter', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Twitter', 'Keap', 'uncanny-automator' ),
 				'value' => 'TWITTER',
 			),
 			array(
-				'text'  => _x( 'Instagram', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Instagram', 'Keap', 'uncanny-automator' ),
 				'value' => 'INSTAGRAM',
 			),
 			array(
-				'text'  => _x( 'Snapchat', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Snapchat', 'Keap', 'uncanny-automator' ),
 				'value' => 'SNAPCHAT',
 			),
 			array(
-				'text'  => _x( 'YouTube', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'YouTube', 'Keap', 'uncanny-automator' ),
 				'value' => 'YOUTUBE',
 			),
 			array(
-				'text'  => _x( 'Pinterest', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Pinterest', 'Keap', 'uncanny-automator' ),
 				'value' => 'PINTEREST',
 			),
 		);
-
 	}
 
 	/**
@@ -507,15 +493,15 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		$options = array(
 			array(
-				'text'  => _x( 'Other', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Other', 'Keap', 'uncanny-automator' ),
 				'value' => 'Other',
 			),
 			array(
-				'text'  => _x( 'Client', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Client', 'Keap', 'uncanny-automator' ),
 				'value' => 'Customer',
 			),
 			array(
-				'text'  => _x( 'Lead', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Lead', 'Keap', 'uncanny-automator' ),
 				'value' => 'Lead',
 			),
 		);
@@ -545,7 +531,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 */
 	private function build_contact_emails( $email, $info, $opt_in = '' ) {
 
-		$opt_in = empty( $opt_in ) ? _x( 'Opt In from API', 'Keap', 'uncanny-automator' ) : $opt_in;
+		$opt_in = empty( $opt_in ) ? esc_html_x( 'Opt In from API', 'Keap', 'uncanny-automator' ) : $opt_in;
 
 		$emails = array(
 			(object) array(
@@ -569,7 +555,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 				$validated = $this->get_validated_email( $field['FIELD_VALUE'], $field['FIELD'] );
 				if ( ! empty( $validated ) ) {
 					$emails[] = (object) array(
-						'email' => $this->helpers->maybe_remove_delete_value( $validated, false ),
+						'email' => $this->maybe_remove_delete_value( $validated, false ),
 						'field' => $field['FIELD'],
 					);
 				}
@@ -612,7 +598,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			if ( is_wp_error( $validated_owner_id ) ) {
 				$this->complete_with_notice_messages[] = sprintf(
 					/* translators: %s: error message */
-					_x( 'Unable to add Owner: %s', 'Keap', 'uncanny-automator' ),
+					esc_html_x( 'Unable to add Owner: %s', 'Keap', 'uncanny-automator' ),
 					$validated_owner_id->get_error_message()
 				);
 			} else {
@@ -631,7 +617,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 			if ( ! empty( $website_link ) ) {
 				$validated_link = $this->get_validated_url( $website_link[0]['URL'], 'WEBSITE' );
 				if ( ! empty( $validated_link ) ) {
-					$contact['website'] = $this->helpers->maybe_remove_delete_value( $validated_link );
+					$contact['website'] = $this->maybe_remove_delete_value( $validated_link );
 				}
 			}
 		}
@@ -677,7 +663,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 			// Add to contact.
 			$key             = strtolower( $field['FIELD'] );
-			$contact[ $key ] = $this->helpers->maybe_remove_delete_value( $value );
+			$contact[ $key ] = $this->maybe_remove_delete_value( $value );
 		}
 
 		return $contact;
@@ -712,9 +698,9 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 			// Add to data with key to ensure we only have one of each.
 			$data[ $field_key ] = (object) array(
-				'extension' => $this->helpers->maybe_remove_delete_value( $phone['EXTENSION'] ),
-				'number'    => $this->helpers->maybe_remove_delete_value( $number ),
-				'type'      => $this->helpers->maybe_remove_delete_value( $phone['TYPE_OF_NUMBER'] ),
+				'extension' => $this->maybe_remove_delete_value( $phone['EXTENSION'] ),
+				'number'    => $this->maybe_remove_delete_value( $number ),
+				'type'      => $this->maybe_remove_delete_value( $phone['TYPE_OF_NUMBER'] ),
 				'field'     => $field_key,
 			);
 		}
@@ -755,7 +741,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 			// Add to data with key to ensure we only have one of each.
 			$data[ $type ] = (object) array(
-				'name' => $this->helpers->maybe_remove_delete_value( $url ),
+				'name' => $this->maybe_remove_delete_value( $url ),
 				'type' => $type,
 			);
 		}
@@ -774,7 +760,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		$addresses = array();
 		foreach ( $this->address_types as $type ) {
-			$address = $this->helpers->get_address_fields_from_parsed( $parsed, $type );
+			$address = $this->get_address_fields_from_parsed( $parsed, $type );
 			if ( ! empty( $address ) ) {
 				$addresses[] = $address;
 			}
@@ -793,15 +779,15 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 */
 	private function get_validated_email( $email, $key ) {
 
-		if ( $this->helpers->is_delete_value( $email ) ) {
+		if ( $this->is_delete_value( $email ) ) {
 			return $email;
 		}
 
-		$validated_email = $this->helpers->get_valid_email( $email );
+		$validated_email = $this->get_valid_email( $email );
 		if ( false === $validated_email ) {
 			$this->complete_with_notice_messages[] = sprintf(
 				// translators: 1: Email, 2: Field key
-				_x( 'Invalid email: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
+				esc_html_x( 'Invalid email: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
 				$email,
 				strtolower( $key )
 			);
@@ -822,7 +808,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( empty( $url ) || ! is_string( $url ) ) {
 			return '';
 		}
-		if ( $this->helpers->is_delete_value( $url ) ) {
+		if ( $this->is_delete_value( $url ) ) {
 			return $url;
 		}
 
@@ -830,7 +816,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( ! $validate_link ) {
 			$this->complete_with_notice_messages[] = sprintf(
 				// translators: 1: URL, 2: Field key
-				_x( 'Invalid url: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
+				esc_html_x( 'Invalid URL: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
 				$url,
 				strtolower( $key )
 			);
@@ -853,15 +839,15 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( empty( $date ) ) {
 			return '';
 		}
-		if ( $this->helpers->is_delete_value( $date ) ) {
+		if ( $this->is_delete_value( $date ) ) {
 			return $date;
 		}
 
-		$validated_date = $this->helpers->get_formatted_date( $date, $format );
+		$validated_date = $this->get_formatted_date( $date, $format );
 		if ( is_wp_error( $validated_date ) ) {
 			$this->complete_with_notice_messages[] = sprintf(
 				// translators: 1: Date, 2: Field key
-				_x( 'Invalid date: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
+				esc_html_x( 'Invalid date: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
 				$date,
 				strtolower( $key )
 			);
@@ -883,15 +869,15 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( empty( $number ) || ! is_string( $number ) ) {
 			return '';
 		}
-		if ( $this->helpers->is_delete_value( $number ) ) {
+		if ( $this->is_delete_value( $number ) ) {
 			return $number;
 		}
 
-		$validate_number = $this->helpers->get_valid_phone_number( $number );
+		$validate_number = $this->get_valid_phone_number( $number );
 		if ( false === $validate_number ) {
 			$this->complete_with_notice_messages[] = sprintf(
 				// translators: 1: Phone number, 2: Field key
-				_x( 'Invalid phone number: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
+				esc_html_x( 'Invalid phone number: "%1$s" for key: "%2$s"', 'Keap', 'uncanny-automator' ),
 				$number,
 				strtolower( $key )
 			);
@@ -908,7 +894,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return string
 	 */
 	private function get_validated_prefix( $prefix ) {
-		if ( empty( $prefix ) || $this->helpers->is_delete_value( $prefix ) ) {
+		if ( empty( $prefix ) || $this->is_delete_value( $prefix ) ) {
 			return $prefix;
 		}
 		// Trim the value and lowercase and then capitalize the first letter.
@@ -919,7 +905,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( ! in_array( $prefix, $prefixes, true ) ) {
 			$this->complete_with_notice_messages[] = sprintf(
 				// translators: %s: valid prefixes
-				_x( 'Invalid name prefix. Valid prefixes are: %s', 'Keap', 'uncanny-automator' ),
+				esc_html_x( 'Invalid name prefix. Valid prefixes are: %s', 'Keap', 'uncanny-automator' ),
 				implode( ', ', $prefixes )
 			);
 			return '';
@@ -936,7 +922,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return string
 	 */
 	private function get_validated_suffix( $suffix ) {
-		if ( empty( $suffix ) || $this->helpers->is_delete_value( $suffix ) ) {
+		if ( empty( $suffix ) || $this->is_delete_value( $suffix ) ) {
 			return $suffix;
 		}
 		$suffix   = trim( $suffix );
@@ -947,7 +933,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( ! in_array( $suffix, $suffixes, true ) ) {
 			$this->complete_with_notice_messages[] = sprintf(
 				// translators: %s: valid suffixes
-				_x( 'Invalid name suffix. Valid suffixes are: %s', 'Keap', 'uncanny-automator' ),
+				esc_html_x( 'Invalid name suffix. Valid suffixes are: %s', 'Keap', 'uncanny-automator' ),
 				implode( ', ', $suffixes )
 			);
 			return '';
@@ -971,7 +957,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		}
 
 		// Return empty object to remove.
-		if ( $this->helpers->is_delete_value( $company ) ) {
+		if ( $this->is_delete_value( $company ) ) {
 			return (object) array(
 				'id'           => '',
 				'company_name' => '',
@@ -982,7 +968,7 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		if ( is_wp_error( $validated ) ) {
 			$this->complete_with_notice_messages[] = sprintf(
 				/* translators: %s: error message */
-				_x( 'Unable to add Company: %s', 'Keap', 'uncanny-automator' ),
+				esc_html_x( 'Unable to add Company: %s', 'Keap', 'uncanny-automator' ),
 				$validated->get_error_message()
 			);
 			$validated = false;
@@ -990,5 +976,4 @@ class KEAP_ADD_UPDATE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 
 		return $validated;
 	}
-
 }

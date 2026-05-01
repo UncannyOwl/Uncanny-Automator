@@ -9,17 +9,14 @@ use Uncanny_Automator\Recipe\Log_Properties;
  * Class KEAP_ADD_NOTE_CONTACT
  *
  * @package Uncanny_Automator
+ * @property Keap_App_Helpers $helpers
+ * @property Keap_Api_Caller $api
  */
-class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
+class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 
 	use Log_Properties;
-
-	/**
-	 * Prefix for action code / meta.
-	 *
-	 * @var string
-	 */
-	public $prefix = 'KEAP_ADD_NOTE_CONTACT';
+	use Keap_Field_Helpers;
+	use Keap_Contact_Tokens;
 
 	/**
 	 * Set up action.
@@ -27,13 +24,9 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		/** @var \Uncanny_Automator\Integrations\Keap\Keap_Helpers $helper */
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'KEAP' );
-		$this->set_action_code( $this->prefix . '_CODE' );
-		$this->set_action_meta( $this->prefix . '_META' );
+		$this->set_action_code( 'KEAP_ADD_NOTE_CONTACT_CODE' );
+		$this->set_action_meta( 'KEAP_ADD_NOTE_CONTACT_META' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/keap/' ) );
 		$this->set_requires_user( false );
@@ -57,38 +50,38 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	public function options() {
 		return array(
 			// Email.
-			$this->helpers->get_email_field_config( $this->get_action_meta() ),
+			$this->get_email_field_config( $this->get_action_meta() ),
 			// Title.
 			array(
 				'option_code' => 'NOTE_TITLE',
-				'label'       => esc_attr__( 'Title', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Title', 'Keap', 'uncanny-automator' ),
 				'input_type'  => 'text',
-				'description' => esc_attr__( 'Enter the title of the note. ( optional )', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter the title of the note. ( optional )', 'Keap', 'uncanny-automator' ),
 			),
 			// Content.
 			array(
 				'option_code' => 'NOTE_BODY',
-				'label'       => esc_attr__( 'Body', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Body', 'Keap', 'uncanny-automator' ),
 				'input_type'  => 'textarea',
-				'description' => esc_attr__( 'Enter the content of the note.', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Enter the content of the note.', 'Keap', 'uncanny-automator' ),
 				'required'    => true,
 			),
 			// Type.
 			array(
 				'option_code' => 'NOTE_TYPE',
-				'label'       => esc_attr__( 'Type', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Type', 'Keap', 'uncanny-automator' ),
 				'input_type'  => 'select',
 				'options'     => $this->get_note_types(),
-				'description' => esc_attr__( 'Select the type of the note.', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Select the type of the note.', 'Keap', 'uncanny-automator' ),
 				'required'    => true,
 			),
 			// Account User ID.
 			array(
 				'option_code' => 'ACCOUNT_USER_ID',
-				'label'       => esc_attr__( 'Keap account user', 'uncanny-automator' ),
+				'label'       => esc_html_x( 'Keap account user', 'Keap', 'uncanny-automator' ),
 				'input_type'  => 'select',
 				'options'     => array(),
-				'description' => esc_attr__( 'Select the Keap account user to assign the note to. If using a custom value emails are excepted.', 'uncanny-automator' ),
+				'description' => esc_html_x( 'Select the Keap account user to assign the note to. If using a custom value emails are excepted.', 'Keap', 'uncanny-automator' ),
 				'required'    => true,
 				'ajax'        => array(
 					'endpoint' => 'automator_keap_get_account_users',
@@ -105,9 +98,9 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	 */
 	public function define_tokens() {
 
-		$tokens                       = $this->helpers->define_contact_action_tokens();
+		$tokens                       = $this->define_contact_action_tokens();
 		$tokens['NOTE_ID']            = array(
-			'name' => esc_attr_x( 'Note ID', 'Keap', 'uncanny-automator' ),
+			'name' => esc_html_x( 'Note ID', 'Keap', 'uncanny-automator' ),
 			'type' => 'int',
 		);
 		$tokens['ACCOUNT_USER_EMAIL'] = array(
@@ -143,7 +136,7 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		// Required fields - throws error if not set and valid.
-		$email = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
+		$email = $this->get_email_from_parsed( $parsed, $this->get_action_meta() );
 
 		// Build variables for request data.
 		$title = $this->get_parsed_meta_value( 'NOTE_TITLE', false );
@@ -178,11 +171,11 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		);
 
 		// Send request.
-		$response = $this->helpers->api_request(
-			'add_note_to_contact',
+		$response = $this->api->api_request(
 			array(
-				'email' => $email,
-				'note'  => wp_json_encode( $note ),
+				'action' => 'add_note_to_contact',
+				'email'  => $email,
+				'note'   => wp_json_encode( $note ),
 			),
 			$action_data
 		);
@@ -190,7 +183,7 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		// Hydrate tokens.
 		$results = $response['data']['results'] ?? array();
 		$contact = $response['data']['contact'] ?? array();
-		$tokens  = $this->helpers->hydrate_contact_tokens( $contact );
+		$tokens  = $this->hydrate_contact_tokens( $contact );
 
 		// Add note specific tokens.
 		$tokens['ACCOUNT_USER_FIRST_NAME'] = $results['assigned_to_user']['given_name'] ?? '';
@@ -212,27 +205,27 @@ class KEAP_ADD_NOTE_CONTACT extends \Uncanny_Automator\Recipe\Action {
 		return array(
 			array(
 				'value' => 'Appointment',
-				'text'  => _x( 'Appointment', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Appointment', 'Keap', 'uncanny-automator' ),
 			),
 			array(
 				'value' => 'Call',
-				'text'  => _x( 'Call', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Call', 'Keap', 'uncanny-automator' ),
 			),
 			array(
 				'value' => 'Email',
-				'text'  => _x( 'Email', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Email', 'Keap', 'uncanny-automator' ),
 			),
 			array(
 				'value' => 'Fax',
-				'text'  => _x( 'Fax', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Fax', 'Keap', 'uncanny-automator' ),
 			),
 			array(
 				'value' => 'Letter',
-				'text'  => _x( 'Letter', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Letter', 'Keap', 'uncanny-automator' ),
 			),
 			array(
 				'value' => 'Other',
-				'text'  => _x( 'Other', 'Keap', 'uncanny-automator' ),
+				'text'  => esc_html_x( 'Other', 'Keap', 'uncanny-automator' ),
 			),
 		);
 	}

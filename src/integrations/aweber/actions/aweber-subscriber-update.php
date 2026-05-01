@@ -9,10 +9,10 @@ use Exception;
  * Class AWEBER_SUBSCRIBER_UPDATE
  *
  * @package Uncanny_Automator
+ * @property Aweber_App_Helpers $helpers
+ * @property Aweber_Api_Caller $api
  */
-class AWEBER_SUBSCRIBER_UPDATE extends \Uncanny_Automator\Recipe\Action {
-
-	public $prefix = 'AWEBER_SUBSCRIBER_UPDATE';
+class AWEBER_SUBSCRIBER_UPDATE extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
 	 * Spins up new action inside "AWEBER" integration.
@@ -20,23 +20,20 @@ class AWEBER_SUBSCRIBER_UPDATE extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
-
 		$this->set_integration( 'AWEBER' );
-		$this->set_action_code( $this->prefix . '_CODE' );
-		$this->set_action_meta( $this->prefix . '_META' );
+		$this->set_action_code( 'AWEBER_SUBSCRIBER_UPDATE_CODE' );
+		$this->set_action_meta( 'AWEBER_SUBSCRIBER_UPDATE_META' );
 		$this->set_is_pro( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/aweber/' ) );
 		$this->set_requires_user( false );
 		$this->set_sentence(
 			sprintf(
-				/* translators: %1$s Contact Email, %2$s List*/
-				esc_attr_x( 'Update {{a subscriber:%1$s}}', 'AWeber', 'uncanny-automator' ),
-				$this->get_action_meta(),
+				// translators: 1: Subscriber field meta key
+				esc_html_x( 'Update {{a subscriber:%1$s}}', 'AWeber', 'uncanny-automator' ),
+				$this->get_action_meta()
 			)
 		);
-		$this->set_readable_sentence( esc_attr_x( 'Update {{a subscriber}}', 'AWeber', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'Update {{a subscriber}}', 'AWeber', 'uncanny-automator' ) );
 		$this->set_background_processing( true );
 	}
 
@@ -46,136 +43,46 @@ class AWEBER_SUBSCRIBER_UPDATE extends \Uncanny_Automator\Recipe\Action {
 	 * @return array
 	 */
 	public function options() {
-
 		return array(
-			array(
-				'option_code' => 'ACCOUNT',
-				'label'       => _x( 'Account', 'AWeber', 'uncanny-automator' ),
-				'input_type'  => 'select',
-				'options'     => array(),
-				'required'    => true,
-				'ajax'        => array(
-					'endpoint' => 'automator_aweber_accounts_fetch',
-					'event'    => 'on_load',
-				),
-			),
-			array(
-				'option_code' => 'LIST',
-				'label'       => _x( 'List', 'AWeber', 'uncanny-automator' ),
-				'input_type'  => 'select',
-				'options'     => array(),
-				'required'    => true,
-				'ajax'        => array(
-					'endpoint'      => 'automator_aweber_list_fetch',
-					'event'         => 'parent_fields_change',
-					'listen_fields' => array( 'ACCOUNT' ),
-				),
-			),
-			array(
-				'option_code' => 'NAME',
-				'label'       => _x( 'Name', 'AWeber', 'uncanny-automator' ),
-				'input_type'  => 'text',
-				'options'     => array(),
-				'required'    => true,
-			),
-			array(
-				'option_code' => $this->get_action_meta(),
-				'label'       => _x( 'Email', 'AWeber', 'uncanny-automator' ),
-				'input_type'  => 'email',
-				'options'     => array(),
-				'required'    => true,
-			),
-			array(
-				'option_code'     => 'CUSTOM_FIELDS',
-				'input_type'      => 'repeater',
-				'relevant_tokens' => array(),
-				'label'           => esc_html__( 'Custom fields', 'uncanny-automator' ),
-				'required'        => false,
-				'fields'          => array(
-					array(
-						'input_type'  => 'text',
-						'option_code' => 'FIELD_ID',
-						'label'       => esc_html__( 'ID', 'uncanny-automator' ),
-						'read_only'   => true,
-					),
-					array(
-						'input_type'  => 'text',
-						'option_code' => 'FIELD_NAME',
-						'label'       => esc_html__( 'Name', 'uncanny-automator' ),
-						'read_only'   => true,
-					),
-					array(
-						'input_type'  => 'text',
-						'option_code' => 'FIELD_VALUE',
-						'label'       => esc_html__( 'Name', 'uncanny-automator' ),
-						'read_only'   => false,
-					),
-
-				),
-				'hide_actions'    => true,
-				'ajax'            => array(
-					'event'          => 'parent_fields_change',
-					'listen_fields'  => array( 'LIST' ),
-					'endpoint'       => 'automator_aweber_custom_fields_fetch',
-					'mapping_column' => 'FIELD_ID',
-				),
-			),
+			$this->helpers->get_account_option_config(),
+			$this->helpers->get_list_option_config(),
+			$this->helpers->get_name_option_config( 'NAME' ),
+			$this->helpers->get_email_option_config( $this->get_action_meta() ),
+			$this->helpers->get_custom_fields_option_config(),
 		);
 	}
 
 	/**
 	 * Process the action.
 	 *
-	 * @param int $user_id
-	 * @param array $action_data
-	 * @param int $recipe_id
-	 * @param array $args
-	 * @param array $parsed
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        The args.
+	 * @param array $parsed      The parsed values.
 	 *
 	 * @return bool
+	 * @throws Exception If validation fails or API request fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$account_id    = $parsed['ACCOUNT'] ?? '';
-		$list_id       = $parsed['LIST'] ?? '';
-		$name          = $parsed['NAME'] ?? '';
-		$email         = $parsed[ $this->get_action_meta() ] ?? '';
-		$custom_fields = (array) json_decode( $action_data['maybe_parsed']['CUSTOM_FIELDS'], true );
+		$account_id    = $this->helpers->get_account_from_parsed( $parsed );
+		$list_id       = $this->helpers->get_list_from_parsed( $parsed );
+		$name          = $this->helpers->get_name_from_parsed( $parsed, 'NAME' );
+		$email         = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
+		$custom_fields = $this->helpers->process_custom_fields( $action_data );
 
-		$custom_fields_processed = array();
+		$body = array(
+			'action'        => 'update_subscriber',
+			'account_id'    => $account_id,
+			'list_id'       => $list_id,
+			'name'          => $name,
+			'email'         => $email,
+			'custom_fields' => wp_json_encode( $custom_fields ),
+		);
 
-		foreach ( $custom_fields as $custom_field ) {
-			$custom_fields_processed[ $custom_field['FIELD_NAME'] ] = $custom_field['FIELD_VALUE'];
-		}
+		$this->api->api_request( $body, $action_data );
 
-		try {
-
-			if ( false === filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-				/* translators: Email address */
-				throw new Exception(
-					sprintf(
-					/* translators: %s: Email address */
-						esc_html__( 'The email address [%s] is invalid', 'uncanny-automator' ),
-						esc_html( $email )
-					)
-				);
-			}
-
-			$body = array(
-				'action'        => 'update_subscriber',
-				'account_id'    => $account_id,
-				'list_id'       => $list_id,
-				'name'          => sanitize_text_field( $name ),
-				'email'         => $email,
-				'custom_fields' => wp_json_encode( $custom_fields_processed ),
-			);
-
-			$this->helpers->api_request( $body, $action_data );
-
-			return true;
-
-		} catch ( Exception $e ) {
-			throw new Exception( esc_html( $e->getMessage() ) );
-		}
+		return true;
 	}
 }

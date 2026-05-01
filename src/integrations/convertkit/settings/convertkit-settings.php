@@ -23,25 +23,32 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	use OAuth_App_Integration;
 
 	/**
-	 * Temporary option key for the API key field (used only during connect flow).
+	 * Temporary option key for the V3 API key field (used only during connect flow).
 	 *
 	 * @var string
 	 */
 	const API_KEY_OPTION = 'automator_convertkit_api_key';
 
 	/**
-	 * Temporary option key for the API secret field (used only during connect flow).
+	 * Temporary option key for the V3 API secret field (used only during connect flow).
 	 *
 	 * @var string
 	 */
 	const API_SECRET_OPTION = 'automator_convertkit_api_secret';
 
 	/**
+	 * Temporary option key for the V4 API key field (used only during connect flow).
+	 *
+	 * @var string
+	 */
+	const V4_API_KEY_OPTION = 'automator_convertkit_v4_api_key';
+
+	/**
 	 * The default connection method.
 	 *
 	 * @var string
 	 */
-	protected $default_connection_type = 'oauth';
+	protected $default_connection_type = 'v4-api-key';
 
 	////////////////////////////////////////////////////////////
 	// Required abstract methods
@@ -93,7 +100,7 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	 */
 	public function set_properties() {
 		$this->name = 'Kit';
-		$this->set_default_connection_type( 'oauth' );
+		$this->set_default_connection_type( 'v4-api-key' );
 	}
 
 	/**
@@ -104,6 +111,7 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	protected function register_disconnected_options() {
 		$this->register_option( self::API_KEY_OPTION );
 		$this->register_option( self::API_SECRET_OPTION );
+		$this->register_option( self::V4_API_KEY_OPTION );
 	}
 
 	/**
@@ -118,16 +126,19 @@ class ConvertKit_Settings extends App_Integration_Settings {
 
 		try {
 
-			$api_key    = automator_get_option( self::API_KEY_OPTION, '' );
-			$api_secret = automator_get_option( self::API_SECRET_OPTION, '' );
+			$v4_api_key = automator_get_option( self::V4_API_KEY_OPTION, '' );
+			$v3_api_key = automator_get_option( self::API_KEY_OPTION, '' );
+			$v3_secret  = automator_get_option( self::API_SECRET_OPTION, '' );
 
-			if ( empty( $api_key ) || empty( $api_secret ) ) {
+			if ( ! empty( $v4_api_key ) ) {
+				$this->api->authorize_v4_api_key( $v4_api_key );
+			} elseif ( ! empty( $v3_api_key ) && ! empty( $v3_secret ) ) {
+				$this->api->authorize_api_keys( $v3_api_key, $v3_secret );
+			} else {
 				throw new Exception(
-					esc_html_x( 'Please enter a valid API key and API secret.', 'ConvertKit', 'uncanny-automator' )
+					esc_html_x( 'Please enter a valid API key.', 'ConvertKit', 'uncanny-automator' )
 				);
 			}
-
-			$this->api->authorize_api_keys( $api_key, $api_secret );
 
 			$this->register_alert(
 				array(
@@ -136,7 +147,8 @@ class ConvertKit_Settings extends App_Integration_Settings {
 				)
 			);
 
-			// Delete the temporary options.
+			// Delete all temporary options regardless of which flow was used.
+			automator_delete_option( self::V4_API_KEY_OPTION );
 			automator_delete_option( self::API_KEY_OPTION );
 			automator_delete_option( self::API_SECRET_OPTION );
 
@@ -216,14 +228,23 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	/**
 	 * Sets the default connection type.
 	 *
-	 * @param string $type "oauth"|"api-key".
+	 * Priority when not connected and no in-flight credentials are stored:
+	 *   1. OAuth (if currently enabled on the proxy)
+	 *   2. V4 API key
+	 *   3. V3 API key
+	 *
+	 * In-flight credentials (left over from a prior failed attempt)
+	 * always take precedence so the user lands back on the tab they
+	 * were using.
+	 *
+	 * @param string $type "oauth"|"api-key"|"v4-api-key".
 	 *
 	 * @return void
 	 */
 	private function set_default_connection_type( $type ) {
 
-		$type = ! in_array( (string) $type, array( 'oauth', 'api-key' ), true )
-			? 'oauth'
+		$type = ! in_array( (string) $type, array( 'oauth', 'api-key', 'v4-api-key' ), true )
+			? 'v4-api-key'
 			: $type;
 
 		if ( $this->is_connected ) {
@@ -231,12 +252,26 @@ class ConvertKit_Settings extends App_Integration_Settings {
 			return;
 		}
 
-		// If not connected and we have stored API key options, show API key tab
-		// as the user may have encountered an error connecting.
-		$has_credentials = ! empty( automator_get_option( self::API_KEY_OPTION, '' ) )
-			|| ! empty( automator_get_option( self::API_SECRET_OPTION, '' ) );
+		// Prefer the tab matching any in-flight credentials so a failed
+		// attempt lands the user back on the tab they were using.
+		if ( ! empty( automator_get_option( self::V4_API_KEY_OPTION, '' ) ) ) {
+			$this->default_connection_type = 'v4-api-key';
+			return;
+		}
 
-		$this->default_connection_type = $has_credentials ? 'api-key' : 'oauth';
+		if ( ! empty( automator_get_option( self::API_KEY_OPTION, '' ) )
+			|| ! empty( automator_get_option( self::API_SECRET_OPTION, '' ) ) ) {
+			$this->default_connection_type = 'api-key';
+			return;
+		}
+
+		// No in-flight credentials — follow the OAuth > V4 > V3 priority.
+		if ( $this->helpers->is_oauth_enabled() ) {
+			$this->default_connection_type = 'oauth';
+			return;
+		}
+
+		$this->default_connection_type = 'v4-api-key';
 	}
 
 	////////////////////////////////////////////////////////////
@@ -258,12 +293,9 @@ class ConvertKit_Settings extends App_Integration_Settings {
 			$this->alert_html(
 				array(
 					'type'    => 'warning',
-					'heading' => esc_html_x( 'You are connected using a legacy API key.', 'ConvertKit', 'uncanny-automator' ),
-					'content' => esc_html_x( 'Reconnect your Kit account using the Quick connect option to unlock additional actions and improved functionality.', 'ConvertKit', 'uncanny-automator' ),
+					'heading' => esc_html_x( 'You are connected using a legacy V3 API key.', 'ConvertKit', 'uncanny-automator' ),
+					'content' => esc_html_x( 'Disconnect and reconnect to unlock additional actions and improved functionality.', 'ConvertKit', 'uncanny-automator' ),
 				)
-			);
-			$this->output_oauth_connect_button(
-				esc_html_x( 'Reconnect using Quick connect', 'ConvertKit', 'uncanny-automator' )
 			);
 		}
 	}
@@ -287,6 +319,8 @@ class ConvertKit_Settings extends App_Integration_Settings {
 
 		$this->output_connection_method_options();
 
+		$this->output_v4_api_key_content();
+
 		$this->output_api_key_content();
 	}
 
@@ -297,13 +331,24 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	 */
 	public function output_bottom_left_disconnected_content() {
 		?>
+		<?php if ( $this->helpers->is_oauth_enabled() ) : ?>
+			<uap-app-integration-settings-section
+				id="quick-connect-section"
+				section-type="quick-connect"
+				state="connection-method"
+				show-when="quick-connect"
+			>
+				<?php $this->output_oauth_connect_button(); ?>
+			</uap-app-integration-settings-section>
+		<?php endif; ?>
+
 		<uap-app-integration-settings-section
-			id="quick-connect-section"
-			section-type="quick-connect"
+			id="v4-api-key-section"
+			section-type="v4-api-key"
 			state="connection-method"
-			show-when="quick-connect"
+			show-when="v4-api-key"
 		>
-			<?php $this->output_oauth_connect_button(); ?>
+			<?php $this->output_connect_button(); ?>
 		</uap-app-integration-settings-section>
 
 		<uap-app-integration-settings-section
@@ -322,7 +367,17 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * Output connection method toggle (Quick connect / API key).
+	 * Output connection method toggle (V4 API key / V3 API key).
+	 *
+	 * Note on naming: the radio `value` is the web-component state ID
+	 * used by `data-state-control="connection-method"` to show/hide the
+	 * matching `<uap-app-integration-settings-section show-when="...">`
+	 * block. The PHP-side connection type (`oauth` / `api-key` /
+	 * `v4-api-key`) is a separate concept used by
+	 * `get_default_connection_type()` / `set_default_connection_type()`.
+	 * The two systems happen to share the string `'v4-api-key'` but the
+	 * V3 flow deliberately keeps them distinct (`'custom-app'` vs
+	 * `'api-key'`) to avoid coupling the UI component to PHP internals.
 	 *
 	 * @return void
 	 */
@@ -334,19 +389,39 @@ class ConvertKit_Settings extends App_Integration_Settings {
 			</div>
 
 			<div class="uap-settings-panel-content-connection-method__options">
-				<div class="uap-settings-panel-content-connection-method__option uap-settings-panel-content-connection-method--quick-connect">
+				<?php if ( $this->helpers->is_oauth_enabled() ) : ?>
+					<div class="uap-settings-panel-content-connection-method__option uap-settings-panel-content-connection-method--quick-connect">
+						<uo-field-input-radio
+							name="uap-convertkit-connect-method"
+							value="quick-connect"
+							data-state-control="connection-method"
+							<?php echo checked( $this->get_default_connection_type(), 'oauth', false ) ? 'checked' : ''; ?>
+						>
+							<div slot="label" class="uap-custom-app-label">
+								<span class="uap-settings-panel-content-connection-method__option-title">
+									<?php echo esc_html_x( 'Quick connect', 'ConvertKit', 'uncanny-automator' ); ?>
+								</span>
+								<p class="uap-settings-panel-content-paragraph">
+									<?php echo esc_html_x( 'The recommended option: Sign in to your Kit account to connect.', 'ConvertKit', 'uncanny-automator' ); ?>
+								</p>
+							</div>
+						</uo-field-input-radio>
+					</div>
+				<?php endif; ?>
+
+				<div class="uap-settings-panel-content-connection-method__option uap-settings-panel-content-connection-method--v4-api-key">
 					<uo-field-input-radio
 						name="uap-convertkit-connect-method"
-						value="quick-connect"
+						value="v4-api-key"
 						data-state-control="connection-method"
-						<?php echo checked( $this->get_default_connection_type(), 'oauth', false ) ? 'checked' : ''; ?>
+						<?php echo checked( $this->get_default_connection_type(), 'v4-api-key', false ) ? 'checked' : ''; ?>
 					>
 						<div slot="label" class="uap-custom-app-label">
 							<span class="uap-settings-panel-content-connection-method__option-title">
-								<?php echo esc_html_x( 'Quick connect', 'ConvertKit', 'uncanny-automator' ); ?>
+								<?php echo esc_html_x( 'V4 API key', 'ConvertKit', 'uncanny-automator' ); ?>
 							</span>
 							<p class="uap-settings-panel-content-paragraph">
-								<?php echo esc_html_x( 'The recommended option: Sign in to your Kit account to connect', 'ConvertKit', 'uncanny-automator' ); ?>
+								<?php echo esc_html_x( 'Connect using your Kit V4 API key for the latest functionality', 'ConvertKit', 'uncanny-automator' ); ?>
 							</p>
 						</div>
 					</uo-field-input-radio>
@@ -360,16 +435,55 @@ class ConvertKit_Settings extends App_Integration_Settings {
 					>
 						<div slot="label" class="uap-custom-app-label">
 							<span class="uap-settings-panel-content-connection-method__option-title">
-								<?php echo esc_html_x( 'API key', 'ConvertKit', 'uncanny-automator' ); ?>
+								<?php echo esc_html_x( 'V3 API key (legacy)', 'ConvertKit', 'uncanny-automator' ); ?>
 							</span>
 							<p class="uap-settings-panel-content-paragraph">
-								<?php echo esc_html_x( 'Legacy option with limited functionality. Connect using your Kit API key and secret', 'ConvertKit', 'uncanny-automator' ); ?>
+								<?php echo esc_html_x( 'Legacy option with limited functionality. Connect using your Kit V3 API key and API secret.', 'ConvertKit', 'uncanny-automator' ); ?>
 							</p>
 						</div>
 					</uo-field-input-radio>
 				</div>
 			</div>
 		</div>
+		<?php
+	}
+
+	/**
+	 * Output the V4 API key form field.
+	 *
+	 * @return void
+	 */
+	private function output_v4_api_key_content() {
+		?>
+		<uap-app-integration-settings-section
+			id="v4-api-key-fields-section"
+			section-type="v4-api-key-fields"
+			state="connection-method"
+			show-when="v4-api-key"
+			class="uap-spacing-top"
+		>
+			<?php
+			$this->output_setup_instructions(
+				esc_html_x( 'To retrieve your Kit V4 API key, perform the following:', 'ConvertKit', 'uncanny-automator' ),
+				array(
+					esc_html_x( 'Sign in to your Kit account.', 'ConvertKit', 'uncanny-automator' ),
+					esc_html_x( 'Click on your avatar in the upper right corner and select "Settings".', 'ConvertKit', 'uncanny-automator' ),
+					esc_html_x( 'Click the "Developer" menu entry on the left side.', 'ConvertKit', 'uncanny-automator' ),
+					esc_html_x( 'Under the API Keys section, locate the "V4 Key" area and copy the API key to connect Automator to Kit.', 'ConvertKit', 'uncanny-automator' ),
+				)
+			);
+
+			$this->text_input_html(
+				array(
+					'id'       => self::V4_API_KEY_OPTION,
+					'value'    => esc_attr( automator_get_option( self::V4_API_KEY_OPTION, '' ) ),
+					'label'    => esc_attr_x( 'V4 API key', 'ConvertKit', 'uncanny-automator' ),
+					'required' => true,
+					'class'    => 'uap-spacing-top',
+				)
+			);
+			?>
+		</uap-app-integration-settings-section>
 		<?php
 	}
 

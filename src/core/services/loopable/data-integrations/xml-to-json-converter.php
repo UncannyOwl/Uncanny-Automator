@@ -88,6 +88,18 @@ class Xml_To_Json_Converter {
 	}
 
 	/**
+	 * Returns the raw XML currently loaded on this instance. Useful for
+	 * callers that need to inspect or transform the body before parsing
+	 * (e.g. to detect and rewrite ATOM upstream), rather than going
+	 * straight from `load_from_url` to `to_json`.
+	 *
+	 * @return string
+	 */
+	public function get_xml_content() {
+		return $this->xml_content;
+	}
+
+	/**
 	 * Load XML data from an absolute file path.
 	 *
 	 * @param string $file_path The absolute file path of the XML file.

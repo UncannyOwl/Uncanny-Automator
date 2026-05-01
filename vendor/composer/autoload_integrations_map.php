@@ -185,7 +185,8 @@ return array(
 			$baseDir . '/src/integrations/aweber/actions/aweber-subscriber-update.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/aweber/helpers/aweber-helpers.php',
+			$baseDir . '/src/integrations/aweber/helpers/aweber-api-caller.php',
+			$baseDir . '/src/integrations/aweber/helpers/aweber-app-helpers.php',
 		),
 	),
 	'badgeos' => array(
@@ -1070,7 +1071,13 @@ return array(
 			$baseDir . '/src/integrations/keap/actions/keap-remove-tags-contact.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/keap/helpers/keap-helpers.php',
+			$baseDir . '/src/integrations/keap/helpers/keap-api-caller.php',
+			$baseDir . '/src/integrations/keap/helpers/keap-app-helpers.php',
+			$baseDir . '/src/integrations/keap/helpers/trait-keap-address-fields.php',
+			$baseDir . '/src/integrations/keap/helpers/trait-keap-contact-tokens.php',
+			$baseDir . '/src/integrations/keap/helpers/trait-keap-custom-fields.php',
+			$baseDir . '/src/integrations/keap/helpers/trait-keap-field-helpers.php',
+			$baseDir . '/src/integrations/keap/helpers/trait-keap-tag-fields.php',
 		),
 	),
 	'konnectz-it' => array(

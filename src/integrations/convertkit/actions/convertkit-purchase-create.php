@@ -34,12 +34,13 @@ class CONVERTKIT_PURCHASE_CREATE extends \Uncanny_Automator\Recipe\App_Action {
 	}
 
 	/**
-	 * Requires OAuth (v4) connection.
+	 * Creating purchases is OAuth-only per Kit's API — v4 API-key auth
+	 * cannot call POST /v4/purchases. Gate this action to v4-oauth only.
 	 *
 	 * @return bool
 	 */
 	public function requirements_met() {
-		return ! $this->helpers->is_v3();
+		return $this->helpers->is_v4_oauth();
 	}
 
 	/**

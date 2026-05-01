@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.2.2.1\n"
+"Project-Id-Version: Uncanny Automator 7.2.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-04-22T15:20:47+00:00\n"
+"POT-Creation-Date: 2026-05-01T14:11:42+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -2041,10 +2041,6 @@ msgstr ""
 #: src/assets/build/main.js:1
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:186
 #: src/core/views/html-admin-status.php:1229
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:103
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:109
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:104
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:110
 #: src/integrations/rafflepress/helpers/rafflepress-helpers.php:46
 #: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:62
 #: src/integrations/wp/actions/wp-add-reply-to-comment.php:88
@@ -2052,8 +2048,6 @@ msgid "Name"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:97
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:98
 msgid "ID"
 msgstr ""
 
@@ -4786,7 +4780,6 @@ msgstr ""
 
 #: src/core/admin/api-log/class-api-log.php:67
 #: src/core/views/html-admin-status.php:972
-#: src/integrations/keap/actions/keap-add-note-contact.php:79
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:120
 #: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:239
 msgid "Type"
@@ -4802,7 +4795,6 @@ msgid "Date"
 msgstr ""
 
 #: src/core/admin/api-log/class-api-log.php:69
-#: src/integrations/keap/actions/keap-add-note-contact.php:64
 #: src/integrations/logging/actions/write-data-to-log.php:40
 msgid "Title"
 msgstr ""
@@ -6888,17 +6880,17 @@ msgctxt "Integration settings"
 msgid "3rd-party"
 msgstr ""
 
-#: src/core/lib/settings/trait-oauth-app-integration.php:111
+#: src/core/lib/settings/trait-oauth-app-integration.php:120
 msgctxt "Integration settings"
 msgid "Invalid response, please try again."
 msgstr ""
 
-#: src/core/lib/settings/trait-oauth-app-integration.php:168
+#: src/core/lib/settings/trait-oauth-app-integration.php:177
 msgctxt "Integration settings"
 msgid "Missing credentials"
 msgstr ""
 
-#: src/core/lib/settings/trait-oauth-app-integration.php:205
+#: src/core/lib/settings/trait-oauth-app-integration.php:214
 msgctxt "Integration settings"
 msgid "App helpers is missing the store_credentials method"
 msgstr ""
@@ -7241,7 +7233,6 @@ msgstr ""
 #. translators: Email field
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:209
 #: src/integrations/emails/actions/emails-send-emails.php:355
-#: src/integrations/keap/actions/keap-add-note-contact.php:71
 #: src/integrations/whatsapp/actions/whatsapp-send-message.php:226
 msgid "Body"
 msgstr ""
@@ -8036,7 +8027,7 @@ msgstr ""
 #. translators: Credits used
 #: src/core/views/admin-dashboard.php:382
 #: src/core/views/admin-dashboard.php:455
-msgid "App credits used"
+msgid "App credits"
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:410
@@ -11869,179 +11860,174 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#. translators: %1$s Contact Email, %2$s List
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:35
+#. translators: 1: Subscriber field meta key, 2: List field meta key
+#: src/integrations/aweber/actions/aweber-subscriber-add.php:32
 #, php-format
 msgctxt "AWeber"
 msgid "Add {{a subscriber:%1$s}} to a {{list:%2$s}}"
 msgstr ""
 
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:40
+#: src/integrations/aweber/actions/aweber-subscriber-add.php:37
 msgctxt "AWeber"
 msgid "Add {{a subscriber}} to a {{list}}"
 msgstr ""
 
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:54
-#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:54
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:53
-msgctxt "AWeber"
-msgid "Account"
-msgstr ""
-
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:65
-#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:65
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:64
-msgctxt "AWeber"
-msgid "List"
-msgstr ""
-
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:77
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:76
-msgctxt "AWeber"
-msgid "Name"
-msgstr ""
-
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:83
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:83
-msgctxt "AWeber"
-msgid "Email"
-msgstr ""
-
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:91
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:92
-msgid "Custom fields"
-msgstr ""
-
-#. translators: 1. Email address
-#. translators: %s: Email address
-#: src/integrations/aweber/actions/aweber-subscriber-add.php:157
-#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:116
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:158
-#, php-format
-msgid "The email address [%s] is invalid"
-msgstr ""
-
-#. translators: %1$s Contact Email, %2$s List
-#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:35
+#. translators: 1: Tag field meta key, 2: Subscriber field meta key
+#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:32
 #, php-format
 msgctxt "AWeber"
 msgid "Add {{a tag:%1$s}} to {{a subscriber:%2$s}}"
 msgstr ""
 
-#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:40
+#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:37
 msgctxt "AWeber"
 msgid "Add {{a tag}} to {{a subscriber}}"
 msgstr ""
 
-#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:77
+#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:52
 msgctxt "AWeber"
 msgid "Subscriber email"
 msgstr ""
 
-#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:83
+#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:56
 msgctxt "AWeber"
 msgid "Tags"
 msgstr ""
 
-#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:84
+#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:57
 msgctxt "AWeber"
 msgid "Please enter a comma-separated list of values."
 msgstr ""
 
-#. translators: %1$s Contact Email, %2$s List
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:35
+#: src/integrations/aweber/actions/aweber-subscriber-tag-add.php:85
+msgctxt "AWeber"
+msgid "At least one tag is required."
+msgstr ""
+
+#. translators: 1: Subscriber field meta key
+#: src/integrations/aweber/actions/aweber-subscriber-update.php:32
 #, php-format
 msgctxt "AWeber"
 msgid "Update {{a subscriber:%1$s}}"
 msgstr ""
 
-#: src/integrations/aweber/actions/aweber-subscriber-update.php:39
+#: src/integrations/aweber/actions/aweber-subscriber-update.php:36
 msgctxt "AWeber"
 msgid "Update {{a subscriber}}"
 msgstr ""
 
-#: src/integrations/aweber/helpers/aweber-helpers.php:236
+#: src/integrations/aweber/helpers/aweber-api-caller.php:99
 msgctxt "AWeber"
-msgid "Unable to decode credentials with the secret provided"
+msgid "Authentication failed. Please check your AWeber connection."
 msgstr ""
 
 #. translators: %d: HTTP status code
-#: src/integrations/aweber/helpers/aweber-helpers.php:402
+#: src/integrations/aweber/helpers/aweber-api-caller.php:132
 #, php-format
 msgctxt "AWeber"
-msgid "API Exception (status code: %d). An error has occurred while performing the action. Please try again later."
+msgid "API error (status code: %d). Please try again later."
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:84
+#: src/integrations/aweber/helpers/aweber-api-caller.php:218
 msgctxt "AWeber"
-msgid "An error exception has occured"
+msgid "Account ID is required."
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:127
+#: src/integrations/aweber/helpers/aweber-api-caller.php:241
 msgctxt "AWeber"
-msgid "Connect Uncanny Automator to AWeber"
+msgid "Account ID and list ID are required."
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:131
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:196
 msgctxt "AWeber"
-msgid "Connect Uncanny Automator to AWeber to streamline automations that incorporate list management, email marketing, customer profile, and activity on your WordPress site."
+msgid "Account"
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:136
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:215
 msgctxt "AWeber"
-msgid "Activating this integration will enable the following for use in your recipes:"
+msgid "List"
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:143
-#: src/integrations/aweber/settings/settings-aweber.php:148
-#: src/integrations/aweber/settings/settings-aweber.php:153
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:237
 msgctxt "AWeber"
-msgid "Action:"
+msgid "Name"
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:144
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:254
 msgctxt "AWeber"
-msgid "Add a subscriber to a list"
+msgid "Email"
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:149
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:270
+msgctxt "Aweber"
+msgid "Custom fields"
+msgstr ""
+
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:276
+msgctxt "Aweber"
+msgid "ID"
+msgstr ""
+
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:282
+msgctxt "Aweber"
+msgid "Name"
+msgstr ""
+
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:288
+msgctxt "Aweber"
+msgid "Value"
+msgstr ""
+
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:317
 msgctxt "AWeber"
-msgid "Add a tag to a subscriber"
+msgid "Account is required."
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:154
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:334
 msgctxt "AWeber"
-msgid "Update a subscriber"
+msgid "List is required."
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:160
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:351
 msgctxt "AWeber"
-msgid "Uncanny Automator supports connecting multiple AWeber account at a time."
+msgid "Email is required."
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:161
+#. translators: %s: Email address.
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:360
+#, php-format
 msgctxt "AWeber"
-msgid "Uncanny Automator helps you link many AWeber accounts at once. You can pick a different account for each action that needs account details. This gives you more choices and control."
+msgid "The email address [%s] is invalid."
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:184
+#: src/integrations/aweber/helpers/aweber-app-helpers.php:380
 msgctxt "AWeber"
-msgid "Connect AWeber account"
+msgid "Name is required."
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:200
+#: src/integrations/aweber/settings/aweber-settings.php:73
 msgctxt "AWeber"
 msgid "AWeber account"
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:205
+#: src/integrations/aweber/settings/aweber-settings.php:74
 msgctxt "AWeber"
 msgid "Connected"
 msgstr ""
 
-#: src/integrations/aweber/settings/settings-aweber.php:225
+#: src/integrations/aweber/settings/aweber-settings.php:87
 msgctxt "AWeber"
-msgid "Disconnect"
+msgid "Connect Uncanny Automator to AWeber to streamline automations that incorporate list management, email marketing, customer profile, and activity on your WordPress site."
+msgstr ""
+
+#: src/integrations/aweber/settings/aweber-settings.php:101
+msgctxt "AWeber"
+msgid "Uncanny Automator supports connecting multiple AWeber accounts at a time."
+msgstr ""
+
+#: src/integrations/aweber/settings/aweber-settings.php:102
+msgctxt "AWeber"
+msgid "Uncanny Automator helps you link many AWeber accounts at once. You can pick a different account for each action that needs account details. This gives you more choices and control."
 msgstr ""
 
 #. translators: Action - BadgeOS
@@ -15241,25 +15227,20 @@ msgstr ""
 
 #: src/integrations/convertkit/actions/convertkit-broadcast-create.php:144
 msgctxt "ConvertKit"
-msgid "Broadcast public URL"
+msgid "Broadcast draft URL"
 msgstr ""
 
 #: src/integrations/convertkit/actions/convertkit-broadcast-create.php:148
 msgctxt "ConvertKit"
-msgid "Broadcast draft URL"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-broadcast-create.php:152
-msgctxt "ConvertKit"
 msgid "Broadcast send at"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-broadcast-create.php:177
+#: src/integrations/convertkit/actions/convertkit-broadcast-create.php:173
 msgctxt "ConvertKit"
 msgid "Please provide a subject line."
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-broadcast-create.php:183
+#: src/integrations/convertkit/actions/convertkit-broadcast-create.php:179
 msgctxt "ConvertKit"
 msgid "Please provide broadcast content."
 msgstr ""
@@ -15330,118 +15311,118 @@ msgctxt "ConvertKit"
 msgid "Create {{a purchase:%1$s}}"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:55
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:149
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:56
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:150
 msgctxt "ConvertKit"
 msgid "Transaction ID"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:62
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:63
 msgctxt "ConvertKit"
 msgid "Status"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:70
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:71
 msgctxt "ConvertKit"
 msgid "Paid"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:74
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:75
 msgctxt "ConvertKit"
 msgid "Refund"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:80
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:81
 msgctxt "ConvertKit"
 msgid "Currency"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:84
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:85
 msgctxt "ConvertKit"
 msgid "3-letter currency code (e.g. USD, EUR, GBP)"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:89
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:90
 msgctxt "ConvertKit"
 msgid "Subtotal"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:96
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:97
 msgctxt "ConvertKit"
 msgid "Tax"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:104
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:105
 msgctxt "ConvertKit"
 msgid "Shipping"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:112
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:113
 msgctxt "ConvertKit"
 msgid "Discount"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:120
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:121
 msgctxt "ConvertKit"
 msgid "Total"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:127
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:128
 msgctxt "ConvertKit"
 msgid "Transaction time"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:130
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:131
 msgctxt "ConvertKit"
 msgid "ISO 8601 datetime (e.g. 2025-06-01T09:00:00Z). Defaults to now if empty."
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:145
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:146
 msgctxt "ConvertKit"
 msgid "Purchase ID"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:164
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:165
 msgctxt "ConvertKit"
 msgid "Products"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:171
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:172
 msgctxt "ConvertKit"
 msgid "Name"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:177
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:178
 msgctxt "ConvertKit"
 msgid "Product ID"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:183
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:184
 msgctxt "ConvertKit"
 msgid "Line item ID"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:189
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:190
 msgctxt "ConvertKit"
 msgid "Quantity"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:196
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:197
 msgctxt "ConvertKit"
 msgid "Unit price"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:202
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:203
 msgctxt "ConvertKit"
 msgid "SKU"
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:229
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:230
 msgctxt "ConvertKit"
 msgid "Please provide a transaction ID."
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:237
+#: src/integrations/convertkit/actions/convertkit-purchase-create.php:238
 msgctxt "ConvertKit"
 msgid "Please add at least one product."
 msgstr ""
@@ -15593,15 +15574,15 @@ msgid "Please provide a tag name."
 msgstr ""
 
 #. translators: %s: ConvertKit API error message
-#: src/integrations/convertkit/helpers/convertkit-api-caller.php:88
-#: src/integrations/convertkit/helpers/convertkit-api-caller.php:100
+#: src/integrations/convertkit/helpers/convertkit-api-caller.php:132
+#: src/integrations/convertkit/helpers/convertkit-api-caller.php:144
 #, php-format
 msgctxt "ConvertKit"
 msgid "Kit API error: %s"
 msgstr ""
 
 #. translators: 1: HTTP status code, 2: response data
-#: src/integrations/convertkit/helpers/convertkit-api-caller.php:111
+#: src/integrations/convertkit/helpers/convertkit-api-caller.php:155
 #, php-format
 msgctxt "ConvertKit"
 msgid "Kit API returned status %1$d. Response: %2$s"
@@ -15668,111 +15649,134 @@ msgid "Subscription type"
 msgstr ""
 
 #. translators: %s: Account name
-#: src/integrations/convertkit/settings/convertkit-settings.php:77
+#: src/integrations/convertkit/settings/convertkit-settings.php:84
 #, php-format
 msgctxt "ConvertKit"
 msgid "Connected as: %s"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:80
+#: src/integrations/convertkit/settings/convertkit-settings.php:87
 msgctxt "ConvertKit"
 msgid "Connected"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:126
+#: src/integrations/convertkit/settings/convertkit-settings.php:139
 msgctxt "ConvertKit"
-msgid "Please enter a valid API key and API secret."
+msgid "Please enter a valid API key."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:135
+#: src/integrations/convertkit/settings/convertkit-settings.php:146
 msgctxt "ConvertKit"
 msgid "You have successfully connected your Kit account."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:148
+#: src/integrations/convertkit/settings/convertkit-settings.php:160
 msgctxt "ConvertKit"
 msgid "Connection error"
 msgstr ""
 
 #. translators: %s is the error message
-#: src/integrations/convertkit/settings/convertkit-settings.php:151
+#: src/integrations/convertkit/settings/convertkit-settings.php:163
 #, php-format
 msgctxt "ConvertKit"
 msgid "There was an error connecting your Kit account: %s"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:261
+#: src/integrations/convertkit/settings/convertkit-settings.php:296
 msgctxt "ConvertKit"
-msgid "You are connected using a legacy API key."
+msgid "You are connected using a legacy V3 API key."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:262
+#: src/integrations/convertkit/settings/convertkit-settings.php:297
 msgctxt "ConvertKit"
-msgid "Reconnect your Kit account using the Quick connect option to unlock additional actions and improved functionality."
+msgid "Disconnect and reconnect to unlock additional actions and improved functionality."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:266
-msgctxt "ConvertKit"
-msgid "Reconnect using Quick connect"
-msgstr ""
-
-#: src/integrations/convertkit/settings/convertkit-settings.php:279
+#: src/integrations/convertkit/settings/convertkit-settings.php:311
 msgctxt "ConvertKit"
 msgid "Connect Uncanny Automator to Kit to better segment and engage with your audience. Once configured, Automator recipes can add or remove Kit tags for subscribers based on activity on your WordPress site, plus add subscribers to Kit forms and sequences."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:333
+#: src/integrations/convertkit/settings/convertkit-settings.php:388
 msgctxt "ConvertKit"
 msgid "Connection method"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:346
+#: src/integrations/convertkit/settings/convertkit-settings.php:402
 msgctxt "ConvertKit"
 msgid "Quick connect"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:349
-msgctxt "ConvertKit"
-msgid "The recommended option: Sign in to your Kit account to connect"
-msgstr ""
-
-#: src/integrations/convertkit/settings/convertkit-settings.php:363
 #: src/integrations/convertkit/settings/convertkit-settings.php:405
 msgctxt "ConvertKit"
-msgid "API key"
+msgid "The recommended option: Sign in to your Kit account to connect."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:366
+#: src/integrations/convertkit/settings/convertkit-settings.php:421
+#: src/integrations/convertkit/settings/convertkit-settings.php:480
 msgctxt "ConvertKit"
-msgid "Legacy option with limited functionality. Connect using your Kit API key and secret"
+msgid "V4 API key"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:392
+#: src/integrations/convertkit/settings/convertkit-settings.php:424
 msgctxt "ConvertKit"
-msgid "To retrieve your Kit V3 API keys, perform the following:"
+msgid "Connect using your Kit V4 API key for the latest functionality"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:394
+#: src/integrations/convertkit/settings/convertkit-settings.php:438
+msgctxt "ConvertKit"
+msgid "V3 API key (legacy)"
+msgstr ""
+
+#: src/integrations/convertkit/settings/convertkit-settings.php:441
+msgctxt "ConvertKit"
+msgid "Legacy option with limited functionality. Connect using your Kit V3 API key and API secret."
+msgstr ""
+
+#: src/integrations/convertkit/settings/convertkit-settings.php:467
+msgctxt "ConvertKit"
+msgid "To retrieve your Kit V4 API key, perform the following:"
+msgstr ""
+
+#: src/integrations/convertkit/settings/convertkit-settings.php:469
+#: src/integrations/convertkit/settings/convertkit-settings.php:508
 msgctxt "ConvertKit"
 msgid "Sign in to your Kit account."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:395
+#: src/integrations/convertkit/settings/convertkit-settings.php:470
+#: src/integrations/convertkit/settings/convertkit-settings.php:509
 msgctxt "ConvertKit"
 msgid "Click on your avatar in the upper right corner and select \"Settings\"."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:396
+#: src/integrations/convertkit/settings/convertkit-settings.php:471
+#: src/integrations/convertkit/settings/convertkit-settings.php:510
 msgctxt "ConvertKit"
 msgid "Click the \"Developer\" menu entry on the left side."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:397
+#: src/integrations/convertkit/settings/convertkit-settings.php:472
+msgctxt "ConvertKit"
+msgid "Under the API Keys section, locate the \"V4 Key\" area and copy the API key to connect Automator to Kit."
+msgstr ""
+
+#: src/integrations/convertkit/settings/convertkit-settings.php:506
+msgctxt "ConvertKit"
+msgid "To retrieve your Kit V3 API keys, perform the following:"
+msgstr ""
+
+#: src/integrations/convertkit/settings/convertkit-settings.php:511
 msgctxt "ConvertKit"
 msgid "In the API Keys section, locate the \"V3 Key\" area. Copy both the API Key and API Secret values to connect Automator to Kit."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:415
+#: src/integrations/convertkit/settings/convertkit-settings.php:519
+msgctxt "ConvertKit"
+msgid "API key"
+msgstr ""
+
+#: src/integrations/convertkit/settings/convertkit-settings.php:529
 msgctxt "ConvertKit"
 msgid "API secret"
 msgstr ""
@@ -24334,891 +24338,823 @@ msgid "A user submits {{a form}}"
 msgstr ""
 
 #. translators: %1$s Note type, Contact Email, %2$s
-#: src/integrations/keap/actions/keap-add-note-contact.php:43
+#: src/integrations/keap/actions/keap-add-note-contact.php:36
 #, php-format
 msgctxt "Keap"
 msgid "Add {{a note:%1$s}} to {{a contact:%2$s}}"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:48
+#: src/integrations/keap/actions/keap-add-note-contact.php:41
 msgctxt "Keap"
 msgid "Add {{a note}} to {{a contact}}"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:66
+#: src/integrations/keap/actions/keap-add-note-contact.php:57
+msgctxt "Keap"
+msgid "Title"
+msgstr ""
+
+#: src/integrations/keap/actions/keap-add-note-contact.php:59
+msgctxt "Keap"
 msgid "Enter the title of the note. ( optional )"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:73
+#: src/integrations/keap/actions/keap-add-note-contact.php:64
+msgctxt "Keap"
+msgid "Body"
+msgstr ""
+
+#: src/integrations/keap/actions/keap-add-note-contact.php:66
+msgctxt "Keap"
 msgid "Enter the content of the note."
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:82
+#: src/integrations/keap/actions/keap-add-note-contact.php:72
+#: src/integrations/keap/actions/keap-add-update-contact.php:135
+#: src/integrations/keap/actions/keap-add-update-contact.php:157
+msgctxt "Keap"
+msgid "Type"
+msgstr ""
+
+#: src/integrations/keap/actions/keap-add-note-contact.php:75
+msgctxt "Keap"
 msgid "Select the type of the note."
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:88
+#: src/integrations/keap/actions/keap-add-note-contact.php:81
+msgctxt "Keap"
 msgid "Keap account user"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:91
+#: src/integrations/keap/actions/keap-add-note-contact.php:84
+msgctxt "Keap"
 msgid "Select the Keap account user to assign the note to. If using a custom value emails are excepted."
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:110
+#: src/integrations/keap/actions/keap-add-note-contact.php:103
 msgctxt "Keap"
 msgid "Note ID"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:114
+#: src/integrations/keap/actions/keap-add-note-contact.php:107
 msgctxt "Keap"
 msgid "Keap account user email"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:119
+#: src/integrations/keap/actions/keap-add-note-contact.php:112
 msgctxt "Keap"
 msgid "Keap account user first name"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:124
+#: src/integrations/keap/actions/keap-add-note-contact.php:117
 msgctxt "Keap"
 msgid "Keap account user last name"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:158
+#: src/integrations/keap/actions/keap-add-note-contact.php:151
 msgctxt "Keap"
 msgid "Note body is required."
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:163
+#: src/integrations/keap/actions/keap-add-note-contact.php:156
 msgctxt "Keap"
 msgid "Either a title or type is required."
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:215
+#: src/integrations/keap/actions/keap-add-note-contact.php:208
 msgctxt "Keap"
 msgid "Appointment"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:219
+#: src/integrations/keap/actions/keap-add-note-contact.php:212
 msgctxt "Keap"
 msgid "Call"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:223
-#: src/integrations/keap/helpers/keap-helpers.php:1339
+#: src/integrations/keap/actions/keap-add-note-contact.php:216
+#: src/integrations/keap/helpers/trait-keap-field-helpers.php:34
 msgctxt "Keap"
 msgid "Email"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:227
+#: src/integrations/keap/actions/keap-add-note-contact.php:220
 msgctxt "Keap"
 msgid "Fax"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:231
+#: src/integrations/keap/actions/keap-add-note-contact.php:224
 msgctxt "Keap"
 msgid "Letter"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-note-contact.php:235
-#: src/integrations/keap/actions/keap-add-update-contact.php:510
+#: src/integrations/keap/actions/keap-add-note-contact.php:228
+#: src/integrations/keap/actions/keap-add-update-contact.php:496
 msgctxt "Keap"
 msgid "Other"
 msgstr ""
 
-#. translators: %1$s Tag Name(s), Contact Email, %2$s
-#: src/integrations/keap/actions/keap-add-tags-contact.php:43
+#. translators: %1$s Tag field meta key, %2$s Contact field meta key
+#: src/integrations/keap/actions/keap-add-tags-contact.php:37
 #, php-format
 msgctxt "Keap"
 msgid "Add {{a tag:%1$s}} to {{a contact:%2$s}}"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-tags-contact.php:48
+#: src/integrations/keap/actions/keap-add-tags-contact.php:42
 msgctxt "Keap"
 msgid "Add {{a tag}} to {{a contact}}"
 msgstr ""
 
-#. translators: %s Tag ID(s)
-#: src/integrations/keap/actions/keap-add-tags-contact.php:110
+#. translators: %s: Tag ID(s)
+#: src/integrations/keap/actions/keap-add-tags-contact.php:102
 #, php-format
 msgctxt "Keap"
 msgid "Tag(s) %s already applied."
 msgstr ""
 
-#. translators: %s Tag ID(s)
-#: src/integrations/keap/actions/keap-add-tags-contact.php:112
+#. translators: %s: Tag ID(s)
+#: src/integrations/keap/actions/keap-add-tags-contact.php:104
 #, php-format
 msgctxt "Keap"
 msgid "Invalid tag(s) %s."
 msgstr ""
 
-#. translators: %s Tag ID(s)
-#: src/integrations/keap/actions/keap-add-tags-contact.php:114
+#. translators: %s: Tag ID(s)
+#: src/integrations/keap/actions/keap-add-tags-contact.php:106
 #, php-format
 msgctxt "Keap"
 msgid "Failed to apply tag(s) %s."
 msgstr ""
 
-#. translators: %s Tag ID(s)
-#: src/integrations/keap/actions/keap-add-tags-contact.php:116
+#. translators: %s: Tag ID(s)
+#: src/integrations/keap/actions/keap-add-tags-contact.php:108
 #, php-format
 msgctxt "Keap"
 msgid "Invalid permission to apply tag(s) %s."
 msgstr ""
 
 #. translators: %1$s Company name.
-#: src/integrations/keap/actions/keap-add-update-company.php:50
+#: src/integrations/keap/actions/keap-add-update-company.php:44
 #, php-format
 msgctxt "Keap"
 msgid "Add/Update {{a company:%1$s}}"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-company.php:54
+#: src/integrations/keap/actions/keap-add-update-company.php:48
 msgctxt "Keap"
 msgid "Add/Update {{a company}}"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-company.php:70
-#: src/integrations/keap/actions/keap-add-update-contact.php:240
+#: src/integrations/keap/actions/keap-add-update-company.php:64
+#: src/integrations/keap/actions/keap-add-update-contact.php:234
 msgctxt "Keap"
 msgid "Company name"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-company.php:84
+#: src/integrations/keap/actions/keap-add-update-company.php:78
 msgctxt "Keap"
 msgid "Phone number"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-company.php:92
+#: src/integrations/keap/actions/keap-add-update-company.php:86
 msgctxt "Keap"
 msgid "Fax number"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-company.php:100
-#: src/integrations/keap/actions/keap-add-update-contact.php:466
+#: src/integrations/keap/actions/keap-add-update-company.php:94
+#: src/integrations/keap/actions/keap-add-update-contact.php:453
 msgctxt "Keap"
 msgid "Website"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-company.php:115
-#: src/integrations/mycred/actions/mycred-awardpoints-a.php:81
-#: src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php:77
+#: src/integrations/keap/actions/keap-add-update-company.php:109
+msgctxt "Keap"
 msgid "Description"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-company.php:118
+#: src/integrations/keap/actions/keap-add-update-company.php:112
+msgctxt "Keap"
 msgid "Add a note about the company."
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-company.php:141
+#: src/integrations/keap/actions/keap-add-update-company.php:135
 msgctxt "Keap"
 msgid "Missing company name"
 msgstr ""
 
 #. translators: %s: Company name
-#: src/integrations/keap/actions/keap-add-update-company.php:156
+#: src/integrations/keap/actions/keap-add-update-company.php:150
 #, php-format
 msgctxt "Keap"
 msgid "Company with name %s already exists and Update existing company option is set to No."
 msgstr ""
 
 #. translators: 1: Field key, 2: Field value
-#: src/integrations/keap/actions/keap-add-update-company.php:250
+#: src/integrations/keap/actions/keap-add-update-company.php:241
 #, php-format
 msgctxt "Keap"
 msgid "Invalid %1$s: \"%2$s\""
 msgstr ""
 
-#. translators: %1$s Contact Email
-#: src/integrations/keap/actions/keap-add-update-contact.php:57
+#. translators: %s Contact field meta key
+#: src/integrations/keap/actions/keap-add-update-contact.php:52
 #, php-format
 msgctxt "Keap"
-msgid "Add/Update {{a contact:%1$s}}"
+msgid "Add/Update {{a contact:%s}}"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:61
+#: src/integrations/keap/actions/keap-add-update-contact.php:56
 msgctxt "Keap"
 msgid "Add/Update {{a contact}}"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:85
+#: src/integrations/keap/actions/keap-add-update-contact.php:79
 msgctxt "Keap"
 msgid "Contact info"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:86
-#: src/integrations/keap/helpers/keap-helpers.php:969
+#: src/integrations/keap/actions/keap-add-update-contact.php:80
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:35
 msgctxt "Keap"
 msgid "Add a field"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:87
-#: src/integrations/keap/helpers/keap-helpers.php:970
+#: src/integrations/keap/actions/keap-add-update-contact.php:81
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:36
 msgctxt "Keap"
 msgid "Remove field"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:92
-#: src/integrations/keap/actions/keap-add-update-contact.php:120
-#: src/integrations/keap/helpers/keap-helpers.php:1010
+#: src/integrations/keap/actions/keap-add-update-contact.php:86
+#: src/integrations/keap/actions/keap-add-update-contact.php:114
+#: src/integrations/keap/helpers/keap-app-helpers.php:605
 msgctxt "Keap"
 msgid "Field"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:101
-#: src/integrations/keap/helpers/keap-helpers.php:1019
+#: src/integrations/keap/actions/keap-add-update-contact.php:95
+#: src/integrations/keap/helpers/keap-app-helpers.php:614
 msgctxt "Keap"
 msgid "Value"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:113
+#: src/integrations/keap/actions/keap-add-update-contact.php:107
 msgctxt "Keap"
 msgid "Phone numbers"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:114
+#: src/integrations/keap/actions/keap-add-update-contact.php:108
 msgctxt "Keap"
 msgid "Add phone number"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:115
+#: src/integrations/keap/actions/keap-add-update-contact.php:109
 msgctxt "Keap"
 msgid "Remove phone number"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:129
+#: src/integrations/keap/actions/keap-add-update-contact.php:123
 msgctxt "Keap"
 msgid "Extension"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:135
+#: src/integrations/keap/actions/keap-add-update-contact.php:129
 msgctxt "Keap"
 msgid "Number"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:141
-#: src/integrations/keap/actions/keap-add-update-contact.php:163
-msgctxt "Keap"
-msgid "Type"
-msgstr ""
-
-#: src/integrations/keap/actions/keap-add-update-contact.php:156
+#: src/integrations/keap/actions/keap-add-update-contact.php:150
 msgctxt "Keap"
 msgid "Links"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:157
+#: src/integrations/keap/actions/keap-add-update-contact.php:151
 msgctxt "Keap"
 msgid "Add a link"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:158
+#: src/integrations/keap/actions/keap-add-update-contact.php:152
 msgctxt "Keap"
 msgid "Remove link"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:172
+#: src/integrations/keap/actions/keap-add-update-contact.php:166
 msgctxt "Keap"
 msgid "URL"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:177
+#: src/integrations/keap/actions/keap-add-update-contact.php:171
 msgctxt "Keap"
 msgid "One of each link type supported"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:193
+#: src/integrations/keap/actions/keap-add-update-contact.php:187
 msgctxt "Keap"
 msgid "Company"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:197
+#: src/integrations/keap/actions/keap-add-update-contact.php:191
 msgctxt "Keap"
 msgid "Select a company to assign to the contact. If using a custom value company ID or name will be excepted."
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:207
+#: src/integrations/keap/actions/keap-add-update-contact.php:201
 msgctxt "Keap"
 msgid "Contact type"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:218
+#: src/integrations/keap/actions/keap-add-update-contact.php:212
 msgctxt "Keap"
 msgid "Contact owner"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:221
+#: src/integrations/keap/actions/keap-add-update-contact.php:215
 msgctxt "Keap"
 msgid "Select the Keap account user to assign as the contact owner. If using a custom value emails are excepted."
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:347
+#: src/integrations/keap/actions/keap-add-update-contact.php:337
 msgctxt "Keap"
 msgid "Name prefix"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:351
+#: src/integrations/keap/actions/keap-add-update-contact.php:341
 msgctxt "Keap"
 msgid "First name"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:355
+#: src/integrations/keap/actions/keap-add-update-contact.php:345
 msgctxt "Keap"
 msgid "Middle name"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:359
+#: src/integrations/keap/actions/keap-add-update-contact.php:349
 msgctxt "Keap"
 msgid "Last name"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:363
+#: src/integrations/keap/actions/keap-add-update-contact.php:353
 msgctxt "Keap"
 msgid "Name suffix"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:367
+#: src/integrations/keap/actions/keap-add-update-contact.php:357
 msgctxt "Keap"
 msgid "Preferred name"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:371
+#: src/integrations/keap/actions/keap-add-update-contact.php:361
 msgctxt "Keap"
 msgid "Job title"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:376
+#: src/integrations/keap/actions/keap-add-update-contact.php:366
 msgctxt "Keap"
 msgid "Personal email"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:380
+#: src/integrations/keap/actions/keap-add-update-contact.php:370
 msgctxt "Keap"
 msgid "Other email"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:385
+#: src/integrations/keap/actions/keap-add-update-contact.php:375
 msgctxt "Keap"
 msgid "Anniversary"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:389
+#: src/integrations/keap/actions/keap-add-update-contact.php:379
 msgctxt "Keap"
 msgid "Birthday"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:394
+#: src/integrations/keap/actions/keap-add-update-contact.php:384
 msgctxt "Keap"
 msgid "Spouse name"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:398
+#: src/integrations/keap/actions/keap-add-update-contact.php:388
 msgctxt "Keap"
 msgid "Preferred locale"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:402
+#: src/integrations/keap/actions/keap-add-update-contact.php:392
 msgctxt "Keap"
 msgid "Time zone"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:406
+#: src/integrations/keap/actions/keap-add-update-contact.php:396
 msgctxt "Keap"
 msgid "Referral code"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:410
+#: src/integrations/keap/actions/keap-add-update-contact.php:400
 msgctxt "Keap"
 msgid "Lead source ID"
 msgstr ""
 
 #. translators: %d: phone field number priority
-#: src/integrations/keap/actions/keap-add-update-contact.php:430
+#: src/integrations/keap/actions/keap-add-update-contact.php:418
 #, php-format
 msgctxt "Keap"
 msgid "Phone %d"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:470
+#: src/integrations/keap/actions/keap-add-update-contact.php:457
 msgctxt "Keap"
 msgid "Facebook"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:474
+#: src/integrations/keap/actions/keap-add-update-contact.php:461
 msgctxt "Keap"
 msgid "LinkedIn"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:478
+#: src/integrations/keap/actions/keap-add-update-contact.php:465
 msgctxt "Keap"
 msgid "Twitter"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:482
+#: src/integrations/keap/actions/keap-add-update-contact.php:469
 msgctxt "Keap"
 msgid "Instagram"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:486
+#: src/integrations/keap/actions/keap-add-update-contact.php:473
 msgctxt "Keap"
 msgid "Snapchat"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:490
+#: src/integrations/keap/actions/keap-add-update-contact.php:477
 msgctxt "Keap"
 msgid "YouTube"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:494
+#: src/integrations/keap/actions/keap-add-update-contact.php:481
 msgctxt "Keap"
 msgid "Pinterest"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:514
+#: src/integrations/keap/actions/keap-add-update-contact.php:500
 msgctxt "Keap"
 msgid "Client"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:518
+#: src/integrations/keap/actions/keap-add-update-contact.php:504
 msgctxt "Keap"
 msgid "Lead"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-add-update-contact.php:548
+#: src/integrations/keap/actions/keap-add-update-contact.php:534
 msgctxt "Keap"
 msgid "Opt In from API"
 msgstr ""
 
 #. translators: %s: error message
-#: src/integrations/keap/actions/keap-add-update-contact.php:615
+#: src/integrations/keap/actions/keap-add-update-contact.php:601
 #, php-format
 msgctxt "Keap"
 msgid "Unable to add Owner: %s"
 msgstr ""
 
 #. translators: 1: Email, 2: Field key
-#: src/integrations/keap/actions/keap-add-update-contact.php:804
+#: src/integrations/keap/actions/keap-add-update-contact.php:790
 #, php-format
 msgctxt "Keap"
 msgid "Invalid email: \"%1$s\" for key: \"%2$s\""
 msgstr ""
 
 #. translators: 1: URL, 2: Field key
-#: src/integrations/keap/actions/keap-add-update-contact.php:833
+#: src/integrations/keap/actions/keap-add-update-contact.php:819
 #, php-format
 msgctxt "Keap"
-msgid "Invalid url: \"%1$s\" for key: \"%2$s\""
+msgid "Invalid URL: \"%1$s\" for key: \"%2$s\""
 msgstr ""
 
 #. translators: 1: Date, 2: Field key
-#: src/integrations/keap/actions/keap-add-update-contact.php:864
+#: src/integrations/keap/actions/keap-add-update-contact.php:850
 #, php-format
 msgctxt "Keap"
 msgid "Invalid date: \"%1$s\" for key: \"%2$s\""
 msgstr ""
 
 #. translators: 1: Phone number, 2: Field key
-#: src/integrations/keap/actions/keap-add-update-contact.php:894
+#: src/integrations/keap/actions/keap-add-update-contact.php:880
 #, php-format
 msgctxt "Keap"
 msgid "Invalid phone number: \"%1$s\" for key: \"%2$s\""
 msgstr ""
 
 #. translators: %s: valid prefixes
-#: src/integrations/keap/actions/keap-add-update-contact.php:922
+#: src/integrations/keap/actions/keap-add-update-contact.php:908
 #, php-format
 msgctxt "Keap"
 msgid "Invalid name prefix. Valid prefixes are: %s"
 msgstr ""
 
 #. translators: %s: valid suffixes
-#: src/integrations/keap/actions/keap-add-update-contact.php:950
+#: src/integrations/keap/actions/keap-add-update-contact.php:936
 #, php-format
 msgctxt "Keap"
 msgid "Invalid name suffix. Valid suffixes are: %s"
 msgstr ""
 
 #. translators: %s: error message
-#: src/integrations/keap/actions/keap-add-update-contact.php:985
+#: src/integrations/keap/actions/keap-add-update-contact.php:971
 #, php-format
 msgctxt "Keap"
 msgid "Unable to add Company: %s"
 msgstr ""
 
-#. translators: %1$s Tag Name(s), Contact Email, %2$s
-#: src/integrations/keap/actions/keap-remove-tags-contact.php:43
+#. translators: %1$s Tag field meta key, %2$s Contact field meta key
+#: src/integrations/keap/actions/keap-remove-tags-contact.php:37
 #, php-format
 msgctxt "Keap"
 msgid "Remove {{a tag:%1$s}} from {{a contact:%2$s}}"
 msgstr ""
 
-#: src/integrations/keap/actions/keap-remove-tags-contact.php:48
+#: src/integrations/keap/actions/keap-remove-tags-contact.php:42
 msgctxt "Keap"
 msgid "Remove {{a tag}} from {{a contact}}"
 msgstr ""
 
-#. translators: %s Tag ID(s)
-#: src/integrations/keap/actions/keap-remove-tags-contact.php:111
+#. translators: %s: Tag ID(s)
+#: src/integrations/keap/actions/keap-remove-tags-contact.php:103
 #, php-format
+msgctxt "Keap"
 msgid "Contact did not have tag(s) %s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:112
+#: src/integrations/keap/helpers/keap-api-caller.php:33
 msgctxt "Keap"
-msgid "Unable to decode credentials with the secret provided. Please refresh and retry."
+msgid "Invalid credentials"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:116
+#: src/integrations/keap/helpers/keap-api-caller.php:61
 msgctxt "Keap"
-msgid "Authentication failed. Please refresh and retry."
+msgid "Keap API Error: "
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:331
-msgctxt "Keap"
-msgid "Select a company"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:356
-msgctxt "Keap"
-msgid "Company required."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:364
-msgctxt "Keap"
-msgid "No companies found."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:400
-msgctxt "Keap"
-msgid "Invalid company."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:476
-msgctxt "Keap"
-msgid "Select an owner"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:508
-msgctxt "Keap"
-msgid "Account user is required."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:516
-msgctxt "Keap"
-msgid "No account users found."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:544
-msgctxt "Keap"
-msgid "Invalid account user."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:578
-msgctxt "Keap"
-msgid "You do not have permission to manage Keap settings."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:697
-msgctxt "Keap"
-msgid "Please navigate to the settings page to establish a connection with your Keap account."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:712
-msgctxt "Keap"
-msgid "Keap API Error : "
-msgstr ""
-
-#. Translators: %s Status code.
-#: src/integrations/keap/helpers/keap-helpers.php:718
+#. translators: %s Status code.
+#: src/integrations/keap/helpers/keap-api-caller.php:67
 #, php-format
 msgctxt "Keap"
 msgid "request failed with status code: %s"
 msgstr ""
 
-#. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:815
+#: src/integrations/keap/helpers/keap-app-helpers.php:198
+msgctxt "Keap"
+msgid "Select a company"
+msgstr ""
+
+#: src/integrations/keap/helpers/keap-app-helpers.php:220
+msgctxt "Keap"
+msgid "Company required."
+msgstr ""
+
+#: src/integrations/keap/helpers/keap-app-helpers.php:228
+msgctxt "Keap"
+msgid "No companies found."
+msgstr ""
+
+#: src/integrations/keap/helpers/keap-app-helpers.php:265
+msgctxt "Keap"
+msgid "Invalid company."
+msgstr ""
+
+#: src/integrations/keap/helpers/keap-app-helpers.php:346
+msgctxt "Keap"
+msgid "Select an owner"
+msgstr ""
+
+#: src/integrations/keap/helpers/keap-app-helpers.php:375
+msgctxt "Keap"
+msgid "Account user is required."
+msgstr ""
+
+#: src/integrations/keap/helpers/keap-app-helpers.php:383
+msgctxt "Keap"
+msgid "No account users found."
+msgstr ""
+
+#: src/integrations/keap/helpers/keap-app-helpers.php:413
+msgctxt "Keap"
+msgid "Invalid account user."
+msgstr ""
+
+#: src/integrations/keap/helpers/keap-app-helpers.php:489
+msgctxt "Keap"
+msgid "No custom fields found"
+msgstr ""
+
+#. translators: %s: Address type
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:58
 #, php-format
 msgctxt "Keap"
 msgid "Add/Update %s address"
 msgstr ""
 
-#. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:830
+#. translators: %s: Address type
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:73
 #, php-format
 msgctxt "Keap"
 msgid "%s address line 1"
 msgstr ""
 
-#. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:841
+#. translators: %s: Address type
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:85
 #, php-format
 msgctxt "Keap"
 msgid "%s address line 2"
 msgstr ""
 
-#. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:852
+#. translators: %s: Address type
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:97
 #, php-format
 msgctxt "Keap"
 msgid "%s address city/locality"
 msgstr ""
 
-#. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:863
+#. translators: %s: Address type
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:109
 #, php-format
 msgctxt "Keap"
 msgid "%s address region code"
 msgstr ""
 
 #. translators: %1$s opening anchor tag, %2$s: closing anchor tag
-#: src/integrations/keap/helpers/keap-helpers.php:868
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:114
 #, php-format
 msgctxt "Keap"
 msgid "An %1$sISO 3166-2%2$s province/region code, such as \"US-CA\" for California."
 msgstr ""
 
-#. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:880
+#. translators: %s: Address type
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:127
 #, php-format
 msgctxt "Keap"
 msgid "%s address zip/postal code"
 msgstr ""
 
-#. Translators: %s: Address type.
-#: src/integrations/keap/helpers/keap-helpers.php:891
+#. translators: %s: Address type
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:139
 #, php-format
 msgctxt "Keap"
 msgid "%s address country code"
 msgstr ""
 
 #. translators: %1$s opening anchor tag, %2$s: closing anchor tag
-#: src/integrations/keap/helpers/keap-helpers.php:896
+#: src/integrations/keap/helpers/trait-keap-address-fields.php:144
 #, php-format
 msgctxt "Keap"
 msgid "An %1$sISO 3166-2%2$s Country Code, such as \"USA\" for the United States of America."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:967
+#: src/integrations/keap/helpers/trait-keap-contact-tokens.php:29
+msgctxt "Keap"
+msgid "Contact ID"
+msgstr ""
+
+#: src/integrations/keap/helpers/trait-keap-contact-tokens.php:33
+msgctxt "Keap"
+msgid "Contact first name"
+msgstr ""
+
+#: src/integrations/keap/helpers/trait-keap-contact-tokens.php:37
+msgctxt "Keap"
+msgid "Contact last name"
+msgstr ""
+
+#: src/integrations/keap/helpers/trait-keap-contact-tokens.php:41
+msgctxt "Keap"
+msgid "Contact tag IDs"
+msgstr ""
+
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:33
 msgctxt "Keap"
 msgid "Custom fields"
 msgstr ""
 
 #. translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag
-#: src/integrations/keap/helpers/keap-helpers.php:973
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:39
 #, php-format
 msgctxt "Keap"
 msgid "Custom field values must align with how they are defined in your Keap account. To delete a value from a field, set its value to %1$s, including the square brackets. Multiple values for checkboxes may be separated with commas. For more details, be sure to check out Keap's tutorial on %2$scustom fields management.%3$s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1043
-msgctxt "Keap"
-msgid "No custom fields found"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1202
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:78
 msgctxt "Keap"
 msgid "Unable to validate Custom Field(s)."
 msgstr ""
 
 #. translators: %s: custom field key
-#: src/integrations/keap/helpers/keap-helpers.php:1218
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:94
 #, php-format
 msgctxt "Keap"
 msgid "Invalid custom field id: %s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1250
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:126
 msgctxt "Keap"
 msgid "Invalid Custom Field(s) :"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1316
-#, php-format
-msgctxt "Keap"
-msgid "Update existing %s"
-msgstr ""
-
-#. translators: %1$s: [delete]
-#: src/integrations/keap/helpers/keap-helpers.php:1321
-#, php-format
-msgctxt "Keap"
-msgid "To exclude fields from being updated, leave them empty. To delete a value from a field, set its value to %1$s, including the square brackets."
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1356
-msgctxt "Keap"
-msgid "Missing email"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1362
-#: src/integrations/keap/helpers/keap-helpers.php:1620
-msgctxt "Keap"
-msgid "Invalid email"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1379
-msgctxt "Keap"
-msgid "Tag(s)"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1452
-msgctxt "Keap"
-msgid "Missing tag(s)"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1458
-msgctxt "Keap"
-msgid "Invalid tag id(s)"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1527
-msgctxt "Keap"
-msgid "Invalid date"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1532
-msgctxt "Keap"
-msgid "Invalid format"
-msgstr ""
-
-#: src/integrations/keap/helpers/keap-helpers.php:1607
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:232
 msgctxt "Keap"
 msgid "Invalid number"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1616
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:241
 msgctxt "Keap"
 msgid "Invalid URL"
 msgstr ""
 
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:245
+#: src/integrations/keap/helpers/trait-keap-field-helpers.php:83
+msgctxt "Keap"
+msgid "Invalid email"
+msgstr ""
+
 #. translators: %s: custom field type
-#: src/integrations/keap/helpers/keap-helpers.php:1625
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:250
 #, php-format
 msgctxt "Keap"
 msgid "Invalid custom field type: %s"
 msgstr ""
 
-#. translators: %s: custom field label.
-#: src/integrations/keap/helpers/keap-helpers.php:1634
+#. translators: %s: custom field label
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:259
 #, php-format
 msgctxt "Keap"
 msgid "for field: %s"
 msgstr ""
 
-#. translators: %1$s: custom field value, %2$s: custom field label.
-#: src/integrations/keap/helpers/keap-helpers.php:1720
+#. translators: %1$s: custom field value, %2$s: custom field label
+#: src/integrations/keap/helpers/trait-keap-custom-fields.php:345
 #, php-format
 msgctxt "Keap"
 msgid "Invalid custom field value: %1$s for field: %2$s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1784
+#. translators: %s: entity type (contact or company)
+#: src/integrations/keap/helpers/trait-keap-field-helpers.php:54
+#, php-format
 msgctxt "Keap"
-msgid "Contact ID"
+msgid "Update existing %s"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1788
+#. translators: %1$s: delete key placeholder
+#: src/integrations/keap/helpers/trait-keap-field-helpers.php:59
+#, php-format
 msgctxt "Keap"
-msgid "Contact first name"
+msgid "To exclude fields from being updated, leave them empty. To delete a value from a field, set its value to %1$s, including the square brackets."
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1792
+#: src/integrations/keap/helpers/trait-keap-field-helpers.php:77
 msgctxt "Keap"
-msgid "Contact last name"
+msgid "Missing email"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1796
+#: src/integrations/keap/helpers/trait-keap-field-helpers.php:150
 msgctxt "Keap"
-msgid "Contact tag IDs"
+msgid "Invalid date"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-helpers.php:1810
+#: src/integrations/keap/helpers/trait-keap-field-helpers.php:155
+msgctxt "Keap"
+msgid "Invalid format"
+msgstr ""
+
+#: src/integrations/keap/helpers/trait-keap-tag-fields.php:33
+msgctxt "Keap"
+msgid "Tag(s)"
+msgstr ""
+
+#: src/integrations/keap/helpers/trait-keap-tag-fields.php:57
+msgctxt "Keap"
+msgid "Missing tag(s)"
+msgstr ""
+
+#: src/integrations/keap/helpers/trait-keap-tag-fields.php:63
+msgctxt "Keap"
+msgid "Invalid tag id(s)"
+msgstr ""
+
+#: src/integrations/keap/helpers/trait-keap-tag-fields.php:133
 msgctxt "Keap"
 msgid "Tag name(s)"
 msgstr ""
 
-#: src/integrations/keap/settings/settings-keap.php:90
-msgctxt "Keap"
-msgid "An error has occured"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:143
-msgctxt "Keap"
-msgid "Connect Uncanny Automator to Keap"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:147
+#: src/integrations/keap/settings/keap-settings.php:43
 msgctxt "Keap"
 msgid "Connect Uncanny Automator to Keap to streamline automations that incorporate contact management, email marketing, and activity on your WordPress site."
 msgstr ""
 
-#: src/integrations/keap/settings/settings-keap.php:152
-msgctxt "Keap"
-msgid "Activating this integration will enable the following for use in your recipes:"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:159
-#: src/integrations/keap/settings/settings-keap.php:164
-#: src/integrations/keap/settings/settings-keap.php:169
-#: src/integrations/keap/settings/settings-keap.php:174
-#: src/integrations/keap/settings/settings-keap.php:179
-msgctxt "Keap"
-msgid "Action:"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:160
-msgctxt "Keap"
-msgid "Add/Update a contact"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:165
-msgctxt "Keap"
-msgid "Add tag(s) to a contact"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:170
-msgctxt "Keap"
-msgid "Remove tag(s) from a contact"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:175
-msgctxt "Keap"
-msgid "Add a note to a contact"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:180
-msgctxt "Keap"
-msgid "Add/Update a company"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:186
-msgctxt "Keap"
-msgid "Uncanny Automator only supports connecting to one Keap account at a time."
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:203
-msgctxt "Keap"
-msgid "Connect Keap account"
-msgstr ""
-
-#. translators: 1. Primary Contact email
-#: src/integrations/keap/settings/settings-keap.php:212
-#, php-format
-msgctxt "Keap"
-msgid "Contact: %1$s"
-msgstr ""
-
 #. translators: %1$s App ID
-#: src/integrations/keap/settings/settings-keap.php:218
+#: src/integrations/keap/settings/keap-settings.php:115
 #, php-format
 msgctxt "Keap"
 msgid "Current App: %1$s"
-msgstr ""
-
-#: src/integrations/keap/settings/settings-keap.php:255
-msgctxt "Keap"
-msgid "Disconnect"
 msgstr ""
 
 #. translators: Trigger sentence
@@ -25750,27 +25686,27 @@ msgid "No data provided"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:1046
-#: src/integrations/learndash/helpers/learndash-helpers.php:1072
+#: src/integrations/learndash/helpers/learndash-helpers.php:1075
 msgctxt "Learndash"
 msgid "Quiz has not been graded"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1067
+#: src/integrations/learndash/helpers/learndash-helpers.php:1070
 msgctxt "Learndash"
 msgid "Not an essay post."
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1082
+#: src/integrations/learndash/helpers/learndash-helpers.php:1084
 msgctxt "Learndash"
 msgid "No user quiz data recorded"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1098
+#: src/integrations/learndash/helpers/learndash-helpers.php:1104
 msgctxt "Learndash"
 msgid "All quizzes have not been graded"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers.php:1106
+#: src/integrations/learndash/helpers/learndash-helpers.php:1112
 msgctxt "Learndash"
 msgid "No quiz data recorded"
 msgstr ""
@@ -25978,21 +25914,15 @@ msgid "A user completes {{a course}}"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
-#. translators: Logged-in trigger - TutorLMS
-#: src/integrations/learndash/triggers/ld-failquiz.php:53
-#: src/integrations/tutorlms/triggers/tutorlms-quizfailed.php:52
+#: src/integrations/learndash/triggers/ld-failquiz.php:44
 #, php-format
+msgctxt "Learndash"
 msgid "A user fails {{a quiz:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
-#. translators: Logged-in trigger - LifterLMS
-#. translators: Logged-in trigger - MasterStudy LMS
-#. translators: Logged-in trigger - TutorLMS
-#: src/integrations/learndash/triggers/ld-failquiz.php:55
-#: src/integrations/lifterlms/triggers/lf-quizfailed.php:44
-#: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:45
-#: src/integrations/tutorlms/triggers/tutorlms-quizfailed.php:54
+#: src/integrations/learndash/triggers/ld-failquiz.php:46
+msgctxt "Learndash"
 msgid "A user fails {{a quiz}}"
 msgstr ""
 
@@ -26076,23 +26006,15 @@ msgid "Lesson featured image URL"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
-#. translators: Logged-in trigger - LifterLMS
-#. translators: Logged-in trigger - TutorLMS
-#: src/integrations/learndash/triggers/ld-passquiz.php:53
-#: src/integrations/lifterlms/triggers/lf-quizpassed.php:42
-#: src/integrations/tutorlms/triggers/tutorlms-quizpassed.php:54
+#: src/integrations/learndash/triggers/ld-passquiz.php:44
 #, php-format
+msgctxt "Learndash"
 msgid "A user passes {{a quiz:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #. translators: Logged-in trigger - LearnDash
-#. translators: Logged-in trigger - LifterLMS
-#. translators: Logged-in trigger - MasterStudy LMS
-#. translators: Logged-in trigger - TutorLMS
-#: src/integrations/learndash/triggers/ld-passquiz.php:55
-#: src/integrations/lifterlms/triggers/lf-quizpassed.php:44
-#: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:45
-#: src/integrations/tutorlms/triggers/tutorlms-quizpassed.php:56
+#: src/integrations/learndash/triggers/ld-passquiz.php:46
+msgctxt "Learndash"
 msgid "A user passes {{a quiz}}"
 msgstr ""
 
@@ -26418,6 +26340,32 @@ msgstr ""
 #: src/integrations/lifterlms/triggers/lf-quizfailed.php:42
 #, php-format
 msgid "A user fails {{a/any quiz:%1$s}} {{a number of:%2$s}} time(s)"
+msgstr ""
+
+#. translators: Logged-in trigger - LifterLMS
+#. translators: Logged-in trigger - MasterStudy LMS
+#. translators: Logged-in trigger - TutorLMS
+#: src/integrations/lifterlms/triggers/lf-quizfailed.php:44
+#: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:45
+#: src/integrations/tutorlms/triggers/tutorlms-quizfailed.php:54
+msgid "A user fails {{a quiz}}"
+msgstr ""
+
+#. translators: Logged-in trigger - LifterLMS
+#. translators: Logged-in trigger - TutorLMS
+#: src/integrations/lifterlms/triggers/lf-quizpassed.php:42
+#: src/integrations/tutorlms/triggers/tutorlms-quizpassed.php:54
+#, php-format
+msgid "A user passes {{a quiz:%1$s}} {{a number of:%2$s}} time(s)"
+msgstr ""
+
+#. translators: Logged-in trigger - LifterLMS
+#. translators: Logged-in trigger - MasterStudy LMS
+#. translators: Logged-in trigger - TutorLMS
+#: src/integrations/lifterlms/triggers/lf-quizpassed.php:44
+#: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:45
+#: src/integrations/tutorlms/triggers/tutorlms-quizpassed.php:56
+msgid "A user passes {{a quiz}}"
 msgstr ""
 
 #. translators: Logged-in trigger - LifterLMS
@@ -29447,6 +29395,11 @@ msgstr ""
 #. translators: Action - myCred
 #: src/integrations/mycred/actions/mycred-awardpoints-a.php:44
 msgid "Award {{a number of}} points to the user"
+msgstr ""
+
+#: src/integrations/mycred/actions/mycred-awardpoints-a.php:81
+#: src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php:77
+msgid "Description"
 msgstr ""
 
 #: src/integrations/mycred/actions/mycred-awardpoints-a.php:82
@@ -36870,6 +36823,12 @@ msgstr ""
 #: src/integrations/trello/settings/trello-settings.php:130
 msgctxt "Trello"
 msgid "Connect Uncanny Automator to Trello to automatically manage your projects from inside your WordPress site. Have form submissions create new checklist items or new comments in a forum discussion automatically update a Trello card; you might even have new group members automatically added to a card."
+msgstr ""
+
+#. translators: Logged-in trigger - TutorLMS
+#: src/integrations/tutorlms/triggers/tutorlms-quizfailed.php:52
+#, php-format
+msgid "A user fails {{a quiz:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #. translators: %1$s: Phone number

@@ -92,21 +92,30 @@ trait OAuth_App_Integration {
 	 */
 	public function process_oauth_authentication( $manager ) {
 
+		// Soft-failure path: the API proxy can bounce users back with a
+		// ?error= (or ?connect=, ?auth_error=, or the integration's custom
+		// error_param) instead of an automator_api_message. Check for those
+		// first so the decode step below doesn't swallow them with a
+		// generic "Authorization failed" exception.
+		// array_unique() collapses overlap when an integration's custom
+		// error_param matches one of the defaults (e.g. the default 'error').
+		$error_params = array_unique( array( 'error', 'connect', 'auth_error', $this->error_param ) );
+		foreach ( $error_params as $param ) {
+			if ( automator_filter_has_var( $param ) ) {
+				$error_message = sanitize_text_field( automator_filter_input( $param ) );
+				$this->register_oauth_error_alert( $error_message );
+				return array(
+					'success'      => false,
+					'redirect_url' => $this->get_settings_page_url(),
+				);
+			}
+		}
+
 		// Validate session and retrieve decoded credentials.
 		$credentials = $manager->get_validated_oauth_credentials( $this->get_id() );
 
 		try {
 			if ( empty( $credentials ) ) {
-				// Handle error cases - check for specific error parameters.
-				$error_params = array( 'error', 'connect', 'auth_error', $this->error_param );
-				foreach ( $error_params as $param ) {
-					if ( automator_filter_has_var( $param ) ) {
-						$error_message = automator_filter_input( $param );
-						$this->register_oauth_error_alert( $error_message );
-						throw new Exception( $error_message );
-					}
-				}
-
 				// Generic error if no specific error parameter found.
 				$error_message = esc_html_x( 'Invalid response, please try again.', 'Integration settings', 'uncanny-automator' );
 				$this->register_oauth_error_alert( $error_message );

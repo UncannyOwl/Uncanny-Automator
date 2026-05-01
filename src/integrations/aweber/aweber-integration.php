@@ -7,58 +7,78 @@ namespace Uncanny_Automator\Integrations\Aweber;
  *
  * @package Uncanny_Automator
  */
-class Aweber_Integration extends \Uncanny_Automator\Integration {
+class Aweber_Integration extends \Uncanny_Automator\App_Integrations\App_Integration {
 
 	/**
-	 * Spins up new integration.
+	 * Get the integration config.
+	 *
+	 * @return array
+	 */
+	public static function get_config() {
+		return array(
+			'integration'  => 'AWEBER',
+			'name'         => 'AWeber',
+			'api_endpoint' => 'v2/aweber',
+			'settings_id'  => 'aweber',
+		);
+	}
+
+	/**
+	 * Spin up the integration.
 	 *
 	 * @return void
 	 */
 	protected function setup() {
+		$config = self::get_config();
 
-		$this->helpers = new Aweber_Helpers();
+		// Create helpers with config.
+		$this->helpers = new Aweber_App_Helpers( $config );
 
-		$this->set_integration( 'AWEBER' );
-		$this->set_name( 'AWeber' );
+		// Set icon URL.
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/aweber-icon.svg' );
-		$this->set_connected( $this->helpers->integration_status() );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'aweber' ) );
-		// Register wp-ajax callbacks.
-		$this->register_hooks();
 
+		// Setup app integration with same config.
+		$this->setup_app_integration( $config );
 	}
 
 	/**
-	 * Bootstrap actions, triggers, settings page, etc.
+	 * Load the integration components.
 	 *
 	 * @return void
 	 */
 	public function load() {
+		// Settings page.
+		new Aweber_Settings( $this->dependencies, $this->get_settings_config() );
 
-		new Aweber_Settings( $this->helpers );
-		new AWEBER_SUBSCRIBER_ADD( $this->helpers );
-		new AWEBER_SUBSCRIBER_UPDATE( $this->helpers );
-		new AWEBER_SUBSCRIBER_TAG_ADD( $this->helpers );
+		// Actions.
+		new AWEBER_SUBSCRIBER_ADD( $this->dependencies );
+		new AWEBER_SUBSCRIBER_UPDATE( $this->dependencies );
+		new AWEBER_SUBSCRIBER_TAG_ADD( $this->dependencies );
 	}
 
 	/**
-	 * Register hooks.
+	 * Check if the app is connected
+	 *
+	 * @return bool
+	 */
+	protected function is_app_connected() {
+		try {
+			$credentials = $this->helpers->get_credentials();
+			return ! empty( $credentials['access_token'] );
+		} catch ( \Exception $e ) {
+			return false;
+		}
+	}
+
+	/**
+	 * Register AJAX hooks for dynamic field loading
 	 *
 	 * @return void
 	 */
 	public function register_hooks() {
-
-		// Authorization handler.
-		add_action( 'wp_ajax_automator_aweber_handle_authorization', array( $this->helpers, 'authenticate' ) );
-		// Disconnect handler.
-		add_action( 'wp_ajax_automator_aweber_disconnect_account', array( $this->helpers, 'disconnect' ) );
-		// List of accounts.
+		// Register field loading handlers.
 		add_action( 'wp_ajax_automator_aweber_accounts_fetch', array( $this->helpers, 'accounts_fetch' ) );
-		// List all 'Lists'.
 		add_action( 'wp_ajax_automator_aweber_list_fetch', array( $this->helpers, 'lists_fetch' ) );
-		// Fetch custom fields.
 		add_action( 'wp_ajax_automator_aweber_custom_fields_fetch', array( $this->helpers, 'custom_fields_fetch' ) );
-
 	}
-
 }

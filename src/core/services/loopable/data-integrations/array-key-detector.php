@@ -96,32 +96,6 @@ class Array_Key_Detector {
 	}
 
 	/**
-	 * Retrieves nested keys from an array's subarrays.
-	 *
-	 * @param array $array The array to extract keys from.
-	 *
-	 * @return array The unique keys from subarrays.
-	 */
-	private static function get_nested_keys( $array ) {
-		$keys = array();
-		foreach ( $array as $value ) {
-			if ( is_array( $value ) && self::is_associative( $value ) ) {
-				foreach ( $value as $sub_key => $sub_value ) {
-					if ( is_array( $sub_value ) && self::is_associative( $sub_value ) ) {
-						foreach ( $sub_value as $inner_key => $inner_value ) {
-							$keys[] = "{$sub_key}.{$inner_key}";
-						}
-					} else {
-						$keys[] = "{$sub_key}";
-					}
-				}
-			}
-			break; // Only check the first sub-array if they all have the same keys.
-		}
-		return array_unique( $keys );
-	}
-
-	/**
 	 * Collects all keys from an associative array, optionally with a prefix.
 	 *
 	 * @param array  $array  The array from which to collect keys.
@@ -141,44 +115,6 @@ class Array_Key_Detector {
 			}
 		}
 		return $keys;
-	}
-
-	/**
-	 * Determines if all subarrays of an array have the same keys.
-	 *
-	 * @param array $array The array to check.
-	 *
-	 * @return bool True if all subarrays have the same keys, false otherwise.
-	 */
-	private static function all_subarrays_have_same_keys( $array ) {
-		$first_keys = null;
-		foreach ( $array as $subarray ) {
-			if ( ! is_array( $subarray ) || ! self::is_associative( $subarray ) ) {
-				return false;
-			}
-			if ( null === $first_keys ) {
-				$first_keys = array_keys( $subarray );
-			} elseif ( $first_keys !== array_keys( $subarray ) ) { // phpcs:ignore WordPress.PHP.YodaConditions.NotYoda
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Checks if an array has any associative subarrays.
-	 *
-	 * @param array $array The array to check.
-	 *
-	 * @return bool True if associative subarrays exist, false otherwise.
-	 */
-	private static function has_associative_subarrays( $array ) {
-		foreach ( $array as $value ) {
-			if ( is_array( $value ) && self::is_associative( $value ) ) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

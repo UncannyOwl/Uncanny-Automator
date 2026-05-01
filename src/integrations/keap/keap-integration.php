@@ -7,63 +7,81 @@ namespace Uncanny_Automator\Integrations\Keap;
  *
  * @package Uncanny_Automator
  */
-class Keap_Integration extends \Uncanny_Automator\Integration {
+class Keap_Integration extends \Uncanny_Automator\App_Integrations\App_Integration {
 
 	/**
-	 * Spins up new integration.
+	 * Define configuration.
+	 *
+	 * @return array
+	 */
+	public static function get_config() {
+		return array(
+			'integration'  => 'KEAP',
+			'name'         => 'Keap',
+			'api_endpoint' => 'v2/keap',
+			'settings_id'  => 'keap',
+		);
+	}
+
+	/**
+	 * Setup integration.
 	 *
 	 * @return void
 	 */
 	protected function setup() {
+		$config = self::get_config();
 
-		$this->helpers = new Keap_Helpers();
+		// Create helpers with config.
+		$this->helpers = new Keap_App_Helpers( $config );
 
-		$this->set_integration( 'KEAP' );
-		$this->set_name( 'Keap' );
+		// Set icon URL.
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/keap-icon.svg' );
-		$this->set_connected( $this->helpers->integration_status() );
-		$this->set_settings_url( automator_get_premium_integrations_settings_url( 'keap' ) );
-		// Register wp-ajax callbacks and filters.
-		$this->register_hooks();
 
+		// Setup app integration with same config.
+		$this->setup_app_integration( $config );
 	}
 
 	/**
-	 * Bootstrap actions, triggers, settings page, etc.
+	 * Load components
 	 *
 	 * @return void
 	 */
 	public function load() {
+		// Settings page.
+		new Keap_Settings( $this->dependencies, $this->get_settings_config() );
 
-		new Keap_Settings( $this->helpers );
-		new KEAP_ADD_UPDATE_CONTACT( $this->helpers );
-		new KEAP_ADD_TAGS_CONTACT( $this->helpers );
-		new KEAP_REMOVE_TAGS_CONTACT( $this->helpers );
-		new KEAP_ADD_NOTE_CONTACT( $this->helpers );
-		new KEAP_ADD_UPDATE_COMPANY( $this->helpers );
+		// Actions.
+		new KEAP_ADD_UPDATE_CONTACT( $this->dependencies );
+		new KEAP_ADD_TAGS_CONTACT( $this->dependencies );
+		new KEAP_REMOVE_TAGS_CONTACT( $this->dependencies );
+		new KEAP_ADD_NOTE_CONTACT( $this->dependencies );
+		new KEAP_ADD_UPDATE_COMPANY( $this->dependencies );
 
+		// Migration.
+		new Keap_Credentials_Migration( 'keap_credentials_migration', $this->dependencies );
 	}
 
 	/**
-	 * Register hooks.
+	 * Check if the app is connected
+	 *
+	 * @return bool
+	 */
+	protected function is_app_connected() {
+		$credentials = $this->helpers->get_credentials();
+
+		return ! empty( $credentials['vault_signature'] ) && ! empty( $credentials['keap_id'] );
+	}
+
+	/**
+	 * Register hooks for UI AJAX handlers
 	 *
 	 * @return void
 	 */
 	public function register_hooks() {
-		// Authorization handler.
-		add_action( 'wp_ajax_automator_keap_handle_authorization', array( $this->helpers, 'authenticate' ) );
-		// Disconnect handler.
-		add_action( 'wp_ajax_automator_keap_disconnect_account', array( $this->helpers, 'disconnect' ) );
-		// Get Tags handler.
 		add_action( 'wp_ajax_automator_keap_get_tags', array( $this->helpers, 'get_tags_ajax' ) );
-		// Get Custom Fields handler.
 		add_action( 'wp_ajax_automator_keap_get_contact_custom_fields', array( $this->helpers, 'get_contact_custom_fields_repeater_ajax' ) );
-		// Get Companies handler.
 		add_action( 'wp_ajax_automator_keap_get_companies', array( $this->helpers, 'get_companies_ajax' ) );
-		// Get Account Users handler.
 		add_action( 'wp_ajax_automator_keap_get_account_users', array( $this->helpers, 'get_account_users_ajax' ) );
-		// Get Company Custom Fields handler.
 		add_action( 'wp_ajax_automator_keap_get_company_custom_fields', array( $this->helpers, 'get_company_custom_fields_repeater_ajax' ) );
 	}
-
 }
