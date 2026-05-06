@@ -483,6 +483,21 @@ class Automator_System_Report {
 	}
 
 	/**
+	 * Recompute the Automator tables total size and persist it to the
+	 * `automator_db_size` option used by the Database tools view.
+	 *
+	 * @return float
+	 */
+	public static function refresh_cached_tables_size() {
+
+		$total_size = self::get_tables_total_size();
+
+		automator_update_option( 'automator_db_size', $total_size, 'no' );
+
+		return $total_size;
+	}
+
+	/**
 	 * Get a list of inplugins active on the site.
 	 *
 	 * @return array

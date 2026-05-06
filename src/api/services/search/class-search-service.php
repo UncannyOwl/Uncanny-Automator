@@ -205,9 +205,10 @@ class Search_Service {
 		if ( 'loop_filter' === $type ) {
 			// If integration is provided, use the collector's integration-based listing.
 			if ( $integration ) {
-				$collection = $this->factory->get_loop_filter_collector()->collect_loop_filters_by_integration( $integration, $limit );
-				$items      = $collection->to_array();
-				$sliced     = array_values( array_slice( $items, $offset, $limit ) );
+				$fetch_limit = $this->get_fetch_limit_for_offset( $limit, $offset );
+				$collection  = $this->factory->get_loop_filter_collector()->collect_loop_filters_by_integration( $integration, $fetch_limit );
+				$items       = $collection->to_array();
+				$sliced      = array_values( array_slice( $items, $offset, $limit ) );
 
 				return array(
 					'message' => sprintf( 'Found %d loop filter(s) for integration %s.', count( $sliced ), $integration ),
@@ -238,8 +239,9 @@ class Search_Service {
 	private function list_triggers( ?string $integration, int $limit, int $offset ) {
 
 		if ( $integration ) {
-			$collection = $this->factory->get_trigger_collector()->collect_triggers_by_integration( $integration, null, $limit );
-			$items      = $collection->to_array();
+			$fetch_limit = $this->get_fetch_limit_for_offset( $limit, $offset );
+			$collection  = $this->factory->get_trigger_collector()->collect_triggers_by_integration( $integration, null, $fetch_limit );
+			$items       = $collection->to_array();
 		} else {
 			$service = Trigger_Registry_Service::instance();
 			$result  = $service->list_triggers( array(), false );
@@ -275,8 +277,9 @@ class Search_Service {
 	private function list_actions( ?string $integration, int $limit, int $offset ) {
 
 		if ( $integration ) {
-			$collection = $this->factory->get_action_collector()->collect_actions_by_integration( $integration, $limit );
-			$items      = $collection->to_array();
+			$fetch_limit = $this->get_fetch_limit_for_offset( $limit, $offset );
+			$collection  = $this->factory->get_action_collector()->collect_actions_by_integration( $integration, $fetch_limit );
+			$items       = $collection->to_array();
 		} else {
 			$service = Action_Registry_Service::instance();
 			$result  = $service->get_available_actions( '', false );
@@ -469,16 +472,17 @@ class Search_Service {
 	 */
 	private function list_by_integration( string $type, string $integration, int $limit, int $offset ) {
 
-		$items = array();
+		$items       = array();
+		$fetch_limit = $this->get_fetch_limit_for_offset( $limit, $offset );
 
 		if ( 'trigger' === $type ) {
-			$collection = $this->factory->get_trigger_collector()->collect_triggers_by_integration( $integration, null, $limit );
+			$collection = $this->factory->get_trigger_collector()->collect_triggers_by_integration( $integration, null, $fetch_limit );
 			$items      = $collection->to_array();
 		} elseif ( 'action' === $type ) {
-			$collection = $this->factory->get_action_collector()->collect_actions_by_integration( $integration, $limit );
+			$collection = $this->factory->get_action_collector()->collect_actions_by_integration( $integration, $fetch_limit );
 			$items      = $collection->to_array();
 		} elseif ( 'loop_filter' === $type ) {
-			$collection = $this->factory->get_loop_filter_collector()->collect_loop_filters_by_integration( $integration, $limit );
+			$collection = $this->factory->get_loop_filter_collector()->collect_loop_filters_by_integration( $integration, $fetch_limit );
 			$items      = $collection->to_array();
 		} elseif ( 'condition' === $type || 'loopable_token' === $type ) {
 			return new WP_Error(
@@ -496,7 +500,7 @@ class Search_Service {
 					'type'        => $type,
 					'integration' => $integration,
 					'items'       => array(),
-					'total'       => 0,
+					'total'       => count( $items ),
 				),
 			);
 		}
@@ -510,5 +514,20 @@ class Search_Service {
 				'total'       => count( $items ),
 			),
 		);
+	}
+
+	/**
+	 * Calculate collector fetch size for integration-backed local offset paging.
+	 *
+	 * Integration collectors accept only a limit. Fetch through the requested
+	 * offset, then slice locally so later pages are not empty just because the
+	 * first collector call only fetched one page.
+	 *
+	 * @param int $limit  Requested page size.
+	 * @param int $offset Requested offset.
+	 * @return int
+	 */
+	private function get_fetch_limit_for_offset( int $limit, int $offset ): int {
+		return max( $limit, $limit + $offset );
 	}
 }

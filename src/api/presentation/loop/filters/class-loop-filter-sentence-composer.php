@@ -149,7 +149,7 @@ class Loop_Filter_Sentence_Composer {
 		// Frontend renders non-interactive pills as static spans.
 		// For logs output, we always use spans (buttons are converted later).
 		return sprintf(
-			'<span class="sentence-pill">%s%s</span>',
+			'<span class="sentence-pill" size="small" filled="">%s<span class="sentence-pill-value">%s</span></span>',
 			$label_html,
 			esc_html( $pill_value )
 		);
@@ -272,7 +272,7 @@ class Loop_Filter_Sentence_Composer {
 				'value'    => $value,
 				'readable' => $readable[ $code ] ?? null,
 				'backup'   => array(
-					'label'                 => $labels[ $code ] ?? '',
+					'label'                  => $labels[ $code ] ?? '',
 					'show_label_in_sentence' => ! empty( $labels[ $code ] ),
 				),
 			);

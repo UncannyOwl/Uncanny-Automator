@@ -156,6 +156,12 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 			return $this->get_single_log( $recipe_id, $run_number, $recipe_log_id, $params );
 		}
 
+		if ( $run_number > 0 || $recipe_log_id > 0 ) {
+			return Json_Rpc_Response::create_error_response(
+				'Single log detail requires recipe_id, run_number, and recipe_log_id together. Omit run_number and recipe_log_id for list mode.'
+			);
+		}
+
 		// List mode.
 		return $this->list_logs( $params );
 	}
@@ -191,7 +197,12 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 		// Strip sensitive HTTP headers (cookies, auth tokens) from log detail.
 		$result = $this->redact_sensitive_log_data( $result );
 
-		return Json_Rpc_Response::create_success_response( 'Recipe log retrieved successfully', $result );
+		$response_data = array_merge(
+			$result,
+			array( 'log' => $result )
+		);
+
+		return Json_Rpc_Response::create_success_response( 'Recipe log retrieved successfully', $response_data );
 	}
 
 	// ──────────────────────────────────────────────────────────────────
@@ -243,6 +254,8 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 		if ( ! is_array( $logs ) ) {
 			$logs = array();
 		}
+
+		$logs = $this->redact_sensitive_log_data( $logs );
 
 		// Transform numeric status codes to human-readable strings.
 		$logs = array_map(

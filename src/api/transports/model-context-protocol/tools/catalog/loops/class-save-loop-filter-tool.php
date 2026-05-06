@@ -127,18 +127,18 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 					'description' => 'Integration code (e.g., WP, WOOCOMMERCE). Required for create.',
 				),
 				'fields'           => array(
-					'type'              => 'object',
-					'description'       => 'Filter field values. Each field is {value: string, label: string}.',
-					'patternProperties' => array(
+					'type'                 => 'object',
+					'description'          => 'Filter field values. Each field is {value: string, label: string}.',
+					'patternProperties'    => array(
 						'^[A-Z_0-9]+$' => array(
 							'type'       => 'object',
 							'properties' => array(
 								'value' => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'Raw field value.',
 								),
 								'label' => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'Human-readable label.',
 								),
 							),
@@ -197,6 +197,8 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 	/**
 	 * Create filter.
 	 *
+	 * @since 7.2.4 Enforces loop ownership against the provided recipe_id before creation.
+	 *
 	 * @param array $params The parameters.
 	 * @return array
 	 */
@@ -204,11 +206,15 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 
 		$recipe_id        = (int) $params['recipe_id'];
 		$loop_id          = isset( $params['loop_id'] ) ? (int) $params['loop_id'] : 0;
-		$filter_code      = $params['filter_code'] ?? '';
-		$integration_code = $params['integration_code'] ?? '';
+		$filter_code      = (string) ( $params['filter_code'] ?? '' );
+		$integration_code = (string) ( $params['integration_code'] ?? '' );
 
 		if ( $loop_id <= 0 ) {
 			return Json_Rpc_Response::create_error_response( 'loop_id is required for creating a filter.' );
+		}
+		$ownership = $this->validate_loop_ownership( $loop_id, $recipe_id );
+		if ( null !== $ownership ) {
+			return $ownership;
 		}
 
 		if ( empty( $filter_code ) ) {
@@ -239,6 +245,16 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 			return Json_Rpc_Response::create_error_response( $definition->get_error_message() );
 		}
 
+		$integration_validation = $this->validate_filter_integration_code( $integration_code, $definition );
+		if ( null !== $integration_validation ) {
+			return $integration_validation;
+		}
+
+		$definition_integration_code = $this->get_definition_integration_code( $definition );
+		if ( '' !== $definition_integration_code ) {
+			$integration_code = $definition_integration_code;
+		}
+
 		// Validate field values against filter schema.
 		$field_validation = $this->validate_filter_fields( $definition, $fields_values );
 		if ( is_wp_error( $field_validation ) ) {
@@ -253,15 +269,13 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
 		}
 
-		$link_recipe_id = $this->resolve_recipe_id_from_loop( $loop_id );
-
 		return Json_Rpc_Response::create_success_response(
 			'Filter added to loop',
 			array(
 				'filter_id' => $result['filter_id'] ?? 0,
 				'filter'    => $result['filter'] ?? array(),
 				'loop_id'   => $loop_id,
-				'links'     => ( new Recipe_Link_Builder() )->build_links( $link_recipe_id ),
+				'links'     => ( new Recipe_Link_Builder() )->build_links( $recipe_id ),
 			)
 		);
 	}
@@ -285,14 +299,6 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 			return $validation_error;
 		}
 
-		$fields_flat   = Field_Mcp_Input_Resolver::flatten( $fields_input );
-		$fields_values = $this->extract_values_for_validation( $fields_input );
-
-		$validation = Token_Validator::validate( $recipe_id, $fields_values );
-		if ( ! $validation['valid'] ) {
-			return Json_Rpc_Response::create_error_response( $validation['message'] );
-		}
-
 		// Validate filter exists and belongs to recipe.
 		$filter_post = get_post( $filter_id );
 		if ( ! $filter_post || AUTOMATOR_POST_TYPE_LOOP_FILTER !== $filter_post->post_type ) {
@@ -300,12 +306,9 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 		}
 
 		$loop_id   = (int) $filter_post->post_parent;
-		$loop_post = get_post( $loop_id );
-
-		if ( ! $loop_post || AUTOMATOR_POST_TYPE_LOOP !== $loop_post->post_type || (int) $loop_post->post_parent !== $recipe_id ) {
-			return Json_Rpc_Response::create_error_response(
-				sprintf( 'Filter %d does not belong to recipe %d.', $filter_id, $recipe_id )
-			);
+		$ownership = $this->validate_loop_ownership( $loop_id, $recipe_id );
+		if ( null !== $ownership ) {
+			return Json_Rpc_Response::create_error_response( sprintf( 'Filter %d does not belong to recipe %d.', $filter_id, $recipe_id ) );
 		}
 
 		// Get filter code for definition lookup.
@@ -319,15 +322,32 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 			return Json_Rpc_Response::create_error_response( $definition->get_error_message() );
 		}
 
-		// Validate field values against filter schema.
-		$field_validation = $this->validate_filter_fields( $definition, $fields_values );
+		$existing_filter_result = $this->filter_service->get_filter( $filter_id );
+		if ( is_wp_error( $existing_filter_result ) ) {
+			return Json_Rpc_Response::create_error_response( $existing_filter_result->get_error_message() );
+		}
+
+		$existing_fields_input = $this->normalize_existing_fields_for_mcp(
+			$existing_filter_result['filter']['fields'] ?? array()
+		);
+		$merged_fields_input   = array_replace( $existing_fields_input, $fields_input );
+		$merged_fields_flat    = Field_Mcp_Input_Resolver::flatten( $merged_fields_input );
+		$merged_fields_values  = $this->extract_values_for_validation( $merged_fields_input );
+
+		$validation = Token_Validator::validate( $recipe_id, $merged_fields_values );
+		if ( ! $validation['valid'] ) {
+			return Json_Rpc_Response::create_error_response( $validation['message'] );
+		}
+
+		// Validate the final merged config so partial updates keep required fields.
+		$field_validation = $this->validate_filter_fields( $definition, $merged_fields_values );
 		if ( is_wp_error( $field_validation ) ) {
 			return Json_Rpc_Response::create_error_response( $field_validation->get_error_message() );
 		}
 
-		$backup = $this->build_filter_backup( $fields_input, $definition );
+		$backup = $this->build_filter_backup( $merged_fields_input, $definition );
 
-		$result = $this->filter_service->update_filter( $filter_id, $fields_flat, $backup );
+		$result = $this->filter_service->update_filter( $filter_id, $merged_fields_flat, $backup );
 
 		if ( is_wp_error( $result ) ) {
 			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
@@ -344,6 +364,100 @@ class Save_Loop_Filter_Tool extends Abstract_Filter_Tool {
 				'links'     => ( new Recipe_Link_Builder() )->build_links( $link_recipe_id ),
 			)
 		);
+	}
+
+	/**
+	 * Convert stored nested filter fields back to MCP input shape for merging.
+	 *
+	 * @param array $fields Stored filter fields.
+	 * @return array MCP-shaped field input.
+	 */
+	private function normalize_existing_fields_for_mcp( array $fields ): array {
+		$normalized = array();
+
+		foreach ( $fields as $code => $field ) {
+			if ( ! is_string( $code ) || false !== strpos( $code, '_readable' ) ) {
+				continue;
+			}
+
+			if ( is_array( $field ) && array_key_exists( 'value', $field ) ) {
+				$value = $field['value'];
+				$label = $field['readable'] ?? $field['label'] ?? $value;
+			} else {
+				$value = $field;
+				$label = $fields[ $code . '_readable' ] ?? $value;
+			}
+
+			$normalized[ $code ] = array(
+				'value' => (string) $value,
+				'label' => (string) $label,
+			);
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Validate caller integration_code against the registered filter definition.
+	 *
+	 * @param string $integration_code Caller-provided integration code.
+	 * @param array  $definition       Registered filter definition.
+	 * @return array|null Error response if mismatched, null when valid.
+	 */
+	private function validate_filter_integration_code( string $integration_code, array $definition ): ?array {
+		$definition_integration_code = $this->get_definition_integration_code( $definition );
+
+		if ( '' === $definition_integration_code ) {
+			return null;
+		}
+
+		if ( strtoupper( $integration_code ) !== strtoupper( $definition_integration_code ) ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf(
+					'Filter "%s" belongs to integration "%s", not "%s".',
+					(string) ( $definition['code'] ?? '' ),
+					$definition_integration_code,
+					$integration_code
+				)
+			);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Resolve canonical integration code from a filter definition.
+	 *
+	 * @param array $definition Registered filter definition.
+	 * @return string Integration code, or empty string when unavailable.
+	 */
+	private function get_definition_integration_code( array $definition ): string {
+		return (string) ( $definition['integration_code'] ?? $definition['integration'] ?? '' );
+	}
+
+	/**
+	 * Validate that a loop exists and belongs to the provided recipe.
+	 *
+	 * @since 7.2.4
+	 *
+	 * @param int $loop_id Loop ID.
+	 * @param int $recipe_id Recipe ID.
+	 * @return array|null Error response if invalid ownership, null when valid.
+	 */
+	private function validate_loop_ownership( int $loop_id, int $recipe_id ): ?array {
+		$loop_post = get_post( $loop_id );
+
+		if ( ! $loop_post || AUTOMATOR_POST_TYPE_LOOP !== $loop_post->post_type ) {
+			return Json_Rpc_Response::create_error_response( sprintf( 'Loop not found: %d.', $loop_id ) );
+		}
+
+		if ( (int) $loop_post->post_parent !== $recipe_id ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf( 'Loop %d belongs to recipe %d, not recipe %d.', $loop_id, (int) $loop_post->post_parent, $recipe_id )
+			);
+		}
+
+		return null;
 	}
 
 	/**

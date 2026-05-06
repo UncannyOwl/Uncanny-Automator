@@ -177,8 +177,8 @@ class Save_Action_Tool extends Abstract_MCP_Tool {
 				'parent_type' => array( 'type' => 'string' ),
 				'parent_id'   => array( 'type' => 'integer' ),
 				'action'      => array(
-					'type'       => 'object',
-					'properties' => array(
+					'type'                 => 'object',
+					'properties'           => array(
 						'action_id'                    => array( 'type' => 'integer' ),
 						'action_code'                  => array( 'type' => 'string' ),
 						'integration'                  => array( 'type' => 'string' ),
@@ -187,10 +187,20 @@ class Save_Action_Tool extends Abstract_MCP_Tool {
 						'config'                       => array( 'type' => 'object' ),
 						'async'                        => array( 'type' => array( 'object', 'null' ) ),
 					),
+					'required'             => array(
+						'action_id',
+						'action_code',
+						'integration',
+						'sentence_human_readable',
+						'sentence_human_readable_html',
+						'config',
+						'async',
+					),
+					'additionalProperties' => false,
 				),
 				'links'       => array( 'type' => 'object' ),
 				'notes'       => array(
-					'type' => 'array',
+					'type'  => 'array',
 					'items' => array( 'type' => 'string' ),
 				),
 			),
@@ -289,19 +299,13 @@ class Save_Action_Tool extends Abstract_MCP_Tool {
 			);
 		}
 
-		$action_data = $result['action'] ?? array();
-
-		// Ensure config/async serialize as JSON objects, not empty arrays.
-		$action_data['config'] = $this->ensure_object( $action_data['config'] ?? array() );
-		if ( isset( $action_data['async'] ) && is_array( $action_data['async'] ) && empty( $action_data['async'] ) ) {
-			$action_data['async'] = null;
-		}
+		$action_payload = $this->format_action_response( $result['action'] ?? array() );
 
 		$payload = array(
 			'recipe_id'   => $recipe_id,
 			'parent_type' => $parent_type,
 			'parent_id'   => $parent_id,
-			'action'      => $action_data,
+			'action'      => $action_payload,
 			'links'       => ( new Recipe_Link_Builder() )->build_links( $recipe_id ),
 
 		);
@@ -419,7 +423,8 @@ class Save_Action_Tool extends Abstract_MCP_Tool {
 		// Warn if anonymous recipe needs user selector (fields may now contain user tokens).
 		$action_code      = get_post_meta( $action_id, 'code', true );
 		$advisor          = new User_Selector_Advisor();
-		$selector_warning = $advisor->check_after_action_add( $recipe_id, $action_code ?: '', $fields );
+		$action_code      = is_string( $action_code ) ? $action_code : '';
+		$selector_warning = $advisor->check_after_action_add( $recipe_id, $action_code, $fields );
 		if ( $selector_warning ) {
 			$notes[] = $selector_warning;
 		}
@@ -496,17 +501,21 @@ class Save_Action_Tool extends Abstract_MCP_Tool {
 	 * @return array Formatted response.
 	 */
 	private function format_action_response( array $action_data ): array {
+		$config = $action_data['config'] ?? $action_data['fields'] ?? array();
+		$async  = $action_data['async'] ?? null;
+
+		if ( is_array( $async ) && empty( $async ) ) {
+			$async = null;
+		}
+
 		return array(
-			'action_id'                    => $action_data['action_id'] ?? 0,
-			'action_code'                  => $action_data['action_code'] ?? '',
-			'integration'                  => $action_data['integration'] ?? '',
-			'type'                         => $action_data['user_type'] ?? '',
-			'recipe_id'                    => $action_data['recipe_id'] ?? 0,
-			'sentence_human_readable'      => $action_data['sentence_human_readable'] ?? '',
-			'sentence_human_readable_html' => $action_data['sentence_human_readable_html'] ?? '',
-			'fields'                       => $this->ensure_object( $action_data['config'] ?? array() ),
-			'async'                        => ! empty( $action_data['async'] ) ? $action_data['async'] : null,
+			'action_id'                    => (int) ( $action_data['action_id'] ?? $action_data['id'] ?? 0 ),
+			'action_code'                  => (string) ( $action_data['action_code'] ?? $action_data['code'] ?? '' ),
+			'integration'                  => (string) ( $action_data['integration'] ?? '' ),
+			'sentence_human_readable'      => (string) ( $action_data['sentence_human_readable'] ?? '' ),
+			'sentence_human_readable_html' => (string) ( $action_data['sentence_human_readable_html'] ?? '' ),
+			'config'                       => $this->ensure_object( $config ),
+			'async'                        => $this->ensure_object( $async ),
 		);
 	}
-
 }

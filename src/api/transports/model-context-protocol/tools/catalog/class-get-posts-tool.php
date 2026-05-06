@@ -52,56 +52,62 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				'post_type'   => array(
+				'post_type'           => array(
 					'type'        => 'string',
 					'enum'        => $post_types,
 					'description' => 'Post type to query.',
 				),
-				'post_parent' => array(
+				'post_parent'         => array(
 					'type'        => 'integer',
 					'description' => 'Parent post ID for hierarchical queries.',
 				),
-				'post_status' => array(
+				'post_status'         => array(
 					'type'        => 'string',
 					'enum'        => array( 'publish', 'draft', 'pending', 'private', 'any' ),
-					'default'     => 'publish',
-					'description' => 'Post status filter.',
+					'description' => 'Post status filter. Omit to return both published and draft posts.',
 				),
-				'search'      => array(
+				'search'              => array(
 					'type'        => 'string',
 					'description' => 'Search posts by title/content.',
 				),
-				'meta_key'    => array(
+				'meta_key'            => array(
 					'type'        => 'string',
 					'description' => 'Filter by meta key.',
 				),
-				'meta_value'  => array(
+				'meta_value'          => array(
 					'type'        => 'string',
 					'description' => 'Filter by meta value (requires meta_key).',
 				),
-				'orderby'     => array(
+				'orderby'             => array(
 					'type'        => 'string',
 					'enum'        => array( 'date', 'modified', 'title', 'ID', 'menu_order', 'rand', 'meta_value', 'meta_value_num' ),
 					'default'     => 'date',
 					'description' => 'Order results by field. "date" = published date, "modified" = last updated date.',
 				),
-				'order'       => array(
+				'order'               => array(
 					'type'        => 'string',
 					'enum'        => array( 'DESC', 'ASC' ),
 					'default'     => 'DESC',
 					'description' => 'Sort direction. DESC = newest first (default), ASC = oldest first.',
 				),
-				'limit'       => array(
+				'limit'               => array(
 					'type'        => 'integer',
 					'default'     => 20,
+					'minimum'     => 1,
 					'maximum'     => 100,
 					'description' => 'Maximum results.',
 				),
-				'include'     => array(
+				'offset'              => array(
+					'type'        => 'integer',
+					'default'     => 0,
+					'minimum'     => 0,
+					'description' => 'Number of posts to skip for pagination.',
+				),
+				'include'             => array(
 					'type'        => 'string',
 					'description' => 'Comma-separated post IDs to include.',
 				),
-				'exclude'     => array(
+				'exclude'             => array(
 					'type'        => 'string',
 					'description' => 'Comma-separated post IDs to exclude.',
 				),
@@ -147,13 +153,16 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 							'title'       => array( 'type' => 'string' ),
 							'slug'        => array( 'type' => 'string' ),
 							'post_parent' => array( 'type' => 'integer' ),
+							'status'      => array( 'type' => 'string' ),
 						),
 					),
 				),
 				'total'     => array( 'type' => 'integer' ),
+				'offset'    => array( 'type' => 'integer' ),
+				'limit'     => array( 'type' => 'integer' ),
 				'has_more'  => array( 'type' => 'boolean' ),
 			),
-			'required'   => array( 'post_type', 'items', 'total', 'has_more' ),
+			'required'   => array( 'post_type', 'items', 'total', 'offset', 'limit', 'has_more' ),
 		);
 	}
 
@@ -165,9 +174,13 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 	 * @return array
 	 */
 	protected function execute_tool( User_Context $user_context, array $params ) {
+		// Intentional admin-context discovery default: include editable drafts unless caller narrows status.
 		$post_type   = sanitize_key( $params['post_type'] ?? 'post' );
-		$limit       = min( (int) ( $params['limit'] ?? 20 ), 100 );
-		$post_status = sanitize_key( $params['post_status'] ?? 'publish' );
+		$limit       = max( 1, min( (int) ( $params['limit'] ?? 20 ), 100 ) );
+		$offset      = max( (int) ( $params['offset'] ?? 0 ), 0 );
+		$post_status = isset( $params['post_status'] )
+			? sanitize_key( $params['post_status'] )
+			: array( 'publish', 'draft' );
 		$orderby     = sanitize_key( $params['orderby'] ?? 'date' );
 		$order       = strtoupper( $params['order'] ?? 'DESC' ) === 'ASC' ? 'ASC' : 'DESC';
 
@@ -175,6 +188,7 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 			'post_type'      => $post_type,
 			'post_status'    => $post_status,
 			'posts_per_page' => $limit,
+			'offset'         => $offset,
 			'orderby'        => $orderby,
 			'order'          => $order,
 		);
@@ -224,6 +238,7 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 					'title'       => $post->post_title,
 					'slug'        => $post->post_name,
 					'post_parent' => $post->post_parent,
+					'status'      => $post->post_status,
 				);
 			},
 			$query->posts
@@ -235,7 +250,9 @@ class Get_Posts_Tool extends Abstract_MCP_Tool {
 				'post_type' => $post_type,
 				'items'     => $items,
 				'total'     => $query->found_posts,
-				'has_more'  => $query->found_posts > $limit,
+				'offset'    => $offset,
+				'limit'     => $limit,
+				'has_more'  => ( $offset + count( $items ) ) < $query->found_posts,
 			)
 		);
 	}

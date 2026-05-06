@@ -262,14 +262,16 @@ class Save_Condition_Tool extends Abstract_MCP_Tool {
 			$merged_fields = array_merge( $existing_fields, $fields );
 
 			// Validate field values against condition schema.
-			$integration_code = (string) ( $existing_condition['integration_code'] ?? $params['integration_code'] ?? '' );
-			$condition_code   = (string) ( $existing_condition['condition_code'] ?? $params['condition_code'] ?? '' );
+			$integration_code = (string) ( $existing_condition['integration'] ?? '' );
+			$condition_code   = (string) ( $existing_condition['condition'] ?? '' );
 
-			if ( '' !== $integration_code && '' !== $condition_code ) {
-				$field_validation = $this->validate_condition_fields( $integration_code, $condition_code, $merged_fields );
-				if ( is_wp_error( $field_validation ) ) {
-					return Json_Rpc_Response::create_error_response( $field_validation->get_error_message() );
-				}
+			if ( '' === $integration_code || '' === $condition_code ) {
+				return Json_Rpc_Response::create_error_response( 'Condition registry metadata is missing; cannot validate updated fields safely.' );
+			}
+
+			$field_validation = $this->validate_condition_fields( $integration_code, $condition_code, $merged_fields );
+			if ( is_wp_error( $field_validation ) ) {
+				return Json_Rpc_Response::create_error_response( $field_validation->get_error_message() );
 			}
 
 			// Validate tokens in merged fields.
@@ -289,6 +291,8 @@ class Save_Condition_Tool extends Abstract_MCP_Tool {
 				'recipe_id'       => $recipe_id,
 				'group_id'        => $group_id,
 				'condition_id'    => $condition_id,
+				'integration'     => $integration_code,
+				'condition_code'  => $condition_code,
 				'provided_fields' => $fields,
 				'merged_fields'   => $merged_fields,
 			);

@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 6.9.4
 Requires PHP: 7.4
-Stable tag: 7.2.3
+Stable tag: 7.2.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -417,6 +417,21 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 7.2.4 [2026-05-06] =
+
+**New Feature:**
+
+* Uncanny Agent - Officially launched for all Automator Pro users
+
+**Added:**
+
+* Dashboard - Uncanny Agent Usage meter #6635
+
+**Under the hood:**
+
+* Uncanny Agent - Default conversation starters based on the page context #7251
+* Core – Total table size now gets a well-deserved refresh after log table resets. #7272
 
 = 7.2.3 [2026-05-01] =
 

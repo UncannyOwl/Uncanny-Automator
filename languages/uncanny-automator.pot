@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.2.3\n"
+"Project-Id-Version: Uncanny Automator 7.2.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-01T14:11:42+00:00\n"
+"POT-Creation-Date: 2026-05-06T19:47:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -33,57 +33,6 @@ msgstr ""
 #. Author of the plugin
 #: uncanny-automator.php
 msgid "Uncanny Automator, Uncanny Owl"
-msgstr ""
-
-#. translators: 1. Number
-#: src/assets/build/main.js:1
-#, js-format
-msgid "Per user: %1$s"
-msgstr ""
-
-#: src/assets/build/main.js:1
-msgctxt "Times"
-msgid "Unlimited"
-msgstr ""
-
-#. translators: 1. Number
-#: src/assets/build/main.js:1
-#, js-format
-msgid "Total: %1$s"
-msgstr ""
-
-#. translators: Log column.
-#: src/assets/build/main.js:1
-#: src/core/admin/admin-logs/tabs/recipe.php:49
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:164
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:86
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:122
-#: src/core/includes/recipe-logs-view.php:41
-#: src/core/includes/recipe-logs-view.php:86
-#: src/core/includes/recipe-logs-view.php:139
-#: src/core/includes/recipe-logs-view.php:184
-#: src/core/views/admin-logs/component/logs.php:31
-#: src/core/views/admin-logs/component/logs.php:77
-#: src/core/views/admin-logs/component/logs.php:132
-#: src/core/views/admin-logs/component/logs.php:179
-#: src/integrations/popup-maker/add-popup-maker-integration.php:54
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:58
-msgid "Recipe"
-msgstr ""
-
-#: src/assets/build/main.js:1
-msgid "Completions allowed"
-msgstr ""
-
-#. translators: The number of times a recipe was completed
-#: src/assets/build/main.js:1
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1089
-msgid "Completed runs"
-msgstr ""
-
-#: src/assets/build/main.js:1
-#: src/core/views/admin-dashboard.php:647
-msgid "No recipes using app credits on this site"
 msgstr ""
 
 #: src/assets/build/main.js:1
@@ -472,7 +421,7 @@ msgid "Get credits for apps like:"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:642
+#: src/core/admin/class-admin-menu.php:673
 msgid "Facebook Pages"
 msgstr ""
 
@@ -485,22 +434,22 @@ msgid "X/Twitter"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:670
+#: src/core/admin/class-admin-menu.php:701
 msgid "Zoom"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:622
+#: src/core/admin/class-admin-menu.php:653
 msgid "Google Calendar"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:618
+#: src/core/admin/class-admin-menu.php:649
 msgid "Google Sheets"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:666
+#: src/core/admin/class-admin-menu.php:697
 msgid "Slack"
 msgstr ""
 
@@ -1401,7 +1350,7 @@ msgid "Delay"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:553
+#: src/core/admin/class-admin-menu.php:584
 msgid "Schedule"
 msgstr ""
 
@@ -1744,7 +1693,9 @@ msgstr ""
 #: src/assets/build/main.js:1
 #: src/api/services/scope-tag/resolvers/integration/dependency/class-dependency-tag-resolver.php:124
 #: src/core/admin/setup-wizard/src/views/step-2.php:68
-#: src/core/lib/utilities/class-automator-system-report.php:678
+#: src/core/lib/utilities/class-automator-system-report.php:693
+#: src/core/views/admin-dashboard/usage-panel.php:24
+#: src/core/views/admin-dashboard/usage-panel.php:50
 msgid "Not connected"
 msgstr ""
 
@@ -2554,22 +2505,22 @@ msgstr ""
 msgid "Changes you made may not be saved."
 msgstr ""
 
-#: src/api/application/mcp/class-mcp-client.php:403
+#: src/api/application/mcp/class-mcp-client.php:424
 msgctxt "MCP client validation error"
 msgid "The supplied page URL must be a string."
 msgstr ""
 
-#: src/api/application/mcp/class-mcp-client.php:411
+#: src/api/application/mcp/class-mcp-client.php:432
 msgctxt "MCP client validation error"
 msgid "The supplied page URL is invalid."
 msgstr ""
 
-#: src/api/application/mcp/class-mcp-client.php:419
+#: src/api/application/mcp/class-mcp-client.php:440
 msgctxt "MCP client validation error"
 msgid "Unable to load the required encryption key."
 msgstr ""
 
-#: src/api/application/mcp/class-mcp-client.php:431
+#: src/api/application/mcp/class-mcp-client.php:452
 msgctxt "MCP client validation error"
 msgid "Could not generate the encrypted payload."
 msgstr ""
@@ -3938,7 +3889,7 @@ msgstr ""
 #. translators: %d Loop ID.
 #: src/api/services/loop/filter/services/class-filter-crud-service.php:113
 #: src/api/services/loop/filter/services/class-filter-crud-service.php:201
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:345
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:347
 #, php-format
 msgid "Loop not found with ID: %d"
 msgstr ""
@@ -3964,7 +3915,7 @@ msgstr ""
 #. translators: %d Filter ID.
 #: src/api/services/loop/filter/services/class-filter-crud-service.php:178
 #: src/api/services/loop/filter/services/class-filter-crud-service.php:243
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:302
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:304
 #, php-format
 msgid "Filter not found with ID: %d"
 msgstr ""
@@ -3975,35 +3926,35 @@ msgstr ""
 msgid "Failed to retrieve filters: %s"
 msgstr ""
 
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:264
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:266
 msgid "Filter post not found."
 msgstr ""
 
 #. translators: %s Error message.
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:278
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:280
 #, php-format
 msgid "Failed to update filter: %s"
 msgstr ""
 
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:293
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:337
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:295
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:339
 msgid "Deletion must be confirmed."
 msgstr ""
 
 #. translators: %s Error message.
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:322
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:324
 #, php-format
 msgid "Failed to delete filter: %s"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:365
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:367
 #, php-format
 msgid "Failed to delete filters: %s"
 msgstr ""
 
 #. translators: %1$s Filter code, %2$s Filter types, %3$s Loop type.
-#: src/api/services/loop/filter/services/class-filter-crud-service.php:503
+#: src/api/services/loop/filter/services/class-filter-crud-service.php:505
 #, php-format
 msgid "Filter \"%1$s\" supports iteration types [%2$s] but the loop is type \"%3$s\"."
 msgstr ""
@@ -4165,71 +4116,71 @@ msgid "Trigger code does not exist: %s"
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:239
+#: src/api/services/trigger/services/class-trigger-crud-service.php:236
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Add trigger failed: Recipe not found with ID: %d"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:314
+#: src/api/services/trigger/services/class-trigger-crud-service.php:311
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Failed to create trigger: %s"
 msgstr ""
 
 #. translators: 1: trigger type, 2: recipe type.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:334
+#: src/api/services/trigger/services/class-trigger-crud-service.php:331
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Trigger type '%1$s' does not match recipe type '%2$s'"
 msgstr ""
 
-#: src/api/services/trigger/services/class-trigger-crud-service.php:354
+#: src/api/services/trigger/services/class-trigger-crud-service.php:351
 msgctxt "Trigger CRUD error"
 msgid "Anonymous recipes can only have 1 trigger"
 msgstr ""
 
-#: src/api/services/trigger/services/class-trigger-crud-service.php:373
+#: src/api/services/trigger/services/class-trigger-crud-service.php:370
 msgctxt "Trigger CRUD success message"
 msgid "Trigger successfully added to recipe"
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:404
+#: src/api/services/trigger/services/class-trigger-crud-service.php:401
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Add trigger entity failed: Recipe not found with ID: %d"
 msgstr ""
 
-#: src/api/services/trigger/services/class-trigger-crud-service.php:435
+#: src/api/services/trigger/services/class-trigger-crud-service.php:432
 msgctxt "Trigger CRUD error"
 msgid "Trigger was saved but no ID was returned"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:453
+#: src/api/services/trigger/services/class-trigger-crud-service.php:450
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Failed to save trigger: %s"
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:475
+#: src/api/services/trigger/services/class-trigger-crud-service.php:472
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Get recipe triggers failed: Recipe not found with ID: %d"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:507
+#: src/api/services/trigger/services/class-trigger-crud-service.php:504
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Failed to get recipe triggers: %s"
 msgstr ""
 
 #. translators: %d Trigger ID.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:528
+#: src/api/services/trigger/services/class-trigger-crud-service.php:525
 #: src/api/services/trigger/services/class-trigger-crud-service.php:607
 #, php-format
 msgctxt "Trigger CRUD error"
@@ -4326,21 +4277,21 @@ msgid "Failed to delete recipe triggers: %s"
 msgstr ""
 
 #. translators: %1$d Trigger ID, %2$d Recipe ID.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:1138
+#: src/api/services/trigger/services/class-trigger-crud-service.php:1146
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Trigger %1$d does not belong to recipe %2$d."
 msgstr ""
 
 #. translators: %1$s Current code, %2$s Requested code.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:1169
+#: src/api/services/trigger/services/class-trigger-crud-service.php:1177
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Cannot change trigger_code from \"%1$s\" to \"%2$s\" on an existing trigger. Delete and recreate instead."
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/api/services/trigger/services/class-trigger-crud-service.php:1190
+#: src/api/services/trigger/services/class-trigger-crud-service.php:1198
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Recipe %d is trashed. Restore it to draft status before making changes."
@@ -4484,6 +4435,25 @@ msgstr ""
 
 #: src/core/admin/admin-logs/tabs/api.php:27
 msgid "API"
+msgstr ""
+
+#. translators: Log column.
+#: src/core/admin/admin-logs/tabs/recipe.php:49
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:164
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:86
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:122
+#: src/core/includes/recipe-logs-view.php:41
+#: src/core/includes/recipe-logs-view.php:86
+#: src/core/includes/recipe-logs-view.php:139
+#: src/core/includes/recipe-logs-view.php:184
+#: src/core/views/admin-dashboard/usage-panel.php:277
+#: src/core/views/admin-logs/component/logs.php:31
+#: src/core/views/admin-logs/component/logs.php:77
+#: src/core/views/admin-logs/component/logs.php:132
+#: src/core/views/admin-logs/component/logs.php:179
+#: src/integrations/popup-maker/add-popup-maker-integration.php:54
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:58
+msgid "Recipe"
 msgstr ""
 
 #. translators: Log column.
@@ -4710,6 +4680,7 @@ msgid "App integrations"
 msgstr ""
 
 #: src/core/admin/admin-settings/tabs/uncanny-agent.php:60
+#: src/core/views/admin-dashboard/usage-panel.php:161
 msgid "Uncanny Agent"
 msgstr ""
 
@@ -4750,7 +4721,7 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: src/core/admin/admin-tools/tabs/tools/tools.php:142
+#: src/core/admin/admin-tools/tabs/tools/tools.php:143
 #: src/core/views/html-admin-status.php:1016
 msgid "Database"
 msgstr ""
@@ -4825,9 +4796,6 @@ msgid "App credits charged"
 msgstr ""
 
 #: src/core/admin/api-log/class-api-log.php:79
-#: src/core/views/admin-dashboard.php:380
-#: src/core/views/admin-dashboard.php:405
-#: src/core/views/admin-dashboard.php:503
 #: src/core/views/html-admin-status.php:607
 msgid "App credits left"
 msgstr ""
@@ -4860,7 +4828,7 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:292
 #: src/core/admin/class-admin-menu.php:293
-#: src/core/admin/class-admin-menu.php:1780
+#: src/core/admin/class-admin-menu.php:1830
 #: src/core/views/admin-integrations/archive/search.php:20
 msgid "All integrations"
 msgstr ""
@@ -4879,494 +4847,530 @@ msgstr ""
 msgid "Guest"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:431
+#: src/core/admin/class-admin-menu.php:462
 msgid "Getting started"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:434
+#: src/core/admin/class-admin-menu.php:465
 msgid "What is Uncanny Automator?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:438
+#: src/core/admin/class-admin-menu.php:469
 msgid "Installing Uncanny Automator"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:442
+#: src/core/admin/class-admin-menu.php:473
 msgid "Creating a Recipe"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:446
+#: src/core/admin/class-admin-menu.php:477
 msgid "Recipes for Everyone"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:450
+#: src/core/admin/class-admin-menu.php:481
 msgid "Managing Triggers"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:454
+#: src/core/admin/class-admin-menu.php:485
 msgid "Managing Actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:458
+#: src/core/admin/class-admin-menu.php:489
 msgid "Managing Tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:462
+#: src/core/admin/class-admin-menu.php:493
 msgid "Scheduled Actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:466
+#: src/core/admin/class-admin-menu.php:497
 msgid "Action filters / conditions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:470
+#: src/core/admin/class-admin-menu.php:501
 msgid "What are App Credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:474
+#: src/core/admin/class-admin-menu.php:505
 msgid "License Keys"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:478
+#: src/core/admin/class-admin-menu.php:509
 msgid "Working with Redirects"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:484
+#: src/core/admin/class-admin-menu.php:515
 msgid "Key resources"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:487
+#: src/core/admin/class-admin-menu.php:518
 msgid "Uncanny Automator Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:491
+#: src/core/admin/class-admin-menu.php:522
 msgid "Uncanny Automator Pro Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:495
+#: src/core/admin/class-admin-menu.php:526
 msgid "Having trouble? Read this"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:499
+#: src/core/admin/class-admin-menu.php:530
 msgid "Using Automator Logs"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:503
+#: src/core/admin/class-admin-menu.php:534
 msgid "Developer Resources"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:507
+#: src/core/admin/class-admin-menu.php:538
 msgid "Data Privacy and GDPR"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:511
+#: src/core/admin/class-admin-menu.php:542
 msgid "Usage Tracking"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:515
+#: src/core/admin/class-admin-menu.php:546
 msgid "Connecting your site"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:519
+#: src/core/admin/class-admin-menu.php:550
 #: src/core/views/html-admin-status.php:454
 msgid "PHP version"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:525
+#: src/core/admin/class-admin-menu.php:556
 msgid "Webhooks"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:528
+#: src/core/admin/class-admin-menu.php:559
 msgid "Incoming Webhook Triggers"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:532
+#: src/core/admin/class-admin-menu.php:563
 msgid "Webhook Actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:536
+#: src/core/admin/class-admin-menu.php:567
 msgid "Sending a JSON Array"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:540
+#: src/core/admin/class-admin-menu.php:571
 msgid "Sending a JSON Object"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:546
+#: src/core/admin/class-admin-menu.php:577
 msgid "Special triggers"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:549
+#: src/core/admin/class-admin-menu.php:580
 msgid "Magic Buttons & Magic Links"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:557
+#: src/core/admin/class-admin-menu.php:588
 msgid "Google Sheets™ Webhook Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:561
+#: src/core/admin/class-admin-menu.php:592
 msgid "Run Now"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:565
+#: src/core/admin/class-admin-menu.php:596
 msgid "Advanced Custom Fields"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:569
-#: src/core/admin/class-admin-menu.php:638
+#: src/core/admin/class-admin-menu.php:600
+#: src/core/admin/class-admin-menu.php:669
 msgid "ActiveCampaign"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:573
-#: src/core/admin/class-admin-menu.php:706
+#: src/core/admin/class-admin-menu.php:604
+#: src/core/admin/class-admin-menu.php:737
 msgid "IFTTT"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:577
+#: src/core/admin/class-admin-menu.php:608
 msgid "OptinMonster Triggers"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:581
-#: src/core/admin/class-admin-menu.php:634
+#: src/core/admin/class-admin-menu.php:612
+#: src/core/admin/class-admin-menu.php:665
 msgid "Mailchimp"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:585
-#: src/core/admin/class-admin-menu.php:654
+#: src/core/admin/class-admin-menu.php:616
+#: src/core/admin/class-admin-menu.php:685
 #: src/integrations/whatsapp/settings/view-whatsapp.php:28
 msgid "WhatsApp"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:589
+#: src/core/admin/class-admin-menu.php:620
 msgid "Help Scout"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:593
-#: src/core/admin/class-admin-menu.php:738
+#: src/core/admin/class-admin-menu.php:624
+#: src/core/admin/class-admin-menu.php:769
 msgid "Telegram"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:597
-#: src/core/admin/class-admin-menu.php:917
+#: src/core/admin/class-admin-menu.php:628
+#: src/core/admin/class-admin-menu.php:948
 msgid "WooCommerce"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:603
+#: src/core/admin/class-admin-menu.php:634
 msgid "Special actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:606
+#: src/core/admin/class-admin-menu.php:637
 msgid "Run a WordPress hook"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:610
+#: src/core/admin/class-admin-menu.php:641
 msgid "Call a custom function/method"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:614
+#: src/core/admin/class-admin-menu.php:645
 msgid "The Formatter Action"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:626
+#: src/core/admin/class-admin-menu.php:657
 msgid "OpenAI"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:630
+#: src/core/admin/class-admin-menu.php:661
 msgid "X / Twitter"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:646
+#: src/core/admin/class-admin-menu.php:677
 msgid "OptinMonster"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:650
+#: src/core/admin/class-admin-menu.php:681
 msgid "Zapier Actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:658
+#: src/core/admin/class-admin-menu.php:689
 msgid "Integrately"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:662
+#: src/core/admin/class-admin-menu.php:693
 msgid "Popup Maker"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:674
+#: src/core/admin/class-admin-menu.php:705
 msgid "Integromat"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:678
+#: src/core/admin/class-admin-menu.php:709
 msgid "HubSpot"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:682
+#: src/core/admin/class-admin-menu.php:713
 msgid "GoToTraining"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:686
+#: src/core/admin/class-admin-menu.php:717
 msgid "GoToWebinar"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:690
+#: src/core/admin/class-admin-menu.php:721
 msgid "Twilio"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:694
+#: src/core/admin/class-admin-menu.php:725
 msgid "Instagram Business"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:698
+#: src/core/admin/class-admin-menu.php:729
 msgid "Send a certificate"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:702
+#: src/core/admin/class-admin-menu.php:733
 msgid "Uncanny Continuing Education Credits"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:710
+#: src/core/admin/class-admin-menu.php:741
 msgid "Create WooCommerce orders"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:714
+#: src/core/admin/class-admin-menu.php:745
 msgid "LinkedIn Pages"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:718
+#: src/core/admin/class-admin-menu.php:749
 msgid "Airtable"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:722
+#: src/core/admin/class-admin-menu.php:753
 msgid "Make"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:726
+#: src/core/admin/class-admin-menu.php:757
 msgid "MailerLite"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:730
+#: src/core/admin/class-admin-menu.php:761
 msgid "Drip"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:734
+#: src/core/admin/class-admin-menu.php:765
 msgid "Microsoft Teams (Beta)"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:742
+#: src/core/admin/class-admin-menu.php:773
 msgid "Zoho Campaigns"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:746
+#: src/core/admin/class-admin-menu.php:777
 msgid "Facebook Groups (Deprecated)"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:752
+#: src/core/admin/class-admin-menu.php:783
 msgid "Special tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:755
+#: src/core/admin/class-admin-menu.php:786
 msgid "User meta tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:759
+#: src/core/admin/class-admin-menu.php:790
 msgid "Post meta tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:763
+#: src/core/admin/class-admin-menu.php:794
 msgid "Calculations (math equations)"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:769
+#: src/core/admin/class-admin-menu.php:800
 msgid "Custom User Fields Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:772
+#: src/core/admin/class-admin-menu.php:803
 msgid "Installing the Custom User Fields Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:776
+#: src/core/admin/class-admin-menu.php:807
 msgid "Managing Custom User Fields"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:780
+#: src/core/admin/class-admin-menu.php:811
 msgid "Updating Custom User Field Data"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:784
+#: src/core/admin/class-admin-menu.php:815
 msgid "Displaying Custom User Fields"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:788
+#: src/core/admin/class-admin-menu.php:819
 msgid "Uncanny Automator Custom User Fields Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:794
+#: src/core/admin/class-admin-menu.php:825
 msgid "Restrict Content Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:797
+#: src/core/admin/class-admin-menu.php:828
 msgid "Installing the Restrict Content Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:801
+#: src/core/admin/class-admin-menu.php:832
 msgid "Managing Access Levels"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:805
+#: src/core/admin/class-admin-menu.php:836
 msgid "Restrict Content Shortcodes"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:809
+#: src/core/admin/class-admin-menu.php:840
 msgid "Restrict Content for Blocks"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:813
+#: src/core/admin/class-admin-menu.php:844
 msgid "Restrict WordPress Pages & Posts"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:817
+#: src/core/admin/class-admin-menu.php:848
 msgid "Restrict Content Integration with Automator"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:821
+#: src/core/admin/class-admin-menu.php:852
 msgid "Uncanny Automator Restrict Content Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:827
+#: src/core/admin/class-admin-menu.php:858
 msgid "User Lists Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:830
+#: src/core/admin/class-admin-menu.php:861
 msgid "Installing the User Lists Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:834
+#: src/core/admin/class-admin-menu.php:865
 msgid "Managing user lists"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:838
+#: src/core/admin/class-admin-menu.php:869
 msgid "Managing user list subscriptions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:842
+#: src/core/admin/class-admin-menu.php:873
 msgid "User Lists Integration with Automator"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:846
+#: src/core/admin/class-admin-menu.php:877
 msgid "Sending bulk emails with user lists"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:850
+#: src/core/admin/class-admin-menu.php:881
 msgid "The Unsubscribed list and managing subscriptions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:854
+#: src/core/admin/class-admin-menu.php:885
 msgid "Uncanny Automator User Lists Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:860
+#: src/core/admin/class-admin-menu.php:891
 msgid "Advanced Topics"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:863
+#: src/core/admin/class-admin-menu.php:894
 msgid "User Loops"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:867
+#: src/core/admin/class-admin-menu.php:898
 msgid "Post Loops"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:871
+#: src/core/admin/class-admin-menu.php:902
 msgid "Custom Scheduling"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:877
+#: src/core/admin/class-admin-menu.php:908
 msgid "Registering users"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:880
+#: src/core/admin/class-admin-menu.php:911
 msgid "Registration form with Contact Form 7"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:884
+#: src/core/admin/class-admin-menu.php:915
 msgid "Registration form with Caldera Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:888
+#: src/core/admin/class-admin-menu.php:919
 msgid "Registration form with Ninja Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:892
+#: src/core/admin/class-admin-menu.php:923
 msgid "Registration form with Gravity Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:896
+#: src/core/admin/class-admin-menu.php:927
 msgid "Registration form with Formidable Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:900
+#: src/core/admin/class-admin-menu.php:931
 msgid "Registration form with WPForms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:906
+#: src/core/admin/class-admin-menu.php:937
 msgid "Integrations FAQ"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:909
+#: src/core/admin/class-admin-menu.php:940
 msgid "Contact Form 7"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:913
+#: src/core/admin/class-admin-menu.php:944
 msgid "Gravity Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:926
+#: src/core/admin/class-admin-menu.php:957
+msgctxt "Dashboard FAQ"
 msgid "What are app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:927
+#: src/core/admin/class-admin-menu.php:958
+msgctxt "Dashboard FAQ"
 msgid "Some app integrations connect to other services using an API. Automator's app credit system allows free plugin users to try this out. Passing a record to one of these integrations uses one app credit."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:930
+#: src/core/admin/class-admin-menu.php:961
+msgctxt "Dashboard FAQ"
 msgid "Do I need app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:931
+#: src/core/admin/class-admin-menu.php:962
+msgctxt "Dashboard FAQ"
 msgid "App credits are only needed for app integrations that pass through an API. Everything else is unrestricted (and Pro users get unlimited app credits)."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:934
+#: src/core/admin/class-admin-menu.php:965
+msgctxt "Dashboard FAQ"
 msgid "Can I get more app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:935
+#: src/core/admin/class-admin-menu.php:966
+msgctxt "Dashboard FAQ"
 msgid "If you use more than 250 app credits, you must either purchase the Pro version or disable your actions that use credits."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1012
+#: src/core/admin/class-admin-menu.php:969
+msgctxt "Dashboard FAQ"
+msgid "What is Uncanny Agent?"
+msgstr ""
+
+#: src/core/admin/class-admin-menu.php:970
+msgctxt "Dashboard FAQ"
+msgid "Uncanny Agent is a highly capable AI agent for your WordPress site. It can build, update and troubleshoot recipes, provide business insights, and complete tasks for you."
+msgstr ""
+
+#: src/core/admin/class-admin-menu.php:973
+msgctxt "Dashboard FAQ"
+msgid "What is Uncanny Agent usage?"
+msgstr ""
+
+#: src/core/admin/class-admin-menu.php:974
+msgctxt "Dashboard FAQ"
+msgid "Capable AI tools like Uncanny Agent require significant resources to operate. (Resources are consumed in a datacenter; Uncanny Agent does not use your server resources.) Uncanny Agent usage is a measurement of how much you can use Uncanny Agent on your AI + Automation plan and via other purchases or allocations of Uncanny Agent usage."
+msgstr ""
+
+#: src/core/admin/class-admin-menu.php:977
+msgctxt "Dashboard FAQ"
+msgid "How can I get more Uncanny Agent usage?"
+msgstr ""
+
+#: src/core/admin/class-admin-menu.php:978
+msgctxt "Dashboard FAQ"
+msgid "The most cost-effective method of getting additional usage of Uncanny Agent is by upgrading your plan. Higher plan tiers offer discounts on Uncanny Agent additional usage packs. Visit the usage page in your dashboard for details."
+msgstr ""
+
+#: src/core/admin/class-admin-menu.php:1062
 #: src/core/includes/recipe-logs-view.php:13
 msgid "Recipe log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1015
+#: src/core/admin/class-admin-menu.php:1065
 #: src/core/includes/recipe-logs-view.php:14
 msgid "Trigger log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1018
+#: src/core/admin/class-admin-menu.php:1068
 #: src/core/includes/recipe-logs-view.php:15
 msgid "Action log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1662
+#: src/core/admin/class-admin-menu.php:1712
 msgid "Installed integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1663
+#: src/core/admin/class-admin-menu.php:1713
 msgid "Ready-to-use integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1781
+#: src/core/admin/class-admin-menu.php:1831
 msgid "Put your WordPress site on autopilot"
 msgstr ""
 
@@ -5526,18 +5530,18 @@ msgstr ""
 msgid "%d GB"
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:384
+#: src/core/admin/class-prune-logs.php:379
 msgctxt "Prune logs"
 msgid "Invalid nonce."
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:553
+#: src/core/admin/class-prune-logs.php:548
 msgctxt "Prune logs"
 msgid "Invalid input. Please ensure that the \"Days\" field contains a valid numeric value, is not empty, and is not equal to zero."
 msgstr ""
 
 #. translators: %d: Minimum number of days
-#: src/core/admin/class-prune-logs.php:564
+#: src/core/admin/class-prune-logs.php:559
 #, php-format
 msgctxt "Prune logs"
 msgid "The field \"Days\" must be greater than or equals to %d"
@@ -5782,7 +5786,6 @@ msgid "for app integrations, but a Pro account gets you"
 msgstr ""
 
 #: src/core/admin/setup-wizard/src/views/step-1.php:77
-#: src/core/views/admin-dashboard.php:462
 msgid "unlimited"
 msgstr ""
 
@@ -6029,6 +6032,12 @@ msgstr ""
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1021
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:77
 msgid "Draft"
+msgstr ""
+
+#. translators: The number of times a recipe was completed
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1089
+#: src/core/views/admin-dashboard/usage-panel.php:279
+msgid "Completed runs"
 msgstr ""
 
 #: src/core/automator-post-types/uo-taxonomies/class-automator-taxonomies.php:44
@@ -7082,19 +7091,20 @@ msgstr ""
 msgid "Missing base tables: %s. Some Automator functionality may not work as expected."
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-system-report.php:636
+#: src/core/lib/utilities/class-automator-system-report.php:651
 #: src/core/views/html-admin-status.php:1195
 msgid "Visit plugin homepage"
 msgstr ""
 
 #. translators: %s: plugin author
-#: src/core/lib/utilities/class-automator-system-report.php:648
+#: src/core/lib/utilities/class-automator-system-report.php:663
 #: src/core/views/html-admin-status.php:1209
 #, php-format
 msgid "by %s"
 msgstr ""
 
-#: src/core/lib/utilities/class-automator-system-report.php:681
+#: src/core/lib/utilities/class-automator-system-report.php:696
+#: src/core/views/admin-dashboard/usage-panel.php:125
 msgid "Unlimited"
 msgstr ""
 
@@ -7918,7 +7928,8 @@ msgstr ""
 
 #: src/core/views/admin-dashboard.php:111
 #: src/core/views/admin-dashboard.php:195
-#: src/core/views/admin-dashboard.php:419
+#: src/core/views/admin-dashboard/usage-panel.php:146
+#: src/core/views/admin-dashboard/usage-panel.php:218
 #: src/core/views/admin-settings/tab/general/license/connect-site.php:60
 #: src/core/views/admin-settings/tab/premium-integrations/not-connected.php:72
 msgid "Connect your site"
@@ -7967,7 +7978,6 @@ msgid "%1$s free credits"
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:204
-#: src/core/views/admin-dashboard.php:428
 msgid "Activate your license"
 msgstr ""
 
@@ -8024,61 +8034,114 @@ msgstr ""
 msgid "View all blog posts"
 msgstr ""
 
-#. translators: Credits used
-#: src/core/views/admin-dashboard.php:382
-#: src/core/views/admin-dashboard.php:455
-msgid "App credits"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:410
-msgid "Site not connected"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:460
-msgid "You have"
-msgstr ""
-
-#. translators: 1. Pro label
-#: src/core/views/admin-dashboard.php:471
-#, php-format
-msgid "App credits with %1$s"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:481
-msgid "Connect app integrations"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:511
-msgid "Get"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:522
-msgid "Activate Pro license"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:530
-msgid "How do I get more credits?"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:546
-msgid "FAQ"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:574
-msgid "Learn more about app credits"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:582
-#: src/core/views/html-admin-status.php:612
-msgid "Recipes using app credits"
-msgstr ""
-
-#: src/core/views/admin-dashboard.php:662
+#: src/core/views/admin-dashboard.php:381
 msgid "Connect with us:"
 msgstr ""
 
 #: src/core/views/admin-dashboard/blog-posts.php:12
 msgid "Fetching blog posts..."
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:16
+msgctxt "Dashboard usage panel"
+msgid "Pro"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:32
+msgid "100% used"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:36
+#: src/core/views/admin-dashboard/usage-panel.php:58
+msgid "Near limit"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:54
+msgid "Over"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:79
+msgid "Usage"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:90
+msgid "App credits"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:105
+msgid "used · no limit"
+msgstr ""
+
+#. translators: %s — formatted limit.
+#. translators: %s — allocation name.
+#: src/core/views/admin-dashboard/usage-panel.php:109
+#: src/core/views/admin-dashboard/usage-panel.php:178
+#, php-format
+msgid "of %s used"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:136
+#: src/core/views/admin-dashboard/usage-panel.php:201
+msgid "Site not connected"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:138
+msgid "Unlimited app credits with"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:150
+msgid "Learn more about App Credits"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:152
+#: src/core/views/admin-dashboard/usage-panel.php:224
+#: src/core/views/admin-dashboard/usage-panel.php:229
+msgid "(opens in new tab)"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:182
+msgid "used"
+msgstr ""
+
+#. translators: %s — formatted expiry date.
+#: src/core/views/admin-dashboard/usage-panel.php:207
+#, php-format
+msgid "Expires %s"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:222
+msgid "View usage details"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:227
+msgid "Get more Uncanny Agent usage"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:243
+msgid "FAQ"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:261
+#: src/core/views/html-admin-status.php:612
+msgid "Recipes using app credits"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:269
+msgid "No recipes using app credits on this site"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:278
+msgid "Completions allowed"
+msgstr ""
+
+#: src/core/views/admin-dashboard/usage-panel.php:291
+msgid "Total: Unlimited"
+msgstr ""
+
+#. translators: %s — formatted total.
+#: src/core/views/admin-dashboard/usage-panel.php:293
+#, php-format
+msgid "Total: %s"
 msgstr ""
 
 #: src/core/views/admin-integrations/archive/banner.php:11

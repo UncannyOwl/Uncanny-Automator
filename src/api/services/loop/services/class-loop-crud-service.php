@@ -604,8 +604,8 @@ class Loop_CRUD_Service {
 									'value'    => 'does-not-have',
 									'readable' => 'does not have',
 									'backup'   => array(
-										'label'                    => 'Criteria',
-										'supports_custom_value'    => false,
+										'label' => 'Criteria',
+										'supports_custom_value' => false,
 										'supports_multiple_values' => false,
 									),
 								),
@@ -614,8 +614,8 @@ class Loop_CRUD_Service {
 									'value'    => 'administrator',
 									'readable' => 'Administrator',
 									'backup'   => array(
-										'label'                    => 'Role',
-										'supports_custom_value'    => false,
+										'label' => 'Role',
+										'supports_custom_value' => false,
 										'supports_multiple_values' => false,
 									),
 								),
@@ -651,8 +651,8 @@ class Loop_CRUD_Service {
 									'value'    => 'post',
 									'readable' => 'Posts',
 									'backup'   => array(
-										'label'                    => 'Post type',
-										'supports_custom_value'    => true,
+										'label' => 'Post type',
+										'supports_custom_value' => true,
 										'supports_multiple_values' => false,
 									),
 								),
@@ -689,9 +689,9 @@ class Loop_CRUD_Service {
 									'value'    => 'is_not_empty',
 									'readable' => 'The item is not empty',
 									'backup'   => array(
-										'label'                    => 'Condition',
-										'show_label_in_sentence'   => true,
-										'supports_custom_value'    => false,
+										'label' => 'Condition',
+										'show_label_in_sentence' => true,
+										'supports_custom_value' => false,
 										'supports_multiple_values' => false,
 									),
 								),
@@ -716,6 +716,6 @@ class Loop_CRUD_Service {
 	private function compose_filter_sentence_html( string $sentence, array $fields ): string {
 		$html = $this->filter_sentence_composer->compose( $sentence, $fields );
 
-		return htmlspecialchars( $html, ENT_QUOTES, 'UTF-8' );
+		return htmlspecialchars( html_entity_decode( $html, ENT_QUOTES, 'UTF-8' ), ENT_QUOTES, 'UTF-8' );
 	}
 }

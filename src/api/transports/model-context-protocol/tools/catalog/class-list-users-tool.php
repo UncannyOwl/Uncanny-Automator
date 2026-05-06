@@ -22,6 +22,8 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  */
 class List_Users_Tool extends Abstract_MCP_Tool {
 
+	private const SEARCH_FILTER_PRIORITY = 999;
+
 	/**
 	 * Get tool name.
 	 *
@@ -52,32 +54,32 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				'search'      => array(
+				'search'       => array(
 					'type'        => 'string',
 					'description' => 'Search term. Searches user_login, user_email, user_nicename, display_name, first_name, last_name, and nickname. Example: "Joseph" finds users with Joseph in any name field.',
 				),
-				'role'        => array(
+				'role'         => array(
 					'type'        => 'string',
 					'enum'        => $roles,
 					'description' => 'Filter by user role.',
 				),
-				'email'       => array(
+				'email'        => array(
 					'type'        => 'string',
 					'description' => 'Exact email address lookup. Returns single user if found.',
 				),
-				'include'     => array(
+				'include'      => array(
 					'type'        => 'string',
 					'description' => 'Comma-separated user IDs to include.',
 				),
-				'exclude'     => array(
+				'exclude'      => array(
 					'type'        => 'string',
 					'description' => 'Comma-separated user IDs to exclude.',
 				),
-				'meta_key'    => array(
+				'meta_key'     => array(
 					'type'        => 'string',
 					'description' => 'Filter by user meta key (e.g., billing_country, first_name).',
 				),
-				'meta_value'  => array(
+				'meta_value'   => array(
 					'type'        => 'string',
 					'description' => 'Filter by user meta value (requires meta_key). For IN/NOT IN, pass comma-separated values. For BETWEEN/NOT BETWEEN, pass two comma-separated values.',
 				),
@@ -87,27 +89,28 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 					'default'     => '=',
 					'description' => 'Comparison operator for meta_value. Use EXISTS/NOT EXISTS to check if a meta key is set (no meta_value needed).',
 				),
-				'orderby'     => array(
+				'orderby'      => array(
 					'type'        => 'string',
 					'enum'        => array( 'ID', 'display_name', 'user_login', 'user_email', 'user_registered', 'meta_value' ),
 					'default'     => 'display_name',
 					'description' => 'Order results by field.',
 				),
-				'order'       => array(
+				'order'        => array(
 					'type'        => 'string',
 					'enum'        => array( 'ASC', 'DESC' ),
 					'default'     => 'ASC',
 					'description' => 'Sort direction.',
 				),
-				'offset'      => array(
+				'offset'       => array(
 					'type'        => 'integer',
 					'default'     => 0,
 					'minimum'     => 0,
 					'description' => 'Number of users to skip (for pagination). Use with limit to page through results.',
 				),
-				'limit'       => array(
+				'limit'        => array(
 					'type'        => 'integer',
 					'default'     => 20,
+					'minimum'     => 1,
 					'maximum'     => 100,
 					'description' => 'Maximum results to return.',
 				),
@@ -137,7 +140,7 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 							'last_name'    => array( 'type' => 'string' ),
 							'email'        => array( 'type' => 'string' ),
 							'roles'        => array(
-								'type' => 'array',
+								'type'  => 'array',
 								'items' => array( 'type' => 'string' ),
 							),
 							'registered'   => array( 'type' => 'string' ),
@@ -161,7 +164,7 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 	 * @return array
 	 */
 	protected function execute_tool( User_Context $user_context, array $params ) {
-		$limit   = min( (int) ( $params['limit'] ?? 20 ), 100 );
+		$limit   = max( 1, min( (int) ( $params['limit'] ?? 20 ), 100 ) );
 		$offset  = max( (int) ( $params['offset'] ?? 0 ), 0 );
 		$orderby = sanitize_key( $params['orderby'] ?? 'display_name' );
 		$order   = strtoupper( $params['order'] ?? 'ASC' ) === 'DESC' ? 'DESC' : 'ASC';
@@ -213,28 +216,14 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 			$args['exclude'] = array_map( 'intval', explode( ',', $params['exclude'] ) );
 		}
 
-		// Search - searches across multiple fields using OR logic.
-		// Runs two ID-only queries (user table columns + usermeta) and merges results.
+		$search_filter = null;
 		if ( ! empty( $params['search'] ) ) {
-			$search   = sanitize_text_field( $params['search'] );
-			$user_ids = $this->search_users_by_name( $search, $limit + $offset );
-
-			if ( empty( $user_ids ) ) {
-				return Json_Rpc_Response::create_success_response(
-					'No users found matching that search',
-					array(
-						'items' => array(),
-						'total' => 0,
-					)
-				);
+			$search = trim( sanitize_text_field( $params['search'] ) );
+			if ( '' !== $search ) {
+				$search_scope                            = wp_generate_uuid4();
+				$args['automator_mcp_user_search_scope'] = $search_scope;
+				$search_filter                           = $this->build_search_query_filter( $search, $search_scope );
 			}
-
-			// If caller also passed 'include', intersect with search results.
-			if ( ! empty( $args['include'] ) ) {
-				$user_ids = array_values( array_intersect( $user_ids, $args['include'] ) );
-			}
-
-			$args['include'] = $user_ids;
 		}
 
 		// Meta query - works standalone or combined with search.
@@ -266,9 +255,20 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 			$args['meta_query'] = array( $meta_query ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		}
 
-		$user_query = new \WP_User_Query( $args );
-		$users      = $user_query->get_results();
-		$total      = (int) $user_query->get_total();
+		if ( null !== $search_filter ) {
+			add_action( 'pre_user_query', $search_filter, self::SEARCH_FILTER_PRIORITY );
+		}
+
+		try {
+			$user_query = new \WP_User_Query( $args );
+		} finally {
+			if ( null !== $search_filter ) {
+				remove_action( 'pre_user_query', $search_filter, self::SEARCH_FILTER_PRIORITY );
+			}
+		}
+
+		$users = $user_query->get_results();
+		$total = (int) $user_query->get_total();
 
 		$items = array_map( array( $this, 'format_user' ), $users );
 
@@ -285,57 +285,41 @@ class List_Users_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
-	 * Search users across user table columns and usermeta fields.
+	 * Build a scoped search filter for WP_User_Query.
 	 *
-	 * Runs two lightweight ID-only queries and merges with OR logic so that
-	 * a partial match on first_name, last_name, nickname, display_name,
-	 * user_login, user_email, or user_nicename will return the user.
-	 *
-	 * @param string $search Sanitized search term.
-	 * @param int    $limit  Max results per sub-query.
-	 * @return int[] Unique user IDs matching the search.
+	 * @param string $search       Sanitized search term.
+	 * @param string $search_scope Unique marker for the WP_User_Query instance this filter may mutate.
+	 * @return callable
 	 */
-	private function search_users_by_name( string $search, int $limit ): array {
-		// Query 1: user table columns (user_login, user_email, user_nicename, display_name).
-		$table_query = new \WP_User_Query(
-			array(
-				'search'         => '*' . $search . '*',
-				'search_columns' => array( 'user_login', 'user_email', 'user_nicename', 'display_name' ),
-				'fields'         => 'ID',
-				'number'         => $limit,
-			)
-		);
+	private function build_search_query_filter( string $search, string $search_scope ): callable {
+		return static function ( \WP_User_Query $query ) use ( $search, $search_scope ): void {
+			global $wpdb;
 
-		// Query 2: usermeta fields (first_name, last_name, nickname).
-		$meta_query = new \WP_User_Query(
-			array(
-				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-					'relation' => 'OR',
-					array(
-						'key'     => 'first_name',
-						'value'   => $search,
-						'compare' => 'LIKE',
-					),
-					array(
-						'key'     => 'last_name',
-						'value'   => $search,
-						'compare' => 'LIKE',
-					),
-					array(
-						'key'     => 'nickname',
-						'value'   => $search,
-						'compare' => 'LIKE',
-					),
-				),
-				'fields'     => 'ID',
-				'number'     => $limit,
-			)
-		);
+			if ( ( $query->query_vars['automator_mcp_user_search_scope'] ?? null ) !== $search_scope ) {
+				return;
+			}
 
-		$table_ids = array_map( 'intval', $table_query->get_results() );
-		$meta_ids  = array_map( 'intval', $meta_query->get_results() );
+			// WordPress LIKE searches must escape the raw term, then pass the wildcarded value into prepare().
+			$like       = '%' . $wpdb->esc_like( $search ) . '%';
+			$conditions = array(
+				$wpdb->prepare( "{$wpdb->users}.user_login LIKE %s", $like ), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$wpdb->prepare( "{$wpdb->users}.user_email LIKE %s", $like ), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$wpdb->prepare( "{$wpdb->users}.user_nicename LIKE %s", $like ), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$wpdb->prepare( "{$wpdb->users}.display_name LIKE %s", $like ), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$wpdb->prepare(
+					"EXISTS (
+							SELECT 1
+							FROM {$wpdb->usermeta} automator_mcp_user_search_meta
+							WHERE automator_mcp_user_search_meta.user_id = {$wpdb->users}.ID
+							AND automator_mcp_user_search_meta.meta_key IN ( 'first_name', 'last_name', 'nickname' )
+							AND automator_mcp_user_search_meta.meta_value LIKE %s
+						)",
+					$like
+				), // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			);
 
-		return array_values( array_unique( array_merge( $table_ids, $meta_ids ) ) );
+			$query->query_where .= ' AND ( ' . implode( ' OR ', $conditions ) . ' )';
+		};
 	}
 
 	/**

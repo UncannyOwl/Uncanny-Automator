@@ -50,10 +50,10 @@ class Filter_CRUD_Service {
 	) {
 		global $wpdb;
 
-		$this->filter_store     = $filter_store ?? new WP_Filter_Store( $wpdb );
-		$this->loop_store       = $loop_store ?? new WP_Loop_Store( $wpdb, $this->filter_store );
-		$this->registry_service = $registry_service ?? Filter_Registry_Service::instance();
-		$this->field_normalizer = $field_normalizer ?? new Field_Normalizer();
+		$this->filter_store      = $filter_store ?? new WP_Filter_Store( $wpdb );
+		$this->loop_store        = $loop_store ?? new WP_Loop_Store( $wpdb, $this->filter_store );
+		$this->registry_service  = $registry_service ?? Filter_Registry_Service::instance();
+		$this->field_normalizer  = $field_normalizer ?? new Field_Normalizer();
 		$this->sentence_composer = $sentence_composer ?? new Loop_Filter_Sentence_Composer();
 	}
 	/**
@@ -182,8 +182,8 @@ class Filter_CRUD_Service {
 		}
 
 		return array(
-			'success'  => true,
-			'filter'   => $filter->to_array(),
+			'success' => true,
+			'filter'  => $filter->to_array(),
 		);
 	}
 	/**
@@ -249,12 +249,14 @@ class Filter_CRUD_Service {
 		try {
 			$existing_data = $existing->to_array();
 			$definition    = $this->registry_service->validate_filter_code_and_get_definition( $existing_data['code'] );
+			$fields        = ! empty( $fields ) ? array_replace( $existing_data['fields'], $fields ) : $existing_data['fields'];
+			$backup        = ! empty( $backup ) ? array_replace( $existing_data['backup'], $backup ) : $existing_data['backup'];
 
 			$config = $this->build_hydrated_config(
 				$existing_data['code'],
 				$existing_data['integration_code'],
-				! empty( $fields ) ? $fields : $existing_data['fields'],
-				! empty( $backup ) ? $backup : $existing_data['backup'],
+				$fields,
+				$backup,
 				is_wp_error( $definition ) ? array() : $definition
 			);
 			$config->id( $existing_data['id'] );
@@ -267,8 +269,8 @@ class Filter_CRUD_Service {
 			$saved = $this->filter_store->save( $post->post_parent, new Filter( $config ), $post->menu_order );
 
 			return array(
-				'success'  => true,
-				'filter'   => $saved->to_array(),
+				'success' => true,
+				'filter'  => $saved->to_array(),
 			);
 		} catch ( \Exception $e ) {
 			return new WP_Error(
@@ -353,9 +355,9 @@ class Filter_CRUD_Service {
 			$this->filter_store->delete_loop_filters( $loop_id );
 
 			return array(
-				'success'        => true,
-				'loop_id'        => $loop_id,
-				'deleted_count'  => $count,
+				'success'       => true,
+				'loop_id'       => $loop_id,
+				'deleted_count' => $count,
 			);
 		} catch ( \Exception $e ) {
 			return new WP_Error(
@@ -412,7 +414,7 @@ class Filter_CRUD_Service {
 	 */
 	private function build_backup( array $existing, array $definition, string $integration_code, array $fields ): array {
 		$existing_without_sentence = $this->strip_sentence_artifacts( $existing );
-		$sentence = $definition['sentence'] ?? '';
+		$sentence                  = $definition['sentence_readable'] ?? $definition['sentence'] ?? '';
 		if ( empty( $sentence ) ) {
 			return $existing_without_sentence;
 		}
@@ -424,7 +426,7 @@ class Filter_CRUD_Service {
 			array(
 				'integration_name' => $this->get_integration_name( $integration_code ),
 				'sentence'         => $sentence,
-				'sentence_html'    => htmlspecialchars( $sentence_html, ENT_QUOTES, 'UTF-8' ),
+				'sentence_html'    => htmlspecialchars( html_entity_decode( $sentence_html, ENT_QUOTES, 'UTF-8' ), ENT_QUOTES, 'UTF-8' ),
 			)
 		);
 	}

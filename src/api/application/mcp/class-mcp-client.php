@@ -13,6 +13,8 @@ namespace Uncanny_Automator\Api\Application\Mcp;
 
 use Uncanny_Automator\Api\Application\Mcp\Agent\Agent_Context;
 use Uncanny_Automator\Api\Application\Mcp\Agent\Url_Agent_Context;
+use Uncanny_Automator\Api\Components\Conversation_Starter\Domain\Conversation_Starter;
+use Uncanny_Automator\Api\Components\Conversation_Starter\Registry\Conversation_Registry;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Client\Client_Context_Service;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Client\Client_Payload_Service;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Client\Client_Public_Key_Manager;
@@ -85,6 +87,13 @@ class Mcp_Client {
 	private Client_Payload_Service $payload_service;
 
 	/**
+	 * Conversation starter registry.
+	 *
+	 * @var Conversation_Registry
+	 */
+	private Conversation_Registry $conversation_registry;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Agent_Context|null             $agent_context Optional agent context builder.
@@ -92,22 +101,26 @@ class Mcp_Client {
 	 * @param Client_Public_Key_Manager|null $public_key_manager Optional public key helper.
 	 * @param Client_Token_Service|null      $token_service Optional token helper.
 	 * @param Client_Payload_Service|null    $payload_service Optional payload helper.
+	 * @param Conversation_Registry|null     $conversation_registry Optional conversation starter registry.
 	 */
 	public function __construct(
 		?Agent_Context $agent_context = null,
 		?Client_Context_Service $context_service = null,
 		?Client_Public_Key_Manager $public_key_manager = null,
 		?Client_Token_Service $token_service = null,
-		?Client_Payload_Service $payload_service = null
+		?Client_Payload_Service $payload_service = null,
+		?Conversation_Registry $conversation_registry = null
 	) {
-		$this->agent_context      = $agent_context ? $agent_context : new Agent_Context();
-		$this->context_service    = $context_service ? $context_service : new Client_Context_Service();
-		$this->public_key_manager = $public_key_manager ? $public_key_manager : new Client_Public_Key_Manager();
-		$this->token_service      = $token_service ? $token_service : new Client_Token_Service();
-		$this->payload_service    = $payload_service ? $payload_service : Client_Payload_Service::builder()
+
+		$this->agent_context         = $agent_context ? $agent_context : new Agent_Context();
+		$this->context_service       = $context_service ? $context_service : new Client_Context_Service();
+		$this->public_key_manager    = $public_key_manager ? $public_key_manager : new Client_Public_Key_Manager();
+		$this->token_service         = $token_service ? $token_service : new Client_Token_Service();
+		$this->payload_service       = $payload_service ? $payload_service : Client_Payload_Service::builder()
 			->with_token_service( $this->token_service )
 			->with_public_key_manager( $this->public_key_manager )
 			->build();
+		$this->conversation_registry = $conversation_registry ? $conversation_registry : new Conversation_Registry();
 
 		$this->register_hooks();
 	}
@@ -127,6 +140,7 @@ class Mcp_Client {
 	 * @return void
 	 */
 	private function register_hooks(): void {
+
 		add_action( 'admin_footer', array( $this, 'load_chat_sdk' ), 10, 1 );
 		add_action( 'admin_footer', array( $this, 'render_launcher' ), 20, 1 );
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
@@ -144,6 +158,7 @@ class Mcp_Client {
 	 * @return void
 	 */
 	public function register_rest_routes(): void {
+
 		register_rest_route(
 			'uap/v2',
 			'/mcp/chat/refresh',
@@ -187,6 +202,7 @@ class Mcp_Client {
 	 * @return bool
 	 */
 	public function validate_page_url( $value ): bool {
+
 		if ( null === $value || '' === $value ) {
 			return true;
 		}
@@ -243,6 +259,7 @@ class Mcp_Client {
 	 * @return void
 	 */
 	public function load_chat_sdk(): void {
+
 		if ( ! self::get_uncanny_agent_settings() || ! $this->context_service->can_access_client() ) {
 			return;
 		}
@@ -291,6 +308,7 @@ class Mcp_Client {
 	 * @return bool
 	 */
 	private function in_allowed_pages(): bool {
+
 		if ( ! function_exists( 'get_current_screen' ) ) {
 			return false;
 		}
@@ -337,6 +355,7 @@ class Mcp_Client {
 	 * @return string The CSS and launcher HTML, or empty string on failure.
 	 */
 	private function generate_launcher_html(): string {
+
 		$payload = $this->payload_service->generate_encrypted_payload( array() );
 
 		if ( '' === $payload ) {
@@ -380,6 +399,7 @@ class Mcp_Client {
 	 * @return string
 	 */
 	public static function get_inference_url(): string {
+
 		$url = defined( 'AUTOMATOR_MCP_CLIENT_INFERENCE_URL' )
 			&& AUTOMATOR_MCP_CLIENT_INFERENCE_URL
 				? AUTOMATOR_MCP_CLIENT_INFERENCE_URL
@@ -395,6 +415,7 @@ class Mcp_Client {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function refresh_payload( WP_REST_Request $request ) {
+
 		$page_url = $request->get_param( 'page_url' );
 
 		if ( null !== $page_url && ! is_string( $page_url ) ) {
@@ -441,10 +462,140 @@ class Mcp_Client {
 
 		return rest_ensure_response(
 			array(
-				'encrypted_payload' => $payload,
-				'context'           => $context,
+				'encrypted_payload'     => $payload,
+				'context'               => $context,
+				'conversation_starters' => $this->load_conversation_starters_for_refresh( $page_url, $context ),
 			)
 		);
+	}
+
+	/**
+	 * Load conversation starters for the refresh response.
+	 *
+	 * @param string|null          $page_url Optional page URL from the request.
+	 * @param array<string,mixed>  $context  Agent context.
+	 *
+	 * @return array<int,array{id:int,label:string,prompt:string}>
+	 */
+	private function load_conversation_starters_for_refresh( ?string $page_url, array $context ): array {
+
+		$url      = $this->get_conversation_starter_url( $page_url, $context );
+		$starters = $this->conversation_registry->load_by_context( $url, $this->get_conversation_starter_post_type( $url, $context ) );
+
+		return array_map(
+			static fn( Conversation_Starter $starter ): array => $starter->to_array(),
+			array_slice( $starters, 0, 5 )
+		);
+	}
+
+	/**
+	 * Resolve the URL used for conversation starter matching.
+	 *
+	 * @param string|null         $page_url Optional page URL from the request.
+	 * @param array<string,mixed> $context  Agent context.
+	 *
+	 * @return string
+	 */
+	private function get_conversation_starter_url( ?string $page_url, array $context ): string {
+
+		if ( is_string( $page_url ) && '' !== $page_url ) {
+			return $page_url;
+		}
+
+		$context_url = $context['WordPress']['currentScreen']['url'] ?? '';
+
+		return is_string( $context_url ) ? $context_url : '';
+	}
+
+	/**
+	 * Resolve the post type used for conversation starter matching.
+	 *
+	 * @param string              $url     URL used for starter matching.
+	 * @param array<string,mixed> $context Agent context.
+	 *
+	 * @return string
+	 */
+	private function get_conversation_starter_post_type( string $url, array $context ): string {
+
+		$current_post = $context['WordPress']['currentPost'] ?? false;
+
+		if ( is_array( $current_post ) && ! empty( $current_post['type'] ) && is_string( $current_post['type'] ) ) {
+			return sanitize_key( $current_post['type'] );
+		}
+
+		$post_type = $this->get_post_type_from_url( $url );
+
+		if ( '' !== $post_type ) {
+			return $post_type;
+		}
+
+		$screen_id = $context['WordPress']['currentScreen']['id'] ?? '';
+
+		if ( is_string( $screen_id ) && 0 === strpos( $screen_id, 'edit-' ) ) {
+			return sanitize_key( substr( $screen_id, strlen( 'edit-' ) ) );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Resolve a post type from a WordPress admin URL.
+	 *
+	 * @param string $url URL used for starter matching.
+	 *
+	 * @return string
+	 */
+	private function get_post_type_from_url( string $url ): string {
+
+		$path     = wp_parse_url( $url, PHP_URL_PATH );
+		$basename = is_string( $path ) ? basename( $path ) : '';
+		$query    = array();
+
+		$query_string = wp_parse_url( $url, PHP_URL_QUERY );
+
+		if ( is_string( $query_string ) ) {
+			wp_parse_str( $query_string, $query );
+		}
+
+		if ( isset( $query['post_type'] ) && is_scalar( $query['post_type'] ) ) {
+			return sanitize_key( (string) $query['post_type'] );
+		}
+
+		if ( in_array( $basename, array( 'edit.php', 'post-new.php' ), true ) ) {
+			return 'post';
+		}
+
+		if ( 'admin.php' === $basename && isset( $query['page'] ) && is_scalar( $query['page'] ) ) {
+			return $this->get_post_type_from_admin_page( (string) $query['page'] );
+		}
+
+		return '';
+	}
+
+	/**
+	 * Resolve known admin page slugs to post types.
+	 *
+	 * @param string $page Admin page slug.
+	 *
+	 * @return string
+	 */
+	private function get_post_type_from_admin_page( string $page ): string {
+
+		$page = sanitize_key( $page );
+
+		if ( 'wc-orders' === $page ) {
+			return 'shop_order';
+		}
+
+		if ( 'wc-orders--shop_subscription' === $page ) {
+			return 'shop_subscription';
+		}
+
+		if ( 0 === strpos( $page, 'uncanny-automator-' ) || 0 === strpos( $page, 'uo-recipe-' ) ) {
+			return defined( 'AUTOMATOR_POST_TYPE_RECIPE' ) ? AUTOMATOR_POST_TYPE_RECIPE : 'uo-recipe';
+		}
+
+		return '';
 	}
 
 	/**
@@ -532,6 +683,7 @@ class Mcp_Client {
 	 * @return WP_REST_Response
 	 */
 	public function get_launcher_html( WP_REST_Request $request ) {
+
 		$html = $this->generate_launcher_html();
 
 		return rest_ensure_response(
@@ -551,6 +703,7 @@ class Mcp_Client {
 	 * @return string
 	 */
 	private function get_sdk_url(): string {
+
 		// Check if developer explicitly defined a custom SDK URL.
 		$is_custom_url = defined( 'AUTOMATOR_MCP_CLIENT_SDK_URL' ) && AUTOMATOR_MCP_CLIENT_SDK_URL;
 
@@ -587,6 +740,7 @@ class Mcp_Client {
 	 * @return string
 	 */
 	private function get_sdk_css_url(): string {
+
 		$url = defined( 'AUTOMATOR_MCP_CLIENT_SDK_CSS_URL' ) && AUTOMATOR_MCP_CLIENT_SDK_CSS_URL
 			? AUTOMATOR_MCP_CLIENT_SDK_CSS_URL
 			: self::SDK_CSS_URL;

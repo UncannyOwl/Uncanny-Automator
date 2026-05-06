@@ -116,7 +116,7 @@ class Field_Normalizer {
 		return array(
 			'type'     => $field_config['type'] ?? 'select',
 			'value'    => $value,
-			'readable' => $flat_fields[ "{$code}_readable" ] ?? $value,
+			'readable' => $this->resolve_readable_value( $code, $value, $flat_fields, $field_config ),
 			'backup'   => array(
 				'label'                    => $field_config['label'] ?? $code,
 				'show_label_in_sentence'   => $field_config['show_label_in_sentence'] ?? true,
@@ -124,6 +124,30 @@ class Field_Normalizer {
 				'supports_multiple_values' => $field_config['supports_multiple_values'] ?? false,
 			),
 		);
+	}
+
+	/**
+	 * Resolve readable text for a field value.
+	 *
+	 * Registry options are authoritative for select fields and match the UI.
+	 * Fall back to client-provided readable text for custom values/tokens.
+	 *
+	 * @param string $code         Field code.
+	 * @param mixed  $value        Raw field value.
+	 * @param array  $flat_fields  All flat fields.
+	 * @param array  $field_config Registry field config.
+	 *
+	 * @return mixed
+	 */
+	private function resolve_readable_value( string $code, $value, array $flat_fields, array $field_config ) {
+		$options   = $field_config['options'] ?? array();
+		$value_key = (string) $value;
+
+		if ( is_array( $options ) && array_key_exists( $value_key, $options ) ) {
+			return $options[ $value_key ];
+		}
+
+		return $flat_fields[ "{$code}_readable" ] ?? $value;
 	}
 
 	/**

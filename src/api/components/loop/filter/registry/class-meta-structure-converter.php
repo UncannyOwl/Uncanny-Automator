@@ -33,12 +33,16 @@ class Meta_Structure_Converter {
 			}
 
 			$meta_structure[ $field_code ] = array(
-				'type'        => $this->convert_input_type( $field['input_type'] ?? 'text' ),
-				'label'       => $field['label'] ?? '',
-				'description' => $field['description'] ?? $field['custom_value_description'] ?? '',
-				'required'    => ! empty( $field['required'] ),
-				'placeholder' => $field['placeholder'] ?? '',
-				'options'     => $this->normalize_options( $field['options'] ?? array() ),
+				'type'                     => $field['type'] ?? $field['input_type'] ?? 'text',
+				'schema_type'              => $this->convert_input_type( $field['input_type'] ?? $field['type'] ?? 'text' ),
+				'label'                    => $field['label'] ?? '',
+				'description'              => $field['description'] ?? $field['custom_value_description'] ?? '',
+				'required'                 => ! empty( $field['required'] ),
+				'placeholder'              => $field['placeholder'] ?? '',
+				'options'                  => $this->normalize_options( $field['options'] ?? array() ),
+				'show_label_in_sentence'   => $field['show_label_in_sentence'] ?? true,
+				'supports_custom_value'    => $field['supports_custom_value'] ?? true,
+				'supports_multiple_values' => $field['supports_multiple_values'] ?? false,
 			);
 		}
 

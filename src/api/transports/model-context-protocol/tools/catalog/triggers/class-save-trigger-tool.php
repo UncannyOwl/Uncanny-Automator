@@ -25,7 +25,7 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_T
  * Save Trigger Tool — upsert.
  *
  * Create: omit trigger_id. Requires recipe_id, trigger_code, fields.
- * Update: include trigger_id. Requires trigger_id. fields and status are optional.
+ * Update: include trigger_id. Requires recipe_id and trigger_id.
  *
  * @since 7.1.0
  */
@@ -68,7 +68,7 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 	public function get_description(): string {
 		return 'Create or update a trigger. Omit trigger_id to create, include trigger_id to update. '
 			. 'Create requires recipe_id and trigger_code. Fields may be empty for triggers with no configurable fields. '
-			. 'Update requires trigger_id; fields and status are optional. '
+			. 'Update requires trigger_id; include recipe_id to validate trigger ownership. '
 			. 'Get field definitions from get_component_schema first. '
 			. 'CRITICAL: For dropdown fields, always pass BOTH the value AND the _readable suffix '
 			. '(e.g., "LDCOURSE": "656", "LDCOURSE_readable": "Sales 101").';
@@ -95,7 +95,7 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 			'properties' => array(
 				'recipe_id'    => array(
 					'type'        => 'integer',
-					'description' => 'Recipe ID. Required for create.',
+					'description' => 'Recipe ID. Required for create; optional for update to validate trigger ownership.',
 					'minimum'     => 1,
 				),
 				'trigger_id'   => array(
@@ -119,12 +119,15 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 					'enum'        => array( 'draft', 'publish' ),
 				),
 			),
-			'required'   => array( 'recipe_id' ),
+			'required'   => array(),
 		);
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @since 7.1.0
+	 * @since 7.2.4 Output schema tightened to exact MCP trigger payload contract.
 	 */
 	protected function output_schema_definition(): ?array {
 		return array(
@@ -132,16 +135,26 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 			'properties' => array(
 				'recipe_id' => array( 'type' => 'integer' ),
 				'trigger'   => array(
-					'type'       => 'object',
-					'properties' => array(
+					'type'                 => 'object',
+					'properties'           => array(
 						'trigger_id'                   => array( 'type' => 'integer' ),
 						'trigger_code'                 => array( 'type' => 'string' ),
 						'integration'                  => array( 'type' => 'string' ),
 						'sentence_human_readable'      => array( 'type' => 'string' ),
-						'sentence_human_readable_html' => array( 'type' => 'string' ),
-						'config'                       => array( 'type' => 'object' ),
+						'sentence_human_readable_html' => array( 'type' => array( 'string', 'null' ) ),
+						'configuration'                => array( 'type' => 'object' ),
 						'recipe_id'                    => array( 'type' => 'integer' ),
 					),
+					'required'             => array(
+						'trigger_id',
+						'trigger_code',
+						'integration',
+						'sentence_human_readable',
+						'sentence_human_readable_html',
+						'configuration',
+						'recipe_id',
+					),
+					'additionalProperties' => false,
 				),
 				'links'     => array( 'type' => 'object' ),
 				'notes'     => array(
@@ -177,6 +190,9 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 
 	/**
 	 * Update an existing trigger.
+	 *
+	 * @since 7.1.0
+	 * @since 7.2.4 Trigger response is projected to the declared MCP output schema.
 	 *
 	 * @param int   $trigger_id Trigger post ID.
 	 * @param array $params     Tool parameters.
@@ -224,7 +240,10 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
 		}
 
-		$trigger_payload = $result['trigger'] ?? array();
+		$trigger_payload = $this->shape_trigger_output(
+			$result['trigger'] ?? array(),
+			$recipe_id > 0 ? $recipe_id : null
+		);
 		$recipe_id       = isset( $trigger_payload['recipe_id'] ) ? (int) $trigger_payload['recipe_id'] : 0;
 
 		$payload = array(
@@ -247,6 +266,9 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 
 	/**
 	 * Create a new trigger on a recipe.
+	 *
+	 * @since 7.1.0
+	 * @since 7.2.4 Trigger response is projected to the declared MCP output schema.
 	 *
 	 * Validates transport-level parameters, then delegates to the service layer
 	 * for entity construction, domain validation, persistence, and any
@@ -320,8 +342,7 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( $result->get_error_message() );
 		}
 
-		$trigger_payload = $result['trigger'] ?? array();
-		$trigger_id      = $result['trigger_id'] ?? ( $trigger_payload['trigger_id'] ?? 0 );
+		$trigger_payload = $this->shape_trigger_output( $result['trigger'] ?? array(), $recipe_id );
 
 		$payload = array(
 			'recipe_id' => $recipe_id,
@@ -339,6 +360,8 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Strip client-provided sentence artifacts from incoming fields.
 	 *
+	 * @since 7.1.0
+	 *
 	 * @param array $fields Incoming fields.
 	 * @return array Cleaned fields.
 	 */
@@ -348,7 +371,36 @@ class Save_Trigger_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
+	 * Project trigger responses to the public MCP save_trigger output contract.
+	 *
+	 * @since 7.2.4
+	 *
+	 * @param array    $trigger_payload Raw trigger payload from service layer.
+	 * @param int|null $fallback_recipe_id Fallback recipe ID from request context.
+	 *
+	 * @return array
+	 */
+	private function shape_trigger_output( array $trigger_payload, ?int $fallback_recipe_id = null ): array {
+		$trigger_id = (int) ( $trigger_payload['trigger_id'] ?? $trigger_payload['id'] ?? 0 );
+		$recipe_id  = (int) ( $trigger_payload['recipe_id'] ?? $fallback_recipe_id ?? 0 );
+
+		return array(
+			'trigger_id'                   => $trigger_id,
+			'trigger_code'                 => (string) ( $trigger_payload['trigger_code'] ?? $trigger_payload['code'] ?? '' ),
+			'integration'                  => (string) ( $trigger_payload['integration'] ?? '' ),
+			'sentence_human_readable'      => (string) ( $trigger_payload['sentence_human_readable'] ?? '' ),
+			'sentence_human_readable_html' => $trigger_payload['sentence_human_readable_html'] ?? null,
+			'configuration'                => isset( $trigger_payload['configuration'] ) && is_array( $trigger_payload['configuration'] )
+				? $trigger_payload['configuration']
+				: array(),
+			'recipe_id'                    => $recipe_id,
+		);
+	}
+
+	/**
 	 * Extract and clear field normalization errors.
+	 *
+	 * @since 7.1.0
 	 *
 	 * @param array<string, mixed> $fields Normalized fields.
 	 *

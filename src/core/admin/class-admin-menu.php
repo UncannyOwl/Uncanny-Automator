@@ -426,6 +426,37 @@ class Admin_Menu {
 
 		$free_credits = $is_connected ? ( $usage_limit - $paid_usage_count ) : 250;
 
+		// Ledger payload from the API server (api/credits/ledger). The API may
+		// omit `llm_credits` entirely if the upstream call failed — treat as optional.
+		$ledger          = isset( $is_connected['llm_credits'] ) ? (array) $is_connected['llm_credits'] : array();
+		$ledger_has_data = ! empty( $ledger ) && ! empty( $ledger['success'] );
+
+		$ledger_active = $ledger_has_data && isset( $ledger['active'] ) ? (array) $ledger['active'] : array();
+
+		// Featured allocation: latest by `date_of_expiry` when multiple are
+		// active (typically the most recent purchase / renewal). The big-number
+		// % and total are pre-aggregated upstream via `overall_usage_percent`,
+		// so this only governs the suffix name + expiry caption.
+		// ISO 8601 strings sort lexicographically the same as chronologically.
+		$current_alloc = array();
+		if ( ! empty( $ledger_active ) ) {
+			usort(
+				$ledger_active,
+				static function ( $a, $b ): int {
+					$a_exp = isset( $a['date_of_expiry'] ) ? (string) $a['date_of_expiry'] : '';
+					$b_exp = isset( $b['date_of_expiry'] ) ? (string) $b['date_of_expiry'] : '';
+					return strcmp( $b_exp, $a_exp );
+				}
+			);
+			$current_alloc = (array) $ledger_active[0];
+		}
+
+		$llm_usage_percent   = $ledger_has_data && isset( $ledger['overall_usage_percent'] )
+			? max( 0, min( 100, (int) $ledger['overall_usage_percent'] ) )
+			: 0;
+		$llm_allocation_name = isset( $current_alloc['description'] ) ? (string) $current_alloc['description'] : '';
+		$llm_expires_on      = isset( $current_alloc['date_of_expiry'] ) ? (string) $current_alloc['date_of_expiry'] : '';
+
 		$kb_articles = array(
 			array(
 				'title' => esc_html__( 'Getting started', 'uncanny-automator' ),
@@ -923,22 +954,35 @@ class Admin_Menu {
 
 		$faq_items = array(
 			array(
-				'question' => esc_html__( 'What are app credits?', 'uncanny-automator' ),
-				'answer'   => esc_html__( "Some app integrations connect to other services using an API. Automator's app credit system allows free plugin users to try this out. Passing a record to one of these integrations uses one app credit.", 'uncanny-automator' ),
+				'question' => esc_html_x( 'What are app credits?', 'Dashboard FAQ', 'uncanny-automator' ),
+				'answer'   => esc_html_x( "Some app integrations connect to other services using an API. Automator's app credit system allows free plugin users to try this out. Passing a record to one of these integrations uses one app credit.", 'Dashboard FAQ', 'uncanny-automator' ),
 			),
 			array(
-				'question' => esc_html__( 'Do I need app credits?', 'uncanny-automator' ),
-				'answer'   => esc_html__( 'App credits are only needed for app integrations that pass through an API. Everything else is unrestricted (and Pro users get unlimited app credits).', 'uncanny-automator' ),
+				'question' => esc_html_x( 'Do I need app credits?', 'Dashboard FAQ', 'uncanny-automator' ),
+				'answer'   => esc_html_x( 'App credits are only needed for app integrations that pass through an API. Everything else is unrestricted (and Pro users get unlimited app credits).', 'Dashboard FAQ', 'uncanny-automator' ),
 			),
 			array(
-				'question' => esc_html__( 'Can I get more app credits?', 'uncanny-automator' ),
-				'answer'   => esc_html__( 'If you use more than 250 app credits, you must either purchase the Pro version or disable your actions that use credits.', 'uncanny-automator' ),
+				'question' => esc_html_x( 'Can I get more app credits?', 'Dashboard FAQ', 'uncanny-automator' ),
+				'answer'   => esc_html_x( 'If you use more than 250 app credits, you must either purchase the Pro version or disable your actions that use credits.', 'Dashboard FAQ', 'uncanny-automator' ),
 			),
+			array(
+				'question' => esc_html_x( 'What is Uncanny Agent?', 'Dashboard FAQ', 'uncanny-automator' ),
+				'answer'   => esc_html_x( 'Uncanny Agent is a highly capable AI agent for your WordPress site. It can build, update and troubleshoot recipes, provide business insights, and complete tasks for you.', 'Dashboard FAQ', 'uncanny-automator' ),
+			),
+			array(
+				'question' => esc_html_x( 'What is Uncanny Agent usage?', 'Dashboard FAQ', 'uncanny-automator' ),
+				'answer'   => esc_html_x( 'Capable AI tools like Uncanny Agent require significant resources to operate. (Resources are consumed in a datacenter; Uncanny Agent does not use your server resources.) Uncanny Agent usage is a measurement of how much you can use Uncanny Agent on your AI + Automation plan and via other purchases or allocations of Uncanny Agent usage.', 'Dashboard FAQ', 'uncanny-automator' ),
+			),
+			array(
+				'question' => esc_html_x( 'How can I get more Uncanny Agent usage?', 'Dashboard FAQ', 'uncanny-automator' ),
+				'answer'   => esc_html_x( 'The most cost-effective method of getting additional usage of Uncanny Agent is by upgrading your plan. Higher plan tiers offer discounts on Uncanny Agent additional usage packs. Visit the usage page in your dashboard for details.', 'Dashboard FAQ', 'uncanny-automator' ),
+			)
 		);
 
 		return (object) array(
 			// The number of credits used by pro.
 			'paid_usage_count'   => absint( $paid_usage_count ),
+			'usage_limit'        => absint( $usage_limit ),
 			// Check if the user is using Automator Pro
 			'is_pro'             => $is_pro_active,
 			'is_elite'           => $is_elite_active,
@@ -977,6 +1021,12 @@ class Admin_Menu {
 				'site_url_without_protocol' => preg_replace( '(^https?://)', '', get_site_url() ),
 			),
 			'upgrade_url'        => 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=pricing',
+			'llm_credits'        => (object) array(
+				'has_data'        => $ledger_has_data,
+				'usage_percent'   => $llm_usage_percent,
+				'allocation_name' => $llm_allocation_name,
+				'expires_on'      => $llm_expires_on,
+			),
 		);
 	}
 

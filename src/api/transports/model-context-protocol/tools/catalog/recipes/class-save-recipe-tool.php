@@ -13,6 +13,7 @@ namespace Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Abstract_MCP_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Json_Rpc_Response;
 use Uncanny_Automator\Api\Services\Recipe\Recipe_Service;
+use Uncanny_Automator\Api\Services\Recipe\Utilities\Recipe_Formatter;
 use Uncanny_Automator\Api\Services\Recipe\Utilities\Recipe_Validator;
 use Uncanny_Automator\Api\Services\User_Selector\User_Selector_Service;
 use Uncanny_Automator\Api\Services\Token\Validation\Token_Validator;
@@ -58,11 +59,13 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 	protected function schema_definition() {
 
 		return array(
-			'type'       => 'object',
-			'properties' => array(
+			'type'                 => 'object',
+			'additionalProperties' => false,
+			'properties'           => array(
 				'recipe_id'      => array(
 					'type'        => 'integer',
 					'description' => 'Existing recipe ID to update. Omit to create a new recipe.',
+					'minimum'     => 1,
 				),
 				'title'          => array(
 					'type'        => 'string',
@@ -177,38 +180,38 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 							'description' => 'User data. Required for newUser, optional for existingUser with create-new-user fallback.',
 							'properties'  => array(
 								'email'       => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'User email. Supports tokens.',
 								),
 								'username'    => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'User login name. Supports tokens.',
 								),
 								'firstName'   => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'First name.',
 								),
 								'lastName'    => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'Last name.',
 								),
 								'displayName' => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'Display name.',
 								),
 								'password'    => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'Password. Empty = auto-generate.',
 								),
 								'role'        => array(
-									'type' => 'string',
+									'type'        => 'string',
 									'description' => 'WordPress role.',
-									'default' => 'subscriber',
+									'default'     => 'subscriber',
 								),
 								'logUserIn'   => array(
-									'type' => 'boolean',
+									'type'        => 'boolean',
 									'description' => 'Log user in after creation.',
-									'default' => false,
+									'default'     => false,
 								),
 							),
 						),
@@ -223,22 +226,39 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 	 */
 	protected function output_schema_definition(): ?array {
 		return array(
-			'type'       => 'object',
-			'properties' => array(
-				'recipe_id'  => array( 'type' => 'integer' ),
-				'recipe'     => array( 'type' => 'object' ),
-				'links'      => array(
-					'type'       => 'object',
-					'properties' => array(
+			'type'                 => 'object',
+			'additionalProperties' => false,
+			'properties'           => array(
+				'recipe_id' => array( 'type' => 'integer' ),
+				'recipe'    => array(
+					'type'                 => 'object',
+					'additionalProperties' => false,
+					'properties'           => array(
+						'id'             => array( 'type' => 'integer' ),
+						'title'          => array( 'type' => 'string' ),
+						'status'         => array( 'type' => 'string' ),
+						'type'           => array( 'type' => 'string' ),
+						'notes'          => array( 'type' => 'string' ),
+						'meta'           => array( 'type' => 'object' ),
+						'times_per_user' => array( 'type' => array( 'integer', 'null' ) ),
+						'total_times'    => array( 'type' => array( 'integer', 'null' ) ),
+						'throttle'       => array( 'type' => 'object' ),
+					),
+					'required'             => array( 'id', 'title', 'status', 'type' ),
+				),
+				'links'     => array(
+					'type'                 => 'object',
+					'additionalProperties' => false,
+					'properties'           => array(
 						'edit_recipe' => array( 'type' => 'string' ),
 					),
 				),
-				'notes'      => array(
-					'type' => 'array',
+				'notes'     => array(
+					'type'  => 'array',
 					'items' => array( 'type' => 'string' ),
 				),
 			),
-			'required'   => array( 'recipe_id', 'recipe', 'links' ),
+			'required'             => array( 'recipe_id', 'recipe', 'links' ),
 		);
 	}
 
@@ -248,7 +268,11 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 	protected function execute_tool( User_Context $user_context, array $params ): array {
 		$this->require_authenticated_executor( $user_context );
 
-		$recipe_id = isset( $params['recipe_id'] ) ? (int) $params['recipe_id'] : 0;
+		$has_recipe_id = array_key_exists( 'recipe_id', $params );
+		$recipe_id     = $has_recipe_id ? (int) $params['recipe_id'] : 0;
+		if ( $has_recipe_id && $recipe_id <= 0 ) {
+			return Json_Rpc_Response::create_error_response( 'recipe_id must be a positive integer. Omit recipe_id to create a new recipe.' );
+		}
 
 		// Extract taxonomy and user_selector params before passing to service.
 		$categories    = $params['categories'] ?? null;
@@ -268,6 +292,12 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 
 		// Pre-publish validation (service-layer checks).
 		$wants_publish = isset( $params['status'] ) && 'publish' === $params['status'];
+		if ( $wants_publish && $recipe_id <= 0 ) {
+			return Json_Rpc_Response::create_error_response(
+				'Recipes cannot be created directly as published. Create the recipe as draft, add at least 1 live trigger and 1 live action, then update status to publish.'
+			);
+		}
+
 		if ( $wants_publish && $recipe_id > 0 ) {
 			$validator = new Recipe_Validator();
 			$readiness = $validator->validate_publish_readiness( $recipe_id );
@@ -295,20 +325,13 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 				}
 
 				$recipe_data = isset( $result['recipe'] ) ? $result['recipe'] : $result;
+				$recipe_data = $this->format_recipe_data( $recipe_data );
 				if ( isset( $recipe_data['id'] ) ) {
 					$recipe_id = (int) $recipe_data['id'];
 				}
 
 				// Taxonomy assignment via service layer.
 				$service->assign_taxonomies( $recipe_id, $categories, $tags );
-
-				// Handle user_selector if provided — fail the operation on error.
-				$us_result = $this->save_user_selector_if_present( $recipe_id, $user_selector );
-				if ( is_wp_error( $us_result ) ) {
-					return Json_Rpc_Response::create_error_response(
-						'Recipe updated but user selector save failed: ' . $us_result->get_error_message()
-					);
-				}
 
 				$payload = array(
 					'recipe_id' => $recipe_id,
@@ -320,6 +343,15 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 					$payload['notes'] = array( $result['message'] );
 				}
 
+				// Handle user_selector if provided. Recipe changes have already been saved.
+				$us_result = $this->save_user_selector_if_present( $recipe_id, $user_selector );
+				if ( is_wp_error( $us_result ) ) {
+					return Json_Rpc_Response::create_error_response(
+						'Partial success: recipe was updated and any requested taxonomies were saved, but user selector save failed: ' . $us_result->get_error_message(),
+						$payload
+					);
+				}
+
 				return Json_Rpc_Response::create_success_response( 'Recipe updated successfully', $payload );
 			} else {
 				// Create new recipe.
@@ -328,24 +360,11 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 					return Json_Rpc_Response::create_error_response( $result->get_error_message() );
 				}
 
-				$recipe_data = $result['recipe'] ?? array();
+				$recipe_data = $this->format_recipe_data( $result['recipe'] ?? array() );
 				$created_id  = isset( $result['recipe_id'] ) ? (int) $result['recipe_id'] : (int) ( $recipe_data['id'] ?? 0 );
 
 				// Taxonomy assignment via service layer.
 				$service->assign_taxonomies( $created_id, $categories, $tags );
-
-				// Handle user_selector if provided — include created_id in error so caller can reconcile.
-				$us_result = $this->save_user_selector_if_present( $created_id, $user_selector );
-				if ( is_wp_error( $us_result ) ) {
-					return Json_Rpc_Response::create_error_response(
-						'Recipe created (recipe_id: ' . $created_id . ') but user selector save failed: ' . $us_result->get_error_message(),
-						array(
-							'recipe_id' => $created_id,
-							'recipe'    => $recipe_data,
-							'links'     => ( new Recipe_Link_Builder() )->build_links( $created_id ),
-						)
-					);
-				}
 
 				$payload = array(
 					'recipe_id' => $created_id,
@@ -357,6 +376,15 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 					$payload['notes'] = array( $result['message'] );
 				}
 
+				// Handle user_selector if provided. Recipe creation has already been saved.
+				$us_result = $this->save_user_selector_if_present( $created_id, $user_selector );
+				if ( is_wp_error( $us_result ) ) {
+					return Json_Rpc_Response::create_error_response(
+						'Partial success: recipe was created (recipe_id: ' . $created_id . ') and any requested taxonomies were saved, but user selector save failed: ' . $us_result->get_error_message(),
+						$payload
+					);
+				}
+
 				return Json_Rpc_Response::create_success_response( 'Recipe created successfully', $payload );
 			}
 		} catch ( \InvalidArgumentException $e ) {
@@ -364,6 +392,16 @@ class Save_Recipe_Tool extends Abstract_MCP_Tool {
 		} catch ( \Exception $e ) {
 			return Json_Rpc_Response::create_error_response( 'Failed to process recipe: ' . $e->getMessage() );
 		}
+	}
+
+	/**
+	 * Normalize recipe response data for create and update paths.
+	 *
+	 * @param array $recipe_data Raw or formatted recipe data.
+	 * @return array Formatted recipe data.
+	 */
+	private function format_recipe_data( array $recipe_data ): array {
+		return ( new Recipe_Formatter() )->format_recipe_response( $recipe_data );
 	}
 
 	/**

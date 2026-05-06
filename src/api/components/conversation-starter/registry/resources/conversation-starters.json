@@ -1,0 +1,3296 @@
+[
+  {
+    "Section": "WordPress",
+    "Page": "Dashboard",
+    "#": "1",
+    "Starter": "Suggest recipes for my site",
+    "Prompt": "Review my installed plugins and ask me questions to help me identify what recipes would help me save time.",
+    "URL Regex": "\\/wp-admin\\/(?:index\\.php)?(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Dashboard",
+    "#": "2",
+    "Starter": "Review my site security",
+    "Prompt": "Check my installed plugins for any known vulnerabilities, check for installed security plugins, two-factor authentication plugins, and other known WordPress vulnerabilities.",
+    "URL Regex": "\\/wp-admin\\/(?:index\\.php)?(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Dashboard",
+    "#": "3",
+    "Starter": "Review my site health",
+    "Prompt": "Check the WordPress site health report for any issues.",
+    "URL Regex": "\\/wp-admin\\/(?:index\\.php)?(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Dashboard",
+    "#": "4",
+    "Starter": "Show content summary",
+    "Prompt": "Show me a publishing summary for the last 12 months: posts and pages by status (publish/draft/pending), by author, and by month. Highlight months with unusual volume.",
+    "URL Regex": "\\/wp-admin\\/(?:index\\.php)?(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Dashboard",
+    "#": "5",
+    "Starter": "Show user growth",
+    "Prompt": "Show new user registrations per month for the last 12 months, broken down by role. Identify trends — accelerating, declining, or flat.",
+    "URL Regex": "\\/wp-admin\\/(?:index\\.php)?(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Posts",
+    "#": "1",
+    "Starter": "Find old drafts",
+    "Prompt": "Find draft posts older than 30 days. Show the title, author, last modified date, and how long the draft has been sitting. Sort by oldest first.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php(?:\\?post_type=post)?(?:[&#]|$)",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Posts",
+    "#": "2",
+    "Starter": "Show top authors",
+    "Prompt": "Rank authors by published post count over the last 12 months. Show post count, average word length, and most recent publish date for each.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php(?:\\?post_type=post)?(?:[&#]|$)",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Posts",
+    "#": "3",
+    "Starter": "Find posts without featured images",
+    "Prompt": "List published posts that don't have a featured image set. Show title, author, publish date, and category.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php(?:\\?post_type=post)?(?:[&#]|$)",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Posts",
+    "#": "4",
+    "Starter": "Email me on post status change",
+    "Prompt": "Create an automation that emails me when a post is set to a specific status. What status should trigger it (e.g., publish, pending, draft)?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php(?:\\?post_type=post)?(?:[&#]|$)",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Posts",
+    "#": "5",
+    "Starter": "Find posts with low engagement",
+    "Prompt": "Show published posts sorted by comment count ascending. Highlight posts with zero comments and posts that performed below the site average.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php(?:\\?post_type=post)?(?:[&#]|$)",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Post",
+    "#": "1",
+    "Starter": "Show this post's revision history",
+    "Prompt": "Show all revisions of this post: who edited, when, and roughly how much changed each time. Identify the most active editor.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Post",
+    "#": "2",
+    "Starter": "Show this post's comments",
+    "Prompt": "List all comments on this post with date, commenter name, status, and content. Highlight any pending or held in moderation.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Post",
+    "#": "3",
+    "Starter": "Find similar posts",
+    "Prompt": "Find published posts that share categories or tags with this one. Rank by overlap and show title, author, and publish date.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Post",
+    "#": "4",
+    "Starter": "Show content stats",
+    "Prompt": "Show this post's word count, paragraph count, estimated reading time, internal link count, and external link count.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "post"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Pages",
+    "#": "1",
+    "Starter": "Find orphaned pages",
+    "Prompt": "Find published pages that no other page or post links to (scan post_content for internal links). Show title, last modified date, and parent.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=page(?:[&#]|$)",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Pages",
+    "#": "2",
+    "Starter": "Show page hierarchy",
+    "Prompt": "Show the full parent/child page hierarchy as a tree, with each page's last modified date and author. Highlight any orphans (no parent and no children).",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=page(?:[&#]|$)",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Pages",
+    "#": "3",
+    "Starter": "Find stale pages",
+    "Prompt": "Find published pages not updated in the last 12 months. Show title, last modified date, and author.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=page(?:[&#]|$)",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Pages",
+    "#": "4",
+    "Starter": "Show page length distribution",
+    "Prompt": "Show pages ranked by word count. Identify the longest and shortest published pages and the average length.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=page(?:[&#]|$)",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Pages",
+    "#": "5",
+    "Starter": "Find empty pages",
+    "Prompt": "Find published pages with no content or fewer than 100 words. Show title, parent, and word count.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=page(?:[&#]|$)",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Page",
+    "#": "1",
+    "Starter": "Show this page's revision history",
+    "Prompt": "Show all revisions of this page: who edited, when, and how much changed. Identify the most active editor.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Page",
+    "#": "2",
+    "Starter": "Show pages linking here",
+    "Prompt": "Find all pages and posts whose content links to this page. Show title, post type, and link context.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Page",
+    "#": "3",
+    "Starter": "Show this page's content stats",
+    "Prompt": "Show this page's word count, paragraph count, image count, internal link count, and external link count.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Page",
+    "#": "4",
+    "Starter": "Duplicate this page",
+    "Prompt": "Create a duplicate of this page using the WordPress duplicate page action. What should the new title be?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit Page",
+    "#": "5",
+    "Starter": "Email me when this page is updated",
+    "Prompt": "Create an automation that emails me whenever this specific page is updated. Include who updated it and when.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "page"
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Comments",
+    "#": "1",
+    "Starter": "Show pending comments",
+    "Prompt": "List all comments currently pending moderation, oldest first. Show post title, commenter name, and how long each has been waiting.",
+    "URL Regex": "\\/wp-admin\\/edit-comments\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Comments",
+    "#": "2",
+    "Starter": "Show top commenters",
+    "Prompt": "Rank commenters by approved comment count over the last 12 months. Show count, last comment date, and which posts they comment on most.",
+    "URL Regex": "\\/wp-admin\\/edit-comments\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Comments",
+    "#": "3",
+    "Starter": "Show moderation rate",
+    "Prompt": "Show the breakdown of comments approved vs. spam vs. trash for the last 90 days. What percentage of incoming comments end up approved?",
+    "URL Regex": "\\/wp-admin\\/edit-comments\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Comments",
+    "#": "4",
+    "Starter": "Find spam patterns",
+    "Prompt": "Find common patterns in comments marked as spam over the last 90 days: repeat IPs, repeat email domains, links per comment, and time-of-day clusters.",
+    "URL Regex": "\\/wp-admin\\/edit-comments\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Users",
+    "#": "1",
+    "Starter": "Segment users by role",
+    "Prompt": "Show user counts by role, the average account age per role, and the percentage of users in each role who have published a post or submitted a comment.",
+    "URL Regex": "\\/wp-admin\\/users\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Users",
+    "#": "2",
+    "Starter": "Find dormant users",
+    "Prompt": "Find users who registered more than 30 days ago but have never published a post or submitted a comment. Show username, email, role, and registration date.",
+    "URL Regex": "\\/wp-admin\\/users\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Users",
+    "#": "3",
+    "Starter": "Show registration trend",
+    "Prompt": "Show new user registrations per month for the last 24 months. Highlight whether the trend is accelerating, declining, or flat.",
+    "URL Regex": "\\/wp-admin\\/users\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "All Users",
+    "#": "4",
+    "Starter": "Find top contributors",
+    "Prompt": "Find the 20 users with the most published posts. Show post count, comment count, and account age. Compare to the user-base average.",
+    "URL Regex": "\\/wp-admin\\/users\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit User",
+    "#": "1",
+    "Starter": "Show this user's full activity",
+    "Prompt": "Show this user's complete activity: every published post, draft, comment, and last-known activity date. Calculate days since last contribution.",
+    "URL Regex": "\\/wp-admin\\/(user-edit\\.php\\?user_id=|profile\\.php(?:[?#]|$))",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit User",
+    "#": "2",
+    "Starter": "Show this user's content performance",
+    "Prompt": "Rank this user's published posts by comment count. Show their most-commented post and overall comments-per-post average.",
+    "URL Regex": "\\/wp-admin\\/(user-edit\\.php\\?user_id=|profile\\.php(?:[?#]|$))",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit User",
+    "#": "3",
+    "Starter": "Calculate engagement score",
+    "Prompt": "Score this user's engagement based on posts published, comments submitted, and account age. Compare their score to the site-wide average and percentile.",
+    "URL Regex": "\\/wp-admin\\/(user-edit\\.php\\?user_id=|profile\\.php(?:[?#]|$))",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit User",
+    "#": "4",
+    "Starter": "Add a role",
+    "Prompt": "Add a role to this user using the WordPress add role action. Which role should I add?",
+    "URL Regex": "\\/wp-admin\\/(user-edit\\.php\\?user_id=|profile\\.php(?:[?#]|$))",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Edit User",
+    "#": "5",
+    "Starter": "Email when this user publishes",
+    "Prompt": "Create an automation that emails me whenever this user publishes a post. Include the post title and link.",
+    "URL Regex": "\\/wp-admin\\/(user-edit\\.php\\?user_id=|profile\\.php(?:[?#]|$))",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Media Library",
+    "#": "1",
+    "Starter": "Show media library size",
+    "Prompt": "Show total media library size, count by file type (image/video/audio/document), and average file size per type.",
+    "URL Regex": "\\/wp-admin\\/upload\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Media Library",
+    "#": "2",
+    "Starter": "Find unused media",
+    "Prompt": "Find media attachments that aren't referenced anywhere in published post or page content and aren't set as a featured image. Show file name, type, size, and upload date.",
+    "URL Regex": "\\/wp-admin\\/upload\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Media Library",
+    "#": "3",
+    "Starter": "Find images without alt text",
+    "Prompt": "List image attachments that don't have alt text set (the _wp_attachment_image_alt postmeta is empty or missing). Show file name, size, and where the image is used.",
+    "URL Regex": "\\/wp-admin\\/upload\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Media Library",
+    "#": "4",
+    "Starter": "Show largest files",
+    "Prompt": "List the 25 largest files in the media library. Show file name, type, size, upload date, and which posts use them.",
+    "URL Regex": "\\/wp-admin\\/upload\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WordPress",
+    "Page": "Media Library",
+    "#": "5",
+    "Starter": "Show upload trend",
+    "Prompt": "Show media upload counts per month for the last 12 months. Identify months with unusually high upload activity.",
+    "URL Regex": "\\/wp-admin\\/upload\\.php(?:[?#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Orders",
+    "#": "1",
+    "Starter": "Show revenue by weekday",
+    "Prompt": "Show me total revenue broken down by day of the week for the last 3 months. Which day consistently generates the most revenue, and which generates the least?",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_order|admin\\.php\\?page=wc-orders(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Orders",
+    "#": "2",
+    "Starter": "Find unfulfilled orders",
+    "Prompt": "List all orders currently in processing or on-hold status. Sort them by date, oldest first, and flag any that have been in that status for more than 7 days.",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_order|admin\\.php\\?page=wc-orders(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Orders",
+    "#": "3",
+    "Starter": "Analyze refund rates",
+    "Prompt": "Calculate the refund rate for each product over the last 6 months. Show the number of orders, number of refunds, refund rate, and total refund amount per product, sorted by highest refund rate.",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_order|admin\\.php\\?page=wc-orders(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Orders",
+    "#": "4",
+    "Starter": "Find repeat buyers",
+    "Prompt": "Find all customers who have placed more than one order. Show how many orders each has placed, their total spend, and the average number of days between orders. Sort by total spend, highest first.",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_order|admin\\.php\\?page=wc-orders(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Orders",
+    "#": "5",
+    "Starter": "Email me when orders fail",
+    "Prompt": "Create an automation that sends me an email whenever a payment fails on an order. Include the order number, customer name, and order total in the email.",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_order|admin\\.php\\?page=wc-orders(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Products",
+    "#": "1",
+    "Starter": "Rank my top sellers",
+    "Prompt": "Rank all products by units sold and total revenue for the current quarter. Include a comparison to the previous quarter showing the change in units and revenue for each product.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=product(?:[&#]|$)",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Products",
+    "#": "2",
+    "Starter": "Find cross-sell opportunities",
+    "Prompt": "Analyze order data to find products that are frequently purchased together in the same order. Show the top 10 product pairs by co-occurrence count and the percentage of orders containing one that also contain the other.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=product(?:[&#]|$)",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Products",
+    "#": "3",
+    "Starter": "Alert me on low stock",
+    "Prompt": "Create an automation that sends me an email notification whenever a product goes out of stock. Include the product name and SKU in the email.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=product(?:[&#]|$)",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Products",
+    "#": "4",
+    "Starter": "Find products without sales",
+    "Prompt": "List all published products that have had zero orders in the last 90 days. Show the product name, price, and the date of their last order (if any).",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=product(?:[&#]|$)",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Products",
+    "#": "5",
+    "Starter": "Show revenue per product over time",
+    "Prompt": "Show each product's monthly revenue for the last 12 months. Highlight which products have increasing revenue, which are declining, and which are flat.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=product(?:[&#]|$)",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Dashboard",
+    "#": "1",
+    "Starter": "Show revenue trends",
+    "Prompt": "Show total revenue week over week for the last 3 months, and month over month for the last 12 months. Compare each month to the same month last year if data exists. Highlight whether revenue is accelerating or decelerating.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin(?:&path=%2F)?(?:[#&]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Dashboard",
+    "#": "2",
+    "Starter": "Calculate customer lifetime value",
+    "Prompt": "Calculate the average lifetime value across all customers by summing each customer's total order revenue. Break it down by the first product each customer purchased to show which entry products lead to the highest LTV.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin(?:&path=%2F)?(?:[#&]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Dashboard",
+    "#": "3",
+    "Starter": "Show cohort retention rates",
+    "Prompt": "Group all customers by the month of their first purchase. For each monthly cohort, show what percentage placed at least one additional order in each subsequent month.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin(?:&path=%2F)?(?:[#&]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Dashboard",
+    "#": "4",
+    "Starter": "Summarize monthly KPIs",
+    "Prompt": "Give me a monthly KPI summary for this month vs. last month: total revenue, number of new customers, average order value, total refunds, and number of subscription cancellations. Show the month-over-month change for each.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin(?:&path=%2F)?(?:[#&]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Dashboard",
+    "#": "5",
+    "Starter": "Analyze failed payments",
+    "Prompt": "Show all failed payment orders from the last 3 months. Group them by payment method and show the total count, total revenue lost, and how many were eventually recovered (completed in a later order by the same customer).",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin(?:&path=%2F)?(?:[#&]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Order",
+    "#": "1",
+    "Starter": "Show this customer's orders",
+    "Prompt": "Pull up every order placed by this customer. Show order dates, totals, products purchased, and order statuses. Include their total lifetime spend, number of orders, and average order value.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders&[^#]*action=edit",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Order",
+    "#": "2",
+    "Starter": "Add a note to this order",
+    "Prompt": "Add a note to this order. What should the note say?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders&[^#]*action=edit",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Order",
+    "#": "3",
+    "Starter": "Find similar orders",
+    "Prompt": "Find other orders that contain the same product(s) as this order. Show the average order value for those orders and which other products were most commonly included alongside them.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders&[^#]*action=edit",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Order",
+    "#": "4",
+    "Starter": "Show this order's timeline",
+    "Prompt": "Show the full status change history for this order with the date and time of each status transition and how long the order spent in each status.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders&[^#]*action=edit",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Order",
+    "#": "5",
+    "Starter": "Email on status change",
+    "Prompt": "Create an automation that sends a custom email whenever an order's status changes. What status change should trigger the email, and what should the email say?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders&[^#]*action=edit",
+    "Post Type": "shop_order"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Product",
+    "#": "1",
+    "Starter": "Show this product's performance",
+    "Prompt": "Show this product's total units sold, total revenue, number of refunds, and refund rate. Break it down by month for the last 12 months.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Product",
+    "#": "2",
+    "Starter": "Who buys this product?",
+    "Prompt": "Analyze the customers who have purchased this product. Show the geographic distribution by country from billing addresses, their average total spend across all orders, what percentage are repeat buyers, and which other products they most commonly purchase.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Product",
+    "#": "3",
+    "Starter": "Show this product's sales trend",
+    "Prompt": "Show this product's monthly units sold and revenue for the last 12 months. Is the trend accelerating, flat, or declining?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Product",
+    "#": "4",
+    "Starter": "Notify me when restocked",
+    "Prompt": "Create an automation that sends me an email when this product is restocked after being out of stock. Include the product name and current stock quantity in the email.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Product",
+    "#": "5",
+    "Starter": "Compare to other products",
+    "Prompt": "Compare this product's total revenue, units sold, and refund rate to other products in the same category. Rank them side by side.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "product"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Subscriptions",
+    "#": "1",
+    "Starter": "Show my churn rate",
+    "Prompt": "Calculate the subscription churn rate for each of the last 6 months. Show the number of active subscriptions at the start of each month, the number cancelled during the month, the churn rate, and the revenue lost to cancellations.",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_subscription|admin\\.php\\?page=wc-orders--shop_subscription(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Subscriptions",
+    "#": "2",
+    "Starter": "Show renewals due soon",
+    "Prompt": "List all subscriptions with a renewal date in the next 14 days. Group them by product and plan tier, and show the total renewal revenue at risk for each group.",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_subscription|admin\\.php\\?page=wc-orders--shop_subscription(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Subscriptions",
+    "#": "3",
+    "Starter": "Calculate MRR breakdown",
+    "Prompt": "Calculate current monthly recurring revenue from all active subscriptions. Break it down by product, plan tier, and show what percentage of MRR comes from subscriptions created in the last 3 months vs. older subscriptions.",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_subscription|admin\\.php\\?page=wc-orders--shop_subscription(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Subscriptions",
+    "#": "4",
+    "Starter": "Analyze cancellation patterns",
+    "Prompt": "Analyze all subscription cancellations from the last 6 months. Show which products have the highest cancellation rate, the average subscription tenure at cancellation, and whether cancellations cluster at specific points in the billing cycle (e.g., after month 1, month 3, month 12).",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_subscription|admin\\.php\\?page=wc-orders--shop_subscription(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Subscriptions",
+    "#": "5",
+    "Starter": "Email on failed renewal",
+    "Prompt": "Create an automation that sends the customer an email when their subscription renewal payment fails. Include their name, the subscription product, and a link to update their payment method.",
+    "URL Regex": "\\/wp-admin\\/(edit\\.php\\?post_type=shop_subscription|admin\\.php\\?page=wc-orders--shop_subscription(?:[&#]|$))(?!.*[?&]action=)",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Subscription",
+    "#": "1",
+    "Starter": "Extend this subscription",
+    "Prompt": "Extend this subscription. How many days should I extend it by?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders--shop_subscription&[^#]*action=edit",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Subscription",
+    "#": "2",
+    "Starter": "Show this subscriber's history",
+    "Prompt": "Show this subscriber's complete history: all orders, subscription status changes, renewal dates, and any failed payment attempts, sorted by date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders--shop_subscription&[^#]*action=edit",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Subscription",
+    "#": "3",
+    "Starter": "Assess this subscriber's risk",
+    "Prompt": "Assess this subscriber's cancellation risk based on their payment history (any failed payments or late renewals), how long they've been subscribed, and whether they've changed plans. How does their tenure compare to the average subscriber on this plan?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders--shop_subscription&[^#]*action=edit",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Subscription",
+    "#": "4",
+    "Starter": "Compare to similar subscribers",
+    "Prompt": "Find all other subscribers on the same plan as this subscriber. Compare this subscriber's tenure and total spend to the average, median, and top 10% of that group.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders--shop_subscription&[^#]*action=edit",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Subscription",
+    "#": "5",
+    "Starter": "Show payment history",
+    "Prompt": "List every payment attempt for this subscription — successful and failed — with the date, amount, payment method, and result for each.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-orders--shop_subscription&[^#]*action=edit",
+    "Post Type": "shop_subscription"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Coupons",
+    "#": "1",
+    "Starter": "Show coupon ROI",
+    "Prompt": "For each active coupon, show the number of times it was used, the total revenue from orders using it, the total discount given, and the net revenue (revenue minus discount). Sort by net revenue, highest first.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=shop_coupon(?:[&#]|$)",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Coupons",
+    "#": "2",
+    "Starter": "Find most used coupons",
+    "Prompt": "Rank all coupons by usage count. Show total uses, total discount amount, and average discount per use. Flag any coupons with usage significantly above average.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=shop_coupon(?:[&#]|$)",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Coupons",
+    "#": "3",
+    "Starter": "Send a coupon after purchase",
+    "Prompt": "Create an automation that generates a unique coupon code and emails it to a customer after they purchase a product. What product should trigger it, and what discount should the coupon offer?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=shop_coupon(?:[&#]|$)",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Coupons",
+    "#": "4",
+    "Starter": "Find expired coupons",
+    "Prompt": "List all coupons that have passed their expiry date or have reached their usage limit. Show the coupon code, expiry date, and last used date for each.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=shop_coupon(?:[&#]|$)",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Coupons",
+    "#": "5",
+    "Starter": "Compare orders with vs. without coupons",
+    "Prompt": "Compare orders that used a coupon code vs. orders without one for the last 6 months. Show the average order value, average number of items, and repeat purchase rate (percentage who ordered again within 90 days) for each group.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=shop_coupon(?:[&#]|$)",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Coupon",
+    "#": "1",
+    "Starter": "Show this coupon's results",
+    "Prompt": "Show all orders that used this coupon. Include total uses, total revenue generated, average order value, and how many of those customers had also used a different coupon on a previous order.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Coupon",
+    "#": "2",
+    "Starter": "Who used this coupon?",
+    "Prompt": "List every customer who used this coupon with their order total, the products they purchased, and whether they have placed any subsequent orders since.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Coupon",
+    "#": "3",
+    "Starter": "Generate a new coupon",
+    "Prompt": "Generate a new coupon code. What type of discount (percentage or fixed), what amount, and should it have a usage limit or expiry date?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Coupon",
+    "#": "4",
+    "Starter": "Send a win-back coupon",
+    "Prompt": "Create an automation that generates and emails a coupon code to a customer when they cancel their subscription. What discount should the coupon offer, and how long should it be valid?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Edit Coupon",
+    "#": "5",
+    "Starter": "Compare to other coupons",
+    "Prompt": "Compare this coupon's total uses, revenue generated, and average order value to all other coupons used during the same time period. Where does it rank?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "shop_coupon"
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Customers",
+    "#": "1",
+    "Starter": "Segment my customers",
+    "Prompt": "Segment all customers into groups based on lifetime value (top 20%, middle 60%, bottom 20%), purchase frequency (one-time, occasional, regular), and primary product category. Show the count and average LTV for each segment.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin&path=%2Fcustomers",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Customers",
+    "#": "2",
+    "Starter": "Find at-risk customers",
+    "Prompt": "Find customers whose average time between orders is less than 90 days but who haven't placed an order in over 120 days. Show their last order date, total lifetime spend, and how many days they're overdue.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin&path=%2Fcustomers",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Customers",
+    "#": "3",
+    "Starter": "Recognize VIP customers",
+    "Prompt": "Create an automation that fires when a customer's total lifetime spend exceeds a threshold. Add a VIP role to their account and send them a thank-you email. What spend threshold should I use?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin&path=%2Fcustomers",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Customers",
+    "#": "4",
+    "Starter": "Show new vs. returning buyers",
+    "Prompt": "For the current month, show how many orders came from first-time buyers vs. returning customers. Show the total revenue and average order value for each group, and compare to last month.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin&path=%2Fcustomers",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "All Customers",
+    "#": "5",
+    "Starter": "Show revenue by region",
+    "Prompt": "Break down total revenue by country and region using billing addresses. Show the top 15 regions by revenue, the number of orders from each, and the average order value per region.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-admin&path=%2Fcustomers",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Reports",
+    "#": "1",
+    "Starter": "Compare revenue to last year",
+    "Prompt": "Compare this month's revenue to the same month last year. Break it down by product category and show the year-over-year change for each. Also show the year-to-date comparison.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=(wc-reports\\b|wc-admin&path=%2Fanalytics)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Reports",
+    "#": "2",
+    "Starter": "Show AOV trends",
+    "Prompt": "Show the average order value for each of the last 12 months. Identify what's driving changes — is it shifts in product mix, increased coupon usage, or changes in items per order?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=(wc-reports\\b|wc-admin&path=%2Fanalytics)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Reports",
+    "#": "3",
+    "Starter": "Analyze payment methods",
+    "Prompt": "Show the breakdown of orders by payment method. For each method, show the number of orders, total revenue, average order value, and the percentage of orders that failed.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=(wc-reports\\b|wc-admin&path=%2Fanalytics)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Reports",
+    "#": "4",
+    "Starter": "Find fastest growing products",
+    "Prompt": "Rank products by revenue growth rate over the last 3 months compared to the prior 3 months. Show the absolute revenue for both periods and the percentage change. I'm looking for emerging products, not just the biggest sellers.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=(wc-reports\\b|wc-admin&path=%2Fanalytics)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Reports",
+    "#": "5",
+    "Starter": "Show revenue by coupon vs. organic",
+    "Prompt": "Compare total revenue from orders that used a coupon code vs. orders with no coupon for the last 6 months. Show the month-by-month split and whether the proportion of coupon revenue is growing or shrinking.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=(wc-reports\\b|wc-admin&path=%2Fanalytics)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Status",
+    "#": "1",
+    "Starter": "Find processing bottlenecks",
+    "Prompt": "Analyze the average time orders spend in each status before transitioning to the next one. Which status transition takes the longest? Are there orders stuck in a particular status for an unusually long time?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Status",
+    "#": "2",
+    "Starter": "Show recent failed orders",
+    "Prompt": "List all orders that are currently in failed status from the last 30 days. Show the customer name, email, payment method, order total, and the date the order failed.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Status",
+    "#": "3",
+    "Starter": "Email on order status change",
+    "Prompt": "Create an automation that sends a notification email whenever an order status changes to a specific status. What status should trigger it, and who should receive the email?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Status",
+    "#": "4",
+    "Starter": "Find incomplete orders",
+    "Prompt": "Find all orders stuck in pending or failed status for more than 48 hours. Group them by payment method and product to see if there's a pattern in what's failing.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WooCommerce",
+    "Page": "Status",
+    "#": "5",
+    "Starter": "Run a database health check",
+    "Prompt": "Check the WooCommerce database for common issues: orphaned order meta without a matching order, duplicate subscription records, orders with inconsistent status data, and any orders missing key metadata. Report what you find.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wc-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Courses",
+    "#": "1",
+    "Starter": "Show completion rates",
+    "Prompt": "Calculate the completion rate for every course: number of enrolled students, number who completed, and the completion percentage. Rank by lowest completion rate first.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-courses(?:[&#]|$)",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Courses",
+    "#": "2",
+    "Starter": "Show enrollment trends",
+    "Prompt": "Show enrollment counts per course for each of the last 12 months. Which courses are gaining enrollments, which are declining, and which are flat?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-courses(?:[&#]|$)",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Courses",
+    "#": "3",
+    "Starter": "Send certificates on completion",
+    "Prompt": "Create an automation that sends a certificate to a student when they complete a course. Which course should I set this up for?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-courses(?:[&#]|$)",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Courses",
+    "#": "4",
+    "Starter": "Find courses nobody finishes",
+    "Prompt": "Find courses where at least 5 students are enrolled but the completion rate is below 10%. Show the enrollment count, completion count, and completion rate for each.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-courses(?:[&#]|$)",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Courses",
+    "#": "5",
+    "Starter": "Compare course performance",
+    "Prompt": "Show a side-by-side comparison of all courses: completion rate, average quiz score, and average time from enrollment to completion. Rank by completion rate.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-courses(?:[&#]|$)",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Course",
+    "#": "1",
+    "Starter": "Where do students drop off?",
+    "Prompt": "Analyze this course's lesson and topic completion data. Show the completion count for each lesson in order and identify where the biggest drop-off happens — the point where students stop progressing.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Course",
+    "#": "2",
+    "Starter": "Enroll a user",
+    "Prompt": "Enroll a user in this course. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Course",
+    "#": "3",
+    "Starter": "Show time to complete",
+    "Prompt": "For students who have completed this course, calculate the average, median, fastest, and slowest time from enrollment to completion.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Course",
+    "#": "4",
+    "Starter": "Enroll in next course on completion",
+    "Prompt": "Create an automation that enrolls a student in the next course when they complete this one. Which course should they be enrolled in next?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Course",
+    "#": "5",
+    "Starter": "Notify leader on completion",
+    "Prompt": "Create an automation that emails the student's group leader when a student completes this course. Include the student's name and the completion date in the email.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-courses"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Lessons",
+    "#": "1",
+    "Starter": "Find highest drop-off lessons",
+    "Prompt": "For each course, compare the completion count of each lesson to the previous lesson. Identify the lessons with the largest drop-off — where the most students stopped progressing.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-lessons(?:[&#]|$)",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Lessons",
+    "#": "2",
+    "Starter": "Show completions this week",
+    "Prompt": "Show how many lesson completions happened this week, broken down by course. Compare to last week.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-lessons(?:[&#]|$)",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Lessons",
+    "#": "3",
+    "Starter": "Email students after lessons",
+    "Prompt": "Create an automation that sends a student an email when they complete a lesson, previewing what they'll learn next. Which course should I set this up for?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-lessons(?:[&#]|$)",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Lessons",
+    "#": "4",
+    "Starter": "Show average lesson pace",
+    "Prompt": "Calculate how many lessons the average student completes per week across all courses. Are students pacing steadily or do they tend to complete lessons in bursts?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-lessons(?:[&#]|$)",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Lessons",
+    "#": "5",
+    "Starter": "Find lessons with no activity",
+    "Prompt": "List all lessons that have had zero completions in the last 30 days, even though they belong to courses with active students. Show the lesson name, course name, and number of students enrolled in the course.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-lessons(?:[&#]|$)",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Lesson",
+    "#": "1",
+    "Starter": "Who completed this lesson?",
+    "Prompt": "List all students who have completed this lesson with their completion date. Also show students who completed the previous lesson but have not completed this one.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Lesson",
+    "#": "2",
+    "Starter": "Mark complete for a user",
+    "Prompt": "Mark this lesson complete for a specific user. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Lesson",
+    "#": "3",
+    "Starter": "Who's stuck on this lesson?",
+    "Prompt": "Find students who completed the lesson before this one but haven't completed this lesson. Show their name, when they completed the previous lesson, and how many days they've been stuck.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Lesson",
+    "#": "4",
+    "Starter": "Show time to complete",
+    "Prompt": "Calculate the average time students take between completing the previous lesson and completing this one.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Lesson",
+    "#": "5",
+    "Starter": "Reset for a user",
+    "Prompt": "Mark this lesson as not complete for a specific user so they can redo it. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-lessons"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Quizzes",
+    "#": "1",
+    "Starter": "Show pass/fail rates",
+    "Prompt": "Calculate the pass rate and fail rate for every quiz. Show total attempts, passes, fails, and the pass percentage. Rank by lowest pass rate first.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-quiz(?:[&#]|$)",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Quizzes",
+    "#": "2",
+    "Starter": "Show average scores",
+    "Prompt": "Show the average quiz score for each quiz this month and compare it to last month. Are scores improving or declining?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-quiz(?:[&#]|$)",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Quizzes",
+    "#": "3",
+    "Starter": "Email students who fail",
+    "Prompt": "Create an automation that sends a student an email when they fail a quiz, encouraging them to review the material and try again. Which quiz should I set this up for?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-quiz(?:[&#]|$)",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Quizzes",
+    "#": "4",
+    "Starter": "Analyze retake patterns",
+    "Prompt": "For each quiz, show the average number of attempts per student and whether scores improve on retakes. Which quizzes do students need the most attempts for, and do retakes actually help?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-quiz(?:[&#]|$)",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Quizzes",
+    "#": "5",
+    "Starter": "Find quizzes nobody passes",
+    "Prompt": "Find quizzes where the pass rate is below 25%. Show the quiz name, course, total attempts, and pass rate. These may need content or difficulty adjustments.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-quiz(?:[&#]|$)",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Quiz",
+    "#": "1",
+    "Starter": "Show score distribution",
+    "Prompt": "Show the score distribution for all attempts on this quiz: how many students scored 0-10%, 11-20%, and so on up to 91-100%. Include the average and median score.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Quiz",
+    "#": "2",
+    "Starter": "Reset attempts for a user",
+    "Prompt": "Reset a specific user's attempts for this quiz so they can retake it. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Quiz",
+    "#": "3",
+    "Starter": "Find the hardest questions",
+    "Prompt": "Analyze the question-level results for this quiz. Rank each question by the percentage of students who answered it incorrectly. Which questions are the hardest?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Quiz",
+    "#": "4",
+    "Starter": "Award achievement on pass",
+    "Prompt": "Create an automation that awards an achievement and sends a congratulations email when a student passes this quiz.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Quiz",
+    "#": "5",
+    "Starter": "Mark complete for a user",
+    "Prompt": "Mark this quiz as complete for a specific user. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-quiz"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Topics",
+    "#": "1",
+    "Starter": "Show completion rates",
+    "Prompt": "Calculate the completion rate for all topics, grouped by their parent lesson and course. Show enrollment count, completions, and completion percentage for each.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-topic(?:[&#]|$)",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Topics",
+    "#": "2",
+    "Starter": "Find least completed topics",
+    "Prompt": "Find the topics with the lowest completion rates relative to their parent lesson's completion rate. These are topics that students skip or get stuck on even when they're completing the rest of the lesson.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-topic(?:[&#]|$)",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Topics",
+    "#": "3",
+    "Starter": "Email on topic completion",
+    "Prompt": "Create an automation that sends a student a progress update email when they complete a topic. Which course should I set this up for?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-topic(?:[&#]|$)",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Topics",
+    "#": "4",
+    "Starter": "Show topics per course",
+    "Prompt": "Count the number of topics per course. Which courses have the most topics, and which have the fewest?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-topic(?:[&#]|$)",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Topics",
+    "#": "5",
+    "Starter": "Show activity this week",
+    "Prompt": "Show topic completions from the last 7 days, broken down by course and number of students. Compare to the prior 7 days.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-topic(?:[&#]|$)",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Topic",
+    "#": "1",
+    "Starter": "Who's stuck on this topic?",
+    "Prompt": "Find students who completed the previous topic in this lesson but haven't completed this one. Show their name, when they completed the previous topic, and how many days it's been.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Topic",
+    "#": "2",
+    "Starter": "Mark complete for a user",
+    "Prompt": "Mark this topic complete for a specific user. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Topic",
+    "#": "3",
+    "Starter": "Show completion trend",
+    "Prompt": "Show how many students completed this topic each month for the last 6 months. Is the completion count increasing, decreasing, or staying the same?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Topic",
+    "#": "4",
+    "Starter": "Show time to complete",
+    "Prompt": "Calculate the average time students take to complete this topic, from when they completed the previous topic to when they completed this one.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Topic",
+    "#": "5",
+    "Starter": "Reset for a user",
+    "Prompt": "Mark this topic as not complete for a specific user so they can redo it. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "sfwd-topic"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Groups",
+    "#": "1",
+    "Starter": "Compare group performance",
+    "Prompt": "Compare all groups side by side: average course completion rate and average quiz score for each group's members. Rank by completion rate.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=groups(?:[&#]|$)",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Groups",
+    "#": "2",
+    "Starter": "Show largest groups",
+    "Prompt": "List all groups ranked by member count. Show each group's name, number of members, associated courses, and group leader(s).",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=groups(?:[&#]|$)",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Groups",
+    "#": "3",
+    "Starter": "Find inactive groups",
+    "Prompt": "Find groups where no member has completed a lesson, topic, or quiz in the last 30 days. Show the group name, member count, leader, and the date of the most recent activity.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=groups(?:[&#]|$)",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Groups",
+    "#": "4",
+    "Starter": "Show group progress summary",
+    "Prompt": "For each group, show total members, average course progress percentage, average quiz score, and number of course completions this month.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=groups(?:[&#]|$)",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "All Groups",
+    "#": "5",
+    "Starter": "Compare leader effectiveness",
+    "Prompt": "Group all groups by their group leader. For each leader, show the average completion rate and average quiz score across all their groups' members. Which leaders' groups perform best?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=groups(?:[&#]|$)",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Group",
+    "#": "1",
+    "Starter": "Show group dashboard",
+    "Prompt": "Show all members of this group with their course progress (percentage complete for each course), quiz scores, and completion dates. Highlight any members significantly below the group average.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Group",
+    "#": "2",
+    "Starter": "Add a user to this group",
+    "Prompt": "Add a user to this group. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Group",
+    "#": "3",
+    "Starter": "Find members falling behind",
+    "Prompt": "Find members of this group whose course progress is more than 25% below the group average. Show their name, current progress, and the group average for comparison.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Group",
+    "#": "4",
+    "Starter": "Email the group leader",
+    "Prompt": "Send an email to this group's leader(s). What should the email say?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Edit Group",
+    "#": "5",
+    "Starter": "Notify leader on course completion",
+    "Prompt": "Create an automation that emails this group's leader whenever a member completes all of the group's courses. Include the student's name and completion date.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "groups"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Reports",
+    "#": "1",
+    "Starter": "Score engagement by student",
+    "Prompt": "Create an engagement score for each student based on their total lesson completions, quiz attempts, quiz scores, and assignment submissions over the last 90 days. Rank students from most to least engaged.",
+    "URL Regex": "\\/wp-admin/admin.php?page=learndash-lms-reports\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Reports",
+    "#": "2",
+    "Starter": "Show monthly active learners",
+    "Prompt": "Show the number of distinct students who completed at least one lesson, topic, or quiz each month for the last 12 months. Is the trend increasing or decreasing?",
+    "URL Regex": "\\/wp-admin/admin.php?page=learndash-lms-reports\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Reports",
+    "#": "3",
+    "Starter": "Compare completion by group",
+    "Prompt": "Compare the average time to course completion and the average quiz pass rate across all groups. Which groups complete fastest and score highest?",
+    "URL Regex": "\\/wp-admin/admin.php?page=learndash-lms-reports\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Reports",
+    "#": "4",
+    "Starter": "Find most engaged students",
+    "Prompt": "Find the 20 most active students over the last 90 days based on lesson completions, quiz attempts, quiz scores, and assignment submissions. Show their activity counts.",
+    "URL Regex": "\\/wp-admin/admin.php?page=learndash-lms-reports\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Reports",
+    "#": "5",
+    "Starter": "Show progress across all courses",
+    "Prompt": "For every course, show the total number of students enrolled, in progress, and completed. Calculate the completion percentage and the average days to completion for each.",
+    "URL Regex": "\\/wp-admin/admin.php?page=learndash-lms-reports\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Assignments",
+    "#": "1",
+    "Starter": "Show ungraded assignments",
+    "Prompt": "List all assignments that have been submitted but not yet graded. Sort by submission date, oldest first, and show the student name, course, and how many days the assignment has been waiting.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-assignment(?:[&#]|$)",
+    "Post Type": "sfwd-assignment"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Assignments",
+    "#": "2",
+    "Starter": "Show assignments per course",
+    "Prompt": "For each course, show the total submitted assignments, total graded, total ungraded, and the percentage graded. Which courses have the biggest grading backlog?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-assignment(?:[&#]|$)",
+    "Post Type": "sfwd-assignment"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Assignments",
+    "#": "3",
+    "Starter": "Notify student on grading",
+    "Prompt": "Create an automation that sends a student an email when their assignment is graded, letting them know their results are ready.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-assignment(?:[&#]|$)",
+    "Post Type": "sfwd-assignment"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Assignments",
+    "#": "4",
+    "Starter": "Show grading turnaround time",
+    "Prompt": "Calculate the average time between assignment submission and grading for each course. Which courses have the fastest and slowest grading turnaround?",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-assignment(?:[&#]|$)",
+    "Post Type": "sfwd-assignment"
+  },
+  {
+    "Section": "LearnDash",
+    "Page": "Assignments",
+    "#": "5",
+    "Starter": "Alert leader on submission",
+    "Prompt": "Create an automation that emails the student's group leader whenever a student submits an assignment. Include the student's name, the course, and the assignment title.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=sfwd-assignment(?:[&#]|$)",
+    "Post Type": "sfwd-assignment"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Members",
+    "#": "1",
+    "Starter": "Show member growth",
+    "Prompt": "Show BuddyBoss member registrations per month for the last 12 months. Compare to the activity rate (members posting in the activity stream) per cohort.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members(?:[&#]|$)(?!.*user_id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Members",
+    "#": "2",
+    "Starter": "Find inactive members",
+    "Prompt": "Find BuddyBoss members who haven't posted in the activity stream, joined a group, or sent a message in the last 60 days. Show name, registration date, and last activity date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members(?:[&#]|$)(?!.*user_id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Members",
+    "#": "3",
+    "Starter": "Compare profile completion",
+    "Prompt": "Compare BuddyBoss member profile completion: percentage of xprofile fields filled in by each member. Show the distribution and identify members with incomplete profiles.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members(?:[&#]|$)(?!.*user_id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Members",
+    "#": "4",
+    "Starter": "Find top connectors",
+    "Prompt": "Find BuddyBoss members with the most friend connections. Show the top 25 with friend count and number of groups they belong to.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members(?:[&#]|$)(?!.*user_id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Member",
+    "#": "1",
+    "Starter": "Show this member's activity timeline",
+    "Prompt": "Show this BuddyBoss member's full activity: posts to the activity stream, group joins/leaves, friendships made, forum topics, and replies. Order chronologically.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members&[^#]*user_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Member",
+    "#": "2",
+    "Starter": "Show this member's groups",
+    "Prompt": "Show every BuddyBoss group this member belongs to with their role in each group, when they joined, and their post count in each group's activity stream.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members&[^#]*user_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Member",
+    "#": "3",
+    "Starter": "Add to a group",
+    "Prompt": "Add this BuddyBoss user to a group. Which group should I add them to?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members&[^#]*user_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Member",
+    "#": "4",
+    "Starter": "Set profile type",
+    "Prompt": "Set this BuddyBoss user's profile type to a specific type. Which profile type should I assign?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members&[^#]*user_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Member",
+    "#": "5",
+    "Starter": "Send a private message",
+    "Prompt": "Send a BuddyBoss private message to this user. What should the message say?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-members&[^#]*user_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Groups",
+    "#": "1",
+    "Starter": "Compare group activity rates",
+    "Prompt": "Compare BuddyBoss groups by activity rate: posts per member per month over the last 90 days. Rank from most to least active.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups(?:[&#]|$)(?!.*action=edit)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Groups",
+    "#": "2",
+    "Starter": "Find inactive groups",
+    "Prompt": "Find BuddyBoss groups with no activity stream posts in the last 30 days. Show group name, member count, and date of last activity.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups(?:[&#]|$)(?!.*action=edit)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Groups",
+    "#": "3",
+    "Starter": "Show group size distribution",
+    "Prompt": "Show the distribution of BuddyBoss group member counts. Identify the largest groups and how many groups have fewer than 5 members.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups(?:[&#]|$)(?!.*action=edit)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Groups",
+    "#": "4",
+    "Starter": "Email me on new group",
+    "Prompt": "Create an automation that emails me whenever a BuddyBoss user creates a group. Include the group name, creator, and group type.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups(?:[&#]|$)(?!.*action=edit)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Groups",
+    "#": "5",
+    "Starter": "Show group growth",
+    "Prompt": "Show new BuddyBoss group creations per month for the last 12 months. Identify which group types are being created most often.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups(?:[&#]|$)(?!.*action=edit)",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Group",
+    "#": "1",
+    "Starter": "Show this group's activity timeline",
+    "Prompt": "Show this BuddyBoss group's activity for the last 30 days: posts, replies, joins, leaves. Identify the most active member and the daily post average.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups&[^#]*action=edit",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Group",
+    "#": "2",
+    "Starter": "Show member engagement",
+    "Prompt": "Show how active each member of this BuddyBoss group is: posts to the group activity stream, replies, and last activity date. Highlight members who joined but never posted.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups&[^#]*action=edit",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Group",
+    "#": "3",
+    "Starter": "Find inactive members",
+    "Prompt": "Find members of this BuddyBoss group who haven't posted in the group's activity stream or replied to discussions in the last 30 days. Show name and join date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups&[^#]*action=edit",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Group",
+    "#": "4",
+    "Starter": "Message all members",
+    "Prompt": "Send a BuddyBoss private message to all members of this group. What should the message say?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups&[^#]*action=edit",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Group",
+    "#": "5",
+    "Starter": "Add a user",
+    "Prompt": "Add a user to this BuddyBoss group. What is their username or email address?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=bp-groups&[^#]*action=edit",
+    "Post Type": ""
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Forums",
+    "#": "1",
+    "Starter": "Show forum activity",
+    "Prompt": "Show each BuddyBoss forum ranked by topic count and reply count over the last 90 days. Show the most recent activity date per forum.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=forum(?:[&#]|$)",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Forums",
+    "#": "2",
+    "Starter": "Find inactive forums",
+    "Prompt": "Find BuddyBoss forums with no new topics in the last 30 days. Show forum name, total topic count, and last activity date.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=forum(?:[&#]|$)",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Forums",
+    "#": "3",
+    "Starter": "Show top topic creators",
+    "Prompt": "Rank users by topics created across all BuddyBoss forums over the last 12 months. Show topic count and reply count per user.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=forum(?:[&#]|$)",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Forums",
+    "#": "4",
+    "Starter": "Compare forum subscribers",
+    "Prompt": "Show subscriber counts per BuddyBoss forum and the ratio of subscribers to topics. Identify forums with many subscribers but low activity.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=forum(?:[&#]|$)",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Forums",
+    "#": "5",
+    "Starter": "Email me on new topic",
+    "Prompt": "Create an automation that emails me whenever a BuddyBoss user creates a forum topic. Include topic title, author, and forum name in the email.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=forum(?:[&#]|$)",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Forum",
+    "#": "1",
+    "Starter": "Show this forum's activity",
+    "Prompt": "Show this forum's topics ranked by reply count and views. Identify the most active topic creators and the daily activity rate.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Forum",
+    "#": "2",
+    "Starter": "Find unanswered topics",
+    "Prompt": "Find topics in this forum with zero replies. Show the topic title, author, and how long the topic has been open.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Forum",
+    "#": "3",
+    "Starter": "Find cold topics",
+    "Prompt": "Find topics in this forum with no new replies in the last 30 days. Show topic title, last reply date, and reply count.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Forum",
+    "#": "4",
+    "Starter": "Subscribe a user",
+    "Prompt": "Subscribe a BuddyBoss user to this forum so they get notified of new topics. What is their username or email?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Forum",
+    "#": "5",
+    "Starter": "Email me on new reply",
+    "Prompt": "Create an automation that emails me whenever a BuddyBoss user posts a reply in this forum. Include reply content, author, and topic title.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "forum"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Topics",
+    "#": "1",
+    "Starter": "Show topic engagement",
+    "Prompt": "Show BuddyBoss forum topics ranked by reply count over the last 90 days. Show the average replies per topic and identify the top 10 most active topics.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=topic(?:[&#]|$)",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Topics",
+    "#": "2",
+    "Starter": "Find unanswered topics",
+    "Prompt": "Find BuddyBoss topics with zero replies, sorted by oldest first. Show topic title, author, forum, and how long the topic has been waiting.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=topic(?:[&#]|$)",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Topics",
+    "#": "3",
+    "Starter": "Show top topic creators",
+    "Prompt": "Rank users by topics created in the last 90 days. Show topic count, replies received, and the forums they post in most.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=topic(?:[&#]|$)",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Topics",
+    "#": "4",
+    "Starter": "Find cold topics",
+    "Prompt": "Find BuddyBoss topics with no new replies in the last 30 days. Show title, last reply date, forum, and total reply count.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=topic(?:[&#]|$)",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "All Topics",
+    "#": "5",
+    "Starter": "Email me on topic reply",
+    "Prompt": "Create an automation that emails me whenever a BuddyBoss topic receives a reply. Include the topic title and reply content in the email.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=topic(?:[&#]|$)",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Topic",
+    "#": "1",
+    "Starter": "Show this topic's reply activity",
+    "Prompt": "Show this BuddyBoss topic's replies in chronological order with author and timestamp. Identify the most active replier and the average time between replies.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Topic",
+    "#": "2",
+    "Starter": "Find similar topics",
+    "Prompt": "Find similar topics in the same BuddyBoss forum based on title and tags. Show title, author, reply count, and last activity.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Topic",
+    "#": "3",
+    "Starter": "Post a reply",
+    "Prompt": "Post a reply to this BuddyBoss topic. What should the reply say?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Topic",
+    "#": "4",
+    "Starter": "Email me on new reply",
+    "Prompt": "Create an automation that emails me whenever this BuddyBoss topic receives a reply. Include the reply content and author in the email.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "BuddyBoss",
+    "Page": "Edit Topic",
+    "#": "5",
+    "Starter": "Show topic timeline",
+    "Prompt": "Show a chronological timeline of this BuddyBoss topic: when it was created, when each reply was posted, and any periods of inactivity longer than 7 days.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "topic"
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Dashboard",
+    "#": "1",
+    "Starter": "Show SEO score distribution",
+    "Prompt": "Show the distribution of Yoast SEO scores (the _yoast_wpseo_linkdex postmeta) across all published posts and pages. Group into 0-30 needs work, 31-70 OK, 71-100 good. Show counts per bucket.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_dashboard\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Dashboard",
+    "#": "2",
+    "Starter": "Find posts without focus keyphrase",
+    "Prompt": "Find published posts that don't have a Yoast focus keyphrase set (_yoast_wpseo_focuskw is empty or missing). Show title, author, last modified date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_dashboard\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Dashboard",
+    "#": "3",
+    "Starter": "Find low-scoring posts",
+    "Prompt": "Find published posts where the Yoast SEO score (_yoast_wpseo_linkdex) is below 50. Show title, score, focus keyphrase if any, and author. Sort by lowest score first.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_dashboard\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Dashboard",
+    "#": "4",
+    "Starter": "Compare scores by post type",
+    "Prompt": "Compare Yoast SEO score distribution by post type. Show average and median score for posts vs. pages vs. other public post types. Identify which post type needs the most attention.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_dashboard\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Dashboard",
+    "#": "5",
+    "Starter": "Audit missing meta descriptions",
+    "Prompt": "Find published posts that don't have a Yoast meta description (_yoast_wpseo_metadesc is empty). Show title, author, post type, and word count.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_dashboard\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Tools",
+    "#": "1",
+    "Starter": "Audit SEO titles",
+    "Prompt": "Audit Yoast SEO titles (_yoast_wpseo_title) across all published posts. Find titles that are too short (under 30 chars) or too long (over 60 chars). Show count and examples.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_tools\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Tools",
+    "#": "2",
+    "Starter": "Find duplicate titles",
+    "Prompt": "Find posts where the Yoast SEO title (_yoast_wpseo_title) is identical to another post's. Show the title and the list of post IDs sharing it.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_tools\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Tools",
+    "#": "3",
+    "Starter": "Find noindexed posts",
+    "Prompt": "Find posts that are set to noindex via Yoast (_yoast_wpseo_meta-robots-noindex postmeta). Show title, post type, and author.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_tools\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Tools",
+    "#": "4",
+    "Starter": "Set focus keyphrase",
+    "Prompt": "Set a Yoast focus keyphrase for a specific post. Which post and what keyphrase?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_tools\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Yoast SEO",
+    "Page": "Tools",
+    "#": "5",
+    "Starter": "Email me on low SEO score",
+    "Prompt": "Create an automation that emails me when a post's Yoast SEO score drops below a threshold (using the Yoast trigger 'A post's SEO score is greater than, less than, or equal to a value'). What threshold should trigger it?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpseo_tools\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Dashboard",
+    "#": "1",
+    "Starter": "Show SEO score distribution",
+    "Prompt": "Show the distribution of Rank Math SEO scores (rank_math_seo_score postmeta) across all published posts and pages. Group into 0-50 needs work, 51-80 good, 81-100 excellent. Show counts per bucket.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Dashboard",
+    "#": "2",
+    "Starter": "Find posts without focus keyword",
+    "Prompt": "Find published posts that don't have a Rank Math focus keyword set (rank_math_focus_keyword is empty or missing). Show title, author, post type, and last modified date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Dashboard",
+    "#": "3",
+    "Starter": "Find low-scoring posts",
+    "Prompt": "Find published posts where the Rank Math SEO score is below 50. Show title, score, focus keyword if any, and author. Sort by lowest score first.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Dashboard",
+    "#": "4",
+    "Starter": "Compare scores by post type",
+    "Prompt": "Compare Rank Math SEO score distribution by post type. Show average and median score for posts vs. pages vs. other public post types.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Dashboard",
+    "#": "5",
+    "Starter": "Audit missing SEO descriptions",
+    "Prompt": "Find published posts that don't have a Rank Math SEO description (rank_math_description is empty). Show title, author, post type, and word count.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Status",
+    "#": "1",
+    "Starter": "Audit SEO titles",
+    "Prompt": "Audit Rank Math SEO titles (rank_math_title) across all published posts. Find titles that are too short (under 30 chars) or too long (over 60 chars). Show count and examples.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Status",
+    "#": "2",
+    "Starter": "Find duplicate titles",
+    "Prompt": "Find posts where the Rank Math SEO title (rank_math_title) is identical to another post's. Show the title and list of post IDs sharing it.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Status",
+    "#": "3",
+    "Starter": "Find noindexed posts",
+    "Prompt": "Find posts that are noindexed via Rank Math (check rank_math_robots postmeta for 'noindex'). Show title, post type, and author.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Status",
+    "#": "4",
+    "Starter": "Set SEO title",
+    "Prompt": "Set a Rank Math SEO title for a specific post. Which post and what title?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "Rank Math SEO",
+    "Page": "Status",
+    "#": "5",
+    "Starter": "Email me on low SEO score",
+    "Prompt": "Create an automation that emails me when a post's Rank Math SEO score drops below a threshold (using the Rank Math trigger 'A post's SEO score is greater than, less than, or equal to a value'). What threshold should trigger it?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=rank-math-status\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "All Forms",
+    "#": "1",
+    "Starter": "Show submission volume",
+    "Prompt": "Show WPForms submission volume per form for the last 30 days. Compare to the previous 30 days and highlight forms with rising or falling submission rates.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-overview\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "All Forms",
+    "#": "2",
+    "Starter": "Find inactive forms",
+    "Prompt": "Find WPForms forms with no submissions in the last 60 days. Show form name, total lifetime entries, and date of last submission.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-overview\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "All Forms",
+    "#": "3",
+    "Starter": "Show top forms",
+    "Prompt": "Rank WPForms forms by total entries received. Show entry count, average entries per day, and creation date for each.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-overview\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "All Forms",
+    "#": "4",
+    "Starter": "Show submission trend",
+    "Prompt": "Show total WPForms submissions per week for the last 12 weeks across all forms. Highlight which forms are driving the trend.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-overview\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Edit Form",
+    "#": "1",
+    "Starter": "Automate this form",
+    "Prompt": "Create an Uncanny Automator recipe using this WPForms form as the trigger (the 'A user submits a form' / WPFSUBFORM trigger). What should happen when this form is submitted?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-builder\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Edit Form",
+    "#": "2",
+    "Starter": "Summarize submissions",
+    "Prompt": "Read the last 30 days of entries to this WPForms form and summarize the patterns: top values per choice field, common themes in free-text fields, and peak submission times.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-builder\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Edit Form",
+    "#": "3",
+    "Starter": "Compile field statistics",
+    "Prompt": "For every field in this WPForms form, show the fill rate (how often it's completed), the average length for text fields, the value distribution for choice fields, and the most common value.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-builder\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Edit Form",
+    "#": "4",
+    "Starter": "Find drop-off fields",
+    "Prompt": "Identify which fields in this WPForms form are most often left blank in completed submissions. Suggest which fields might be causing user abandonment or confusion.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-builder\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Edit Form",
+    "#": "5",
+    "Starter": "Show form performance",
+    "Prompt": "Show this WPForms form's total entry count, average entries per day, and how it compares to the average performance of all forms on the site.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-builder\\b",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Entries Overview",
+    "#": "1",
+    "Starter": "Show recent entries",
+    "Prompt": "Show all WPForms entries submitted in the last 7 days across all forms. Group by form and show the volume per form.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries(?:[&#]|$)(?!.*view=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Entries Overview",
+    "#": "2",
+    "Starter": "Find spam entries",
+    "Prompt": "Find WPForms entries flagged as spam in the last 90 days. Show form name, IP address, submission date, and identify any IPs that appear repeatedly.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries(?:[&#]|$)(?!.*view=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Entries Overview",
+    "#": "3",
+    "Starter": "Show entry volume by form",
+    "Prompt": "Show WPForms entry counts per form for the current month vs. the previous month. Calculate the percentage change for each form.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries(?:[&#]|$)(?!.*view=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Entries Overview",
+    "#": "4",
+    "Starter": "Find old entries",
+    "Prompt": "Find WPForms entries older than 90 days. Show count per form and total storage used. Recommend whether they're safe to archive.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries(?:[&#]|$)(?!.*view=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Entries Overview",
+    "#": "5",
+    "Starter": "Show entries with file uploads",
+    "Prompt": "Find WPForms entries that include file uploads. Show form name, total file count, and total file size across all such entries.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries(?:[&#]|$)(?!.*view=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Form Entries",
+    "#": "1",
+    "Starter": "Show submission timing",
+    "Prompt": "Show submission timing patterns for this WPForms form: counts by day of the week and by hour of day. Identify peak submission windows.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=list",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Form Entries",
+    "#": "2",
+    "Starter": "Find duplicate submissions",
+    "Prompt": "Find duplicate submissions to this WPForms form, defined as the same email address submitting more than once. Show count of duplicates per email.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=list",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Form Entries",
+    "#": "3",
+    "Starter": "Add submitter to a role",
+    "Prompt": "Create an automation that adds a role to the user when this WPForms form is submitted by a logged-in user. Which role should I add?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=list",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Form Entries",
+    "#": "4",
+    "Starter": "Search entries by field",
+    "Prompt": "Search this WPForms form's entries by a specific field value. Which field and what value should I search for?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=list",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Single Entry",
+    "#": "1",
+    "Starter": "Show this submitter's other entries",
+    "Prompt": "Find all other WPForms entries from this submitter (matched by email address) across all forms. Show form name, submission date, and key field values.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=details",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Single Entry",
+    "#": "2",
+    "Starter": "Show entry metadata",
+    "Prompt": "Show this WPForms entry's metadata: submission date, IP address, user agent, referring URL, and time spent filling the form (if tracked).",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=details",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Single Entry",
+    "#": "3",
+    "Starter": "Compare to typical submission",
+    "Prompt": "Compare this WPForms entry's field values to the typical submission for this form. Identify which fields are unusual (e.g., much longer/shorter than average).",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=details",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Single Entry",
+    "#": "4",
+    "Starter": "Send a reply email",
+    "Prompt": "Send a reply email to this WPForms submitter. What should the email say?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=details",
+    "Post Type": ""
+  },
+  {
+    "Section": "WPForms",
+    "Page": "Single Entry",
+    "#": "5",
+    "Starter": "Find entries from same IP",
+    "Prompt": "Find all WPForms entries submitted from this entry's IP address across all forms. Show form name, submission date, and email used.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=wpforms-entries&[^#]*view=details",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "All Forms",
+    "#": "1",
+    "Starter": "Show submission volume",
+    "Prompt": "Show Gravity Forms submission volume per form for the last 30 days. Compare to the previous 30 days and highlight forms with rising or falling submission rates.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms(?:[&#]|$)(?!.*[?&]id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "All Forms",
+    "#": "2",
+    "Starter": "Find inactive forms",
+    "Prompt": "Find Gravity Forms forms with no entries in the last 60 days. Show form name, total entries lifetime, and last entry date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms(?:[&#]|$)(?!.*[?&]id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "All Forms",
+    "#": "3",
+    "Starter": "Show top forms",
+    "Prompt": "Rank Gravity Forms forms by total entries received. Show entry count, average entries per day, and form creation date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms(?:[&#]|$)(?!.*[?&]id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "All Forms",
+    "#": "4",
+    "Starter": "Show entry status breakdown",
+    "Prompt": "Show entry status breakdown across all Gravity Forms: active, spam, trash. Calculate spam rate per form.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms(?:[&#]|$)(?!.*[?&]id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Edit Form",
+    "#": "1",
+    "Starter": "Automate this form",
+    "Prompt": "Create an Uncanny Automator recipe using this Gravity Forms form as the trigger (the 'A form is submitted' / GFSUBFORM trigger). What should happen when this form is submitted?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms&[^#]*[?&]id=\\d",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Edit Form",
+    "#": "2",
+    "Starter": "Summarize entries",
+    "Prompt": "Read the last 30 days of Gravity Forms entries to this form and summarize the patterns: top values per choice field, common themes in free-text fields, and peak submission times.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms&[^#]*[?&]id=\\d",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Edit Form",
+    "#": "3",
+    "Starter": "Compile field statistics",
+    "Prompt": "For every field in this Gravity Forms form, show the fill rate (how often it's completed), the average length for text fields, the value distribution for choice fields, and the most common value.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms&[^#]*[?&]id=\\d",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Edit Form",
+    "#": "4",
+    "Starter": "Find drop-off fields",
+    "Prompt": "Identify which fields in this Gravity Forms form are most often left blank in completed entries. Suggest which fields might be causing abandonment or confusion.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms&[^#]*[?&]id=\\d",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Edit Form",
+    "#": "5",
+    "Starter": "Show form performance",
+    "Prompt": "Show this Gravity Forms form's total entry count, average entries per day, spam rate, and how it compares to the average performance of all forms on the site.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_edit_forms&[^#]*[?&]id=\\d",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Entries",
+    "#": "1",
+    "Starter": "Show daily entry counts",
+    "Prompt": "Show Gravity Forms entry counts for this form per day for the last 30 days. Identify days with unusually high or low volume.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries\\b(?!.*view=entry)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Entries",
+    "#": "2",
+    "Starter": "Find spam entries",
+    "Prompt": "Find Gravity Forms entries marked as spam for this form. Show count, common patterns (IPs, email domains), and date range.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries\\b(?!.*view=entry)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Entries",
+    "#": "3",
+    "Starter": "Find duplicate entries",
+    "Prompt": "Find duplicate Gravity Forms entries for this form (same email address submitting more than once). Show count per email.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries\\b(?!.*view=entry)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Entries",
+    "#": "4",
+    "Starter": "Show entry timing patterns",
+    "Prompt": "Show Gravity Forms entry submission timing for this form: counts by day of week and by hour. Identify peak submission windows.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries\\b(?!.*view=entry)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Entries",
+    "#": "5",
+    "Starter": "Bulk delete old entries",
+    "Prompt": "Find Gravity Forms entries older than 90 days for this form. Show count per month and offer to delete them using the Gravity Forms delete entry action.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries\\b(?!.*view=entry)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Single Entry",
+    "#": "1",
+    "Starter": "Show submitter's other entries",
+    "Prompt": "Find all other Gravity Forms entries from this submitter (matched by email) across all forms. Show form name, entry date, and entry status.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries&[^#]*view=entry",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Single Entry",
+    "#": "2",
+    "Starter": "Show entry metadata",
+    "Prompt": "Show this Gravity Forms entry's metadata: submission date, IP address, user agent, source URL, and any entry notes.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries&[^#]*view=entry",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Single Entry",
+    "#": "3",
+    "Starter": "Update this entry",
+    "Prompt": "Update a field on this Gravity Forms entry using the Gravity Forms update entry action. Which field and what new value?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries&[^#]*view=entry",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Single Entry",
+    "#": "4",
+    "Starter": "Delete this entry",
+    "Prompt": "Delete this Gravity Forms entry using the Gravity Forms delete entry action. Are you sure?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries&[^#]*view=entry",
+    "Post Type": ""
+  },
+  {
+    "Section": "Gravity Forms",
+    "Page": "Single Entry",
+    "#": "5",
+    "Starter": "Email this submitter",
+    "Prompt": "Send an email to this Gravity Forms submitter. What should the email say?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=gf_entries&[^#]*view=entry",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "All Forms",
+    "#": "1",
+    "Starter": "Show submission volume",
+    "Prompt": "Show Fluent Forms submission volume per form for the last 30 days. Compare to the previous 30 days and highlight forms with changing rates.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms(?:[&#]|$)(?!.*route=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "All Forms",
+    "#": "2",
+    "Starter": "Find inactive forms",
+    "Prompt": "Find Fluent Forms forms with no submissions in the last 60 days. Show form title, total entries, and last submission date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms(?:[&#]|$)(?!.*route=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "All Forms",
+    "#": "3",
+    "Starter": "Show top forms",
+    "Prompt": "Rank Fluent Forms forms by total submissions. Show submission count, average per day, and creation date.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms(?:[&#]|$)(?!.*route=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "All Forms",
+    "#": "4",
+    "Starter": "Compare conversion rates",
+    "Prompt": "Compare Fluent Forms conversion rates per form: views vs. submissions (using fluentform_form_analytics). Identify forms with high views but low submissions.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms(?:[&#]|$)(?!.*route=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Edit Form",
+    "#": "1",
+    "Starter": "Automate this form",
+    "Prompt": "Create an Uncanny Automator recipe using this Fluent Forms form as the trigger (the 'A user submits a form' / WPFFSUBFORM trigger). What should happen when this form is submitted?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=editor",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Edit Form",
+    "#": "2",
+    "Starter": "Summarize submissions",
+    "Prompt": "Read the last 30 days of Fluent Forms entries to this form and summarize the patterns: top values per choice field, common themes in free-text fields, and peak submission times.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=editor",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Edit Form",
+    "#": "3",
+    "Starter": "Compile field statistics",
+    "Prompt": "For every field in this Fluent Forms form, show the fill rate (how often it's completed), the average length for text fields, the value distribution for choice fields, and the most common value.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=editor",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Edit Form",
+    "#": "4",
+    "Starter": "Find drop-off fields",
+    "Prompt": "Identify which fields in this Fluent Forms form are most often left blank in completed submissions. Suggest which fields might be causing abandonment or confusion.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=editor",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Edit Form",
+    "#": "5",
+    "Starter": "Show form performance",
+    "Prompt": "Show this Fluent Forms form's total submission count, conversion rate (views vs. submissions from fluentform_form_analytics), and how it compares to the average performance of all forms on the site.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=editor",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Entries",
+    "#": "1",
+    "Starter": "Show recent entries",
+    "Prompt": "Show Fluent Forms entries for this form from the last 7 days. Group by day and show the volume.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=entries(?!.*entry_id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Entries",
+    "#": "2",
+    "Starter": "Find duplicate entries",
+    "Prompt": "Find duplicate Fluent Forms entries for this form (same email submitting more than once). Show duplicate count per email.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=entries(?!.*entry_id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Entries",
+    "#": "3",
+    "Starter": "Show entry status breakdown",
+    "Prompt": "Show Fluent Forms entry status breakdown for this form: read vs. unread, favorited, spam, trashed.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=entries(?!.*entry_id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Entries",
+    "#": "4",
+    "Starter": "Show submission timing",
+    "Prompt": "Show Fluent Forms submission timing for this form: counts by day of the week and by hour. Identify peak submission windows.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*route=entries(?!.*entry_id=)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Single Entry",
+    "#": "1",
+    "Starter": "Show submitter's other entries",
+    "Prompt": "Find all other Fluent Forms entries from this submitter (matched by email) across all forms. Show form title, submission date, and key fields.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*entry_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Single Entry",
+    "#": "2",
+    "Starter": "Show entry metadata",
+    "Prompt": "Show this Fluent Forms entry's metadata: submission date, IP address, user agent, source URL, and read status.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*entry_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Single Entry",
+    "#": "3",
+    "Starter": "Send a reply",
+    "Prompt": "Send an email reply to this Fluent Forms submitter. What should the email say?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*entry_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Single Entry",
+    "#": "4",
+    "Starter": "Find entries from same IP",
+    "Prompt": "Find all Fluent Forms entries submitted from this entry's IP address across all forms. Show form title, submission date, and email.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*entry_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "Fluent Forms",
+    "Page": "Single Entry",
+    "#": "5",
+    "Starter": "Add submitter to a role",
+    "Prompt": "Create an automation that adds a role to the user when this Fluent Forms form is submitted by a logged-in user. Which role should I add?",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=fluent_forms&[^#]*entry_id=",
+    "Post Type": ""
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Dashboard",
+    "#": "1",
+    "Starter": "Show course completion rates",
+    "Prompt": "Calculate Tutor LMS course completion rates: enrollments vs. completions per course. Show completion percentage and rank from highest to lowest.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=tutor(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Dashboard",
+    "#": "2",
+    "Starter": "Show enrollment trend",
+    "Prompt": "Show Tutor LMS enrollments per month for the last 12 months across all courses. Identify whether the trend is accelerating, declining, or flat.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=tutor(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Dashboard",
+    "#": "3",
+    "Starter": "Show top courses",
+    "Prompt": "Show top Tutor LMS courses by enrollment count over the last 90 days. Show enrollment count, completion rate, and average quiz score per course.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=tutor(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Dashboard",
+    "#": "4",
+    "Starter": "Show student activity",
+    "Prompt": "Show Tutor LMS student activity for the last 30 days: distinct students who completed at least one lesson, attempted a quiz, or asked a question.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=tutor(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Dashboard",
+    "#": "5",
+    "Starter": "Email me on course completion",
+    "Prompt": "Create an automation that emails me whenever a user completes a Tutor LMS course. Include the student name and course title in the email.",
+    "URL Regex": "\\/wp-admin\\/admin\\.php\\?page=tutor(?:[&#]|$)",
+    "Post Type": ""
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Courses",
+    "#": "1",
+    "Starter": "Compare completion rates",
+    "Prompt": "Compare Tutor LMS course completion rates across all courses. Show enrollment count, completion count, and completion percentage. Rank by lowest completion rate first.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=courses(?:[&#]|$)",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Courses",
+    "#": "2",
+    "Starter": "Find low-completion courses",
+    "Prompt": "Find Tutor LMS courses with at least 5 enrollments but completion rate below 20%. Show course title, enrollment count, completion count, and completion percentage.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=courses(?:[&#]|$)",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Courses",
+    "#": "3",
+    "Starter": "Show enrollment trends per course",
+    "Prompt": "Show Tutor LMS enrollment trends per course over the last 12 months. Identify courses gaining vs. losing enrollment momentum.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=courses(?:[&#]|$)",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Courses",
+    "#": "4",
+    "Starter": "Find inactive courses",
+    "Prompt": "Find Tutor LMS courses with no new enrollments in the last 60 days. Show course title, total lifetime enrollments, and last enrollment date.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=courses(?:[&#]|$)",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Courses",
+    "#": "5",
+    "Starter": "Email me on enrollment",
+    "Prompt": "Create an automation that emails me whenever a user enrolls in a Tutor LMS course. Include student name and course title in the email.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=courses(?:[&#]|$)",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Edit Course",
+    "#": "1",
+    "Starter": "Show this course's stats",
+    "Prompt": "Show this Tutor LMS course's enrollment count, completion rate, average quiz score, and average time from enrollment to completion.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Edit Course",
+    "#": "2",
+    "Starter": "Show student progress",
+    "Prompt": "Show student progress distribution for this Tutor LMS course: how many students are at 0%, 1-25%, 26-50%, 51-75%, 76-99%, and 100% complete.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Edit Course",
+    "#": "3",
+    "Starter": "Find abandoned students",
+    "Prompt": "Find students enrolled in this Tutor LMS course who started progress but haven't completed a lesson in the last 30 days. Show name, current progress, and last activity date.",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Edit Course",
+    "#": "4",
+    "Starter": "Enroll a student",
+    "Prompt": "Enroll a user in this Tutor LMS course. What is their username or email?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Tutor LMS",
+    "Page": "Edit Course",
+    "#": "5",
+    "Starter": "Mark complete for a user",
+    "Prompt": "Mark this Tutor LMS course complete for a specific user. What is their username or email?",
+    "URL Regex": "\\/wp-admin\\/post\\.php\\?[^#]*action=edit\\b",
+    "Post Type": "courses"
+  },
+  {
+    "Section": "Default",
+    "Page": "Default",
+    "#": "1",
+    "Starter": "Help me with this page",
+    "Prompt": "Use the current WordPress and Automator context to help me understand what I can do here. If the page is unclear, ask me one short question first.",
+    "URL Regex": "",
+    "Post Type": ""
+  },
+  {
+    "Section": "Default",
+    "Page": "Default",
+    "#": "2",
+    "Starter": "Help me automate my site",
+    "Prompt": "Review my installed plugins and connected app integrations, then suggest one practical automation idea for my site. Avoid inspecting recipe definitions unless I ask.",
+    "URL Regex": "",
+    "Post Type": ""
+  },
+  {
+    "Section": "Default",
+    "Page": "Default",
+    "#": "3",
+    "Starter": "Check what needs attention",
+    "Prompt": "Check lightweight Automator signals such as recent failures, disconnected apps, credits, settings, or status details, then tell me if anything needs attention.",
+    "URL Regex": "",
+    "Post Type": ""
+  },
+  {
+    "Section": "Default",
+    "Page": "Default",
+    "#": "4",
+    "Starter": "Find a quick win",
+    "Prompt": "Suggest one small WordPress or Automator task I can do now that would save time, reduce manual work, or improve reliability.",
+    "URL Regex": "",
+    "Post Type": ""
+  },
+  {
+    "Section": "Default",
+    "Page": "Default",
+    "#": "5",
+    "Starter": "What can you do?",
+    "Prompt": "Give me a short, practical menu of ways you can help on this site, using the context available to you and asking for anything missing.",
+    "URL Regex": "",
+    "Post Type": ""
+  },
+  {
+    "Section": "Automator",
+    "Page": "Dashboard",
+    "#": "1",
+    "Starter": "Give me a quick win",
+    "Prompt": "Suggest one small Automator improvement I can make today that is likely to save time or reduce manual work on my site.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-dashboard(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Dashboard",
+    "#": "2",
+    "Starter": "Inspire me",
+    "Prompt": "Suggest a useful automation idea based on the kind of site I appear to be running. Keep it practical, not generic.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-dashboard(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Dashboard",
+    "#": "3",
+    "Starter": "Check the essentials",
+    "Prompt": "Check whether anything important needs my attention, such as failed runs, disconnected apps, low credits, or settings that may affect reliability.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-dashboard(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Dashboard",
+    "#": "4",
+    "Starter": "Teach me a useful trick",
+    "Prompt": "Show me one Automator feature or workflow idea I might not be using yet, and explain when it is worth trying.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-dashboard(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Dashboard",
+    "#": "5",
+    "Starter": "Surprise me with an automation",
+    "Prompt": "Give me one creative but realistic recipe idea for my site, then explain what problem it would solve.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-dashboard(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All recipes",
+    "#": "1",
+    "Starter": "Show my busiest recipes",
+    "Prompt": "Show me the recipes with the most completed runs, including status and last activity if available.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=uo-recipe(?![^#]*[?&]page=)(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All recipes",
+    "#": "2",
+    "Starter": "Find drafts to finish",
+    "Prompt": "Show me draft recipes that might be worth finishing, starting with the most recently updated.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=uo-recipe(?![^#]*[?&]page=)(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All recipes",
+    "#": "3",
+    "Starter": "Find recipes with recent errors",
+    "Prompt": "Show me recipes that recently failed or produced errors, including the recipe name, last error, and when it happened.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=uo-recipe(?![^#]*[?&]page=)(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All recipes",
+    "#": "4",
+    "Starter": "Find quiet recipes",
+    "Prompt": "Show me recipes that have not run recently or appear disabled, so I can decide whether to keep them.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=uo-recipe(?![^#]*[?&]page=)(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All recipes",
+    "#": "5",
+    "Starter": "Help me clean this list",
+    "Prompt": "Suggest a few filters or cleanup targets so I can quickly find recipes worth reviewing.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?post_type=uo-recipe(?![^#]*[?&]page=)(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Recipe editor",
+    "#": "1",
+    "Starter": "Troubleshoot this recipe",
+    "Prompt": "Help me troubleshoot this recipe. Start with recent logs and a quick summary, then ask before doing a deeper review.",
+    "URL Regex": "\\/wp-admin\\/(?:post-new\\.php\\?post_type=uo-recipe(?:[&#]|$)|post\\.php\\?[^#]*action=edit\\b)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Recipe editor",
+    "#": "2",
+    "Starter": "Explain this recipe",
+    "Prompt": "Explain what this recipe does in plain language, starting with the main trigger and action flow.",
+    "URL Regex": "\\/wp-admin\\/(?:post-new\\.php\\?post_type=uo-recipe(?:[&#]|$)|post\\.php\\?[^#]*action=edit\\b)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Recipe editor",
+    "#": "3",
+    "Starter": "Improve this recipe",
+    "Prompt": "Suggest a few ways to make this recipe more reliable or easier to maintain. Start with the summary and recent logs.",
+    "URL Regex": "\\/wp-admin\\/(?:post-new\\.php\\?post_type=uo-recipe(?:[&#]|$)|post\\.php\\?[^#]*action=edit\\b)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Recipe editor",
+    "#": "4",
+    "Starter": "Add to this recipe",
+    "Prompt": "Help me add something to this recipe. Ask what outcome I want, then suggest the right trigger, action, condition, or delay.",
+    "URL Regex": "\\/wp-admin\\/(?:post-new\\.php\\?post_type=uo-recipe(?:[&#]|$)|post\\.php\\?[^#]*action=edit\\b)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Recipe editor",
+    "#": "5",
+    "Starter": "Build a new recipe",
+    "Prompt": "Help me build a new recipe. If a current recipe exists in context, ask whether I want to modify it or create a separate recipe.",
+    "URL Regex": "\\/wp-admin\\/(?:post-new\\.php\\?post_type=uo-recipe(?:[&#]|$)|post\\.php\\?[^#]*action=edit\\b)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Categories",
+    "#": "1",
+    "Starter": "Summarize category usage",
+    "Prompt": "Show how my Automator recipe categories are being used. Include category names, recipe counts, and any empty categories.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_category(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Categories",
+    "#": "2",
+    "Starter": "Find uncategorized recipes",
+    "Prompt": "Show me recipes that do not have a category, with their names and statuses.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_category(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Categories",
+    "#": "3",
+    "Starter": "Suggest category cleanup",
+    "Prompt": "Suggest categories that may be worth merging, renaming, deleting, or keeping based on names and recipe counts.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_category(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Categories",
+    "#": "4",
+    "Starter": "Organize my recipes",
+    "Prompt": "Suggest a simple category structure that would make my recipes easier to browse and maintain.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_category(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Categories",
+    "#": "5",
+    "Starter": "Create category plan",
+    "Prompt": "Help me create a recipe category plan. Ask what kind of recipes I build most often, then recommend category names.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_category(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Scheduled Recipes",
+    "#": "1",
+    "Starter": "Show upcoming schedules",
+    "Prompt": "Find recipes that use scheduled triggers and show me the next runs coming up, including recipe name, schedule, next run time, and status.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uo-recipe-scheduled-actions(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Scheduled Recipes",
+    "#": "2",
+    "Starter": "Find failed schedules",
+    "Prompt": "Find scheduled runs that failed, were missed, or look stuck, and summarize what needs attention.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uo-recipe-scheduled-actions(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Scheduled Recipes",
+    "#": "3",
+    "Starter": "Review schedule load",
+    "Prompt": "Show me whether scheduled runs are clustered around the same times and suggest a better spread if needed.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uo-recipe-scheduled-actions(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Scheduled Recipes",
+    "#": "4",
+    "Starter": "Find inactive scheduled recipes",
+    "Prompt": "Show me scheduled recipes that have not run recently or appear disabled.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uo-recipe-scheduled-actions(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Scheduled Recipes",
+    "#": "5",
+    "Starter": "Improve my schedules",
+    "Prompt": "Suggest ways to make my scheduled recipes more reliable or better timed.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uo-recipe-scheduled-actions(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Tags",
+    "#": "1",
+    "Starter": "Summarize tag usage",
+    "Prompt": "Show how my Automator recipe tags are being used. Include tag names, recipe counts, and any unused tags.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_tag(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Tags",
+    "#": "2",
+    "Starter": "Find untagged recipes",
+    "Prompt": "Show me recipes without tags and suggest simple tags when the recipe name makes the purpose clear.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_tag(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Tags",
+    "#": "3",
+    "Starter": "Clean up recipe tags",
+    "Prompt": "Suggest duplicate, overly specific, or unclear tags that I may want to rename or remove.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_tag(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Tags",
+    "#": "4",
+    "Starter": "Suggest tagging strategy",
+    "Prompt": "Recommend a practical tagging strategy for Automator recipes so I can find and manage them more easily.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_tag(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Tags",
+    "#": "5",
+    "Starter": "Plan purpose-based tags",
+    "Prompt": "Suggest purpose-based tags such as onboarding, reporting, notifications, ecommerce, learning, or maintenance, and explain how I could apply them gradually.",
+    "URL Regex": "\\/wp-admin\\/edit-tags\\.php\\?[^#]*taxonomy=recipe_tag(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All integrations",
+    "#": "1",
+    "Starter": "Recommend integrations",
+    "Prompt": "Review my installed plugins and connected app integrations, then suggest Automator integrations that are most relevant to my site.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All integrations",
+    "#": "2",
+    "Starter": "Find automation opportunities",
+    "Prompt": "Suggest useful automation ideas based on my installed plugins and connected app integrations.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All integrations",
+    "#": "3",
+    "Starter": "Explain an integration",
+    "Prompt": "Ask me which integration I am interested in, then explain what kinds of recipes it can unlock.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All integrations",
+    "#": "4",
+    "Starter": "Find missing integrations",
+    "Prompt": "Compare my installed plugins and connected apps with available Automator integrations, then identify anything I may need to install, connect, or upgrade.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "All integrations",
+    "#": "5",
+    "Starter": "Build with an integration",
+    "Prompt": "Help me choose an Automator integration and turn it into a useful recipe idea for my site.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "App integrations",
+    "#": "1",
+    "Starter": "Review connected apps",
+    "Prompt": "List my connected app integrations and summarize which ones are ready to use in recipes.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config[^#]*tab=premium-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "App integrations",
+    "#": "2",
+    "Starter": "Find disconnected apps",
+    "Prompt": "Show app integrations that are not connected yet and suggest which ones would be most useful to connect first.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config[^#]*tab=premium-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "App integrations",
+    "#": "3",
+    "Starter": "Troubleshoot app connections",
+    "Prompt": "Check app integration connection status and help troubleshoot anything that appears disconnected, expired, or incomplete.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config[^#]*tab=premium-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "App integrations",
+    "#": "4",
+    "Starter": "Suggest app recipes",
+    "Prompt": "Suggest new recipe ideas that send data to or receive data from my connected app integrations.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config[^#]*tab=premium-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "App integrations",
+    "#": "5",
+    "Starter": "Help connect an app",
+    "Prompt": "Ask which app I want to connect, then walk me through what information or permissions I should expect to provide.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config[^#]*tab=premium-integrations(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Logs",
+    "#": "1",
+    "Starter": "Find recent errors",
+    "Prompt": "Review recent Automator logs and list recipe runs with errors. Include recipe name, error message, and when it happened.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-logs(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Logs",
+    "#": "2",
+    "Starter": "Troubleshoot failed runs",
+    "Prompt": "Help me troubleshoot failed recipe runs. Start by identifying the most common recent error and likely cause.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-logs(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Logs",
+    "#": "3",
+    "Starter": "Show recipe activity",
+    "Prompt": "Summarize Automator activity from the logs, including successful runs, failed runs, and recipes with unusual activity.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-logs(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Logs",
+    "#": "4",
+    "Starter": "Check a recipe that is not firing",
+    "Prompt": "Ask which recipe is not firing, then help me check the most likely causes.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-logs(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Logs",
+    "#": "5",
+    "Starter": "Explain a log entry",
+    "Prompt": "Ask which log entry ID, recipe, or error message I want to understand, then explain what happened and what I should do next.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-logs(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Status",
+    "#": "1",
+    "Starter": "Review site status",
+    "Prompt": "Review the Automator status information and summarize anything that may affect recipe reliability.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-tools(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Status",
+    "#": "2",
+    "Starter": "Check environment compatibility",
+    "Prompt": "Check WordPress, PHP, database, and Automator environment details for compatibility concerns or outdated components.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-tools(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Status",
+    "#": "3",
+    "Starter": "Review cron health",
+    "Prompt": "Check whether WP-Cron or scheduled task behavior may affect Automator recipes, especially scheduled recipes or delayed actions.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-tools(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Status",
+    "#": "4",
+    "Starter": "Create support summary",
+    "Prompt": "Summarize the important environment and Automator status details I should include when contacting support.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-tools(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Status",
+    "#": "5",
+    "Starter": "Find reliability risks",
+    "Prompt": "Review Automator and WordPress environment status details, then identify risks that could cause recipes to fail, run late, or behave inconsistently.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-admin-tools(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Addons",
+    "#": "1",
+    "Starter": "Recommend addons",
+    "Prompt": "Review my installed plugins and connected app integrations, then recommend addons that could unlock useful automations.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-addons(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Addons",
+    "#": "2",
+    "Starter": "Explain an addon",
+    "Prompt": "Ask which addon I am considering, then explain what it adds and when it is worth installing.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-addons(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Addons",
+    "#": "3",
+    "Starter": "Find missing capabilities",
+    "Prompt": "Identify automation capabilities I may be missing and suggest which addon or integration would provide them.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-addons(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Addons",
+    "#": "4",
+    "Starter": "Compare addon options",
+    "Prompt": "Help me compare available addons based on my site needs, current plugins, and likely recipe ideas.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-addons(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Addons",
+    "#": "5",
+    "Starter": "Plan addon setup",
+    "Prompt": "Help me plan installing and configuring an addon. Ask what workflow I want to automate, then suggest the next steps.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-addons(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Settings",
+    "#": "1",
+    "Starter": "Review Automator settings",
+    "Prompt": "Review my Automator settings and summarize anything important, risky, or worth changing.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config(?![^#]*[?&]tab=premium-integrations)(?:[&#][^#]*)?$",
+    "Post Type": ""
+  },
+  {
+    "Section": "Automator",
+    "Page": "Settings",
+    "#": "2",
+    "Starter": "Recommend best settings",
+    "Prompt": "Suggest recommended Automator settings for a reliable production site. Explain any tradeoffs.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config(?![^#]*[?&]tab=premium-integrations)(?:[&#][^#]*)?$",
+    "Post Type": ""
+  },
+  {
+    "Section": "Automator",
+    "Page": "Settings",
+    "#": "3",
+    "Starter": "Check email settings",
+    "Prompt": "Review settings related to email, notifications, or recipe communication and suggest improvements.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config(?![^#]*[?&]tab=premium-integrations)(?:[&#][^#]*)?$",
+    "Post Type": ""
+  },
+  {
+    "Section": "Automator",
+    "Page": "Settings",
+    "#": "4",
+    "Starter": "Check performance settings",
+    "Prompt": "Review settings that may affect recipe performance, logging, scheduling, or background processing.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config(?![^#]*[?&]tab=premium-integrations)(?:[&#][^#]*)?$",
+    "Post Type": ""
+  },
+  {
+    "Section": "Automator",
+    "Page": "Settings",
+    "#": "5",
+    "Starter": "Explain a setting",
+    "Prompt": "Ask which Automator setting I want explained, then describe what it does and when I should change it.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-config(?![^#]*[?&]tab=premium-integrations)(?:[&#][^#]*)?$",
+    "Post Type": ""
+  },
+  {
+    "Section": "Automator",
+    "Page": "Plans",
+    "#": "1",
+    "Starter": "Explain my plan",
+    "Prompt": "Explain what my current Automator plan includes and which features are most relevant to my site.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-pro-upgrade(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Plans",
+    "#": "2",
+    "Starter": "Find locked features",
+    "Prompt": "Identify Automator features that are not available on my current plan and explain what they would enable.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-pro-upgrade(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Plans",
+    "#": "3",
+    "Starter": "Recommend plan changes",
+    "Prompt": "Based on my installed plugins, connected app integrations, and automation goals, tell me whether changing plans would likely be useful.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-pro-upgrade(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Plans",
+    "#": "4",
+    "Starter": "Compare plan benefits",
+    "Prompt": "Compare the practical benefits of the available Automator plans for the kinds of recipes I might build.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-pro-upgrade(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  },
+  {
+    "Section": "Automator",
+    "Page": "Plans",
+    "#": "5",
+    "Starter": "Find upgrade-worthy recipes",
+    "Prompt": "Suggest recipe ideas that would justify upgrading, based on my installed plugins and connected app integrations.",
+    "URL Regex": "\\/wp-admin\\/edit\\.php\\?[^#]*page=uncanny-automator-pro-upgrade(?:[&#]|$)",
+    "Post Type": "uo-recipe"
+  }
+]

@@ -294,8 +294,8 @@ class WP_Filter_Store implements Filter_Store {
 			'integration_name'        => $data['integration_name'] ?? $data['integration_code'],
 			'type'                    => $data['filter_type'] ?? 'lite',
 			'user_type'               => $data['user_type'] ?? 'user',
-			'fields'                  => wp_json_encode( $data['fields'] ),
-			'backup'                  => wp_json_encode( $data['backup'] ),
+			'fields'                  => wp_slash( wp_json_encode( $data['fields'] ) ),
+			'backup'                  => wp_slash( wp_json_encode( $data['backup'] ) ),
 			'uap_loop-filter_version' => $data['version'] ?? AUTOMATOR_PLUGIN_VERSION,
 		);
 	}

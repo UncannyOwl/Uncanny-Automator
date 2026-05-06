@@ -102,7 +102,7 @@ class Mysql_Get_Tables_Tool extends Abstract_MCP_Tool {
 		global $wpdb;
 
 		$search = $params['search'] ?? '';
-		$limit  = min( (int) ( $params['limit'] ?? 50 ), 200 );
+		$limit  = max( 1, min( (int) ( $params['limit'] ?? 50 ), 200 ) );
 
 		// Get all tables with row counts.
 		$query = "SELECT TABLE_NAME, TABLE_ROWS

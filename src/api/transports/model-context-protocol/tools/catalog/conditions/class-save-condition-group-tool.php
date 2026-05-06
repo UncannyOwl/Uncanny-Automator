@@ -135,7 +135,7 @@ class Save_Condition_Group_Tool extends Abstract_MCP_Tool {
 				),
 				'priority'    => array( 'type' => 'integer' ),
 				'action_ids'  => array(
-					'type' => 'array',
+					'type'  => 'array',
 					'items' => array( 'type' => 'integer' ),
 				),
 			),
@@ -392,5 +392,4 @@ class Save_Condition_Group_Tool extends Abstract_MCP_Tool {
 
 		return null;
 	}
-
 }

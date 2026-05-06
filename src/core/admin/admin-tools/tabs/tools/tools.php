@@ -74,6 +74,10 @@ class Admin_Tools_Tabs_Tools {
 
 				automator_delete_option( 'automator_schema_missing_tables' );
 
+				if ( $purged ) {
+					Automator_System_Report::refresh_cached_tables_size();
+				}
+
 				$query_params['purged'] = $purged ? 'true' : 'false';
 
 				break;
@@ -97,10 +101,7 @@ class Admin_Tools_Tabs_Tools {
 		Automator_DB::empty_table( 'uap_api_log' );
 		Automator_DB::empty_table( 'uap_api_log_response' );
 
-		// Update the size of the Database on clear
-		$total_size = Automator_System_Report::get_tables_total_size();
-
-		automator_update_option( 'automator_db_size', $total_size, 'no' );
+		Automator_System_Report::refresh_cached_tables_size();
 
 		$query_params = array(
 			'post_type' => AUTOMATOR_POST_TYPE_RECIPE,

@@ -131,7 +131,7 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 				'recipe_id' => array( 'type' => 'integer' ),
 				'links'     => array( 'type' => 'object' ),
 				'warnings'  => array(
-					'type' => 'array',
+					'type'  => 'array',
 					'items' => array( 'type' => 'string' ),
 				),
 			),
@@ -239,6 +239,8 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 	/**
 	 * Update loop.
 	 *
+	 * @since 7.2.4 Enforces loop ownership against the provided recipe_id before updates.
+	 *
 	 * @param int $loop_id The ID.
 	 * @param array $params The parameters.
 	 * @return array
@@ -246,11 +248,21 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 	private function update_loop( int $loop_id, array $params ): array {
 
 		$recipe_id = (int) $params['recipe_id'];
+		$ownership = $this->validate_loop_ownership( $loop_id, $recipe_id );
+		if ( null !== $ownership ) {
+			return $ownership;
+		}
 
 		// Fetch existing state.
 		$existing_loop  = $this->get_existing_loop( $loop_id );
 		$existing_type  = $existing_loop['type'] ?? '';
 		$effective_type = $existing_type;
+
+		if ( array_key_exists( 'type', $params ) && (string) $params['type'] !== $existing_type ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf( 'Loop type cannot be changed after creation. Existing type is "%s"; omit type on update.', $existing_type )
+			);
+		}
 
 		// Determine loopable_token.
 		$loopable_token = $params['loopable_token'] ?? '';
@@ -323,6 +335,32 @@ class Save_Loop_Tool extends Abstract_Loop_Tool {
 		}
 
 		return Json_Rpc_Response::create_success_response( 'Loop updated successfully', $payload );
+	}
+
+	/**
+	 * Validate that a loop exists and belongs to the provided recipe.
+	 *
+	 * @since 7.2.4
+	 *
+	 * @param int $loop_id Loop ID.
+	 * @param int $recipe_id Recipe ID.
+	 * @return array|null Error response if invalid ownership, null when valid.
+	 */
+	private function validate_loop_ownership( int $loop_id, int $recipe_id ): ?array {
+		$loop_post = get_post( $loop_id );
+
+		if ( ! $loop_post || AUTOMATOR_POST_TYPE_LOOP !== $loop_post->post_type ) {
+			return Json_Rpc_Response::create_error_response( sprintf( 'Loop not found: %d.', $loop_id ) );
+		}
+
+		$actual_recipe_id = (int) $loop_post->post_parent;
+		if ( $actual_recipe_id !== $recipe_id ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf( 'Loop %d belongs to recipe %d, not recipe %d.', $loop_id, $actual_recipe_id, $recipe_id )
+			);
+		}
+
+		return null;
 	}
 
 	/**

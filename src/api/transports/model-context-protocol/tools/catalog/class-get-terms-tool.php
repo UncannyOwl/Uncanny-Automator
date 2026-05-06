@@ -109,8 +109,15 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 				'limit'      => array(
 					'type'        => 'integer',
 					'default'     => 20,
+					'minimum'     => 1,
 					'maximum'     => 100,
 					'description' => 'Maximum results to return.',
+				),
+				'offset'     => array(
+					'type'        => 'integer',
+					'default'     => 0,
+					'minimum'     => 0,
+					'description' => 'Number of terms to skip for pagination.',
 				),
 			),
 			'required'   => array( 'taxonomy' ),
@@ -140,9 +147,11 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 					),
 				),
 				'total'    => array( 'type' => 'integer' ),
+				'offset'   => array( 'type' => 'integer' ),
+				'limit'    => array( 'type' => 'integer' ),
 				'has_more' => array( 'type' => 'boolean' ),
 			),
-			'required'   => array( 'taxonomy', 'items', 'total', 'has_more' ),
+			'required'   => array( 'taxonomy', 'items', 'total', 'offset', 'limit', 'has_more' ),
 		);
 	}
 
@@ -155,7 +164,8 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 	 */
 	protected function execute_tool( User_Context $user_context, array $params ) {
 		$taxonomy   = sanitize_key( $params['taxonomy'] ?? 'category' );
-		$limit      = min( (int) ( $params['limit'] ?? 20 ), 100 );
+		$limit      = max( 1, min( (int) ( $params['limit'] ?? 20 ), 100 ) );
+		$offset     = max( (int) ( $params['offset'] ?? 0 ), 0 );
 		$orderby    = sanitize_key( $params['orderby'] ?? 'name' );
 		$order      = strtoupper( $params['order'] ?? 'ASC' ) === 'DESC' ? 'DESC' : 'ASC';
 		$hide_empty = ! empty( $params['hide_empty'] );
@@ -163,6 +173,7 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 		$args = array(
 			'taxonomy'   => $taxonomy,
 			'number'     => $limit,
+			'offset'     => $offset,
 			'orderby'    => $orderby,
 			'order'      => $order,
 			'hide_empty' => $hide_empty,
@@ -214,6 +225,11 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( $terms->get_error_message() );
 		}
 
+		$total = $this->count_terms( $args );
+		if ( is_wp_error( $total ) ) {
+			return Json_Rpc_Response::create_error_response( $total->get_error_message() );
+		}
+
 		$items = array_map(
 			function ( $term ) {
 				return array(
@@ -233,9 +249,30 @@ class Get_Terms_Tool extends Abstract_MCP_Tool {
 			array(
 				'taxonomy' => $taxonomy,
 				'items'    => $items,
-				'total'    => count( $items ),
-				'has_more' => count( $items ) === $limit,
+				'total'    => $total,
+				'offset'   => $offset,
+				'limit'    => $limit,
+				'has_more' => ( $offset + count( $items ) ) < $total,
 			)
 		);
+	}
+
+	/**
+	 * Count terms using the same filters without pagination.
+	 *
+	 * @param array $args get_terms() arguments.
+	 * @return int|\WP_Error
+	 */
+	private function count_terms( array $args ) {
+		unset( $args['number'], $args['offset'], $args['orderby'], $args['order'] );
+
+		$args['fields'] = 'count';
+
+		$count = get_terms( $args );
+		if ( is_wp_error( $count ) ) {
+			return $count;
+		}
+
+		return (int) $count;
 	}
 }

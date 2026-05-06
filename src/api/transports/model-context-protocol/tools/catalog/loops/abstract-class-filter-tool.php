@@ -125,7 +125,7 @@ abstract class Abstract_Filter_Tool extends Abstract_MCP_Tool {
 	 * @return array Backup array with sentence and sentence_html.
 	 */
 	protected function build_filter_backup( array $mcp_fields, array $definition ): array {
-		$sentence = $definition['sentence'] ?? '';
+		$sentence = $definition['sentence_readable'] ?? $definition['sentence'] ?? '';
 
 		// If no sentence template, return empty backup.
 		if ( empty( $sentence ) ) {
@@ -188,8 +188,8 @@ abstract class Abstract_Filter_Tool extends Abstract_MCP_Tool {
 
 		// Build a map of field codes to their config for easy lookup.
 		$field_config_map = array();
-		foreach ( $meta_structure as $field_config ) {
-			$code = $field_config['code'] ?? '';
+		foreach ( $meta_structure as $field_code => $field_config ) {
+			$code = $field_config['code'] ?? $field_config['option_code'] ?? $field_code;
 			if ( ! empty( $code ) ) {
 				$field_config_map[ $code ] = $field_config;
 			}

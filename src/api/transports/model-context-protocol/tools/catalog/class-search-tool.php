@@ -119,14 +119,21 @@ class Search_Tool extends Abstract_MCP_Tool {
 		return array(
 			'type'       => 'object',
 			'properties' => array(
-				'type'                  => array( 'type' => 'string' ),
-				'items'                 => array( 'type' => 'array' ),
-				'total'                 => array( 'type' => 'integer' ),
-				'query'                 => array( 'type' => 'string' ),
-				'alternative_triggers'  => array( 'type' => 'array' ),
-				'integration'           => array( 'type' => 'string' ),
-				'loop_id'               => array( 'type' => 'integer' ),
-				'loop_type'             => array( 'type' => 'string' ),
+				'type'                 => array( 'type' => 'string' ),
+				'items'                => array( 'type' => 'array' ),
+				'total'                => array( 'type' => 'integer' ),
+				'query'                => array( 'type' => 'string' ),
+				'alternative_triggers' => array(
+					'type'       => 'object',
+					'properties' => array(
+						'count'       => array( 'type' => 'integer' ),
+						'recipe_type' => array( 'type' => 'string' ),
+					),
+					'required'   => array( 'count', 'recipe_type' ),
+				),
+				'integration'          => array( 'type' => 'string' ),
+				'loop_id'              => array( 'type' => 'integer' ),
+				'loop_type'            => array( 'type' => 'string' ),
 			),
 			'required'   => array( 'type', 'items', 'total' ),
 		);

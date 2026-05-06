@@ -83,6 +83,10 @@ class Message_Router {
 			$handler_method  = $handler_config[0];
 			$requires_params = $handler_config[1];
 
+			if ( $requires_params && ! is_array( $params ) ) {
+				return $this->create_invalid_params_response( $id, 'Invalid params: params must be an object.' );
+			}
+
 			return $requires_params
 				? $this->$handler_method( $id, $params )
 				: $this->$handler_method( $id );
@@ -169,7 +173,15 @@ class Message_Router {
 	 */
 	private function handle_tools_call( $id, $params ) {
 
-		$tool_name = $params['name'] ?? '';
+		if ( ! isset( $params['name'] ) || ! is_string( $params['name'] ) || '' === trim( $params['name'] ) ) {
+			return $this->create_invalid_params_response( $id, 'Invalid params: tools/call requires a non-empty string name.' );
+		}
+
+		if ( isset( $params['arguments'] ) && ! is_array( $params['arguments'] ) ) {
+			return $this->create_invalid_params_response( $id, 'Invalid params: arguments must be an object.' );
+		}
+
+		$tool_name = $params['name'];
 		$arguments = $params['arguments'] ?? array();
 
 		// Get tool from registry
@@ -202,6 +214,23 @@ class Message_Router {
 		}
 
 		return Json_Rpc_Envelope::create_success_response( $id, $result );
+	}
+
+	/**
+	 * Create a JSON-RPC invalid params response.
+	 *
+	 * @since 7.2.3
+	 *
+	 * @param string|int|null $id      Request ID.
+	 * @param string          $message Error message.
+	 * @return array Response.
+	 */
+	private function create_invalid_params_response( $id, string $message ): array {
+		return Json_Rpc_Envelope::create_error_response(
+			$id,
+			-32602,
+			$message
+		);
 	}
 
 	/**

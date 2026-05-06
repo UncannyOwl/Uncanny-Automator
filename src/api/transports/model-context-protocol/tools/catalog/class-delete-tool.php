@@ -49,6 +49,19 @@ class Delete_Tool extends Abstract_MCP_Tool {
 	);
 
 	/**
+	 * Component types whose component_id is a WordPress post ID.
+	 *
+	 * These are delete tool component type strings, not WordPress post type names.
+	 */
+	private const POST_ID_TYPES = array(
+		'trigger',
+		'action',
+		'loop',
+		'loop_filter',
+		'all_loop_filters',
+	);
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function get_name(): string {
@@ -172,6 +185,13 @@ class Delete_Tool extends Abstract_MCP_Tool {
 			return Json_Rpc_Response::create_error_response( 'confirm=true is required for this destructive operation.' );
 		}
 
+		if ( in_array( $type, self::POST_ID_TYPES, true ) ) {
+			$post_id_validation = $this->validate_post_component_id( (string) $component_id, $type );
+			if ( null !== $post_id_validation ) {
+				return $post_id_validation;
+			}
+		}
+
 		switch ( $type ) {
 			case 'trigger':
 				return $this->delete_trigger( (int) $component_id, $recipe_id );
@@ -193,6 +213,24 @@ class Delete_Tool extends Abstract_MCP_Tool {
 				return Json_Rpc_Response::create_error_response( 'Unsupported component type.' );
 		}
 	}
+
+	/**
+	 * Validate post-backed component IDs before casting.
+	 *
+	 * @param string $component_id Component ID from params.
+	 * @param string $type         Component type.
+	 * @return array|null Error response if invalid, null if valid.
+	 */
+	private function validate_post_component_id( string $component_id, string $type ): ?array {
+		if ( ! ctype_digit( $component_id ) || (int) $component_id <= 0 ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf( 'component_id must be a positive integer string for type=%s.', $type )
+			);
+		}
+
+		return null;
+	}
+
 	/**
 	 * Delete trigger.
 	 *
@@ -275,11 +313,17 @@ class Delete_Tool extends Abstract_MCP_Tool {
 	/**
 	 * Delete all loop filters.
 	 *
+	 * @since 7.2.4 Enforces loop-to-recipe ownership before bulk filter deletion.
+	 *
 	 * @param int $loop_id The ID.
 	 * @param int $recipe_id The ID.
 	 * @return array
 	 */
 	private function delete_all_loop_filters( int $loop_id, int $recipe_id ): array {
+		$ownership = $this->verify_component_ownership( $loop_id, $recipe_id );
+		if ( null !== $ownership ) {
+			return $ownership;
+		}
 		$service = Filter_CRUD_Service::instance();
 		$result  = $service->delete_loop_filters( $loop_id, true );
 		if ( is_wp_error( $result ) ) {
@@ -289,7 +333,7 @@ class Delete_Tool extends Abstract_MCP_Tool {
 			'All loop filters deleted',
 			array(
 				'recipe_id' => $recipe_id,
-				'loop_id' => $loop_id,
+				'loop_id'   => $loop_id,
 			)
 		);
 	}
@@ -326,7 +370,7 @@ class Delete_Tool extends Abstract_MCP_Tool {
 			'Condition removed from group',
 			array(
 				'recipe_id' => $recipe_id,
-				'group_id' => $group_id,
+				'group_id'  => $group_id,
 			)
 		);
 	}

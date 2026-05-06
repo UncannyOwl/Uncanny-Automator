@@ -363,13 +363,13 @@ class WP_Registry implements Registry {
 
 		foreach ( $meta_structure as $field_code => $field_config ) {
 			$schema_properties[ $field_code ] = array(
-				'type'        => $field_config['type'] ?? 'string',
+				'type'        => $field_config['schema_type'] ?? $this->meta_converter->convert_input_type( $field_config['type'] ?? 'text' ),
 				'description' => $field_config['description'] ?? $field_config['label'] ?? '',
 			);
 
 			// Add enum for select fields.
 			if ( ! empty( $field_config['options'] ) ) {
-				$schema_properties[ $field_code ]['enum'] = array_keys( $field_config['options'] );
+				$schema_properties[ $field_code ]['enum'] = array_map( 'strval', array_keys( $field_config['options'] ) );
 			}
 
 			// Track required fields.

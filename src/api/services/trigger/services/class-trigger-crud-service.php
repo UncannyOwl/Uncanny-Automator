@@ -188,26 +188,23 @@ class Trigger_CRUD_Service {
 	/**
 	 * Build add trigger success response.
 	 *
+	 * @since 7.0.0
+	 * @since 7.2.4 Uses the canonical trigger response formatter for contract parity.
+	 *
 	 * @param int   $recipe_id Recipe ID.
 	 * @param array $trigger_data Trigger data array.
 	 * @return array Success response.
 	 */
 	public function build_add_trigger_response( int $recipe_id, array $trigger_data ): array {
+		$trigger_payload              = $this->format_trigger_response( $trigger_data );
+		$trigger_payload['recipe_id'] = $recipe_id;
+
 		return array(
 			'success'    => true,
 			'message'    => 'Trigger successfully added to recipe',
 			'recipe_id'  => $recipe_id,
-			'trigger_id' => $trigger_data['trigger_id'] ?? null,
-			'trigger'    => array(
-				'code'                    => $trigger_data['trigger_code'],
-				'integration'             => $trigger_data['integration'],
-				'type'                    => $trigger_data['trigger_type'],
-				'sentence'                => $trigger_data['sentence'],
-				'sentence_human_readable' => $trigger_data['sentence_human_readable'],
-				'hook'                    => $trigger_data['trigger_hook'],
-				'tokens'                  => $trigger_data['trigger_tokens'],
-				'configuration'           => $trigger_data['configuration'],
-			),
+			'trigger_id' => $trigger_payload['trigger_id'] ?? null,
+			'trigger'    => $trigger_payload,
 		);
 	}
 
@@ -591,6 +588,9 @@ class Trigger_CRUD_Service {
 	/**
 	 * Update trigger configuration.
 	 *
+	 * @since 7.0.0
+	 * @since 7.2.4 Returns canonical trigger response format on success.
+	 *
 	 * @param int   $trigger_id Trigger ID.
 	 * @param array $config Updated trigger configuration.
 	 * @return array|\WP_Error Success data or error.
@@ -657,7 +657,7 @@ class Trigger_CRUD_Service {
 			$response = array(
 				'success' => true,
 				'message' => 'Trigger successfully updated',
-				'trigger' => $saved_trigger->to_array(),
+				'trigger' => $this->format_trigger_response( $saved_trigger->to_array() ),
 			);
 
 			// Fire the generic post-save extension points. Any listener can
@@ -1000,6 +1000,9 @@ class Trigger_CRUD_Service {
 	/**
 	 * Format trigger response.
 	 *
+	 * @since 7.0.0
+	 * @since 7.2.4 Includes MCP-aligned keys (`trigger_code`, nullable `sentence_human_readable_html`).
+	 *
 	 * Transforms raw trigger data into a structured API response format.
 	 * Maps internal domain keys (with 'trigger_' prefix) to clean external API keys.
 	 *
@@ -1010,33 +1013,38 @@ class Trigger_CRUD_Service {
 		// Handle edge case: empty or invalid data
 		if ( empty( $trigger_data ) ) {
 			return array(
-				'id'                      => null,
-				'recipe_id'               => null,
-				'code'                    => '',
-				'integration'             => '',
-				'type'                    => '',
-				'sentence'                => '',
-				'sentence_human_readable' => '',
-				'hook'                    => array(),
-				'tokens'                  => array(),
-				'configuration'           => array(),
+				'id'                           => null,
+				'trigger_id'                   => null,
+				'recipe_id'                    => null,
+				'trigger_code'                 => '',
+				'code'                         => '',
+				'integration'                  => '',
+				'type'                         => '',
+				'sentence'                     => '',
+				'sentence_human_readable'      => '',
+				'sentence_human_readable_html' => null,
+				'hook'                         => array(),
+				'tokens'                       => array(),
+				'configuration'                => array(),
 			);
 		}
 
 		// Transform domain keys to API response keys
 		// Domain uses 'trigger_' prefix, API uses cleaner keys
 		return array(
-			'id'                      => $trigger_data['trigger_id'] ?? null,
-			'trigger_id'              => $trigger_data['trigger_id'] ?? null, // Backward compatibility
-			'recipe_id'               => $trigger_data['recipe_id'] ?? null,
-			'code'                    => $trigger_data['trigger_code'] ?? '',
-			'integration'             => $trigger_data['integration'] ?? '',
-			'type'                    => $trigger_data['trigger_type'] ?? '',
-			'sentence'                => $trigger_data['sentence'] ?? '',
-			'sentence_human_readable' => $trigger_data['sentence_human_readable'] ?? '',
-			'hook'                    => $trigger_data['trigger_hook'] ?? array(),
-			'tokens'                  => $trigger_data['trigger_tokens'] ?? array(),
-			'configuration'           => $trigger_data['configuration'] ?? array(),
+			'id'                           => $trigger_data['trigger_id'] ?? null,
+			'trigger_id'                   => $trigger_data['trigger_id'] ?? null, // Backward compatibility
+			'recipe_id'                    => $trigger_data['recipe_id'] ?? null,
+			'trigger_code'                 => $trigger_data['trigger_code'] ?? '',
+			'code'                         => $trigger_data['trigger_code'] ?? '',
+			'integration'                  => $trigger_data['integration'] ?? '',
+			'type'                         => $trigger_data['trigger_type'] ?? '',
+			'sentence'                     => $trigger_data['sentence'] ?? '',
+			'sentence_human_readable'      => $trigger_data['sentence_human_readable'] ?? '',
+			'sentence_human_readable_html' => $trigger_data['sentence_human_readable_html'] ?? null,
+			'hook'                         => $trigger_data['trigger_hook'] ?? array(),
+			'tokens'                       => $trigger_data['trigger_tokens'] ?? array(),
+			'configuration'                => $trigger_data['configuration'] ?? array(),
 		);
 	}
 

@@ -20,6 +20,7 @@ use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\List_R
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Mysql_Get_Tables_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Mysql_Get_Table_Columns_Tool;
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Mysql_Select_From_Table_Tool;
+use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Mysql_Get_Cell_Chunk_Tool;
 
 // Consolidated CRUD tools.
 use Uncanny_Automator\Api\Transports\Model_Context_Protocol\Tools\Catalog\Triggers\Save_Trigger_Tool;
@@ -161,7 +162,7 @@ class Tool_Registry {
 	 * @since 7.0.0
 	 *
 	 * @param string $name   Tool name.
-	 * @param array  $params Tool parameters.
+	 * @param mixed  $params Tool parameters.
 	 * @return array|WP_Error Tool execution result.
 	 */
 	public function execute_tool( $name, $params ) {
@@ -174,7 +175,7 @@ class Tool_Registry {
 	 * @since 7.0.0
 	 *
 	 * @param string            $name          Tool name.
-	 * @param array             $params        Tool parameters.
+	 * @param mixed             $params        Tool parameters.
 	 * @param User_Context|null $user_context  Custom user context (null = auto-detect).
 	 * @return array|WP_Error Tool execution result.
 	 */
@@ -195,13 +196,26 @@ class Tool_Registry {
 			}
 
 			return $tool->execute( $user_context, $params );
+		} catch ( \TypeError $e ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf(
+					'Failed to execute tool "%s": invalid tool parameters.',
+					$name
+				)
+			);
 		} catch ( \Exception $e ) {
-
 			return Json_Rpc_Response::create_error_response(
 				sprintf(
 					'Failed to execute tool "%s": %s',
 					$name,
 					Security::sanitize( $e->getMessage() )
+				)
+			);
+		} catch ( \Throwable $e ) {
+			return Json_Rpc_Response::create_error_response(
+				sprintf(
+					'Failed to execute tool "%s": internal execution error.',
+					$name
 				)
 			);
 		}
@@ -210,11 +224,12 @@ class Tool_Registry {
 	/**
 	 * Auto-register all tools from the tools directory.
 	 *
-	 * 23 server-registered tools + 1 client-local (get_field_options) = 24 total.
+	 * 24 server-registered tools + 1 client-local (get_field_options) = 25 total.
 	 * Keep the tool count lean. LLM accuracy drifts when there are too many tools.
 	 *
 	 * @since 7.0.0
 	 * @since 7.1.0 Consolidated from 49 to 23 server tools. 37 deprecated tools unloaded.
+	 * @since 7.2.4 Added mysql_get_cell_chunk for bounded large-value retrieval.
 	 *
 	 * @return void
 	 */
@@ -240,6 +255,7 @@ class Tool_Registry {
 		$this->register_tool( new Mysql_Get_Tables_Tool() );
 		$this->register_tool( new Mysql_Get_Table_Columns_Tool() );
 		$this->register_tool( new Mysql_Select_From_Table_Tool() );
+		$this->register_tool( new Mysql_Get_Cell_Chunk_Tool() );
 
 		// Consolidated CRUD tools (upsert pattern: id absent = create, id present = update).
 		$this->register_tool( new Save_Trigger_Tool() );

@@ -69,7 +69,7 @@ class List_Roles_Tool extends Abstract_MCP_Tool {
 							'name'         => array( 'type' => 'string' ),
 							'display_name' => array( 'type' => 'string' ),
 							'capabilities' => array(
-								'type' => 'array',
+								'type'  => 'array',
 								'items' => array( 'type' => 'string' ),
 							),
 						),

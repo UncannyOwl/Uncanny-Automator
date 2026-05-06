@@ -242,12 +242,7 @@ class Prune_Logs {
 	 * @return float
 	 */
 	public function calculate_and_save_table_size() {
-
-		$total_size = Automator_System_Report::get_tables_total_size();
-
-		automator_update_option( 'automator_db_size', $total_size, 'no' );
-
-		return $total_size;
+		return Automator_System_Report::refresh_cached_tables_size();
 	}
 
 	/**

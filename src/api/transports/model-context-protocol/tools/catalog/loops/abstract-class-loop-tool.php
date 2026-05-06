@@ -190,12 +190,12 @@ abstract class Abstract_Loop_Tool extends Abstract_MCP_Tool {
 			return '';
 		}
 
-		$context      = (string) ( $parsed['context'] ?? '' );
-		$entity_code  = (string) ( $parsed['entity_code'] ?? '' );
-		$entity_id    = absint( $parsed['entity_id'] ?? 0 );
-		$loopable_id  = (string) ( $parsed['loopable_id'] ?? '' );
-		$definition   = 'action' === $context ? Automator()->get_action( $entity_code ) : Automator()->get_trigger( $entity_code );
-		$resolved     = $this->resolve_name_from_loopable_definition( $definition, $loopable_id, $entity_id );
+		$context     = (string) ( $parsed['context'] ?? '' );
+		$entity_code = (string) ( $parsed['entity_code'] ?? '' );
+		$entity_id   = absint( $parsed['entity_id'] ?? 0 );
+		$loopable_id = (string) ( $parsed['loopable_id'] ?? '' );
+		$definition  = 'action' === $context ? Automator()->get_action( $entity_code ) : Automator()->get_trigger( $entity_code );
+		$resolved    = $this->resolve_name_from_loopable_definition( $definition, $loopable_id, $entity_id );
 
 		if ( '' !== $resolved ) {
 			return $resolved;
@@ -329,5 +329,4 @@ abstract class Abstract_Loop_Tool extends Abstract_MCP_Tool {
 
 		return (string) ( $integration['icon_svg'] ?? $integration['icon'] ?? '' );
 	}
-
 }

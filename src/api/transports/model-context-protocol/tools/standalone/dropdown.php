@@ -43,6 +43,15 @@ class Dropdown_Controller extends WP_REST_Controller {
 	private $token_manager;
 
 	/**
+	 * Authenticated user ID for the current request lifecycle.
+	 *
+	 * Set during permission callback when Bearer authentication succeeds.
+	 *
+	 * @var int|null
+	 */
+	private $authenticated_user_id = null;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -229,6 +238,8 @@ class Dropdown_Controller extends WP_REST_Controller {
 			// Handle repeater rows (e.g., Google Sheets columns) - return as-is without normalization.
 			if ( is_array( $options ) && ! empty( $options['__repeater_rows'] ) ) {
 				$field_data['repeater_rows'] = $options['rows'];
+				$field_data['description']   = 'Pre-populated repeater rows. Copy readOnly values exactly from repeater_rows; do not rewrite, simplify, or overwrite readOnly fields.';
+				$field_data['inputSchema']   = $this->build_repeater_rows_input_schema( $field_info['repeater_field']['fields'] ?? array() );
 
 				return new WP_REST_Response(
 					array(
@@ -236,7 +247,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 						'field'    => $field_data,
 						'metadata' => $metadata,
 						'type'     => 'repeater_rows',
-						'message'  => 'This field returns pre-populated repeater rows. Each row contains column names that should be filled with values.',
+						'message'  => 'This field returns pre-populated repeater rows. For readOnly fields, copy values exactly from repeater_rows; only fill editable fields.',
 					),
 					200
 				);
@@ -246,7 +257,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 			// Returns a row_template where compound keys ARE the JSON keys so the
 			// agent can copy them directly into its payload without confusion.
 			if ( is_array( $options ) && ! empty( $options['__repeater_fields'] ) ) {
-				$row_template = $this->build_row_template( $options['fields'] );
+				$row_template               = $this->build_row_template( $options['fields'] );
 				$field_data['row_template'] = $row_template;
 
 				// Build a concrete usage example from the first text field.
@@ -345,19 +356,18 @@ class Dropdown_Controller extends WP_REST_Controller {
 	 * @return array|WP_Error Options array or error.
 	 */
 	private function call_ajax_handler( string $ajax_endpoint, ?string $parent_code = null, ?string $parent_value = null, array $all_parent_values = array() ) {
-		// Get an admin user for the request.
-		$admin_user = $this->get_admin_user();
-		if ( ! $admin_user ) {
+		$user_id = $this->resolve_ajax_execution_user_id();
+		if ( $user_id <= 0 ) {
 			return new WP_Error(
-				'no_admin_user',
-				'No administrator user found to execute AJAX request.',
+				'no_authenticated_user',
+				'No authenticated administrator user found to execute AJAX request.',
 				array( 'status' => 500 )
 			);
 		}
 
-		// Generate cookies and nonce for admin authentication.
+		// Generate cookies and nonce for authenticated user context.
 		// Nonce must be generated after setting current user for it to be valid.
-		$auth = $this->generate_auth_cookies_and_nonce( $admin_user->ID );
+		$auth = $this->generate_auth_cookies_and_nonce( $user_id );
 
 		// Build POST body.
 		$body = array(
@@ -633,13 +643,14 @@ class Dropdown_Controller extends WP_REST_Controller {
 
 			// Found the sub-field. Check if it's the mapping column for AJAX.
 			$info = array(
-				'label'        => $sub_field['label'] ?? $sub_code,
-				'options'      => $sub_field['options'] ?? array(),
-				'endpoint'     => null,
-				'is_parent'    => false,
-				'parent_codes' => array(),
-				'populates'    => null,
+				'label'                => $sub_field['label'] ?? $sub_code,
+				'options'              => $sub_field['options'] ?? array(),
+				'endpoint'             => null,
+				'is_parent'            => false,
+				'parent_codes'         => array(),
+				'populates'            => null,
 				'is_repeater_subfield' => true,
+				'repeater_field'       => $repeater_field,
 			);
 
 			// If this sub-field is the mapping column, use the repeater's AJAX endpoint.
@@ -652,6 +663,85 @@ class Dropdown_Controller extends WP_REST_Controller {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Build an OpenAPI-style schema for pre-populated repeater rows.
+	 *
+	 * @param array $sub_fields Repeater sub-field definitions.
+	 * @return array
+	 */
+	private function build_repeater_rows_input_schema( array $sub_fields ): array {
+		$properties = array();
+		$required   = array();
+
+		foreach ( $sub_fields as $sub_field ) {
+			if ( ! is_array( $sub_field ) || empty( $sub_field['option_code'] ) ) {
+				continue;
+			}
+
+			$option_code = (string) $sub_field['option_code'];
+			$property    = array(
+				'type'        => $this->map_input_type_to_json_schema_type( (string) ( $sub_field['input_type'] ?? 'text' ) ),
+				'description' => (string) ( $sub_field['description'] ?? $sub_field['label'] ?? $option_code ),
+			);
+
+			if ( ! empty( $sub_field['read_only'] ) ) {
+				$property['readOnly']    = true;
+				$property['description'] = trim( $property['description'] . ' Read-only: copy this value exactly from repeater_rows; do not rewrite or overwrite it.' );
+			}
+
+			if ( array_key_exists( 'default_value', $sub_field ) ) {
+				$property['default'] = $sub_field['default_value'];
+			}
+
+			$properties[ $option_code ] = $property;
+
+			if ( ! empty( $sub_field['required'] ) ) {
+				$required[] = $option_code;
+			}
+		}
+
+		$schema = array(
+			'type'        => 'array',
+			'description' => 'Submit one object per repeater row. Preserve readOnly fields exactly as returned by repeater_rows and fill only editable fields.',
+			'items'       => array(
+				'type'       => 'object',
+				'properties' => $properties,
+			),
+		);
+
+		if ( ! empty( $required ) ) {
+			$schema['items']['required'] = array_values( array_unique( $required ) );
+		}
+
+		return $schema;
+	}
+
+	/**
+	 * Convert Automator input types to JSON schema scalar types.
+	 *
+	 * @param string $input_type Automator input type.
+	 * @return string
+	 */
+	private function map_input_type_to_json_schema_type( string $input_type ): string {
+		if ( in_array( $input_type, array( 'checkbox', 'toggle' ), true ) ) {
+			return 'boolean';
+		}
+
+		if ( in_array( $input_type, array( 'int', 'integer' ), true ) ) {
+			return 'integer';
+		}
+
+		if ( in_array( $input_type, array( 'float', 'number' ), true ) ) {
+			return 'number';
+		}
+
+		if ( 'repeater' === $input_type ) {
+			return 'array';
+		}
+
+		return 'string';
 	}
 
 	/**
@@ -760,6 +850,31 @@ class Dropdown_Controller extends WP_REST_Controller {
 	}
 
 	/**
+	 * Resolve the user context used for dynamic AJAX subrequests.
+	 *
+	 * Priority:
+	 * 1. Bearer-authenticated request user (permission callback context).
+	 * 2. Current WP user if already authenticated and authorized.
+	 *
+	 * @since 7.2.4
+	 *
+	 * @return int User ID, or 0 when no valid execution context exists.
+	 */
+	private function resolve_ajax_execution_user_id(): int {
+		$user_id = (int) $this->authenticated_user_id;
+		if ( $user_id > 0 ) {
+			return $user_id;
+		}
+
+		$current_user_id = get_current_user_id();
+		if ( $current_user_id > 0 && current_user_can( 'manage_options' ) ) {
+			return (int) $current_user_id;
+		}
+
+		return 0;
+	}
+
+	/**
 	 * Generate authentication cookies and nonce for a user.
 	 *
 	 * Creates WordPress auth cookies that can be passed to wp_remote_post,
@@ -777,9 +892,10 @@ class Dropdown_Controller extends WP_REST_Controller {
 		$manager    = \WP_Session_Tokens::get_instance( $user_id );
 		$token      = $manager->create( $expiration );
 
-		// Generate auth cookies WITH the same token.
-		$auth_cookie      = wp_generate_auth_cookie( $user_id, $expiration, 'auth', $token );
-		$logged_in_cookie = wp_generate_auth_cookie( $user_id, $expiration, 'logged_in', $token );
+		// Generate auth cookies WITH the same token and each cookie's expected scheme.
+		$auth_cookie        = wp_generate_auth_cookie( $user_id, $expiration, 'auth', $token );
+		$secure_auth_cookie = wp_generate_auth_cookie( $user_id, $expiration, 'secure_auth', $token );
+		$logged_in_cookie   = wp_generate_auth_cookie( $user_id, $expiration, 'logged_in', $token );
 
 		// Fake the logged_in cookie in $_COOKIE so wp_get_session_token() works.
 		// This is needed for wp_create_nonce() to use the correct token.
@@ -802,7 +918,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 		$cookies[] = new \WP_Http_Cookie(
 			array(
 				'name'  => SECURE_AUTH_COOKIE,
-				'value' => $auth_cookie,
+				'value' => $secure_auth_cookie,
 			)
 		);
 
@@ -818,22 +934,6 @@ class Dropdown_Controller extends WP_REST_Controller {
 			'cookies' => $cookies,
 			'nonce'   => $nonce,
 		);
-	}
-
-	/**
-	 * Get an admin user for capability checks.
-	 *
-	 * @return \WP_User|null Admin user or null if not found.
-	 */
-	private function get_admin_user(): ?\WP_User {
-		$admins = get_users(
-			array(
-				'role'   => 'administrator',
-				'number' => 1,
-			)
-		);
-
-		return ! empty( $admins ) ? $admins[0] : null;
 	}
 
 	/**
@@ -864,6 +964,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 			if ( $user && user_can( $user, 'manage_options' ) ) {
 				// Set current user for the request.
 				wp_set_current_user( $user->ID );
+				$this->authenticated_user_id = (int) $user->ID;
 				return true;
 			}
 
@@ -889,25 +990,25 @@ class Dropdown_Controller extends WP_REST_Controller {
 	 */
 	private function get_endpoint_args() {
 		return array(
-			'entity_type'       => array(
+			'entity_type'               => array(
 				'required'          => true,
 				'type'              => 'string',
 				'description'       => 'The entity type: "action" or "trigger".',
 				'sanitize_callback' => 'sanitize_text_field',
 			),
-			'entity_code'       => array(
+			'entity_code'               => array(
 				'required'          => true,
 				'type'              => 'string',
 				'description'       => 'The action/trigger code (e.g., SLACKSENDMESSAGE).',
 				'sanitize_callback' => 'sanitize_text_field',
 			),
-			'field_option_code' => array(
+			'field_option_code'         => array(
 				'required'          => true,
 				'type'              => 'string',
 				'description'       => 'The field option code (e.g., SLACKCHANNEL).',
 				'sanitize_callback' => 'sanitize_text_field',
 			),
-			'field_parent_option_code' => array(
+			'field_parent_option_code'  => array(
 				'required'          => false,
 				'type'              => 'string',
 				'description'       => 'Parent field option code for cascading dropdowns (e.g., ASANA_WORKSPACE).',
