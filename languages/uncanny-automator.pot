@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.2.4\n"
+"Project-Id-Version: Uncanny Automator 7.2.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-06T19:47:15+00:00\n"
+"POT-Creation-Date: 2026-05-08T16:41:08+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -652,7 +652,6 @@ msgstr ""
 #: src/core/views/credits-remaining-25.php:41
 #: src/core/views/credits-remaining-100.php:44
 #: src/integrations/advanced/tokens/calculation-token.php:92
-#: src/integrations/advanced/tokens/postmeta-token.php:32
 #: src/integrations/mailchimp/actions/campaign-createandsend.php:89
 #: src/integrations/whatsapp/settings/settings-whatsapp.php:159
 msgid "Learn more"
@@ -2505,22 +2504,27 @@ msgstr ""
 msgid "Changes you made may not be saved."
 msgstr ""
 
-#: src/api/application/mcp/class-mcp-client.php:424
+#: src/api/application/mcp/class-mcp-client.php:569
+msgctxt "MCP client validation error"
+msgid "A valid Automator Pro license is required to use Uncanny Agent."
+msgstr ""
+
+#: src/api/application/mcp/class-mcp-client.php:583
 msgctxt "MCP client validation error"
 msgid "The supplied page URL must be a string."
 msgstr ""
 
-#: src/api/application/mcp/class-mcp-client.php:432
+#: src/api/application/mcp/class-mcp-client.php:591
 msgctxt "MCP client validation error"
 msgid "The supplied page URL is invalid."
 msgstr ""
 
-#: src/api/application/mcp/class-mcp-client.php:440
+#: src/api/application/mcp/class-mcp-client.php:599
 msgctxt "MCP client validation error"
 msgid "Unable to load the required encryption key."
 msgstr ""
 
-#: src/api/application/mcp/class-mcp-client.php:452
+#: src/api/application/mcp/class-mcp-client.php:611
 msgctxt "MCP client validation error"
 msgid "Could not generate the encrypted payload."
 msgstr ""
@@ -4828,7 +4832,7 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:292
 #: src/core/admin/class-admin-menu.php:293
-#: src/core/admin/class-admin-menu.php:1830
+#: src/core/admin/class-admin-menu.php:1832
 #: src/core/views/admin-integrations/archive/search.php:20
 msgid "All integrations"
 msgstr ""
@@ -5362,15 +5366,15 @@ msgstr ""
 msgid "Action log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1712
+#: src/core/admin/class-admin-menu.php:1714
 msgid "Installed integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1713
+#: src/core/admin/class-admin-menu.php:1715
 msgid "Ready-to-use integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1831
+#: src/core/admin/class-admin-menu.php:1833
 msgid "Put your WordPress site on autopilot"
 msgstr ""
 
@@ -8515,92 +8519,102 @@ msgctxt "settings panel title"
 msgid "Uncanny Agent"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:42
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:41
 msgctxt "agent feature description"
-msgid "Uncanny Agent is your made-for-WordPress AI assistant. It can analyze or answer questions about your users, posts, sales, courses and more. It can write blog posts, design pages and build and troubleshoot recipes. It's like having a dedicated WordPress helper at your fingertips."
+msgid "Uncanny Agent is your made-for-WordPress AI assistant. It can analyze or answer questions about your users, posts, sales, courses and more. It can write blog posts, design pages and build and troubleshoot recipes. It's like having a dedicated WordPress helper at your fingertips. Note: Uncanny Agent is available to Administrator users only."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:48
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:45
+msgctxt "launcher tab subtitle"
+msgid "Uncanny Agent Launcher Tab"
+msgstr ""
+
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:49
+msgctxt "launcher tab description"
+msgid "A tab is displayed at the bottom of the WordPress admin dashboard to enable quick access to Uncanny Agent from any screen. This is a static link that opens the Uncanny Agent window. Uncanny Agent does not load on any screen until you initiate a conversation by sending a message."
+msgstr ""
+
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:53
+msgctxt "launcher tab toggle hint"
+msgid "If you prefer that the Uncanny Agent tab is not displayed, you can toggle it off below."
+msgstr ""
+
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:61
 msgctxt "toggle status label"
 msgid "Enabled"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:48
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:61
 msgctxt "toggle status label"
 msgid "Disabled"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:54
-msgctxt "agent feature description"
-msgid "Keep Uncanny Agent enabled to help your team work faster. Uncanny Agent is available to Administrator users only."
-msgstr ""
-
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:60
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:66
 msgctxt "Uncanny Agent"
 msgid "Success. Redirecting..."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:61
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:67
 msgctxt "Uncanny Agent"
 msgid "Permission denied."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:69
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:75
 msgctxt "handshake description"
 msgid "wants to connect this site to"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:76
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:82
 msgctxt "handshake description"
 msgid "This will allow the Uncanny Agent standalone app to manage automations on this site. The connection uses a secure application password that you can revoke at any time."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:80
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:86
 msgctxt "handshake expiry"
 msgid "This request expires in 5 minutes."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:85
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:91
 msgctxt "handshake button"
 msgid "Allow Connection"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:88
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:94
 msgctxt "handshake button"
 msgid "Deny"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:131
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:137
 msgctxt "Uncanny Agent"
 msgid "Connection denied."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:137
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:143
 msgctxt "Uncanny Agent"
 msgid "Something went wrong."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:141
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:147
 msgctxt "Uncanny Agent"
 msgid "Network error. Please try again."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:147
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:153
 msgctxt "Uncanny Agent"
 msgid "Connecting..."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:159
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:165
 msgctxt "handshake error title"
 msgid "Invalid Connection Request"
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:160
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:166
 msgctxt "handshake error"
 msgid "This connection request is invalid or has expired. Please try again from app.uncannyagent.com."
 msgstr ""
 
-#: src/core/views/admin-settings/tab/uncanny-agent/general.php:173
+#: src/core/views/admin-settings/tab/uncanny-agent/general.php:179
 msgctxt "settings save button"
 msgid "Save settings"
 msgstr ""
@@ -10303,7 +10317,6 @@ msgid "Formula"
 msgstr ""
 
 #: src/integrations/advanced/tokens/calculation-token.php:92
-#: src/integrations/advanced/tokens/postmeta-token.php:32
 msgid "The ID of the post that contains the meta data."
 msgstr ""
 
@@ -10319,19 +10332,28 @@ msgctxt "Token"
 msgid "Post meta"
 msgstr ""
 
-#: src/integrations/advanced/tokens/postmeta-token.php:31
-#: src/integrations/wp-all-import/tokens/wpai-tokens.php:90
-#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:38
-#: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:95
-#: src/integrations/wp/actions/wp-add-reply-to-comment.php:64
+#: src/integrations/advanced/tokens/postmeta-token.php:36
+msgctxt "Advanced"
 msgid "Post ID"
 msgstr ""
 
-#: src/integrations/advanced/tokens/postmeta-token.php:40
+#: src/integrations/advanced/tokens/postmeta-token.php:37
+msgctxt "Advanced"
+msgid "The ID of the post that contains the meta data."
+msgstr ""
+
+#: src/integrations/advanced/tokens/postmeta-token.php:37
+msgctxt "Advanced"
+msgid "Learn more"
+msgstr ""
+
+#: src/integrations/advanced/tokens/postmeta-token.php:45
+msgctxt "Advanced"
 msgid "Meta key"
 msgstr ""
 
-#: src/integrations/advanced/tokens/postmeta-token.php:41
+#: src/integrations/advanced/tokens/postmeta-token.php:46
+msgctxt "Advanced"
 msgid "The meta key associated with the data you want to retrieve. Only one meta key can be entered per token."
 msgstr ""
 
@@ -36895,88 +36917,88 @@ msgid "A user fails {{a quiz:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
 #. translators: %1$s: Phone number
-#: src/integrations/twilio/actions/twilio-send-sms.php:36
+#: src/integrations/twilio/actions/twilio-send-sms.php:37
 #, php-format
 msgctxt "Twilio"
 msgid "Send an SMS {{to a number:%1$s}}"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:41
+#: src/integrations/twilio/actions/twilio-send-sms.php:42
 msgctxt "Twilio"
 msgid "Send an SMS {{to a number}}"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:55
+#: src/integrations/twilio/actions/twilio-send-sms.php:56
 msgctxt "Twilio"
 msgid "To"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:59
+#: src/integrations/twilio/actions/twilio-send-sms.php:60
 msgctxt "Twilio"
 msgid "Separate multiple phone numbers with a comma"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:63
+#: src/integrations/twilio/actions/twilio-send-sms.php:64
 msgctxt "Twilio"
 msgid "Body"
 msgstr ""
 
 #. translators: %1$s: Allowed characters count, %2$s: Single ASCII count, %3$s: Single Unicode count
-#: src/integrations/twilio/actions/twilio-send-sms.php:69
+#: src/integrations/twilio/actions/twilio-send-sms.php:70
 #, php-format
 msgctxt "Twilio"
 msgid "SMS allows up to %1$s. A single SMS can contain up to %2$s GSM characters, or %3$s Unicode characters. Multiple SMS segments are supported."
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:70
+#: src/integrations/twilio/actions/twilio-send-sms.php:71
 msgctxt "Twilio"
 msgid "1600 characters"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:71
+#: src/integrations/twilio/actions/twilio-send-sms.php:72
 msgctxt "Twilio"
 msgid "160"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:72
+#: src/integrations/twilio/actions/twilio-send-sms.php:73
 msgctxt "Twilio"
 msgid "70"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:86
+#: src/integrations/twilio/actions/twilio-send-sms.php:87
 msgctxt "Twilio"
 msgid "SMS status"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:90
+#: src/integrations/twilio/actions/twilio-send-sms.php:91
 msgctxt "Twilio"
 msgid "SMS ID"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:114
+#: src/integrations/twilio/actions/twilio-send-sms.php:115
 msgctxt "Twilio"
 msgid "Phone number is required"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:118
+#: src/integrations/twilio/actions/twilio-send-sms.php:119
 msgctxt "Twilio"
 msgid "Message body is required"
 msgstr ""
 
-#: src/integrations/twilio/actions/twilio-send-sms.php:131
+#: src/integrations/twilio/actions/twilio-send-sms.php:132
 msgctxt "Twilio"
 msgid "No valid phone numbers provided"
 msgstr ""
 
 #. translators: 1. Phone number, 2. Error message
-#: src/integrations/twilio/actions/twilio-send-sms.php:165
+#: src/integrations/twilio/actions/twilio-send-sms.php:166
 #, php-format
 msgctxt "Twilio"
 msgid "%1$s: %2$s"
 msgstr ""
 
 #. translators: %1$d Success count, %2$d Total count, %3$s Errors
-#: src/integrations/twilio/actions/twilio-send-sms.php:196
+#: src/integrations/twilio/actions/twilio-send-sms.php:197
 #, php-format
 msgctxt "Twilio"
 msgid "Sent %1$d of %2$d SMS messages. Failed: %3$s"
@@ -39894,6 +39916,13 @@ msgstr ""
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:84
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:100
 msgid "Post title"
+msgstr ""
+
+#: src/integrations/wp-all-import/tokens/wpai-tokens.php:90
+#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:38
+#: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:95
+#: src/integrations/wp/actions/wp-add-reply-to-comment.php:64
+msgid "Post ID"
 msgstr ""
 
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:96

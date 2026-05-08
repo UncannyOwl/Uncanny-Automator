@@ -52,6 +52,31 @@ class Mcp_Client {
 	const SDK_CSS_URL = 'https://llm.automatorplugin.com/sdk.css';
 
 	/**
+	 * Automator Pro license download ID.
+	 */
+	private const AUTOMATOR_PRO_DOWNLOAD_ID = 506;
+
+	/**
+	 * Valid license status returned by the Automator licensing API.
+	 */
+	private const LICENSE_STATUS_VALID = 'valid';
+
+	/**
+	 * One-way SDK license hash query parameter.
+	 */
+	private const SDK_LICENSE_HASH_QUERY_ARG = 'l';
+
+	/**
+	 * Decryptable SDK license package query parameter.
+	 */
+	private const SDK_LICENSE_PAYLOAD_QUERY_ARG = 'm';
+
+	/**
+	 * SDK license package fallback when encryption key is unavailable.
+	 */
+	private const SDK_LICENSE_PAYLOAD_AES_KEY_NONE = 'aes_key_none';
+
+	/**
 	 * Agent context builder.
 	 *
 	 * @var Agent_Context
@@ -132,6 +157,121 @@ class Mcp_Client {
 	 */
 	private static function get_uncanny_agent_settings(): bool {
 		return (bool) Admin_Settings_Uncanny_Agent_General::get_setting( Admin_Settings_Uncanny_Agent_General::ENABLED_KEY );
+	}
+
+	/**
+	 * Check whether the current license grants Uncanny Agent access.
+	 *
+	 * @return bool
+	 */
+	private function has_agent_eligible_license(): bool {
+
+		try {
+			$license = Api_Server::get_license();
+		} catch ( \Exception $e ) {
+			unset( $e );
+			return false;
+		}
+
+		if ( ! is_array( $license ) ) {
+			return false;
+		}
+
+		$license_status = $license['license'] ?? $license['status'] ?? '';
+
+		return self::LICENSE_STATUS_VALID === $license_status
+			&& self::AUTOMATOR_PRO_DOWNLOAD_ID === absint( $license['download_id'] ?? 0 );
+	}
+
+	/**
+	 * Generate the decryptable SDK license package.
+	 *
+	 * @return string
+	 */
+	private function generate_sdk_license_payload(): string {
+
+		$license = $this->get_sdk_license_data();
+
+		if ( ! is_array( $license ) ) {
+			return '';
+		}
+
+		$license_key = $this->get_sdk_license_key( $license );
+
+		if ( '' === $license_key ) {
+			return '';
+		}
+
+		return $this->payload_service->generate_encrypted_package(
+			$this->build_sdk_license_payload( $license, $license_key )
+		);
+	}
+
+	/**
+	 * Get license data for SDK URL values.
+	 *
+	 * @return array<string,mixed>|false
+	 */
+	private function get_sdk_license_data() {
+
+		try {
+			$license = Api_Server::get_license();
+		} catch ( \Exception $e ) {
+			unset( $e );
+			return false;
+		}
+
+		return is_array( $license ) ? $license : false;
+	}
+
+	/**
+	 * Get the license key for SDK URL values.
+	 *
+	 * @param array<string,mixed>|false $license License data.
+	 *
+	 * @return string
+	 */
+	private function get_sdk_license_key( $license ): string {
+
+		$license_key = is_array( $license ) ? ( $license['license_key'] ?? '' ) : '';
+
+		if ( ! is_scalar( $license_key ) || '' === (string) $license_key ) {
+			$license_key = Api_Server::get_license_key();
+		}
+
+		if ( ! is_scalar( $license_key ) || '' === (string) $license_key ) {
+			return '';
+		}
+
+		return (string) $license_key;
+	}
+
+	/**
+	 * Resolve the SDK license package query value.
+	 *
+	 * @return string
+	 */
+	private function get_sdk_license_payload_query_value(): string {
+
+		$license_payload = $this->generate_sdk_license_payload();
+
+		return '' === $license_payload ? self::SDK_LICENSE_PAYLOAD_AES_KEY_NONE : $license_payload;
+	}
+
+	/**
+	 * Build the sanitized SDK license package.
+	 *
+	 * @param array<string,mixed> $license License data.
+	 * @param string              $license_key License key.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function build_sdk_license_payload( array $license, string $license_key ): array {
+
+		return array(
+			'license_key' => sanitize_text_field( $license_key ),
+			'license_id'  => absint( $license['license_id'] ?? 0 ),
+		);
 	}
 
 	/**
@@ -260,15 +400,16 @@ class Mcp_Client {
 	 */
 	public function load_chat_sdk(): void {
 
-		if ( ! self::get_uncanny_agent_settings() || ! $this->context_service->can_access_client() ) {
+		if (
+			! self::get_uncanny_agent_settings()
+			|| ! $this->context_service->can_access_client()
+			|| ! $this->has_agent_eligible_license()
+		) {
 			return;
 		}
 
 		$force_refresh = isset( $_GET['mcp_refresh_key'] ) && '1' === sanitize_text_field( wp_unslash( $_GET['mcp_refresh_key'] ) );
-
-		if ( ! $this->public_key_manager->ensure_public_key_ready( $force_refresh ) ) {
-			return;
-		}
+		$this->public_key_manager->ensure_public_key_ready( $force_refresh );
 
 		printf(
 			'<script src="%s" type="module"></script> <link rel="stylesheet" href="%s">',  // phpcs:ignore WordPress.WP.EnqueuedResources -- MCP launcher web component requires inline loading.
@@ -356,6 +497,10 @@ class Mcp_Client {
 	 */
 	private function generate_launcher_html(): string {
 
+		if ( ! $this->has_agent_eligible_license() ) {
+			return '';
+		}
+
 		$payload = $this->payload_service->generate_encrypted_payload( array() );
 
 		if ( '' === $payload ) {
@@ -369,15 +514,16 @@ class Mcp_Client {
 		$view_mode = $can_dock_to_right ? 'fab' : 'bottom-dock';
 
 		$launcher = sprintf(
-			'<ua-chat-launcher 
-				server-url="%s" 
-				payload="%s" 
-				parent-selector="#wpbody" 
-				consumer-server-url="%s" 
+			'<ua-chat-launcher
+				server-url="%s"
+				payload="%s"
+				parent-selector="#wpbody"
+				consumer-server-url="%s"
 				consumer-nonce="%s"
 				bundle-url="%s"
 				bundle-css-url="%s"
 				view-mode="%s"
+				locale="%s"
 				%s
 			></ua-chat-launcher>',
 			esc_attr( self::get_inference_url() ),
@@ -387,6 +533,7 @@ class Mcp_Client {
 			esc_url( $this->get_sdk_url() ),
 			esc_url( $this->get_sdk_css_url() ),
 			esc_attr( $view_mode ),
+			esc_attr( $this->context_service->get_user_locale_bcp47() ),
 			( $can_dock_to_right ? 'can-dock-to-right' : '' )
 		);
 
@@ -415,6 +562,18 @@ class Mcp_Client {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function refresh_payload( WP_REST_Request $request ) {
+
+		if ( ! $this->has_agent_eligible_license() ) {
+			return new WP_Error(
+				'agent_license_required',
+				esc_html_x(
+					'A valid Automator Pro license is required to use Uncanny Agent.',
+					'MCP client validation error',
+					'uncanny-automator'
+				),
+				array( 'status' => 403 )
+			);
+		}
 
 		$page_url = $request->get_param( 'page_url' );
 
@@ -721,10 +880,15 @@ class Mcp_Client {
 		$url = apply_filters( 'automator_mcp_client_sdk_url', $url );
 
 		// Append license hash for beta enrollment check.
-		$license_key = Api_Server::get_license_key();
+		$license     = $this->get_sdk_license_data();
+		$license_key = $this->get_sdk_license_key( $license );
 		if ( ! empty( $license_key ) ) {
 			$license_hash = hash_hmac( 'sha256', $license_key, $license_key );
-			$url          = add_query_arg( 'l', $license_hash, $url );
+			$url          = add_query_arg( self::SDK_LICENSE_HASH_QUERY_ARG, $license_hash, $url );
+		}
+
+		if ( ! empty( $license_key ) ) {
+			$url = add_query_arg( self::SDK_LICENSE_PAYLOAD_QUERY_ARG, rawurlencode( $this->get_sdk_license_payload_query_value() ), $url );
 		}
 
 		// Append plugin version for cache busting.

@@ -1,0 +1,1525 @@
+{
+    "pages": {
+        "Addons": "Dodatki",
+        "All Coupons": "Wszystkie kupony",
+        "All Courses": "Wszystkie kursy",
+        "All Customers": "Wszyscy klienci",
+        "All Forms": "Wszystkie formularze",
+        "All Forums": "Wszystkie fora",
+        "All Groups": "Wszystkie grupy",
+        "All Lessons": "Wszystkie lekcje",
+        "All Members": "Wszyscy członkowie",
+        "All Orders": "Wszystkie zamówienia",
+        "All Pages": "Wszystkie strony",
+        "All Posts": "Wszystkie wpisy",
+        "All Products": "Wszystkie produkty",
+        "All Quizzes": "Wszystkie quizy",
+        "All Subscriptions": "Wszystkie subskrypcje",
+        "All Topics": "Wszystkie tematy",
+        "All Users": "Wszyscy użytkownicy",
+        "All integrations": "Wszystkie integracje",
+        "All recipes": "Wszystkie przepisy",
+        "App integrations": "Integracje aplikacji",
+        "Assignments": "Zadania",
+        "Categories": "Kategorie",
+        "Comments": "Komentarze",
+        "Courses": "Kursy",
+        "Dashboard": "Kokpit",
+        "Default": "Domyślne",
+        "Edit Coupon": "Edytuj kupon",
+        "Edit Course": "Edytuj kurs",
+        "Edit Form": "Edytuj formularz",
+        "Edit Forum": "Edytuj forum",
+        "Edit Group": "Edytuj grupę",
+        "Edit Lesson": "Edytuj lekcję",
+        "Edit Member": "Edytuj członka",
+        "Edit Order": "Edytuj zamówienie",
+        "Edit Page": "Edytuj stronę",
+        "Edit Post": "Edytuj wpis",
+        "Edit Product": "Edytuj produkt",
+        "Edit Quiz": "Edytuj quiz",
+        "Edit Subscription": "Edytuj subskrypcję",
+        "Edit Topic": "Edytuj temat",
+        "Edit User": "Edytuj użytkownika",
+        "Entries": "Wpisy",
+        "Entries Overview": "Przegląd wpisów",
+        "Form Entries": "Wpisy formularza",
+        "Logs": "Dzienniki",
+        "Media Library": "Biblioteka mediów",
+        "Plans": "Plany",
+        "Recipe editor": "Edytor przepisu",
+        "Reports": "Raporty",
+        "Scheduled Recipes": "Zaplanowane przepisy",
+        "Settings": "Ustawienia",
+        "Single Entry": "Pojedynczy wpis",
+        "Status": "Status",
+        "Tags": "Tagi",
+        "Tools": "Narzędzia"
+    },
+    "rows": {
+        "Automator.Addons.1": {
+            "Starter": "Polecaj dodatki",
+            "Prompt": "Przejrzyj moje zainstalowane wtyczki i połączone integracje aplikacji, a następnie poleć dodatki, które mogą odblokować przydatne automatyzacje."
+        },
+        "Automator.Addons.2": {
+            "Starter": "Wyjaśnij dodatek",
+            "Prompt": "Zapytaj, który dodatek rozważam, a następnie wyjaśnij, co dodaje i kiedy warto go zainstalować."
+        },
+        "Automator.Addons.3": {
+            "Starter": "Znajdź brakujące możliwości",
+            "Prompt": "Wskaż możliwości automatyzacji, których mi brakuje, i zasugeruj, który dodatek lub integracja by je zapewniły."
+        },
+        "Automator.Addons.4": {
+            "Starter": "Porównaj opcje dodatków",
+            "Prompt": "Pomóż mi porównać dostępne dodatki na podstawie potrzeb mojej witryny, obecnych wtyczek i prawdopodobnych pomysłów na przepisy."
+        },
+        "Automator.Addons.5": {
+            "Starter": "Zaplanuj konfigurację dodatku",
+            "Prompt": "Pomóż mi zaplanować instalację i konfigurację dodatku. Zapytaj, jaki przepływ pracy chcę zautomatyzować, a następnie zasugeruj kolejne kroki."
+        },
+        "Automator.All integrations.1": {
+            "Starter": "Polecaj integracje",
+            "Prompt": "Przejrzyj moje zainstalowane wtyczki i połączone integracje aplikacji, a następnie zasugeruj integracje Automator najbardziej odpowiednie dla mojej witryny."
+        },
+        "Automator.All integrations.2": {
+            "Starter": "Znajdź szanse na automatyzację",
+            "Prompt": "Zasugeruj przydatne pomysły na automatyzację na podstawie moich zainstalowanych wtyczek i połączonych integracji aplikacji."
+        },
+        "Automator.All integrations.3": {
+            "Starter": "Wyjaśnij integrację",
+            "Prompt": "Zapytaj, którą integracją jestem zainteresowany, a następnie wyjaśnij, jakie przepisy może odblokować."
+        },
+        "Automator.All integrations.4": {
+            "Starter": "Znajdź brakujące integracje",
+            "Prompt": "Porównaj moje zainstalowane wtyczki i połączone aplikacje z dostępnymi integracjami Automator, a następnie wskaż wszystko, co mogę potrzebować zainstalować, połączyć lub zaktualizować."
+        },
+        "Automator.All integrations.5": {
+            "Starter": "Buduj z integracją",
+            "Prompt": "Pomóż mi wybrać integrację Automator i przekształcić ją w przydatny pomysł na przepis dla mojej witryny."
+        },
+        "Automator.All recipes.1": {
+            "Starter": "Pokaż moje najczęściej używane przepisy",
+            "Prompt": "Pokaż mi przepisy z największą liczbą zakończonych uruchomień, w tym status i ostatnią aktywność, jeśli są dostępne."
+        },
+        "Automator.All recipes.2": {
+            "Starter": "Znajdź szkice do dokończenia",
+            "Prompt": "Pokaż mi szkice przepisów, które warto dokończyć, zaczynając od ostatnio aktualizowanych."
+        },
+        "Automator.All recipes.3": {
+            "Starter": "Znajdź przepisy z ostatnimi błędami",
+            "Prompt": "Pokaż mi przepisy, które niedawno zawiodły lub wygenerowały błędy, w tym nazwę przepisu, ostatni błąd i kiedy wystąpił."
+        },
+        "Automator.All recipes.4": {
+            "Starter": "Znajdź nieaktywne przepisy",
+            "Prompt": "Pokaż mi przepisy, które nie były uruchamiane od dawna lub wydają się wyłączone, abym mógł zdecydować, czy je zachować."
+        },
+        "Automator.All recipes.5": {
+            "Starter": "Pomóż mi uporządkować tę listę",
+            "Prompt": "Zasugeruj kilka filtrów lub celów porządkowania, abym mógł szybko znaleźć przepisy warte przeglądu."
+        },
+        "Automator.App integrations.1": {
+            "Starter": "Przejrzyj połączone aplikacje",
+            "Prompt": "Wyświetl listę moich połączonych integracji aplikacji i podsumuj, które są gotowe do użycia w przepisach."
+        },
+        "Automator.App integrations.2": {
+            "Starter": "Znajdź odłączone aplikacje",
+            "Prompt": "Pokaż integracje aplikacji, które nie są jeszcze połączone, i zasugeruj, które najlepiej połączyć w pierwszej kolejności."
+        },
+        "Automator.App integrations.3": {
+            "Starter": "Rozwiąż problemy z połączeniami aplikacji",
+            "Prompt": "Sprawdź status połączeń integracji aplikacji i pomóż rozwiązać problemy ze wszystkim, co wydaje się odłączone, wygasłe lub niekompletne."
+        },
+        "Automator.App integrations.4": {
+            "Starter": "Zasugeruj przepisy aplikacji",
+            "Prompt": "Zasugeruj nowe pomysły na przepisy, które wysyłają lub odbierają dane z moich połączonych integracji aplikacji."
+        },
+        "Automator.App integrations.5": {
+            "Starter": "Pomóż połączyć aplikację",
+            "Prompt": "Zapytaj, którą aplikację chcę połączyć, a następnie poprowadź mnie przez to, jakich informacji lub uprawnień powinienem się spodziewać."
+        },
+        "Automator.Categories.1": {
+            "Starter": "Podsumuj użycie kategorii",
+            "Prompt": "Pokaż, jak są wykorzystywane moje kategorie przepisów Automator. Uwzględnij nazwy kategorii, liczbę przepisów oraz puste kategorie."
+        },
+        "Automator.Categories.2": {
+            "Starter": "Znajdź nieskategoryzowane przepisy",
+            "Prompt": "Pokaż mi przepisy, które nie mają kategorii, wraz z ich nazwami i statusami."
+        },
+        "Automator.Categories.3": {
+            "Starter": "Zasugeruj porządkowanie kategorii",
+            "Prompt": "Zasugeruj kategorie, które warto połączyć, zmienić nazwę, usunąć lub zachować, na podstawie nazw i liczby przepisów."
+        },
+        "Automator.Categories.4": {
+            "Starter": "Uporządkuj moje przepisy",
+            "Prompt": "Zaproponuj prostą strukturę kategorii, która ułatwi przeglądanie i utrzymanie moich przepisów."
+        },
+        "Automator.Categories.5": {
+            "Starter": "Stwórz plan kategorii",
+            "Prompt": "Pomóż mi stworzyć plan kategorii przepisów. Zapytaj, jakie przepisy buduję najczęściej, a następnie zaproponuj nazwy kategorii."
+        },
+        "Automator.Dashboard.1": {
+            "Starter": "Daj mi szybkie zwycięstwo",
+            "Prompt": "Zasugeruj jedno małe usprawnienie Automator, które mogę wprowadzić dziś, a które prawdopodobnie zaoszczędzi czas lub zmniejszy ręczną pracę na mojej witrynie."
+        },
+        "Automator.Dashboard.2": {
+            "Starter": "Zainspiruj mnie",
+            "Prompt": "Zasugeruj przydatny pomysł na automatyzację na podstawie rodzaju witryny, jaką wydaję się prowadzić. Niech będzie praktyczny, nie ogólnikowy."
+        },
+        "Automator.Dashboard.3": {
+            "Starter": "Sprawdź najważniejsze rzeczy",
+            "Prompt": "Sprawdź, czy coś ważnego wymaga mojej uwagi, na przykład nieudane uruchomienia, odłączone aplikacje, niskie kredyty lub ustawienia, które mogą wpływać na niezawodność."
+        },
+        "Automator.Dashboard.4": {
+            "Starter": "Naucz mnie przydatnej sztuczki",
+            "Prompt": "Pokaż mi jedną funkcję Automator lub pomysł na przepływ pracy, którego mogę jeszcze nie używać, i wyjaśnij, kiedy warto go wypróbować."
+        },
+        "Automator.Dashboard.5": {
+            "Starter": "Zaskocz mnie automatyzacją",
+            "Prompt": "Daj mi jeden kreatywny, ale realistyczny pomysł na przepis dla mojej witryny, a następnie wyjaśnij, jaki problem by rozwiązał."
+        },
+        "Automator.Logs.1": {
+            "Starter": "Znajdź ostatnie błędy",
+            "Prompt": "Przejrzyj ostatnie dzienniki Automator i wymień uruchomienia przepisów z błędami. Uwzględnij nazwę przepisu, komunikat o błędzie i kiedy wystąpił."
+        },
+        "Automator.Logs.2": {
+            "Starter": "Rozwiąż problemy z nieudanymi uruchomieniami",
+            "Prompt": "Pomóż mi rozwiązać problemy z nieudanymi uruchomieniami przepisów. Zacznij od zidentyfikowania najczęstszego ostatniego błędu i jego prawdopodobnej przyczyny."
+        },
+        "Automator.Logs.3": {
+            "Starter": "Pokaż aktywność przepisów",
+            "Prompt": "Podsumuj aktywność Automator z dzienników, w tym udane uruchomienia, nieudane uruchomienia oraz przepisy z nietypową aktywnością."
+        },
+        "Automator.Logs.4": {
+            "Starter": "Sprawdź przepis, który się nie uruchamia",
+            "Prompt": "Zapytaj, który przepis się nie uruchamia, a następnie pomóż mi sprawdzić najbardziej prawdopodobne przyczyny."
+        },
+        "Automator.Logs.5": {
+            "Starter": "Wyjaśnij wpis dziennika",
+            "Prompt": "Zapytaj, który identyfikator wpisu dziennika, przepis lub komunikat o błędzie chcę zrozumieć, a następnie wyjaśnij, co się stało i co powinienem zrobić dalej."
+        },
+        "Automator.Plans.1": {
+            "Starter": "Wyjaśnij mój plan",
+            "Prompt": "Wyjaśnij, co obejmuje mój obecny plan Automator i które funkcje są najbardziej istotne dla mojej witryny."
+        },
+        "Automator.Plans.2": {
+            "Starter": "Znajdź zablokowane funkcje",
+            "Prompt": "Wskaż funkcje Automator, które nie są dostępne w moim obecnym planie, i wyjaśnij, co by umożliwiały."
+        },
+        "Automator.Plans.3": {
+            "Starter": "Zaleć zmiany planu",
+            "Prompt": "Na podstawie moich zainstalowanych wtyczek, połączonych integracji aplikacji i celów automatyzacji powiedz mi, czy zmiana planu byłaby przydatna."
+        },
+        "Automator.Plans.4": {
+            "Starter": "Porównaj korzyści planów",
+            "Prompt": "Porównaj praktyczne korzyści dostępnych planów Automator dla rodzajów przepisów, które mogę budować."
+        },
+        "Automator.Plans.5": {
+            "Starter": "Znajdź przepisy uzasadniające ulepszenie",
+            "Prompt": "Zasugeruj pomysły na przepisy, które uzasadniłyby ulepszenie planu, na podstawie moich zainstalowanych wtyczek i połączonych integracji aplikacji."
+        },
+        "Automator.Recipe editor.1": {
+            "Starter": "Rozwiąż problemy z tym przepisem",
+            "Prompt": "Pomóż mi rozwiązać problemy z tym przepisem. Zacznij od ostatnich dzienników i krótkiego podsumowania, następnie zapytaj przed głębszą analizą."
+        },
+        "Automator.Recipe editor.2": {
+            "Starter": "Wyjaśnij ten przepis",
+            "Prompt": "Wyjaśnij prostym językiem, co robi ten przepis, zaczynając od głównego wyzwalacza i przepływu akcji."
+        },
+        "Automator.Recipe editor.3": {
+            "Starter": "Ulepsz ten przepis",
+            "Prompt": "Zasugeruj kilka sposobów, jak uczynić ten przepis bardziej niezawodnym lub łatwiejszym w utrzymaniu. Zacznij od podsumowania i ostatnich dzienników."
+        },
+        "Automator.Recipe editor.4": {
+            "Starter": "Dodaj coś do tego przepisu",
+            "Prompt": "Pomóż mi coś dodać do tego przepisu. Zapytaj, jaki rezultat chcę osiągnąć, a następnie zasugeruj odpowiedni wyzwalacz, akcję, warunek lub opóźnienie."
+        },
+        "Automator.Recipe editor.5": {
+            "Starter": "Zbuduj nowy przepis",
+            "Prompt": "Pomóż mi zbudować nowy przepis. Jeśli w kontekście istnieje obecny przepis, zapytaj, czy chcę go zmodyfikować, czy stworzyć osobny przepis."
+        },
+        "Automator.Scheduled Recipes.1": {
+            "Starter": "Pokaż nadchodzące harmonogramy",
+            "Prompt": "Znajdź przepisy używające zaplanowanych wyzwalaczy i pokaż mi nadchodzące uruchomienia, w tym nazwę przepisu, harmonogram, czas następnego uruchomienia i status."
+        },
+        "Automator.Scheduled Recipes.2": {
+            "Starter": "Znajdź nieudane harmonogramy",
+            "Prompt": "Znajdź zaplanowane uruchomienia, które się nie powiodły, zostały pominięte lub wyglądają na zablokowane, i podsumuj, co wymaga uwagi."
+        },
+        "Automator.Scheduled Recipes.3": {
+            "Starter": "Przejrzyj obciążenie harmonogramów",
+            "Prompt": "Pokaż mi, czy zaplanowane uruchomienia są skupione w tych samych godzinach, i zasugeruj lepsze rozłożenie, jeśli to potrzebne."
+        },
+        "Automator.Scheduled Recipes.4": {
+            "Starter": "Znajdź nieaktywne zaplanowane przepisy",
+            "Prompt": "Pokaż mi zaplanowane przepisy, które nie były uruchamiane od dawna lub wydają się wyłączone."
+        },
+        "Automator.Scheduled Recipes.5": {
+            "Starter": "Ulepsz moje harmonogramy",
+            "Prompt": "Zasugeruj sposoby, jak uczynić moje zaplanowane przepisy bardziej niezawodnymi lub lepiej zaplanowanymi w czasie."
+        },
+        "Automator.Settings.1": {
+            "Starter": "Przejrzyj ustawienia Automator",
+            "Prompt": "Przejrzyj moje ustawienia Automator i podsumuj wszystko, co jest ważne, ryzykowne lub warte zmiany."
+        },
+        "Automator.Settings.2": {
+            "Starter": "Zaleć najlepsze ustawienia",
+            "Prompt": "Zasugeruj zalecane ustawienia Automator dla niezawodnej witryny produkcyjnej. Wyjaśnij wszelkie kompromisy."
+        },
+        "Automator.Settings.3": {
+            "Starter": "Sprawdź ustawienia e-mail",
+            "Prompt": "Przejrzyj ustawienia związane z e-mailem, powiadomieniami lub komunikacją przepisów i zasugeruj ulepszenia."
+        },
+        "Automator.Settings.4": {
+            "Starter": "Sprawdź ustawienia wydajności",
+            "Prompt": "Przejrzyj ustawienia, które mogą wpływać na wydajność przepisów, dziennikowanie, harmonogramowanie lub przetwarzanie w tle."
+        },
+        "Automator.Settings.5": {
+            "Starter": "Wyjaśnij ustawienie",
+            "Prompt": "Zapytaj, które ustawienie Automator chcę wyjaśnione, a następnie opisz, co robi i kiedy powinienem je zmienić."
+        },
+        "Automator.Status.1": {
+            "Starter": "Przejrzyj status witryny",
+            "Prompt": "Przejrzyj informacje o statusie Automator i podsumuj wszystko, co może wpływać na niezawodność przepisów."
+        },
+        "Automator.Status.2": {
+            "Starter": "Sprawdź zgodność środowiska",
+            "Prompt": "Sprawdź szczegóły WordPress, PHP, bazy danych i środowiska Automator pod kątem problemów ze zgodnością lub przestarzałych komponentów."
+        },
+        "Automator.Status.3": {
+            "Starter": "Przejrzyj kondycję crona",
+            "Prompt": "Sprawdź, czy zachowanie WP-Cron lub zaplanowanych zadań może wpływać na przepisy Automator, zwłaszcza zaplanowane przepisy lub opóźnione akcje."
+        },
+        "Automator.Status.4": {
+            "Starter": "Stwórz podsumowanie dla wsparcia",
+            "Prompt": "Podsumuj ważne szczegóły środowiska i statusu Automator, które powinienem dołączyć przy kontakcie ze wsparciem."
+        },
+        "Automator.Status.5": {
+            "Starter": "Znajdź zagrożenia niezawodności",
+            "Prompt": "Przejrzyj szczegóły statusu Automator i środowiska WordPress, a następnie wskaż zagrożenia, które mogą powodować awarie przepisów, opóźnione uruchomienia lub niespójne zachowanie."
+        },
+        "Automator.Tags.1": {
+            "Starter": "Podsumuj użycie tagów",
+            "Prompt": "Pokaż, jak są wykorzystywane moje tagi przepisów Automator. Uwzględnij nazwy tagów, liczbę przepisów oraz nieużywane tagi."
+        },
+        "Automator.Tags.2": {
+            "Starter": "Znajdź nieotagowane przepisy",
+            "Prompt": "Pokaż mi przepisy bez tagów i zasugeruj proste tagi, gdy nazwa przepisu jasno określa jego cel."
+        },
+        "Automator.Tags.3": {
+            "Starter": "Uporządkuj tagi przepisów",
+            "Prompt": "Zasugeruj zduplikowane, zbyt szczegółowe lub niejasne tagi, które warto zmienić nazwę lub usunąć."
+        },
+        "Automator.Tags.4": {
+            "Starter": "Zasugeruj strategię tagowania",
+            "Prompt": "Zaleć praktyczną strategię tagowania przepisów Automator, abym mógł je łatwiej znajdować i zarządzać nimi."
+        },
+        "Automator.Tags.5": {
+            "Starter": "Zaplanuj tagi oparte na celu",
+            "Prompt": "Zasugeruj tagi oparte na celu, takie jak onboarding, raportowanie, powiadomienia, e-commerce, nauka czy konserwacja, i wyjaśnij, jak mógłbym je stopniowo wdrażać."
+        },
+        "BuddyBoss.All Forums.1": {
+            "Starter": "Pokaż aktywność forum",
+            "Prompt": "Pokaż każde forum BuddyBoss uszeregowane według liczby tematów i odpowiedzi z ostatnich 90 dni. Pokaż datę najnowszej aktywności dla każdego forum."
+        },
+        "BuddyBoss.All Forums.2": {
+            "Starter": "Znajdź nieaktywne fora",
+            "Prompt": "Znajdź fora BuddyBoss bez nowych tematów w ciągu ostatnich 30 dni. Pokaż nazwę forum, łączną liczbę tematów i datę ostatniej aktywności."
+        },
+        "BuddyBoss.All Forums.3": {
+            "Starter": "Pokaż najlepszych autorów tematów",
+            "Prompt": "Uszereguj użytkowników według liczby utworzonych tematów na wszystkich forach BuddyBoss z ostatnich 12 miesięcy. Pokaż liczbę tematów i odpowiedzi na użytkownika."
+        },
+        "BuddyBoss.All Forums.4": {
+            "Starter": "Porównaj subskrybentów forum",
+            "Prompt": "Pokaż liczbę subskrybentów na forum BuddyBoss oraz stosunek subskrybentów do tematów. Wskaż fora z wieloma subskrybentami, ale niską aktywnością."
+        },
+        "BuddyBoss.All Forums.5": {
+            "Starter": "Wyślij mi e-mail przy nowym temacie",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy użytkownik BuddyBoss tworzy temat na forum. W e-mailu uwzględnij tytuł tematu, autora i nazwę forum."
+        },
+        "BuddyBoss.All Groups.1": {
+            "Starter": "Porównaj wskaźniki aktywności grup",
+            "Prompt": "Porównaj grupy BuddyBoss według wskaźnika aktywności: wpisów na członka miesięcznie z ostatnich 90 dni. Uszereguj od najbardziej do najmniej aktywnych."
+        },
+        "BuddyBoss.All Groups.2": {
+            "Starter": "Znajdź nieaktywne grupy",
+            "Prompt": "Znajdź grupy BuddyBoss bez wpisów w strumieniu aktywności w ciągu ostatnich 30 dni. Pokaż nazwę grupy, liczbę członków i datę ostatniej aktywności."
+        },
+        "BuddyBoss.All Groups.3": {
+            "Starter": "Pokaż rozkład rozmiarów grup",
+            "Prompt": "Pokaż rozkład liczby członków grup BuddyBoss. Wskaż największe grupy oraz ile grup ma mniej niż 5 członków."
+        },
+        "BuddyBoss.All Groups.4": {
+            "Starter": "Wyślij mi e-mail przy nowej grupie",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy użytkownik BuddyBoss tworzy grupę. Uwzględnij nazwę grupy, twórcę i typ grupy."
+        },
+        "BuddyBoss.All Groups.5": {
+            "Starter": "Pokaż wzrost grup",
+            "Prompt": "Pokaż liczbę nowych grup BuddyBoss tworzonych miesięcznie z ostatnich 12 miesięcy. Wskaż, jakie typy grup są tworzone najczęściej."
+        },
+        "BuddyBoss.All Members.1": {
+            "Starter": "Pokaż wzrost liczby członków",
+            "Prompt": "Pokaż liczbę rejestracji członków BuddyBoss miesięcznie z ostatnich 12 miesięcy. Porównaj ze wskaźnikiem aktywności (członków publikujących w strumieniu aktywności) na kohortę."
+        },
+        "BuddyBoss.All Members.2": {
+            "Starter": "Znajdź nieaktywnych członków",
+            "Prompt": "Znajdź członków BuddyBoss, którzy nie publikowali w strumieniu aktywności, nie dołączyli do grupy ani nie wysłali wiadomości w ciągu ostatnich 60 dni. Pokaż imię, datę rejestracji i datę ostatniej aktywności."
+        },
+        "BuddyBoss.All Members.3": {
+            "Starter": "Porównaj kompletność profili",
+            "Prompt": "Porównaj kompletność profili członków BuddyBoss: procent pól xprofile wypełnionych przez każdego członka. Pokaż rozkład i wskaż członków z niekompletnymi profilami."
+        },
+        "BuddyBoss.All Members.4": {
+            "Starter": "Znajdź najlepiej połączonych członków",
+            "Prompt": "Znajdź członków BuddyBoss z największą liczbą znajomych. Pokaż 25 najlepszych z liczbą znajomych i liczbą grup, do których należą."
+        },
+        "BuddyBoss.All Topics.1": {
+            "Starter": "Pokaż zaangażowanie w tematach",
+            "Prompt": "Pokaż tematy forum BuddyBoss uszeregowane według liczby odpowiedzi z ostatnich 90 dni. Pokaż średnią liczbę odpowiedzi na temat i wskaż 10 najbardziej aktywnych tematów."
+        },
+        "BuddyBoss.All Topics.2": {
+            "Starter": "Znajdź tematy bez odpowiedzi",
+            "Prompt": "Znajdź tematy BuddyBoss z zerową liczbą odpowiedzi, posortowane od najstarszych. Pokaż tytuł tematu, autora, forum i jak długo temat czeka."
+        },
+        "BuddyBoss.All Topics.3": {
+            "Starter": "Pokaż najlepszych autorów tematów",
+            "Prompt": "Uszereguj użytkowników według liczby tematów utworzonych w ciągu ostatnich 90 dni. Pokaż liczbę tematów, otrzymanych odpowiedzi oraz fora, w których publikują najczęściej."
+        },
+        "BuddyBoss.All Topics.4": {
+            "Starter": "Znajdź wystygłe tematy",
+            "Prompt": "Znajdź tematy BuddyBoss bez nowych odpowiedzi w ciągu ostatnich 30 dni. Pokaż tytuł, datę ostatniej odpowiedzi, forum i łączną liczbę odpowiedzi."
+        },
+        "BuddyBoss.All Topics.5": {
+            "Starter": "Wyślij mi e-mail przy odpowiedzi w temacie",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy temat BuddyBoss otrzyma odpowiedź. W e-mailu uwzględnij tytuł tematu i treść odpowiedzi."
+        },
+        "BuddyBoss.Edit Forum.1": {
+            "Starter": "Pokaż aktywność tego forum",
+            "Prompt": "Pokaż tematy tego forum uszeregowane według liczby odpowiedzi i wyświetleń. Wskaż najbardziej aktywnych autorów tematów oraz dzienny wskaźnik aktywności."
+        },
+        "BuddyBoss.Edit Forum.2": {
+            "Starter": "Znajdź tematy bez odpowiedzi",
+            "Prompt": "Znajdź tematy w tym forum z zerową liczbą odpowiedzi. Pokaż tytuł tematu, autora i jak długo temat jest otwarty."
+        },
+        "BuddyBoss.Edit Forum.3": {
+            "Starter": "Znajdź wystygłe tematy",
+            "Prompt": "Znajdź tematy w tym forum bez nowych odpowiedzi w ciągu ostatnich 30 dni. Pokaż tytuł tematu, datę ostatniej odpowiedzi i liczbę odpowiedzi."
+        },
+        "BuddyBoss.Edit Forum.4": {
+            "Starter": "Subskrybuj użytkownika",
+            "Prompt": "Subskrybuj użytkownika BuddyBoss do tego forum, aby otrzymywał powiadomienia o nowych tematach. Jaka jest jego nazwa użytkownika lub e-mail?"
+        },
+        "BuddyBoss.Edit Forum.5": {
+            "Starter": "Wyślij mi e-mail przy nowej odpowiedzi",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy użytkownik BuddyBoss zamieści odpowiedź na tym forum. Uwzględnij treść odpowiedzi, autora i tytuł tematu."
+        },
+        "BuddyBoss.Edit Group.1": {
+            "Starter": "Pokaż oś czasu aktywności tej grupy",
+            "Prompt": "Pokaż aktywność tej grupy BuddyBoss z ostatnich 30 dni: wpisy, odpowiedzi, dołączenia, opuszczenia. Wskaż najbardziej aktywnego członka i dzienną średnią wpisów."
+        },
+        "BuddyBoss.Edit Group.2": {
+            "Starter": "Pokaż zaangażowanie członków",
+            "Prompt": "Pokaż, jak aktywny jest każdy członek tej grupy BuddyBoss: wpisy w strumieniu aktywności grupy, odpowiedzi i datę ostatniej aktywności. Wyróżnij członków, którzy dołączyli, ale nigdy nic nie zamieścili."
+        },
+        "BuddyBoss.Edit Group.3": {
+            "Starter": "Znajdź nieaktywnych członków",
+            "Prompt": "Znajdź członków tej grupy BuddyBoss, którzy nie publikowali w strumieniu aktywności grupy ani nie odpowiadali w dyskusjach w ciągu ostatnich 30 dni. Pokaż imię i datę dołączenia."
+        },
+        "BuddyBoss.Edit Group.4": {
+            "Starter": "Wyślij wiadomość do wszystkich członków",
+            "Prompt": "Wyślij prywatną wiadomość BuddyBoss do wszystkich członków tej grupy. Co powinna mówić wiadomość?"
+        },
+        "BuddyBoss.Edit Group.5": {
+            "Starter": "Dodaj użytkownika",
+            "Prompt": "Dodaj użytkownika do tej grupy BuddyBoss. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "BuddyBoss.Edit Member.1": {
+            "Starter": "Pokaż oś czasu aktywności tego członka",
+            "Prompt": "Pokaż pełną aktywność tego członka BuddyBoss: wpisy w strumieniu aktywności, dołączenia/opuszczenia grup, zawarte przyjaźnie, tematy na forum i odpowiedzi. Uporządkuj chronologicznie."
+        },
+        "BuddyBoss.Edit Member.2": {
+            "Starter": "Pokaż grupy tego członka",
+            "Prompt": "Pokaż każdą grupę BuddyBoss, do której należy ten członek, jego rolę w każdej grupie, datę dołączenia i liczbę wpisów w strumieniu aktywności każdej grupy."
+        },
+        "BuddyBoss.Edit Member.3": {
+            "Starter": "Dodaj do grupy",
+            "Prompt": "Dodaj tego użytkownika BuddyBoss do grupy. Do której grupy mam go dodać?"
+        },
+        "BuddyBoss.Edit Member.4": {
+            "Starter": "Ustaw typ profilu",
+            "Prompt": "Ustaw typ profilu tego użytkownika BuddyBoss na konkretny typ. Który typ profilu mam przypisać?"
+        },
+        "BuddyBoss.Edit Member.5": {
+            "Starter": "Wyślij prywatną wiadomość",
+            "Prompt": "Wyślij prywatną wiadomość BuddyBoss do tego użytkownika. Co powinna mówić wiadomość?"
+        },
+        "BuddyBoss.Edit Topic.1": {
+            "Starter": "Pokaż aktywność odpowiedzi w tym temacie",
+            "Prompt": "Pokaż odpowiedzi w tym temacie BuddyBoss w porządku chronologicznym z autorem i znacznikiem czasu. Wskaż najbardziej aktywnego respondenta i średni czas między odpowiedziami."
+        },
+        "BuddyBoss.Edit Topic.2": {
+            "Starter": "Znajdź podobne tematy",
+            "Prompt": "Znajdź podobne tematy w tym samym forum BuddyBoss na podstawie tytułu i tagów. Pokaż tytuł, autora, liczbę odpowiedzi i ostatnią aktywność."
+        },
+        "BuddyBoss.Edit Topic.3": {
+            "Starter": "Zamieść odpowiedź",
+            "Prompt": "Zamieść odpowiedź w tym temacie BuddyBoss. Co powinna mówić odpowiedź?"
+        },
+        "BuddyBoss.Edit Topic.4": {
+            "Starter": "Wyślij mi e-mail przy nowej odpowiedzi",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy ten temat BuddyBoss otrzyma odpowiedź. W e-mailu uwzględnij treść odpowiedzi i autora."
+        },
+        "BuddyBoss.Edit Topic.5": {
+            "Starter": "Pokaż oś czasu tematu",
+            "Prompt": "Pokaż chronologiczną oś czasu tego tematu BuddyBoss: kiedy został utworzony, kiedy zamieszczono każdą odpowiedź oraz wszelkie okresy nieaktywności dłuższe niż 7 dni."
+        },
+        "Default.Default.1": {
+            "Starter": "Pomóż mi z tą stroną",
+            "Prompt": "Wykorzystaj obecny kontekst WordPress i Automator, aby pomóc mi zrozumieć, co mogę tu zrobić. Jeśli strona jest niejasna, zadaj mi najpierw jedno krótkie pytanie."
+        },
+        "Default.Default.2": {
+            "Starter": "Pomóż mi zautomatyzować witrynę",
+            "Prompt": "Przejrzyj moje zainstalowane wtyczki i połączone integracje aplikacji, a następnie zaproponuj jeden praktyczny pomysł na automatyzację dla mojej witryny. Unikaj sprawdzania definicji przepisów, chyba że poproszę."
+        },
+        "Default.Default.3": {
+            "Starter": "Sprawdź, co wymaga uwagi",
+            "Prompt": "Sprawdź lekkie sygnały Automator, takie jak ostatnie awarie, odłączone aplikacje, kredyty, ustawienia czy szczegóły statusu, a następnie powiedz mi, czy coś wymaga uwagi."
+        },
+        "Default.Default.4": {
+            "Starter": "Znajdź szybkie zwycięstwo",
+            "Prompt": "Zaproponuj jedno małe zadanie WordPress lub Automator, które mogę teraz wykonać, a które zaoszczędzi czas, zmniejszy ręczną pracę lub poprawi niezawodność."
+        },
+        "Default.Default.5": {
+            "Starter": "Co potrafisz?",
+            "Prompt": "Daj mi krótką, praktyczną listę sposobów, w jakie możesz pomóc na tej witrynie, korzystając z dostępnego kontekstu i pytając o brakujące informacje."
+        },
+        "Fluent Forms.All Forms.1": {
+            "Starter": "Pokaż liczbę zgłoszeń",
+            "Prompt": "Pokaż liczbę zgłoszeń Fluent Forms na formularz z ostatnich 30 dni. Porównaj z poprzednimi 30 dniami i wyróżnij formularze ze zmieniającymi się wskaźnikami."
+        },
+        "Fluent Forms.All Forms.2": {
+            "Starter": "Znajdź nieaktywne formularze",
+            "Prompt": "Znajdź formularze Fluent Forms bez zgłoszeń w ciągu ostatnich 60 dni. Pokaż tytuł formularza, łączną liczbę wpisów i datę ostatniego zgłoszenia."
+        },
+        "Fluent Forms.All Forms.3": {
+            "Starter": "Pokaż najlepsze formularze",
+            "Prompt": "Uszereguj formularze Fluent Forms według łącznej liczby zgłoszeń. Pokaż liczbę zgłoszeń, średnią dzienną i datę utworzenia."
+        },
+        "Fluent Forms.All Forms.4": {
+            "Starter": "Porównaj wskaźniki konwersji",
+            "Prompt": "Porównaj wskaźniki konwersji formularzy Fluent Forms: wyświetlenia vs zgłoszenia (przy użyciu fluentform_form_analytics). Wskaż formularze z dużą liczbą wyświetleń, ale niską liczbą zgłoszeń."
+        },
+        "Fluent Forms.Edit Form.1": {
+            "Starter": "Zautomatyzuj ten formularz",
+            "Prompt": "Stwórz przepis Uncanny Automator, używając tego formularza Fluent Forms jako wyzwalacza (wyzwalacz 'A user submits a form' / WPFFSUBFORM). Co powinno się stać po wysłaniu tego formularza?"
+        },
+        "Fluent Forms.Edit Form.2": {
+            "Starter": "Podsumuj zgłoszenia",
+            "Prompt": "Przeczytaj wpisy Fluent Forms z ostatnich 30 dni dla tego formularza i podsumuj wzorce: najczęstsze wartości w polach wyboru, wspólne motywy w polach tekstowych i godziny szczytowych zgłoszeń."
+        },
+        "Fluent Forms.Edit Form.3": {
+            "Starter": "Skompiluj statystyki pól",
+            "Prompt": "Dla każdego pola w tym formularzu Fluent Forms pokaż wskaźnik wypełnienia (jak często jest wypełnione), średnią długość dla pól tekstowych, rozkład wartości dla pól wyboru i najczęstszą wartość."
+        },
+        "Fluent Forms.Edit Form.4": {
+            "Starter": "Znajdź pola powodujące rezygnację",
+            "Prompt": "Wskaż, które pola w tym formularzu Fluent Forms są najczęściej pozostawiane puste w wypełnionych zgłoszeniach. Zasugeruj, które pola mogą powodować rezygnację lub zamieszanie."
+        },
+        "Fluent Forms.Edit Form.5": {
+            "Starter": "Pokaż wydajność formularza",
+            "Prompt": "Pokaż łączną liczbę zgłoszeń tego formularza Fluent Forms, wskaźnik konwersji (wyświetlenia vs zgłoszenia z fluentform_form_analytics) i jak wypada na tle średniej wydajności wszystkich formularzy na witrynie."
+        },
+        "Fluent Forms.Entries.1": {
+            "Starter": "Pokaż ostatnie wpisy",
+            "Prompt": "Pokaż wpisy Fluent Forms dla tego formularza z ostatnich 7 dni. Pogrupuj według dnia i pokaż liczbę."
+        },
+        "Fluent Forms.Entries.2": {
+            "Starter": "Znajdź zduplikowane wpisy",
+            "Prompt": "Znajdź zduplikowane wpisy Fluent Forms dla tego formularza (ten sam e-mail wysyłający więcej niż raz). Pokaż liczbę duplikatów na e-mail."
+        },
+        "Fluent Forms.Entries.3": {
+            "Starter": "Pokaż podział statusów wpisów",
+            "Prompt": "Pokaż podział statusów wpisów Fluent Forms dla tego formularza: przeczytane vs nieprzeczytane, ulubione, spam, w koszu."
+        },
+        "Fluent Forms.Entries.4": {
+            "Starter": "Pokaż czas zgłoszeń",
+            "Prompt": "Pokaż czas zgłoszeń Fluent Forms dla tego formularza: liczby według dnia tygodnia i godziny. Wskaż okna szczytowych zgłoszeń."
+        },
+        "Fluent Forms.Single Entry.1": {
+            "Starter": "Pokaż inne wpisy tego nadawcy",
+            "Prompt": "Znajdź wszystkie inne wpisy Fluent Forms od tego nadawcy (dopasowane po e-mailu) we wszystkich formularzach. Pokaż tytuł formularza, datę zgłoszenia i kluczowe pola."
+        },
+        "Fluent Forms.Single Entry.2": {
+            "Starter": "Pokaż metadane wpisu",
+            "Prompt": "Pokaż metadane tego wpisu Fluent Forms: datę zgłoszenia, adres IP, klienta przeglądarki, źródłowy URL i status przeczytania."
+        },
+        "Fluent Forms.Single Entry.3": {
+            "Starter": "Wyślij odpowiedź",
+            "Prompt": "Wyślij e-mail z odpowiedzią do tego nadawcy Fluent Forms. Co powinien mówić e-mail?"
+        },
+        "Fluent Forms.Single Entry.4": {
+            "Starter": "Znajdź wpisy z tego samego IP",
+            "Prompt": "Znajdź wszystkie wpisy Fluent Forms wysłane z adresu IP tego wpisu we wszystkich formularzach. Pokaż tytuł formularza, datę zgłoszenia i e-mail."
+        },
+        "Fluent Forms.Single Entry.5": {
+            "Starter": "Dodaj nadawcy rolę",
+            "Prompt": "Stwórz automatyzację, która dodaje rolę użytkownikowi, gdy ten formularz Fluent Forms zostanie wysłany przez zalogowanego użytkownika. Jaką rolę mam dodać?"
+        },
+        "Gravity Forms.All Forms.1": {
+            "Starter": "Pokaż liczbę zgłoszeń",
+            "Prompt": "Pokaż liczbę zgłoszeń Gravity Forms na formularz z ostatnich 30 dni. Porównaj z poprzednimi 30 dniami i wyróżnij formularze z rosnącymi lub spadającymi wskaźnikami zgłoszeń."
+        },
+        "Gravity Forms.All Forms.2": {
+            "Starter": "Znajdź nieaktywne formularze",
+            "Prompt": "Znajdź formularze Gravity Forms bez wpisów w ciągu ostatnich 60 dni. Pokaż nazwę formularza, łączną liczbę wpisów oraz datę ostatniego wpisu."
+        },
+        "Gravity Forms.All Forms.3": {
+            "Starter": "Pokaż najlepsze formularze",
+            "Prompt": "Uszereguj formularze Gravity Forms według łącznej liczby otrzymanych wpisów. Pokaż liczbę wpisów, średnią dzienną i datę utworzenia formularza."
+        },
+        "Gravity Forms.All Forms.4": {
+            "Starter": "Pokaż podział statusów wpisów",
+            "Prompt": "Pokaż podział statusów wpisów we wszystkich formularzach Gravity Forms: aktywne, spam, kosz. Oblicz wskaźnik spamu na formularz."
+        },
+        "Gravity Forms.Edit Form.1": {
+            "Starter": "Zautomatyzuj ten formularz",
+            "Prompt": "Stwórz przepis Uncanny Automator, używając tego formularza Gravity Forms jako wyzwalacza (wyzwalacz 'A form is submitted' / GFSUBFORM). Co powinno się stać po wysłaniu tego formularza?"
+        },
+        "Gravity Forms.Edit Form.2": {
+            "Starter": "Podsumuj wpisy",
+            "Prompt": "Przeczytaj wpisy Gravity Forms z ostatnich 30 dni dla tego formularza i podsumuj wzorce: najczęstsze wartości w polach wyboru, wspólne motywy w polach tekstowych i godziny szczytowych zgłoszeń."
+        },
+        "Gravity Forms.Edit Form.3": {
+            "Starter": "Skompiluj statystyki pól",
+            "Prompt": "Dla każdego pola w tym formularzu Gravity Forms pokaż wskaźnik wypełnienia (jak często jest wypełnione), średnią długość dla pól tekstowych, rozkład wartości dla pól wyboru i najczęstszą wartość."
+        },
+        "Gravity Forms.Edit Form.4": {
+            "Starter": "Znajdź pola powodujące rezygnację",
+            "Prompt": "Wskaż, które pola w tym formularzu Gravity Forms są najczęściej pozostawiane puste w wypełnionych wpisach. Zasugeruj, które pola mogą powodować rezygnację lub zamieszanie."
+        },
+        "Gravity Forms.Edit Form.5": {
+            "Starter": "Pokaż wydajność formularza",
+            "Prompt": "Pokaż łączną liczbę wpisów tego formularza Gravity Forms, średnią dzienną liczbę wpisów, wskaźnik spamu i jak wypada na tle średniej wydajności wszystkich formularzy na witrynie."
+        },
+        "Gravity Forms.Entries.1": {
+            "Starter": "Pokaż dzienną liczbę wpisów",
+            "Prompt": "Pokaż liczbę wpisów Gravity Forms dla tego formularza dziennie z ostatnich 30 dni. Wskaż dni z nietypowo wysokim lub niskim wolumenem."
+        },
+        "Gravity Forms.Entries.2": {
+            "Starter": "Znajdź wpisy spam",
+            "Prompt": "Znajdź wpisy Gravity Forms oznaczone jako spam dla tego formularza. Pokaż liczbę, częste wzorce (IP, domeny e-mail) i zakres dat."
+        },
+        "Gravity Forms.Entries.3": {
+            "Starter": "Znajdź zduplikowane wpisy",
+            "Prompt": "Znajdź zduplikowane wpisy Gravity Forms dla tego formularza (ten sam adres e-mail wysyłający więcej niż raz). Pokaż liczbę na e-mail."
+        },
+        "Gravity Forms.Entries.4": {
+            "Starter": "Pokaż wzorce czasu wpisów",
+            "Prompt": "Pokaż czas zgłaszania wpisów Gravity Forms dla tego formularza: liczby według dnia tygodnia i godziny. Wskaż okna szczytowych zgłoszeń."
+        },
+        "Gravity Forms.Entries.5": {
+            "Starter": "Masowo usuń stare wpisy",
+            "Prompt": "Znajdź wpisy Gravity Forms starsze niż 90 dni dla tego formularza. Pokaż liczbę miesięcznie i zaproponuj ich usunięcie przy użyciu akcji Gravity Forms delete entry."
+        },
+        "Gravity Forms.Single Entry.1": {
+            "Starter": "Pokaż inne wpisy tego nadawcy",
+            "Prompt": "Znajdź wszystkie inne wpisy Gravity Forms od tego nadawcy (dopasowane po e-mailu) we wszystkich formularzach. Pokaż nazwę formularza, datę wpisu i status wpisu."
+        },
+        "Gravity Forms.Single Entry.2": {
+            "Starter": "Pokaż metadane wpisu",
+            "Prompt": "Pokaż metadane tego wpisu Gravity Forms: datę zgłoszenia, adres IP, klienta przeglądarki, źródłowy URL oraz wszelkie notatki do wpisu."
+        },
+        "Gravity Forms.Single Entry.3": {
+            "Starter": "Zaktualizuj ten wpis",
+            "Prompt": "Zaktualizuj pole w tym wpisie Gravity Forms przy użyciu akcji Gravity Forms update entry. Które pole i jaka nowa wartość?"
+        },
+        "Gravity Forms.Single Entry.4": {
+            "Starter": "Usuń ten wpis",
+            "Prompt": "Usuń ten wpis Gravity Forms przy użyciu akcji Gravity Forms delete entry. Czy na pewno?"
+        },
+        "Gravity Forms.Single Entry.5": {
+            "Starter": "Wyślij e-mail do nadawcy",
+            "Prompt": "Wyślij e-mail do tego nadawcy Gravity Forms. Co powinien mówić e-mail?"
+        },
+        "LearnDash.All Courses.1": {
+            "Starter": "Pokaż wskaźniki ukończenia",
+            "Prompt": "Oblicz wskaźnik ukończenia dla każdego kursu: liczbę zapisanych studentów, liczbę tych, którzy ukończyli, oraz procent ukończenia. Uszereguj według najniższego wskaźnika ukończenia."
+        },
+        "LearnDash.All Courses.2": {
+            "Starter": "Pokaż trendy zapisów",
+            "Prompt": "Pokaż liczbę zapisów na kurs dla każdego z ostatnich 12 miesięcy. Które kursy zyskują zapisy, które tracą, a które są stabilne?"
+        },
+        "LearnDash.All Courses.3": {
+            "Starter": "Wyślij certyfikaty po ukończeniu",
+            "Prompt": "Stwórz automatyzację, która wysyła certyfikat studentowi po ukończeniu kursu. Dla którego kursu mam to skonfigurować?"
+        },
+        "LearnDash.All Courses.4": {
+            "Starter": "Znajdź kursy, których nikt nie kończy",
+            "Prompt": "Znajdź kursy, na które zapisało się co najmniej 5 studentów, ale wskaźnik ukończenia jest poniżej 10%. Pokaż liczbę zapisów, liczbę ukończeń i wskaźnik ukończenia dla każdego."
+        },
+        "LearnDash.All Courses.5": {
+            "Starter": "Porównaj wydajność kursów",
+            "Prompt": "Pokaż porównanie wszystkich kursów obok siebie: wskaźnik ukończenia, średni wynik quizu i średni czas od zapisu do ukończenia. Uszereguj według wskaźnika ukończenia."
+        },
+        "LearnDash.All Groups.1": {
+            "Starter": "Porównaj wydajność grup",
+            "Prompt": "Porównaj wszystkie grupy obok siebie: średni wskaźnik ukończenia kursu i średni wynik quizu dla członków każdej grupy. Uszereguj według wskaźnika ukończenia."
+        },
+        "LearnDash.All Groups.2": {
+            "Starter": "Pokaż największe grupy",
+            "Prompt": "Wymień wszystkie grupy uszeregowane według liczby członków. Pokaż nazwę każdej grupy, liczbę członków, powiązane kursy i lidera/liderów grupy."
+        },
+        "LearnDash.All Groups.3": {
+            "Starter": "Znajdź nieaktywne grupy",
+            "Prompt": "Znajdź grupy, w których żaden członek nie ukończył lekcji, tematu ani quizu w ciągu ostatnich 30 dni. Pokaż nazwę grupy, liczbę członków, lidera i datę najnowszej aktywności."
+        },
+        "LearnDash.All Groups.4": {
+            "Starter": "Pokaż podsumowanie postępów grupy",
+            "Prompt": "Dla każdej grupy pokaż łączną liczbę członków, średni procent postępu kursu, średni wynik quizu i liczbę ukończeń kursu w tym miesiącu."
+        },
+        "LearnDash.All Groups.5": {
+            "Starter": "Porównaj efektywność liderów",
+            "Prompt": "Pogrupuj wszystkie grupy według ich lidera. Dla każdego lidera pokaż średni wskaźnik ukończenia i średni wynik quizu wśród członków wszystkich jego grup. Grupy których liderów wypadają najlepiej?"
+        },
+        "LearnDash.All Lessons.1": {
+            "Starter": "Znajdź lekcje z największymi spadkami",
+            "Prompt": "Dla każdego kursu porównaj liczbę ukończeń każdej lekcji do poprzedniej. Wskaż lekcje z największym spadkiem - momenty, w których najwięcej studentów przestało się rozwijać."
+        },
+        "LearnDash.All Lessons.2": {
+            "Starter": "Pokaż ukończenia w tym tygodniu",
+            "Prompt": "Pokaż, ile ukończeń lekcji nastąpiło w tym tygodniu, w podziale na kursy. Porównaj z ubiegłym tygodniem."
+        },
+        "LearnDash.All Lessons.3": {
+            "Starter": "Wyślij studentom e-mail po lekcjach",
+            "Prompt": "Stwórz automatyzację, która wysyła studentowi e-mail po ukończeniu lekcji, zapowiadając, czego nauczy się dalej. Dla którego kursu mam to skonfigurować?"
+        },
+        "LearnDash.All Lessons.4": {
+            "Starter": "Pokaż średnie tempo lekcji",
+            "Prompt": "Oblicz, ile lekcji średnio kończy student tygodniowo we wszystkich kursach. Czy studenci uczą się równomiernie, czy raczej w zrywach?"
+        },
+        "LearnDash.All Lessons.5": {
+            "Starter": "Znajdź lekcje bez aktywności",
+            "Prompt": "Wymień wszystkie lekcje, które miały zero ukończeń w ciągu ostatnich 30 dni, mimo że należą do kursów z aktywnymi studentami. Pokaż nazwę lekcji, nazwę kursu i liczbę studentów zapisanych na kurs."
+        },
+        "LearnDash.All Quizzes.1": {
+            "Starter": "Pokaż wskaźniki zaliczeń/niezaliczeń",
+            "Prompt": "Oblicz wskaźnik zaliczeń i niezaliczeń dla każdego quizu. Pokaż łączną liczbę podejść, zaliczeń, niezaliczeń i procent zaliczeń. Uszereguj według najniższego wskaźnika zaliczeń."
+        },
+        "LearnDash.All Quizzes.2": {
+            "Starter": "Pokaż średnie wyniki",
+            "Prompt": "Pokaż średni wynik quizu dla każdego quizu w tym miesiącu i porównaj z ubiegłym miesiącem. Czy wyniki się poprawiają, czy spadają?"
+        },
+        "LearnDash.All Quizzes.3": {
+            "Starter": "Wyślij e-mail studentom, którzy nie zaliczyli",
+            "Prompt": "Stwórz automatyzację, która wysyła studentowi e-mail po niezaliczeniu quizu, zachęcając do powtórzenia materiału i ponownej próby. Dla którego quizu mam to skonfigurować?"
+        },
+        "LearnDash.All Quizzes.4": {
+            "Starter": "Przeanalizuj wzorce powtarzania",
+            "Prompt": "Dla każdego quizu pokaż średnią liczbę podejść na studenta i czy wyniki poprawiają się przy ponownych próbach. Które quizy wymagają najwięcej podejść i czy ponowne próby faktycznie pomagają?"
+        },
+        "LearnDash.All Quizzes.5": {
+            "Starter": "Znajdź quizy, których nikt nie zalicza",
+            "Prompt": "Znajdź quizy, w których wskaźnik zaliczeń jest poniżej 25%. Pokaż nazwę quizu, kurs, łączną liczbę podejść i wskaźnik zaliczeń. Mogą wymagać korekty treści lub trudności."
+        },
+        "LearnDash.All Topics.1": {
+            "Starter": "Pokaż wskaźniki ukończenia",
+            "Prompt": "Oblicz wskaźnik ukończenia dla wszystkich tematów, pogrupowanych według lekcji nadrzędnej i kursu. Pokaż liczbę zapisanych, ukończeń i procent ukończenia dla każdego."
+        },
+        "LearnDash.All Topics.2": {
+            "Starter": "Znajdź najmniej kończone tematy",
+            "Prompt": "Znajdź tematy z najniższymi wskaźnikami ukończenia w stosunku do wskaźnika ukończenia ich lekcji nadrzędnej. To są tematy, które studenci pomijają lub w których utykają, nawet kończąc resztę lekcji."
+        },
+        "LearnDash.All Topics.3": {
+            "Starter": "Wyślij e-mail po ukończeniu tematu",
+            "Prompt": "Stwórz automatyzację, która wysyła studentowi e-mail z aktualizacją postępu po ukończeniu tematu. Dla którego kursu mam to skonfigurować?"
+        },
+        "LearnDash.All Topics.4": {
+            "Starter": "Pokaż liczbę tematów na kurs",
+            "Prompt": "Policz liczbę tematów na kurs. Które kursy mają najwięcej tematów, a które najmniej?"
+        },
+        "LearnDash.All Topics.5": {
+            "Starter": "Pokaż aktywność z tego tygodnia",
+            "Prompt": "Pokaż ukończenia tematów z ostatnich 7 dni, w podziale na kursy i liczbę studentów. Porównaj z poprzednimi 7 dniami."
+        },
+        "LearnDash.Assignments.1": {
+            "Starter": "Pokaż nieocenione zadania",
+            "Prompt": "Wymień wszystkie zadania, które zostały złożone, ale jeszcze nie ocenione. Posortuj według daty złożenia, od najstarszych, i pokaż imię studenta, kurs oraz liczbę dni oczekiwania zadania."
+        },
+        "LearnDash.Assignments.2": {
+            "Starter": "Pokaż zadania na kurs",
+            "Prompt": "Dla każdego kursu pokaż łączną liczbę złożonych zadań, ocenionych, nieocenionych oraz procent ocenionych. Które kursy mają największe zaległości w ocenianiu?"
+        },
+        "LearnDash.Assignments.3": {
+            "Starter": "Powiadom studenta po ocenieniu",
+            "Prompt": "Stwórz automatyzację, która wysyła studentowi e-mail po ocenieniu jego zadania, informując go, że wyniki są gotowe."
+        },
+        "LearnDash.Assignments.4": {
+            "Starter": "Pokaż czas oceniania",
+            "Prompt": "Oblicz średni czas między złożeniem zadania a jego oceną dla każdego kursu. Które kursy mają najszybszy, a które najwolniejszy czas oceniania?"
+        },
+        "LearnDash.Assignments.5": {
+            "Starter": "Powiadom lidera o złożeniu",
+            "Prompt": "Stwórz automatyzację, która wysyła e-mail liderowi grupy studenta za każdym razem, gdy student złoży zadanie. Uwzględnij imię studenta, kurs i tytuł zadania."
+        },
+        "LearnDash.Edit Course.1": {
+            "Starter": "Gdzie studenci rezygnują?",
+            "Prompt": "Przeanalizuj dane ukończenia lekcji i tematów tego kursu. Pokaż liczbę ukończeń każdej lekcji w kolejności i wskaż, gdzie następuje największy spadek - punkt, w którym studenci przestają się rozwijać."
+        },
+        "LearnDash.Edit Course.2": {
+            "Starter": "Zapisz użytkownika",
+            "Prompt": "Zapisz użytkownika na ten kurs. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "LearnDash.Edit Course.3": {
+            "Starter": "Pokaż czas ukończenia",
+            "Prompt": "Dla studentów, którzy ukończyli ten kurs, oblicz średni, medianowy, najszybszy i najwolniejszy czas od zapisu do ukończenia."
+        },
+        "LearnDash.Edit Course.4": {
+            "Starter": "Zapisz na następny kurs po ukończeniu",
+            "Prompt": "Stwórz automatyzację, która zapisuje studenta na następny kurs po ukończeniu tego. Na który kurs powinien zostać zapisany w następnej kolejności?"
+        },
+        "LearnDash.Edit Course.5": {
+            "Starter": "Powiadom lidera po ukończeniu",
+            "Prompt": "Stwórz automatyzację, która wysyła e-mail liderowi grupy studenta, gdy student ukończy ten kurs. W e-mailu uwzględnij imię studenta i datę ukończenia."
+        },
+        "LearnDash.Edit Group.1": {
+            "Starter": "Pokaż kokpit grupy",
+            "Prompt": "Pokaż wszystkich członków tej grupy z ich postępami w kursach (procent ukończenia każdego kursu), wynikami quizów i datami ukończenia. Wyróżnij członków znacząco poniżej średniej grupy."
+        },
+        "LearnDash.Edit Group.2": {
+            "Starter": "Dodaj użytkownika do tej grupy",
+            "Prompt": "Dodaj użytkownika do tej grupy. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "LearnDash.Edit Group.3": {
+            "Starter": "Znajdź członków pozostających w tyle",
+            "Prompt": "Znajdź członków tej grupy, których postęp w kursie jest o ponad 25% poniżej średniej grupy. Pokaż ich imię, obecny postęp i średnią grupy do porównania."
+        },
+        "LearnDash.Edit Group.4": {
+            "Starter": "Wyślij e-mail liderowi grupy",
+            "Prompt": "Wyślij e-mail liderowi/liderom tej grupy. Co powinien mówić e-mail?"
+        },
+        "LearnDash.Edit Group.5": {
+            "Starter": "Powiadom lidera po ukończeniu kursu",
+            "Prompt": "Stwórz automatyzację, która wysyła e-mail liderowi tej grupy za każdym razem, gdy członek ukończy wszystkie kursy grupy. Uwzględnij imię studenta i datę ukończenia."
+        },
+        "LearnDash.Edit Lesson.1": {
+            "Starter": "Kto ukończył tę lekcję?",
+            "Prompt": "Wymień wszystkich studentów, którzy ukończyli tę lekcję, z datą ukończenia. Pokaż również studentów, którzy ukończyli poprzednią lekcję, ale nie ukończyli tej."
+        },
+        "LearnDash.Edit Lesson.2": {
+            "Starter": "Zaznacz jako ukończone dla użytkownika",
+            "Prompt": "Zaznacz tę lekcję jako ukończoną dla konkretnego użytkownika. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "LearnDash.Edit Lesson.3": {
+            "Starter": "Kto utknął na tej lekcji?",
+            "Prompt": "Znajdź studentów, którzy ukończyli lekcję poprzedzającą tę, ale nie ukończyli tej. Pokaż ich imię, kiedy ukończyli poprzednią lekcję i ile dni są w impasie."
+        },
+        "LearnDash.Edit Lesson.4": {
+            "Starter": "Pokaż czas ukończenia",
+            "Prompt": "Oblicz średni czas, jaki studenci spędzają między ukończeniem poprzedniej lekcji a ukończeniem tej."
+        },
+        "LearnDash.Edit Lesson.5": {
+            "Starter": "Zresetuj dla użytkownika",
+            "Prompt": "Zaznacz tę lekcję jako nieukończoną dla konkretnego użytkownika, aby mógł ją powtórzyć. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "LearnDash.Edit Quiz.1": {
+            "Starter": "Pokaż rozkład wyników",
+            "Prompt": "Pokaż rozkład wyników dla wszystkich podejść do tego quizu: ilu studentów uzyskało 0-10%, 11-20% i tak dalej do 91-100%. Uwzględnij średni i medianowy wynik."
+        },
+        "LearnDash.Edit Quiz.2": {
+            "Starter": "Zresetuj podejścia dla użytkownika",
+            "Prompt": "Zresetuj podejścia konkretnego użytkownika do tego quizu, aby mógł ponownie podejść. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "LearnDash.Edit Quiz.3": {
+            "Starter": "Znajdź najtrudniejsze pytania",
+            "Prompt": "Przeanalizuj wyniki na poziomie pytań dla tego quizu. Uszereguj każde pytanie według procentu studentów, którzy odpowiedzieli niepoprawnie. Które pytania są najtrudniejsze?"
+        },
+        "LearnDash.Edit Quiz.4": {
+            "Starter": "Przyznaj osiągnięcie po zaliczeniu",
+            "Prompt": "Stwórz automatyzację, która przyznaje osiągnięcie i wysyła e-mail z gratulacjami, gdy student zaliczy ten quiz."
+        },
+        "LearnDash.Edit Quiz.5": {
+            "Starter": "Zaznacz jako ukończone dla użytkownika",
+            "Prompt": "Zaznacz ten quiz jako ukończony dla konkretnego użytkownika. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "LearnDash.Edit Topic.1": {
+            "Starter": "Kto utknął na tym temacie?",
+            "Prompt": "Znajdź studentów, którzy ukończyli poprzedni temat w tej lekcji, ale nie ukończyli tego. Pokaż ich imię, kiedy ukończyli poprzedni temat i ile to już dni."
+        },
+        "LearnDash.Edit Topic.2": {
+            "Starter": "Zaznacz jako ukończone dla użytkownika",
+            "Prompt": "Zaznacz ten temat jako ukończony dla konkretnego użytkownika. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "LearnDash.Edit Topic.3": {
+            "Starter": "Pokaż trend ukończeń",
+            "Prompt": "Pokaż, ilu studentów ukończyło ten temat w każdym miesiącu z ostatnich 6 miesięcy. Czy liczba ukończeń rośnie, spada, czy pozostaje stabilna?"
+        },
+        "LearnDash.Edit Topic.4": {
+            "Starter": "Pokaż czas ukończenia",
+            "Prompt": "Oblicz średni czas, jaki studenci potrzebują, aby ukończyć ten temat, od ukończenia poprzedniego tematu do ukończenia tego."
+        },
+        "LearnDash.Edit Topic.5": {
+            "Starter": "Zresetuj dla użytkownika",
+            "Prompt": "Zaznacz ten temat jako nieukończony dla konkretnego użytkownika, aby mógł go powtórzyć. Jaka jest jego nazwa użytkownika lub adres e-mail?"
+        },
+        "LearnDash.Reports.1": {
+            "Starter": "Oceń zaangażowanie według studenta",
+            "Prompt": "Stwórz wskaźnik zaangażowania dla każdego studenta na podstawie łącznej liczby ukończonych lekcji, podejść do quizów, wyników quizów i złożonych zadań z ostatnich 90 dni. Uszereguj studentów od najbardziej do najmniej zaangażowanych."
+        },
+        "LearnDash.Reports.2": {
+            "Starter": "Pokaż miesięcznie aktywnych uczących się",
+            "Prompt": "Pokaż liczbę unikalnych studentów, którzy ukończyli co najmniej jedną lekcję, temat lub quiz w każdym miesiącu z ostatnich 12 miesięcy. Czy trend rośnie, czy spada?"
+        },
+        "LearnDash.Reports.3": {
+            "Starter": "Porównaj ukończenia według grupy",
+            "Prompt": "Porównaj średni czas ukończenia kursu i średni wskaźnik zaliczeń quizów we wszystkich grupach. Które grupy kończą najszybciej i osiągają najwyższe wyniki?"
+        },
+        "LearnDash.Reports.4": {
+            "Starter": "Znajdź najbardziej zaangażowanych studentów",
+            "Prompt": "Znajdź 20 najaktywniejszych studentów z ostatnich 90 dni na podstawie ukończonych lekcji, podejść do quizów, wyników quizów i złożonych zadań. Pokaż liczbę ich aktywności."
+        },
+        "LearnDash.Reports.5": {
+            "Starter": "Pokaż postęp we wszystkich kursach",
+            "Prompt": "Dla każdego kursu pokaż łączną liczbę zapisanych, w trakcie i ukończonych studentów. Oblicz procent ukończenia i średnią liczbę dni do ukończenia dla każdego."
+        },
+        "Rank Math SEO.Dashboard.1": {
+            "Starter": "Pokaż rozkład wyników SEO",
+            "Prompt": "Pokaż rozkład wyników Rank Math SEO (postmeta rank_math_seo_score) we wszystkich opublikowanych wpisach i stronach. Pogrupuj na 0-50 wymaga pracy, 51-80 dobre, 81-100 doskonałe. Pokaż liczby na przedział."
+        },
+        "Rank Math SEO.Dashboard.2": {
+            "Starter": "Znajdź wpisy bez słowa kluczowego",
+            "Prompt": "Znajdź opublikowane wpisy, które nie mają ustawionego słowa kluczowego Rank Math (rank_math_focus_keyword jest puste lub nie istnieje). Pokaż tytuł, autora, typ wpisu i datę ostatniej modyfikacji."
+        },
+        "Rank Math SEO.Dashboard.3": {
+            "Starter": "Znajdź wpisy z niskim wynikiem",
+            "Prompt": "Znajdź opublikowane wpisy, w których wynik Rank Math SEO jest poniżej 50. Pokaż tytuł, wynik, słowo kluczowe (jeśli jest) i autora. Posortuj według najniższego wyniku."
+        },
+        "Rank Math SEO.Dashboard.4": {
+            "Starter": "Porównaj wyniki według typu wpisu",
+            "Prompt": "Porównaj rozkład wyników Rank Math SEO według typu wpisu. Pokaż średni i medianowy wynik dla wpisów vs stron vs innych publicznych typów wpisów."
+        },
+        "Rank Math SEO.Dashboard.5": {
+            "Starter": "Sprawdź brakujące opisy SEO",
+            "Prompt": "Znajdź opublikowane wpisy, które nie mają opisu Rank Math SEO (rank_math_description jest puste). Pokaż tytuł, autora, typ wpisu i liczbę słów."
+        },
+        "Rank Math SEO.Status.1": {
+            "Starter": "Sprawdź tytuły SEO",
+            "Prompt": "Sprawdź tytuły Rank Math SEO (rank_math_title) we wszystkich opublikowanych wpisach. Znajdź tytuły, które są zbyt krótkie (poniżej 30 znaków) lub zbyt długie (powyżej 60 znaków). Pokaż liczbę i przykłady."
+        },
+        "Rank Math SEO.Status.2": {
+            "Starter": "Znajdź zduplikowane tytuły",
+            "Prompt": "Znajdź wpisy, w których tytuł Rank Math SEO (rank_math_title) jest identyczny z innym. Pokaż tytuł i listę identyfikatorów wpisów go używających."
+        },
+        "Rank Math SEO.Status.3": {
+            "Starter": "Znajdź wpisy noindex",
+            "Prompt": "Znajdź wpisy z noindex przez Rank Math (sprawdź postmeta rank_math_robots pod kątem 'noindex'). Pokaż tytuł, typ wpisu i autora."
+        },
+        "Rank Math SEO.Status.4": {
+            "Starter": "Ustaw tytuł SEO",
+            "Prompt": "Ustaw tytuł Rank Math SEO dla konkretnego wpisu. Który wpis i jaki tytuł?"
+        },
+        "Rank Math SEO.Status.5": {
+            "Starter": "Wyślij mi e-mail przy niskim wyniku SEO",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail, gdy wynik Rank Math SEO wpisu spadnie poniżej progu (przy użyciu wyzwalacza Rank Math 'A post's SEO score is greater than, less than, or equal to a value'). Jaki próg ma to wyzwalać?"
+        },
+        "Tutor LMS.Courses.1": {
+            "Starter": "Porównaj wskaźniki ukończenia",
+            "Prompt": "Porównaj wskaźniki ukończenia kursów Tutor LMS we wszystkich kursach. Pokaż liczbę zapisów, ukończeń i procent ukończenia. Uszereguj według najniższego wskaźnika ukończenia."
+        },
+        "Tutor LMS.Courses.2": {
+            "Starter": "Znajdź kursy z niskim ukończeniem",
+            "Prompt": "Znajdź kursy Tutor LMS z co najmniej 5 zapisami, ale wskaźnikiem ukończenia poniżej 20%. Pokaż tytuł kursu, liczbę zapisów, ukończeń i procent ukończenia."
+        },
+        "Tutor LMS.Courses.3": {
+            "Starter": "Pokaż trendy zapisów na kurs",
+            "Prompt": "Pokaż trendy zapisów na kurs Tutor LMS z ostatnich 12 miesięcy. Wskaż kursy zyskujące vs tracące tempo zapisów."
+        },
+        "Tutor LMS.Courses.4": {
+            "Starter": "Znajdź nieaktywne kursy",
+            "Prompt": "Znajdź kursy Tutor LMS bez nowych zapisów w ciągu ostatnich 60 dni. Pokaż tytuł kursu, łączną liczbę zapisów i datę ostatniego zapisu."
+        },
+        "Tutor LMS.Courses.5": {
+            "Starter": "Wyślij mi e-mail przy zapisie",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy użytkownik zapisze się na kurs Tutor LMS. W e-mailu uwzględnij imię studenta i tytuł kursu."
+        },
+        "Tutor LMS.Dashboard.1": {
+            "Starter": "Pokaż wskaźniki ukończenia kursów",
+            "Prompt": "Oblicz wskaźniki ukończenia kursów Tutor LMS: zapisy vs ukończenia na kurs. Pokaż procent ukończenia i uszereguj od najwyższego do najniższego."
+        },
+        "Tutor LMS.Dashboard.2": {
+            "Starter": "Pokaż trend zapisów",
+            "Prompt": "Pokaż liczbę zapisów Tutor LMS miesięcznie z ostatnich 12 miesięcy we wszystkich kursach. Wskaż, czy trend przyspiesza, spada, czy jest stabilny."
+        },
+        "Tutor LMS.Dashboard.3": {
+            "Starter": "Pokaż najlepsze kursy",
+            "Prompt": "Pokaż najlepsze kursy Tutor LMS według liczby zapisów z ostatnich 90 dni. Pokaż liczbę zapisów, wskaźnik ukończenia i średni wynik quizu na kurs."
+        },
+        "Tutor LMS.Dashboard.4": {
+            "Starter": "Pokaż aktywność studentów",
+            "Prompt": "Pokaż aktywność studentów Tutor LMS z ostatnich 30 dni: unikalnych studentów, którzy ukończyli co najmniej jedną lekcję, podeszli do quizu lub zadali pytanie."
+        },
+        "Tutor LMS.Dashboard.5": {
+            "Starter": "Wyślij mi e-mail po ukończeniu kursu",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy użytkownik ukończy kurs Tutor LMS. W e-mailu uwzględnij imię studenta i tytuł kursu."
+        },
+        "Tutor LMS.Edit Course.1": {
+            "Starter": "Pokaż statystyki tego kursu",
+            "Prompt": "Pokaż liczbę zapisów na ten kurs Tutor LMS, wskaźnik ukończenia, średni wynik quizu i średni czas od zapisu do ukończenia."
+        },
+        "Tutor LMS.Edit Course.2": {
+            "Starter": "Pokaż postęp studentów",
+            "Prompt": "Pokaż rozkład postępu studentów na tym kursie Tutor LMS: ilu studentów jest na 0%, 1-25%, 26-50%, 51-75%, 76-99% i 100% ukończenia."
+        },
+        "Tutor LMS.Edit Course.3": {
+            "Starter": "Znajdź porzucających studentów",
+            "Prompt": "Znajdź studentów zapisanych na ten kurs Tutor LMS, którzy rozpoczęli postęp, ale nie ukończyli lekcji w ciągu ostatnich 30 dni. Pokaż imię, obecny postęp i datę ostatniej aktywności."
+        },
+        "Tutor LMS.Edit Course.4": {
+            "Starter": "Zapisz studenta",
+            "Prompt": "Zapisz użytkownika na ten kurs Tutor LMS. Jaka jest jego nazwa użytkownika lub e-mail?"
+        },
+        "Tutor LMS.Edit Course.5": {
+            "Starter": "Zaznacz jako ukończone dla użytkownika",
+            "Prompt": "Zaznacz ten kurs Tutor LMS jako ukończony dla konkretnego użytkownika. Jaka jest jego nazwa użytkownika lub e-mail?"
+        },
+        "WPForms.All Forms.1": {
+            "Starter": "Pokaż liczbę zgłoszeń",
+            "Prompt": "Pokaż liczbę zgłoszeń WPForms na formularz z ostatnich 30 dni. Porównaj z poprzednimi 30 dniami i wyróżnij formularze z rosnącymi lub spadającymi wskaźnikami zgłoszeń."
+        },
+        "WPForms.All Forms.2": {
+            "Starter": "Znajdź nieaktywne formularze",
+            "Prompt": "Znajdź formularze WPForms bez zgłoszeń w ciągu ostatnich 60 dni. Pokaż nazwę formularza, łączną liczbę wpisów i datę ostatniego zgłoszenia."
+        },
+        "WPForms.All Forms.3": {
+            "Starter": "Pokaż najlepsze formularze",
+            "Prompt": "Uszereguj formularze WPForms według łącznej liczby otrzymanych wpisów. Pokaż liczbę wpisów, średnią dzienną i datę utworzenia dla każdego."
+        },
+        "WPForms.All Forms.4": {
+            "Starter": "Pokaż trend zgłoszeń",
+            "Prompt": "Pokaż łączną liczbę zgłoszeń WPForms tygodniowo z ostatnich 12 tygodni we wszystkich formularzach. Wyróżnij formularze napędzające trend."
+        },
+        "WPForms.Edit Form.1": {
+            "Starter": "Zautomatyzuj ten formularz",
+            "Prompt": "Stwórz przepis Uncanny Automator, używając tego formularza WPForms jako wyzwalacza (wyzwalacz 'A user submits a form' / WPFSUBFORM). Co powinno się stać po wysłaniu tego formularza?"
+        },
+        "WPForms.Edit Form.2": {
+            "Starter": "Podsumuj zgłoszenia",
+            "Prompt": "Przeczytaj wpisy do tego formularza WPForms z ostatnich 30 dni i podsumuj wzorce: najczęstsze wartości w polach wyboru, wspólne motywy w polach tekstowych i godziny szczytowych zgłoszeń."
+        },
+        "WPForms.Edit Form.3": {
+            "Starter": "Skompiluj statystyki pól",
+            "Prompt": "Dla każdego pola w tym formularzu WPForms pokaż wskaźnik wypełnienia (jak często jest wypełnione), średnią długość dla pól tekstowych, rozkład wartości dla pól wyboru i najczęstszą wartość."
+        },
+        "WPForms.Edit Form.4": {
+            "Starter": "Znajdź pola powodujące rezygnację",
+            "Prompt": "Wskaż, które pola w tym formularzu WPForms są najczęściej pozostawiane puste w wypełnionych zgłoszeniach. Zasugeruj, które pola mogą powodować rezygnację lub zamieszanie użytkowników."
+        },
+        "WPForms.Edit Form.5": {
+            "Starter": "Pokaż wydajność formularza",
+            "Prompt": "Pokaż łączną liczbę wpisów tego formularza WPForms, średnią dzienną liczbę wpisów i jak wypada na tle średniej wydajności wszystkich formularzy na witrynie."
+        },
+        "WPForms.Entries Overview.1": {
+            "Starter": "Pokaż ostatnie wpisy",
+            "Prompt": "Pokaż wszystkie wpisy WPForms wysłane w ciągu ostatnich 7 dni we wszystkich formularzach. Pogrupuj według formularza i pokaż liczbę na formularz."
+        },
+        "WPForms.Entries Overview.2": {
+            "Starter": "Znajdź wpisy spam",
+            "Prompt": "Znajdź wpisy WPForms oznaczone jako spam w ciągu ostatnich 90 dni. Pokaż nazwę formularza, adres IP, datę zgłoszenia i wskaż wszelkie IP, które pojawiają się wielokrotnie."
+        },
+        "WPForms.Entries Overview.3": {
+            "Starter": "Pokaż liczbę wpisów według formularza",
+            "Prompt": "Pokaż liczbę wpisów WPForms na formularz w obecnym miesiącu vs poprzednim miesiącu. Oblicz procentową zmianę dla każdego formularza."
+        },
+        "WPForms.Entries Overview.4": {
+            "Starter": "Znajdź stare wpisy",
+            "Prompt": "Znajdź wpisy WPForms starsze niż 90 dni. Pokaż liczbę na formularz i łączne miejsce zajmowane. Zaleć, czy można je bezpiecznie zarchiwizować."
+        },
+        "WPForms.Entries Overview.5": {
+            "Starter": "Pokaż wpisy z plikami",
+            "Prompt": "Znajdź wpisy WPForms zawierające przesłane pliki. Pokaż nazwę formularza, łączną liczbę plików i łączny rozmiar plików we wszystkich takich wpisach."
+        },
+        "WPForms.Form Entries.1": {
+            "Starter": "Pokaż czas zgłoszeń",
+            "Prompt": "Pokaż wzorce czasu zgłoszeń dla tego formularza WPForms: liczby według dnia tygodnia i godziny dnia. Wskaż okna szczytowych zgłoszeń."
+        },
+        "WPForms.Form Entries.2": {
+            "Starter": "Znajdź zduplikowane zgłoszenia",
+            "Prompt": "Znajdź zduplikowane zgłoszenia do tego formularza WPForms, definiowane jako ten sam adres e-mail wysyłający więcej niż raz. Pokaż liczbę duplikatów na e-mail."
+        },
+        "WPForms.Form Entries.3": {
+            "Starter": "Dodaj nadawcy rolę",
+            "Prompt": "Stwórz automatyzację, która dodaje rolę użytkownikowi, gdy ten formularz WPForms zostanie wysłany przez zalogowanego użytkownika. Jaką rolę mam dodać?"
+        },
+        "WPForms.Form Entries.4": {
+            "Starter": "Wyszukaj wpisy według pola",
+            "Prompt": "Wyszukaj wpisy tego formularza WPForms według wartości konkretnego pola. Które pole i jaką wartość mam wyszukać?"
+        },
+        "WPForms.Single Entry.1": {
+            "Starter": "Pokaż inne wpisy tego nadawcy",
+            "Prompt": "Znajdź wszystkie inne wpisy WPForms od tego nadawcy (dopasowane po adresie e-mail) we wszystkich formularzach. Pokaż nazwę formularza, datę zgłoszenia i wartości kluczowych pól."
+        },
+        "WPForms.Single Entry.2": {
+            "Starter": "Pokaż metadane wpisu",
+            "Prompt": "Pokaż metadane tego wpisu WPForms: datę zgłoszenia, adres IP, klienta przeglądarki, URL odsyłający i czas wypełniania formularza (jeśli jest śledzony)."
+        },
+        "WPForms.Single Entry.3": {
+            "Starter": "Porównaj z typowym zgłoszeniem",
+            "Prompt": "Porównaj wartości pól tego wpisu WPForms z typowym zgłoszeniem do tego formularza. Wskaż, które pola są nietypowe (np. znacznie dłuższe/krótsze niż średnia)."
+        },
+        "WPForms.Single Entry.4": {
+            "Starter": "Wyślij e-mail z odpowiedzią",
+            "Prompt": "Wyślij e-mail z odpowiedzią do tego nadawcy WPForms. Co powinien mówić e-mail?"
+        },
+        "WPForms.Single Entry.5": {
+            "Starter": "Znajdź wpisy z tego samego IP",
+            "Prompt": "Znajdź wszystkie wpisy WPForms wysłane z adresu IP tego wpisu we wszystkich formularzach. Pokaż nazwę formularza, datę zgłoszenia i użyty e-mail."
+        },
+        "WooCommerce.All Coupons.1": {
+            "Starter": "Pokaż ROI kuponów",
+            "Prompt": "Dla każdego aktywnego kuponu pokaż liczbę użyć, łączny przychód z zamówień go używających, łączny przyznany rabat oraz przychód netto (przychód minus rabat). Posortuj według przychodu netto, od najwyższego."
+        },
+        "WooCommerce.All Coupons.2": {
+            "Starter": "Znajdź najczęściej używane kupony",
+            "Prompt": "Uszereguj wszystkie kupony według liczby użyć. Pokaż łączną liczbę użyć, łączną kwotę rabatu i średni rabat na użycie. Oznacz kupony z użyciem znacząco powyżej średniej."
+        },
+        "WooCommerce.All Coupons.3": {
+            "Starter": "Wyślij kupon po zakupie",
+            "Prompt": "Stwórz automatyzację, która generuje unikalny kod kuponu i wysyła go e-mailem do klienta po zakupie produktu. Jaki produkt ma to wyzwalać i jaki rabat ma oferować kupon?"
+        },
+        "WooCommerce.All Coupons.4": {
+            "Starter": "Znajdź wygasłe kupony",
+            "Prompt": "Wymień wszystkie kupony, które przekroczyły datę ważności lub osiągnęły limit użyć. Pokaż kod kuponu, datę wygaśnięcia i datę ostatniego użycia dla każdego."
+        },
+        "WooCommerce.All Coupons.5": {
+            "Starter": "Porównaj zamówienia z kuponem vs bez",
+            "Prompt": "Porównaj zamówienia, które użyły kodu kuponu, vs zamówienia bez kuponu z ostatnich 6 miesięcy. Pokaż średnią wartość zamówienia, średnią liczbę produktów oraz wskaźnik ponownych zakupów (procent osób, które zamówiły ponownie w ciągu 90 dni) dla każdej grupy."
+        },
+        "WooCommerce.All Customers.1": {
+            "Starter": "Posegmentuj moich klientów",
+            "Prompt": "Posegmentuj wszystkich klientów na grupy według wartości życiowej (top 20%, środkowe 60%, dolne 20%), częstotliwości zakupów (jednorazowi, okazjonalni, regularni) i głównej kategorii produktu. Pokaż liczbę i średnią LTV dla każdego segmentu."
+        },
+        "WooCommerce.All Customers.2": {
+            "Starter": "Znajdź klientów zagrożonych odpływem",
+            "Prompt": "Znajdź klientów, których średni czas między zamówieniami jest mniejszy niż 90 dni, ale którzy nie złożyli zamówienia od ponad 120 dni. Pokaż datę ich ostatniego zamówienia, łączne wydatki życiowe i o ile dni są spóźnieni."
+        },
+        "WooCommerce.All Customers.3": {
+            "Starter": "Wyróżnij klientów VIP",
+            "Prompt": "Stwórz automatyzację, która uruchamia się, gdy łączne wydatki życiowe klienta przekroczą próg. Dodaj rolę VIP do jego konta i wyślij mu e-mail z podziękowaniem. Jaki próg wydatków mam użyć?"
+        },
+        "WooCommerce.All Customers.4": {
+            "Starter": "Pokaż nowych vs powracających kupujących",
+            "Prompt": "Dla obecnego miesiąca pokaż, ile zamówień pochodzi od kupujących po raz pierwszy vs powracających klientów. Pokaż łączny przychód i średnią wartość zamówienia dla każdej grupy oraz porównaj z ubiegłym miesiącem."
+        },
+        "WooCommerce.All Customers.5": {
+            "Starter": "Pokaż przychód według regionu",
+            "Prompt": "Podziel łączny przychód według kraju i regionu na podstawie adresów rozliczeniowych. Pokaż 15 najlepszych regionów według przychodu, liczbę zamówień z każdego oraz średnią wartość zamówienia na region."
+        },
+        "WooCommerce.All Orders.1": {
+            "Starter": "Pokaż przychód według dnia tygodnia",
+            "Prompt": "Pokaż mi łączny przychód w podziale na dni tygodnia z ostatnich 3 miesięcy. Który dzień konsekwentnie generuje najwięcej przychodu, a który najmniej?"
+        },
+        "WooCommerce.All Orders.2": {
+            "Starter": "Znajdź niezrealizowane zamówienia",
+            "Prompt": "Wymień wszystkie zamówienia obecnie w statusie 'w trakcie realizacji' lub 'wstrzymane'. Posortuj je według daty, od najstarszych, i oznacz te, które są w tym statusie dłużej niż 7 dni."
+        },
+        "WooCommerce.All Orders.3": {
+            "Starter": "Przeanalizuj wskaźniki zwrotów",
+            "Prompt": "Oblicz wskaźnik zwrotów dla każdego produktu z ostatnich 6 miesięcy. Pokaż liczbę zamówień, liczbę zwrotów, wskaźnik zwrotów i łączną kwotę zwrotów na produkt, posortowane według najwyższego wskaźnika zwrotów."
+        },
+        "WooCommerce.All Orders.4": {
+            "Starter": "Znajdź powracających kupujących",
+            "Prompt": "Znajdź wszystkich klientów, którzy złożyli więcej niż jedno zamówienie. Pokaż liczbę zamówień każdego z nich, łączne wydatki i średnią liczbę dni między zamówieniami. Posortuj według łącznych wydatków, od najwyższych."
+        },
+        "WooCommerce.All Orders.5": {
+            "Starter": "Wyślij mi e-mail przy nieudanym zamówieniu",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy płatność za zamówienie się nie powiedzie. W e-mailu uwzględnij numer zamówienia, imię klienta i sumę zamówienia."
+        },
+        "WooCommerce.All Products.1": {
+            "Starter": "Uszereguj moich bestsellerów",
+            "Prompt": "Uszereguj wszystkie produkty według sprzedanych sztuk i łącznego przychodu w obecnym kwartale. Uwzględnij porównanie z poprzednim kwartałem pokazujące zmianę w sztukach i przychodzie dla każdego produktu."
+        },
+        "WooCommerce.All Products.2": {
+            "Starter": "Znajdź szanse cross-sell",
+            "Prompt": "Przeanalizuj dane zamówień, aby znaleźć produkty często kupowane razem w jednym zamówieniu. Pokaż 10 najlepszych par produktów według liczby współwystąpień i procent zamówień zawierających jeden, który zawiera również drugi."
+        },
+        "WooCommerce.All Products.3": {
+            "Starter": "Powiadom mnie o niskim stanie",
+            "Prompt": "Stwórz automatyzację, która wysyła mi powiadomienie e-mail za każdym razem, gdy produkt skończy się w magazynie. W e-mailu uwzględnij nazwę produktu i SKU."
+        },
+        "WooCommerce.All Products.4": {
+            "Starter": "Znajdź produkty bez sprzedaży",
+            "Prompt": "Wymień wszystkie opublikowane produkty, które miały zero zamówień w ciągu ostatnich 90 dni. Pokaż nazwę produktu, cenę i datę ostatniego zamówienia (jeśli było)."
+        },
+        "WooCommerce.All Products.5": {
+            "Starter": "Pokaż przychód na produkt w czasie",
+            "Prompt": "Pokaż miesięczny przychód każdego produktu z ostatnich 12 miesięcy. Wyróżnij produkty z rosnącym przychodem, malejące i stabilne."
+        },
+        "WooCommerce.All Subscriptions.1": {
+            "Starter": "Pokaż mój wskaźnik churnu",
+            "Prompt": "Oblicz wskaźnik churnu subskrypcji dla każdego z ostatnich 6 miesięcy. Pokaż liczbę aktywnych subskrypcji na początku każdego miesiąca, liczbę anulowanych w trakcie miesiąca, wskaźnik churnu oraz przychód utracony przez anulowania."
+        },
+        "WooCommerce.All Subscriptions.2": {
+            "Starter": "Pokaż nadchodzące odnowienia",
+            "Prompt": "Wymień wszystkie subskrypcje z datą odnowienia w ciągu najbliższych 14 dni. Pogrupuj je według produktu i poziomu planu i pokaż łączny przychód z odnowienia zagrożony dla każdej grupy."
+        },
+        "WooCommerce.All Subscriptions.3": {
+            "Starter": "Oblicz podział MRR",
+            "Prompt": "Oblicz obecny miesięczny powtarzalny przychód ze wszystkich aktywnych subskrypcji. Podziel go według produktu, poziomu planu i pokaż, jaki procent MRR pochodzi z subskrypcji utworzonych w ciągu ostatnich 3 miesięcy vs starszych subskrypcji."
+        },
+        "WooCommerce.All Subscriptions.4": {
+            "Starter": "Przeanalizuj wzorce anulowania",
+            "Prompt": "Przeanalizuj wszystkie anulowania subskrypcji z ostatnich 6 miesięcy. Pokaż, które produkty mają najwyższy wskaźnik anulowań, średni okres subskrypcji w momencie anulowania oraz czy anulowania skupiają się w określonych punktach cyklu rozliczeniowego (np. po miesiącu 1, 3, 12)."
+        },
+        "WooCommerce.All Subscriptions.5": {
+            "Starter": "Wyślij e-mail przy nieudanym odnowieniu",
+            "Prompt": "Stwórz automatyzację, która wysyła klientowi e-mail, gdy płatność za odnowienie subskrypcji się nie powiedzie. Uwzględnij jego imię, produkt subskrypcji i link do aktualizacji metody płatności."
+        },
+        "WooCommerce.Dashboard.1": {
+            "Starter": "Pokaż trendy przychodu",
+            "Prompt": "Pokaż łączny przychód tydzień do tygodnia z ostatnich 3 miesięcy oraz miesiąc do miesiąca z ostatnich 12 miesięcy. Porównaj każdy miesiąc do tego samego miesiąca w zeszłym roku, jeśli istnieją dane. Wyróżnij, czy przychód przyspiesza, czy zwalnia."
+        },
+        "WooCommerce.Dashboard.2": {
+            "Starter": "Oblicz wartość życiową klienta",
+            "Prompt": "Oblicz średnią wartość życiową dla wszystkich klientów, sumując łączny przychód z zamówień każdego klienta. Podziel ją według pierwszego produktu, jaki kupił każdy klient, aby pokazać, które produkty wejściowe prowadzą do najwyższego LTV."
+        },
+        "WooCommerce.Dashboard.3": {
+            "Starter": "Pokaż wskaźniki retencji kohort",
+            "Prompt": "Pogrupuj wszystkich klientów według miesiąca pierwszego zakupu. Dla każdej miesięcznej kohorty pokaż, jaki procent złożył co najmniej jedno dodatkowe zamówienie w każdym kolejnym miesiącu."
+        },
+        "WooCommerce.Dashboard.4": {
+            "Starter": "Podsumuj miesięczne KPI",
+            "Prompt": "Daj mi miesięczne podsumowanie KPI dla tego miesiąca vs ubiegłego: łączny przychód, liczbę nowych klientów, średnią wartość zamówienia, łączne zwroty i liczbę anulowań subskrypcji. Pokaż zmianę miesiąc do miesiąca dla każdego."
+        },
+        "WooCommerce.Dashboard.5": {
+            "Starter": "Przeanalizuj nieudane płatności",
+            "Prompt": "Pokaż wszystkie zamówienia z nieudanymi płatnościami z ostatnich 3 miesięcy. Pogrupuj je według metody płatności i pokaż łączną liczbę, łączny utracony przychód i ile zostało ostatecznie odzyskanych (zakończonych w późniejszym zamówieniu przez tego samego klienta)."
+        },
+        "WooCommerce.Edit Coupon.1": {
+            "Starter": "Pokaż wyniki tego kuponu",
+            "Prompt": "Pokaż wszystkie zamówienia, które użyły tego kuponu. Uwzględnij łączne użycia, łączny wygenerowany przychód, średnią wartość zamówienia oraz ilu z tych klientów użyło wcześniej innego kuponu w poprzednim zamówieniu."
+        },
+        "WooCommerce.Edit Coupon.2": {
+            "Starter": "Kto użył tego kuponu?",
+            "Prompt": "Wymień każdego klienta, który użył tego kuponu, z sumą jego zamówienia, kupionymi produktami i tym, czy złożył od tego czasu kolejne zamówienia."
+        },
+        "WooCommerce.Edit Coupon.3": {
+            "Starter": "Wygeneruj nowy kupon",
+            "Prompt": "Wygeneruj nowy kod kuponu. Jaki typ rabatu (procentowy lub stała kwota), jaka kwota i czy ma mieć limit użyć lub datę ważności?"
+        },
+        "WooCommerce.Edit Coupon.4": {
+            "Starter": "Wyślij kupon win-back",
+            "Prompt": "Stwórz automatyzację, która generuje i wysyła e-mailem kod kuponu klientowi, gdy anuluje subskrypcję. Jaki rabat ma oferować kupon i jak długo ma być ważny?"
+        },
+        "WooCommerce.Edit Coupon.5": {
+            "Starter": "Porównaj z innymi kuponami",
+            "Prompt": "Porównaj łączne użycia, wygenerowany przychód i średnią wartość zamówienia tego kuponu z wszystkimi innymi kuponami używanymi w tym samym okresie. Na którym miejscu się znajduje?"
+        },
+        "WooCommerce.Edit Order.1": {
+            "Starter": "Pokaż zamówienia tego klienta",
+            "Prompt": "Wyświetl każde zamówienie złożone przez tego klienta. Pokaż daty zamówień, sumy, kupione produkty i statusy zamówień. Uwzględnij jego łączne wydatki życiowe, liczbę zamówień i średnią wartość zamówienia."
+        },
+        "WooCommerce.Edit Order.2": {
+            "Starter": "Dodaj notatkę do tego zamówienia",
+            "Prompt": "Dodaj notatkę do tego zamówienia. Co powinna mówić notatka?"
+        },
+        "WooCommerce.Edit Order.3": {
+            "Starter": "Znajdź podobne zamówienia",
+            "Prompt": "Znajdź inne zamówienia zawierające te same produkty, co to zamówienie. Pokaż średnią wartość tych zamówień oraz inne produkty najczęściej kupowane razem z nimi."
+        },
+        "WooCommerce.Edit Order.4": {
+            "Starter": "Pokaż oś czasu tego zamówienia",
+            "Prompt": "Pokaż pełną historię zmian statusu tego zamówienia z datą i godziną każdego przejścia statusu oraz tym, ile czasu zamówienie spędziło w każdym statusie."
+        },
+        "WooCommerce.Edit Order.5": {
+            "Starter": "Wyślij e-mail przy zmianie statusu",
+            "Prompt": "Stwórz automatyzację, która wysyła niestandardowy e-mail za każdym razem, gdy status zamówienia się zmieni. Jaka zmiana statusu ma to wyzwalać i co ma mówić e-mail?"
+        },
+        "WooCommerce.Edit Product.1": {
+            "Starter": "Pokaż wydajność tego produktu",
+            "Prompt": "Pokaż łączną liczbę sprzedanych sztuk tego produktu, łączny przychód, liczbę zwrotów i wskaźnik zwrotów. Podziel na miesiące z ostatnich 12 miesięcy."
+        },
+        "WooCommerce.Edit Product.2": {
+            "Starter": "Kto kupuje ten produkt?",
+            "Prompt": "Przeanalizuj klientów, którzy kupili ten produkt. Pokaż geograficzny rozkład według kraju z adresów rozliczeniowych, ich średnie łączne wydatki we wszystkich zamówieniach, jaki procent to powracający kupujący oraz jakie inne produkty najczęściej kupują."
+        },
+        "WooCommerce.Edit Product.3": {
+            "Starter": "Pokaż trend sprzedaży tego produktu",
+            "Prompt": "Pokaż miesięczne sprzedane sztuki i przychód tego produktu z ostatnich 12 miesięcy. Czy trend przyspiesza, jest stabilny, czy spada?"
+        },
+        "WooCommerce.Edit Product.4": {
+            "Starter": "Powiadom mnie o uzupełnieniu zapasów",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail, gdy ten produkt zostanie ponownie wprowadzony do magazynu po jego wyczerpaniu. W e-mailu uwzględnij nazwę produktu i obecną ilość."
+        },
+        "WooCommerce.Edit Product.5": {
+            "Starter": "Porównaj z innymi produktami",
+            "Prompt": "Porównaj łączny przychód, sprzedane sztuki i wskaźnik zwrotów tego produktu z innymi produktami w tej samej kategorii. Uszereguj je obok siebie."
+        },
+        "WooCommerce.Edit Subscription.1": {
+            "Starter": "Przedłuż tę subskrypcję",
+            "Prompt": "Przedłuż tę subskrypcję. O ile dni mam ją przedłużyć?"
+        },
+        "WooCommerce.Edit Subscription.2": {
+            "Starter": "Pokaż historię tego subskrybenta",
+            "Prompt": "Pokaż pełną historię tego subskrybenta: wszystkie zamówienia, zmiany statusu subskrypcji, daty odnowień oraz wszelkie nieudane próby płatności, posortowane według daty."
+        },
+        "WooCommerce.Edit Subscription.3": {
+            "Starter": "Oceń ryzyko tego subskrybenta",
+            "Prompt": "Oceń ryzyko anulowania tego subskrybenta na podstawie historii płatności (wszelkich nieudanych płatności lub spóźnionych odnowień), długości subskrypcji oraz tego, czy zmieniał plany. Jak jego okres subskrypcji wypada na tle średniego subskrybenta tego planu?"
+        },
+        "WooCommerce.Edit Subscription.4": {
+            "Starter": "Porównaj z podobnymi subskrybentami",
+            "Prompt": "Znajdź wszystkich innych subskrybentów na tym samym planie co ten subskrybent. Porównaj okres subskrypcji i łączne wydatki tego subskrybenta ze średnią, medianą i top 10% tej grupy."
+        },
+        "WooCommerce.Edit Subscription.5": {
+            "Starter": "Pokaż historię płatności",
+            "Prompt": "Wymień każdą próbę płatności za tę subskrypcję - udaną i nieudaną - z datą, kwotą, metodą płatności i wynikiem dla każdej."
+        },
+        "WooCommerce.Reports.1": {
+            "Starter": "Porównaj przychód do zeszłego roku",
+            "Prompt": "Porównaj przychód tego miesiąca z tym samym miesiącem w zeszłym roku. Podziel go według kategorii produktów i pokaż zmianę rok do roku dla każdej. Pokaż również porównanie od początku roku."
+        },
+        "WooCommerce.Reports.2": {
+            "Starter": "Pokaż trendy AOV",
+            "Prompt": "Pokaż średnią wartość zamówienia dla każdego z ostatnich 12 miesięcy. Wskaż, co napędza zmiany - zmiany w miksie produktów, zwiększone użycie kuponów czy zmiany w liczbie produktów na zamówienie."
+        },
+        "WooCommerce.Reports.3": {
+            "Starter": "Przeanalizuj metody płatności",
+            "Prompt": "Pokaż podział zamówień według metody płatności. Dla każdej metody pokaż liczbę zamówień, łączny przychód, średnią wartość zamówienia i procent zamówień, które się nie powiodły."
+        },
+        "WooCommerce.Reports.4": {
+            "Starter": "Znajdź najszybciej rosnące produkty",
+            "Prompt": "Uszereguj produkty według tempa wzrostu przychodu z ostatnich 3 miesięcy w porównaniu z poprzednimi 3 miesiącami. Pokaż bezwzględny przychód dla obu okresów i procentową zmianę. Szukam wschodzących produktów, nie tylko największych bestsellerów."
+        },
+        "WooCommerce.Reports.5": {
+            "Starter": "Pokaż przychód z kuponami vs organiczny",
+            "Prompt": "Porównaj łączny przychód z zamówień, które użyły kodu kuponu, vs zamówień bez kuponu z ostatnich 6 miesięcy. Pokaż podział miesiąc po miesiącu i to, czy proporcja przychodu z kuponów rośnie, czy maleje."
+        },
+        "WooCommerce.Status.1": {
+            "Starter": "Znajdź wąskie gardła w przetwarzaniu",
+            "Prompt": "Przeanalizuj średni czas, jaki zamówienia spędzają w każdym statusie przed przejściem do następnego. Które przejście statusu trwa najdłużej? Czy są zamówienia utknięte w konkretnym statusie nietypowo długo?"
+        },
+        "WooCommerce.Status.2": {
+            "Starter": "Pokaż ostatnie nieudane zamówienia",
+            "Prompt": "Wymień wszystkie zamówienia obecnie w statusie 'nieudane' z ostatnich 30 dni. Pokaż imię klienta, e-mail, metodę płatności, sumę zamówienia i datę, kiedy zamówienie się nie powiodło."
+        },
+        "WooCommerce.Status.3": {
+            "Starter": "Wyślij e-mail przy zmianie statusu zamówienia",
+            "Prompt": "Stwórz automatyzację, która wysyła e-mail z powiadomieniem za każdym razem, gdy status zamówienia zmieni się na konkretny status. Jaki status ma to wyzwalać i kto powinien otrzymać e-mail?"
+        },
+        "WooCommerce.Status.4": {
+            "Starter": "Znajdź niekompletne zamówienia",
+            "Prompt": "Znajdź wszystkie zamówienia utknięte w statusie 'oczekujące' lub 'nieudane' dłużej niż 48 godzin. Pogrupuj je według metody płatności i produktu, aby zobaczyć, czy istnieje wzorzec w tym, co zawodzi."
+        },
+        "WooCommerce.Status.5": {
+            "Starter": "Wykonaj kontrolę kondycji bazy danych",
+            "Prompt": "Sprawdź bazę danych WooCommerce pod kątem typowych problemów: osierocone metadane zamówień bez pasującego zamówienia, zduplikowane rekordy subskrypcji, zamówienia z niespójnymi danymi statusu i wszelkie zamówienia z brakującymi kluczowymi metadanymi. Zgłoś, co znajdziesz."
+        },
+        "WordPress.All Pages.1": {
+            "Starter": "Znajdź osierocone strony",
+            "Prompt": "Znajdź opublikowane strony, do których nie linkuje żadna inna strona ani wpis (przeskanuj post_content pod kątem linków wewnętrznych). Pokaż tytuł, datę ostatniej modyfikacji i rodzica."
+        },
+        "WordPress.All Pages.2": {
+            "Starter": "Pokaż hierarchię stron",
+            "Prompt": "Pokaż pełną hierarchię stron rodzic/dziecko jako drzewo, z datą ostatniej modyfikacji i autorem każdej strony. Wyróżnij wszelkie sieroty (bez rodzica i bez dzieci)."
+        },
+        "WordPress.All Pages.3": {
+            "Starter": "Znajdź nieaktualne strony",
+            "Prompt": "Znajdź opublikowane strony nieaktualizowane w ciągu ostatnich 12 miesięcy. Pokaż tytuł, datę ostatniej modyfikacji i autora."
+        },
+        "WordPress.All Pages.4": {
+            "Starter": "Pokaż rozkład długości stron",
+            "Prompt": "Pokaż strony uszeregowane według liczby słów. Wskaż najdłuższą i najkrótszą opublikowaną stronę oraz średnią długość."
+        },
+        "WordPress.All Pages.5": {
+            "Starter": "Znajdź puste strony",
+            "Prompt": "Znajdź opublikowane strony bez treści lub z mniej niż 100 słowami. Pokaż tytuł, rodzica i liczbę słów."
+        },
+        "WordPress.All Posts.1": {
+            "Starter": "Znajdź stare szkice",
+            "Prompt": "Znajdź szkice wpisów starsze niż 30 dni. Pokaż tytuł, autora, datę ostatniej modyfikacji oraz jak długo szkic czeka. Posortuj od najstarszych."
+        },
+        "WordPress.All Posts.2": {
+            "Starter": "Pokaż najlepszych autorów",
+            "Prompt": "Uszereguj autorów według liczby opublikowanych wpisów z ostatnich 12 miesięcy. Pokaż liczbę wpisów, średnią długość w słowach i datę ostatniej publikacji dla każdego."
+        },
+        "WordPress.All Posts.3": {
+            "Starter": "Znajdź wpisy bez obrazka wyróżniającego",
+            "Prompt": "Wymień opublikowane wpisy, które nie mają ustawionego obrazka wyróżniającego. Pokaż tytuł, autora, datę publikacji i kategorię."
+        },
+        "WordPress.All Posts.4": {
+            "Starter": "Wyślij mi e-mail przy zmianie statusu wpisu",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail, gdy wpis zostanie ustawiony na konkretny status. Jaki status ma to wyzwalać (np. opublikowany, oczekujący, szkic)?"
+        },
+        "WordPress.All Posts.5": {
+            "Starter": "Znajdź wpisy z niskim zaangażowaniem",
+            "Prompt": "Pokaż opublikowane wpisy posortowane według liczby komentarzy rosnąco. Wyróżnij wpisy z zerową liczbą komentarzy oraz wpisy, które wypadły poniżej średniej witryny."
+        },
+        "WordPress.All Users.1": {
+            "Starter": "Posegmentuj użytkowników według roli",
+            "Prompt": "Pokaż liczbę użytkowników według roli, średni wiek konta na rolę oraz procent użytkowników w każdej roli, którzy opublikowali wpis lub zamieścili komentarz."
+        },
+        "WordPress.All Users.2": {
+            "Starter": "Znajdź uśpionych użytkowników",
+            "Prompt": "Znajdź użytkowników, którzy zarejestrowali się ponad 30 dni temu, ale nigdy nie opublikowali wpisu ani nie zamieścili komentarza. Pokaż nazwę użytkownika, e-mail, rolę i datę rejestracji."
+        },
+        "WordPress.All Users.3": {
+            "Starter": "Pokaż trend rejestracji",
+            "Prompt": "Pokaż liczbę nowych rejestracji użytkowników miesięcznie z ostatnich 24 miesięcy. Wyróżnij, czy trend przyspiesza, spada, czy jest stabilny."
+        },
+        "WordPress.All Users.4": {
+            "Starter": "Znajdź najlepszych autorów",
+            "Prompt": "Znajdź 20 użytkowników z największą liczbą opublikowanych wpisów. Pokaż liczbę wpisów, liczbę komentarzy i wiek konta. Porównaj ze średnią bazy użytkowników."
+        },
+        "WordPress.Comments.1": {
+            "Starter": "Pokaż oczekujące komentarze",
+            "Prompt": "Wymień wszystkie komentarze obecnie oczekujące na moderację, od najstarszych. Pokaż tytuł wpisu, imię komentującego oraz jak długo każdy z nich czeka."
+        },
+        "WordPress.Comments.2": {
+            "Starter": "Pokaż najlepszych komentujących",
+            "Prompt": "Uszereguj komentujących według liczby zatwierdzonych komentarzy z ostatnich 12 miesięcy. Pokaż liczbę, datę ostatniego komentarza oraz wpisy, które komentują najczęściej."
+        },
+        "WordPress.Comments.3": {
+            "Starter": "Pokaż wskaźnik moderacji",
+            "Prompt": "Pokaż podział komentarzy zatwierdzonych vs spam vs kosz z ostatnich 90 dni. Jaki procent przychodzących komentarzy jest ostatecznie zatwierdzany?"
+        },
+        "WordPress.Comments.4": {
+            "Starter": "Znajdź wzorce spamu",
+            "Prompt": "Znajdź wspólne wzorce w komentarzach oznaczonych jako spam z ostatnich 90 dni: powtarzające się IP, powtarzające się domeny e-mail, liczbę linków na komentarz oraz skupiska o określonych porach dnia."
+        },
+        "WordPress.Dashboard.1": {
+            "Starter": "Zasugeruj przepisy dla mojej witryny",
+            "Prompt": "Przejrzyj moje zainstalowane wtyczki i zadawaj mi pytania, aby pomóc mi zidentyfikować, jakie przepisy zaoszczędziłyby mi czas."
+        },
+        "WordPress.Dashboard.2": {
+            "Starter": "Przejrzyj bezpieczeństwo mojej witryny",
+            "Prompt": "Sprawdź moje zainstalowane wtyczki pod kątem znanych podatności, sprawdź zainstalowane wtyczki bezpieczeństwa, wtyczki uwierzytelniania dwuskładnikowego i inne znane podatności WordPress."
+        },
+        "WordPress.Dashboard.3": {
+            "Starter": "Przejrzyj kondycję mojej witryny",
+            "Prompt": "Sprawdź raport kondycji witryny WordPress pod kątem wszelkich problemów."
+        },
+        "WordPress.Dashboard.4": {
+            "Starter": "Pokaż podsumowanie treści",
+            "Prompt": "Pokaż mi podsumowanie publikacji z ostatnich 12 miesięcy: wpisy i strony według statusu (opublikowane/szkic/oczekujące), według autora i według miesiąca. Wyróżnij miesiące z nietypowym wolumenem."
+        },
+        "WordPress.Dashboard.5": {
+            "Starter": "Pokaż wzrost liczby użytkowników",
+            "Prompt": "Pokaż liczbę nowych rejestracji użytkowników miesięcznie z ostatnich 12 miesięcy, w podziale na role. Wskaż trendy - przyspieszające, spadające lub stabilne."
+        },
+        "WordPress.Edit Page.1": {
+            "Starter": "Pokaż historię wersji tej strony",
+            "Prompt": "Pokaż wszystkie wersje tej strony: kto edytował, kiedy i ile się zmieniło. Wskaż najbardziej aktywnego edytora."
+        },
+        "WordPress.Edit Page.2": {
+            "Starter": "Pokaż strony linkujące tutaj",
+            "Prompt": "Znajdź wszystkie strony i wpisy, których treść linkuje do tej strony. Pokaż tytuł, typ wpisu i kontekst linku."
+        },
+        "WordPress.Edit Page.3": {
+            "Starter": "Pokaż statystyki treści tej strony",
+            "Prompt": "Pokaż liczbę słów, liczbę akapitów, liczbę obrazów, liczbę linków wewnętrznych i liczbę linków zewnętrznych tej strony."
+        },
+        "WordPress.Edit Page.4": {
+            "Starter": "Zduplikuj tę stronę",
+            "Prompt": "Stwórz duplikat tej strony przy użyciu akcji WordPress duplicate page. Jaki ma być nowy tytuł?"
+        },
+        "WordPress.Edit Page.5": {
+            "Starter": "Wyślij mi e-mail przy aktualizacji tej strony",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy ta konkretna strona zostanie zaktualizowana. Uwzględnij, kto ją zaktualizował i kiedy."
+        },
+        "WordPress.Edit Post.1": {
+            "Starter": "Pokaż historię wersji tego wpisu",
+            "Prompt": "Pokaż wszystkie wersje tego wpisu: kto edytował, kiedy i z grubsza ile się zmieniło za każdym razem. Wskaż najbardziej aktywnego edytora."
+        },
+        "WordPress.Edit Post.2": {
+            "Starter": "Pokaż komentarze do tego wpisu",
+            "Prompt": "Wymień wszystkie komentarze do tego wpisu z datą, imieniem komentującego, statusem i treścią. Wyróżnij wszelkie oczekujące lub wstrzymane w moderacji."
+        },
+        "WordPress.Edit Post.3": {
+            "Starter": "Znajdź podobne wpisy",
+            "Prompt": "Znajdź opublikowane wpisy, które dzielą kategorie lub tagi z tym. Uszereguj według nakładania się i pokaż tytuł, autora i datę publikacji."
+        },
+        "WordPress.Edit Post.4": {
+            "Starter": "Pokaż statystyki treści",
+            "Prompt": "Pokaż liczbę słów, liczbę akapitów, szacowany czas czytania, liczbę linków wewnętrznych i liczbę linków zewnętrznych tego wpisu."
+        },
+        "WordPress.Edit User.1": {
+            "Starter": "Pokaż pełną aktywność tego użytkownika",
+            "Prompt": "Pokaż pełną aktywność tego użytkownika: każdy opublikowany wpis, szkic, komentarz oraz datę ostatnio znanej aktywności. Oblicz liczbę dni od ostatniego wkładu."
+        },
+        "WordPress.Edit User.2": {
+            "Starter": "Pokaż wydajność treści tego użytkownika",
+            "Prompt": "Uszereguj opublikowane wpisy tego użytkownika według liczby komentarzy. Pokaż jego najczęściej komentowany wpis i ogólną średnią komentarzy na wpis."
+        },
+        "WordPress.Edit User.3": {
+            "Starter": "Oblicz wskaźnik zaangażowania",
+            "Prompt": "Oceń zaangażowanie tego użytkownika na podstawie opublikowanych wpisów, zamieszczonych komentarzy i wieku konta. Porównaj jego wynik ze średnią witryny i percentylem."
+        },
+        "WordPress.Edit User.4": {
+            "Starter": "Dodaj rolę",
+            "Prompt": "Dodaj rolę temu użytkownikowi przy użyciu akcji WordPress add role. Jaką rolę mam dodać?"
+        },
+        "WordPress.Edit User.5": {
+            "Starter": "Wyślij e-mail przy publikacji tego użytkownika",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail za każdym razem, gdy ten użytkownik opublikuje wpis. Uwzględnij tytuł wpisu i link."
+        },
+        "WordPress.Media Library.1": {
+            "Starter": "Pokaż rozmiar biblioteki mediów",
+            "Prompt": "Pokaż łączny rozmiar biblioteki mediów, liczbę według typu pliku (obraz/wideo/dźwięk/dokument) oraz średni rozmiar pliku na typ."
+        },
+        "WordPress.Media Library.2": {
+            "Starter": "Znajdź nieużywane media",
+            "Prompt": "Znajdź załączniki mediów, do których nie ma odniesień w treści opublikowanych wpisów ani stron i które nie są ustawione jako obrazek wyróżniający. Pokaż nazwę pliku, typ, rozmiar i datę przesłania."
+        },
+        "WordPress.Media Library.3": {
+            "Starter": "Znajdź obrazy bez tekstu alternatywnego",
+            "Prompt": "Wymień załączniki obrazów, które nie mają ustawionego tekstu alternatywnego (postmeta _wp_attachment_image_alt jest puste lub nie istnieje). Pokaż nazwę pliku, rozmiar i miejsce użycia obrazu."
+        },
+        "WordPress.Media Library.4": {
+            "Starter": "Pokaż największe pliki",
+            "Prompt": "Wymień 25 największych plików w bibliotece mediów. Pokaż nazwę pliku, typ, rozmiar, datę przesłania oraz wpisy, które ich używają."
+        },
+        "WordPress.Media Library.5": {
+            "Starter": "Pokaż trend przesyłania",
+            "Prompt": "Pokaż liczbę przesłanych mediów miesięcznie z ostatnich 12 miesięcy. Wskaż miesiące z nietypowo wysoką aktywnością przesyłania."
+        },
+        "Yoast SEO.Dashboard.1": {
+            "Starter": "Pokaż rozkład wyników SEO",
+            "Prompt": "Pokaż rozkład wyników Yoast SEO (postmeta _yoast_wpseo_linkdex) we wszystkich opublikowanych wpisach i stronach. Pogrupuj na 0-30 wymaga pracy, 31-70 OK, 71-100 dobre. Pokaż liczby na przedział."
+        },
+        "Yoast SEO.Dashboard.2": {
+            "Starter": "Znajdź wpisy bez frazy kluczowej",
+            "Prompt": "Znajdź opublikowane wpisy, które nie mają ustawionej frazy kluczowej Yoast (_yoast_wpseo_focuskw jest puste lub nie istnieje). Pokaż tytuł, autora i datę ostatniej modyfikacji."
+        },
+        "Yoast SEO.Dashboard.3": {
+            "Starter": "Znajdź wpisy z niskim wynikiem",
+            "Prompt": "Znajdź opublikowane wpisy, w których wynik Yoast SEO (_yoast_wpseo_linkdex) jest poniżej 50. Pokaż tytuł, wynik, frazę kluczową (jeśli jest) i autora. Posortuj według najniższego wyniku."
+        },
+        "Yoast SEO.Dashboard.4": {
+            "Starter": "Porównaj wyniki według typu wpisu",
+            "Prompt": "Porównaj rozkład wyników Yoast SEO według typu wpisu. Pokaż średni i medianowy wynik dla wpisów vs stron vs innych publicznych typów wpisów. Wskaż, który typ wpisu wymaga największej uwagi."
+        },
+        "Yoast SEO.Dashboard.5": {
+            "Starter": "Sprawdź brakujące meta opisy",
+            "Prompt": "Znajdź opublikowane wpisy, które nie mają meta opisu Yoast (_yoast_wpseo_metadesc jest puste). Pokaż tytuł, autora, typ wpisu i liczbę słów."
+        },
+        "Yoast SEO.Tools.1": {
+            "Starter": "Sprawdź tytuły SEO",
+            "Prompt": "Sprawdź tytuły Yoast SEO (_yoast_wpseo_title) we wszystkich opublikowanych wpisach. Znajdź tytuły, które są zbyt krótkie (poniżej 30 znaków) lub zbyt długie (powyżej 60 znaków). Pokaż liczbę i przykłady."
+        },
+        "Yoast SEO.Tools.2": {
+            "Starter": "Znajdź zduplikowane tytuły",
+            "Prompt": "Znajdź wpisy, w których tytuł Yoast SEO (_yoast_wpseo_title) jest identyczny z innym. Pokaż tytuł i listę identyfikatorów wpisów go używających."
+        },
+        "Yoast SEO.Tools.3": {
+            "Starter": "Znajdź wpisy noindex",
+            "Prompt": "Znajdź wpisy ustawione na noindex przez Yoast (postmeta _yoast_wpseo_meta-robots-noindex). Pokaż tytuł, typ wpisu i autora."
+        },
+        "Yoast SEO.Tools.4": {
+            "Starter": "Ustaw frazę kluczową",
+            "Prompt": "Ustaw frazę kluczową Yoast dla konkretnego wpisu. Który wpis i jaka fraza kluczowa?"
+        },
+        "Yoast SEO.Tools.5": {
+            "Starter": "Wyślij mi e-mail przy niskim wyniku SEO",
+            "Prompt": "Stwórz automatyzację, która wysyła mi e-mail, gdy wynik Yoast SEO wpisu spadnie poniżej progu (przy użyciu wyzwalacza Yoast 'A post's SEO score is greater than, less than, or equal to a value'). Jaki próg ma to wyzwalać?"
+        }
+    }
+}

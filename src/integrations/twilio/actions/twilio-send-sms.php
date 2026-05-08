@@ -29,6 +29,7 @@ class TWILIO_SEND_SMS extends \Uncanny_Automator\Recipe\App_Action {
 		$this->set_action_meta( 'TWSENDSMS' );
 		$this->set_requires_user( false );
 		$this->set_is_pro( false );
+		$this->set_wpautop( false );
 
 		$this->set_sentence(
 			sprintf(

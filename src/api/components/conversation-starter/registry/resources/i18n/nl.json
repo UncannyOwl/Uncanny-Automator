@@ -1,0 +1,1525 @@
+{
+    "pages": {
+        "Addons": "Add-ons",
+        "All Coupons": "Alle kortingsbonnen",
+        "All Courses": "Alle cursussen",
+        "All Customers": "Alle klanten",
+        "All Forms": "Alle formulieren",
+        "All Forums": "Alle forums",
+        "All Groups": "Alle groepen",
+        "All Lessons": "Alle lessen",
+        "All Members": "Alle leden",
+        "All Orders": "Alle bestellingen",
+        "All Pages": "Alle pagina's",
+        "All Posts": "Alle berichten",
+        "All Products": "Alle producten",
+        "All Quizzes": "Alle quizzen",
+        "All Subscriptions": "Alle abonnementen",
+        "All Topics": "Alle onderwerpen",
+        "All Users": "Alle gebruikers",
+        "All integrations": "Alle integraties",
+        "All recipes": "Alle recepten",
+        "App integrations": "App-integraties",
+        "Assignments": "Opdrachten",
+        "Categories": "Categorieën",
+        "Comments": "Reacties",
+        "Courses": "Cursussen",
+        "Dashboard": "Dashboard",
+        "Default": "Standaard",
+        "Edit Coupon": "Kortingsbon bewerken",
+        "Edit Course": "Cursus bewerken",
+        "Edit Form": "Formulier bewerken",
+        "Edit Forum": "Forum bewerken",
+        "Edit Group": "Groep bewerken",
+        "Edit Lesson": "Les bewerken",
+        "Edit Member": "Lid bewerken",
+        "Edit Order": "Bestelling bewerken",
+        "Edit Page": "Pagina bewerken",
+        "Edit Post": "Bericht bewerken",
+        "Edit Product": "Product bewerken",
+        "Edit Quiz": "Quiz bewerken",
+        "Edit Subscription": "Abonnement bewerken",
+        "Edit Topic": "Onderwerp bewerken",
+        "Edit User": "Gebruiker bewerken",
+        "Entries": "Inzendingen",
+        "Entries Overview": "Inzendingenoverzicht",
+        "Form Entries": "Formulierinzendingen",
+        "Logs": "Logboeken",
+        "Media Library": "Mediabibliotheek",
+        "Plans": "Abonnementen",
+        "Recipe editor": "Recepteneditor",
+        "Reports": "Rapporten",
+        "Scheduled Recipes": "Geplande recepten",
+        "Settings": "Instellingen",
+        "Single Entry": "Enkele inzending",
+        "Status": "Status",
+        "Tags": "Labels",
+        "Tools": "Hulpmiddelen"
+    },
+    "rows": {
+        "Automator.Addons.1": {
+            "Starter": "Add-ons aanbevelen",
+            "Prompt": "Bekijk mijn geïnstalleerde plugins en verbonden app-integraties en beveel vervolgens add-ons aan die nuttige automatiseringen kunnen ontgrendelen."
+        },
+        "Automator.Addons.2": {
+            "Starter": "Een add-on uitleggen",
+            "Prompt": "Vraag welke add-on ik overweeg en leg vervolgens uit wat deze toevoegt en wanneer het de moeite waard is om te installeren."
+        },
+        "Automator.Addons.3": {
+            "Starter": "Ontbrekende mogelijkheden vinden",
+            "Prompt": "Identificeer automatiseringsmogelijkheden die ik mogelijk mis en stel voor welke add-on of integratie deze zou bieden."
+        },
+        "Automator.Addons.4": {
+            "Starter": "Add-ons vergelijken",
+            "Prompt": "Help me beschikbare add-ons te vergelijken op basis van mijn sitebehoeften, huidige plugins en waarschijnlijke recepten."
+        },
+        "Automator.Addons.5": {
+            "Starter": "Add-on-installatie plannen",
+            "Prompt": "Help me met het plannen van de installatie en configuratie van een add-on. Vraag welke workflow ik wil automatiseren en stel vervolgens de volgende stappen voor."
+        },
+        "Automator.All integrations.1": {
+            "Starter": "Integraties aanbevelen",
+            "Prompt": "Bekijk mijn geïnstalleerde plugins en verbonden app-integraties en stel vervolgens Automator-integraties voor die het meest relevant zijn voor mijn site."
+        },
+        "Automator.All integrations.2": {
+            "Starter": "Automatiseringskansen vinden",
+            "Prompt": "Stel nuttige automatiseringsideeën voor op basis van mijn geïnstalleerde plugins en verbonden app-integraties."
+        },
+        "Automator.All integrations.3": {
+            "Starter": "Een integratie uitleggen",
+            "Prompt": "Vraag mij in welke integratie ik geïnteresseerd ben en leg vervolgens uit welke soorten recepten deze kan ontgrendelen."
+        },
+        "Automator.All integrations.4": {
+            "Starter": "Ontbrekende integraties vinden",
+            "Prompt": "Vergelijk mijn geïnstalleerde plugins en verbonden apps met beschikbare Automator-integraties en identificeer vervolgens wat ik mogelijk moet installeren, verbinden of upgraden."
+        },
+        "Automator.All integrations.5": {
+            "Starter": "Bouwen met een integratie",
+            "Prompt": "Help me een Automator-integratie te kiezen en deze om te zetten in een nuttig recept voor mijn site."
+        },
+        "Automator.All recipes.1": {
+            "Starter": "Mijn drukste recepten tonen",
+            "Prompt": "Toon me de recepten met de meest voltooide uitvoeringen, inclusief status en laatste activiteit indien beschikbaar."
+        },
+        "Automator.All recipes.2": {
+            "Starter": "Concepten zoeken om af te ronden",
+            "Prompt": "Toon me conceptrecepten die misschien de moeite waard zijn om af te ronden, te beginnen met de meest recent bijgewerkte."
+        },
+        "Automator.All recipes.3": {
+            "Starter": "Recepten met recente fouten zoeken",
+            "Prompt": "Toon me recepten die recent zijn mislukt of fouten hebben veroorzaakt, inclusief de receptnaam, laatste fout en wanneer deze plaatsvond."
+        },
+        "Automator.All recipes.4": {
+            "Starter": "Stille recepten vinden",
+            "Prompt": "Toon me recepten die niet recent zijn uitgevoerd of uitgeschakeld lijken, zodat ik kan beslissen of ik ze wil behouden."
+        },
+        "Automator.All recipes.5": {
+            "Starter": "Help me deze lijst op te schonen",
+            "Prompt": "Stel een paar filters of opschoondoelen voor zodat ik snel recepten kan vinden die de moeite waard zijn om te beoordelen."
+        },
+        "Automator.App integrations.1": {
+            "Starter": "Verbonden apps bekijken",
+            "Prompt": "Toon mijn verbonden app-integraties en geef een samenvatting van welke klaar zijn voor gebruik in recepten."
+        },
+        "Automator.App integrations.2": {
+            "Starter": "Niet-verbonden apps vinden",
+            "Prompt": "Toon app-integraties die nog niet zijn verbonden en stel voor welke het nuttigst zouden zijn om als eerste te verbinden."
+        },
+        "Automator.App integrations.3": {
+            "Starter": "App-verbindingen oplossen",
+            "Prompt": "Controleer de verbindingsstatus van app-integraties en help bij het oplossen van alles wat losgekoppeld, verlopen of onvolledig lijkt."
+        },
+        "Automator.App integrations.4": {
+            "Starter": "App-recepten voorstellen",
+            "Prompt": "Stel nieuwe receptideeën voor die gegevens verzenden naar of ontvangen van mijn verbonden app-integraties."
+        },
+        "Automator.App integrations.5": {
+            "Starter": "Help bij het verbinden van een app",
+            "Prompt": "Vraag welke app ik wil verbinden en leg me vervolgens uit welke informatie of toestemmingen ik zou moeten geven."
+        },
+        "Automator.Categories.1": {
+            "Starter": "Categoriegebruik samenvatten",
+            "Prompt": "Toon hoe mijn Automator-receptcategorieën worden gebruikt. Inclusief categorienamen, recepttellingen en eventuele lege categorieën."
+        },
+        "Automator.Categories.2": {
+            "Starter": "Niet-gecategoriseerde recepten vinden",
+            "Prompt": "Toon me recepten die geen categorie hebben, met hun namen en statussen."
+        },
+        "Automator.Categories.3": {
+            "Starter": "Categorie-opschoning voorstellen",
+            "Prompt": "Stel categorieën voor die mogelijk de moeite waard zijn om samen te voegen, te hernoemen, te verwijderen of te behouden op basis van namen en recepttellingen."
+        },
+        "Automator.Categories.4": {
+            "Starter": "Mijn recepten organiseren",
+            "Prompt": "Stel een eenvoudige categoriestructuur voor die mijn recepten gemakkelijker te bekijken en te onderhouden maakt."
+        },
+        "Automator.Categories.5": {
+            "Starter": "Categorieplan maken",
+            "Prompt": "Help me een receptcategorieplan te maken. Vraag welk soort recepten ik het vaakst bouw en beveel vervolgens categorienamen aan."
+        },
+        "Automator.Dashboard.1": {
+            "Starter": "Geef me een snelle winst",
+            "Prompt": "Stel één kleine Automator-verbetering voor die ik vandaag kan doorvoeren en die waarschijnlijk tijd bespaart of handmatig werk op mijn site vermindert."
+        },
+        "Automator.Dashboard.2": {
+            "Starter": "Inspireer me",
+            "Prompt": "Stel een nuttig automatiseringsidee voor op basis van het soort site dat ik lijk te runnen. Houd het praktisch, niet generiek."
+        },
+        "Automator.Dashboard.3": {
+            "Starter": "Controleer de essentiële zaken",
+            "Prompt": "Controleer of er iets belangrijks aandacht behoeft, zoals mislukte uitvoeringen, niet-verbonden apps, weinig credits of instellingen die de betrouwbaarheid kunnen beïnvloeden."
+        },
+        "Automator.Dashboard.4": {
+            "Starter": "Leer me een nuttige truc",
+            "Prompt": "Toon me één Automator-functie of workflow-idee dat ik mogelijk nog niet gebruik en leg uit wanneer het de moeite waard is om te proberen."
+        },
+        "Automator.Dashboard.5": {
+            "Starter": "Verras me met een automatisering",
+            "Prompt": "Geef me één creatief maar realistisch receptidee voor mijn site en leg vervolgens uit welk probleem het zou oplossen."
+        },
+        "Automator.Logs.1": {
+            "Starter": "Recente fouten vinden",
+            "Prompt": "Bekijk recente Automator-logboeken en toon receptuitvoeringen met fouten. Inclusief receptnaam, foutmelding en wanneer deze plaatsvond."
+        },
+        "Automator.Logs.2": {
+            "Starter": "Mislukte uitvoeringen oplossen",
+            "Prompt": "Help me mislukte receptuitvoeringen op te lossen. Begin met het identificeren van de meest voorkomende recente fout en de waarschijnlijke oorzaak."
+        },
+        "Automator.Logs.3": {
+            "Starter": "Receptactiviteit tonen",
+            "Prompt": "Vat Automator-activiteit uit de logboeken samen, inclusief succesvolle uitvoeringen, mislukte uitvoeringen en recepten met ongebruikelijke activiteit."
+        },
+        "Automator.Logs.4": {
+            "Starter": "Een recept controleren dat niet activeert",
+            "Prompt": "Vraag welk recept niet activeert en help me vervolgens de meest waarschijnlijke oorzaken te controleren."
+        },
+        "Automator.Logs.5": {
+            "Starter": "Een logboekvermelding uitleggen",
+            "Prompt": "Vraag welke logboek-ID, recept of foutmelding ik wil begrijpen en leg vervolgens uit wat er is gebeurd en wat ik daarna moet doen."
+        },
+        "Automator.Plans.1": {
+            "Starter": "Mijn abonnement uitleggen",
+            "Prompt": "Leg uit wat mijn huidige Automator-abonnement bevat en welke functies het meest relevant zijn voor mijn site."
+        },
+        "Automator.Plans.2": {
+            "Starter": "Vergrendelde functies vinden",
+            "Prompt": "Identificeer Automator-functies die niet beschikbaar zijn in mijn huidige abonnement en leg uit wat ze mogelijk maken."
+        },
+        "Automator.Plans.3": {
+            "Starter": "Wijzigingen in abonnement aanbevelen",
+            "Prompt": "Vertel me, op basis van mijn geïnstalleerde plugins, verbonden app-integraties en automatiseringsdoelen, of het waarschijnlijk nuttig zou zijn om van abonnement te wisselen."
+        },
+        "Automator.Plans.4": {
+            "Starter": "Voordelen van abonnementen vergelijken",
+            "Prompt": "Vergelijk de praktische voordelen van de beschikbare Automator-abonnementen voor de soorten recepten die ik zou kunnen bouwen."
+        },
+        "Automator.Plans.5": {
+            "Starter": "Recepten vinden die een upgrade waard zijn",
+            "Prompt": "Stel receptideeën voor die een upgrade rechtvaardigen, op basis van mijn geïnstalleerde plugins en verbonden app-integraties."
+        },
+        "Automator.Recipe editor.1": {
+            "Starter": "Dit recept oplossen",
+            "Prompt": "Help me dit recept op te lossen. Begin met recente logboeken en een korte samenvatting en vraag voordat je een diepere beoordeling uitvoert."
+        },
+        "Automator.Recipe editor.2": {
+            "Starter": "Dit recept uitleggen",
+            "Prompt": "Leg in eenvoudige taal uit wat dit recept doet, te beginnen met de hoofdtrigger en de actiestroom."
+        },
+        "Automator.Recipe editor.3": {
+            "Starter": "Dit recept verbeteren",
+            "Prompt": "Stel een paar manieren voor om dit recept betrouwbaarder of gemakkelijker te onderhouden te maken. Begin met de samenvatting en recente logboeken."
+        },
+        "Automator.Recipe editor.4": {
+            "Starter": "Toevoegen aan dit recept",
+            "Prompt": "Help me iets toe te voegen aan dit recept. Vraag welk resultaat ik wil en stel vervolgens de juiste trigger, actie, voorwaarde of vertraging voor."
+        },
+        "Automator.Recipe editor.5": {
+            "Starter": "Een nieuw recept bouwen",
+            "Prompt": "Help me een nieuw recept te bouwen. Als er een huidig recept in de context staat, vraag dan of ik dit wil aanpassen of een afzonderlijk recept wil maken."
+        },
+        "Automator.Scheduled Recipes.1": {
+            "Starter": "Aankomende planningen tonen",
+            "Prompt": "Vind recepten die geplande triggers gebruiken en toon me de eerstvolgende uitvoeringen, inclusief receptnaam, planning, volgende uitvoeringstijd en status."
+        },
+        "Automator.Scheduled Recipes.2": {
+            "Starter": "Mislukte planningen vinden",
+            "Prompt": "Vind geplande uitvoeringen die zijn mislukt, gemist of vastlopen lijken en vat samen wat aandacht nodig heeft."
+        },
+        "Automator.Scheduled Recipes.3": {
+            "Starter": "Planningsbelasting bekijken",
+            "Prompt": "Toon me of geplande uitvoeringen rond dezelfde tijden zijn geclusterd en stel een betere spreiding voor indien nodig."
+        },
+        "Automator.Scheduled Recipes.4": {
+            "Starter": "Inactieve geplande recepten vinden",
+            "Prompt": "Toon me geplande recepten die niet recent zijn uitgevoerd of uitgeschakeld lijken."
+        },
+        "Automator.Scheduled Recipes.5": {
+            "Starter": "Mijn planningen verbeteren",
+            "Prompt": "Stel manieren voor om mijn geplande recepten betrouwbaarder of beter getimed te maken."
+        },
+        "Automator.Settings.1": {
+            "Starter": "Automator-instellingen bekijken",
+            "Prompt": "Bekijk mijn Automator-instellingen en vat alles samen wat belangrijk, riskant of de moeite waard is om te wijzigen."
+        },
+        "Automator.Settings.2": {
+            "Starter": "Beste instellingen aanbevelen",
+            "Prompt": "Stel aanbevolen Automator-instellingen voor een betrouwbare productiesite voor. Leg eventuele afwegingen uit."
+        },
+        "Automator.Settings.3": {
+            "Starter": "E-mailinstellingen controleren",
+            "Prompt": "Bekijk instellingen die verband houden met e-mail, meldingen of receptcommunicatie en stel verbeteringen voor."
+        },
+        "Automator.Settings.4": {
+            "Starter": "Prestatie-instellingen controleren",
+            "Prompt": "Bekijk instellingen die de receptprestaties, logboekregistratie, planning of achtergrondverwerking kunnen beïnvloeden."
+        },
+        "Automator.Settings.5": {
+            "Starter": "Een instelling uitleggen",
+            "Prompt": "Vraag welke Automator-instelling ik uitgelegd wil hebben en beschrijf vervolgens wat deze doet en wanneer ik deze moet wijzigen."
+        },
+        "Automator.Status.1": {
+            "Starter": "Sitestatus bekijken",
+            "Prompt": "Bekijk de Automator-statusinformatie en vat alles samen wat de receptbetrouwbaarheid kan beïnvloeden."
+        },
+        "Automator.Status.2": {
+            "Starter": "Compatibiliteit van omgeving controleren",
+            "Prompt": "Controleer WordPress-, PHP-, database- en Automator-omgevingsdetails op compatibiliteitsproblemen of verouderde componenten."
+        },
+        "Automator.Status.3": {
+            "Starter": "Cron-gezondheid bekijken",
+            "Prompt": "Controleer of WP-Cron of geplande taakgedrag invloed kan hebben op Automator-recepten, met name geplande recepten of vertraagde acties."
+        },
+        "Automator.Status.4": {
+            "Starter": "Ondersteuningssamenvatting maken",
+            "Prompt": "Vat de belangrijke omgeving- en Automator-statusdetails samen die ik moet meesturen wanneer ik contact opneem met support."
+        },
+        "Automator.Status.5": {
+            "Starter": "Betrouwbaarheidsrisico's vinden",
+            "Prompt": "Bekijk de Automator- en WordPress-omgevingsstatusdetails en identificeer vervolgens risico's die ertoe kunnen leiden dat recepten mislukken, te laat worden uitgevoerd of inconsistent gedrag vertonen."
+        },
+        "Automator.Tags.1": {
+            "Starter": "Labelgebruik samenvatten",
+            "Prompt": "Toon hoe mijn Automator-receptlabels worden gebruikt. Inclusief labelnamen, recepttellingen en eventuele ongebruikte labels."
+        },
+        "Automator.Tags.2": {
+            "Starter": "Recepten zonder label vinden",
+            "Prompt": "Toon me recepten zonder labels en stel eenvoudige labels voor wanneer de receptnaam het doel duidelijk maakt."
+        },
+        "Automator.Tags.3": {
+            "Starter": "Receptlabels opschonen",
+            "Prompt": "Stel dubbele, te specifieke of onduidelijke labels voor die ik mogelijk wil hernoemen of verwijderen."
+        },
+        "Automator.Tags.4": {
+            "Starter": "Labelstrategie voorstellen",
+            "Prompt": "Beveel een praktische labelstrategie voor Automator-recepten aan, zodat ik ze gemakkelijker kan vinden en beheren."
+        },
+        "Automator.Tags.5": {
+            "Starter": "Doelgerichte labels plannen",
+            "Prompt": "Stel doelgerichte labels voor zoals onboarding, rapportage, meldingen, e-commerce, leren of onderhoud, en leg uit hoe ik deze geleidelijk kan toepassen."
+        },
+        "BuddyBoss.All Forums.1": {
+            "Starter": "Forumactiviteit tonen",
+            "Prompt": "Toon elk BuddyBoss-forum gerangschikt op aantal onderwerpen en aantal reacties van de afgelopen 90 dagen. Toon de meest recente activiteitsdatum per forum."
+        },
+        "BuddyBoss.All Forums.2": {
+            "Starter": "Inactieve forums vinden",
+            "Prompt": "Vind BuddyBoss-forums zonder nieuwe onderwerpen in de afgelopen 30 dagen. Toon forumnaam, totaal aantal onderwerpen en datum laatste activiteit."
+        },
+        "BuddyBoss.All Forums.3": {
+            "Starter": "Topmakers van onderwerpen tonen",
+            "Prompt": "Rangschik gebruikers op aangemaakte onderwerpen op alle BuddyBoss-forums in de afgelopen 12 maanden. Toon aantal onderwerpen en aantal reacties per gebruiker."
+        },
+        "BuddyBoss.All Forums.4": {
+            "Starter": "Forumabonnees vergelijken",
+            "Prompt": "Toon het aantal abonnees per BuddyBoss-forum en de verhouding tussen abonnees en onderwerpen. Identificeer forums met veel abonnees maar weinig activiteit."
+        },
+        "BuddyBoss.All Forums.5": {
+            "Starter": "Mail mij bij nieuw onderwerp",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra een BuddyBoss-gebruiker een forumonderwerp aanmaakt. Vermeld de onderwerptitel, auteur en forumnaam in de e-mail."
+        },
+        "BuddyBoss.All Groups.1": {
+            "Starter": "Activiteitspercentages van groepen vergelijken",
+            "Prompt": "Vergelijk BuddyBoss-groepen op activiteitspercentage: berichten per lid per maand over de afgelopen 90 dagen. Rangschik van meest naar minst actief."
+        },
+        "BuddyBoss.All Groups.2": {
+            "Starter": "Inactieve groepen vinden",
+            "Prompt": "Vind BuddyBoss-groepen zonder berichten in de activiteitenstroom in de afgelopen 30 dagen. Toon groepsnaam, ledenaantal en datum van laatste activiteit."
+        },
+        "BuddyBoss.All Groups.3": {
+            "Starter": "Verdeling groepsgrootte tonen",
+            "Prompt": "Toon de verdeling van het aantal leden in BuddyBoss-groepen. Identificeer de grootste groepen en hoeveel groepen minder dan 5 leden hebben."
+        },
+        "BuddyBoss.All Groups.4": {
+            "Starter": "Mail mij bij nieuwe groep",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra een BuddyBoss-gebruiker een groep aanmaakt. Vermeld de groepsnaam, maker en groepstype."
+        },
+        "BuddyBoss.All Groups.5": {
+            "Starter": "Groepsgroei tonen",
+            "Prompt": "Toon nieuwe BuddyBoss-groepscreaties per maand voor de afgelopen 12 maanden. Identificeer welke groepstypen het vaakst worden aangemaakt."
+        },
+        "BuddyBoss.All Members.1": {
+            "Starter": "Ledengroei tonen",
+            "Prompt": "Toon BuddyBoss-ledenregistraties per maand voor de afgelopen 12 maanden. Vergelijk met het activiteitspercentage (leden die berichten plaatsen in de activiteitenstroom) per cohort."
+        },
+        "BuddyBoss.All Members.2": {
+            "Starter": "Inactieve leden vinden",
+            "Prompt": "Vind BuddyBoss-leden die in de afgelopen 60 dagen geen bericht in de activiteitenstroom hebben geplaatst, geen groep zijn binnengekomen of geen bericht hebben gestuurd. Toon naam, registratiedatum en datum laatste activiteit."
+        },
+        "BuddyBoss.All Members.3": {
+            "Starter": "Profielcompletering vergelijken",
+            "Prompt": "Vergelijk de profielcompletering van BuddyBoss-leden: percentage xprofile-velden ingevuld door elk lid. Toon de verdeling en identificeer leden met onvolledige profielen."
+        },
+        "BuddyBoss.All Members.4": {
+            "Starter": "Topverbinders vinden",
+            "Prompt": "Vind BuddyBoss-leden met de meeste vriendverbindingen. Toon de top 25 met aantal vrienden en het aantal groepen waartoe ze behoren."
+        },
+        "BuddyBoss.All Topics.1": {
+            "Starter": "Onderwerpbetrokkenheid tonen",
+            "Prompt": "Toon BuddyBoss-forumonderwerpen gerangschikt op aantal reacties in de afgelopen 90 dagen. Toon het gemiddelde aantal reacties per onderwerp en identificeer de top 10 meest actieve onderwerpen."
+        },
+        "BuddyBoss.All Topics.2": {
+            "Starter": "Onbeantwoorde onderwerpen vinden",
+            "Prompt": "Vind BuddyBoss-onderwerpen met nul reacties, gesorteerd van oudste eerst. Toon onderwerptitel, auteur, forum en hoe lang het onderwerp al wacht."
+        },
+        "BuddyBoss.All Topics.3": {
+            "Starter": "Topmakers van onderwerpen tonen",
+            "Prompt": "Rangschik gebruikers op onderwerpen die in de afgelopen 90 dagen zijn aangemaakt. Toon aantal onderwerpen, ontvangen reacties en de forums waarin ze het meest plaatsen."
+        },
+        "BuddyBoss.All Topics.4": {
+            "Starter": "Koude onderwerpen vinden",
+            "Prompt": "Vind BuddyBoss-onderwerpen zonder nieuwe reacties in de afgelopen 30 dagen. Toon titel, datum laatste reactie, forum en totaal aantal reacties."
+        },
+        "BuddyBoss.All Topics.5": {
+            "Starter": "Mail mij bij onderwerpreactie",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra een BuddyBoss-onderwerp een reactie ontvangt. Vermeld de onderwerptitel en reactie-inhoud in de e-mail."
+        },
+        "BuddyBoss.Edit Forum.1": {
+            "Starter": "Activiteit van dit forum tonen",
+            "Prompt": "Toon de onderwerpen van dit forum gerangschikt op aantal reacties en weergaven. Identificeer de meest actieve onderwerpenmakers en het dagelijkse activiteitspercentage."
+        },
+        "BuddyBoss.Edit Forum.2": {
+            "Starter": "Onbeantwoorde onderwerpen vinden",
+            "Prompt": "Vind onderwerpen in dit forum met nul reacties. Toon de onderwerptitel, auteur en hoe lang het onderwerp al openstaat."
+        },
+        "BuddyBoss.Edit Forum.3": {
+            "Starter": "Koude onderwerpen vinden",
+            "Prompt": "Vind onderwerpen in dit forum zonder nieuwe reacties in de afgelopen 30 dagen. Toon onderwerptitel, datum laatste reactie en aantal reacties."
+        },
+        "BuddyBoss.Edit Forum.4": {
+            "Starter": "Een gebruiker abonneren",
+            "Prompt": "Abonneer een BuddyBoss-gebruiker op dit forum, zodat ze meldingen ontvangen over nieuwe onderwerpen. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "BuddyBoss.Edit Forum.5": {
+            "Starter": "Mail mij bij nieuwe reactie",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra een BuddyBoss-gebruiker een reactie plaatst in dit forum. Vermeld de inhoud van de reactie, auteur en onderwerptitel."
+        },
+        "BuddyBoss.Edit Group.1": {
+            "Starter": "Tijdlijn van deze groep tonen",
+            "Prompt": "Toon de activiteit van deze BuddyBoss-groep van de afgelopen 30 dagen: berichten, reacties, deelnames, vertrekken. Identificeer het meest actieve lid en het dagelijkse berichtgemiddelde."
+        },
+        "BuddyBoss.Edit Group.2": {
+            "Starter": "Ledenbetrokkenheid tonen",
+            "Prompt": "Toon hoe actief elk lid van deze BuddyBoss-groep is: berichten in de activiteitenstroom van de groep, reacties en datum laatste activiteit. Markeer leden die zijn toegetreden maar nooit hebben gepost."
+        },
+        "BuddyBoss.Edit Group.3": {
+            "Starter": "Inactieve leden vinden",
+            "Prompt": "Vind leden van deze BuddyBoss-groep die in de afgelopen 30 dagen geen bericht hebben geplaatst in de activiteitenstroom van de groep of hebben gereageerd op discussies. Toon naam en datum van toetreding."
+        },
+        "BuddyBoss.Edit Group.4": {
+            "Starter": "Alle leden een bericht sturen",
+            "Prompt": "Stuur een privébericht via BuddyBoss naar alle leden van deze groep. Wat moet het bericht zeggen?"
+        },
+        "BuddyBoss.Edit Group.5": {
+            "Starter": "Een gebruiker toevoegen",
+            "Prompt": "Voeg een gebruiker toe aan deze BuddyBoss-groep. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "BuddyBoss.Edit Member.1": {
+            "Starter": "Activiteitstijdlijn van dit lid tonen",
+            "Prompt": "Toon de volledige activiteit van dit BuddyBoss-lid: berichten in de activiteitenstroom, deelnames/vertrekken in groepen, gemaakte vriendschappen, forumonderwerpen en reacties. Sorteer chronologisch."
+        },
+        "BuddyBoss.Edit Member.2": {
+            "Starter": "Groepen van dit lid tonen",
+            "Prompt": "Toon elke BuddyBoss-groep waartoe dit lid behoort, met hun rol in elke groep, wanneer ze zijn toegetreden en hun aantal berichten in de activiteitenstroom van elke groep."
+        },
+        "BuddyBoss.Edit Member.3": {
+            "Starter": "Aan een groep toevoegen",
+            "Prompt": "Voeg deze BuddyBoss-gebruiker toe aan een groep. Aan welke groep moet ik ze toevoegen?"
+        },
+        "BuddyBoss.Edit Member.4": {
+            "Starter": "Profieltype instellen",
+            "Prompt": "Stel het profieltype van deze BuddyBoss-gebruiker in op een specifiek type. Welk profieltype moet ik toewijzen?"
+        },
+        "BuddyBoss.Edit Member.5": {
+            "Starter": "Een privébericht sturen",
+            "Prompt": "Stuur een privébericht via BuddyBoss naar deze gebruiker. Wat moet het bericht zeggen?"
+        },
+        "BuddyBoss.Edit Topic.1": {
+            "Starter": "Reactieactiviteit van dit onderwerp tonen",
+            "Prompt": "Toon de reacties van dit BuddyBoss-onderwerp in chronologische volgorde met auteur en tijdstempel. Identificeer de meest actieve reageerder en de gemiddelde tijd tussen reacties."
+        },
+        "BuddyBoss.Edit Topic.2": {
+            "Starter": "Vergelijkbare onderwerpen vinden",
+            "Prompt": "Vind vergelijkbare onderwerpen in hetzelfde BuddyBoss-forum op basis van titel en labels. Toon titel, auteur, aantal reacties en laatste activiteit."
+        },
+        "BuddyBoss.Edit Topic.3": {
+            "Starter": "Een reactie plaatsen",
+            "Prompt": "Plaats een reactie op dit BuddyBoss-onderwerp. Wat moet de reactie zeggen?"
+        },
+        "BuddyBoss.Edit Topic.4": {
+            "Starter": "Mail mij bij nieuwe reactie",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra dit BuddyBoss-onderwerp een reactie ontvangt. Vermeld de inhoud van de reactie en de auteur in de e-mail."
+        },
+        "BuddyBoss.Edit Topic.5": {
+            "Starter": "Onderwerptijdlijn tonen",
+            "Prompt": "Toon een chronologische tijdlijn van dit BuddyBoss-onderwerp: wanneer het is aangemaakt, wanneer elke reactie is geplaatst en eventuele periodes van inactiviteit langer dan 7 dagen."
+        },
+        "Default.Default.1": {
+            "Starter": "Help me met deze pagina",
+            "Prompt": "Gebruik de huidige WordPress- en Automator-context om me te helpen begrijpen wat ik hier kan doen. Als de pagina onduidelijk is, stel me dan eerst één korte vraag."
+        },
+        "Default.Default.2": {
+            "Starter": "Help me mijn site te automatiseren",
+            "Prompt": "Bekijk mijn geïnstalleerde plugins en verbonden app-integraties en stel vervolgens één praktisch automatiseringsidee voor mijn site voor. Inspecteer de receptdefinities niet, tenzij ik daarom vraag."
+        },
+        "Default.Default.3": {
+            "Starter": "Controleer wat aandacht behoeft",
+            "Prompt": "Controleer lichtgewicht Automator-signalen zoals recente fouten, niet-verbonden apps, credits, instellingen of statusdetails en vertel me vervolgens of er iets aandacht behoeft."
+        },
+        "Default.Default.4": {
+            "Starter": "Een snelle winst vinden",
+            "Prompt": "Stel één kleine WordPress- of Automator-taak voor die ik nu kan doen en die tijd bespaart, handmatig werk vermindert of de betrouwbaarheid verbetert."
+        },
+        "Default.Default.5": {
+            "Starter": "Wat kun je doen?",
+            "Prompt": "Geef me een kort, praktisch menu met manieren waarop je kunt helpen op deze site, gebruikmakend van de beschikbare context en vraag naar ontbrekende informatie."
+        },
+        "Fluent Forms.All Forms.1": {
+            "Starter": "Inzendingsvolume tonen",
+            "Prompt": "Toon het Fluent Forms-inzendingsvolume per formulier voor de afgelopen 30 dagen. Vergelijk met de voorgaande 30 dagen en markeer formulieren met veranderende percentages."
+        },
+        "Fluent Forms.All Forms.2": {
+            "Starter": "Inactieve formulieren vinden",
+            "Prompt": "Vind Fluent Forms-formulieren zonder inzendingen in de afgelopen 60 dagen. Toon formuliertitel, totaal aantal inzendingen en datum laatste inzending."
+        },
+        "Fluent Forms.All Forms.3": {
+            "Starter": "Topformulieren tonen",
+            "Prompt": "Rangschik Fluent Forms-formulieren op totaal aantal inzendingen. Toon aantal inzendingen, gemiddelde per dag en aanmaakdatum."
+        },
+        "Fluent Forms.All Forms.4": {
+            "Starter": "Conversiepercentages vergelijken",
+            "Prompt": "Vergelijk Fluent Forms-conversiepercentages per formulier: weergaven vs. inzendingen (met fluentform_form_analytics). Identificeer formulieren met veel weergaven maar weinig inzendingen."
+        },
+        "Fluent Forms.Edit Form.1": {
+            "Starter": "Dit formulier automatiseren",
+            "Prompt": "Maak een Uncanny Automator-recept met dit Fluent Forms-formulier als trigger (de 'A user submits a form' / WPFFSUBFORM-trigger). Wat moet er gebeuren wanneer dit formulier wordt ingediend?"
+        },
+        "Fluent Forms.Edit Form.2": {
+            "Starter": "Inzendingen samenvatten",
+            "Prompt": "Lees de Fluent Forms-inzendingen van de afgelopen 30 dagen voor dit formulier en vat de patronen samen: topwaarden per keuzeveld, gemeenschappelijke thema's in vrije-tekstvelden en piektijden voor inzendingen."
+        },
+        "Fluent Forms.Edit Form.3": {
+            "Starter": "Veldstatistieken samenstellen",
+            "Prompt": "Toon voor elk veld in dit Fluent Forms-formulier de invulgraad (hoe vaak het is ingevuld), de gemiddelde lengte voor tekstvelden, de waardeverdeling voor keuzevelden en de meest voorkomende waarde."
+        },
+        "Fluent Forms.Edit Form.4": {
+            "Starter": "Afhaakvelden vinden",
+            "Prompt": "Identificeer welke velden in dit Fluent Forms-formulier het vaakst leeg blijven in voltooide inzendingen. Stel voor welke velden mogelijk afhaken of verwarring veroorzaken."
+        },
+        "Fluent Forms.Edit Form.5": {
+            "Starter": "Formulierprestaties tonen",
+            "Prompt": "Toon het totale aantal inzendingen, conversiepercentage (weergaven vs. inzendingen vanuit fluentform_form_analytics) van dit Fluent Forms-formulier en hoe het zich verhoudt tot de gemiddelde prestaties van alle formulieren op de site."
+        },
+        "Fluent Forms.Entries.1": {
+            "Starter": "Recente inzendingen tonen",
+            "Prompt": "Toon Fluent Forms-inzendingen voor dit formulier van de afgelopen 7 dagen. Groepeer per dag en toon het volume."
+        },
+        "Fluent Forms.Entries.2": {
+            "Starter": "Dubbele inzendingen vinden",
+            "Prompt": "Vind dubbele Fluent Forms-inzendingen voor dit formulier (hetzelfde e-mailadres dat meer dan eens inzendt). Toon aantal duplicaten per e-mailadres."
+        },
+        "Fluent Forms.Entries.3": {
+            "Starter": "Verdeling inzendingsstatus tonen",
+            "Prompt": "Toon de verdeling van de Fluent Forms-inzendingsstatus voor dit formulier: gelezen vs. ongelezen, favoriet, spam, prullenbak."
+        },
+        "Fluent Forms.Entries.4": {
+            "Starter": "Tijden van inzendingen tonen",
+            "Prompt": "Toon de tijden van Fluent Forms-inzendingen voor dit formulier: aantallen per dag van de week en per uur. Identificeer de piekvensters voor inzendingen."
+        },
+        "Fluent Forms.Single Entry.1": {
+            "Starter": "Andere inzendingen van indiener tonen",
+            "Prompt": "Vind alle andere Fluent Forms-inzendingen van deze indiener (gematcht op e-mailadres) over alle formulieren. Toon formuliertitel, inzendingsdatum en sleutelvelden."
+        },
+        "Fluent Forms.Single Entry.2": {
+            "Starter": "Inzendingsmetadata tonen",
+            "Prompt": "Toon de metadata van deze Fluent Forms-inzending: inzendingsdatum, IP-adres, user agent, bron-URL en leesstatus."
+        },
+        "Fluent Forms.Single Entry.3": {
+            "Starter": "Een antwoord sturen",
+            "Prompt": "Stuur een e-mailantwoord naar deze Fluent Forms-indiener. Wat moet de e-mail zeggen?"
+        },
+        "Fluent Forms.Single Entry.4": {
+            "Starter": "Inzendingen van hetzelfde IP-adres vinden",
+            "Prompt": "Vind alle Fluent Forms-inzendingen die zijn ingediend vanaf het IP-adres van deze inzending over alle formulieren. Toon formuliertitel, inzendingsdatum en e-mailadres."
+        },
+        "Fluent Forms.Single Entry.5": {
+            "Starter": "Indiener aan een rol toevoegen",
+            "Prompt": "Maak een automatisering die een rol toevoegt aan de gebruiker wanneer dit Fluent Forms-formulier wordt ingediend door een ingelogde gebruiker. Welke rol moet ik toevoegen?"
+        },
+        "Gravity Forms.All Forms.1": {
+            "Starter": "Inzendingsvolume tonen",
+            "Prompt": "Toon het Gravity Forms-inzendingsvolume per formulier voor de afgelopen 30 dagen. Vergelijk met de voorgaande 30 dagen en markeer formulieren met stijgende of dalende inzendingspercentages."
+        },
+        "Gravity Forms.All Forms.2": {
+            "Starter": "Inactieve formulieren vinden",
+            "Prompt": "Vind Gravity Forms-formulieren zonder inzendingen in de afgelopen 60 dagen. Toon formuliernaam, totaal aantal inzendingen ooit en datum laatste inzending."
+        },
+        "Gravity Forms.All Forms.3": {
+            "Starter": "Topformulieren tonen",
+            "Prompt": "Rangschik Gravity Forms-formulieren op totaal aantal ontvangen inzendingen. Toon aantal inzendingen, gemiddeld aantal inzendingen per dag en aanmaakdatum van het formulier."
+        },
+        "Gravity Forms.All Forms.4": {
+            "Starter": "Verdeling inzendingsstatus tonen",
+            "Prompt": "Toon de verdeling van de inzendingsstatus over alle Gravity Forms: actief, spam, prullenbak. Bereken het spampercentage per formulier."
+        },
+        "Gravity Forms.Edit Form.1": {
+            "Starter": "Dit formulier automatiseren",
+            "Prompt": "Maak een Uncanny Automator-recept met dit Gravity Forms-formulier als trigger (de 'A form is submitted' / GFSUBFORM-trigger). Wat moet er gebeuren wanneer dit formulier wordt ingediend?"
+        },
+        "Gravity Forms.Edit Form.2": {
+            "Starter": "Inzendingen samenvatten",
+            "Prompt": "Lees de Gravity Forms-inzendingen van de afgelopen 30 dagen voor dit formulier en vat de patronen samen: topwaarden per keuzeveld, gemeenschappelijke thema's in vrije-tekstvelden en piektijden voor inzendingen."
+        },
+        "Gravity Forms.Edit Form.3": {
+            "Starter": "Veldstatistieken samenstellen",
+            "Prompt": "Toon voor elk veld in dit Gravity Forms-formulier de invulgraad (hoe vaak het is ingevuld), de gemiddelde lengte voor tekstvelden, de waardeverdeling voor keuzevelden en de meest voorkomende waarde."
+        },
+        "Gravity Forms.Edit Form.4": {
+            "Starter": "Afhaakvelden vinden",
+            "Prompt": "Identificeer welke velden in dit Gravity Forms-formulier het vaakst leeg blijven in voltooide inzendingen. Stel voor welke velden mogelijk afhaken of verwarring veroorzaken."
+        },
+        "Gravity Forms.Edit Form.5": {
+            "Starter": "Formulierprestaties tonen",
+            "Prompt": "Toon het totale aantal inzendingen, gemiddeld aantal inzendingen per dag, spampercentage van dit Gravity Forms-formulier en hoe het zich verhoudt tot de gemiddelde prestaties van alle formulieren op de site."
+        },
+        "Gravity Forms.Entries.1": {
+            "Starter": "Dagelijkse aantallen inzendingen tonen",
+            "Prompt": "Toon Gravity Forms-inzendingsaantallen voor dit formulier per dag voor de afgelopen 30 dagen. Identificeer dagen met ongebruikelijk hoog of laag volume."
+        },
+        "Gravity Forms.Entries.2": {
+            "Starter": "Spam-inzendingen vinden",
+            "Prompt": "Vind Gravity Forms-inzendingen die als spam zijn gemarkeerd voor dit formulier. Toon aantal, gemeenschappelijke patronen (IP-adressen, e-maildomeinen) en datumbereik."
+        },
+        "Gravity Forms.Entries.3": {
+            "Starter": "Dubbele inzendingen vinden",
+            "Prompt": "Vind dubbele Gravity Forms-inzendingen voor dit formulier (hetzelfde e-mailadres dat meer dan eens inzendt). Toon aantal per e-mailadres."
+        },
+        "Gravity Forms.Entries.4": {
+            "Starter": "Tijden van inzendingen tonen",
+            "Prompt": "Toon de tijden van Gravity Forms-inzendingen voor dit formulier: aantallen per dag van de week en per uur. Identificeer de piekvensters voor inzendingen."
+        },
+        "Gravity Forms.Entries.5": {
+            "Starter": "Bulksgewijs oude inzendingen verwijderen",
+            "Prompt": "Vind Gravity Forms-inzendingen ouder dan 90 dagen voor dit formulier. Toon aantal per maand en bied aan om ze te verwijderen met de Gravity Forms delete entry-actie."
+        },
+        "Gravity Forms.Single Entry.1": {
+            "Starter": "Andere inzendingen van indiener tonen",
+            "Prompt": "Vind alle andere Gravity Forms-inzendingen van deze indiener (gematcht op e-mailadres) over alle formulieren. Toon formuliernaam, inzendingsdatum en inzendingsstatus."
+        },
+        "Gravity Forms.Single Entry.2": {
+            "Starter": "Inzendingsmetadata tonen",
+            "Prompt": "Toon de metadata van deze Gravity Forms-inzending: inzendingsdatum, IP-adres, user agent, bron-URL en eventuele inzendingsnotities."
+        },
+        "Gravity Forms.Single Entry.3": {
+            "Starter": "Deze inzending bijwerken",
+            "Prompt": "Werk een veld in deze Gravity Forms-inzending bij met behulp van de Gravity Forms update entry-actie. Welk veld en welke nieuwe waarde?"
+        },
+        "Gravity Forms.Single Entry.4": {
+            "Starter": "Deze inzending verwijderen",
+            "Prompt": "Verwijder deze Gravity Forms-inzending met behulp van de Gravity Forms delete entry-actie. Weet je het zeker?"
+        },
+        "Gravity Forms.Single Entry.5": {
+            "Starter": "Deze indiener mailen",
+            "Prompt": "Stuur een e-mail naar deze Gravity Forms-indiener. Wat moet de e-mail zeggen?"
+        },
+        "LearnDash.All Courses.1": {
+            "Starter": "Voltooiingspercentages tonen",
+            "Prompt": "Bereken het voltooiingspercentage voor elke cursus: aantal ingeschreven studenten, aantal dat heeft voltooid en het voltooiingspercentage. Rangschik vanaf het laagste voltooiingspercentage."
+        },
+        "LearnDash.All Courses.2": {
+            "Starter": "Inschrijvingstrends tonen",
+            "Prompt": "Toon inschrijvingsaantallen per cursus voor elk van de afgelopen 12 maanden. Welke cursussen winnen aan inschrijvingen, welke dalen en welke blijven gelijk?"
+        },
+        "LearnDash.All Courses.3": {
+            "Starter": "Certificaten verzenden bij voltooiing",
+            "Prompt": "Maak een automatisering die een certificaat naar een student stuurt wanneer ze een cursus voltooien. Voor welke cursus moet ik dit instellen?"
+        },
+        "LearnDash.All Courses.4": {
+            "Starter": "Cursussen vinden die niemand voltooit",
+            "Prompt": "Vind cursussen waarbij ten minste 5 studenten zijn ingeschreven, maar het voltooiingspercentage onder 10% ligt. Toon het inschrijvingsaantal, voltooiingsaantal en voltooiingspercentage voor elk."
+        },
+        "LearnDash.All Courses.5": {
+            "Starter": "Cursusprestaties vergelijken",
+            "Prompt": "Toon een naast-elkaar-vergelijking van alle cursussen: voltooiingspercentage, gemiddelde quizscore en gemiddelde tijd van inschrijving tot voltooiing. Rangschik op voltooiingspercentage."
+        },
+        "LearnDash.All Groups.1": {
+            "Starter": "Groepsprestaties vergelijken",
+            "Prompt": "Vergelijk alle groepen naast elkaar: gemiddeld cursusvoltooiingspercentage en gemiddelde quizscore voor de leden van elke groep. Rangschik op voltooiingspercentage."
+        },
+        "LearnDash.All Groups.2": {
+            "Starter": "Grootste groepen tonen",
+            "Prompt": "Maak een lijst van alle groepen gerangschikt op aantal leden. Toon de naam van elke groep, aantal leden, bijbehorende cursussen en groepsleider(s)."
+        },
+        "LearnDash.All Groups.3": {
+            "Starter": "Inactieve groepen vinden",
+            "Prompt": "Vind groepen waarin geen lid in de afgelopen 30 dagen een les, onderwerp of quiz heeft voltooid. Toon de groepsnaam, aantal leden, leider en de datum van de meest recente activiteit."
+        },
+        "LearnDash.All Groups.4": {
+            "Starter": "Voortgangsoverzicht groep tonen",
+            "Prompt": "Toon voor elke groep het totale aantal leden, gemiddelde cursusvoortgangspercentage, gemiddelde quizscore en aantal cursusvoltooiingen deze maand."
+        },
+        "LearnDash.All Groups.5": {
+            "Starter": "Effectiviteit van leiders vergelijken",
+            "Prompt": "Groepeer alle groepen op groepsleider. Toon voor elke leider het gemiddelde voltooiingspercentage en de gemiddelde quizscore over de leden van al hun groepen. Welke leiders presteren met hun groepen het best?"
+        },
+        "LearnDash.All Lessons.1": {
+            "Starter": "Lessen met meeste afhakers vinden",
+            "Prompt": "Vergelijk voor elke cursus het voltooiingsaantal van elke les met de vorige les. Identificeer de lessen met de grootste afhaak — waar de meeste studenten stopten met vorderen."
+        },
+        "LearnDash.All Lessons.2": {
+            "Starter": "Voltooiingen deze week tonen",
+            "Prompt": "Toon hoeveel lesvoltooiingen deze week hebben plaatsgevonden, opgesplitst per cursus. Vergelijk met vorige week."
+        },
+        "LearnDash.All Lessons.3": {
+            "Starter": "Studenten mailen na lessen",
+            "Prompt": "Maak een automatisering die een student een e-mail stuurt wanneer ze een les voltooien, met een voorbeeld van wat ze hierna gaan leren. Voor welke cursus moet ik dit instellen?"
+        },
+        "LearnDash.All Lessons.4": {
+            "Starter": "Gemiddelde lestempo tonen",
+            "Prompt": "Bereken hoeveel lessen de gemiddelde student per week voltooit over alle cursussen. Werken studenten in een gestaag tempo of voltooien ze lessen meer in vlagen?"
+        },
+        "LearnDash.All Lessons.5": {
+            "Starter": "Lessen zonder activiteit vinden",
+            "Prompt": "Maak een lijst van alle lessen die in de afgelopen 30 dagen nul voltooiingen hebben gehad, ook al behoren ze tot cursussen met actieve studenten. Toon de lesnaam, cursusnaam en aantal studenten dat is ingeschreven voor de cursus."
+        },
+        "LearnDash.All Quizzes.1": {
+            "Starter": "Slagings-/zakkingspercentages tonen",
+            "Prompt": "Bereken het slagingspercentage en zakkingspercentage voor elke quiz. Toon totaal aantal pogingen, geslaagd, gezakt en het slagingspercentage. Rangschik vanaf het laagste slagingspercentage."
+        },
+        "LearnDash.All Quizzes.2": {
+            "Starter": "Gemiddelde scores tonen",
+            "Prompt": "Toon de gemiddelde quizscore voor elke quiz deze maand en vergelijk met vorige maand. Worden de scores beter of slechter?"
+        },
+        "LearnDash.All Quizzes.3": {
+            "Starter": "Studenten mailen die zakken",
+            "Prompt": "Maak een automatisering die een student een e-mail stuurt wanneer ze zakken voor een quiz, en hen aanmoedigt om de stof te herzien en opnieuw te proberen. Voor welke quiz moet ik dit instellen?"
+        },
+        "LearnDash.All Quizzes.4": {
+            "Starter": "Patronen van herkansingen analyseren",
+            "Prompt": "Toon voor elke quiz het gemiddelde aantal pogingen per student en of de scores verbeteren bij herkansingen. Voor welke quizzen hebben studenten de meeste pogingen nodig en helpen herkansingen daadwerkelijk?"
+        },
+        "LearnDash.All Quizzes.5": {
+            "Starter": "Quizzen vinden waarvoor niemand slaagt",
+            "Prompt": "Vind quizzen waarbij het slagingspercentage onder 25% ligt. Toon de quiznaam, cursus, totaal aantal pogingen en slagingspercentage. Mogelijk hebben deze inhoudelijke of moeilijkheidsaanpassingen nodig."
+        },
+        "LearnDash.All Topics.1": {
+            "Starter": "Voltooiingspercentages tonen",
+            "Prompt": "Bereken het voltooiingspercentage voor alle onderwerpen, gegroepeerd per bovenliggende les en cursus. Toon inschrijvingsaantal, voltooiingen en voltooiingspercentage voor elk."
+        },
+        "LearnDash.All Topics.2": {
+            "Starter": "Minst voltooide onderwerpen vinden",
+            "Prompt": "Vind de onderwerpen met de laagste voltooiingspercentages ten opzichte van het voltooiingspercentage van hun bovenliggende les. Dit zijn onderwerpen die studenten overslaan of waar ze vastlopen, zelfs wanneer ze de rest van de les voltooien."
+        },
+        "LearnDash.All Topics.3": {
+            "Starter": "Mailen bij voltooiing onderwerp",
+            "Prompt": "Maak een automatisering die een student een e-mail met voortgangsupdate stuurt wanneer ze een onderwerp voltooien. Voor welke cursus moet ik dit instellen?"
+        },
+        "LearnDash.All Topics.4": {
+            "Starter": "Onderwerpen per cursus tonen",
+            "Prompt": "Tel het aantal onderwerpen per cursus. Welke cursussen hebben de meeste onderwerpen en welke de minste?"
+        },
+        "LearnDash.All Topics.5": {
+            "Starter": "Activiteit deze week tonen",
+            "Prompt": "Toon onderwerpvoltooiingen van de afgelopen 7 dagen, opgesplitst per cursus en aantal studenten. Vergelijk met de voorgaande 7 dagen."
+        },
+        "LearnDash.Assignments.1": {
+            "Starter": "Niet-beoordeelde opdrachten tonen",
+            "Prompt": "Maak een lijst van alle opdrachten die zijn ingediend maar nog niet zijn beoordeeld. Sorteer op inzendingsdatum, oudste eerst, en toon de naam van de student, cursus en hoeveel dagen de opdracht al wacht."
+        },
+        "LearnDash.Assignments.2": {
+            "Starter": "Opdrachten per cursus tonen",
+            "Prompt": "Toon voor elke cursus de totaal ingediende opdrachten, totaal beoordeeld, totaal niet-beoordeeld en het percentage beoordeeld. Welke cursussen hebben de grootste beoordelingsachterstand?"
+        },
+        "LearnDash.Assignments.3": {
+            "Starter": "Student bij beoordeling op de hoogte stellen",
+            "Prompt": "Maak een automatisering die een student een e-mail stuurt wanneer hun opdracht is beoordeeld, om hen te laten weten dat hun resultaten klaar zijn."
+        },
+        "LearnDash.Assignments.4": {
+            "Starter": "Doorlooptijd beoordeling tonen",
+            "Prompt": "Bereken de gemiddelde tijd tussen inzending van opdracht en beoordeling voor elke cursus. Welke cursussen hebben de snelste en traagste beoordelingsdoorlooptijd?"
+        },
+        "LearnDash.Assignments.5": {
+            "Starter": "Leider waarschuwen bij inzending",
+            "Prompt": "Maak een automatisering die de groepsleider van de student e-mailt zodra een student een opdracht indient. Vermeld de naam van de student, de cursus en de opdrachttitel."
+        },
+        "LearnDash.Edit Course.1": {
+            "Starter": "Waar haken studenten af?",
+            "Prompt": "Analyseer de les- en onderwerpvoltooiingsgegevens van deze cursus. Toon het voltooiingsaantal voor elke les in volgorde en identificeer waar de grootste afhaak plaatsvindt — het punt waarop studenten stoppen met vorderen."
+        },
+        "LearnDash.Edit Course.2": {
+            "Starter": "Een gebruiker inschrijven",
+            "Prompt": "Schrijf een gebruiker in voor deze cursus. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "LearnDash.Edit Course.3": {
+            "Starter": "Tijd tot voltooiing tonen",
+            "Prompt": "Bereken voor studenten die deze cursus hebben voltooid de gemiddelde, mediaan, snelste en traagste tijd van inschrijving tot voltooiing."
+        },
+        "LearnDash.Edit Course.4": {
+            "Starter": "Inschrijven voor volgende cursus bij voltooiing",
+            "Prompt": "Maak een automatisering die een student inschrijft voor de volgende cursus wanneer ze deze voltooien. Voor welke cursus moeten ze daarna worden ingeschreven?"
+        },
+        "LearnDash.Edit Course.5": {
+            "Starter": "Leider op de hoogte stellen bij voltooiing",
+            "Prompt": "Maak een automatisering die de groepsleider van de student e-mailt wanneer een student deze cursus voltooit. Vermeld de naam van de student en de voltooiingsdatum in de e-mail."
+        },
+        "LearnDash.Edit Group.1": {
+            "Starter": "Groepsdashboard tonen",
+            "Prompt": "Toon alle leden van deze groep met hun cursusvoortgang (percentage voltooid voor elke cursus), quizscores en voltooiingsdata. Markeer leden die aanzienlijk onder het groepsgemiddelde liggen."
+        },
+        "LearnDash.Edit Group.2": {
+            "Starter": "Een gebruiker aan deze groep toevoegen",
+            "Prompt": "Voeg een gebruiker toe aan deze groep. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "LearnDash.Edit Group.3": {
+            "Starter": "Leden vinden die achterop raken",
+            "Prompt": "Vind leden van deze groep wier cursusvoortgang meer dan 25% onder het groepsgemiddelde ligt. Toon hun naam, huidige voortgang en het groepsgemiddelde ter vergelijking."
+        },
+        "LearnDash.Edit Group.4": {
+            "Starter": "Groepsleider mailen",
+            "Prompt": "Stuur een e-mail naar de leider(s) van deze groep. Wat moet de e-mail zeggen?"
+        },
+        "LearnDash.Edit Group.5": {
+            "Starter": "Leider op de hoogte stellen bij cursusvoltooiing",
+            "Prompt": "Maak een automatisering die de leider van deze groep e-mailt zodra een lid alle cursussen van de groep voltooit. Vermeld de naam van de student en voltooiingsdatum."
+        },
+        "LearnDash.Edit Lesson.1": {
+            "Starter": "Wie heeft deze les voltooid?",
+            "Prompt": "Maak een lijst van alle studenten die deze les hebben voltooid met hun voltooiingsdatum. Toon ook studenten die de vorige les hebben voltooid maar deze nog niet hebben voltooid."
+        },
+        "LearnDash.Edit Lesson.2": {
+            "Starter": "Markeer als voltooid voor een gebruiker",
+            "Prompt": "Markeer deze les als voltooid voor een specifieke gebruiker. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "LearnDash.Edit Lesson.3": {
+            "Starter": "Wie zit vast op deze les?",
+            "Prompt": "Vind studenten die de les vóór deze hebben voltooid maar deze les nog niet hebben voltooid. Toon hun naam, wanneer ze de vorige les hebben voltooid en hoeveel dagen ze al vastzitten."
+        },
+        "LearnDash.Edit Lesson.4": {
+            "Starter": "Tijd tot voltooiing tonen",
+            "Prompt": "Bereken de gemiddelde tijd die studenten nodig hebben tussen het voltooien van de vorige les en het voltooien van deze."
+        },
+        "LearnDash.Edit Lesson.5": {
+            "Starter": "Resetten voor een gebruiker",
+            "Prompt": "Markeer deze les als niet-voltooid voor een specifieke gebruiker, zodat ze deze opnieuw kunnen doen. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "LearnDash.Edit Quiz.1": {
+            "Starter": "Scoreverdeling tonen",
+            "Prompt": "Toon de scoreverdeling voor alle pogingen op deze quiz: hoeveel studenten scoorden 0-10%, 11-20% en zo verder tot 91-100%. Inclusief de gemiddelde en mediane score."
+        },
+        "LearnDash.Edit Quiz.2": {
+            "Starter": "Pogingen voor een gebruiker resetten",
+            "Prompt": "Reset de pogingen van een specifieke gebruiker voor deze quiz, zodat ze deze opnieuw kunnen maken. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "LearnDash.Edit Quiz.3": {
+            "Starter": "De moeilijkste vragen vinden",
+            "Prompt": "Analyseer de resultaten op vraagniveau voor deze quiz. Rangschik elke vraag op het percentage studenten dat deze onjuist heeft beantwoord. Welke vragen zijn het moeilijkst?"
+        },
+        "LearnDash.Edit Quiz.4": {
+            "Starter": "Prestatie toekennen bij slagen",
+            "Prompt": "Maak een automatisering die een prestatie toekent en een felicitatie-e-mail stuurt wanneer een student slaagt voor deze quiz."
+        },
+        "LearnDash.Edit Quiz.5": {
+            "Starter": "Markeer als voltooid voor een gebruiker",
+            "Prompt": "Markeer deze quiz als voltooid voor een specifieke gebruiker. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "LearnDash.Edit Topic.1": {
+            "Starter": "Wie zit vast op dit onderwerp?",
+            "Prompt": "Vind studenten die het vorige onderwerp in deze les hebben voltooid maar dit nog niet hebben voltooid. Toon hun naam, wanneer ze het vorige onderwerp hebben voltooid en hoeveel dagen het al geleden is."
+        },
+        "LearnDash.Edit Topic.2": {
+            "Starter": "Markeer als voltooid voor een gebruiker",
+            "Prompt": "Markeer dit onderwerp als voltooid voor een specifieke gebruiker. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "LearnDash.Edit Topic.3": {
+            "Starter": "Voltooiingstrend tonen",
+            "Prompt": "Toon hoeveel studenten dit onderwerp elke maand hebben voltooid voor de afgelopen 6 maanden. Stijgt, daalt of blijft het voltooiingsaantal gelijk?"
+        },
+        "LearnDash.Edit Topic.4": {
+            "Starter": "Tijd tot voltooiing tonen",
+            "Prompt": "Bereken de gemiddelde tijd die studenten nodig hebben om dit onderwerp te voltooien, vanaf wanneer ze het vorige onderwerp hebben voltooid tot wanneer ze dit hebben voltooid."
+        },
+        "LearnDash.Edit Topic.5": {
+            "Starter": "Resetten voor een gebruiker",
+            "Prompt": "Markeer dit onderwerp als niet-voltooid voor een specifieke gebruiker, zodat ze het opnieuw kunnen doen. Wat is hun gebruikersnaam of e-mailadres?"
+        },
+        "LearnDash.Reports.1": {
+            "Starter": "Betrokkenheid per student scoren",
+            "Prompt": "Maak een betrokkenheidsscore voor elke student op basis van hun totale lesvoltooiingen, quizpogingen, quizscores en opdrachtinzendingen over de afgelopen 90 dagen. Rangschik studenten van meest tot minst betrokken."
+        },
+        "LearnDash.Reports.2": {
+            "Starter": "Maandelijks actieve studenten tonen",
+            "Prompt": "Toon het aantal unieke studenten die elke maand ten minste één les, onderwerp of quiz hebben voltooid voor de afgelopen 12 maanden. Stijgt of daalt de trend?"
+        },
+        "LearnDash.Reports.3": {
+            "Starter": "Voltooiing per groep vergelijken",
+            "Prompt": "Vergelijk de gemiddelde tijd tot cursusvoltooiing en het gemiddelde quizslagingspercentage over alle groepen. Welke groepen voltooien het snelst en scoren het hoogst?"
+        },
+        "LearnDash.Reports.4": {
+            "Starter": "Meest betrokken studenten vinden",
+            "Prompt": "Vind de 20 meest actieve studenten over de afgelopen 90 dagen op basis van lesvoltooiingen, quizpogingen, quizscores en opdrachtinzendingen. Toon hun activiteitsaantallen."
+        },
+        "LearnDash.Reports.5": {
+            "Starter": "Voortgang over alle cursussen tonen",
+            "Prompt": "Toon voor elke cursus het totale aantal ingeschreven, in uitvoering en voltooide studenten. Bereken het voltooiingspercentage en het gemiddelde aantal dagen tot voltooiing voor elk."
+        },
+        "Rank Math SEO.Dashboard.1": {
+            "Starter": "Verdeling SEO-scores tonen",
+            "Prompt": "Toon de verdeling van Rank Math SEO-scores (rank_math_seo_score postmeta) over alle gepubliceerde berichten en pagina's. Groepeer in 0-50 vraagt aandacht, 51-80 goed, 81-100 uitstekend. Toon aantallen per categorie."
+        },
+        "Rank Math SEO.Dashboard.2": {
+            "Starter": "Berichten zonder focuszoekwoord vinden",
+            "Prompt": "Vind gepubliceerde berichten die geen Rank Math-focuszoekwoord hebben ingesteld (rank_math_focus_keyword is leeg of ontbreekt). Toon titel, auteur, berichttype en datum laatste wijziging."
+        },
+        "Rank Math SEO.Dashboard.3": {
+            "Starter": "Laagscorende berichten vinden",
+            "Prompt": "Vind gepubliceerde berichten waar de Rank Math SEO-score onder 50 ligt. Toon titel, score, eventueel focuszoekwoord en auteur. Sorteer op laagste score eerst."
+        },
+        "Rank Math SEO.Dashboard.4": {
+            "Starter": "Scores per berichttype vergelijken",
+            "Prompt": "Vergelijk de Rank Math SEO-scoreverdeling per berichttype. Toon gemiddelde en mediane score voor berichten vs. pagina's vs. andere openbare berichttypen."
+        },
+        "Rank Math SEO.Dashboard.5": {
+            "Starter": "Audit ontbrekende SEO-beschrijvingen",
+            "Prompt": "Vind gepubliceerde berichten zonder Rank Math SEO-beschrijving (rank_math_description is leeg). Toon titel, auteur, berichttype en aantal woorden."
+        },
+        "Rank Math SEO.Status.1": {
+            "Starter": "SEO-titels controleren",
+            "Prompt": "Controleer Rank Math SEO-titels (rank_math_title) over alle gepubliceerde berichten. Vind titels die te kort zijn (onder 30 tekens) of te lang (meer dan 60 tekens). Toon aantal en voorbeelden."
+        },
+        "Rank Math SEO.Status.2": {
+            "Starter": "Dubbele titels vinden",
+            "Prompt": "Vind berichten waarbij de Rank Math SEO-titel (rank_math_title) identiek is aan die van een ander bericht. Toon de titel en lijst van bericht-ID's die deze delen."
+        },
+        "Rank Math SEO.Status.3": {
+            "Starter": "Niet-geïndexeerde berichten vinden",
+            "Prompt": "Vind berichten die via Rank Math op noindex staan (controleer rank_math_robots postmeta op 'noindex'). Toon titel, berichttype en auteur."
+        },
+        "Rank Math SEO.Status.4": {
+            "Starter": "SEO-titel instellen",
+            "Prompt": "Stel een Rank Math SEO-titel in voor een specifiek bericht. Welk bericht en welke titel?"
+        },
+        "Rank Math SEO.Status.5": {
+            "Starter": "Mail mij bij lage SEO-score",
+            "Prompt": "Maak een automatisering die mij e-mailt wanneer de Rank Math SEO-score van een bericht onder een drempelwaarde zakt (met de Rank Math-trigger 'A post's SEO score is greater than, less than, or equal to a value'). Welke drempelwaarde moet dit activeren?"
+        },
+        "Tutor LMS.Courses.1": {
+            "Starter": "Voltooiingspercentages vergelijken",
+            "Prompt": "Vergelijk Tutor LMS-cursusvoltooiingspercentages over alle cursussen. Toon inschrijvingsaantal, voltooiingsaantal en voltooiingspercentage. Rangschik vanaf het laagste voltooiingspercentage."
+        },
+        "Tutor LMS.Courses.2": {
+            "Starter": "Cursussen met lage voltooiing vinden",
+            "Prompt": "Vind Tutor LMS-cursussen met ten minste 5 inschrijvingen maar een voltooiingspercentage onder 20%. Toon cursustitel, inschrijvingsaantal, voltooiingsaantal en voltooiingspercentage."
+        },
+        "Tutor LMS.Courses.3": {
+            "Starter": "Inschrijvingstrends per cursus tonen",
+            "Prompt": "Toon Tutor LMS-inschrijvingstrends per cursus over de afgelopen 12 maanden. Identificeer cursussen die inschrijvingsmomentum winnen vs. verliezen."
+        },
+        "Tutor LMS.Courses.4": {
+            "Starter": "Inactieve cursussen vinden",
+            "Prompt": "Vind Tutor LMS-cursussen zonder nieuwe inschrijvingen in de afgelopen 60 dagen. Toon cursustitel, totaal aantal inschrijvingen ooit en datum laatste inschrijving."
+        },
+        "Tutor LMS.Courses.5": {
+            "Starter": "Mail mij bij inschrijving",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra een gebruiker zich inschrijft voor een Tutor LMS-cursus. Vermeld de naam van de student en cursustitel in de e-mail."
+        },
+        "Tutor LMS.Dashboard.1": {
+            "Starter": "Cursusvoltooiingspercentages tonen",
+            "Prompt": "Bereken Tutor LMS-cursusvoltooiingspercentages: inschrijvingen vs. voltooiingen per cursus. Toon voltooiingspercentage en rangschik van hoog naar laag."
+        },
+        "Tutor LMS.Dashboard.2": {
+            "Starter": "Inschrijvingstrend tonen",
+            "Prompt": "Toon Tutor LMS-inschrijvingen per maand voor de afgelopen 12 maanden over alle cursussen. Identificeer of de trend versnelt, daalt of vlak blijft."
+        },
+        "Tutor LMS.Dashboard.3": {
+            "Starter": "Topcursussen tonen",
+            "Prompt": "Toon top Tutor LMS-cursussen op aantal inschrijvingen over de afgelopen 90 dagen. Toon inschrijvingsaantal, voltooiingspercentage en gemiddelde quizscore per cursus."
+        },
+        "Tutor LMS.Dashboard.4": {
+            "Starter": "Studentactiviteit tonen",
+            "Prompt": "Toon Tutor LMS-studentactiviteit voor de afgelopen 30 dagen: unieke studenten die ten minste één les hebben voltooid, een quiz hebben geprobeerd of een vraag hebben gesteld."
+        },
+        "Tutor LMS.Dashboard.5": {
+            "Starter": "Mail mij bij cursusvoltooiing",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra een gebruiker een Tutor LMS-cursus voltooit. Vermeld de naam van de student en cursustitel in de e-mail."
+        },
+        "Tutor LMS.Edit Course.1": {
+            "Starter": "Statistieken van deze cursus tonen",
+            "Prompt": "Toon het inschrijvingsaantal, voltooiingspercentage, gemiddelde quizscore en gemiddelde tijd van inschrijving tot voltooiing van deze Tutor LMS-cursus."
+        },
+        "Tutor LMS.Edit Course.2": {
+            "Starter": "Studentvoortgang tonen",
+            "Prompt": "Toon de verdeling van studentvoortgang voor deze Tutor LMS-cursus: hoeveel studenten zitten op 0%, 1-25%, 26-50%, 51-75%, 76-99% en 100% voltooid."
+        },
+        "Tutor LMS.Edit Course.3": {
+            "Starter": "Afhakende studenten vinden",
+            "Prompt": "Vind studenten die zijn ingeschreven voor deze Tutor LMS-cursus die voortgang hebben gestart maar in de afgelopen 30 dagen geen les hebben voltooid. Toon naam, huidige voortgang en datum laatste activiteit."
+        },
+        "Tutor LMS.Edit Course.4": {
+            "Starter": "Een student inschrijven",
+            "Prompt": "Schrijf een gebruiker in voor deze Tutor LMS-cursus. Wat is hun gebruikersnaam of e-mail?"
+        },
+        "Tutor LMS.Edit Course.5": {
+            "Starter": "Markeer als voltooid voor een gebruiker",
+            "Prompt": "Markeer deze Tutor LMS-cursus als voltooid voor een specifieke gebruiker. Wat is hun gebruikersnaam of e-mail?"
+        },
+        "WPForms.All Forms.1": {
+            "Starter": "Inzendingsvolume tonen",
+            "Prompt": "Toon het WPForms-inzendingsvolume per formulier voor de afgelopen 30 dagen. Vergelijk met de voorgaande 30 dagen en markeer formulieren met stijgende of dalende inzendingspercentages."
+        },
+        "WPForms.All Forms.2": {
+            "Starter": "Inactieve formulieren vinden",
+            "Prompt": "Vind WPForms-formulieren zonder inzendingen in de afgelopen 60 dagen. Toon formuliernaam, totaal aantal inzendingen ooit en datum van laatste inzending."
+        },
+        "WPForms.All Forms.3": {
+            "Starter": "Topformulieren tonen",
+            "Prompt": "Rangschik WPForms-formulieren op totaal aantal ontvangen inzendingen. Toon aantal inzendingen, gemiddeld aantal inzendingen per dag en aanmaakdatum voor elk."
+        },
+        "WPForms.All Forms.4": {
+            "Starter": "Inzendingstrend tonen",
+            "Prompt": "Toon het totale aantal WPForms-inzendingen per week voor de afgelopen 12 weken over alle formulieren. Markeer welke formulieren de trend aansturen."
+        },
+        "WPForms.Edit Form.1": {
+            "Starter": "Dit formulier automatiseren",
+            "Prompt": "Maak een Uncanny Automator-recept met dit WPForms-formulier als trigger (de 'A user submits a form' / WPFSUBFORM-trigger). Wat moet er gebeuren wanneer dit formulier wordt ingediend?"
+        },
+        "WPForms.Edit Form.2": {
+            "Starter": "Inzendingen samenvatten",
+            "Prompt": "Lees de inzendingen van de afgelopen 30 dagen voor dit WPForms-formulier en vat de patronen samen: topwaarden per keuzeveld, gemeenschappelijke thema's in vrije-tekstvelden en piektijden voor inzendingen."
+        },
+        "WPForms.Edit Form.3": {
+            "Starter": "Veldstatistieken samenstellen",
+            "Prompt": "Toon voor elk veld in dit WPForms-formulier de invulgraad (hoe vaak het is ingevuld), de gemiddelde lengte voor tekstvelden, de waardeverdeling voor keuzevelden en de meest voorkomende waarde."
+        },
+        "WPForms.Edit Form.4": {
+            "Starter": "Afhaakvelden vinden",
+            "Prompt": "Identificeer welke velden in dit WPForms-formulier het vaakst leeg blijven in voltooide inzendingen. Stel voor welke velden mogelijk gebruikersafhaak of verwarring veroorzaken."
+        },
+        "WPForms.Edit Form.5": {
+            "Starter": "Formulierprestaties tonen",
+            "Prompt": "Toon het totale aantal inzendingen, gemiddeld aantal inzendingen per dag van dit WPForms-formulier en hoe het zich verhoudt tot de gemiddelde prestaties van alle formulieren op de site."
+        },
+        "WPForms.Entries Overview.1": {
+            "Starter": "Recente inzendingen tonen",
+            "Prompt": "Toon alle WPForms-inzendingen die in de afgelopen 7 dagen zijn ingediend over alle formulieren. Groepeer per formulier en toon het volume per formulier."
+        },
+        "WPForms.Entries Overview.2": {
+            "Starter": "Spam-inzendingen vinden",
+            "Prompt": "Vind WPForms-inzendingen die als spam zijn gemarkeerd in de afgelopen 90 dagen. Toon formuliernaam, IP-adres, inzendingsdatum en identificeer IP-adressen die herhaaldelijk voorkomen."
+        },
+        "WPForms.Entries Overview.3": {
+            "Starter": "Inzendingsvolume per formulier tonen",
+            "Prompt": "Toon WPForms-inzendingsaantallen per formulier voor de huidige maand vs. de voorgaande maand. Bereken het percentageverschil voor elk formulier."
+        },
+        "WPForms.Entries Overview.4": {
+            "Starter": "Oude inzendingen vinden",
+            "Prompt": "Vind WPForms-inzendingen ouder dan 90 dagen. Toon aantal per formulier en totale opslag die wordt gebruikt. Beveel aan of ze veilig kunnen worden gearchiveerd."
+        },
+        "WPForms.Entries Overview.5": {
+            "Starter": "Inzendingen met bestandsuploads tonen",
+            "Prompt": "Vind WPForms-inzendingen die bestandsuploads bevatten. Toon formuliernaam, totaal aantal bestanden en totale bestandsgrootte over al deze inzendingen."
+        },
+        "WPForms.Form Entries.1": {
+            "Starter": "Tijden van inzendingen tonen",
+            "Prompt": "Toon de tijdspatronen van inzendingen voor dit WPForms-formulier: aantallen per dag van de week en per uur van de dag. Identificeer de piekvensters voor inzendingen."
+        },
+        "WPForms.Form Entries.2": {
+            "Starter": "Dubbele inzendingen vinden",
+            "Prompt": "Vind dubbele inzendingen voor dit WPForms-formulier, gedefinieerd als hetzelfde e-mailadres dat meer dan eens inzendt. Toon aantal duplicaten per e-mailadres."
+        },
+        "WPForms.Form Entries.3": {
+            "Starter": "Indiener aan een rol toevoegen",
+            "Prompt": "Maak een automatisering die een rol toevoegt aan de gebruiker wanneer dit WPForms-formulier wordt ingediend door een ingelogde gebruiker. Welke rol moet ik toevoegen?"
+        },
+        "WPForms.Form Entries.4": {
+            "Starter": "Inzendingen op veld doorzoeken",
+            "Prompt": "Doorzoek de inzendingen van dit WPForms-formulier op een specifieke veldwaarde. Welk veld en welke waarde moet ik zoeken?"
+        },
+        "WPForms.Single Entry.1": {
+            "Starter": "Andere inzendingen van deze indiener tonen",
+            "Prompt": "Vind alle andere WPForms-inzendingen van deze indiener (gematcht op e-mailadres) over alle formulieren. Toon formuliernaam, inzendingsdatum en sleutelveldwaarden."
+        },
+        "WPForms.Single Entry.2": {
+            "Starter": "Inzendingsmetadata tonen",
+            "Prompt": "Toon de metadata van deze WPForms-inzending: inzendingsdatum, IP-adres, user agent, verwijzende URL en tijd besteed aan het invullen van het formulier (indien bijgehouden)."
+        },
+        "WPForms.Single Entry.3": {
+            "Starter": "Vergelijken met typische inzending",
+            "Prompt": "Vergelijk de veldwaarden van deze WPForms-inzending met de typische inzending voor dit formulier. Identificeer welke velden ongewoon zijn (bijv. veel langer/korter dan gemiddeld)."
+        },
+        "WPForms.Single Entry.4": {
+            "Starter": "Een antwoord-e-mail sturen",
+            "Prompt": "Stuur een antwoord-e-mail naar deze WPForms-indiener. Wat moet de e-mail zeggen?"
+        },
+        "WPForms.Single Entry.5": {
+            "Starter": "Inzendingen van hetzelfde IP-adres vinden",
+            "Prompt": "Vind alle WPForms-inzendingen die zijn ingediend vanaf het IP-adres van deze inzending over alle formulieren. Toon formuliernaam, inzendingsdatum en gebruikt e-mailadres."
+        },
+        "WooCommerce.All Coupons.1": {
+            "Starter": "ROI van kortingsbon tonen",
+            "Prompt": "Toon voor elke actieve kortingsbon het aantal keren dat deze is gebruikt, de totale omzet uit bestellingen waarvoor deze is gebruikt, de totale verleende korting en de netto-omzet (omzet minus korting). Sorteer op netto-omzet, hoogste eerst."
+        },
+        "WooCommerce.All Coupons.2": {
+            "Starter": "Meest gebruikte kortingsbonnen vinden",
+            "Prompt": "Rangschik alle kortingsbonnen op aantal gebruik. Toon totaal aantal gebruik, totaal kortingsbedrag en gemiddelde korting per gebruik. Markeer kortingsbonnen waarvan het gebruik aanzienlijk boven het gemiddelde ligt."
+        },
+        "WooCommerce.All Coupons.3": {
+            "Starter": "Kortingsbon sturen na aankoop",
+            "Prompt": "Maak een automatisering die een unieke kortingsboncode genereert en deze naar een klant e-mailt nadat ze een product hebben gekocht. Welk product moet dit activeren en welke korting moet de kortingsbon bieden?"
+        },
+        "WooCommerce.All Coupons.4": {
+            "Starter": "Verlopen kortingsbonnen vinden",
+            "Prompt": "Maak een lijst van alle kortingsbonnen waarvan de vervaldatum is verstreken of die hun gebruikslimiet hebben bereikt. Toon de kortingsboncode, vervaldatum en datum laatste gebruik voor elk."
+        },
+        "WooCommerce.All Coupons.5": {
+            "Starter": "Bestellingen met vs. zonder kortingsbonnen vergelijken",
+            "Prompt": "Vergelijk bestellingen waarvoor een kortingsboncode is gebruikt vs. bestellingen zonder voor de afgelopen 6 maanden. Toon de gemiddelde bestelwaarde, gemiddelde aantal items en herhaalaankooppercentage (percentage dat binnen 90 dagen opnieuw heeft besteld) voor elke groep."
+        },
+        "WooCommerce.All Customers.1": {
+            "Starter": "Mijn klanten segmenteren",
+            "Prompt": "Segmenteer alle klanten in groepen op basis van levenslange waarde (top 20%, midden 60%, onder 20%), aankoopfrequentie (eenmalig, incidenteel, regelmatig) en primaire productcategorie. Toon het aantal en de gemiddelde LTV voor elk segment."
+        },
+        "WooCommerce.All Customers.2": {
+            "Starter": "Risicoklanten vinden",
+            "Prompt": "Vind klanten waarvan de gemiddelde tijd tussen bestellingen minder dan 90 dagen is, maar die meer dan 120 dagen geen bestelling hebben geplaatst. Toon hun datum laatste bestelling, totale levenslange uitgaven en hoeveel dagen ze achterstallig zijn."
+        },
+        "WooCommerce.All Customers.3": {
+            "Starter": "VIP-klanten herkennen",
+            "Prompt": "Maak een automatisering die wordt geactiveerd wanneer de totale levenslange uitgaven van een klant een drempel overschrijden. Voeg een VIP-rol toe aan hun account en stuur ze een bedankmail. Welke uitgavendrempel moet ik gebruiken?"
+        },
+        "WooCommerce.All Customers.4": {
+            "Starter": "Nieuwe vs. terugkerende kopers tonen",
+            "Prompt": "Toon voor de huidige maand hoeveel bestellingen van eerstekopers kwamen vs. terugkerende klanten. Toon de totale omzet en gemiddelde bestelwaarde voor elke groep en vergelijk met vorige maand."
+        },
+        "WooCommerce.All Customers.5": {
+            "Starter": "Omzet per regio tonen",
+            "Prompt": "Splits de totale omzet uit per land en regio met behulp van factuuradressen. Toon de top 15 regio's op omzet, het aantal bestellingen vanuit elk en de gemiddelde bestelwaarde per regio."
+        },
+        "WooCommerce.All Orders.1": {
+            "Starter": "Omzet per weekdag tonen",
+            "Prompt": "Toon mij de totale omzet uitgesplitst per dag van de week voor de afgelopen 3 maanden. Welke dag genereert consistent de meeste omzet en welke de minste?"
+        },
+        "WooCommerce.All Orders.2": {
+            "Starter": "Niet-uitgevoerde bestellingen vinden",
+            "Prompt": "Maak een lijst van alle bestellingen die momenteel in verwerking of in de wacht staan. Sorteer op datum, oudste eerst, en markeer bestellingen die langer dan 7 dagen in die status staan."
+        },
+        "WooCommerce.All Orders.3": {
+            "Starter": "Retourpercentages analyseren",
+            "Prompt": "Bereken het retourpercentage voor elk product over de afgelopen 6 maanden. Toon het aantal bestellingen, aantal retouren, retourpercentage en totaal retourbedrag per product, gesorteerd op hoogste retourpercentage."
+        },
+        "WooCommerce.All Orders.4": {
+            "Starter": "Herhaalkopers vinden",
+            "Prompt": "Vind alle klanten die meer dan één bestelling hebben geplaatst. Toon hoeveel bestellingen elk heeft geplaatst, hun totale uitgaven en het gemiddelde aantal dagen tussen bestellingen. Sorteer op totale uitgaven, hoogste eerst."
+        },
+        "WooCommerce.All Orders.5": {
+            "Starter": "Mail mij wanneer bestellingen mislukken",
+            "Prompt": "Maak een automatisering die mij een e-mail stuurt zodra een betaling mislukt op een bestelling. Vermeld het bestelnummer, klantnaam en bestelbedrag in de e-mail."
+        },
+        "WooCommerce.All Products.1": {
+            "Starter": "Mijn bestverkopende producten rangschikken",
+            "Prompt": "Rangschik alle producten op verkochte eenheden en totale omzet voor het huidige kwartaal. Inclusief een vergelijking met het vorige kwartaal die de verandering in eenheden en omzet voor elk product toont."
+        },
+        "WooCommerce.All Products.2": {
+            "Starter": "Cross-sell-kansen vinden",
+            "Prompt": "Analyseer bestelgegevens om producten te vinden die vaak samen in dezelfde bestelling worden gekocht. Toon de top 10 productparen op gezamenlijk voorkomen en het percentage bestellingen met de ene die ook de andere bevatten."
+        },
+        "WooCommerce.All Products.3": {
+            "Starter": "Waarschuw mij bij lage voorraad",
+            "Prompt": "Maak een automatisering die mij een e-mailmelding stuurt zodra een product niet meer op voorraad is. Vermeld de productnaam en SKU in de e-mail."
+        },
+        "WooCommerce.All Products.4": {
+            "Starter": "Producten zonder verkoop vinden",
+            "Prompt": "Maak een lijst van alle gepubliceerde producten die in de afgelopen 90 dagen nul bestellingen hebben gehad. Toon de productnaam, prijs en datum van hun laatste bestelling (indien aanwezig)."
+        },
+        "WooCommerce.All Products.5": {
+            "Starter": "Omzet per product over tijd tonen",
+            "Prompt": "Toon de maandelijkse omzet van elk product voor de afgelopen 12 maanden. Markeer welke producten een stijgende omzet hebben, welke dalen en welke gelijk blijven."
+        },
+        "WooCommerce.All Subscriptions.1": {
+            "Starter": "Mijn churn-percentage tonen",
+            "Prompt": "Bereken het abonnement-churn-percentage voor elk van de afgelopen 6 maanden. Toon het aantal actieve abonnementen aan het begin van elke maand, het aantal opzeggingen tijdens de maand, het churn-percentage en de omzet die verloren is gegaan door opzeggingen."
+        },
+        "WooCommerce.All Subscriptions.2": {
+            "Starter": "Aankomende verlengingen tonen",
+            "Prompt": "Maak een lijst van alle abonnementen met een verlengingsdatum in de komende 14 dagen. Groepeer ze per product en abonnementsniveau en toon de totale verlengingsomzet die op het spel staat voor elke groep."
+        },
+        "WooCommerce.All Subscriptions.3": {
+            "Starter": "MRR-uitsplitsing berekenen",
+            "Prompt": "Bereken de huidige maandelijks terugkerende omzet uit alle actieve abonnementen. Splits het uit per product, abonnementsniveau en toon welk percentage van de MRR komt uit abonnementen die in de afgelopen 3 maanden zijn aangemaakt vs. oudere abonnementen."
+        },
+        "WooCommerce.All Subscriptions.4": {
+            "Starter": "Opzegpatronen analyseren",
+            "Prompt": "Analyseer alle abonnementsopzeggingen van de afgelopen 6 maanden. Toon welke producten het hoogste opzegpercentage hebben, de gemiddelde abonnementsduur bij opzegging en of opzeggingen zich clusteren op specifieke punten in de facturatiecyclus (bijv. na maand 1, maand 3, maand 12)."
+        },
+        "WooCommerce.All Subscriptions.5": {
+            "Starter": "Mailen bij mislukte verlenging",
+            "Prompt": "Maak een automatisering die de klant een e-mail stuurt wanneer hun abonnementsverlenging-betaling mislukt. Vermeld hun naam, het abonnementsproduct en een link om hun betaalmethode bij te werken."
+        },
+        "WooCommerce.Dashboard.1": {
+            "Starter": "Omzettrends tonen",
+            "Prompt": "Toon de totale omzet week-op-week voor de afgelopen 3 maanden en maand-op-maand voor de afgelopen 12 maanden. Vergelijk elke maand met dezelfde maand vorig jaar als er gegevens bestaan. Markeer of de omzet versnelt of vertraagt."
+        },
+        "WooCommerce.Dashboard.2": {
+            "Starter": "Levenslange klantwaarde berekenen",
+            "Prompt": "Bereken de gemiddelde levenslange waarde over alle klanten door de totale bestelomzet van elke klant op te tellen. Splits het uit per het eerste product dat elke klant heeft gekocht om te tonen welke instapproducten leiden tot de hoogste LTV."
+        },
+        "WooCommerce.Dashboard.3": {
+            "Starter": "Cohort-retentiepercentages tonen",
+            "Prompt": "Groepeer alle klanten op de maand van hun eerste aankoop. Toon voor elke maandelijkse cohort welk percentage ten minste één extra bestelling heeft geplaatst in elke volgende maand."
+        },
+        "WooCommerce.Dashboard.4": {
+            "Starter": "Maandelijkse KPI's samenvatten",
+            "Prompt": "Geef me een maandelijkse KPI-samenvatting voor deze maand vs. vorige maand: totale omzet, aantal nieuwe klanten, gemiddelde bestelwaarde, totale retouren en aantal abonnementsopzeggingen. Toon de maand-op-maand verandering voor elk."
+        },
+        "WooCommerce.Dashboard.5": {
+            "Starter": "Mislukte betalingen analyseren",
+            "Prompt": "Toon alle bestellingen met mislukte betalingen van de afgelopen 3 maanden. Groepeer ze op betaalmethode en toon het totale aantal, totale verloren omzet en hoeveel uiteindelijk zijn hersteld (voltooid in een latere bestelling door dezelfde klant)."
+        },
+        "WooCommerce.Edit Coupon.1": {
+            "Starter": "Resultaten van deze kortingsbon tonen",
+            "Prompt": "Toon alle bestellingen waarvoor deze kortingsbon is gebruikt. Inclusief totaal aantal gebruik, totale gegenereerde omzet, gemiddelde bestelwaarde en hoeveel van die klanten ook een andere kortingsbon hebben gebruikt voor een eerdere bestelling."
+        },
+        "WooCommerce.Edit Coupon.2": {
+            "Starter": "Wie heeft deze kortingsbon gebruikt?",
+            "Prompt": "Maak een lijst van elke klant die deze kortingsbon heeft gebruikt met hun bestelbedrag, de producten die ze hebben gekocht en of ze sindsdien nog vervolgbestellingen hebben geplaatst."
+        },
+        "WooCommerce.Edit Coupon.3": {
+            "Starter": "Een nieuwe kortingsbon genereren",
+            "Prompt": "Genereer een nieuwe kortingsboncode. Welk type korting (percentage of vast bedrag), welk bedrag en moet er een gebruikslimiet of vervaldatum zijn?"
+        },
+        "WooCommerce.Edit Coupon.4": {
+            "Starter": "Een win-back-kortingsbon sturen",
+            "Prompt": "Maak een automatisering die een kortingsboncode genereert en e-mailt naar een klant wanneer ze hun abonnement opzeggen. Welke korting moet de kortingsbon bieden en hoe lang moet deze geldig zijn?"
+        },
+        "WooCommerce.Edit Coupon.5": {
+            "Starter": "Vergelijken met andere kortingsbonnen",
+            "Prompt": "Vergelijk het totale aantal gebruik, gegenereerde omzet en gemiddelde bestelwaarde van deze kortingsbon met alle andere kortingsbonnen die in dezelfde periode zijn gebruikt. Waar staat deze in de rangorde?"
+        },
+        "WooCommerce.Edit Order.1": {
+            "Starter": "Bestellingen van deze klant tonen",
+            "Prompt": "Haal elke bestelling op die door deze klant is geplaatst. Toon besteldata, totalen, gekochte producten en bestelstatussen. Inclusief hun totale levenslange uitgaven, aantal bestellingen en gemiddelde bestelwaarde."
+        },
+        "WooCommerce.Edit Order.2": {
+            "Starter": "Een notitie aan deze bestelling toevoegen",
+            "Prompt": "Voeg een notitie toe aan deze bestelling. Wat moet de notitie zeggen?"
+        },
+        "WooCommerce.Edit Order.3": {
+            "Starter": "Vergelijkbare bestellingen vinden",
+            "Prompt": "Vind andere bestellingen die hetzelfde product (of dezelfde producten) bevatten als deze bestelling. Toon de gemiddelde bestelwaarde voor die bestellingen en welke andere producten daar het vaakst bij zaten."
+        },
+        "WooCommerce.Edit Order.4": {
+            "Starter": "Tijdlijn van deze bestelling tonen",
+            "Prompt": "Toon de volledige geschiedenis van statuswijzigingen voor deze bestelling met de datum en tijd van elke statusovergang en hoe lang de bestelling in elke status heeft gestaan."
+        },
+        "WooCommerce.Edit Order.5": {
+            "Starter": "Mailen bij statuswijziging",
+            "Prompt": "Maak een automatisering die een aangepaste e-mail stuurt zodra de status van een bestelling verandert. Welke statuswijziging moet de e-mail activeren en wat moet de e-mail zeggen?"
+        },
+        "WooCommerce.Edit Product.1": {
+            "Starter": "Prestaties van dit product tonen",
+            "Prompt": "Toon het totale aantal verkochte eenheden, totale omzet, aantal retouren en retourpercentage van dit product. Splits het uit per maand voor de afgelopen 12 maanden."
+        },
+        "WooCommerce.Edit Product.2": {
+            "Starter": "Wie koopt dit product?",
+            "Prompt": "Analyseer de klanten die dit product hebben gekocht. Toon de geografische verdeling per land op basis van factuuradressen, hun gemiddelde totale uitgaven over alle bestellingen, welk percentage herhaalkopers zijn en welke andere producten ze het vaakst kopen."
+        },
+        "WooCommerce.Edit Product.3": {
+            "Starter": "Verkooptrend van dit product tonen",
+            "Prompt": "Toon de maandelijkse verkochte eenheden en omzet van dit product voor de afgelopen 12 maanden. Versnelt, blijft of daalt de trend?"
+        },
+        "WooCommerce.Edit Product.4": {
+            "Starter": "Op de hoogte stellen wanneer aangevuld",
+            "Prompt": "Maak een automatisering die mij een e-mail stuurt wanneer dit product is aangevuld na niet meer op voorraad te zijn. Vermeld de productnaam en huidige voorraadhoeveelheid in de e-mail."
+        },
+        "WooCommerce.Edit Product.5": {
+            "Starter": "Vergelijken met andere producten",
+            "Prompt": "Vergelijk de totale omzet, verkochte eenheden en het retourpercentage van dit product met andere producten in dezelfde categorie. Rangschik ze naast elkaar."
+        },
+        "WooCommerce.Edit Subscription.1": {
+            "Starter": "Dit abonnement verlengen",
+            "Prompt": "Verleng dit abonnement. Met hoeveel dagen moet ik het verlengen?"
+        },
+        "WooCommerce.Edit Subscription.2": {
+            "Starter": "Geschiedenis van deze abonnee tonen",
+            "Prompt": "Toon de complete geschiedenis van deze abonnee: alle bestellingen, statuswijzigingen van het abonnement, verlengingsdata en eventuele mislukte betaalpogingen, gesorteerd op datum."
+        },
+        "WooCommerce.Edit Subscription.3": {
+            "Starter": "Risico van deze abonnee inschatten",
+            "Prompt": "Beoordeel het opzegrisico van deze abonnee op basis van hun betalingsgeschiedenis (eventuele mislukte betalingen of late verlengingen), hoe lang ze al geabonneerd zijn en of ze van abonnement zijn gewisseld. Hoe verhoudt hun looptijd zich tot de gemiddelde abonnee op dit abonnement?"
+        },
+        "WooCommerce.Edit Subscription.4": {
+            "Starter": "Vergelijken met vergelijkbare abonnees",
+            "Prompt": "Vind alle andere abonnees op hetzelfde abonnement als deze abonnee. Vergelijk de looptijd en totale uitgaven van deze abonnee met het gemiddelde, de mediaan en de top 10% van die groep."
+        },
+        "WooCommerce.Edit Subscription.5": {
+            "Starter": "Betalingsgeschiedenis tonen",
+            "Prompt": "Maak een lijst van elke betaalpoging voor dit abonnement — succesvol en mislukt — met de datum, het bedrag, de betaalmethode en het resultaat voor elk."
+        },
+        "WooCommerce.Reports.1": {
+            "Starter": "Omzet vergelijken met vorig jaar",
+            "Prompt": "Vergelijk de omzet van deze maand met dezelfde maand vorig jaar. Splits het uit per productcategorie en toon de jaar-op-jaar verandering voor elk. Toon ook de jaar-tot-datum vergelijking."
+        },
+        "WooCommerce.Reports.2": {
+            "Starter": "AOV-trends tonen",
+            "Prompt": "Toon de gemiddelde bestelwaarde voor elk van de afgelopen 12 maanden. Identificeer wat de veranderingen aanstuurt — zijn het verschuivingen in de productmix, toegenomen kortingsbongebruik of veranderingen in items per bestelling?"
+        },
+        "WooCommerce.Reports.3": {
+            "Starter": "Betaalmethoden analyseren",
+            "Prompt": "Toon de verdeling van bestellingen per betaalmethode. Toon voor elke methode het aantal bestellingen, totale omzet, gemiddelde bestelwaarde en het percentage bestellingen dat is mislukt."
+        },
+        "WooCommerce.Reports.4": {
+            "Starter": "Snelst groeiende producten vinden",
+            "Prompt": "Rangschik producten op omzetgroeipercentage over de afgelopen 3 maanden vergeleken met de voorgaande 3 maanden. Toon de absolute omzet voor beide periodes en het percentageverschil. Ik zoek opkomende producten, niet alleen de grootste verkopers."
+        },
+        "WooCommerce.Reports.5": {
+            "Starter": "Omzet per kortingsbon vs. organisch tonen",
+            "Prompt": "Vergelijk de totale omzet uit bestellingen waarvoor een kortingsboncode is gebruikt vs. bestellingen zonder kortingsbon voor de afgelopen 6 maanden. Toon de maand-op-maand verdeling en of het aandeel kortingsbon-omzet groeit of krimpt."
+        },
+        "WooCommerce.Status.1": {
+            "Starter": "Verwerkingsknelpunten vinden",
+            "Prompt": "Analyseer de gemiddelde tijd die bestellingen in elke status doorbrengen voordat ze overgaan naar de volgende. Welke statusovergang duurt het langst? Zijn er bestellingen die ongebruikelijk lang in een bepaalde status blijven hangen?"
+        },
+        "WooCommerce.Status.2": {
+            "Starter": "Recente mislukte bestellingen tonen",
+            "Prompt": "Maak een lijst van alle bestellingen die momenteel de status mislukt hebben van de afgelopen 30 dagen. Toon de klantnaam, e-mailadres, betaalmethode, bestelbedrag en de datum waarop de bestelling is mislukt."
+        },
+        "WooCommerce.Status.3": {
+            "Starter": "Mailen bij wijziging bestellingsstatus",
+            "Prompt": "Maak een automatisering die een meldingsmail stuurt zodra een bestellingsstatus verandert in een specifieke status. Welke status moet dit activeren en wie moet de e-mail ontvangen?"
+        },
+        "WooCommerce.Status.4": {
+            "Starter": "Onvoltooide bestellingen vinden",
+            "Prompt": "Vind alle bestellingen die langer dan 48 uur in de status in afwachting of mislukt staan. Groepeer ze per betaalmethode en product om te zien of er een patroon is in wat er misloopt."
+        },
+        "WooCommerce.Status.5": {
+            "Starter": "Database-gezondheidscontrole uitvoeren",
+            "Prompt": "Controleer de WooCommerce-database op veelvoorkomende problemen: weesbestelmeta zonder bijbehorende bestelling, dubbele abonnementsrecords, bestellingen met inconsistente statusgegevens en bestellingen waarbij sleutelmetadata ontbreken. Rapporteer wat je vindt."
+        },
+        "WordPress.All Pages.1": {
+            "Starter": "Verweesde pagina's vinden",
+            "Prompt": "Vind gepubliceerde pagina's waarnaar geen andere pagina of bericht linkt (scan post_content op interne links). Toon titel, datum laatste wijziging en bovenliggende pagina."
+        },
+        "WordPress.All Pages.2": {
+            "Starter": "Paginahiërarchie tonen",
+            "Prompt": "Toon de volledige bovenliggende/onderliggende paginahiërarchie als een boom, met de datum laatste wijziging en auteur van elke pagina. Markeer eventuele wezen (geen bovenliggende en geen onderliggende)."
+        },
+        "WordPress.All Pages.3": {
+            "Starter": "Verouderde pagina's vinden",
+            "Prompt": "Vind gepubliceerde pagina's die in de afgelopen 12 maanden niet zijn bijgewerkt. Toon titel, datum laatste wijziging en auteur."
+        },
+        "WordPress.All Pages.4": {
+            "Starter": "Verdeling paginalengte tonen",
+            "Prompt": "Toon pagina's gerangschikt op aantal woorden. Identificeer de langste en kortste gepubliceerde pagina's en de gemiddelde lengte."
+        },
+        "WordPress.All Pages.5": {
+            "Starter": "Lege pagina's vinden",
+            "Prompt": "Vind gepubliceerde pagina's zonder inhoud of met minder dan 100 woorden. Toon titel, bovenliggende pagina en aantal woorden."
+        },
+        "WordPress.All Posts.1": {
+            "Starter": "Oude concepten vinden",
+            "Prompt": "Vind conceptberichten ouder dan 30 dagen. Toon de titel, auteur, datum laatste wijziging en hoe lang het concept al ligt. Sorteer op oudste eerst."
+        },
+        "WordPress.All Posts.2": {
+            "Starter": "Topauteurs tonen",
+            "Prompt": "Rangschik auteurs op aantal gepubliceerde berichten in de afgelopen 12 maanden. Toon aantal berichten, gemiddelde woordlengte en meest recente publicatiedatum voor elk."
+        },
+        "WordPress.All Posts.3": {
+            "Starter": "Berichten zonder uitgelichte afbeelding vinden",
+            "Prompt": "Maak een lijst van gepubliceerde berichten zonder uitgelichte afbeelding. Toon titel, auteur, publicatiedatum en categorie."
+        },
+        "WordPress.All Posts.4": {
+            "Starter": "Mail mij bij wijziging berichtstatus",
+            "Prompt": "Maak een automatisering die mij e-mailt wanneer een bericht op een specifieke status wordt gezet. Welke status moet dit activeren (bijv. publiceren, in afwachting, concept)?"
+        },
+        "WordPress.All Posts.5": {
+            "Starter": "Berichten met lage betrokkenheid vinden",
+            "Prompt": "Toon gepubliceerde berichten gesorteerd op aantal reacties oplopend. Markeer berichten met nul reacties en berichten die onder het sitegemiddelde presteren."
+        },
+        "WordPress.All Users.1": {
+            "Starter": "Gebruikers segmenteren op rol",
+            "Prompt": "Toon gebruikersaantallen per rol, de gemiddelde accountleeftijd per rol en het percentage gebruikers in elke rol dat een bericht heeft gepubliceerd of een reactie heeft ingediend."
+        },
+        "WordPress.All Users.2": {
+            "Starter": "Slapende gebruikers vinden",
+            "Prompt": "Vind gebruikers die meer dan 30 dagen geleden zijn geregistreerd, maar nog nooit een bericht hebben gepubliceerd of een reactie hebben ingediend. Toon gebruikersnaam, e-mailadres, rol en registratiedatum."
+        },
+        "WordPress.All Users.3": {
+            "Starter": "Registratietrend tonen",
+            "Prompt": "Toon nieuwe gebruikersregistraties per maand voor de afgelopen 24 maanden. Markeer of de trend versnelt, daalt of vlak blijft."
+        },
+        "WordPress.All Users.4": {
+            "Starter": "Topbijdragers vinden",
+            "Prompt": "Vind de 20 gebruikers met de meeste gepubliceerde berichten. Toon aantal berichten, aantal reacties en accountleeftijd. Vergelijk met het gebruikersbestandsgemiddelde."
+        },
+        "WordPress.Comments.1": {
+            "Starter": "Reacties in afwachting tonen",
+            "Prompt": "Maak een lijst van alle reacties die momenteel wachten op moderatie, oudste eerst. Toon berichttitel, naam van reageerder en hoe lang elk al wacht."
+        },
+        "WordPress.Comments.2": {
+            "Starter": "Topreageerders tonen",
+            "Prompt": "Rangschik reageerders op aantal goedgekeurde reacties in de afgelopen 12 maanden. Toon aantal, datum laatste reactie en welke berichten ze het vaakst van een reactie voorzien."
+        },
+        "WordPress.Comments.3": {
+            "Starter": "Moderatiepercentage tonen",
+            "Prompt": "Toon de verdeling van reacties goedgekeurd vs. spam vs. prullenbak voor de afgelopen 90 dagen. Welk percentage binnenkomende reacties wordt uiteindelijk goedgekeurd?"
+        },
+        "WordPress.Comments.4": {
+            "Starter": "Spampatronen vinden",
+            "Prompt": "Vind veelvoorkomende patronen in reacties die als spam zijn gemarkeerd over de afgelopen 90 dagen: terugkerende IP-adressen, terugkerende e-maildomeinen, links per reactie en clusters per tijdstip van de dag."
+        },
+        "WordPress.Dashboard.1": {
+            "Starter": "Recepten voor mijn site voorstellen",
+            "Prompt": "Bekijk mijn geïnstalleerde plugins en stel mij vragen om mij te helpen identificeren welke recepten mij tijd zouden besparen."
+        },
+        "WordPress.Dashboard.2": {
+            "Starter": "Mijn sitebeveiliging bekijken",
+            "Prompt": "Controleer mijn geïnstalleerde plugins op bekende kwetsbaarheden, controleer op geïnstalleerde beveiligingsplugins, plugins voor tweefactorauthenticatie en andere bekende WordPress-kwetsbaarheden."
+        },
+        "WordPress.Dashboard.3": {
+            "Starter": "Mijn sitegezondheid bekijken",
+            "Prompt": "Controleer het WordPress-sitegezondheidsrapport op eventuele problemen."
+        },
+        "WordPress.Dashboard.4": {
+            "Starter": "Inhoudssamenvatting tonen",
+            "Prompt": "Toon mij een publicatiesamenvatting voor de afgelopen 12 maanden: berichten en pagina's per status (publiceren/concept/in afwachting), per auteur en per maand. Markeer maanden met ongebruikelijk volume."
+        },
+        "WordPress.Dashboard.5": {
+            "Starter": "Gebruikersgroei tonen",
+            "Prompt": "Toon nieuwe gebruikersregistraties per maand voor de afgelopen 12 maanden, opgesplitst per rol. Identificeer trends — versnellend, dalend of vlak."
+        },
+        "WordPress.Edit Page.1": {
+            "Starter": "Revisiegeschiedenis van deze pagina tonen",
+            "Prompt": "Toon alle revisies van deze pagina: wie heeft bewerkt, wanneer en hoeveel er is veranderd. Identificeer de meest actieve bewerker."
+        },
+        "WordPress.Edit Page.2": {
+            "Starter": "Pagina's tonen die hier naar linken",
+            "Prompt": "Vind alle pagina's en berichten waarvan de inhoud naar deze pagina linkt. Toon titel, berichttype en linkcontext."
+        },
+        "WordPress.Edit Page.3": {
+            "Starter": "Inhoudsstatistieken van deze pagina tonen",
+            "Prompt": "Toon het aantal woorden, alinea's, afbeeldingen, interne links en externe links van deze pagina."
+        },
+        "WordPress.Edit Page.4": {
+            "Starter": "Deze pagina dupliceren",
+            "Prompt": "Maak een duplicaat van deze pagina met de WordPress duplicate page-actie. Wat moet de nieuwe titel zijn?"
+        },
+        "WordPress.Edit Page.5": {
+            "Starter": "Mail mij wanneer deze pagina wordt bijgewerkt",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra deze specifieke pagina wordt bijgewerkt. Vermeld wie deze heeft bijgewerkt en wanneer."
+        },
+        "WordPress.Edit Post.1": {
+            "Starter": "Revisiegeschiedenis van dit bericht tonen",
+            "Prompt": "Toon alle revisies van dit bericht: wie heeft bewerkt, wanneer en ongeveer hoeveel er elke keer is veranderd. Identificeer de meest actieve bewerker."
+        },
+        "WordPress.Edit Post.2": {
+            "Starter": "Reacties op dit bericht tonen",
+            "Prompt": "Maak een lijst van alle reacties op dit bericht met datum, naam van reageerder, status en inhoud. Markeer eventuele in afwachting of in moderatie."
+        },
+        "WordPress.Edit Post.3": {
+            "Starter": "Vergelijkbare berichten vinden",
+            "Prompt": "Vind gepubliceerde berichten die categorieën of labels delen met dit. Rangschik op overlap en toon titel, auteur en publicatiedatum."
+        },
+        "WordPress.Edit Post.4": {
+            "Starter": "Inhoudsstatistieken tonen",
+            "Prompt": "Toon het aantal woorden, alinea's, geschatte leestijd, interne links en externe links van dit bericht."
+        },
+        "WordPress.Edit User.1": {
+            "Starter": "Volledige activiteit van deze gebruiker tonen",
+            "Prompt": "Toon de volledige activiteit van deze gebruiker: elk gepubliceerd bericht, concept, reactie en datum laatste bekende activiteit. Bereken het aantal dagen sinds de laatste bijdrage."
+        },
+        "WordPress.Edit User.2": {
+            "Starter": "Inhoudsprestaties van deze gebruiker tonen",
+            "Prompt": "Rangschik de gepubliceerde berichten van deze gebruiker op aantal reacties. Toon hun meest becommentarieerde bericht en algemeen gemiddelde reacties per bericht."
+        },
+        "WordPress.Edit User.3": {
+            "Starter": "Betrokkenheidsscore berekenen",
+            "Prompt": "Scoor de betrokkenheid van deze gebruiker op basis van gepubliceerde berichten, ingediende reacties en accountleeftijd. Vergelijk hun score met het sitebrede gemiddelde en percentiel."
+        },
+        "WordPress.Edit User.4": {
+            "Starter": "Een rol toevoegen",
+            "Prompt": "Voeg een rol toe aan deze gebruiker met de WordPress add role-actie. Welke rol moet ik toevoegen?"
+        },
+        "WordPress.Edit User.5": {
+            "Starter": "Mailen wanneer deze gebruiker publiceert",
+            "Prompt": "Maak een automatisering die mij e-mailt zodra deze gebruiker een bericht publiceert. Vermeld de berichttitel en link."
+        },
+        "WordPress.Media Library.1": {
+            "Starter": "Grootte van mediabibliotheek tonen",
+            "Prompt": "Toon de totale grootte van de mediabibliotheek, aantal per bestandstype (afbeelding/video/audio/document) en gemiddelde bestandsgrootte per type."
+        },
+        "WordPress.Media Library.2": {
+            "Starter": "Ongebruikte media vinden",
+            "Prompt": "Vind mediabijlagen waarnaar nergens wordt verwezen in gepubliceerde bericht- of pagina-inhoud en die niet zijn ingesteld als uitgelichte afbeelding. Toon bestandsnaam, type, grootte en uploaddatum."
+        },
+        "WordPress.Media Library.3": {
+            "Starter": "Afbeeldingen zonder alt-tekst vinden",
+            "Prompt": "Maak een lijst van afbeeldingsbijlagen zonder alt-tekst (de _wp_attachment_image_alt postmeta is leeg of ontbreekt). Toon bestandsnaam, grootte en waar de afbeelding wordt gebruikt."
+        },
+        "WordPress.Media Library.4": {
+            "Starter": "Grootste bestanden tonen",
+            "Prompt": "Maak een lijst van de 25 grootste bestanden in de mediabibliotheek. Toon bestandsnaam, type, grootte, uploaddatum en welke berichten ze gebruiken."
+        },
+        "WordPress.Media Library.5": {
+            "Starter": "Uploadtrend tonen",
+            "Prompt": "Toon het aantal media-uploads per maand voor de afgelopen 12 maanden. Identificeer maanden met ongebruikelijk hoge uploadactiviteit."
+        },
+        "Yoast SEO.Dashboard.1": {
+            "Starter": "Verdeling SEO-scores tonen",
+            "Prompt": "Toon de verdeling van Yoast SEO-scores (de _yoast_wpseo_linkdex postmeta) over alle gepubliceerde berichten en pagina's. Groepeer in 0-30 vraagt aandacht, 31-70 oké, 71-100 goed. Toon aantallen per categorie."
+        },
+        "Yoast SEO.Dashboard.2": {
+            "Starter": "Berichten zonder focuszoekwoord vinden",
+            "Prompt": "Vind gepubliceerde berichten die geen Yoast-focuszoekwoord hebben ingesteld (_yoast_wpseo_focuskw is leeg of ontbreekt). Toon titel, auteur, datum laatste wijziging."
+        },
+        "Yoast SEO.Dashboard.3": {
+            "Starter": "Laagscorende berichten vinden",
+            "Prompt": "Vind gepubliceerde berichten waar de Yoast SEO-score (_yoast_wpseo_linkdex) onder 50 ligt. Toon titel, score, eventueel focuszoekwoord en auteur. Sorteer op laagste score eerst."
+        },
+        "Yoast SEO.Dashboard.4": {
+            "Starter": "Scores per berichttype vergelijken",
+            "Prompt": "Vergelijk de Yoast SEO-scoreverdeling per berichttype. Toon gemiddelde en mediane score voor berichten vs. pagina's vs. andere openbare berichttypen. Identificeer welk berichttype de meeste aandacht nodig heeft."
+        },
+        "Yoast SEO.Dashboard.5": {
+            "Starter": "Audit ontbrekende metabeschrijvingen",
+            "Prompt": "Vind gepubliceerde berichten zonder Yoast-metabeschrijving (_yoast_wpseo_metadesc is leeg). Toon titel, auteur, berichttype en aantal woorden."
+        },
+        "Yoast SEO.Tools.1": {
+            "Starter": "SEO-titels controleren",
+            "Prompt": "Controleer Yoast SEO-titels (_yoast_wpseo_title) over alle gepubliceerde berichten. Vind titels die te kort zijn (onder 30 tekens) of te lang (meer dan 60 tekens). Toon aantal en voorbeelden."
+        },
+        "Yoast SEO.Tools.2": {
+            "Starter": "Dubbele titels vinden",
+            "Prompt": "Vind berichten waarbij de Yoast SEO-titel (_yoast_wpseo_title) identiek is aan die van een ander bericht. Toon de titel en de lijst van bericht-ID's die deze delen."
+        },
+        "Yoast SEO.Tools.3": {
+            "Starter": "Niet-geïndexeerde berichten vinden",
+            "Prompt": "Vind berichten die via Yoast op noindex staan (_yoast_wpseo_meta-robots-noindex postmeta). Toon titel, berichttype en auteur."
+        },
+        "Yoast SEO.Tools.4": {
+            "Starter": "Focuszoekwoord instellen",
+            "Prompt": "Stel een Yoast-focuszoekwoord in voor een specifiek bericht. Welk bericht en welk zoekwoord?"
+        },
+        "Yoast SEO.Tools.5": {
+            "Starter": "Mail mij bij lage SEO-score",
+            "Prompt": "Maak een automatisering die mij e-mailt wanneer de Yoast SEO-score van een bericht onder een drempelwaarde zakt (met de Yoast-trigger 'A post's SEO score is greater than, less than, or equal to a value'). Welke drempelwaarde moet dit activeren?"
+        }
+    }
+}

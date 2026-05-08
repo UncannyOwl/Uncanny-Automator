@@ -60,6 +60,28 @@ class Client_Context_Service {
 	}
 
 	/**
+	 * Get the current user's locale as a BCP-47 language tag for the chat client SDK.
+	 *
+	 * WordPress stores locales as `xx_YY` (`es_AR`); the SDK reads its `locale` attribute as BCP-47 (`es-AR`). Variant suffixes such as `_formal` / `_informal` are dropped since the SDK has no concept of formality.
+	 *
+	 * @return string
+	 */
+	public function get_user_locale_bcp47(): string {
+
+		$wp_locale = get_user_locale();
+
+		$parts = explode( '_', $wp_locale );
+		if ( count( $parts ) > 2 ) {
+			$parts = array_slice( $parts, 0, 2 );
+		}
+
+		$language = strtolower( $parts[0] );
+		$region   = isset( $parts[1] ) ? strtoupper( $parts[1] ) : '';
+
+		return '' === $region ? $language : "{$language}-{$region}";
+	}
+
+	/**
 	 * Whether WordPress is currently serving an admin request.
 	 *
 	 * @return bool

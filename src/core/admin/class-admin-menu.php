@@ -1328,7 +1328,9 @@ class Admin_Menu {
 		} else {
 			automator_update_option( 'uap_automator_pro_license_status', 'invalid' );
 			automator_update_option( 'uap_automator_pro_license_expiry', '' );
-			// this license is no longer valid
+			// License is no longer valid — drop the cached license payload so the
+			// Uncanny Agent gate stops reading a stale "valid" status.
+			$this->flush_license_caches();
 		}
 		automator_update_option( 'uap_automator_pro_license_last_checked', time() );
 
@@ -1993,10 +1995,26 @@ class Admin_Menu {
 	}
 
 	/**
+	 * Clear cached license / credits transients.
+	 *
+	 * Called whenever the license key changes (activate or deactivate) so the next
+	 * render sees fresh state instead of waiting for the natural transient TTL.
+	 *
+	 * @return void
+	 */
+	private function flush_license_caches() {
+		delete_transient( 'automator_api_license' );
+		delete_transient( 'automator_api_credit_data' );
+		delete_transient( 'automator_api_credits' );
+	}
+
+	/**
 	 * @return void
 	 */
 	public function activate_license() {
 		$this->validate_credentials( automator_filter_input( 'state' ) );
+
+		$this->flush_license_caches();
 
 		automator_update_option( 'uap_automator_free_license_key', automator_filter_input( 'uap_automator_free_license_key' ) );
 
@@ -2043,6 +2061,8 @@ class Admin_Menu {
 
 		$this->validate_credentials( automator_filter_input( 'state' ) );
 
+		$this->flush_license_caches();
+
 		$license = automator_get_option( 'uap_automator_free_license_key' );
 
 		if ( $license ) {
@@ -2052,9 +2072,6 @@ class Admin_Menu {
 				automator_delete_option( 'uap_automator_free_license_status' );
 				automator_delete_option( 'uap_automator_free_license_key' );
 				automator_delete_option( 'uap_automator_free_license_data' );
-				delete_transient( 'automator_api_credit_data' );
-				delete_transient( 'automator_api_credits' );
-				delete_transient( 'automator_api_license' );
 			}
 
 			wp_safe_redirect( remove_query_arg( array( 'action' ) ) );

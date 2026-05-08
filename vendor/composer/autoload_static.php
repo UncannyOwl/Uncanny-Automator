@@ -395,6 +395,8 @@ class ComposerStaticInitef9c8a16a5cfc09c774f6f239c46cef5
         'Uncanny_Automator\\Api\\Components\\Condition\\Value_Objects\\Individual_Condition' => __DIR__ . '/../..' . '/src/api/components/condition/value-objects/class-individual-condition.php',
         'Uncanny_Automator\\Api\\Components\\Conversation_Starter\\Domain\\Conversation_Starter' => __DIR__ . '/../..' . '/src/api/components/conversation-starter/domain/class-conversation-starter.php',
         'Uncanny_Automator\\Api\\Components\\Conversation_Starter\\Registry\\Conversation_Registry' => __DIR__ . '/../..' . '/src/api/components/conversation-starter/registry/class-conversation-registry.php',
+        'Uncanny_Automator\\Api\\Components\\Conversation_Starter\\Translation\\Locale_Resolver' => __DIR__ . '/../..' . '/src/api/components/conversation-starter/translation/class-locale-resolver.php',
+        'Uncanny_Automator\\Api\\Components\\Conversation_Starter\\Translation\\Translation_Loader' => __DIR__ . '/../..' . '/src/api/components/conversation-starter/translation/class-translation-loader.php',
         'Uncanny_Automator\\Api\\Components\\Dependency\\Dependency' => __DIR__ . '/../..' . '/src/api/components/dependency/class-dependency.php',
         'Uncanny_Automator\\Api\\Components\\Dependency\\Dependency_Config' => __DIR__ . '/../..' . '/src/api/components/dependency/class-dependency-config.php',
         'Uncanny_Automator\\Api\\Components\\Dependency\\Value_Objects\\Dependency_Cta' => __DIR__ . '/../..' . '/src/api/components/dependency/value-objects/class-dependency-cta.php',

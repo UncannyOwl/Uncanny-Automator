@@ -44,13 +44,45 @@ class Admin_Settings {
 		$this->load_tab( 'general' );
 		$this->load_tab( 'premium-integrations' );
 
-		// Only load for Pro users.
-		if ( defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) && AUTOMATOR_PRO_PLUGIN_VERSION ) {
+		// Uncanny Agent: requires Pro active AND a valid Pro license.
+		if ( $this->is_uncanny_agent_eligible() ) {
 			$this->load_tab( 'uncanny-agent' );
 		}
 
 		$this->load_tab( 'advanced' );
 		$this->load_tab( 'addons' );
+	}
+
+	/**
+	 * Whether the Uncanny Agent settings tab should load.
+	 *
+	 * Pro must be active and the cached license (`automator_api_license` transient,
+	 * populated by Api_Server::get_license()) must report a valid Pro license. The
+	 * transient is read directly so the settings page render avoids the network
+	 * hop and the exceptions Api_Server::get_license() throws on failure.
+	 *
+	 * @return bool
+	 */
+	private function is_uncanny_agent_eligible() {
+
+		if ( ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) || ! AUTOMATOR_PRO_PLUGIN_VERSION ) {
+			return false;
+		}
+
+		if ( ! defined( 'AUTOMATOR_PRO_ITEM_ID' ) ) {
+			return false;
+		}
+
+		$license = get_transient( 'automator_api_license' );
+
+		if ( ! is_array( $license ) ) {
+			return false;
+		}
+
+		$license_status = isset( $license['license'] ) ? (string) $license['license'] : '';
+		$download_id    = isset( $license['download_id'] ) ? (int) $license['download_id'] : 0;
+
+		return 'valid' === $license_status && (int) AUTOMATOR_PRO_ITEM_ID === $download_id;
 	}
 
 	/**

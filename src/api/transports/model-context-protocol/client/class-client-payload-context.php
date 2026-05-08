@@ -259,6 +259,15 @@ class Client_Payload_Context {
 	}
 
 	/**
+	 * Retrieve the Automator license ID.
+	 *
+	 * @return int
+	 */
+	public function get_license_id(): int {
+		return $this->get_license_service()->get_license_id();
+	}
+
+	/**
 	 * Retrieve the licensed site name.
 	 *
 	 * @return string

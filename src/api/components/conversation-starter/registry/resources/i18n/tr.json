@@ -1,0 +1,1525 @@
+{
+    "pages": {
+        "Addons": "Eklentiler",
+        "All Coupons": "Tüm Kuponlar",
+        "All Courses": "Tüm Kurslar",
+        "All Customers": "Tüm Müşteriler",
+        "All Forms": "Tüm Formlar",
+        "All Forums": "Tüm Forumlar",
+        "All Groups": "Tüm Gruplar",
+        "All Lessons": "Tüm Dersler",
+        "All Members": "Tüm Üyeler",
+        "All Orders": "Tüm Siparişler",
+        "All Pages": "Tüm Sayfalar",
+        "All Posts": "Tüm Yazılar",
+        "All Products": "Tüm Ürünler",
+        "All Quizzes": "Tüm Sınavlar",
+        "All Subscriptions": "Tüm Abonelikler",
+        "All Topics": "Tüm Konular",
+        "All Users": "Tüm Kullanıcılar",
+        "All integrations": "Tüm entegrasyonlar",
+        "All recipes": "Tüm tarifler",
+        "App integrations": "Uygulama entegrasyonları",
+        "Assignments": "Ödevler",
+        "Categories": "Kategoriler",
+        "Comments": "Yorumlar",
+        "Courses": "Kurslar",
+        "Dashboard": "Panel",
+        "Default": "Varsayılan",
+        "Edit Coupon": "Kuponu Düzenle",
+        "Edit Course": "Kursu Düzenle",
+        "Edit Form": "Formu Düzenle",
+        "Edit Forum": "Forumu Düzenle",
+        "Edit Group": "Grubu Düzenle",
+        "Edit Lesson": "Dersi Düzenle",
+        "Edit Member": "Üyeyi Düzenle",
+        "Edit Order": "Siparişi Düzenle",
+        "Edit Page": "Sayfayı Düzenle",
+        "Edit Post": "Yazıyı Düzenle",
+        "Edit Product": "Ürünü Düzenle",
+        "Edit Quiz": "Sınavı Düzenle",
+        "Edit Subscription": "Aboneliği Düzenle",
+        "Edit Topic": "Konuyu Düzenle",
+        "Edit User": "Kullanıcıyı Düzenle",
+        "Entries": "Girdiler",
+        "Entries Overview": "Girdilere Genel Bakış",
+        "Form Entries": "Form Girdileri",
+        "Logs": "Günlükler",
+        "Media Library": "Ortam Kütüphanesi",
+        "Plans": "Planlar",
+        "Recipe editor": "Tarif düzenleyici",
+        "Reports": "Raporlar",
+        "Scheduled Recipes": "Zamanlanmış Tarifler",
+        "Settings": "Ayarlar",
+        "Single Entry": "Tek Girdi",
+        "Status": "Durum",
+        "Tags": "Etiketler",
+        "Tools": "Araçlar"
+    },
+    "rows": {
+        "Automator.Addons.1": {
+            "Starter": "Eklentiler öner",
+            "Prompt": "Kurulu eklentilerimi ve bağlı uygulama entegrasyonlarımı incele, ardından faydalı otomasyonların kilidini açabilecek eklentiler öner."
+        },
+        "Automator.Addons.2": {
+            "Starter": "Bir eklentiyi açıkla",
+            "Prompt": "Hangi eklentiyi düşündüğümü sor, ardından ne eklediğini ve ne zaman kurmaya değer olduğunu açıkla."
+        },
+        "Automator.Addons.3": {
+            "Starter": "Eksik yetenekleri bul",
+            "Prompt": "Eksik olabilecek otomasyon yeteneklerimi belirle ve hangi eklenti veya entegrasyonun bunları sağlayacağını öner."
+        },
+        "Automator.Addons.4": {
+            "Starter": "Eklenti seçeneklerini karşılaştır",
+            "Prompt": "Site ihtiyaçlarıma, mevcut eklentilerime ve olası tarif fikirlerime göre mevcut eklentileri karşılaştırmama yardım et."
+        },
+        "Automator.Addons.5": {
+            "Starter": "Eklenti kurulumunu planla",
+            "Prompt": "Bir eklentiyi kurmayı ve yapılandırmayı planlamama yardım et. Hangi iş akışını otomatikleştirmek istediğimi sor, ardından sonraki adımları öner."
+        },
+        "Automator.All integrations.1": {
+            "Starter": "Entegrasyonlar öner",
+            "Prompt": "Kurulu eklentilerimi ve bağlı uygulama entegrasyonlarımı incele, ardından siteme en uygun Automator entegrasyonlarını öner."
+        },
+        "Automator.All integrations.2": {
+            "Starter": "Otomasyon fırsatlarını bul",
+            "Prompt": "Kurulu eklentilerime ve bağlı uygulama entegrasyonlarıma göre faydalı otomasyon fikirleri öner."
+        },
+        "Automator.All integrations.3": {
+            "Starter": "Bir entegrasyonu açıkla",
+            "Prompt": "Hangi entegrasyonla ilgilendiğimi sor, ardından ne tür tariflerin kilidini açabileceğini açıkla."
+        },
+        "Automator.All integrations.4": {
+            "Starter": "Eksik entegrasyonları bul",
+            "Prompt": "Kurulu eklentilerimi ve bağlı uygulamalarımı mevcut Automator entegrasyonlarıyla karşılaştır, ardından kurmam, bağlamam veya yükseltmem gereken her şeyi belirle."
+        },
+        "Automator.All integrations.5": {
+            "Starter": "Bir entegrasyonla oluştur",
+            "Prompt": "Bir Automator entegrasyonu seçmeme ve onu siteme uygun faydalı bir tarif fikrine dönüştürmeme yardım et."
+        },
+        "Automator.All recipes.1": {
+            "Starter": "En yoğun tariflerimi göster",
+            "Prompt": "En çok tamamlanan çalıştırmaya sahip tarifleri, varsa durum ve son etkinlik bilgisiyle birlikte göster."
+        },
+        "Automator.All recipes.2": {
+            "Starter": "Bitirilecek taslakları bul",
+            "Prompt": "Bitirmeye değer olabilecek taslak tarifleri, en son güncellenenden başlayarak göster."
+        },
+        "Automator.All recipes.3": {
+            "Starter": "Son hatalı tarifleri bul",
+            "Prompt": "Son zamanlarda başarısız olan veya hata üreten tarifleri, tarif adı, son hata ve ne zaman olduğu bilgileriyle birlikte göster."
+        },
+        "Automator.All recipes.4": {
+            "Starter": "Sessiz tarifleri bul",
+            "Prompt": "Son zamanlarda çalışmamış veya devre dışı görünen tarifleri göster, böylece bunları tutup tutmayacağıma karar verebilirim."
+        },
+        "Automator.All recipes.5": {
+            "Starter": "Bu listeyi temizlememe yardım et",
+            "Prompt": "Gözden geçirmeye değer tarifleri hızlıca bulabileyim diye birkaç filtre veya temizlik hedefi öner."
+        },
+        "Automator.App integrations.1": {
+            "Starter": "Bağlı uygulamaları incele",
+            "Prompt": "Bağlı uygulama entegrasyonlarımı listele ve hangilerinin tariflerde kullanılmaya hazır olduğunu özetle."
+        },
+        "Automator.App integrations.2": {
+            "Starter": "Bağlanmamış uygulamaları bul",
+            "Prompt": "Henüz bağlanmamış uygulama entegrasyonlarını göster ve önce hangilerini bağlamanın en faydalı olacağını öner."
+        },
+        "Automator.App integrations.3": {
+            "Starter": "Uygulama bağlantılarını gider",
+            "Prompt": "Uygulama entegrasyonu bağlantı durumlarını kontrol et ve bağlantısı kesilmiş, süresi dolmuş veya eksik görünen her şeyi gidermeme yardım et."
+        },
+        "Automator.App integrations.4": {
+            "Starter": "Uygulama tarifleri öner",
+            "Prompt": "Bağlı uygulama entegrasyonlarıma veri gönderen veya onlardan veri alan yeni tarif fikirleri öner."
+        },
+        "Automator.App integrations.5": {
+            "Starter": "Bir uygulama bağlamama yardım et",
+            "Prompt": "Hangi uygulamayı bağlamak istediğimi sor, ardından sağlamam beklenen bilgi veya izinleri adım adım anlat."
+        },
+        "Automator.Categories.1": {
+            "Starter": "Kategori kullanımını özetle",
+            "Prompt": "Automator tarif kategorilerimin nasıl kullanıldığını göster. Kategori adlarını, tarif sayılarını ve boş kategorileri dahil et."
+        },
+        "Automator.Categories.2": {
+            "Starter": "Kategorisiz tarifleri bul",
+            "Prompt": "Kategorisi olmayan tarifleri ad ve durum bilgileriyle birlikte göster."
+        },
+        "Automator.Categories.3": {
+            "Starter": "Kategori temizliği öner",
+            "Prompt": "Adlara ve tarif sayılarına göre birleştirilmeye, yeniden adlandırılmaya, silinmeye veya korunmaya değer kategorileri öner."
+        },
+        "Automator.Categories.4": {
+            "Starter": "Tariflerimi düzenle",
+            "Prompt": "Tariflerime göz atmayı ve onları yönetmeyi kolaylaştıracak basit bir kategori yapısı öner."
+        },
+        "Automator.Categories.5": {
+            "Starter": "Kategori planı oluştur",
+            "Prompt": "Bir tarif kategori planı oluşturmama yardım et. Hangi tür tarifleri en sık oluşturduğumu sor, ardından kategori adları öner."
+        },
+        "Automator.Dashboard.1": {
+            "Starter": "Bana hızlı bir kazanım sun",
+            "Prompt": "Bugün yapabileceğim, sitemde zamandan tasarruf etmesi veya manuel işi azaltması olası küçük bir Automator iyileştirmesi öner."
+        },
+        "Automator.Dashboard.2": {
+            "Starter": "Bana ilham ver",
+            "Prompt": "Yürüttüğüm site türüne göre faydalı bir otomasyon fikri öner. Genel değil, pratik olsun."
+        },
+        "Automator.Dashboard.3": {
+            "Starter": "Temel öğeleri kontrol et",
+            "Prompt": "Başarısız çalıştırmalar, bağlantısı kesilmiş uygulamalar, düşük kredi veya güvenilirliği etkileyebilecek ayarlar gibi dikkat gerektiren önemli bir şey olup olmadığını kontrol et."
+        },
+        "Automator.Dashboard.4": {
+            "Starter": "Bana faydalı bir ipucu öğret",
+            "Prompt": "Henüz kullanmıyor olabileceğim bir Automator özelliği veya iş akışı fikri göster ve ne zaman denemeye değer olduğunu açıkla."
+        },
+        "Automator.Dashboard.5": {
+            "Starter": "Beni bir otomasyonla şaşırt",
+            "Prompt": "Sitem için yaratıcı ama gerçekçi bir tarif fikri ver, ardından hangi sorunu çözeceğini açıkla."
+        },
+        "Automator.Logs.1": {
+            "Starter": "Son hataları bul",
+            "Prompt": "Son Automator günlüklerini incele ve hatalı tarif çalıştırmalarını listele. Tarif adı, hata mesajı ve ne zaman olduğunu dahil et."
+        },
+        "Automator.Logs.2": {
+            "Starter": "Başarısız çalıştırmaları gider",
+            "Prompt": "Başarısız tarif çalıştırmalarını gidermeme yardım et. En yaygın son hatayı ve olası nedenini belirleyerek başla."
+        },
+        "Automator.Logs.3": {
+            "Starter": "Tarif etkinliğini göster",
+            "Prompt": "Günlüklerden Automator etkinliğini özetle; başarılı çalıştırmaları, başarısız çalıştırmaları ve olağandışı etkinliği olan tarifleri dahil et."
+        },
+        "Automator.Logs.4": {
+            "Starter": "Çalışmayan tarifi kontrol et",
+            "Prompt": "Hangi tarifin çalışmadığını sor, ardından en olası nedenleri kontrol etmeme yardım et."
+        },
+        "Automator.Logs.5": {
+            "Starter": "Bir günlük girdisini açıkla",
+            "Prompt": "Hangi günlük girdisi kimliğini, tarifi veya hata mesajını anlamak istediğimi sor, ardından ne olduğunu ve sonra ne yapmam gerektiğini açıkla."
+        },
+        "Automator.Plans.1": {
+            "Starter": "Planımı açıkla",
+            "Prompt": "Mevcut Automator planımın neleri içerdiğini ve hangi özelliklerin siteme en uygun olduğunu açıkla."
+        },
+        "Automator.Plans.2": {
+            "Starter": "Kilitli özellikleri bul",
+            "Prompt": "Mevcut planımda olmayan Automator özelliklerini belirle ve neyi mümkün kılacaklarını açıkla."
+        },
+        "Automator.Plans.3": {
+            "Starter": "Plan değişikliği öner",
+            "Prompt": "Kurulu eklentilerime, bağlı uygulama entegrasyonlarıma ve otomasyon hedeflerime göre plan değiştirmenin faydalı olup olmayacağını söyle."
+        },
+        "Automator.Plans.4": {
+            "Starter": "Plan avantajlarını karşılaştır",
+            "Prompt": "Oluşturabileceğim tarifler için mevcut Automator planlarının pratik avantajlarını karşılaştır."
+        },
+        "Automator.Plans.5": {
+            "Starter": "Yükseltmeye değer tarifler bul",
+            "Prompt": "Kurulu eklentilerime ve bağlı uygulama entegrasyonlarıma göre yükseltmeyi haklı çıkaracak tarif fikirleri öner."
+        },
+        "Automator.Recipe editor.1": {
+            "Starter": "Bu tarifi gider",
+            "Prompt": "Bu tarifi gidermeme yardım et. Son günlükler ve kısa bir özetle başla, ardından daha derin bir incelemeden önce sor."
+        },
+        "Automator.Recipe editor.2": {
+            "Starter": "Bu tarifi açıkla",
+            "Prompt": "Bu tarifin ne yaptığını ana tetikleyici ve eylem akışından başlayarak sade bir dille açıkla."
+        },
+        "Automator.Recipe editor.3": {
+            "Starter": "Bu tarifi iyileştir",
+            "Prompt": "Bu tarifi daha güvenilir veya bakımı daha kolay hale getirmenin birkaç yolunu öner. Özet ve son günlüklerle başla."
+        },
+        "Automator.Recipe editor.4": {
+            "Starter": "Bu tarife ekle",
+            "Prompt": "Bu tarife bir şey eklememe yardım et. Hangi sonucu istediğimi sor, ardından doğru tetikleyici, eylem, koşul veya geciktirmeyi öner."
+        },
+        "Automator.Recipe editor.5": {
+            "Starter": "Yeni bir tarif oluştur",
+            "Prompt": "Yeni bir tarif oluşturmama yardım et. Bağlamda mevcut bir tarif varsa, onu değiştirmek mi yoksa ayrı bir tarif oluşturmak mı istediğimi sor."
+        },
+        "Automator.Scheduled Recipes.1": {
+            "Starter": "Yaklaşan zamanlamaları göster",
+            "Prompt": "Zamanlanmış tetikleyici kullanan tarifleri bul ve gelecek çalıştırmaları tarif adı, zamanlama, sonraki çalıştırma zamanı ve durum bilgileriyle birlikte göster."
+        },
+        "Automator.Scheduled Recipes.2": {
+            "Starter": "Başarısız zamanlamaları bul",
+            "Prompt": "Başarısız olan, kaçırılan veya takılı görünen zamanlanmış çalıştırmaları bul ve neyin dikkat gerektirdiğini özetle."
+        },
+        "Automator.Scheduled Recipes.3": {
+            "Starter": "Zamanlama yükünü incele",
+            "Prompt": "Zamanlanmış çalıştırmaların aynı saatlerde kümelenip kümelenmediğini göster ve gerekirse daha iyi bir dağılım öner."
+        },
+        "Automator.Scheduled Recipes.4": {
+            "Starter": "Etkin olmayan zamanlanmış tarifleri bul",
+            "Prompt": "Son zamanlarda çalışmamış veya devre dışı görünen zamanlanmış tarifleri göster."
+        },
+        "Automator.Scheduled Recipes.5": {
+            "Starter": "Zamanlamalarımı iyileştir",
+            "Prompt": "Zamanlanmış tariflerimi daha güvenilir veya daha iyi zamanlanmış hale getirmenin yollarını öner."
+        },
+        "Automator.Settings.1": {
+            "Starter": "Automator ayarlarını incele",
+            "Prompt": "Automator ayarlarımı incele ve önemli, riskli veya değiştirmeye değer her şeyi özetle."
+        },
+        "Automator.Settings.2": {
+            "Starter": "En iyi ayarları öner",
+            "Prompt": "Güvenilir bir üretim sitesi için önerilen Automator ayarlarını öner. Varsa ödünleşimleri açıkla."
+        },
+        "Automator.Settings.3": {
+            "Starter": "E-posta ayarlarını kontrol et",
+            "Prompt": "E-posta, bildirim veya tarif iletişimiyle ilgili ayarları incele ve iyileştirmeler öner."
+        },
+        "Automator.Settings.4": {
+            "Starter": "Performans ayarlarını kontrol et",
+            "Prompt": "Tarif performansını, günlük kaydını, zamanlamayı veya arka plan işlemlerini etkileyebilecek ayarları incele."
+        },
+        "Automator.Settings.5": {
+            "Starter": "Bir ayarı açıkla",
+            "Prompt": "Hangi Automator ayarının açıklanmasını istediğimi sor, ardından ne yaptığını ve ne zaman değiştirmem gerektiğini açıkla."
+        },
+        "Automator.Status.1": {
+            "Starter": "Site durumunu incele",
+            "Prompt": "Automator durum bilgilerini incele ve tarif güvenilirliğini etkileyebilecek her şeyi özetle."
+        },
+        "Automator.Status.2": {
+            "Starter": "Ortam uyumluluğunu kontrol et",
+            "Prompt": "Uyumluluk sorunları veya güncelliğini yitirmiş bileşenler için WordPress, PHP, veritabanı ve Automator ortam ayrıntılarını kontrol et."
+        },
+        "Automator.Status.3": {
+            "Starter": "Cron sağlığını incele",
+            "Prompt": "WP-Cron veya zamanlanmış görev davranışının Automator tariflerini, özellikle zamanlanmış tarifleri veya geciktirilmiş eylemleri etkileyip etkilemediğini kontrol et."
+        },
+        "Automator.Status.4": {
+            "Starter": "Destek özeti oluştur",
+            "Prompt": "Destekle iletişime geçerken eklemem gereken önemli ortam ve Automator durum ayrıntılarını özetle."
+        },
+        "Automator.Status.5": {
+            "Starter": "Güvenilirlik risklerini bul",
+            "Prompt": "Automator ve WordPress ortam durum ayrıntılarını incele, ardından tariflerin başarısız olmasına, geç çalışmasına veya tutarsız davranmasına yol açabilecek riskleri belirle."
+        },
+        "Automator.Tags.1": {
+            "Starter": "Etiket kullanımını özetle",
+            "Prompt": "Automator tarif etiketlerimin nasıl kullanıldığını göster. Etiket adlarını, tarif sayılarını ve kullanılmayan etiketleri dahil et."
+        },
+        "Automator.Tags.2": {
+            "Starter": "Etiketsiz tarifleri bul",
+            "Prompt": "Etiketi olmayan tarifleri göster ve tarif adı amacı netleştirdiğinde basit etiketler öner."
+        },
+        "Automator.Tags.3": {
+            "Starter": "Tarif etiketlerini temizle",
+            "Prompt": "Yeniden adlandırmak veya kaldırmak isteyebileceğim yinelenen, aşırı belirli veya net olmayan etiketleri öner."
+        },
+        "Automator.Tags.4": {
+            "Starter": "Etiketleme stratejisi öner",
+            "Prompt": "Automator tariflerini daha kolay bulabileyim ve yönetebileyim diye pratik bir etiketleme stratejisi öner."
+        },
+        "Automator.Tags.5": {
+            "Starter": "Amaç odaklı etiketler planla",
+            "Prompt": "Onboarding, raporlama, bildirimler, e-ticaret, öğrenme veya bakım gibi amaç odaklı etiketler öner ve bunları kademeli olarak nasıl uygulayabileceğimi açıkla."
+        },
+        "BuddyBoss.All Forums.1": {
+            "Starter": "Forum etkinliğini göster",
+            "Prompt": "Son 90 gün içinde her BuddyBoss forumunu konu sayısı ve yanıt sayısına göre sırala. Forum başına en son etkinlik tarihini göster."
+        },
+        "BuddyBoss.All Forums.2": {
+            "Starter": "Etkin olmayan forumları bul",
+            "Prompt": "Son 30 gün içinde yeni konu açılmamış BuddyBoss forumlarını bul. Forum adını, toplam konu sayısını ve son etkinlik tarihini göster."
+        },
+        "BuddyBoss.All Forums.3": {
+            "Starter": "En çok konu açan kullanıcıları göster",
+            "Prompt": "Son 12 ay içinde tüm BuddyBoss forumlarında açılan konulara göre kullanıcıları sırala. Kullanıcı başına konu sayısını ve yanıt sayısını göster."
+        },
+        "BuddyBoss.All Forums.4": {
+            "Starter": "Forum abonelerini karşılaştır",
+            "Prompt": "BuddyBoss forumu başına abone sayılarını ve abonelerin konulara oranını göster. Abonesi çok ama etkinliği düşük forumları belirle."
+        },
+        "BuddyBoss.All Forums.5": {
+            "Starter": "Yeni konuda bana e-posta gönder",
+            "Prompt": "Bir BuddyBoss kullanıcısı her forum konusu açtığında bana e-posta gönderen bir otomasyon oluştur. E-postaya konu başlığını, yazarı ve forum adını dahil et."
+        },
+        "BuddyBoss.All Groups.1": {
+            "Starter": "Grup etkinlik oranlarını karşılaştır",
+            "Prompt": "BuddyBoss gruplarını etkinlik oranına göre karşılaştır: son 90 gün içinde üye başına aylık gönderi sayısı. En etkinden en az etkine doğru sırala."
+        },
+        "BuddyBoss.All Groups.2": {
+            "Starter": "Etkin olmayan grupları bul",
+            "Prompt": "Son 30 gün içinde etkinlik akışında gönderi olmayan BuddyBoss gruplarını bul. Grup adını, üye sayısını ve son etkinlik tarihini göster."
+        },
+        "BuddyBoss.All Groups.3": {
+            "Starter": "Grup boyutu dağılımını göster",
+            "Prompt": "BuddyBoss grup üye sayılarının dağılımını göster. En büyük grupları ve 5'ten az üyesi olan kaç grup olduğunu belirle."
+        },
+        "BuddyBoss.All Groups.4": {
+            "Starter": "Yeni grupta bana e-posta gönder",
+            "Prompt": "Bir BuddyBoss kullanıcısı her grup oluşturduğunda bana e-posta gönderen bir otomasyon oluştur. Grup adını, oluşturanı ve grup türünü dahil et."
+        },
+        "BuddyBoss.All Groups.5": {
+            "Starter": "Grup büyümesini göster",
+            "Prompt": "Son 12 ay için ay başına yeni BuddyBoss grup oluşturmalarını göster. Hangi grup türlerinin en sık oluşturulduğunu belirle."
+        },
+        "BuddyBoss.All Members.1": {
+            "Starter": "Üye büyümesini göster",
+            "Prompt": "Son 12 ay için ay başına BuddyBoss üye kayıtlarını göster. Kohort başına etkinlik akışında gönderi paylaşan üyelerin oranıyla karşılaştır."
+        },
+        "BuddyBoss.All Members.2": {
+            "Starter": "Etkin olmayan üyeleri bul",
+            "Prompt": "Son 60 gün içinde etkinlik akışında gönderi paylaşmamış, gruba katılmamış veya mesaj göndermemiş BuddyBoss üyelerini bul. Adı, kayıt tarihini ve son etkinlik tarihini göster."
+        },
+        "BuddyBoss.All Members.3": {
+            "Starter": "Profil tamamlanmasını karşılaştır",
+            "Prompt": "BuddyBoss üye profili tamamlanmasını karşılaştır: her üyenin doldurduğu xprofile alanlarının yüzdesi. Dağılımı göster ve eksik profilli üyeleri belirle."
+        },
+        "BuddyBoss.All Members.4": {
+            "Starter": "En çok bağlantı kuran üyeleri bul",
+            "Prompt": "En çok arkadaş bağlantısı olan BuddyBoss üyelerini bul. İlk 25'i arkadaş sayısı ve ait oldukları grup sayısıyla birlikte göster."
+        },
+        "BuddyBoss.All Topics.1": {
+            "Starter": "Konu etkileşimini göster",
+            "Prompt": "Son 90 gün içindeki BuddyBoss forum konularını yanıt sayısına göre sırala. Konu başına ortalama yanıtı göster ve en etkin 10 konuyu belirle."
+        },
+        "BuddyBoss.All Topics.2": {
+            "Starter": "Yanıtsız konuları bul",
+            "Prompt": "Sıfır yanıtı olan BuddyBoss konularını en eskiden başlayarak sırala. Konu başlığını, yazarı, forumu ve konunun ne kadar süredir beklediğini göster."
+        },
+        "BuddyBoss.All Topics.3": {
+            "Starter": "En çok konu açan kullanıcıları göster",
+            "Prompt": "Son 90 gün içinde açılan konulara göre kullanıcıları sırala. Konu sayısını, alınan yanıtları ve en çok yazdıkları forumları göster."
+        },
+        "BuddyBoss.All Topics.4": {
+            "Starter": "Soğumuş konuları bul",
+            "Prompt": "Son 30 gün içinde yeni yanıt almamış BuddyBoss konularını bul. Başlığı, son yanıt tarihini, forumu ve toplam yanıt sayısını göster."
+        },
+        "BuddyBoss.All Topics.5": {
+            "Starter": "Konu yanıtında bana e-posta gönder",
+            "Prompt": "Bir BuddyBoss konusu her yanıt aldığında bana e-posta gönderen bir otomasyon oluştur. E-postaya konu başlığını ve yanıt içeriğini dahil et."
+        },
+        "BuddyBoss.Edit Forum.1": {
+            "Starter": "Bu forumun etkinliğini göster",
+            "Prompt": "Bu forumun konularını yanıt sayısı ve görüntülenmeye göre sırala. En etkin konu açanları ve günlük etkinlik oranını belirle."
+        },
+        "BuddyBoss.Edit Forum.2": {
+            "Starter": "Yanıtsız konuları bul",
+            "Prompt": "Bu forumda sıfır yanıtı olan konuları bul. Konu başlığını, yazarı ve konunun ne kadar süredir açık olduğunu göster."
+        },
+        "BuddyBoss.Edit Forum.3": {
+            "Starter": "Soğumuş konuları bul",
+            "Prompt": "Bu forumda son 30 gün içinde yeni yanıt almamış konuları bul. Konu başlığını, son yanıt tarihini ve yanıt sayısını göster."
+        },
+        "BuddyBoss.Edit Forum.4": {
+            "Starter": "Bir kullanıcıyı abone yap",
+            "Prompt": "Yeni konulardan haberdar olabilmesi için bir BuddyBoss kullanıcısını bu foruma abone yap. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "BuddyBoss.Edit Forum.5": {
+            "Starter": "Yeni yanıtta bana e-posta gönder",
+            "Prompt": "Bir BuddyBoss kullanıcısı bu foruma her yanıt yazdığında bana e-posta gönderen bir otomasyon oluştur. Yanıt içeriğini, yazarı ve konu başlığını dahil et."
+        },
+        "BuddyBoss.Edit Group.1": {
+            "Starter": "Bu grubun etkinlik zaman çizelgesini göster",
+            "Prompt": "Bu BuddyBoss grubunun son 30 gündeki etkinliğini göster: gönderiler, yanıtlar, katılımlar, ayrılmalar. En etkin üyeyi ve günlük gönderi ortalamasını belirle."
+        },
+        "BuddyBoss.Edit Group.2": {
+            "Starter": "Üye etkileşimini göster",
+            "Prompt": "Bu BuddyBoss grubundaki her üyenin ne kadar etkin olduğunu göster: grup etkinlik akışına gönderiler, yanıtlar ve son etkinlik tarihi. Katılan ama hiç gönderi paylaşmayan üyeleri vurgula."
+        },
+        "BuddyBoss.Edit Group.3": {
+            "Starter": "Etkin olmayan üyeleri bul",
+            "Prompt": "Bu BuddyBoss grubunun son 30 gün içinde grup etkinlik akışında gönderi paylaşmayan veya tartışmalara yanıt vermeyen üyelerini bul. Adı ve katılım tarihini göster."
+        },
+        "BuddyBoss.Edit Group.4": {
+            "Starter": "Tüm üyelere mesaj gönder",
+            "Prompt": "Bu grubun tüm üyelerine BuddyBoss özel mesajı gönder. Mesaj ne demeli?"
+        },
+        "BuddyBoss.Edit Group.5": {
+            "Starter": "Bir kullanıcı ekle",
+            "Prompt": "Bu BuddyBoss grubuna bir kullanıcı ekle. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "BuddyBoss.Edit Member.1": {
+            "Starter": "Bu üyenin etkinlik zaman çizelgesini göster",
+            "Prompt": "Bu BuddyBoss üyesinin tüm etkinliğini göster: etkinlik akışına gönderiler, gruba katılmalar/ayrılmalar, kurulan arkadaşlıklar, forum konuları ve yanıtlar. Kronolojik olarak sırala."
+        },
+        "BuddyBoss.Edit Member.2": {
+            "Starter": "Bu üyenin gruplarını göster",
+            "Prompt": "Bu üyenin ait olduğu her BuddyBoss grubunu, her gruptaki rolüyle, ne zaman katıldığıyla ve her grubun etkinlik akışındaki gönderi sayısıyla birlikte göster."
+        },
+        "BuddyBoss.Edit Member.3": {
+            "Starter": "Bir gruba ekle",
+            "Prompt": "Bu BuddyBoss kullanıcısını bir gruba ekle. Hangi gruba eklemeliyim?"
+        },
+        "BuddyBoss.Edit Member.4": {
+            "Starter": "Profil türünü ayarla",
+            "Prompt": "Bu BuddyBoss kullanıcısının profil türünü belirli bir türe ayarla. Hangi profil türünü atamalıyım?"
+        },
+        "BuddyBoss.Edit Member.5": {
+            "Starter": "Özel mesaj gönder",
+            "Prompt": "Bu kullanıcıya BuddyBoss özel mesajı gönder. Mesaj ne demeli?"
+        },
+        "BuddyBoss.Edit Topic.1": {
+            "Starter": "Bu konunun yanıt etkinliğini göster",
+            "Prompt": "Bu BuddyBoss konusunun yanıtlarını yazar ve zaman damgasıyla kronolojik sırada göster. En etkin yanıtlayanı ve yanıtlar arası ortalama süreyi belirle."
+        },
+        "BuddyBoss.Edit Topic.2": {
+            "Starter": "Benzer konuları bul",
+            "Prompt": "Aynı BuddyBoss forumunda başlık ve etiketlere göre benzer konuları bul. Başlığı, yazarı, yanıt sayısını ve son etkinliği göster."
+        },
+        "BuddyBoss.Edit Topic.3": {
+            "Starter": "Yanıt yaz",
+            "Prompt": "Bu BuddyBoss konusuna yanıt yaz. Yanıt ne demeli?"
+        },
+        "BuddyBoss.Edit Topic.4": {
+            "Starter": "Yeni yanıtta bana e-posta gönder",
+            "Prompt": "Bu BuddyBoss konusu her yanıt aldığında bana e-posta gönderen bir otomasyon oluştur. E-postaya yanıt içeriğini ve yazarı dahil et."
+        },
+        "BuddyBoss.Edit Topic.5": {
+            "Starter": "Konu zaman çizelgesini göster",
+            "Prompt": "Bu BuddyBoss konusunun kronolojik bir zaman çizelgesini göster: ne zaman oluşturulduğu, her yanıtın ne zaman yazıldığı ve 7 günden uzun süren etkinlik dışı dönemler."
+        },
+        "Default.Default.1": {
+            "Starter": "Bu sayfada bana yardım et",
+            "Prompt": "Burada neler yapabileceğimi anlamama yardım etmek için mevcut WordPress ve Automator bağlamını kullan. Sayfa anlaşılır değilse, önce bana kısa bir soru sor."
+        },
+        "Default.Default.2": {
+            "Starter": "Sitemi otomatikleştirmeme yardım et",
+            "Prompt": "Kurulu eklentilerimi ve bağlı uygulama entegrasyonlarımı incele, ardından sitem için pratik bir otomasyon fikri öner. Sormadığım sürece tarif tanımlarını incelemekten kaçın."
+        },
+        "Default.Default.3": {
+            "Starter": "Neyin dikkat gerektirdiğini kontrol et",
+            "Prompt": "Son hatalar, bağlantısı kesilmiş uygulamalar, krediler, ayarlar veya durum ayrıntıları gibi hafif Automator sinyallerini kontrol et, ardından bir şeyin dikkat gerektirip gerektirmediğini söyle."
+        },
+        "Default.Default.4": {
+            "Starter": "Hızlı bir kazanım bul",
+            "Prompt": "Şimdi yapabileceğim, zamandan tasarruf ettirecek, manuel işi azaltacak veya güvenilirliği artıracak küçük bir WordPress veya Automator görevi öner."
+        },
+        "Default.Default.5": {
+            "Starter": "Neler yapabilirsin?",
+            "Prompt": "Sana açık olan bağlamı kullanarak ve eksik olan her şeyi sorarak bu sitede bana nasıl yardım edebileceğine dair kısa, pratik bir menü ver."
+        },
+        "Fluent Forms.All Forms.1": {
+            "Starter": "Gönderim hacmini göster",
+            "Prompt": "Son 30 gün için form başına Fluent Forms gönderim hacmini göster. Önceki 30 günle karşılaştır ve oranı değişen formları vurgula."
+        },
+        "Fluent Forms.All Forms.2": {
+            "Starter": "Etkin olmayan formları bul",
+            "Prompt": "Son 60 gün içinde gönderim almamış Fluent Forms formlarını bul. Form başlığını, toplam girdileri ve son gönderim tarihini göster."
+        },
+        "Fluent Forms.All Forms.3": {
+            "Starter": "En iyi formları göster",
+            "Prompt": "Fluent Forms formlarını toplam gönderim sayısına göre sırala. Gönderim sayısını, günlük ortalamayı ve oluşturulma tarihini göster."
+        },
+        "Fluent Forms.All Forms.4": {
+            "Starter": "Dönüşüm oranlarını karşılaştır",
+            "Prompt": "Fluent Forms formlarının dönüşüm oranlarını karşılaştır: görüntülenme ile gönderim karşılaştırması (fluentform_form_analytics kullanarak). Görüntülenmesi yüksek ama gönderimi düşük formları belirle."
+        },
+        "Fluent Forms.Edit Form.1": {
+            "Starter": "Bu formu otomatikleştir",
+            "Prompt": "Bu Fluent Forms formunu tetikleyici olarak kullanan bir Uncanny Automator tarifi oluştur ('Bir kullanıcı bir form gönderir' / WPFFSUBFORM tetikleyicisi). Bu form gönderildiğinde ne olmalı?"
+        },
+        "Fluent Forms.Edit Form.2": {
+            "Starter": "Gönderimleri özetle",
+            "Prompt": "Bu Fluent Forms formuna son 30 gündeki girdileri oku ve örüntüleri özetle: seçim alanı başına en sık değerler, serbest metin alanlarındaki ortak temalar ve en yoğun gönderim saatleri."
+        },
+        "Fluent Forms.Edit Form.3": {
+            "Starter": "Alan istatistiklerini derle",
+            "Prompt": "Bu Fluent Forms formundaki her alan için doldurma oranını (ne sıklıkla doldurulduğu), metin alanları için ortalama uzunluğu, seçim alanları için değer dağılımını ve en sık değeri göster."
+        },
+        "Fluent Forms.Edit Form.4": {
+            "Starter": "Terk edilen alanları bul",
+            "Prompt": "Bu Fluent Forms formundaki tamamlanmış gönderimlerde en sık boş bırakılan alanları belirle. Hangi alanların terk veya kafa karışıklığına neden olabileceğini öner."
+        },
+        "Fluent Forms.Edit Form.5": {
+            "Starter": "Form performansını göster",
+            "Prompt": "Bu Fluent Forms formunun toplam gönderim sayısını, dönüşüm oranını (fluentform_form_analytics'ten görüntülenme ile gönderim karşılaştırması) ve sitedeki tüm formların ortalama performansıyla nasıl karşılaştırıldığını göster."
+        },
+        "Fluent Forms.Entries.1": {
+            "Starter": "Son girdileri göster",
+            "Prompt": "Son 7 günde bu forma yapılan Fluent Forms girdilerini göster. Güne göre grupla ve hacmi göster."
+        },
+        "Fluent Forms.Entries.2": {
+            "Starter": "Yinelenen girdileri bul",
+            "Prompt": "Bu form için yinelenen Fluent Forms girdilerini bul (aynı e-posta birden fazla kez gönderiyorsa). E-posta başına yineleme sayısını göster."
+        },
+        "Fluent Forms.Entries.3": {
+            "Starter": "Girdi durum dağılımını göster",
+            "Prompt": "Bu form için Fluent Forms girdi durum dağılımını göster: okundu ile okunmadı, favorilenen, spam, çöpe atılan."
+        },
+        "Fluent Forms.Entries.4": {
+            "Starter": "Gönderim zamanlamasını göster",
+            "Prompt": "Bu form için Fluent Forms gönderim zamanlamasını göster: haftanın gününe ve saate göre sayılar. En yoğun gönderim aralıklarını belirle."
+        },
+        "Fluent Forms.Single Entry.1": {
+            "Starter": "Gönderenin diğer girdilerini göster",
+            "Prompt": "Bu gönderenin tüm formlardaki diğer Fluent Forms girdilerini bul (e-postayla eşleştirilerek). Form başlığını, gönderim tarihini ve önemli alanları göster."
+        },
+        "Fluent Forms.Single Entry.2": {
+            "Starter": "Girdi üst verisini göster",
+            "Prompt": "Bu Fluent Forms girdisinin üst verisini göster: gönderim tarihi, IP adresi, kullanıcı aracısı, kaynak URL'si ve okundu durumu."
+        },
+        "Fluent Forms.Single Entry.3": {
+            "Starter": "Yanıt gönder",
+            "Prompt": "Bu Fluent Forms gönderenine e-postayla yanıt gönder. E-posta ne demeli?"
+        },
+        "Fluent Forms.Single Entry.4": {
+            "Starter": "Aynı IP'den girdileri bul",
+            "Prompt": "Bu girdinin IP adresinden tüm formlara gönderilen Fluent Forms girdilerini bul. Form başlığını, gönderim tarihini ve e-postayı göster."
+        },
+        "Fluent Forms.Single Entry.5": {
+            "Starter": "Göndereni bir role ekle",
+            "Prompt": "Bu Fluent Forms formu giriş yapmış bir kullanıcı tarafından gönderildiğinde kullanıcıya rol ekleyen bir otomasyon oluştur. Hangi rolü eklemeliyim?"
+        },
+        "Gravity Forms.All Forms.1": {
+            "Starter": "Gönderim hacmini göster",
+            "Prompt": "Son 30 gün için form başına Gravity Forms gönderim hacmini göster. Önceki 30 günle karşılaştır ve gönderim oranı yükselen veya düşen formları vurgula."
+        },
+        "Gravity Forms.All Forms.2": {
+            "Starter": "Etkin olmayan formları bul",
+            "Prompt": "Son 60 gün içinde girdi almamış Gravity Forms formlarını bul. Form adını, ömür boyu toplam girdiyi ve son girdi tarihini göster."
+        },
+        "Gravity Forms.All Forms.3": {
+            "Starter": "En iyi formları göster",
+            "Prompt": "Gravity Forms formlarını alınan toplam girdiye göre sırala. Girdi sayısını, günlük ortalama girdiyi ve form oluşturulma tarihini göster."
+        },
+        "Gravity Forms.All Forms.4": {
+            "Starter": "Girdi durum dağılımını göster",
+            "Prompt": "Tüm Gravity Forms formları arasında girdi durum dağılımını göster: etkin, spam, çöp. Form başına spam oranını hesapla."
+        },
+        "Gravity Forms.Edit Form.1": {
+            "Starter": "Bu formu otomatikleştir",
+            "Prompt": "Bu Gravity Forms formunu tetikleyici olarak kullanan bir Uncanny Automator tarifi oluştur ('Bir form gönderilir' / GFSUBFORM tetikleyicisi). Bu form gönderildiğinde ne olmalı?"
+        },
+        "Gravity Forms.Edit Form.2": {
+            "Starter": "Girdileri özetle",
+            "Prompt": "Bu Gravity Forms formuna son 30 gündeki girdileri oku ve örüntüleri özetle: seçim alanı başına en sık değerler, serbest metin alanlarındaki ortak temalar ve en yoğun gönderim saatleri."
+        },
+        "Gravity Forms.Edit Form.3": {
+            "Starter": "Alan istatistiklerini derle",
+            "Prompt": "Bu Gravity Forms formundaki her alan için doldurma oranını (ne sıklıkla doldurulduğu), metin alanları için ortalama uzunluğu, seçim alanları için değer dağılımını ve en sık değeri göster."
+        },
+        "Gravity Forms.Edit Form.4": {
+            "Starter": "Terk edilen alanları bul",
+            "Prompt": "Bu Gravity Forms formundaki tamamlanmış girdilerde en sık boş bırakılan alanları belirle. Hangi alanların terk veya kafa karışıklığına neden olabileceğini öner."
+        },
+        "Gravity Forms.Edit Form.5": {
+            "Starter": "Form performansını göster",
+            "Prompt": "Bu Gravity Forms formunun toplam girdi sayısını, günlük ortalama girdiyi, spam oranını ve sitedeki tüm formların ortalama performansıyla nasıl karşılaştırıldığını göster."
+        },
+        "Gravity Forms.Entries.1": {
+            "Starter": "Günlük girdi sayılarını göster",
+            "Prompt": "Bu form için son 30 gün boyunca gün başına Gravity Forms girdi sayılarını göster. Olağandışı yüksek veya düşük hacimli günleri belirle."
+        },
+        "Gravity Forms.Entries.2": {
+            "Starter": "Spam girdileri bul",
+            "Prompt": "Bu form için spam olarak işaretlenmiş Gravity Forms girdilerini bul. Sayıyı, ortak örüntüleri (IP'ler, e-posta alan adları) ve tarih aralığını göster."
+        },
+        "Gravity Forms.Entries.3": {
+            "Starter": "Yinelenen girdileri bul",
+            "Prompt": "Bu form için yinelenen Gravity Forms girdilerini bul (aynı e-posta adresi birden fazla kez gönderiyorsa). E-posta başına sayıyı göster."
+        },
+        "Gravity Forms.Entries.4": {
+            "Starter": "Girdi zamanlama örüntülerini göster",
+            "Prompt": "Bu form için Gravity Forms girdi gönderim zamanlamasını göster: haftanın gününe ve saate göre sayılar. En yoğun gönderim aralıklarını belirle."
+        },
+        "Gravity Forms.Entries.5": {
+            "Starter": "Eski girdileri toplu sil",
+            "Prompt": "Bu form için 90 günden eski Gravity Forms girdilerini bul. Ay başına sayıyı göster ve Gravity Forms girdi silme eylemini kullanarak silmeyi öner."
+        },
+        "Gravity Forms.Single Entry.1": {
+            "Starter": "Gönderenin diğer girdilerini göster",
+            "Prompt": "Bu gönderenin tüm formlardaki diğer Gravity Forms girdilerini bul (e-postayla eşleştirilerek). Form adını, girdi tarihini ve girdi durumunu göster."
+        },
+        "Gravity Forms.Single Entry.2": {
+            "Starter": "Girdi üst verisini göster",
+            "Prompt": "Bu Gravity Forms girdisinin üst verisini göster: gönderim tarihi, IP adresi, kullanıcı aracısı, kaynak URL'si ve varsa girdi notları."
+        },
+        "Gravity Forms.Single Entry.3": {
+            "Starter": "Bu girdiyi güncelle",
+            "Prompt": "Gravity Forms girdi güncelleme eylemini kullanarak bu Gravity Forms girdisindeki bir alanı güncelle. Hangi alan ve yeni değer ne?"
+        },
+        "Gravity Forms.Single Entry.4": {
+            "Starter": "Bu girdiyi sil",
+            "Prompt": "Gravity Forms girdi silme eylemini kullanarak bu Gravity Forms girdisini sil. Emin misin?"
+        },
+        "Gravity Forms.Single Entry.5": {
+            "Starter": "Bu gönderene e-posta gönder",
+            "Prompt": "Bu Gravity Forms gönderenine e-posta gönder. E-posta ne demeli?"
+        },
+        "LearnDash.All Courses.1": {
+            "Starter": "Tamamlanma oranlarını göster",
+            "Prompt": "Her kurs için tamamlanma oranını hesapla: kayıtlı öğrenci sayısı, tamamlayan sayısı ve tamamlanma yüzdesi. En düşük tamamlanma oranından başlayarak sırala."
+        },
+        "LearnDash.All Courses.2": {
+            "Starter": "Kayıt eğilimlerini göster",
+            "Prompt": "Son 12 ayın her ayı için kurs başına kayıt sayılarını göster. Hangi kurslar kayıt kazanıyor, hangileri düşüyor ve hangileri sabit?"
+        },
+        "LearnDash.All Courses.3": {
+            "Starter": "Tamamlanmada sertifika gönder",
+            "Prompt": "Bir öğrenci kursu tamamladığında ona sertifika gönderen bir otomasyon oluştur. Bunu hangi kurs için ayarlamalıyım?"
+        },
+        "LearnDash.All Courses.4": {
+            "Starter": "Kimsenin bitirmediği kursları bul",
+            "Prompt": "En az 5 öğrencinin kayıtlı olduğu ama tamamlanma oranı %10'un altında olan kursları bul. Her biri için kayıt sayısını, tamamlanma sayısını ve tamamlanma oranını göster."
+        },
+        "LearnDash.All Courses.5": {
+            "Starter": "Kurs performansını karşılaştır",
+            "Prompt": "Tüm kursların yan yana karşılaştırmasını göster: tamamlanma oranı, ortalama sınav puanı ve kayıttan tamamlanmaya kadar geçen ortalama süre. Tamamlanma oranına göre sırala."
+        },
+        "LearnDash.All Groups.1": {
+            "Starter": "Grup performansını karşılaştır",
+            "Prompt": "Tüm grupları yan yana karşılaştır: her grubun üyeleri için ortalama kurs tamamlanma oranı ve ortalama sınav puanı. Tamamlanma oranına göre sırala."
+        },
+        "LearnDash.All Groups.2": {
+            "Starter": "En büyük grupları göster",
+            "Prompt": "Tüm grupları üye sayısına göre sıralı listele. Her grubun adını, üye sayısını, ilişkili kursları ve grup liderlerini göster."
+        },
+        "LearnDash.All Groups.3": {
+            "Starter": "Etkin olmayan grupları bul",
+            "Prompt": "Son 30 gün içinde hiçbir üyenin ders, konu veya sınav tamamlamadığı grupları bul. Grup adını, üye sayısını, lideri ve en son etkinlik tarihini göster."
+        },
+        "LearnDash.All Groups.4": {
+            "Starter": "Grup ilerleme özetini göster",
+            "Prompt": "Her grup için toplam üye sayısını, ortalama kurs ilerleme yüzdesini, ortalama sınav puanını ve bu ay kurs tamamlanma sayısını göster."
+        },
+        "LearnDash.All Groups.5": {
+            "Starter": "Lider etkinliğini karşılaştır",
+            "Prompt": "Tüm grupları grup liderlerine göre grupla. Her lider için tüm gruplarının üyeleri arasında ortalama tamamlanma oranını ve ortalama sınav puanını göster. Hangi liderlerin grupları en iyi performansı gösteriyor?"
+        },
+        "LearnDash.All Lessons.1": {
+            "Starter": "En yüksek terk dersleri bul",
+            "Prompt": "Her kurs için her dersin tamamlanma sayısını önceki dersle karşılaştır. En büyük terk yaşanan dersleri belirle - en çok öğrencinin ilerlemeyi durdurduğu yer."
+        },
+        "LearnDash.All Lessons.2": {
+            "Starter": "Bu haftaki tamamlanmaları göster",
+            "Prompt": "Bu hafta gerçekleşen ders tamamlanmalarının sayısını kursa göre ayrılmış olarak göster. Geçen haftayla karşılaştır."
+        },
+        "LearnDash.All Lessons.3": {
+            "Starter": "Derslerden sonra öğrencilere e-posta gönder",
+            "Prompt": "Bir öğrenci dersi tamamladığında, sırada ne öğreneceğini önizleyen bir e-posta gönderen bir otomasyon oluştur. Bunu hangi kurs için ayarlamalıyım?"
+        },
+        "LearnDash.All Lessons.4": {
+            "Starter": "Ortalama ders hızını göster",
+            "Prompt": "Tüm kurslarda ortalama öğrencinin haftada kaç ders tamamladığını hesapla. Öğrenciler düzenli ilerliyor mu yoksa dersleri patlamalar halinde mi tamamlıyor?"
+        },
+        "LearnDash.All Lessons.5": {
+            "Starter": "Etkinliği olmayan dersleri bul",
+            "Prompt": "Etkin öğrencisi olan kurslara ait olduğu halde son 30 gün içinde sıfır tamamlanması olan tüm dersleri listele. Ders adını, kurs adını ve kursa kayıtlı öğrenci sayısını göster."
+        },
+        "LearnDash.All Quizzes.1": {
+            "Starter": "Geçme/kalma oranlarını göster",
+            "Prompt": "Her sınav için geçme oranını ve kalma oranını hesapla. Toplam denemeleri, geçenleri, kalanları ve geçme yüzdesini göster. En düşük geçme oranından başlayarak sırala."
+        },
+        "LearnDash.All Quizzes.2": {
+            "Starter": "Ortalama puanları göster",
+            "Prompt": "Bu ay her sınav için ortalama sınav puanını göster ve geçen ayla karşılaştır. Puanlar artıyor mu yoksa düşüyor mu?"
+        },
+        "LearnDash.All Quizzes.3": {
+            "Starter": "Kalan öğrencilere e-posta gönder",
+            "Prompt": "Bir öğrenci sınavda kaldığında, materyali gözden geçirip tekrar denemesi için cesaretlendiren bir e-posta gönderen bir otomasyon oluştur. Bunu hangi sınav için ayarlamalıyım?"
+        },
+        "LearnDash.All Quizzes.4": {
+            "Starter": "Yeniden alma örüntülerini analiz et",
+            "Prompt": "Her sınav için öğrenci başına ortalama deneme sayısını ve yeniden almalarda puanların artıp artmadığını göster. Hangi sınavlar için en çok deneme gerekiyor ve yeniden almalar gerçekten yardım ediyor mu?"
+        },
+        "LearnDash.All Quizzes.5": {
+            "Starter": "Kimsenin geçemediği sınavları bul",
+            "Prompt": "Geçme oranı %25'in altında olan sınavları bul. Sınav adını, kursu, toplam denemeleri ve geçme oranını göster. Bunlar içerik veya zorluk ayarlaması gerektirebilir."
+        },
+        "LearnDash.All Topics.1": {
+            "Starter": "Tamamlanma oranlarını göster",
+            "Prompt": "Tüm konular için tamamlanma oranını üst dersine ve kursa göre gruplayarak hesapla. Her biri için kayıt sayısını, tamamlanmaları ve tamamlanma yüzdesini göster."
+        },
+        "LearnDash.All Topics.2": {
+            "Starter": "En az tamamlanan konuları bul",
+            "Prompt": "Üst dersinin tamamlanma oranına göre en düşük tamamlanma oranlarına sahip konuları bul. Bunlar, dersin geri kalanını tamamlasalar bile öğrencilerin atladığı veya takıldığı konulardır."
+        },
+        "LearnDash.All Topics.3": {
+            "Starter": "Konu tamamlanmasında e-posta gönder",
+            "Prompt": "Bir öğrenci bir konuyu tamamladığında ilerleme güncelleme e-postası gönderen bir otomasyon oluştur. Bunu hangi kurs için ayarlamalıyım?"
+        },
+        "LearnDash.All Topics.4": {
+            "Starter": "Kurs başına konuları göster",
+            "Prompt": "Kurs başına konu sayısını say. Hangi kurslarda en çok konu var ve hangilerinde en az?"
+        },
+        "LearnDash.All Topics.5": {
+            "Starter": "Bu haftaki etkinliği göster",
+            "Prompt": "Son 7 gündeki konu tamamlanmalarını kursa ve öğrenci sayısına göre ayrılmış olarak göster. Önceki 7 günle karşılaştır."
+        },
+        "LearnDash.Assignments.1": {
+            "Starter": "Notlandırılmamış ödevleri göster",
+            "Prompt": "Gönderilmiş ama henüz notlandırılmamış tüm ödevleri listele. Gönderim tarihine göre, en eskiden başlayarak sırala ve öğrenci adını, kursu ve ödevin kaç gündür beklediğini göster."
+        },
+        "LearnDash.Assignments.2": {
+            "Starter": "Kurs başına ödevleri göster",
+            "Prompt": "Her kurs için toplam gönderilen ödevleri, toplam notlandırılanları, toplam notlandırılmayanları ve notlandırılma yüzdesini göster. Hangi kurslarda en büyük notlandırma birikimi var?"
+        },
+        "LearnDash.Assignments.3": {
+            "Starter": "Notlandırmada öğrenciye bildir",
+            "Prompt": "Bir öğrencinin ödevi notlandırıldığında, sonuçlarının hazır olduğunu bildiren bir e-posta gönderen bir otomasyon oluştur."
+        },
+        "LearnDash.Assignments.4": {
+            "Starter": "Notlandırma yanıt süresini göster",
+            "Prompt": "Her kurs için ödev gönderimi ile notlandırma arasındaki ortalama süreyi hesapla. Hangi kursların en hızlı ve en yavaş notlandırma yanıt süresi var?"
+        },
+        "LearnDash.Assignments.5": {
+            "Starter": "Gönderimde lideri uyar",
+            "Prompt": "Bir öğrenci her ödev gönderdiğinde öğrencinin grup liderine e-posta gönderen bir otomasyon oluştur. Öğrencinin adını, kursu ve ödev başlığını dahil et."
+        },
+        "LearnDash.Edit Course.1": {
+            "Starter": "Öğrenciler nerede terk ediyor?",
+            "Prompt": "Bu kursun ders ve konu tamamlanma verilerini analiz et. Sıralı olarak her dersin tamamlanma sayısını göster ve en büyük terkin nerede yaşandığını belirle - öğrencilerin ilerlemeyi bıraktığı nokta."
+        },
+        "LearnDash.Edit Course.2": {
+            "Starter": "Bir kullanıcıyı kaydet",
+            "Prompt": "Bu kursa bir kullanıcıyı kaydet. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "LearnDash.Edit Course.3": {
+            "Starter": "Tamamlanma süresini göster",
+            "Prompt": "Bu kursu tamamlayan öğrenciler için kayıttan tamamlanmaya kadar geçen ortalama, medyan, en hızlı ve en yavaş süreyi hesapla."
+        },
+        "LearnDash.Edit Course.4": {
+            "Starter": "Tamamlanmada sonraki kursa kaydet",
+            "Prompt": "Bir öğrenci bu kursu tamamladığında onu sonraki kursa kaydeden bir otomasyon oluştur. Sırada hangi kursa kaydedilmeliler?"
+        },
+        "LearnDash.Edit Course.5": {
+            "Starter": "Tamamlanmada lideri bilgilendir",
+            "Prompt": "Bir öğrenci bu kursu tamamladığında öğrencinin grup liderine e-posta gönderen bir otomasyon oluştur. E-postaya öğrencinin adını ve tamamlanma tarihini dahil et."
+        },
+        "LearnDash.Edit Group.1": {
+            "Starter": "Grup panosunu göster",
+            "Prompt": "Bu grubun tüm üyelerini kurs ilerlemeleri (her kurs için tamamlanma yüzdesi), sınav puanları ve tamamlanma tarihleriyle birlikte göster. Grup ortalamasının önemli ölçüde altında kalan üyeleri vurgula."
+        },
+        "LearnDash.Edit Group.2": {
+            "Starter": "Bu gruba bir kullanıcı ekle",
+            "Prompt": "Bu gruba bir kullanıcı ekle. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "LearnDash.Edit Group.3": {
+            "Starter": "Geride kalan üyeleri bul",
+            "Prompt": "Bu grubun kurs ilerlemesi grup ortalamasının %25'inden fazla altında olan üyelerini bul. Adlarını, mevcut ilerlemelerini ve karşılaştırma için grup ortalamasını göster."
+        },
+        "LearnDash.Edit Group.4": {
+            "Starter": "Grup liderine e-posta gönder",
+            "Prompt": "Bu grubun liderlerine e-posta gönder. E-posta ne demeli?"
+        },
+        "LearnDash.Edit Group.5": {
+            "Starter": "Kurs tamamlanmasında lideri bilgilendir",
+            "Prompt": "Bir üye grubun tüm kurslarını her tamamladığında bu grubun liderine e-posta gönderen bir otomasyon oluştur. Öğrencinin adını ve tamamlanma tarihini dahil et."
+        },
+        "LearnDash.Edit Lesson.1": {
+            "Starter": "Bu dersi kim tamamladı?",
+            "Prompt": "Bu dersi tamamlamış tüm öğrencileri tamamlanma tarihleriyle birlikte listele. Ayrıca önceki dersi tamamlamış ama bu dersi tamamlamamış öğrencileri de göster."
+        },
+        "LearnDash.Edit Lesson.2": {
+            "Starter": "Bir kullanıcı için tamamlandı olarak işaretle",
+            "Prompt": "Bu dersi belirli bir kullanıcı için tamamlandı olarak işaretle. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "LearnDash.Edit Lesson.3": {
+            "Starter": "Bu derste kim takıldı?",
+            "Prompt": "Bundan önceki dersi tamamlamış ama bu dersi tamamlamamış öğrencileri bul. Adlarını, önceki dersi ne zaman tamamladıklarını ve kaç gündür takılı olduklarını göster."
+        },
+        "LearnDash.Edit Lesson.4": {
+            "Starter": "Tamamlanma süresini göster",
+            "Prompt": "Öğrencilerin önceki dersi tamamlamak ile bu dersi tamamlamak arasında geçirdikleri ortalama süreyi hesapla."
+        },
+        "LearnDash.Edit Lesson.5": {
+            "Starter": "Bir kullanıcı için sıfırla",
+            "Prompt": "Bu dersi belirli bir kullanıcı için, yeniden yapabilmesi adına tamamlanmadı olarak işaretle. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "LearnDash.Edit Quiz.1": {
+            "Starter": "Puan dağılımını göster",
+            "Prompt": "Bu sınava ait tüm denemeler için puan dağılımını göster: kaç öğrencinin %0-10, %11-20 arasında ve %91-100'e kadar puan aldığını. Ortalama ve medyan puanı dahil et."
+        },
+        "LearnDash.Edit Quiz.2": {
+            "Starter": "Bir kullanıcı için denemeleri sıfırla",
+            "Prompt": "Bu sınavı yeniden alabilmesi için belirli bir kullanıcının denemelerini sıfırla. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "LearnDash.Edit Quiz.3": {
+            "Starter": "En zor soruları bul",
+            "Prompt": "Bu sınav için soru düzeyindeki sonuçları analiz et. Her soruyu yanlış cevaplayan öğrencilerin yüzdesine göre sırala. Hangi sorular en zor?"
+        },
+        "LearnDash.Edit Quiz.4": {
+            "Starter": "Geçmede başarı ver",
+            "Prompt": "Bir öğrenci bu sınavı geçtiğinde başarı veren ve tebrik e-postası gönderen bir otomasyon oluştur."
+        },
+        "LearnDash.Edit Quiz.5": {
+            "Starter": "Bir kullanıcı için tamamlandı olarak işaretle",
+            "Prompt": "Bu sınavı belirli bir kullanıcı için tamamlandı olarak işaretle. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "LearnDash.Edit Topic.1": {
+            "Starter": "Bu konuda kim takıldı?",
+            "Prompt": "Bu dersteki önceki konuyu tamamlamış ama bu konuyu tamamlamamış öğrencileri bul. Adlarını, önceki konuyu ne zaman tamamladıklarını ve kaç gün geçtiğini göster."
+        },
+        "LearnDash.Edit Topic.2": {
+            "Starter": "Bir kullanıcı için tamamlandı olarak işaretle",
+            "Prompt": "Bu konuyu belirli bir kullanıcı için tamamlandı olarak işaretle. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "LearnDash.Edit Topic.3": {
+            "Starter": "Tamamlanma eğilimini göster",
+            "Prompt": "Son 6 ayın her ayı için bu konuyu kaç öğrencinin tamamladığını göster. Tamamlanma sayısı artıyor mu, azalıyor mu yoksa aynı mı kalıyor?"
+        },
+        "LearnDash.Edit Topic.4": {
+            "Starter": "Tamamlanma süresini göster",
+            "Prompt": "Öğrencilerin önceki konuyu tamamladıkları zamandan bu konuyu tamamladıkları zamana kadar bu konuyu tamamlamak için harcadıkları ortalama süreyi hesapla."
+        },
+        "LearnDash.Edit Topic.5": {
+            "Starter": "Bir kullanıcı için sıfırla",
+            "Prompt": "Bu konuyu belirli bir kullanıcı için, yeniden yapabilmesi adına tamamlanmadı olarak işaretle. Kullanıcı adı veya e-posta adresi nedir?"
+        },
+        "LearnDash.Reports.1": {
+            "Starter": "Öğrenciye göre etkileşim puanla",
+            "Prompt": "Son 90 gün içinde her öğrencinin toplam ders tamamlanmaları, sınav denemeleri, sınav puanları ve ödev gönderimlerine dayalı bir etkileşim puanı oluştur. Öğrencileri en etkinden en az etkine doğru sırala."
+        },
+        "LearnDash.Reports.2": {
+            "Starter": "Aylık etkin öğrencileri göster",
+            "Prompt": "Son 12 ayın her ayı için en az bir ders, konu veya sınav tamamlamış farklı öğrenci sayısını göster. Eğilim artıyor mu yoksa azalıyor mu?"
+        },
+        "LearnDash.Reports.3": {
+            "Starter": "Gruba göre tamamlanmayı karşılaştır",
+            "Prompt": "Tüm gruplar arasında ortalama kurs tamamlanma süresini ve ortalama sınav geçme oranını karşılaştır. Hangi gruplar en hızlı tamamlıyor ve en yüksek puanı alıyor?"
+        },
+        "LearnDash.Reports.4": {
+            "Starter": "En etkileşimli öğrencileri bul",
+            "Prompt": "Son 90 gün içinde ders tamamlanmaları, sınav denemeleri, sınav puanları ve ödev gönderimlerine göre en etkin 20 öğrenciyi bul. Etkinlik sayılarını göster."
+        },
+        "LearnDash.Reports.5": {
+            "Starter": "Tüm kurslardaki ilerlemeyi göster",
+            "Prompt": "Her kurs için kayıtlı, devam eden ve tamamlamış toplam öğrenci sayısını göster. Her biri için tamamlanma yüzdesini ve ortalama tamamlanma gün sayısını hesapla."
+        },
+        "Rank Math SEO.Dashboard.1": {
+            "Starter": "SEO puan dağılımını göster",
+            "Prompt": "Tüm yayımlanmış yazı ve sayfalar için Rank Math SEO puanlarının (rank_math_seo_score postmeta) dağılımını göster. 0-50 geliştirilmeli, 51-80 iyi, 81-100 mükemmel olarak grupla. Kova başına sayıyı göster."
+        },
+        "Rank Math SEO.Dashboard.2": {
+            "Starter": "Odak anahtar kelimesi olmayan yazıları bul",
+            "Prompt": "Rank Math odak anahtar kelimesi ayarlanmamış (rank_math_focus_keyword boş veya eksik) yayımlanmış yazıları bul. Başlığı, yazarı, yazı türünü ve son değiştirilme tarihini göster."
+        },
+        "Rank Math SEO.Dashboard.3": {
+            "Starter": "Düşük puanlı yazıları bul",
+            "Prompt": "Rank Math SEO puanı 50'nin altında olan yayımlanmış yazıları bul. Başlığı, puanı, varsa odak anahtar kelimesini ve yazarı göster. En düşük puandan başlayarak sırala."
+        },
+        "Rank Math SEO.Dashboard.4": {
+            "Starter": "Puanları yazı türüne göre karşılaştır",
+            "Prompt": "Rank Math SEO puan dağılımını yazı türüne göre karşılaştır. Yazılar, sayfalar ve diğer kamuya açık yazı türleri için ortalama ve medyan puanı göster."
+        },
+        "Rank Math SEO.Dashboard.5": {
+            "Starter": "Eksik SEO açıklamalarını denetle",
+            "Prompt": "Rank Math SEO açıklaması olmayan (rank_math_description boş) yayımlanmış yazıları bul. Başlığı, yazarı, yazı türünü ve sözcük sayısını göster."
+        },
+        "Rank Math SEO.Status.1": {
+            "Starter": "SEO başlıklarını denetle",
+            "Prompt": "Tüm yayımlanmış yazılarda Rank Math SEO başlıklarını (rank_math_title) denetle. Çok kısa (30 karakterin altında) veya çok uzun (60 karakterin üstünde) başlıkları bul. Sayıyı ve örnekleri göster."
+        },
+        "Rank Math SEO.Status.2": {
+            "Starter": "Yinelenen başlıkları bul",
+            "Prompt": "Rank Math SEO başlığının (rank_math_title) başka bir yazıyla aynı olduğu yazıları bul. Başlığı ve onu paylaşan yazı kimliklerinin listesini göster."
+        },
+        "Rank Math SEO.Status.3": {
+            "Starter": "Noindex yazıları bul",
+            "Prompt": "Rank Math aracılığıyla noindex yapılmış (rank_math_robots postmeta'da 'noindex' kontrol et) yazıları bul. Başlığı, yazı türünü ve yazarı göster."
+        },
+        "Rank Math SEO.Status.4": {
+            "Starter": "SEO başlığını ayarla",
+            "Prompt": "Belirli bir yazı için Rank Math SEO başlığı ayarla. Hangi yazı ve hangi başlık?"
+        },
+        "Rank Math SEO.Status.5": {
+            "Starter": "Düşük SEO puanında bana e-posta gönder",
+            "Prompt": "Bir yazının Rank Math SEO puanı bir eşiğin altına düştüğünde bana e-posta gönderen bir otomasyon oluştur (Rank Math 'Bir yazının SEO puanı bir değerden büyük, küçük veya eşit' tetikleyicisini kullanarak). Hangi eşik tetiklemeli?"
+        },
+        "Tutor LMS.Courses.1": {
+            "Starter": "Tamamlanma oranlarını karşılaştır",
+            "Prompt": "Tüm kurslarda Tutor LMS kurs tamamlanma oranlarını karşılaştır. Kayıt sayısını, tamamlanma sayısını ve tamamlanma yüzdesini göster. En düşük tamamlanma oranından başlayarak sırala."
+        },
+        "Tutor LMS.Courses.2": {
+            "Starter": "Düşük tamamlanmalı kursları bul",
+            "Prompt": "En az 5 kayıtlı ama tamamlanma oranı %20'nin altında olan Tutor LMS kurslarını bul. Kurs başlığını, kayıt sayısını, tamamlanma sayısını ve tamamlanma yüzdesini göster."
+        },
+        "Tutor LMS.Courses.3": {
+            "Starter": "Kurs başına kayıt eğilimlerini göster",
+            "Prompt": "Son 12 ay için kurs başına Tutor LMS kayıt eğilimlerini göster. Kayıt momentumu kazanan ve kaybeden kursları belirle."
+        },
+        "Tutor LMS.Courses.4": {
+            "Starter": "Etkin olmayan kursları bul",
+            "Prompt": "Son 60 gün içinde yeni kayıt almayan Tutor LMS kurslarını bul. Kurs başlığını, ömür boyu toplam kayıtları ve son kayıt tarihini göster."
+        },
+        "Tutor LMS.Courses.5": {
+            "Starter": "Kayıtta bana e-posta gönder",
+            "Prompt": "Bir kullanıcı her Tutor LMS kursuna kaydolduğunda bana e-posta gönderen bir otomasyon oluştur. E-postaya öğrenci adını ve kurs başlığını dahil et."
+        },
+        "Tutor LMS.Dashboard.1": {
+            "Starter": "Kurs tamamlanma oranlarını göster",
+            "Prompt": "Tutor LMS kurs tamamlanma oranlarını hesapla: kurs başına kayıtlar ile tamamlanmalar karşılaştırması. Tamamlanma yüzdesini göster ve en yüksekten en düşüğe sırala."
+        },
+        "Tutor LMS.Dashboard.2": {
+            "Starter": "Kayıt eğilimini göster",
+            "Prompt": "Son 12 ay için tüm kurslarda ay başına Tutor LMS kayıtlarını göster. Eğilimin hızlandığını, düştüğünü veya sabit olduğunu belirle."
+        },
+        "Tutor LMS.Dashboard.3": {
+            "Starter": "En iyi kursları göster",
+            "Prompt": "Son 90 gün içinde kayıt sayısına göre en iyi Tutor LMS kurslarını göster. Kurs başına kayıt sayısını, tamamlanma oranını ve ortalama sınav puanını göster."
+        },
+        "Tutor LMS.Dashboard.4": {
+            "Starter": "Öğrenci etkinliğini göster",
+            "Prompt": "Son 30 gündeki Tutor LMS öğrenci etkinliğini göster: en az bir ders tamamlamış, sınav denemiş veya soru sormuş farklı öğrenci sayısı."
+        },
+        "Tutor LMS.Dashboard.5": {
+            "Starter": "Kurs tamamlanmasında bana e-posta gönder",
+            "Prompt": "Bir kullanıcı her Tutor LMS kursunu tamamladığında bana e-posta gönderen bir otomasyon oluştur. E-postaya öğrenci adını ve kurs başlığını dahil et."
+        },
+        "Tutor LMS.Edit Course.1": {
+            "Starter": "Bu kursun istatistiklerini göster",
+            "Prompt": "Bu Tutor LMS kursunun kayıt sayısını, tamamlanma oranını, ortalama sınav puanını ve kayıttan tamamlanmaya kadar geçen ortalama süreyi göster."
+        },
+        "Tutor LMS.Edit Course.2": {
+            "Starter": "Öğrenci ilerlemesini göster",
+            "Prompt": "Bu Tutor LMS kursu için öğrenci ilerleme dağılımını göster: kaç öğrenci %0, %1-25, %26-50, %51-75, %76-99 ve %100 tamamlanmada."
+        },
+        "Tutor LMS.Edit Course.3": {
+            "Starter": "Bırakmış öğrencileri bul",
+            "Prompt": "Bu Tutor LMS kursuna kayıtlı, ilerlemeye başlamış ama son 30 gün içinde ders tamamlamamış öğrencileri bul. Adı, mevcut ilerlemeyi ve son etkinlik tarihini göster."
+        },
+        "Tutor LMS.Edit Course.4": {
+            "Starter": "Bir öğrenciyi kaydet",
+            "Prompt": "Bu Tutor LMS kursuna bir kullanıcıyı kaydet. Kullanıcı adı veya e-postası nedir?"
+        },
+        "Tutor LMS.Edit Course.5": {
+            "Starter": "Bir kullanıcı için tamamlandı olarak işaretle",
+            "Prompt": "Bu Tutor LMS kursunu belirli bir kullanıcı için tamamlandı olarak işaretle. Kullanıcı adı veya e-postası nedir?"
+        },
+        "WPForms.All Forms.1": {
+            "Starter": "Gönderim hacmini göster",
+            "Prompt": "Son 30 gün için form başına WPForms gönderim hacmini göster. Önceki 30 günle karşılaştır ve gönderim oranı yükselen veya düşen formları vurgula."
+        },
+        "WPForms.All Forms.2": {
+            "Starter": "Etkin olmayan formları bul",
+            "Prompt": "Son 60 gün içinde gönderim almamış WPForms formlarını bul. Form adını, ömür boyu toplam girdiyi ve son gönderim tarihini göster."
+        },
+        "WPForms.All Forms.3": {
+            "Starter": "En iyi formları göster",
+            "Prompt": "WPForms formlarını alınan toplam girdiye göre sırala. Her biri için girdi sayısını, günlük ortalama girdiyi ve oluşturulma tarihini göster."
+        },
+        "WPForms.All Forms.4": {
+            "Starter": "Gönderim eğilimini göster",
+            "Prompt": "Son 12 hafta için tüm formlarda hafta başına toplam WPForms gönderimlerini göster. Eğilimi yönlendiren formları vurgula."
+        },
+        "WPForms.Edit Form.1": {
+            "Starter": "Bu formu otomatikleştir",
+            "Prompt": "Bu WPForms formunu tetikleyici olarak kullanan bir Uncanny Automator tarifi oluştur ('Bir kullanıcı bir form gönderir' / WPFSUBFORM tetikleyicisi). Bu form gönderildiğinde ne olmalı?"
+        },
+        "WPForms.Edit Form.2": {
+            "Starter": "Gönderimleri özetle",
+            "Prompt": "Bu WPForms formuna son 30 gündeki girdileri oku ve örüntüleri özetle: seçim alanı başına en sık değerler, serbest metin alanlarındaki ortak temalar ve en yoğun gönderim saatleri."
+        },
+        "WPForms.Edit Form.3": {
+            "Starter": "Alan istatistiklerini derle",
+            "Prompt": "Bu WPForms formundaki her alan için doldurma oranını (ne sıklıkla doldurulduğu), metin alanları için ortalama uzunluğu, seçim alanları için değer dağılımını ve en sık değeri göster."
+        },
+        "WPForms.Edit Form.4": {
+            "Starter": "Terk edilen alanları bul",
+            "Prompt": "Bu WPForms formundaki tamamlanmış gönderimlerde en sık boş bırakılan alanları belirle. Hangi alanların kullanıcı terkine veya kafa karışıklığına neden olabileceğini öner."
+        },
+        "WPForms.Edit Form.5": {
+            "Starter": "Form performansını göster",
+            "Prompt": "Bu WPForms formunun toplam girdi sayısını, günlük ortalama girdiyi ve sitedeki tüm formların ortalama performansıyla nasıl karşılaştırıldığını göster."
+        },
+        "WPForms.Entries Overview.1": {
+            "Starter": "Son girdileri göster",
+            "Prompt": "Son 7 gün içinde tüm formlara gönderilen tüm WPForms girdilerini göster. Forma göre grupla ve form başına hacmi göster."
+        },
+        "WPForms.Entries Overview.2": {
+            "Starter": "Spam girdileri bul",
+            "Prompt": "Son 90 gün içinde spam olarak işaretlenmiş WPForms girdilerini bul. Form adını, IP adresini, gönderim tarihini göster ve tekrar eden IP'leri belirle."
+        },
+        "WPForms.Entries Overview.3": {
+            "Starter": "Forma göre girdi hacmini göster",
+            "Prompt": "Bu ay ile önceki ay için form başına WPForms girdi sayılarını göster. Her form için yüzde değişimi hesapla."
+        },
+        "WPForms.Entries Overview.4": {
+            "Starter": "Eski girdileri bul",
+            "Prompt": "90 günden eski WPForms girdilerini bul. Form başına sayıyı ve kullanılan toplam depolamayı göster. Arşivlemenin güvenli olup olmadığını öner."
+        },
+        "WPForms.Entries Overview.5": {
+            "Starter": "Dosya yüklemeli girdileri göster",
+            "Prompt": "Dosya yüklemesi içeren WPForms girdilerini bul. Form adını, toplam dosya sayısını ve tüm bu girdilerdeki toplam dosya boyutunu göster."
+        },
+        "WPForms.Form Entries.1": {
+            "Starter": "Gönderim zamanlamasını göster",
+            "Prompt": "Bu WPForms formu için gönderim zamanlama örüntülerini göster: haftanın gününe ve günün saatine göre sayılar. En yoğun gönderim aralıklarını belirle."
+        },
+        "WPForms.Form Entries.2": {
+            "Starter": "Yinelenen gönderimleri bul",
+            "Prompt": "Bu WPForms formu için yinelenen gönderimleri bul, yani aynı e-posta adresinin birden fazla kez göndermesi. E-posta başına yineleme sayısını göster."
+        },
+        "WPForms.Form Entries.3": {
+            "Starter": "Göndereni bir role ekle",
+            "Prompt": "Bu WPForms formu giriş yapmış bir kullanıcı tarafından gönderildiğinde kullanıcıya rol ekleyen bir otomasyon oluştur. Hangi rolü eklemeliyim?"
+        },
+        "WPForms.Form Entries.4": {
+            "Starter": "Girdileri alan değerine göre ara",
+            "Prompt": "Bu WPForms formunun girdilerini belirli bir alan değerine göre ara. Hangi alan ve hangi değer için arama yapmalıyım?"
+        },
+        "WPForms.Single Entry.1": {
+            "Starter": "Bu gönderenin diğer girdilerini göster",
+            "Prompt": "Bu gönderenin tüm formlardaki diğer WPForms girdilerini bul (e-posta adresiyle eşleştirilerek). Form adını, gönderim tarihini ve önemli alan değerlerini göster."
+        },
+        "WPForms.Single Entry.2": {
+            "Starter": "Girdi üst verisini göster",
+            "Prompt": "Bu WPForms girdisinin üst verisini göster: gönderim tarihi, IP adresi, kullanıcı aracısı, yönlendiren URL ve formu doldurmak için harcanan süre (izlendiyse)."
+        },
+        "WPForms.Single Entry.3": {
+            "Starter": "Tipik gönderimle karşılaştır",
+            "Prompt": "Bu WPForms girdisinin alan değerlerini bu form için tipik gönderimle karşılaştır. Hangi alanların olağandışı olduğunu (örneğin ortalamadan çok daha uzun/kısa) belirle."
+        },
+        "WPForms.Single Entry.4": {
+            "Starter": "Yanıt e-postası gönder",
+            "Prompt": "Bu WPForms gönderenine yanıt e-postası gönder. E-posta ne demeli?"
+        },
+        "WPForms.Single Entry.5": {
+            "Starter": "Aynı IP'den girdileri bul",
+            "Prompt": "Bu girdinin IP adresinden tüm formlara gönderilen WPForms girdilerini bul. Form adını, gönderim tarihini ve kullanılan e-postayı göster."
+        },
+        "WooCommerce.All Coupons.1": {
+            "Starter": "Kupon yatırım getirisini göster",
+            "Prompt": "Her etkin kupon için kullanım sayısını, onu kullanan siparişlerden gelen toplam geliri, verilen toplam indirimi ve net geliri (gelir eksi indirim) göster. En yüksek net gelirden başlayarak sırala."
+        },
+        "WooCommerce.All Coupons.2": {
+            "Starter": "En çok kullanılan kuponları bul",
+            "Prompt": "Tüm kuponları kullanım sayısına göre sırala. Toplam kullanımı, toplam indirim tutarını ve kullanım başına ortalama indirimi göster. Kullanımı ortalamanın belirgin şekilde üzerinde olan kuponları işaretle."
+        },
+        "WooCommerce.All Coupons.3": {
+            "Starter": "Satın almadan sonra kupon gönder",
+            "Prompt": "Bir müşteri ürün satın aldıktan sonra benzersiz bir kupon kodu üreten ve ona e-posta ile gönderen bir otomasyon oluştur. Hangi ürün tetiklemeli ve kupon ne kadar indirim sunmalı?"
+        },
+        "WooCommerce.All Coupons.4": {
+            "Starter": "Süresi dolmuş kuponları bul",
+            "Prompt": "Son kullanma tarihi geçmiş veya kullanım sınırına ulaşmış tüm kuponları listele. Her biri için kupon kodunu, son kullanma tarihini ve son kullanılma tarihini göster."
+        },
+        "WooCommerce.All Coupons.5": {
+            "Starter": "Kuponlu ile kuponsuz siparişleri karşılaştır",
+            "Prompt": "Son 6 ay için kupon kodu kullanan siparişler ile kullanmayan siparişleri karşılaştır. Her grup için ortalama sipariş değerini, ortalama ürün sayısını ve tekrar satın alma oranını (90 gün içinde tekrar sipariş veren yüzde) göster."
+        },
+        "WooCommerce.All Customers.1": {
+            "Starter": "Müşterilerimi segmentlere ayır",
+            "Prompt": "Tüm müşterileri yaşam boyu değere (en üst %20, ortadaki %60, en alt %20), satın alma sıklığına (tek seferlik, ara sıra, düzenli) ve birincil ürün kategorisine göre gruplara ayır. Her segment için sayıyı ve ortalama LTV'yi göster."
+        },
+        "WooCommerce.All Customers.2": {
+            "Starter": "Risk altındaki müşterileri bul",
+            "Prompt": "Siparişler arası ortalama süresi 90 günden az olan ama 120 günden uzun süredir sipariş vermemiş müşterileri bul. Son sipariş tarihini, toplam yaşam boyu harcamayı ve kaç gün geciktiklerini göster."
+        },
+        "WooCommerce.All Customers.3": {
+            "Starter": "VIP müşterileri ödüllendir",
+            "Prompt": "Bir müşterinin toplam yaşam boyu harcaması bir eşiği aştığında çalışan bir otomasyon oluştur. Hesabına VIP rolü ekle ve ona teşekkür e-postası gönder. Hangi harcama eşiğini kullanmalıyım?"
+        },
+        "WooCommerce.All Customers.4": {
+            "Starter": "Yeni ile geri dönen alıcıları göster",
+            "Prompt": "Bu ay için kaç siparişin ilk kez alıcılardan ve kaçının geri dönen müşterilerden geldiğini göster. Her grup için toplam geliri ve ortalama sipariş değerini göster ve geçen ayla karşılaştır."
+        },
+        "WooCommerce.All Customers.5": {
+            "Starter": "Bölgeye göre geliri göster",
+            "Prompt": "Faturalama adreslerini kullanarak toplam geliri ülkeye ve bölgeye göre dök. Gelire göre en iyi 15 bölgeyi, her birinden gelen sipariş sayısını ve bölge başına ortalama sipariş değerini göster."
+        },
+        "WooCommerce.All Orders.1": {
+            "Starter": "Hafta gününe göre geliri göster",
+            "Prompt": "Son 3 ay için haftanın gününe göre toplam geliri dök. Hangi gün sürekli olarak en fazla geliri ve hangisi en az geliri üretiyor?"
+        },
+        "WooCommerce.All Orders.2": {
+            "Starter": "Yerine getirilmemiş siparişleri bul",
+            "Prompt": "Şu anda işleniyor veya beklemede durumundaki tüm siparişleri listele. Tarihe göre, en eskiden başlayarak sırala ve 7 günden uzun süredir bu durumda olanları işaretle."
+        },
+        "WooCommerce.All Orders.3": {
+            "Starter": "İade oranlarını analiz et",
+            "Prompt": "Son 6 ay için her ürün için iade oranını hesapla. Sipariş sayısını, iade sayısını, iade oranını ve ürün başına toplam iade tutarını en yüksek iade oranından başlayarak sırala."
+        },
+        "WooCommerce.All Orders.4": {
+            "Starter": "Tekrar eden alıcıları bul",
+            "Prompt": "Birden fazla sipariş veren tüm müşterileri bul. Her birinin verdiği sipariş sayısını, toplam harcamasını ve siparişler arası ortalama gün sayısını göster. Toplam harcamaya göre, en yüksekten başlayarak sırala."
+        },
+        "WooCommerce.All Orders.5": {
+            "Starter": "Sipariş başarısız olduğunda bana e-posta gönder",
+            "Prompt": "Bir siparişte ödeme her başarısız olduğunda bana e-posta gönderen bir otomasyon oluştur. Sipariş numarasını, müşteri adını ve sipariş toplamını e-postaya dahil et."
+        },
+        "WooCommerce.All Products.1": {
+            "Starter": "En çok satanlarımı sırala",
+            "Prompt": "Bu çeyrek için tüm ürünleri satılan adet ve toplam gelire göre sırala. Her ürün için adet ve gelirdeki değişimi gösteren önceki çeyrekle bir karşılaştırma dahil et."
+        },
+        "WooCommerce.All Products.2": {
+            "Starter": "Çapraz satış fırsatlarını bul",
+            "Prompt": "Aynı siparişte sıkça birlikte satın alınan ürünleri bulmak için sipariş verisini analiz et. Birlikte görülme sayısına göre en iyi 10 ürün çiftini ve birini içeren siparişlerin diğerini de içerme yüzdesini göster."
+        },
+        "WooCommerce.All Products.3": {
+            "Starter": "Düşük stokta beni uyar",
+            "Prompt": "Bir ürün her stokta kalmadığında bana e-posta bildirimi gönderen bir otomasyon oluştur. Ürün adını ve SKU'yu e-postaya dahil et."
+        },
+        "WooCommerce.All Products.4": {
+            "Starter": "Satışı olmayan ürünleri bul",
+            "Prompt": "Son 90 gün içinde sıfır siparişi olan tüm yayımlanmış ürünleri listele. Ürün adını, fiyatını ve varsa son sipariş tarihini göster."
+        },
+        "WooCommerce.All Products.5": {
+            "Starter": "Zaman içinde ürün başına geliri göster",
+            "Prompt": "Son 12 ay için her ürünün aylık gelirini göster. Gelirleri artan, düşen ve sabit kalan ürünleri vurgula."
+        },
+        "WooCommerce.All Subscriptions.1": {
+            "Starter": "Kayıp oranımı göster",
+            "Prompt": "Son 6 ayın her ayı için abonelik kayıp oranını hesapla. Her ayın başındaki etkin abonelik sayısını, ay içinde iptal edilenleri, kayıp oranını ve iptallerden kaybedilen geliri göster."
+        },
+        "WooCommerce.All Subscriptions.2": {
+            "Starter": "Yakında yenilenecekleri göster",
+            "Prompt": "Önümüzdeki 14 gün içinde yenileme tarihi olan tüm abonelikleri listele. Ürüne ve plan kademesine göre grupla ve her grup için risk altındaki toplam yenileme gelirini göster."
+        },
+        "WooCommerce.All Subscriptions.3": {
+            "Starter": "MRR dökümünü hesapla",
+            "Prompt": "Tüm etkin aboneliklerden mevcut aylık tekrar eden geliri hesapla. Ürüne, plan kademesine göre dök ve MRR'nin yüzde kaçının son 3 ay içinde oluşturulan aboneliklerden, yüzde kaçının daha eski aboneliklerden geldiğini göster."
+        },
+        "WooCommerce.All Subscriptions.4": {
+            "Starter": "İptal örüntülerini analiz et",
+            "Prompt": "Son 6 aydaki tüm abonelik iptallerini analiz et. Hangi ürünlerin en yüksek iptal oranına sahip olduğunu, iptal anındaki ortalama abonelik süresini ve iptallerin faturalama döngüsünün belirli noktalarında (örn. 1. ay, 3. ay, 12. aydan sonra) kümelenip kümelenmediğini göster."
+        },
+        "WooCommerce.All Subscriptions.5": {
+            "Starter": "Başarısız yenilemede e-posta gönder",
+            "Prompt": "Müşterinin abonelik yenileme ödemesi başarısız olduğunda ona e-posta gönderen bir otomasyon oluştur. Adını, abonelik ürününü ve ödeme yöntemini güncellemek için bir bağlantıyı dahil et."
+        },
+        "WooCommerce.Dashboard.1": {
+            "Starter": "Gelir eğilimlerini göster",
+            "Prompt": "Son 3 ay için haftalık ve son 12 ay için aylık toplam geliri göster. Veri varsa her ayı geçen yılın aynı ayıyla karşılaştır. Gelirin hızlanıp hızlanmadığını veya yavaşlayıp yavaşlamadığını vurgula."
+        },
+        "WooCommerce.Dashboard.2": {
+            "Starter": "Müşteri yaşam boyu değerini hesapla",
+            "Prompt": "Her müşterinin toplam sipariş gelirini toplayarak tüm müşteriler arasında ortalama yaşam boyu değeri hesapla. Hangi giriş ürünlerinin en yüksek LTV'ye yol açtığını göstermek için bunu her müşterinin satın aldığı ilk ürüne göre dök."
+        },
+        "WooCommerce.Dashboard.3": {
+            "Starter": "Kohort tutma oranlarını göster",
+            "Prompt": "Tüm müşterileri ilk satın alma aylarına göre grupla. Her aylık kohort için, sonraki her ayda en az bir ek sipariş veren yüzdeyi göster."
+        },
+        "WooCommerce.Dashboard.4": {
+            "Starter": "Aylık KPI'ları özetle",
+            "Prompt": "Bu ay ile geçen ay için aylık KPI özeti ver: toplam gelir, yeni müşteri sayısı, ortalama sipariş değeri, toplam iadeler ve abonelik iptal sayısı. Her biri için aylık değişimi göster."
+        },
+        "WooCommerce.Dashboard.5": {
+            "Starter": "Başarısız ödemeleri analiz et",
+            "Prompt": "Son 3 aydaki tüm başarısız ödeme siparişlerini göster. Ödeme yöntemine göre grupla ve toplam sayıyı, kaybedilen toplam geliri ve sonunda kaçının kurtarıldığını (aynı müşteri tarafından sonraki bir siparişte tamamlandı) göster."
+        },
+        "WooCommerce.Edit Coupon.1": {
+            "Starter": "Bu kuponun sonuçlarını göster",
+            "Prompt": "Bu kuponu kullanan tüm siparişleri göster. Toplam kullanımları, üretilen toplam geliri, ortalama sipariş değerini ve bu müşterilerden kaçının önceki bir siparişte farklı bir kupon da kullandığını dahil et."
+        },
+        "WooCommerce.Edit Coupon.2": {
+            "Starter": "Bu kuponu kim kullandı?",
+            "Prompt": "Bu kuponu kullanan her müşteriyi sipariş tutarı, satın aldıkları ürünler ve o zamandan beri ek sipariş verip vermedikleriyle birlikte listele."
+        },
+        "WooCommerce.Edit Coupon.3": {
+            "Starter": "Yeni bir kupon oluştur",
+            "Prompt": "Yeni bir kupon kodu oluştur. Hangi tür indirim (yüzde veya sabit), ne kadar tutar ve kullanım sınırı veya son kullanma tarihi olmalı mı?"
+        },
+        "WooCommerce.Edit Coupon.4": {
+            "Starter": "Geri kazanım kuponu gönder",
+            "Prompt": "Bir müşteri aboneliğini iptal ettiğinde kupon kodu üreten ve e-posta ile gönderen bir otomasyon oluştur. Kupon ne kadar indirim sunmalı ve ne kadar süre geçerli olmalı?"
+        },
+        "WooCommerce.Edit Coupon.5": {
+            "Starter": "Diğer kuponlarla karşılaştır",
+            "Prompt": "Bu kuponun toplam kullanımlarını, üretilen geliri ve ortalama sipariş değerini aynı dönemde kullanılan tüm diğer kuponlarla karşılaştır. Sıralamada nerede?"
+        },
+        "WooCommerce.Edit Order.1": {
+            "Starter": "Bu müşterinin siparişlerini göster",
+            "Prompt": "Bu müşterinin verdiği her siparişi getir. Sipariş tarihlerini, toplamlarını, satın alınan ürünleri ve sipariş durumlarını göster. Toplam yaşam boyu harcamasını, sipariş sayısını ve ortalama sipariş değerini dahil et."
+        },
+        "WooCommerce.Edit Order.2": {
+            "Starter": "Bu siparişe not ekle",
+            "Prompt": "Bu siparişe bir not ekle. Not ne demeli?"
+        },
+        "WooCommerce.Edit Order.3": {
+            "Starter": "Benzer siparişleri bul",
+            "Prompt": "Bu siparişle aynı ürünleri içeren diğer siparişleri bul. Bu siparişler için ortalama sipariş değerini ve onlarla birlikte en sık dahil edilen diğer ürünleri göster."
+        },
+        "WooCommerce.Edit Order.4": {
+            "Starter": "Bu siparişin zaman çizelgesini göster",
+            "Prompt": "Bu sipariş için tam durum değişikliği geçmişini, her durum geçişinin tarihi ve saati ile siparişin her durumda ne kadar süre kaldığıyla birlikte göster."
+        },
+        "WooCommerce.Edit Order.5": {
+            "Starter": "Durum değişiminde e-posta gönder",
+            "Prompt": "Bir siparişin durumu her değiştiğinde özel bir e-posta gönderen bir otomasyon oluştur. Hangi durum değişimi e-postayı tetiklemeli ve e-posta ne demeli?"
+        },
+        "WooCommerce.Edit Product.1": {
+            "Starter": "Bu ürünün performansını göster",
+            "Prompt": "Bu ürünün toplam satılan adedini, toplam gelirini, iade sayısını ve iade oranını göster. Son 12 ay için aya göre dök."
+        },
+        "WooCommerce.Edit Product.2": {
+            "Starter": "Bu ürünü kim satın alıyor?",
+            "Prompt": "Bu ürünü satın almış müşterileri analiz et. Faturalama adreslerinden ülkeye göre coğrafi dağılımlarını, tüm siparişlerinde ortalama toplam harcamalarını, yüzde kaçının tekrar eden alıcı olduğunu ve en sık birlikte satın aldıkları diğer ürünleri göster."
+        },
+        "WooCommerce.Edit Product.3": {
+            "Starter": "Bu ürünün satış eğilimini göster",
+            "Prompt": "Bu ürünün son 12 ay için aylık satılan adedini ve gelirini göster. Eğilim hızlanıyor, sabit mi yoksa düşüyor mu?"
+        },
+        "WooCommerce.Edit Product.4": {
+            "Starter": "Yeniden stoklandığında bana bildir",
+            "Prompt": "Bu ürün stokta kalmadıktan sonra yeniden stoklandığında bana e-posta gönderen bir otomasyon oluştur. Ürün adını ve mevcut stok miktarını e-postaya dahil et."
+        },
+        "WooCommerce.Edit Product.5": {
+            "Starter": "Diğer ürünlerle karşılaştır",
+            "Prompt": "Bu ürünün toplam gelirini, satılan adedini ve iade oranını aynı kategorideki diğer ürünlerle karşılaştır. Onları yan yana sırala."
+        },
+        "WooCommerce.Edit Subscription.1": {
+            "Starter": "Bu aboneliği uzat",
+            "Prompt": "Bu aboneliği uzat. Kaç gün uzatmalıyım?"
+        },
+        "WooCommerce.Edit Subscription.2": {
+            "Starter": "Bu abonenin geçmişini göster",
+            "Prompt": "Bu abonenin tam geçmişini göster: tüm siparişler, abonelik durumu değişiklikleri, yenileme tarihleri ve başarısız ödeme denemeleri, tarihe göre sıralı."
+        },
+        "WooCommerce.Edit Subscription.3": {
+            "Starter": "Bu abonenin riskini değerlendir",
+            "Prompt": "Bu abonenin iptal riskini ödeme geçmişine (başarısız ödemeler veya geç yenilemeler), ne kadar süredir abone olduğuna ve plan değiştirip değiştirmediğine göre değerlendir. Süresi bu plandaki ortalama aboneninkiyle nasıl karşılaştırılıyor?"
+        },
+        "WooCommerce.Edit Subscription.4": {
+            "Starter": "Benzer abonelerle karşılaştır",
+            "Prompt": "Bu aboneyle aynı plandaki tüm diğer aboneleri bul. Bu abonenin süresini ve toplam harcamasını o grubun ortalamasına, medyanına ve en üst %10'una karşı karşılaştır."
+        },
+        "WooCommerce.Edit Subscription.5": {
+            "Starter": "Ödeme geçmişini göster",
+            "Prompt": "Bu abonelik için her ödeme denemesini - başarılı ve başarısız - her biri için tarih, tutar, ödeme yöntemi ve sonuçla birlikte listele."
+        },
+        "WooCommerce.Reports.1": {
+            "Starter": "Geliri geçen yılla karşılaştır",
+            "Prompt": "Bu ayın gelirini geçen yılın aynı ayıyla karşılaştır. Ürün kategorisine göre dök ve her biri için yıllık değişimi göster. Ayrıca yıl başından bugüne karşılaştırmayı da göster."
+        },
+        "WooCommerce.Reports.2": {
+            "Starter": "AOV eğilimlerini göster",
+            "Prompt": "Son 12 ayın her ayı için ortalama sipariş değerini göster. Değişiklikleri neyin yönlendirdiğini belirle - ürün karışımındaki kaymalar mı, artan kupon kullanımı mı yoksa sipariş başına ürün sayısındaki değişiklikler mi?"
+        },
+        "WooCommerce.Reports.3": {
+            "Starter": "Ödeme yöntemlerini analiz et",
+            "Prompt": "Ödeme yöntemine göre sipariş dökümünü göster. Her yöntem için sipariş sayısını, toplam geliri, ortalama sipariş değerini ve başarısız sipariş yüzdesini göster."
+        },
+        "WooCommerce.Reports.4": {
+            "Starter": "En hızlı büyüyen ürünleri bul",
+            "Prompt": "Ürünleri son 3 ay ile önceki 3 ayı karşılaştırarak gelir büyüme oranına göre sırala. Her iki dönem için mutlak geliri ve yüzde değişimi göster. Sadece en çok satanları değil, yükselen ürünleri arıyorum."
+        },
+        "WooCommerce.Reports.5": {
+            "Starter": "Kupona karşı organik geliri göster",
+            "Prompt": "Son 6 ay için kupon kodu kullanan siparişlerden gelen toplam geliri kupon olmayanlarla karşılaştır. Aylık dökümü ve kupon gelirinin oranının büyüyüp büyümediğini veya küçülüp küçülmediğini göster."
+        },
+        "WooCommerce.Status.1": {
+            "Starter": "İşleme darboğazlarını bul",
+            "Prompt": "Siparişlerin bir sonraki duruma geçmeden önce her durumda geçirdikleri ortalama süreyi analiz et. Hangi durum geçişi en uzun sürüyor? Belirli bir durumda olağandışı uzun süre takılı kalan siparişler var mı?"
+        },
+        "WooCommerce.Status.2": {
+            "Starter": "Son başarısız siparişleri göster",
+            "Prompt": "Son 30 gün içinde şu anda başarısız durumundaki tüm siparişleri listele. Müşteri adını, e-postasını, ödeme yöntemini, sipariş toplamını ve siparişin başarısız olduğu tarihi göster."
+        },
+        "WooCommerce.Status.3": {
+            "Starter": "Sipariş durum değişiminde e-posta gönder",
+            "Prompt": "Bir sipariş durumu belirli bir duruma her değiştiğinde bildirim e-postası gönderen bir otomasyon oluştur. Hangi durum tetiklemeli ve e-postayı kim almalı?"
+        },
+        "WooCommerce.Status.4": {
+            "Starter": "Tamamlanmamış siparişleri bul",
+            "Prompt": "48 saatten uzun süredir bekleme veya başarısız durumunda takılı tüm siparişleri bul. Neyin başarısız olduğunda bir örüntü olup olmadığını görmek için ödeme yöntemine ve ürüne göre grupla."
+        },
+        "WooCommerce.Status.5": {
+            "Starter": "Veritabanı sağlık kontrolü yap",
+            "Prompt": "WooCommerce veritabanını yaygın sorunlar için kontrol et: eşleşen sipariş olmadan kalmış sipariş üst verisi, yinelenen abonelik kayıtları, tutarsız durum verisine sahip siparişler ve önemli üst veriden yoksun siparişler. Bulduklarını raporla."
+        },
+        "WordPress.All Pages.1": {
+            "Starter": "Bağlantısız sayfaları bul",
+            "Prompt": "Hiçbir başka sayfa veya yazının bağlantı vermediği yayımlanmış sayfaları bul (post_content'i dahili bağlantılar için tara). Başlığı, son değiştirilme tarihini ve üstü göster."
+        },
+        "WordPress.All Pages.2": {
+            "Starter": "Sayfa hiyerarşisini göster",
+            "Prompt": "Tam üst/alt sayfa hiyerarşisini her sayfanın son değiştirilme tarihi ve yazarıyla bir ağaç olarak göster. Bağlantısızları (üstü ve altı olmayanları) vurgula."
+        },
+        "WordPress.All Pages.3": {
+            "Starter": "Eski sayfaları bul",
+            "Prompt": "Son 12 ay içinde güncellenmemiş yayımlanmış sayfaları bul. Başlığı, son değiştirilme tarihini ve yazarı göster."
+        },
+        "WordPress.All Pages.4": {
+            "Starter": "Sayfa uzunluğu dağılımını göster",
+            "Prompt": "Sayfaları sözcük sayısına göre sırala. En uzun ve en kısa yayımlanmış sayfaları ve ortalama uzunluğu belirle."
+        },
+        "WordPress.All Pages.5": {
+            "Starter": "Boş sayfaları bul",
+            "Prompt": "İçeriği olmayan veya 100 sözcükten az sözcük içeren yayımlanmış sayfaları bul. Başlığı, üstü ve sözcük sayısını göster."
+        },
+        "WordPress.All Posts.1": {
+            "Starter": "Eski taslakları bul",
+            "Prompt": "30 günden eski taslak yazıları bul. Başlığı, yazarı, son değiştirilme tarihini ve taslağın ne kadar süredir beklediğini göster. En eskiden başlayarak sırala."
+        },
+        "WordPress.All Posts.2": {
+            "Starter": "En iyi yazarları göster",
+            "Prompt": "Son 12 ay içinde yayımlanan yazı sayısına göre yazarları sırala. Her biri için yazı sayısını, ortalama sözcük uzunluğunu ve en son yayımlama tarihini göster."
+        },
+        "WordPress.All Posts.3": {
+            "Starter": "Öne çıkan görseli olmayan yazıları bul",
+            "Prompt": "Öne çıkan görseli ayarlanmamış yayımlanmış yazıları listele. Başlığı, yazarı, yayımlama tarihini ve kategoriyi göster."
+        },
+        "WordPress.All Posts.4": {
+            "Starter": "Yazı durum değişiminde bana e-posta gönder",
+            "Prompt": "Bir yazı belirli bir duruma ayarlandığında bana e-posta gönderen bir otomasyon oluştur. Hangi durum tetiklemeli (örn. yayımla, beklemede, taslak)?"
+        },
+        "WordPress.All Posts.5": {
+            "Starter": "Düşük etkileşimli yazıları bul",
+            "Prompt": "Yayımlanmış yazıları yorum sayısına göre artan sırada göster. Sıfır yorumu olan yazıları ve site ortalamasının altında performans gösteren yazıları vurgula."
+        },
+        "WordPress.All Users.1": {
+            "Starter": "Kullanıcıları role göre segmentlere ayır",
+            "Prompt": "Role göre kullanıcı sayılarını, rol başına ortalama hesap yaşını ve her roldeki yazı yayımlamış veya yorum yapmış kullanıcıların yüzdesini göster."
+        },
+        "WordPress.All Users.2": {
+            "Starter": "Hareketsiz kullanıcıları bul",
+            "Prompt": "30 günden uzun süre önce kayıt olmuş ama hiç yazı yayımlamamış veya yorum yapmamış kullanıcıları bul. Kullanıcı adını, e-postasını, rolünü ve kayıt tarihini göster."
+        },
+        "WordPress.All Users.3": {
+            "Starter": "Kayıt eğilimini göster",
+            "Prompt": "Son 24 ay için ay başına yeni kullanıcı kayıtlarını göster. Eğilimin hızlandığını, düştüğünü veya sabit olduğunu vurgula."
+        },
+        "WordPress.All Users.4": {
+            "Starter": "En iyi katkıda bulunanları bul",
+            "Prompt": "En çok yayımlanmış yazısı olan 20 kullanıcıyı bul. Yazı sayısını, yorum sayısını ve hesap yaşını göster. Kullanıcı tabanı ortalamasıyla karşılaştır."
+        },
+        "WordPress.Comments.1": {
+            "Starter": "Bekleyen yorumları göster",
+            "Prompt": "Şu anda denetlemede bekleyen tüm yorumları, en eskiden başlayarak listele. Yazı başlığını, yorum yapanın adını ve her birinin ne kadar süredir beklediğini göster."
+        },
+        "WordPress.Comments.2": {
+            "Starter": "En çok yorum yapanları göster",
+            "Prompt": "Son 12 ay için onaylanmış yorum sayısına göre yorum yapanları sırala. Sayıyı, son yorum tarihini ve en sık yorum yaptıkları yazıları göster."
+        },
+        "WordPress.Comments.3": {
+            "Starter": "Denetleme oranını göster",
+            "Prompt": "Son 90 gün için onaylanan, spam ve çöp yorum dökümünü göster. Gelen yorumların yüzde kaçı sonunda onaylanıyor?"
+        },
+        "WordPress.Comments.4": {
+            "Starter": "Spam örüntülerini bul",
+            "Prompt": "Son 90 gün içinde spam olarak işaretlenen yorumlardaki ortak örüntüleri bul: tekrar eden IP'ler, tekrar eden e-posta alan adları, yorum başına bağlantılar ve günün saati kümeleri."
+        },
+        "WordPress.Dashboard.1": {
+            "Starter": "Sitem için tarifler öner",
+            "Prompt": "Kurulu eklentilerimi incele ve hangi tariflerin zamandan tasarruf etmeme yardım edeceğini belirlememe yardımcı olacak sorular sor."
+        },
+        "WordPress.Dashboard.2": {
+            "Starter": "Site güvenliğimi incele",
+            "Prompt": "Kurulu eklentilerimi bilinen güvenlik açıkları için kontrol et, kurulu güvenlik eklentilerini, iki faktörlü kimlik doğrulama eklentilerini ve diğer bilinen WordPress güvenlik açıklarını kontrol et."
+        },
+        "WordPress.Dashboard.3": {
+            "Starter": "Site sağlığımı incele",
+            "Prompt": "WordPress site sağlığı raporunu sorunlar için kontrol et."
+        },
+        "WordPress.Dashboard.4": {
+            "Starter": "İçerik özetini göster",
+            "Prompt": "Son 12 ay için yayımlama özeti göster: duruma (yayımla/taslak/beklemede), yazara ve aya göre yazılar ve sayfalar. Olağandışı hacimli ayları vurgula."
+        },
+        "WordPress.Dashboard.5": {
+            "Starter": "Kullanıcı büyümesini göster",
+            "Prompt": "Son 12 ay için ay başına yeni kullanıcı kayıtlarını role göre dökümlü göster. Eğilimleri belirle - hızlanan, düşen veya sabit."
+        },
+        "WordPress.Edit Page.1": {
+            "Starter": "Bu sayfanın revizyon geçmişini göster",
+            "Prompt": "Bu sayfanın tüm revizyonlarını göster: kim düzenledi, ne zaman ve ne kadar değişti. En etkin düzenleyiciyi belirle."
+        },
+        "WordPress.Edit Page.2": {
+            "Starter": "Buraya bağlantı veren sayfaları göster",
+            "Prompt": "İçeriği bu sayfaya bağlantı veren tüm sayfaları ve yazıları bul. Başlığı, yazı türünü ve bağlantı bağlamını göster."
+        },
+        "WordPress.Edit Page.3": {
+            "Starter": "Bu sayfanın içerik istatistiklerini göster",
+            "Prompt": "Bu sayfanın sözcük sayısını, paragraf sayısını, görsel sayısını, dahili bağlantı sayısını ve harici bağlantı sayısını göster."
+        },
+        "WordPress.Edit Page.4": {
+            "Starter": "Bu sayfayı çoğalt",
+            "Prompt": "WordPress sayfa çoğaltma eylemini kullanarak bu sayfanın bir kopyasını oluştur. Yeni başlık ne olmalı?"
+        },
+        "WordPress.Edit Page.5": {
+            "Starter": "Bu sayfa güncellendiğinde bana e-posta gönder",
+            "Prompt": "Bu belirli sayfa her güncellendiğinde bana e-posta gönderen bir otomasyon oluştur. Kimin güncellediğini ve ne zaman olduğunu dahil et."
+        },
+        "WordPress.Edit Post.1": {
+            "Starter": "Bu yazının revizyon geçmişini göster",
+            "Prompt": "Bu yazının tüm revizyonlarını göster: kim düzenledi, ne zaman ve her seferinde yaklaşık ne kadar değişti. En etkin düzenleyiciyi belirle."
+        },
+        "WordPress.Edit Post.2": {
+            "Starter": "Bu yazının yorumlarını göster",
+            "Prompt": "Bu yazıdaki tüm yorumları tarih, yorum yapanın adı, durum ve içerikle birlikte listele. Beklemede olanları veya denetlemede tutulanları vurgula."
+        },
+        "WordPress.Edit Post.3": {
+            "Starter": "Benzer yazıları bul",
+            "Prompt": "Bu yazıyla kategori veya etiketleri paylaşan yayımlanmış yazıları bul. Örtüşmeye göre sırala ve başlığı, yazarı ve yayımlama tarihini göster."
+        },
+        "WordPress.Edit Post.4": {
+            "Starter": "İçerik istatistiklerini göster",
+            "Prompt": "Bu yazının sözcük sayısını, paragraf sayısını, tahmini okuma süresini, dahili bağlantı sayısını ve harici bağlantı sayısını göster."
+        },
+        "WordPress.Edit User.1": {
+            "Starter": "Bu kullanıcının tüm etkinliğini göster",
+            "Prompt": "Bu kullanıcının tüm etkinliğini göster: her yayımlanmış yazı, taslak, yorum ve son bilinen etkinlik tarihi. Son katkıdan bu yana geçen gün sayısını hesapla."
+        },
+        "WordPress.Edit User.2": {
+            "Starter": "Bu kullanıcının içerik performansını göster",
+            "Prompt": "Bu kullanıcının yayımlanmış yazılarını yorum sayısına göre sırala. En çok yorumlanmış yazısını ve genel olarak yazı başına yorum ortalamasını göster."
+        },
+        "WordPress.Edit User.3": {
+            "Starter": "Etkileşim puanı hesapla",
+            "Prompt": "Bu kullanıcının etkileşimini yayımlanmış yazılara, gönderilen yorumlara ve hesap yaşına göre puanla. Puanını site genelindeki ortalama ve yüzdelik dilimle karşılaştır."
+        },
+        "WordPress.Edit User.4": {
+            "Starter": "Bir rol ekle",
+            "Prompt": "WordPress rol ekleme eylemini kullanarak bu kullanıcıya bir rol ekle. Hangi rolü eklemeliyim?"
+        },
+        "WordPress.Edit User.5": {
+            "Starter": "Bu kullanıcı yayımladığında e-posta gönder",
+            "Prompt": "Bu kullanıcı her yazı yayımladığında bana e-posta gönderen bir otomasyon oluştur. Yazı başlığını ve bağlantısını dahil et."
+        },
+        "WordPress.Media Library.1": {
+            "Starter": "Ortam kütüphanesi boyutunu göster",
+            "Prompt": "Toplam ortam kütüphanesi boyutunu, dosya türüne göre (görsel/video/ses/belge) sayıyı ve tür başına ortalama dosya boyutunu göster."
+        },
+        "WordPress.Media Library.2": {
+            "Starter": "Kullanılmayan ortamı bul",
+            "Prompt": "Yayımlanmış yazı veya sayfa içeriğinde herhangi bir yere referans verilmeyen ve öne çıkan görsel olarak ayarlanmamış ortam eklerini bul. Dosya adını, türünü, boyutunu ve yükleme tarihini göster."
+        },
+        "WordPress.Media Library.3": {
+            "Starter": "Alternatif metni olmayan görselleri bul",
+            "Prompt": "Alternatif metin ayarlanmamış (_wp_attachment_image_alt postmeta boş veya eksik) görsel eklerini listele. Dosya adını, boyutunu ve görselin nerede kullanıldığını göster."
+        },
+        "WordPress.Media Library.4": {
+            "Starter": "En büyük dosyaları göster",
+            "Prompt": "Ortam kütüphanesindeki en büyük 25 dosyayı listele. Dosya adını, türünü, boyutunu, yükleme tarihini ve hangi yazıların onları kullandığını göster."
+        },
+        "WordPress.Media Library.5": {
+            "Starter": "Yükleme eğilimini göster",
+            "Prompt": "Son 12 ay için ay başına ortam yükleme sayılarını göster. Olağandışı yüksek yükleme etkinliği olan ayları belirle."
+        },
+        "Yoast SEO.Dashboard.1": {
+            "Starter": "SEO puan dağılımını göster",
+            "Prompt": "Tüm yayımlanmış yazı ve sayfalar için Yoast SEO puanlarının (_yoast_wpseo_linkdex postmeta) dağılımını göster. 0-30 geliştirilmeli, 31-70 ortalama, 71-100 iyi olarak grupla. Kova başına sayıyı göster."
+        },
+        "Yoast SEO.Dashboard.2": {
+            "Starter": "Odak anahtar ifadesi olmayan yazıları bul",
+            "Prompt": "Yoast odak anahtar ifadesi ayarlanmamış (_yoast_wpseo_focuskw boş veya eksik) yayımlanmış yazıları bul. Başlığı, yazarı, son değiştirilme tarihini göster."
+        },
+        "Yoast SEO.Dashboard.3": {
+            "Starter": "Düşük puanlı yazıları bul",
+            "Prompt": "Yoast SEO puanı (_yoast_wpseo_linkdex) 50'nin altında olan yayımlanmış yazıları bul. Başlığı, puanı, varsa odak anahtar ifadesini ve yazarı göster. En düşük puandan başlayarak sırala."
+        },
+        "Yoast SEO.Dashboard.4": {
+            "Starter": "Puanları yazı türüne göre karşılaştır",
+            "Prompt": "Yoast SEO puan dağılımını yazı türüne göre karşılaştır. Yazılar, sayfalar ve diğer kamuya açık yazı türleri için ortalama ve medyan puanı göster. En çok dikkat gerektiren yazı türünü belirle."
+        },
+        "Yoast SEO.Dashboard.5": {
+            "Starter": "Eksik meta açıklamalarını denetle",
+            "Prompt": "Yoast meta açıklaması olmayan (_yoast_wpseo_metadesc boş) yayımlanmış yazıları bul. Başlığı, yazarı, yazı türünü ve sözcük sayısını göster."
+        },
+        "Yoast SEO.Tools.1": {
+            "Starter": "SEO başlıklarını denetle",
+            "Prompt": "Tüm yayımlanmış yazılarda Yoast SEO başlıklarını (_yoast_wpseo_title) denetle. Çok kısa (30 karakterin altında) veya çok uzun (60 karakterin üstünde) başlıkları bul. Sayıyı ve örnekleri göster."
+        },
+        "Yoast SEO.Tools.2": {
+            "Starter": "Yinelenen başlıkları bul",
+            "Prompt": "Yoast SEO başlığının (_yoast_wpseo_title) başka bir yazıyla aynı olduğu yazıları bul. Başlığı ve onu paylaşan yazı kimliklerinin listesini göster."
+        },
+        "Yoast SEO.Tools.3": {
+            "Starter": "Noindex yazıları bul",
+            "Prompt": "Yoast aracılığıyla noindex olarak ayarlanmış (_yoast_wpseo_meta-robots-noindex postmeta) yazıları bul. Başlığı, yazı türünü ve yazarı göster."
+        },
+        "Yoast SEO.Tools.4": {
+            "Starter": "Odak anahtar ifadesi ayarla",
+            "Prompt": "Belirli bir yazı için Yoast odak anahtar ifadesi ayarla. Hangi yazı ve hangi anahtar ifade?"
+        },
+        "Yoast SEO.Tools.5": {
+            "Starter": "Düşük SEO puanında bana e-posta gönder",
+            "Prompt": "Bir yazının Yoast SEO puanı bir eşiğin altına düştüğünde bana e-posta gönderen bir otomasyon oluştur (Yoast 'Bir yazının SEO puanı bir değerden büyük, küçük veya eşit' tetikleyicisini kullanarak). Hangi eşik tetiklemeli?"
+        }
+    }
+}

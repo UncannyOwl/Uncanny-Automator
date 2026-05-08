@@ -81,6 +81,17 @@ class License_Service {
 	}
 
 	/**
+	 * Get license ID.
+	 *
+	 * @return int License ID or 0 when unavailable.
+	 */
+	public function get_license_id(): int {
+		$license = $this->get_license();
+
+		return is_array( $license ) && isset( $license['license_id'] ) ? absint( $license['license_id'] ) : 0;
+	}
+
+	/**
 	 * Get license type.
 	 *
 	 * Returns 'pro' if Pro license is valid, 'free' if Free license is valid, or false.

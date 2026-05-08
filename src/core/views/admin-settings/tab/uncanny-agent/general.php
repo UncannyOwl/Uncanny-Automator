@@ -38,22 +38,28 @@ if ( $has_connect_token ) {
 			<div class="uap-settings-panel-content">
 
 				<div class="uap-field uap-spacing-top--small">
+					<?php echo esc_html_x( "Uncanny Agent is your made-for-WordPress AI assistant. It can analyze or answer questions about your users, posts, sales, courses and more. It can write blog posts, design pages and build and troubleshoot recipes. It's like having a dedicated WordPress helper at your fingertips. Note: Uncanny Agent is available to Administrator users only.", 'agent feature description', 'uncanny-automator' ); ?>
+				</div>
 
-					<?php echo esc_html_x( "Uncanny Agent is your made-for-WordPress AI assistant. It can analyze or answer questions about your users, posts, sales, courses and more. It can write blog posts, design pages and build and troubleshoot recipes. It's like having a dedicated WordPress helper at your fingertips.", 'agent feature description', 'uncanny-automator' ); ?>
+				<div class="uap-settings-panel-content-subtitle uap-spacing-top">
+					<?php echo esc_html_x( 'Uncanny Agent Launcher Tab', 'launcher tab subtitle', 'uncanny-automator' ); ?>
+				</div>
 
+				<div class="uap-field uap-spacing-top--small">
+					<?php echo esc_html_x( 'A tab is displayed at the bottom of the WordPress admin dashboard to enable quick access to Uncanny Agent from any screen. This is a static link that opens the Uncanny Agent window. Uncanny Agent does not load on any screen until you initiate a conversation by sending a message.', 'launcher tab description', 'uncanny-automator' ); ?>
+				</div>
+
+				<div class="uap-field uap-spacing-top--small">
+					<?php echo esc_html_x( 'If you prefer that the Uncanny Agent tab is not displayed, you can toggle it off below.', 'launcher tab toggle hint', 'uncanny-automator' ); ?>
+				</div>
+
+				<div class="uap-field uap-spacing-top">
 					<uo-switch
 						id="<?php echo esc_attr( Admin_Settings_Uncanny_Agent_General::ENABLED_KEY ); ?>"
 						<?php echo $is_enabled ? 'checked' : ''; ?>
 
 						status-label="<?php echo esc_attr_x( 'Enabled', 'toggle status label', 'uncanny-automator' ); ?>,<?php echo esc_attr_x( 'Disabled', 'toggle status label', 'uncanny-automator' ); ?>"
-
-						class="uap-spacing-top"
 					></uo-switch>
-
-					<div class="uap-field-description">
-						<?php echo esc_html_x( "Keep Uncanny Agent enabled to help your team work faster. Uncanny Agent is available to Administrator users only.", 'agent feature description', 'uncanny-automator' ); ?>
-					</div>
-
 				</div>
 
 				<!-- Handshake status -->
@@ -62,16 +68,16 @@ if ( $has_connect_token ) {
 
 				 <?php if ( $has_connect_token && ! empty( $handshake_data['valid'] ) ) : ?>
 
-					<uo-alert 
+					<uo-alert
 						class="uap-spacing-top"
 						heading="
 							<?php echo esc_html( $handshake_data['requester_email'] ); ?>
 							<?php echo esc_html_x( 'wants to connect this site to', 'handshake description', 'uncanny-automator' ); ?>
 							app.uncannyagent.com.
-						" 
+						"
 						type="info"
 					>
-						
+
 						<div class="uap-spacing-top">
 							<?php echo esc_html_x( 'This will allow the Uncanny Agent standalone app to manage automations on this site. The connection uses a secure application password that you can revoke at any time.', 'handshake description', 'uncanny-automator' ); ?>
 						</div>

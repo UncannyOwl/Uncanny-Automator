@@ -74,6 +74,16 @@ class Client_Payload_Service {
 	public function generate_encrypted_payload( array $overrides = array() ): string {
 		$payload_data = $this->build_payload_data( $overrides );
 
+		return $this->generate_encrypted_package( $payload_data );
+	}
+
+	/**
+	 * Generate an encrypted package for arbitrary MCP client data.
+	 *
+	 * @param array<string,mixed> $payload_data Payload data.
+	 * @return string Empty string on failure.
+	 */
+	public function generate_encrypted_package( array $payload_data ): string {
 		$payload_json = wp_json_encode( $payload_data );
 		if ( false === $payload_json ) {
 			return '';
@@ -105,6 +115,7 @@ class Client_Payload_Service {
 			'mcp_url'                => esc_url_raw( $this->context->get_mcp_rest_url() ),
 			'bearer_token'           => $this->token_service->get_bearer_token(),
 			'license_key'            => sanitize_text_field( (string) $this->context->get_license_key() ),
+			'license_id'             => absint( $this->context->get_license_id() ),
 			'site_name'              => sanitize_text_field( (string) $this->context->get_site_name() ),
 			'item_name'              => sanitize_text_field( (string) $this->context->get_item_name() ),
 			'license_type'           => sanitize_text_field( (string) $this->context->get_license_type() ),

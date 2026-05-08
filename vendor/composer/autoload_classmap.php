@@ -384,6 +384,8 @@ return array(
     'Uncanny_Automator\\Api\\Components\\Condition\\Value_Objects\\Individual_Condition' => $baseDir . '/src/api/components/condition/value-objects/class-individual-condition.php',
     'Uncanny_Automator\\Api\\Components\\Conversation_Starter\\Domain\\Conversation_Starter' => $baseDir . '/src/api/components/conversation-starter/domain/class-conversation-starter.php',
     'Uncanny_Automator\\Api\\Components\\Conversation_Starter\\Registry\\Conversation_Registry' => $baseDir . '/src/api/components/conversation-starter/registry/class-conversation-registry.php',
+    'Uncanny_Automator\\Api\\Components\\Conversation_Starter\\Translation\\Locale_Resolver' => $baseDir . '/src/api/components/conversation-starter/translation/class-locale-resolver.php',
+    'Uncanny_Automator\\Api\\Components\\Conversation_Starter\\Translation\\Translation_Loader' => $baseDir . '/src/api/components/conversation-starter/translation/class-translation-loader.php',
     'Uncanny_Automator\\Api\\Components\\Dependency\\Dependency' => $baseDir . '/src/api/components/dependency/class-dependency.php',
     'Uncanny_Automator\\Api\\Components\\Dependency\\Dependency_Config' => $baseDir . '/src/api/components/dependency/class-dependency-config.php',
     'Uncanny_Automator\\Api\\Components\\Dependency\\Value_Objects\\Dependency_Cta' => $baseDir . '/src/api/components/dependency/value-objects/class-dependency-cta.php',

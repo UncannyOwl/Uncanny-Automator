@@ -63,7 +63,7 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 
 		$this->action = $action;
 
-		$closure = function( $tokens, $loop ) use ( $action ) {
+		$closure = function ( $tokens, $loop ) use ( $action ) {
 			return $this->loop_list( $tokens, $loop, $action );
 		};
 
@@ -71,7 +71,6 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 		add_filter( 'automator_recipe_main_object_loop_tokens_items', $closure, 10, 2 );
 
 		add_filter( 'automator_action_token_input_parser_text_field_text', array( $this, 'hydrate_loopable_parent_action_token' ), 10, 3 );
-
 	}
 
 	/**
@@ -116,9 +115,20 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 			return '';
 		}
 
-		// Hydrate the value.
-		return wp_json_encode( $to_array, JSON_HEX_QUOT );
+		// The result of this filter becomes the field text that the input parser
+		// then runs through stripcslashes() in maybe_parse_shortcodes_in_fields().
+		// stripcslashes is C-style and does not recognise \uNNNN — for any
+		// unrecognised escape it just drops the leading backslash, so a JSON
+		// payload like {"t":"‘x’"} comes out as {"t":"u2018xu2019"}
+		// and the corruption rides along into entity_ids and every child token.
+		// JSON_UNESCAPED_UNICODE keeps non-ASCII chars as their raw UTF-8 bytes
+		// (no backslash, nothing for stripcslashes to damage). The double-up of
+		// remaining backslashes lets the JSON's own escapes (" from
+		// JSON_HEX_QUOT, \/ for slashes, etc.) survive stripcslashes intact —
+		// stripcslashes turns \\ into \, restoring the original JSON.
+		$json = wp_json_encode( $to_array, JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE );
 
+		return str_replace( '\\', '\\\\', (string) $json );
 	}
 
 	/**
@@ -131,7 +141,6 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 		$child_tokens_parser_hook = strtolower( 'automator_token_parser_extended_data_token_children_' . $this->get_id() );
 
 		add_filter( $child_tokens_parser_hook, array( $this, 'hydrate_children_tokens' ), 10, 4 );
-
 	}
 
 	/**
@@ -184,7 +193,6 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 		}
 
 		return $tokens;
-
 	}
 
 	/**
@@ -210,7 +218,6 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 		}
 
 		return false; // Pattern did not match.
-
 	}
 
 
@@ -255,13 +262,13 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 	 * This context refers to the child token.
 	 *
 	 * @param string $field_text
-	 * @param array $match
+	 * @param array $match_values
 	 * @param array $args
 	 * @param array $process_args
 	 *
 	 * @return string
 	 */
-	public function hydrate_children_tokens( $field_text = '', $match = array(), $args = array(), $process_args = array() ) {
+	public function hydrate_children_tokens( $field_text = '', $match_values = array(), $args = array(), $process_args = array() ) {
 
 		$entity_id  = $process_args['loop']['entity_id'] ?? null;
 		$process_id = $process_args['loop']['loop_item']['filter_id'] ?? null;
@@ -292,7 +299,6 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 		}
 
 		return strtr( $field_text, $key_value_pairs );
-
 	}
 
 	/**
@@ -310,54 +316,51 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 	}
 
 	/**
-	 * @param string $string
+	 * @param string $string_value
 	 *
 	 * @return int|null
 	 */
-	public static function extract_loopable_item_index_number( $string ) {
+	public static function extract_loopable_item_index_number( $string_value ) {
 
-		if ( ! is_string( $string ) ) {
+		if ( ! is_string( $string_value ) ) {
 			return null;
 		}
 
 		// Check if the string matches the pattern 'loopable_item_index_'
-		if ( preg_match( '/^loopable_item_index_(\d+)$/', $string, $matches ) ) {
+		if ( preg_match( '/^loopable_item_index_(\d+)$/', $string_value, $matches ) ) {
 			return (int) $matches[1]; // Return the extracted number
 		}
 
 		return null; // Return null if the pattern doesn't match
-
 	}
 
 
 	/**
-	 * @param mixed $array
+	 * @param mixed $array_value
 	 * @param mixed $dot_notation
 	 * @return mixed
 	 */
-	public static function get_value_by_dot_notation( $array, $dot_notation ) {
+	public static function get_value_by_dot_notation( $array_value, $dot_notation ) {
 
 		$keys = explode( '.', $dot_notation ); // Split dot notation into array keys
 
 		foreach ( $keys as $key ) {
 
-			if ( isset( $array[ $key ] ) ) {
-				$array = $array[ $key ]; // Move deeper into the array
+			if ( isset( $array_value[ $key ] ) ) {
+				$array_value = $array_value[ $key ]; // Move deeper into the array
 			}
 
 			// XML Support.
-			if ( isset( $array[0]['_loopable_xml_text'] ) ) {
-				$array = $array[0]['_loopable_xml_text'];
+			if ( isset( $array_value[0]['_loopable_xml_text'] ) ) {
+				$array_value = $array_value[0]['_loopable_xml_text'];
 			}
 
 			// If the key doesn't exist, stop further processing by returning null
-			if ( ! isset( $array ) ) {
+			if ( ! isset( $array_value ) ) {
 				return null; // Early exit without using else
 			}
 		}
 
-		return $array; // Return the final value
+		return $array_value; // Return the final value
 	}
-
-
 }

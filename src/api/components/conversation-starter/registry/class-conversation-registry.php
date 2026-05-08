@@ -12,6 +12,8 @@ namespace Uncanny_Automator\Api\Components\Conversation_Starter\Registry;
 
 use InvalidArgumentException;
 use Uncanny_Automator\Api\Components\Conversation_Starter\Domain\Conversation_Starter;
+use Uncanny_Automator\Api\Components\Conversation_Starter\Translation\Locale_Resolver;
+use Uncanny_Automator\Api\Components\Conversation_Starter\Translation\Translation_Loader;
 
 /**
  * Loads conversation starters from the bundled JSON resource.
@@ -24,6 +26,34 @@ class Conversation_Registry {
 	 * @var string
 	 */
 	private const TRANSIENT_PREFIX = 'automator_conversation_starters_';
+
+	/**
+	 * Resolves the user locale to the language code used to pick a translation overlay.
+	 *
+	 * @var Locale_Resolver
+	 */
+	private Locale_Resolver $locale_resolver;
+
+	/**
+	 * Loader for the per-language translation overlay; lazily instantiated to honor the resolver's runtime locale at the moment rows are first read.
+	 *
+	 * @var Translation_Loader|null
+	 */
+	private ?Translation_Loader $translation_loader;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Locale_Resolver|null    $locale_resolver    Optional locale resolver.
+	 * @param Translation_Loader|null $translation_loader Optional translation loader.
+	 */
+	public function __construct(
+		?Locale_Resolver $locale_resolver = null,
+		?Translation_Loader $translation_loader = null
+	) {
+		$this->locale_resolver    = $locale_resolver ?? new Locale_Resolver();
+		$this->translation_loader = $translation_loader;
+	}
 
 	/**
 	 * Load all conversation starters.
@@ -154,14 +184,34 @@ class Conversation_Registry {
 			return array();
 		}
 
-		return array_values(
-			array_filter(
-				$decoded,
-				static function ( $row ): bool {
-					return is_array( $row );
-				}
-			)
-		);
+		$loader = $this->get_translation_loader();
+		$rows   = array();
+
+		foreach ( $decoded as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			$rows[] = $loader->translate_row( $row );
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Lazily build the translation loader using the runtime-resolved language code.
+	 *
+	 * @return Translation_Loader
+	 */
+	private function get_translation_loader(): Translation_Loader {
+
+		if ( null === $this->translation_loader ) {
+			$this->translation_loader = new Translation_Loader(
+				__DIR__ . '/resources/i18n',
+				$this->locale_resolver->get_language_code()
+			);
+		}
+
+		return $this->translation_loader;
 	}
 
 	/**
@@ -520,9 +570,11 @@ class Conversation_Registry {
 	 */
 	private function get_transient_key(): string {
 
-		$version = defined( 'AUTOMATOR_PLUGIN_VERSION' ) ? AUTOMATOR_PLUGIN_VERSION : 'dev';
+		$version  = defined( 'AUTOMATOR_PLUGIN_VERSION' ) ? AUTOMATOR_PLUGIN_VERSION : 'dev';
+		$language = $this->locale_resolver->get_language_code();
+		$suffix   = '' !== $language ? '_' . sanitize_key( $language ) : '';
 
-		return self::TRANSIENT_PREFIX . sanitize_key( (string) $version );
+		return self::TRANSIENT_PREFIX . sanitize_key( (string) $version ) . $suffix;
 	}
 
 	/**

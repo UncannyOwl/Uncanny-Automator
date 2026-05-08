@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 6.9.4
 Requires PHP: 7.4
-Stable tag: 7.2.4
+Stable tag: 7.2.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -417,6 +417,18 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 7.2.5 [2026-05-08] =
+
+**Added:**
+
+* Uncanny Agent - Support for translating conversation starters into 12 languages #7289
+
+**Fixed:**
+
+* Advanced - Post meta token now gracefully acknowledges "0" with an empty string. #7292
+* Loopable Tokens bid farewell to their geeky Unicode escape disguises. #7280
+* Twilio - Send an SMS to a number now sans HTML `<p>` shenanigans. #7282
 
 = 7.2.4 [2026-05-06] =
 

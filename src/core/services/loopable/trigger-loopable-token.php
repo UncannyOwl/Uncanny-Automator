@@ -51,7 +51,7 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 
 		$this->trigger = $trigger;
 
-		$closure = function( $tokens, $loop ) use ( $trigger ) {
+		$closure = function ( $tokens, $loop ) use ( $trigger ) {
 			return $this->loop_list( $tokens, $loop, $trigger );
 		};
 
@@ -63,7 +63,6 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 
 		add_filter( 'automator_recipe_main_object_loop_tokens_items', $closure, 10, 2 );
 		add_action( 'automator_loopable_token_hydrate', array( $this, 'on_before_trigger_complete' ), 10, 2 );
-
 	}
 
 	/**
@@ -72,23 +71,39 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	 * This context refers to the parent token.
 	 *
 	 * @param string $field_text
-	 * @param string $match
+	 * @param string $match_value
 	 * @param mixed[] $args
 	 * @param mixed[] $process_args
 	 *
 	 * @return string - The JSON string of the loopable token.
 	 */
-	public function hydrate_tokens( $field_text = '', $match = '', $args = array(), $process_args = array() ) {
+	public function hydrate_tokens( $field_text = '', $match_value = '', $args = array(), $process_args = array() ) {
 
 		// Bail if its universal to avoid conflict.
-		if ( strpos( $match, ':UNIVERSAL:' ) ) {
+		if ( strpos( $match_value, ':UNIVERSAL:' ) ) {
 			return $field_text;
 		}
 
 		$field_text = Automator()->db->token->get( 'LOOPABLE_' . $this->get_id(), $process_args );
 
-		return $field_text;
+		if ( ! is_string( $field_text ) || '' === $field_text ) {
+			return $field_text;
+		}
 
+		// The result of this filter becomes the field text that the input parser
+		// then runs through stripcslashes() in maybe_parse_shortcodes_in_fields().
+		// stripcslashes is C-style and does not recognise \uNNNN — for any
+		// unrecognised escape it just drops the leading backslash, so the
+		// stored ‘ / " (from JSON_HEX_QUOT and the default unicode
+		// escape) come out as literal "u2018" / "u0022", and the corruption
+		// rides along into entity_ids and every child token resolved during
+		// the loop. Doubling the backslashes lets stripcslashes restore the
+		// original JSON intact (\\ → \), so a downstream json_decode sees
+		// valid escapes again. The DB value is left untouched so the
+		// hydrate_tokens_children() fallback at line 130, which json_decodes
+		// the same row directly without going through the parser, keeps
+		// working with the un-doubled form it expects.
+		return str_replace( '\\', '\\\\', $field_text );
 	}
 
 	/**
@@ -97,13 +112,13 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 	 * This context refers to the child token.
 	 *
 	 * @param string $field_text
-	 * @param array $match
+	 * @param array $match_values
 	 * @param array $args
 	 * @param array $process_args
 	 *
 	 * @return string
 	 */
-	public function hydrate_tokens_children( $field_text = '', $match = array(), $args = array(), $process_args = array() ) {
+	public function hydrate_tokens_children( $field_text = '', $match_values = array(), $args = array(), $process_args = array() ) {
 
 		$entity_id        = $process_args['loop']['entity_id'] ?? null;
 		$process_id       = $process_args['loop']['loop_item']['filter_id'] ?? null;
@@ -150,7 +165,6 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		}
 
 		return strtr( $field_text, $key_value_pairs );
-
 	}
 
 	/**
@@ -169,13 +183,12 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		);
 
 		// We're using closure because we want to easily pass arguments.
-		$closure = function( $args ) use ( $parameters_reference ) {
+		$closure = function ( $args ) use ( $parameters_reference ) {
 			$this->handle_token_trigger_log_meta_entry( $args, $parameters_reference );
 		};
 
 		// Send the hydration just before the loop is queued.
 		add_action( 'automator_pro_before_loop_is_queued', $closure, 10, 1 );
-
 	}
 
 	/**
@@ -256,7 +269,6 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		);
 
 		return Automator()->db->trigger->add_meta( $trigger_id, $trigger_log_id, $run_number, $args );
-
 	}
 
 	/**
@@ -338,7 +350,6 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		}
 
 		return $tokens;
-
 	}
 
 	/**
@@ -400,7 +411,5 @@ abstract class Trigger_Loopable_Token extends Loopable_Token {
 		}
 
 		return $results;
-
 	}
-
 }
