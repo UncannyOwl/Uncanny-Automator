@@ -489,6 +489,7 @@ class Copy_Recipe_Parts {
 			&& false === preg_match_all( '/{{(ACTION_(FIELD|META)\:)?\d+:\w.+?}}/', $content )
 			&& false === preg_match_all( '/{{id:(WPMAGICBUTTON|WPMAGICLINK)}}/', $content )
 			&& false === preg_match_all( '/{{TOKEN_EXTENDED:([^}]*)}}/', $content )
+			&& false === preg_match_all( '/{{TRIGGER_COMMON:\d+:[^}]+}}/', $content )
 		) {
 			return false;
 		}
@@ -526,6 +527,16 @@ class Copy_Recipe_Parts {
 			if ( preg_match_all( $extended_pattern, $content ) ) {
 				$content = preg_replace( $extended_pattern, '{{TOKEN_EXTENDED:${1}:' . $new_id . ':${2}}}', $content );
 			}
+
+			// TRIGGER_COMMON namespaced tokens — `{{TRIGGER_COMMON:<trigger_id>:<SUFFIX>}}`
+			// emitted for trigger ID / title / completion date (see
+			// services/recipe/structure/triggers/trigger/tokens.php). Suffix
+			// is open-ended (`ID`, `TITLE`, `COMPLETION_DATE`, …) so the
+			// pattern accepts anything that's not a closing brace.
+			$common_pattern = '/\{\{TRIGGER_COMMON:' . preg_quote( $prev_id, '/' ) . ':([^}]+)\}\}/';
+			if ( preg_match_all( $common_pattern, $content ) ) {
+				$content = preg_replace( $common_pattern, '{{TRIGGER_COMMON:' . $new_id . ':${1}}}', $content );
+			}
 		}
 
 		return $content;
@@ -547,6 +558,18 @@ class Copy_Recipe_Parts {
 			// Sanity check
 			if ( is_array( $prev_id ) || is_array( $new_id ) ) {
 				continue;
+			}
+
+			// Bare action tokens — `{{<action_id>:<option_code>:<token_code>}}`.
+			// This is the field-level relevant_tokens shape (see
+			// services/recipe/structure/actions/item/tokens.php::generate_relevant_tokens()).
+			// It carries no ACTION_FIELD:/ACTION_META: prefix, so the prefixed
+			// replacement below never matches it — without this the producing
+			// action's old ID survives import and every reference renders red.
+			// Mirrors replace_trigger_token_ids() for the equivalent trigger shape.
+			$bare_pattern = '/(\{\{|\[\[)' . preg_quote( $prev_id, '/' ) . '(:|;)/';
+			if ( preg_match_all( $bare_pattern, $content ) ) {
+				$content = preg_replace( $bare_pattern, '${1}' . $new_id . '${2}', $content );
 			}
 
 			// Check if content contains a replaceable token by previous ID.

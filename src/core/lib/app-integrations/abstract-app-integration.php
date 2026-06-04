@@ -148,6 +148,13 @@ abstract class App_Integration extends Integration {
 		// Pass dependencies to api.
 		if ( $this->dependencies->api ) {
 			$this->dependencies->api->set_dependencies( $this->dependencies );
+
+			// Wire new Api_Client if infrastructure is loaded.
+			if ( function_exists( '\Uncanny_Automator\App\Infrastructure\automator_api_client' ) ) {
+				$this->dependencies->api->set_api_client(
+					\Uncanny_Automator\App\Infrastructure\automator_api_client()
+				);
+			}
 		}
 		// Pass dependencies to webhooks.
 		if ( $this->dependencies->webhooks ) {

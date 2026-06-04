@@ -1,126 +1,83 @@
 <?php
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Mailchimp;
 
-class MC_EVERYONE_CONTACT_REMOVE {
+/**
+ * Class MC_EVERYONE_CONTACT_REMOVE
+ *
+ * @package Uncanny_Automator
+ * @property Mailchimp_App_Helpers $helpers
+ * @property Mailchimp_Api_Caller $api
+ */
+class MC_EVERYONE_CONTACT_REMOVE extends \Uncanny_Automator\Recipe\App_Action {
 
-	use Recipe\Actions;
+	use Mailchimp_Audience_Fields;
+	use Mailchimp_Email_Fields;
+	use Mailchimp_Subscriber_Fields;
 
-	const INTEGRATION = 'MAILCHIMP';
-
-	const CODE = 'MC_EVERYONE_CONTACT_REMOVE';
-
-	const META = 'MC_EVERYONE_CONTACT_REMOVE_MET';
-
-	public function __construct() {
-
-		$this->setup_action();
-
-		$this->register_action();
-
-	}
-
-	public function setup_action() {
-
-		$this->set_integration( self::INTEGRATION );
-
-		$this->set_action_code( self::CODE );
-
-		$this->set_action_meta( self::META );
-
+	/**
+	 * Setup action.
+	 *
+	 * @return void
+	 */
+	protected function setup_action() {
+		$this->set_integration( 'MAILCHIMP' );
+		$this->set_action_code( 'MC_EVERYONE_CONTACT_REMOVE' );
+		// Note: Legacy used 'MET' (typo), not 'META'. Preserved for backward compatibility.
+		$this->set_action_meta( 'MC_EVERYONE_CONTACT_REMOVE_MET' );
 		$this->set_is_pro( false );
-
 		$this->set_requires_user( false );
-
-		/* translators: Action - WordPress */
-		$this->set_sentence( sprintf( 'Unsubscribe {{a contact:%1$s}} from {{an audience:%2$s}}', self::META . '_EMAIL', $this->get_action_meta() ) );
-
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( 'Unsubscribe {{a contact}} from {{an audience}}' );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/mailchimp/' ) );
-
-		$this->set_author( Automator()->get_author_name( $this->get_action_code() ) );
-
+		$this->set_readable_sentence( esc_html_x( 'Unsubscribe {{a contact}} from {{an audience}}', 'Mailchimp', 'uncanny-automator' ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s is the contact email, %2$s is the audience
+				esc_html_x( 'Unsubscribe {{a contact:%1$s}} from {{an audience:%2$s}}', 'Mailchimp', 'uncanny-automator' ),
+				$this->get_action_meta() . '_EMAIL',
+				$this->get_action_meta()
+			)
+		);
 	}
 
+	/**
+	 * Define grouped action options.
+	 *
+	 * @return array
+	 */
 	public function load_options() {
-
 		return array(
 			'options'       => array(
-				Automator()->helpers->recipe->mailchimp->options->get_email_field( self::META . '_EMAIL' ),
+				$this->get_email_field_config( $this->get_action_meta() . '_EMAIL' ),
 			),
 			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						esc_html__( 'Audience', 'uncanny-automator' ),
-						'MCLIST'
-					),
-					Automator()->helpers->recipe->mailchimp->options->get_double_opt_in(
-						esc_html__( 'Delete subscriber from Mailchimp?', 'uncanny-automator' ),
-						'MCDELETEMEMBER',
-						array(
-							'description' => esc_html__( 'Yes, delete from Mailchimp, No, only unsubscribe from audience', 'uncanny-automator' ),
-						)
-					),
+				$this->get_action_meta() => array(
+					$this->get_audience_select_config(),
+					$this->get_delete_member_config(),
 				),
 			),
 		);
-
 	}
 
-	public function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+	/**
+	 * Process the action.
+	 *
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        The arguments.
+	 * @param array $parsed      The parsed values.
+	 *
+	 * @return bool
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$email   = $this->get_email_from_parsed( $this->get_action_meta() . '_EMAIL' );
+		$list_id = $this->get_audience_from_parsed();
 
-		$helpers = Automator()->helpers->recipe->mailchimp->options;
-
-		try {
-
-			$list_id = isset( $parsed['MCLIST'] ) ? sanitize_text_field( $parsed['MCLIST'] ) : '';
-
-			$delete_member = isset( $parsed['MCDELETEMEMBER'] ) ? sanitize_text_field( $parsed['MCDELETEMEMBER'] ) : '';
-
-			$email = isset( $parsed[ self::META . '_EMAIL' ] ) ? trim( sanitize_text_field( $parsed[ self::META . '_EMAIL' ] ) ) : '';
-
-			if ( empty( filter_var( $email, FILTER_VALIDATE_EMAIL ) ) ) {
-				throw new \Exception( 'Invalid email address format.' );
-			}
-
-			$user_hash = md5( strtolower( $email ) );
-
-			if ( 'no' === $delete_member ) {
-
-				$user_data = array(
-					'status' => 'unsubscribed',
-				);
-
-				$request_params = array(
-					'action'    => 'update_subscriber',
-					'list_id'   => $list_id,
-					'user_hash' => $user_hash,
-					'user_data' => wp_json_encode( $user_data ),
-				);
-
-			} else {
-
-				$request_params = array(
-					'action'    => 'delete_subscriber',
-					'list_id'   => $list_id,
-					'user_hash' => $user_hash,
-				);
-
-			}
-
-			$response = $helpers->api_request( $request_params, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
-
+		if ( $this->should_delete_member() ) {
+			$this->api->delete_subscriber( $list_id, $email );
+		} else {
+			$this->api->unsubscribe_contact( $list_id, $email );
 		}
 
+		return true;
 	}
-
 }

@@ -223,7 +223,7 @@ class Notion_Api_Caller extends Api_Caller {
 		$fields     = array();
 
 		foreach ( $properties as $property ) {
-			$fields_mapper = new Mapper();
+			$fields_mapper = new Mapper( $this->helpers );
 			$fields_mapper->set_properties( $property );
 			$field = $fields_mapper->get_corresponding_field();
 

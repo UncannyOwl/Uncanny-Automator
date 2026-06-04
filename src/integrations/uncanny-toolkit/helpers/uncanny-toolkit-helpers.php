@@ -1,50 +1,34 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
+
+use Uncanny_Automator\Recipe\Abstract_Helpers;
 
 /**
- * Uncanny Toolkit Integration Helpers file
+ * Class Ut_Helpers
+ *
+ * @package Uncanny_Automator
  */
-class Uncanny_Toolkit_Helpers {
+class Ut_Helpers extends Abstract_Helpers {
 
 	/**
-	 * @var
-	 */
-	public $options;
-	/**
-	 * @var
-	 */
-	public $pro;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options = true;
-
-	/**
-	 * Checks if the Toolkit Pro Group Sign Up module is activated.
-	 *
-	 * @var mixed null || bool once checked
-	 */
-	public static $is_groups_sign_up_activated = null;
-
-	/**
-	 *
+	 * Ut_Helpers constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
+	 * Build token data from CSV import values.
 	 *
-	 * Building default tokens for the triggers
+	 * Combines CSV data with user ID, courses, groups, and group leader data
+	 * into a single token array.
 	 *
-	 * @param array $values
-	 * @param array $headers
-	 * @param array $keys
-	 * @param int $user_id
+	 * @param array $values  The CSV row values.
+	 * @param array $headers The CSV column headers.
+	 * @param array $keys    The column key mappings.
+	 * @param int   $user_id The imported user ID.
 	 *
-	 * @return array|false
+	 * @return array|false The combined token data or false on failure.
 	 */
 	public static function build_token_data( $values, $headers, $keys, $user_id ) {
 
@@ -65,14 +49,15 @@ class Uncanny_Toolkit_Helpers {
 	}
 
 	/**
-	 * Course Meta
+	 * Extract course IDs and titles from CSV import data.
 	 *
-	 * @param $values
-	 * @param $keys
+	 * @param array $values The CSV row values.
+	 * @param array $keys   The column key mappings.
 	 *
-	 * @return array[]
+	 * @return array{course_ids: array, course_titles: array}
 	 */
 	public static function get_courses_from_data( $values, $keys ) {
+
 		$ids    = array();
 		$titles = array();
 		$return = array(
@@ -85,13 +70,13 @@ class Uncanny_Toolkit_Helpers {
 		}
 
 		$k = $keys['learndash_courses'];
-		if ( ! isset( $values[ $k ] ) ) {
+
+		if ( ! isset( $values[ $k ] ) || empty( $values[ $k ] ) ) {
 			return $return;
 		}
-		if ( empty( $values[ $k ] ) ) {
-			return $return;
-		}
+
 		$learndash_courses = explode( ';', $values[ $k ] );
+
 		if ( empty( $learndash_courses ) || is_numeric( $values[ $k ] ) ) {
 			$ids[]    = $values[ $k ];
 			$titles[] = get_the_title( $values[ $k ] );
@@ -109,14 +94,15 @@ class Uncanny_Toolkit_Helpers {
 	}
 
 	/**
-	 * Group meta
+	 * Extract group IDs and titles from CSV import data.
 	 *
-	 * @param $values
-	 * @param $keys
+	 * @param array $values The CSV row values.
+	 * @param array $keys   The column key mappings.
 	 *
-	 * @return array[]
+	 * @return array{group_ids: array, group_titles: array}
 	 */
 	public static function get_groups_from_data( $values, $keys ) {
+
 		$ids    = array();
 		$titles = array();
 		$return = array(
@@ -129,13 +115,13 @@ class Uncanny_Toolkit_Helpers {
 		}
 
 		$k = $keys['learndash_groups'];
-		if ( ! isset( $values[ $k ] ) ) {
+
+		if ( ! isset( $values[ $k ] ) || empty( $values[ $k ] ) ) {
 			return $return;
 		}
-		if ( empty( $values[ $k ] ) ) {
-			return $return;
-		}
+
 		$learndash_groups = explode( ';', $values[ $k ] );
+
 		if ( empty( $learndash_groups ) || is_numeric( $values[ $k ] ) ) {
 			$ids[]    = $values[ $k ];
 			$titles[] = get_the_title( $values[ $k ] );
@@ -153,14 +139,15 @@ class Uncanny_Toolkit_Helpers {
 	}
 
 	/**
-	 * Group leader meta
+	 * Extract group leader group IDs and titles from CSV import data.
 	 *
-	 * @param $values
-	 * @param $keys
+	 * @param array $values The CSV row values.
+	 * @param array $keys   The column key mappings.
 	 *
-	 * @return array[]
+	 * @return array{group_ids: array, group_titles: array}
 	 */
 	public static function get_group_leader_from_data( $values, $keys ) {
+
 		$ids    = array();
 		$titles = array();
 		$return = array(
@@ -173,13 +160,13 @@ class Uncanny_Toolkit_Helpers {
 		}
 
 		$k = $keys['group_leader'];
-		if ( ! isset( $values[ $k ] ) ) {
+
+		if ( ! isset( $values[ $k ] ) || empty( $values[ $k ] ) ) {
 			return $return;
 		}
-		if ( empty( $values[ $k ] ) ) {
-			return $return;
-		}
+
 		$learndash_groups = explode( ';', $values[ $k ] );
+
 		if ( empty( $learndash_groups ) || is_numeric( $values[ $k ] ) ) {
 			$ids[]    = $values[ $k ];
 			$titles[] = get_the_title( $values[ $k ] );
@@ -197,58 +184,121 @@ class Uncanny_Toolkit_Helpers {
 	}
 
 	/**
-	 * @param Uncanny_Toolkit_Helpers $options
-	 */
-	public function setOptions( Uncanny_Toolkit_Helpers $options ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		$this->options = $options;
-	}
-
-	/**
-	 * @param Uncanny_Toolkit_Pro_Helpers $pro
-	 */
-	public function setPro( Uncanny_Toolkit_Pro_Helpers $pro ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-		$this->pro = $pro;
-	}
-
-	/**
-	 * Check if Toolkit Pro Group Sign Up module is activated
+	 * Check if Group Sign Up module is activated in Toolkit Pro.
+	 *
+	 * @return bool
 	 */
 	public static function is_group_sign_up_activated() {
+		static $is_activated = null;
 
-		if ( is_null( self::$is_groups_sign_up_activated ) ) {
-			if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
-				self::$is_groups_sign_up_activated = false;
-			} else {
-				$active_modules                    = get_option( 'uncanny_toolkit_active_classes', true );
-				self::$is_groups_sign_up_activated = ! empty( $active_modules['uncanny_pro_toolkit\LearnDashGroupSignUp'] );
-			}
+		if ( null !== $is_activated ) {
+			return $is_activated;
 		}
 
-		return self::$is_groups_sign_up_activated;
+		if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
+			$is_activated = false;
+			return $is_activated;
+		}
+
+		$active_classes = get_option( 'uncanny_toolkit_active_classes', array() );
+
+		if ( ! is_array( $active_classes ) ) {
+			$is_activated = false;
+			return $is_activated;
+		}
+
+		$is_activated = in_array( 'uncanny_pro_toolkit\LearnDashGroupSignUp', $active_classes, true );
+
+		return $is_activated;
 	}
 
 	/**
-	 * Return the generated Group Sign Up URL.
+	 * Get the Group Sign Up URL for a group.
 	 *
-	 * @param int $group_id Group ID.
+	 * @param int $group_id The group post ID.
 	 *
-	 * @return string
+	 * @return string The signup URL or empty string.
 	 */
 	public static function get_group_sign_up_url( $group_id ) {
-		// Validate Post Type.
+
 		if ( 'groups' !== get_post_type( $group_id ) ) {
 			return '';
 		}
 
-		// Generate the group key from the ID.
-		$group_key = str_replace( array( ' ', '.', '[', '-' ), '_', crypt( $group_id, 'uncanny-group' ) );
-		$slug      = get_post_field( 'post_name', $group_id, 'raw' );
-		// Generate the signup URL.
-		return add_query_arg(
+		$slug          = get_post_field( 'post_name', $group_id );
+		$encrypted_key = crypt( $group_id, 'uncanny-group' );
+		$url           = site_url( 'sign-up/' . $slug . '/' );
+		$url           = add_query_arg( 'gid', $group_id, $url );
+		$url          .= $encrypted_key;
+
+		return $url;
+	}
+
+	// =========================================================================
+	// Remote-data handlers — entity dropdowns served via REST.
+	//
+	// Toolkit's triggers/actions operate on LearnDash courses and groups but
+	// route through this helper so the wire shape stays self-contained
+	// (`/wp-json/uap/v2/remote-data/uncannytoolkit/{segment}`). No cross-
+	// integration coupling — each handler queries the LD post type directly.
+	// =========================================================================
+
+	/**
+	 * Remote-data handler: Load LearnDash courses (with "Any course").
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_courses( $request ): array {
+		return $this->remote_data_success(
+			$this->build_post_type_options( 'sfwd-courses', true, esc_html_x( 'Any course', 'Uncanny Toolkit', 'uncanny-automator' ) )
+		);
+	}
+
+	/**
+	 * Remote-data handler: Load LearnDash courses (no "Any" option).
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_courses_strict( $request ): array {
+		return $this->remote_data_success(
+			$this->build_post_type_options( 'sfwd-courses', false )
+		);
+	}
+
+	/**
+	 * Remote-data handler: Load LearnDash groups (with "Any group").
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_groups( $request ): array {
+		return $this->remote_data_success(
+			$this->build_post_type_options( 'groups', true, esc_html_x( 'Any group', 'Uncanny Toolkit', 'uncanny-automator' ) )
+		);
+	}
+
+	/**
+	 * Build options for a LearnDash post type.
+	 *
+	 * @param string $post_type   The post type slug.
+	 * @param bool   $include_any Whether to prepend an "Any" option.
+	 * @param string $any_label   Label for the Any option.
+	 *
+	 * @return array
+	 */
+	private function build_post_type_options( $post_type, $include_any = true, $any_label = '' ) {
+
+		return automator_wp_query(
 			array(
-				'gid' => $group_id,
-			),
-			site_url( 'sign-up/' . $slug . '/' )
-		) . '&' . $group_key;
+				'post_type'   => $post_type,
+				'include_any' => $include_any,
+				'any_label'   => $any_label,
+			)
+		);
 	}
 }

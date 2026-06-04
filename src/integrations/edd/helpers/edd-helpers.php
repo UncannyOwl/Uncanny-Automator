@@ -4,10 +4,6 @@ namespace Uncanny_Automator\Integrations\Easy_Digital_Downloads;
 
 use Uncanny_Automator_Pro\Edd_Pro_Helpers;
 
-// Create class alias for backward compatibility with Pro plugin
-class_alias( 'Uncanny_Automator\Integrations\Easy_Digital_Downloads\Edd_Helpers', 'Uncanny_Automator\Edd_Helpers' );
-
-
 /**
  * Class Edd_Helpers
  *
@@ -384,3 +380,6 @@ class Edd_Helpers {
 		return implode( ', ', $order_licenses );
 	}
 }
+
+// BC alias — must run after the class declaration (before, PHP autoload fails).
+class_alias( 'Uncanny_Automator\Integrations\Easy_Digital_Downloads\Edd_Helpers', 'Uncanny_Automator\Edd_Helpers' );

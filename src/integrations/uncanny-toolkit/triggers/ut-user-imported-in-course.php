@@ -1,185 +1,201 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
 
 /**
- * Uncanny Toolkit - Trigger: A user is imported to {{a LearnDash Course}}
+ * Trigger: A user is imported to a LearnDash course.
+ *
+ * @property \Uncanny_Automator\Integrations\Uncanny_Toolkit\Ut_Helpers $item_helpers
  */
-class UT_USER_IMPORTED_IN_COURSE {
+class UT_USER_IMPORTED_IN_COURSE extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Integration code
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	public static $integration = 'UNCANNYTOOLKIT';
-
-	/**
-	 * Trigger Code
-	 *
-	 * @var string
-	 */
-	private $trigger_code;
-	/**
-	 * Trigger Meta
-	 *
-	 * @var string
-	 */
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		if ( ! defined( 'LEARNDASH_VERSION' ) || ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
-			return;
-		}
-		$this->trigger_code = 'UTUSERIMPORTEDCOURSE';
-		$this->trigger_meta = 'UOUSERIMPORTEDCOURSE';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'UTUSERIMPORTEDCOURSE', 'UNCANNYTOOLKIT' )
+			->trigger_meta( 'UOUSERIMPORTEDCOURSE' )
+			->hook( 'uo_after_user_row_imported', 20, 4 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup trigger configuration.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
-
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-toolkit/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			'meta'                => $this->trigger_meta,
-			/* translators: Logged-in trigger - Uncanny Toolkit */
-			'sentence'            => sprintf( esc_attr__( 'A user is imported to {{a LearnDash course:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - Uncanny Toolkit */
-			'select_option_name'  => esc_attr__( 'A user is imported to {{a LearnDash course}}', 'uncanny-automator' ),
-			'action'              => 'uo_after_user_row_imported',
-			'priority'            => 20,
-			'accepted_args'       => 4,
-			'validation_function' => array( $this, 'a_user_is_imported' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
-
-		Automator()->register->trigger( $trigger );
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
+		// translators: %1$s is a LearnDash course.
+		$this->set_sentence( sprintf( esc_html_x( 'A user is imported to {{a LearnDash course:%1$s}}', 'Uncanny Toolkit', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'A user is imported to {{a LearnDash course}}', 'Uncanny Toolkit', 'uncanny-automator' ) );
 	}
 
 	/**
+	 * Check if LearnDash and Toolkit Pro are active.
+	 *
+	 * @return bool
+	 */
+	public function requirements_met() {
+		return defined( 'LEARNDASH_VERSION' ) && defined( 'UNCANNY_TOOLKIT_PRO_VERSION' );
+	}
+
+	/**
+	 * Define trigger options.
+	 *
 	 * @return array[]
 	 */
-	public function load_options() {
-		$all_courses = Automator()->helpers->recipe->learndash->options->all_ld_courses( null, $this->trigger_meta );
-		if ( isset( $all_courses['relevant_tokens'] ) ) {
-			unset( $all_courses['relevant_tokens'] );
-		}
-
-		return Automator()->utilities->keep_order_of_options(
+	public function options() {
+		return array(
 			array(
-				'options' => array(
-					$all_courses,
-				),
-			)
+				'option_code' => $this->get_trigger_meta(),
+				'label'       => esc_html_x( 'Course', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'input_type'  => 'select',
+				'required'    => true,
+				'remote_data' => $this->item_helpers->remote_data_load_config( 'courses' ),
+				'options'     => array(),
+			),
 		);
 	}
 
 	/**
-	 * Running an actual function on the trigger
+	 * Define available tokens.
 	 *
-	 * @param $user_id
-	 * @param $csv_data
-	 * @param $csv_header
-	 * @param $key_location
+	 * @param array $trigger The trigger settings.
+	 * @param array $tokens  Existing tokens.
+	 *
+	 * @return array
 	 */
-	public function a_user_is_imported( $user_id, $csv_data, $csv_header, $key_location ) {
+	public function define_tokens( $trigger, $tokens ) {
+
+		$new_tokens = array(
+			array(
+				'tokenId'   => 'user_id',
+				'tokenName' => esc_html_x( 'Imported user ID', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'user_login',
+				'tokenName' => esc_html_x( 'Imported user login', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'user_email',
+				'tokenName' => esc_html_x( 'Imported user email', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'email',
+			),
+			array(
+				'tokenId'   => 'first_name',
+				'tokenName' => esc_html_x( 'Imported user first name', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'last_name',
+				'tokenName' => esc_html_x( 'Imported user last name', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'display_name',
+				'tokenName' => esc_html_x( 'Imported user display name', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'wp_role',
+				'tokenName' => esc_html_x( 'Imported user WordPress role', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'learndash_course_id',
+				'tokenName' => esc_html_x( 'Course ID', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+		);
+
+		return array_merge( $new_tokens, $tokens );
+	}
+
+	/**
+	 * Validate trigger against hook arguments.
+	 *
+	 * The trigger fires once per imported course ID. The framework loops through
+	 * recipes automatically, so validate() only checks the current recipe's
+	 * selection against one course ID at a time.
+	 *
+	 * @param array $trigger   The trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool
+	 */
+	public function validate( $trigger, $hook_args ) {
+
+		list( $user_id, $csv_data, $csv_header, $key_location ) = $hook_args;
 
 		if ( ! is_numeric( $user_id ) ) {
-			return;
+			return false;
 		}
 
-		$meta_value = Uncanny_Toolkit_Helpers::build_token_data( $csv_data, $csv_header, $key_location, $user_id );
-		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$meta_value = Ut_Helpers::build_token_data( $csv_data, $csv_header, $key_location, $user_id );
 
-		if ( empty( $recipes ) ) {
-			return;
+		if ( ! isset( $meta_value['learndash_course_ids'] ) || empty( $meta_value['learndash_course_ids'] ) ) {
+			return false;
 		}
 
-		$required_course = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$selected_course = $trigger['meta'][ $this->get_trigger_meta() ] ?? '';
 
-		if ( empty( $required_course ) ) {
-			return;
+		// "Any course" sentinel.
+		if ( '-1' === $selected_course ) {
+			return true;
 		}
 
-		if ( ! isset( $meta_value['learndash_course_ids'] ) ) {
-			return;
-		}
-
-		if ( empty( $meta_value['learndash_course_ids'] ) ) {
-			return;
-		}
-
+		// Check if the selected course is among the imported courses.
 		foreach ( $meta_value['learndash_course_ids'] as $course_id ) {
-			foreach ( $recipes as $recipe_id => $recipe ) {
-				foreach ( $recipe['triggers'] as $trigger ) {
-					$trigger_id = $trigger['ID'];//return early for all products
-					if ( ! isset( $required_course[ $recipe_id ] ) ) {
-						continue;
-					}
-					if ( ! isset( $required_course[ $recipe_id ][ $trigger_id ] ) ) {
-						continue;
-					}
-					if ( intval( '-1' ) === intval( $required_course[ $recipe_id ][ $trigger_id ] ) || (int) $required_course[ $recipe_id ][ $trigger_id ] === (int) $course_id ) {
-						$args = array(
-							'code'             => $this->trigger_code,
-							'meta'             => $this->trigger_meta,
-							'ignore_post_id'   => true,
-							'user_id'          => $user_id,
-							'is_signed_in'     => true,
-							'recipe_to_match'  => $recipe_id,
-							'trigger_to_match' => $trigger_id,
-						);
+			if ( (int) $selected_course === (int) $course_id ) {
+				return true;
+			}
+		}
 
-						$this->complete_trigger( $meta_value, $args, $course_id );
-					}
+		return false;
+	}
+
+	/**
+	 * Hydrate token values from hook arguments.
+	 *
+	 * @param array $trigger   The completed trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		list( $user_id, $csv_data, $csv_header, $key_location ) = $hook_args;
+
+		$meta_value = Ut_Helpers::build_token_data( $csv_data, $csv_header, $key_location, $user_id );
+
+		$tokens          = array();
+		$selected_course = $trigger['meta'][ $this->get_trigger_meta() ] ?? '';
+
+		if ( is_array( $meta_value ) ) {
+			foreach ( $meta_value as $key => $val ) {
+				if ( is_array( $val ) ) {
+					$tokens[ $key ] = implode( ' | ', $val );
+				} else {
+					$tokens[ $key ] = wp_strip_all_tags( $val );
 				}
 			}
 		}
-	}
 
-	/**
-	 * Running an actual function on the trigger
-	 *
-	 * @param $meta_value
-	 * @param $args
-	 * @param $course_id
-	 */
-	public function complete_trigger( $meta_value, $args, $course_id ) {
-
-		$results                              = Automator()->process->user->maybe_add_trigger_entry( $args, false );
-		$meta_value['learndash_course_id']    = $course_id;
-		$meta_value['learndash_course_title'] = get_the_title( $course_id );
-		$serialized                           = maybe_serialize( $meta_value );
-		if ( empty( $results ) ) {
-			return;
+		// Determine which course ID to use for the single-course token.
+		$course_id = 0;
+		if ( '-1' === $selected_course && ! empty( $meta_value['learndash_course_ids'] ) ) {
+			$course_id = reset( $meta_value['learndash_course_ids'] );
+		} elseif ( ! empty( $selected_course ) ) {
+			$course_id = $selected_course;
 		}
-		foreach ( $results as $rr ) {
-			if ( ! $rr['result'] ) {
-				continue;
-			}
-			$trigger_id     = (int) $rr['args']['trigger_id'];
-			$user_id        = (int) $rr['args']['user_id'];
-			$trigger_log_id = (int) $rr['args']['trigger_log_id'];
-			$run_number     = (int) $rr['args']['run_number'];
-			$token_args     = array(
-				'user_id'        => $user_id,
-				'trigger_id'     => $trigger_id,
-				'run_number'     => $run_number, //get run number
-				'trigger_log_id' => $trigger_log_id,
-			);
 
-			Automator()->db->trigger->add_token_meta( 'imported_row', $serialized, $token_args );
+		$tokens['learndash_course_id']       = $course_id;
+		$tokens[ $this->get_trigger_meta() ] = get_the_title( $course_id );
 
-			Automator()->process->user->maybe_trigger_complete( $rr['args'] );
-		}
+		return $tokens;
 	}
-
 }

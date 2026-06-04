@@ -1,185 +1,195 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
 
 /**
- * Uncanny Toolkit - Trigger: A user is imported to {{a LearnDash Group}}
+ * Trigger: A user is imported to a LearnDash group.
+ *
+ * @property \Uncanny_Automator\Integrations\Uncanny_Toolkit\Ut_Helpers $item_helpers
  */
-class UT_USER_IMPORTED_IN_GROUP {
+class UT_USER_IMPORTED_IN_GROUP extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Integration code
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	public static $integration = 'UNCANNYTOOLKIT';
-
-	/**
-	 * Trigger Code
-	 *
-	 * @var string
-	 */
-	private $trigger_code;
-	/**
-	 * Trigger Meta
-	 *
-	 * @var string
-	 */
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		if ( ! defined( 'LEARNDASH_VERSION' ) || ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
-			return;
-		}
-		$this->trigger_code = 'UTUSERIMPORTEDGROUP';
-		$this->trigger_meta = 'UOUSERIMPORTEDGROUP';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'UTUSERIMPORTEDGROUP', 'UNCANNYTOOLKIT' )
+			->trigger_meta( 'UOUSERIMPORTEDGROUP' )
+			->hook( 'uo_after_user_row_imported', 20, 4 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup trigger configuration.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
-
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-toolkit/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			'meta'                => $this->trigger_meta,
-			/* translators: Logged-in trigger - Uncanny Toolkit */
-			'sentence'            => sprintf( esc_attr__( 'A user is imported to {{a LearnDash group:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - Uncanny Toolkit */
-			'select_option_name'  => esc_attr__( 'A user is imported to {{a LearnDash group}}', 'uncanny-automator' ),
-			'action'              => 'uo_after_user_row_imported',
-			'priority'            => 20,
-			'accepted_args'       => 4,
-			'validation_function' => array( $this, 'a_user_is_imported' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
-
-		Automator()->register->trigger( $trigger );
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
+		// translators: %1$s is a LearnDash group.
+		$this->set_sentence( sprintf( esc_html_x( 'A user is imported to {{a LearnDash group:%1$s}}', 'Uncanny Toolkit', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'A user is imported to {{a LearnDash group}}', 'Uncanny Toolkit', 'uncanny-automator' ) );
 	}
 
 	/**
+	 * Check if LearnDash and Toolkit Pro are active.
+	 *
+	 * @return bool
+	 */
+	public function requirements_met() {
+		return defined( 'LEARNDASH_VERSION' ) && defined( 'UNCANNY_TOOLKIT_PRO_VERSION' );
+	}
+
+	/**
+	 * Define trigger options.
+	 *
 	 * @return array[]
 	 */
-	public function load_options() {
-
-		$all_groups = Automator()->helpers->recipe->learndash->options->all_ld_groups( null, $this->trigger_meta );
-		if ( isset( $all_groups['relevant_tokens'] ) ) {
-			unset( $all_groups['relevant_tokens'] );
-		}
-
-		return Automator()->utilities->keep_order_of_options(
+	public function options() {
+		return array(
 			array(
-				'options' => array(
-					$all_groups,
-				),
-			)
+				'option_code' => $this->get_trigger_meta(),
+				'label'       => esc_html_x( 'Group', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'input_type'  => 'select',
+				'required'    => true,
+				'remote_data' => $this->item_helpers->remote_data_load_config( 'groups' ),
+				'options'     => array(),
+			),
 		);
 	}
 
 	/**
-	 * Running an actual function on the trigger
+	 * Define available tokens.
 	 *
-	 * @param $user_id
-	 * @param $csv_data
-	 * @param $csv_header
-	 * @param $key_location
+	 * @param array $trigger The trigger settings.
+	 * @param array $tokens  Existing tokens.
+	 *
+	 * @return array
 	 */
-	public function a_user_is_imported( $user_id, $csv_data, $csv_header, $key_location ) {
+	public function define_tokens( $trigger, $tokens ) {
+
+		$new_tokens = array(
+			array(
+				'tokenId'   => 'user_id',
+				'tokenName' => esc_html_x( 'Imported user ID', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'user_login',
+				'tokenName' => esc_html_x( 'Imported user login', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'user_email',
+				'tokenName' => esc_html_x( 'Imported user email', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'email',
+			),
+			array(
+				'tokenId'   => 'first_name',
+				'tokenName' => esc_html_x( 'Imported user first name', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'last_name',
+				'tokenName' => esc_html_x( 'Imported user last name', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'display_name',
+				'tokenName' => esc_html_x( 'Imported user display name', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'wp_role',
+				'tokenName' => esc_html_x( 'Imported user WordPress role', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'learndash_group_id',
+				'tokenName' => esc_html_x( 'Group ID', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+		);
+
+		return array_merge( $new_tokens, $tokens );
+	}
+
+	/**
+	 * Validate trigger against hook arguments.
+	 *
+	 * @param array $trigger   The trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool
+	 */
+	public function validate( $trigger, $hook_args ) {
+
+		list( $user_id, $csv_data, $csv_header, $key_location ) = $hook_args;
 
 		if ( ! is_numeric( $user_id ) ) {
-			return;
+			return false;
 		}
 
-		$meta_value = Uncanny_Toolkit_Helpers::build_token_data( $csv_data, $csv_header, $key_location, $user_id );
-		$recipes    = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$meta_value = Ut_Helpers::build_token_data( $csv_data, $csv_header, $key_location, $user_id );
 
-		if ( empty( $recipes ) ) {
-			return;
+		if ( ! isset( $meta_value['learndash_group_ids'] ) || empty( $meta_value['learndash_group_ids'] ) ) {
+			return false;
 		}
 
-		$required_group = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
+		$selected_group = $trigger['meta'][ $this->get_trigger_meta() ] ?? '';
 
-		if ( empty( $required_group ) ) {
-			return;
-		}
-
-		if ( ! isset( $meta_value['learndash_group_ids'] ) ) {
-			return;
-		}
-
-		if ( empty( $meta_value['learndash_group_ids'] ) ) {
-			return;
+		// "Any group" sentinel.
+		if ( '-1' === $selected_group ) {
+			return true;
 		}
 
 		foreach ( $meta_value['learndash_group_ids'] as $group_id ) {
-			foreach ( $recipes as $recipe_id => $recipe ) {
-				foreach ( $recipe['triggers'] as $trigger ) {
-					$trigger_id = $trigger['ID'];//return early for all products
-					if ( ! isset( $required_group[ $recipe_id ] ) ) {
-						continue;
-					}
-					if ( ! isset( $required_group[ $recipe_id ][ $trigger_id ] ) ) {
-						continue;
-					}
-					if ( intval( '-1' ) === intval( $required_group[ $recipe_id ][ $trigger_id ] ) || (int) $required_group[ $recipe_id ][ $trigger_id ] === (int) $group_id ) {
-						$args = array(
-							'code'             => $this->trigger_code,
-							'meta'             => $this->trigger_meta,
-							'ignore_post_id'   => true,
-							'user_id'          => $user_id,
-							'is_signed_in'     => true,
-							'recipe_to_match'  => $recipe_id,
-							'trigger_to_match' => $trigger_id,
-						);
-
-						$this->complete_trigger( $meta_value, $args, $group_id );
-					}
-				}
+			if ( (int) $selected_group === (int) $group_id ) {
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	/**
-	 * Running an actual function on the trigger
+	 * Hydrate token values from hook arguments.
 	 *
-	 * @param $meta_value
-	 * @param $args
-	 * @param $group_id
+	 * @param array $trigger   The completed trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array
 	 */
-	public function complete_trigger( $meta_value, $args, $group_id ) {
+	public function hydrate_tokens( $trigger, $hook_args ) {
 
-		$results                             = Automator()->process->user->maybe_add_trigger_entry( $args, false );
-		$meta_value['learndash_group_id']    = $group_id;
-		$meta_value['learndash_group_title'] = get_the_title( $group_id );
-		$serialized                          = maybe_serialize( $meta_value );
-		if ( empty( $results ) ) {
-			return;
-		}
-		foreach ( $results as $rr ) {
-			if ( ! $rr['result'] ) {
-				continue;
+		list( $user_id, $csv_data, $csv_header, $key_location ) = $hook_args;
+
+		$meta_value = Ut_Helpers::build_token_data( $csv_data, $csv_header, $key_location, $user_id );
+
+		$tokens         = array();
+		$selected_group = $trigger['meta'][ $this->get_trigger_meta() ] ?? '';
+
+		if ( is_array( $meta_value ) ) {
+			foreach ( $meta_value as $key => $val ) {
+				if ( is_array( $val ) ) {
+					$tokens[ $key ] = implode( ' | ', $val );
+				} else {
+					$tokens[ $key ] = wp_strip_all_tags( $val );
+				}
 			}
-			$trigger_id     = (int) $rr['args']['trigger_id'];
-			$user_id        = (int) $rr['args']['user_id'];
-			$trigger_log_id = (int) $rr['args']['trigger_log_id'];
-			$run_number     = (int) $rr['args']['run_number'];
-			$token_args     = array(
-				'user_id'        => $user_id,
-				'trigger_id'     => $trigger_id,
-				'run_number'     => $run_number, //get run number
-				'trigger_log_id' => $trigger_log_id,
-			);
-
-			Automator()->db->trigger->add_token_meta( 'imported_row', $serialized, $token_args );
-			Automator()->process->user->maybe_trigger_complete( $rr['args'] );
 		}
-	}
 
+		$group_id = 0;
+		if ( '-1' === $selected_group && ! empty( $meta_value['learndash_group_ids'] ) ) {
+			$group_id = reset( $meta_value['learndash_group_ids'] );
+		} elseif ( ! empty( $selected_group ) ) {
+			$group_id = $selected_group;
+		}
+
+		$tokens['learndash_group_id']        = $group_id;
+		$tokens[ $this->get_trigger_meta() ] = get_the_title( $group_id );
+
+		return $tokens;
+	}
 }

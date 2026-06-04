@@ -407,70 +407,58 @@ class Wpf_Tokens {
 						}
 
 						if ( 'address' === $field['type'] ) {
-							$args = array(
-								'user_id'        => $user_id,
-								'trigger_id'     => $trigger_id,
-								'run_number'     => $run_number, // get run number
-								'trigger_log_id' => $trigger_log_id,
+							$address_parts = array(
+								'address1' => $field['address1'],
+								'address2' => $field['address2'],
+								'city'     => $field['city'],
+								'state'    => $field['state'],
+								'postal'   => $field['postal'],
+								'country'  => $field['country'],
 							);
 
-							$args['meta_key']   = 'address1';
-							$args['meta_value'] = $field['address1'];
-							Automator()->insert_trigger_meta( $args );
-
-							$args['meta_key']   = 'address2';
-							$args['meta_value'] = $field['address2'];
-							Automator()->insert_trigger_meta( $args );
-
-							$args['meta_key']   = 'city';
-							$args['meta_value'] = $field['city'];
-							Automator()->insert_trigger_meta( $args );
-
-							$args['meta_key']   = 'state';
-							$args['meta_value'] = $field['state'];
-							Automator()->insert_trigger_meta( $args );
-
-							$args['meta_key']   = 'postal';
-							$args['meta_value'] = $field['postal'];
-							Automator()->insert_trigger_meta( $args );
-
-							$args['meta_key']   = 'country';
-							$args['meta_value'] = $field['country'];
-							Automator()->insert_trigger_meta( $args );
+							foreach ( $address_parts as $part_key => $part_value ) {
+								Automator()->db->trigger->add_meta(
+									$trigger_id,
+									$trigger_log_id,
+									$run_number,
+									array(
+										'meta_key'   => $part_key,
+										'meta_value' => $part_value,
+									)
+								);
+							}
 						}
 
 						if ( 'name' === $field['type'] ) {
-							$args = array(
-								'user_id'        => $user_id,
-								'trigger_id'     => $trigger_id,
-								'run_number'     => $run_number, // get run number
-								'trigger_log_id' => $trigger_log_id,
-							);
+							$name_parts = array();
 
 							if ( ! empty( $field['first'] ) && ! empty( $field['middle'] ) && ! empty( $field['last'] ) ) {
-								$args['meta_key']   = 'first';
-								$args['meta_value'] = $field['first'];
-								Automator()->insert_trigger_meta( $args );
-
-								$args['meta_key']   = 'middle';
-								$args['meta_value'] = $field['middle'];
-								Automator()->insert_trigger_meta( $args );
-
-								$args['meta_key']   = 'last';
-								$args['meta_value'] = $field['last'];
-								Automator()->insert_trigger_meta( $args );
+								$name_parts = array(
+									'first'  => $field['first'],
+									'middle' => $field['middle'],
+									'last'   => $field['last'],
+								);
 							} elseif ( ! empty( $field['first'] ) && ! empty( $field['last'] ) && empty( $field['middle'] ) ) {
-								$args['meta_key']   = 'first';
-								$args['meta_value'] = $field['first'];
-								Automator()->insert_trigger_meta( $args );
-
-								$args['meta_key']   = 'last';
-								$args['meta_value'] = $field['last'];
-								Automator()->insert_trigger_meta( $args );
+								$name_parts = array(
+									'first' => $field['first'],
+									'last'  => $field['last'],
+								);
 							} else {
-								$args['meta_key']   = 'name';
-								$args['meta_value'] = $field['value'];
-								Automator()->insert_trigger_meta( $args );
+								$name_parts = array(
+									'name' => $field['value'],
+								);
+							}
+
+							foreach ( $name_parts as $part_key => $part_value ) {
+								Automator()->db->trigger->add_meta(
+									$trigger_id,
+									$trigger_log_id,
+									$run_number,
+									array(
+										'meta_key'   => $part_key,
+										'meta_value' => $part_value,
+									)
+								);
 							}
 						}
 
@@ -488,16 +476,15 @@ class Wpf_Tokens {
 						}
 					}
 
-					$args = array(
-						'user_id'        => $user_id,
-						'trigger_id'     => $trigger_id,
-						'meta_key'       => $meta_key,
-						'meta_value'     => maybe_serialize( $data ),
-						'run_number'     => $run_number, // get run number
-						'trigger_log_id' => $trigger_log_id,
+					Automator()->db->trigger->add_meta(
+						$trigger_id,
+						$trigger_log_id,
+						$run_number,
+						array(
+							'meta_key'   => $meta_key,
+							'meta_value' => maybe_serialize( $data ),
+						)
 					);
-
-					Automator()->insert_trigger_meta( $args );
 				}
 			}
 		}
@@ -556,7 +543,14 @@ class Wpf_Tokens {
 					$trigger_id     = $trigger['ID'];
 					$trigger_log_id = $replace_args['trigger_log_id'];
 					$meta_key       = $pieces[2];
-					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
+					$meta_value     = Automator()->db->trigger->get_token_meta(
+						$meta_key,
+						array(
+							'trigger_id'     => $trigger_id,
+							'trigger_log_id' => $trigger_log_id,
+							'user_id'        => $user_id,
+						)
+					);
 					if ( class_exists( 'WPForms_Lite' ) ) {
 						$meta_value = esc_html_x( 'This token requires WPForms Pro', 'WPForms', 'uncanny-automator' );
 					}

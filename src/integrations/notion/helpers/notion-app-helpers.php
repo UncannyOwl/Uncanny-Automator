@@ -66,147 +66,115 @@ class Notion_App_Helpers extends App_Helpers {
 			: array();
 	}
 
+	////////////////////////////////////////////////////////////
+	// Remote-data REST handlers
+	//
+	// Reachable via POST /wp-json/uap/v2/remote-data/notion/{data},
+	// where {data} matches the suffix on the method name. Dispatched
+	// through Abstract_Helpers::process_remote_data_request().
+	////////////////////////////////////////////////////////////
+
 	/**
-	 * List pages handler.
+	 * Fetch all accessible Notion pages for the parent select on Create Page.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function automator_notion_list_pages_handler() {
-
-		// Verify request.
-		Automator()->utilities->verify_nonce();
-
+	protected function remote_data_get_pages( $request ): array {
 		try {
 			$options = $this->api->list_pages();
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $options,
-				)
-			);
+			return $this->remote_data_success( $options );
 		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => sprintf( 'API Exception: (%2$s) %1$s', $e->getMessage(), $e->getCode() ),
-				)
+			return $this->remote_data_error(
+				sprintf( 'API Exception: (%2$s) %1$s', $e->getMessage(), $e->getCode() )
 			);
 		}
 	}
 
 	/**
-	 * List databases handler.
+	 * Fetch all databases the connected workspace has access to.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function automator_notion_list_databases_handler() {
-
-		// Verify request.
-		Automator()->utilities->verify_nonce();
-
+	protected function remote_data_get_databases( $request ): array {
 		try {
 			$options = $this->api->list_databases();
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $options,
-				)
-			);
+			return $this->remote_data_success( $options );
 		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => sprintf( 'API Exception: (%2$s) %1$s', $e->getMessage(), $e->getCode() ),
-				)
+			return $this->remote_data_error(
+				sprintf( 'API Exception: (%2$s) %1$s', $e->getMessage(), $e->getCode() )
 			);
 		}
 	}
 
 	/**
-	 * Get database columns.
+	 * Fetch the column list for the COLUMN_SEARCH select on the update-row action.
 	 *
-	 * @return void
+	 * `group_id` carries the parent option code that triggered the cascade (e.g.
+	 * NOTION_UPDATE_ROW_META) — the database UUID is read from values[group_id].
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function automator_notion_get_database_columns_handler() {
-
-		// Verify request.
-		Automator()->utilities->verify_nonce();
-
-		$field_values = automator_filter_input_array( 'values', INPUT_POST );
-		$group_id     = automator_filter_input( 'group_id', INPUT_POST );
-		$db_id        = $field_values[ $group_id ] ?? null;
+	protected function remote_data_get_database_columns( $request ): array {
+		$values   = $request->get_values();
+		$group_id = $request->get_group_id();
+		$db_id    = $values[ $group_id ] ?? null;
 
 		try {
 			$options = $this->api->get_database_columns( $db_id );
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $options,
-				)
-			);
+			return $this->remote_data_success( $options );
 		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => $e->getMessage(),
-				)
-			);
+			return $this->remote_data_error( $e->getMessage() );
 		}
 	}
 
 	/**
-	 * Retrieves the database columns and properties and sends back new fields to UI.
+	 * Build the dynamic field set for the FIELD_COLUMN_VALUE repeater based on
+	 * the selected database's property schema. Response uses the
+	 * `field_properties` envelope the legacy repeater consumer reads from.
 	 *
-	 * @return mixed
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function automator_notion_get_database_handler() {
-
-		// Verify request.
-		Automator()->utilities->verify_nonce();
-
-		$field_values = automator_filter_input_array( 'values', INPUT_POST );
-		$group_id     = automator_filter_input( 'group_id', INPUT_POST );
-		$db_id        = $field_values[ $group_id ] ?? null;
+	protected function remote_data_get_database_fields( $request ): array {
+		$values   = $request->get_values();
+		$group_id = $request->get_group_id();
+		$db_id    = $values[ $group_id ] ?? null;
 
 		try {
 			$fields = $this->api->get_database_fields( $db_id );
-			wp_send_json(
-				array(
-					'success'          => true,
-					'field_properties' => array(
-						'fields' => $fields,
-					),
-				)
+			return $this->remote_data_success(
+				array( 'fields' => $fields ),
+				'field_properties'
 			);
 		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => sprintf( 'API Exception: (%2$s) %1$s', $e->getMessage(), $e->getCode() ),
-				)
+			return $this->remote_data_error(
+				sprintf( 'API Exception: (%2$s) %1$s', $e->getMessage(), $e->getCode() ),
+				'field_properties'
 			);
 		}
 	}
 
 	/**
-	 * List users handler.
+	 * Fetch the user list for the people select. Cached for 5 minutes — first
+	 * request after the cache expires hits the Notion API; subsequent requests
+	 * (within the window) return the cached options.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function automator_notion_list_users() {
-
-		// Verify request.
-		Automator()->utilities->verify_nonce();
-
+	protected function remote_data_get_users( $request ): array {
 		$persons_cached = get_transient( self::PERSONS_TRANSIENT_KEY );
 
 		if ( false !== $persons_cached ) {
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $persons_cached,
-				)
-			);
+			return $this->remote_data_success( $persons_cached );
 		}
 
 		try {
@@ -216,19 +184,9 @@ class Notion_App_Helpers extends App_Helpers {
 				set_transient( self::PERSONS_TRANSIENT_KEY, $options, MINUTE_IN_SECONDS * 5 );
 			}
 
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $options,
-				)
-			);
+			return $this->remote_data_success( $options );
 		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => $e->getMessage(),
-				)
-			);
+			return $this->remote_data_error( $e->getMessage() );
 		}
 	}
 

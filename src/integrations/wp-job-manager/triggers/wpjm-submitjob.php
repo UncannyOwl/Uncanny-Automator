@@ -19,19 +19,22 @@ class Wpjm_Submitjob extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( self::TRIGGER_CODE, 'WPJM' )
+			->trigger_meta( self::TRIGGER_META )
+			->hook( 'transition_post_status', 10, 3 );
+	}
+
+	/**
 	 * Setup trigger
 	 */
 	protected function setup_trigger() {
-		$this->set_integration( 'WPJM' );
-		$this->set_trigger_code( self::TRIGGER_CODE );
-		$this->set_trigger_meta( self::TRIGGER_META );
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_pro( false );
-		$this->set_is_login_required( true );
-		$this->set_trigger_type( 'user' );
+		$this->set_is_login_required( false );
 		$this->set_uses_api( false );
-
-		$this->add_action( 'transition_post_status' );
-		$this->set_action_args_count( 3 );
 
 		// translators: %1$s is the job type
 		$this->set_sentence( sprintf( esc_html_x( 'A user submits a {{specific type of:%1$s}} job', 'WP Job Manager', 'uncanny-automator' ), $this->get_trigger_meta() ) );
@@ -82,6 +85,17 @@ class Wpjm_Submitjob extends \Uncanny_Automator\Recipe\Trigger {
 		if ( ! $this->is_valid_job_status( $post->post_status ) ) {
 			return false;
 		}
+
+		// Credit the job's author. transition_post_status fires regardless of
+		// who is logged in, so programmatic wp_insert_post / WP-CLI / cron
+		// imports work too — matching pre-7.0 behaviour. Bail if we can't
+		// resolve a real WP user, since this is a `user` trigger.
+		$author_id = (int) $post->post_author;
+		if ( $author_id <= 0 || false === get_user_by( 'ID', $author_id ) ) {
+			return false;
+		}
+
+		$this->set_user_id( $author_id );
 
 		$job_terms         = wpjm_get_the_job_types( $job_id );
 		$selected_job_type = $trigger['meta'][ self::TRIGGER_META ];

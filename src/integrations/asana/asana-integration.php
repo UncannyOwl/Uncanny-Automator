@@ -58,6 +58,13 @@ class Asana_Integration extends \Uncanny_Automator\App_Integrations\App_Integrat
 		new ASANA_ADD_TAG_TASK( $this->dependencies );
 		new ASANA_REMOVE_TAG_TASK( $this->dependencies );
 		new ASANA_GET_TASK_DETAILS( $this->dependencies );
+
+		// Load triggers.
+		new TASK_CREATED_IN_PROJECT( $this->dependencies );
+		new TASK_UPDATED_IN_PROJECT( $this->dependencies );
+		new COMMENT_ADDED_TO_TASK( $this->dependencies );
+		new APPROVAL_STATUS_CHANGED( $this->dependencies );
+		new TASK_CUSTOM_FIELD_CHANGED( $this->dependencies );
 	}
 
 	/**
@@ -80,15 +87,6 @@ class Asana_Integration extends \Uncanny_Automator\App_Integrations\App_Integrat
 	 * @return void
 	 */
 	public function register_hooks() {
-		// Recipe options AJAX handlers.
-		add_action( 'wp_ajax_automator_asana_get_workspace_options', array( $this->helpers, 'get_workspace_options_ajax' ) );
-		add_action( 'wp_ajax_automator_asana_get_project_options', array( $this->helpers, 'get_project_options_ajax' ) );
-		add_action( 'wp_ajax_automator_asana_get_task_options', array( $this->helpers, 'get_task_options_ajax' ) );
-		add_action( 'wp_ajax_automator_asana_get_tag_options', array( $this->helpers, 'get_tag_options_ajax' ) );
-		add_action( 'wp_ajax_automator_asana_get_user_options', array( $this->helpers, 'get_user_options_ajax' ) );
-		add_action( 'wp_ajax_automator_asana_get_field_options', array( $this->helpers, 'get_field_options_ajax' ) );
-		add_action( 'wp_ajax_automator_asana_get_custom_fields_repeater', array( $this->helpers, 'get_custom_fields_repeater_ajax' ) );
-
 		// Dynamic tokens filter.
 		add_filter(
 			"automator_action_ASANA_TASK_DETAILS_CODE_tokens_renderable",

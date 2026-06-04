@@ -22,6 +22,15 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 	private $gf;
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( 'GF_SUBFORM_CODES', 'GF' )
+			->trigger_meta( 'GF_SUBFORM_CODES_METADATA' )
+			->hook( 'gform_after_submission', 10, 2 );
+	}
+
+	/**
 	 * requirements_met
 	 *
 	 * @return bool
@@ -37,9 +46,7 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->gf = array_shift( $this->dependencies );
 
-		$this->set_integration( 'GF' );
-		$this->set_trigger_code( 'GF_SUBFORM_CODES' );
-		$this->set_trigger_meta( 'GF_SUBFORM_CODES_METADATA' );
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_login_required( false );
 		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/gravity-forms/' ) );
 		$this->set_sentence(
@@ -55,8 +62,6 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 		$this->set_readable_sentence( esc_attr_x( 'A user submits {{a form}} with a code from {{a specific batch}}', 'Gravity Forms', 'uncanny-automator' ) );
 
 		// Which do_action() fires this trigger.
-		$this->add_action( 'gform_after_submission' );
-		$this->set_action_args_count( 2 );
 	}
 
 	/**

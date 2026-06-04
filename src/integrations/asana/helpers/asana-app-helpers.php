@@ -10,6 +10,7 @@ use Exception;
  * @package Uncanny_Automator
  *
  * @property Asana_API $api
+ * @property Asana_Webhooks $webhooks
  */
 class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers {
 
@@ -125,28 +126,20 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 			'options'         => array(),
 			'options_show_id' => false,
 			'relevant_tokens' => array(),
-			'ajax'            => array(
-				'endpoint' => 'automator_asana_get_workspace_options',
-				'event'    => 'on_load',
-			),
+			'remote_data'     => $this->remote_data_load_config( 'workspaces' ),
 		);
 	}
 
 	/**
-	 * Get workspace options AJAX.
+	 * Fetch user workspaces.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_workspace_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$workspaces = $this->api->get_user_workspaces( $this->is_ajax_refresh() );
-
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $workspaces,
-			)
-		);
+	protected function remote_data_get_workspaces( $request ): array {
+		$workspaces = $this->api->get_user_workspaces( $request->is_refresh() );
+		return $this->remote_data_success( $workspaces );
 	}
 
 	/**
@@ -166,30 +159,21 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 			'options'         => array(),
 			'options_show_id' => false,
 			'relevant_tokens' => array(),
-			'ajax'            => array(
-				'endpoint'      => 'automator_asana_get_project_options',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( self::ACTION_WORKSPACE_META_KEY ),
-			),
+			'remote_data'     => $this->remote_data_parent_config( 'projects', array( self::ACTION_WORKSPACE_META_KEY ) ),
 		);
 	}
 
 	/**
-	 * Get project options AJAX.
+	 * Fetch projects for the selected workspace.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_project_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$workspace_id = $this->get_workspace_from_ajax();
-		$projects     = $this->api->get_workspace_projects( $workspace_id, $this->is_ajax_refresh() );
-
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $projects,
-			)
-		);
+	protected function remote_data_get_projects( $request ): array {
+		$workspace_id = $request->get_field_value( self::ACTION_WORKSPACE_META_KEY );
+		$projects     = $this->api->get_workspace_projects( $workspace_id, $request->is_refresh() );
+		return $this->remote_data_success( $projects );
 	}
 
 	/**
@@ -234,6 +218,28 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 	 * @return array
 	 */
 	public function get_task_option_config( $option_code ) {
+		return array_merge(
+			$this->get_task_option_config_base( $option_code ),
+			array(
+				'remote_data' => $this->remote_data_parent_config(
+					'tasks',
+					array( self::ACTION_PROJECT_META_KEY )
+				),
+			)
+		);
+	}
+
+	/**
+	 * Shared field config for the Task select — every key except `remote_data`.
+	 * Used by both the action-side `get_task_option_config()` and the trigger-side
+	 * `get_webhook_task_option_config()` so the visible field shape stays in lockstep
+	 * while each call site supplies its own routed `remote_data` block.
+	 *
+	 * @param string $option_code The field's option code.
+	 *
+	 * @return array
+	 */
+	private function get_task_option_config_base( $option_code ) {
 		return array(
 			'input_type'               => 'select',
 			'option_code'              => $option_code,
@@ -244,30 +250,20 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 			'options_show_id'          => false,
 			'relevant_tokens'          => array(),
 			'custom_value_description' => esc_html_x( 'ID of existing task', 'Asana', 'uncanny-automator' ),
-			'ajax'                     => array(
-				'endpoint'      => 'automator_asana_get_task_options',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( self::ACTION_PROJECT_META_KEY ),
-			),
 		);
 	}
 
 	/**
-	 * Get task options AJAX.
+	 * Fetch tasks for the selected project.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_task_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$project_id = $this->get_project_from_ajax();
-		$tasks      = $this->api->get_project_tasks( $project_id, $this->is_ajax_refresh() );
-
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $tasks,
-			)
-		);
+	protected function remote_data_get_tasks( $request ): array {
+		$project_id = $request->get_field_value( self::ACTION_PROJECT_META_KEY );
+		$tasks      = $this->api->get_project_tasks( $project_id, $request->is_refresh() );
+		return $this->remote_data_success( $tasks );
 	}
 
 	/**
@@ -338,11 +334,7 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 			'options'                  => array(),
 			'options_show_id'          => true,
 			'relevant_tokens'          => array(),
-			'ajax'                     => array(
-				'endpoint'      => 'automator_asana_get_tag_options',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( self::ACTION_WORKSPACE_META_KEY ),
-			),
+			'remote_data'              => $this->remote_data_parent_config( 'tags', array( self::ACTION_WORKSPACE_META_KEY ) ),
 			'description'              => $is_update
 				? esc_html_x( 'To create a new tag enter it as a custom value', 'Asana', 'uncanny-automator' )
 				: esc_html_x( 'Select an existing tag to remove', 'Asana', 'uncanny-automator' ),
@@ -353,21 +345,16 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 	}
 
 	/**
-	 * Get tag options AJAX.
+	 * Fetch tags for the selected workspace.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_tag_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$workspace_id = $this->get_workspace_from_ajax();
-		$tags         = $this->api->get_workspace_tags( $workspace_id, $this->is_ajax_refresh() );
-
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $tags,
-			)
-		);
+	protected function remote_data_get_tags( $request ): array {
+		$workspace_id = $request->get_field_value( self::ACTION_WORKSPACE_META_KEY );
+		$tags         = $this->api->get_workspace_tags( $workspace_id, $request->is_refresh() );
+		return $this->remote_data_success( $tags );
 	}
 
 	/**
@@ -388,27 +375,23 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 	}
 
 	/**
-	 * Get user options AJAX.
+	 * Fetch users for the selected workspace, with the empty placeholder + the
+	 * [DELETE] sentinel appended when the request comes from `ASANA_UPDATE_TASK_META`.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_user_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$workspace_id = $this->get_workspace_from_ajax();
-		$users        = $this->api->get_workspace_users( $workspace_id, $this->is_ajax_refresh() );
+	protected function remote_data_get_users( $request ): array {
+		$workspace_id = $request->get_field_value( self::ACTION_WORKSPACE_META_KEY );
+		$users        = $this->api->get_workspace_users( $workspace_id, $request->is_refresh() );
 		$users        = $this->prepend_empty_option( $users );
 
-		// Append the [DELETE] option to update task meta.
-		if ( 'ASANA_UPDATE_TASK_META' === automator_filter_input( 'group_id', INPUT_POST ) ) {
+		if ( 'ASANA_UPDATE_TASK_META' === $request->get_group_id() ) {
 			$users = $this->append_delete_option( $users );
 		}
 
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $users,
-			)
-		);
+		return $this->remote_data_success( $users );
 	}
 
 	/**
@@ -452,36 +435,30 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 	}
 
 	/**
-	 * AJAX handler for field options.
+	 * Fetch the field-picker options (standard fields + per-project custom fields)
+	 * for the field-monitoring select used by triggers/actions that listen to specific fields.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_field_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$project_id = $this->get_project_from_ajax();
+	protected function remote_data_get_task_fields( $request ): array {
+		$project_id = $request->get_field_value( self::ACTION_PROJECT_META_KEY );
 
-		// Return empty if no project selected
+		// No project selected — empty list (the consumer falls back to "all field changes").
 		if ( empty( $project_id ) ) {
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => array(),
-				)
-			);
+			return $this->remote_data_success( array() );
 		}
 
-		// Get standard fields
-		$options = $this->get_standard_task_fields();
-
-		// Add custom fields if project is selected
-		$custom_fields = $this->api->get_project_custom_fields( $project_id, $this->is_ajax_refresh() );
+		$options       = $this->get_standard_task_fields();
+		$custom_fields = $this->api->get_project_custom_fields( $project_id, $request->is_refresh() );
 
 		if ( ! empty( $custom_fields ) && is_array( $custom_fields ) ) {
 			foreach ( $custom_fields as $field ) {
 				$options[] = array(
 					'value' => $field['value'],
 					'text'  => sprintf(
-							// translators: %s is the custom field name
+						// translators: %s is the custom field name
 						esc_html_x( 'Custom field - %s', 'Asana', 'uncanny-automator' ),
 						$field['text']
 					),
@@ -489,12 +466,7 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 			}
 		}
 
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $options,
-			)
-		);
+		return $this->remote_data_success( $options );
 	}
 
 	/**
@@ -556,53 +528,40 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 	}
 
 	/**
-	 * Get custom fields repeater for a project via AJAX.
+	 * Build the per-project custom-fields repeater (returns the dynamic-field
+	 * `field_properties` envelope, not a flat options list).
 	 *
-	 * @return void
+	 * The cascade pivot key flips meaning by trigger/action: for `ASANA_UPDATE_TASK_META`
+	 * the pivot is the action's project meta key, while every other consumer drives
+	 * the repeater off whatever group_id the request carries.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_custom_fields_repeater_ajax() {
-		Automator()->utilities->verify_nonce();
-
-		$group_id    = automator_filter_input( 'group_id', INPUT_POST );
+	protected function remote_data_get_custom_fields( $request ): array {
+		$group_id    = $request->get_group_id();
 		$option_code = 'ASANA_UPDATE_TASK_META' === $group_id
 			? self::ACTION_PROJECT_META_KEY
 			: $group_id;
-		$project_id  = $this->get_project_from_ajax( $option_code );
+		$project_id  = $request->get_field_value( $option_code );
 
-		// Return empty if no project selected.
 		if ( empty( $project_id ) ) {
-			wp_send_json(
-				array(
-					'success'          => false,
-					'error'            => esc_html_x( 'Please select a project.', 'Asana', 'uncanny-automator' ),
-					'field_properties' => array(
-						'fields' => array(),
-					),
-				)
+			return $this->remote_data_error(
+				esc_html_x( 'Please select a project.', 'Asana', 'uncanny-automator' ),
+				'field_properties'
 			);
 		}
 
-		// Get custom fields for the project.
-		$custom_fields = $this->api->get_project_custom_fields( $project_id, $this->is_ajax_refresh() );
-
-		// Generate people options if necessary.
+		$custom_fields  = $this->api->get_project_custom_fields( $project_id, $request->is_refresh() );
 		$people_options = Asana_Custom_Fields_Helper::has_people_fields( $custom_fields )
-			? $this->api->get_workspace_users( $this->get_workspace_from_ajax(), false )
+			? $this->api->get_workspace_users( $request->get_field_value( self::ACTION_WORKSPACE_META_KEY ), false )
 			: array();
 
-		// Generate repeater rows.
 		$is_update_task = 'ASANA_UPDATE_TASK_META' === $group_id;
 		$fields         = Asana_Custom_Fields_Helper::generate_repeater_fields( $custom_fields, $people_options, $is_update_task, $this );
 
-		// Return rows.
-		wp_send_json(
-			array(
-				'success'          => true,
-				'field_properties' => array(
-					'fields' => $fields,
-				),
-			)
-		);
+		return $this->remote_data_success( array( 'fields' => $fields ), 'field_properties' );
 	}
 
 	/**
@@ -684,5 +643,346 @@ class Asana_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers 
 			'text'  => esc_html_x( 'Delete value', 'Asana', 'uncanny-automator' ),
 		);
 		return $options;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Webhook recipe UI helper methods
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Get workspace option config for webhooks.
+	 *
+	 * @param string $option_code
+	 *
+	 * @return array
+	 */
+	public function get_webhook_workspace_option_config( $option_code ) {
+		return array(
+			'input_type'      => 'select',
+			'option_code'     => $option_code,
+			'label'           => esc_html_x( 'Workspace', 'Asana', 'uncanny-automator' ),
+			'placeholder'     => esc_html_x( 'Select a workspace', 'Asana', 'uncanny-automator' ),
+			'required'        => true,
+			'options'         => array(),
+			'options_show_id' => false,
+			'relevant_tokens' => array(),
+			'description'     => sprintf(
+				// translators: %s is common text with a link to the Asana settings page.
+				esc_html_x( 'Only workspaces with at least one connected project webhook will be shown. %s', 'Asana', 'uncanny-automator' ),
+				$this->get_formatted_manage_webhooks_link()
+			),
+			'remote_data'     => $this->remote_data_load_config( 'webhook_workspaces' ),
+		);
+	}
+
+	/**
+	 * Fetch workspaces that have at least one project with a connected webhook
+	 * subscription. Filtered down from the canonical webhook-manager config.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_webhook_workspaces( $request ): array {
+		$webhook_config = $this->webhooks->get_webhook_manager_config();
+		$options        = array();
+
+		foreach ( $webhook_config as $project ) {
+			if ( empty( $project['events'] ) || empty( $project['hook_id'] ) ) {
+				continue;
+			}
+
+			$workspace_id   = $project['meta']['workspace_id'] ?? '';
+			$workspace_name = $project['meta']['workspace_name'] ?? '';
+			if ( '' === $workspace_id || isset( $options[ $workspace_id ] ) ) {
+				continue;
+			}
+
+			$options[ $workspace_id ] = array(
+				'text'  => $workspace_name,
+				'value' => $workspace_id,
+			);
+		}
+
+		return $this->remote_data_success( array_values( $options ) );
+	}
+
+	/**
+	 * Get project option config for webhooks.
+	 *
+	 * @param string $option_code
+	 * @param string $parent_code
+	 * @param string $event
+	 *
+	 * @return array
+	 */
+	public function get_webhook_project_option_config( $option_code, $parent_code, $event ) {
+
+		$description = 'all' !== $event
+			? sprintf(
+				// translators: %1$s is the event name, %2$s is common text with a link to the Asana settings page.
+				esc_html_x( 'Only projects with a connected webhook for %1$s will be shown. %2$s', 'Asana', 'uncanny-automator' ),
+				$event,
+				$this->get_formatted_manage_webhooks_link()
+			)
+			: sprintf(
+				// translators: %s is common text with a link to the Asana settings page.
+				esc_html_x( 'Only projects with a connected webhook will be shown. %s', 'Asana', 'uncanny-automator' ),
+				$this->get_formatted_manage_webhooks_link()
+			);
+
+		return array(
+			'input_type'      => 'select',
+			'option_code'     => $option_code,
+			'label'           => esc_html_x( 'Project', 'Asana', 'uncanny-automator' ),
+			'required'        => true,
+			'options'         => array(),
+			'options_show_id' => false,
+			'relevant_tokens' => array(),
+			'description'     => $description,
+			'remote_data'     => $this->remote_data_parent_config( 'webhook_projects', array( $parent_code ) ),
+		);
+	}
+
+	/**
+	 * Fetch the projects in the selected workspace whose webhooks are subscribed
+	 * to the event corresponding to the requesting trigger (group_id maps to the
+	 * Asana event name via {@see self::get_event_filter()}).
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_webhook_projects( $request ): array {
+		$event     = $this->get_event_filter( $request->get_group_id() );
+		$workspace = $request->get_field_value( self::ACTION_WORKSPACE_META_KEY );
+		$options   = $this->get_webhook_project_options( $workspace, $event );
+		return $this->remote_data_success( $options );
+	}
+
+	/**
+	 * Get task option config for webhooks.
+	 *
+	 * @param string $option_code
+	 * @param string $parent_code
+	 * @param string $event
+	 *
+	 * @return array
+	 */
+	public function get_webhook_task_option_config( $option_code, $parent_code ) {
+		return array_merge(
+			$this->get_task_option_config_base( $option_code ),
+			array(
+				'remote_data' => $this->remote_data_parent_config(
+					'webhook_tasks',
+					array( $parent_code )
+				),
+			)
+		);
+	}
+
+	/**
+	 * Fetch tasks for the webhook-connected project, prepended with the "Any task"
+	 * sentinel (`-1`) so triggers can listen for events on every task in the project.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_webhook_tasks( $request ): array {
+		$project_id = $request->get_field_value( self::ACTION_PROJECT_META_KEY );
+		$tasks      = $this->api->get_project_tasks( $project_id, $request->is_refresh() );
+
+		$options = array(
+			array(
+				'text'  => esc_html_x( 'Any task', 'Asana', 'uncanny-automator' ),
+				'value' => '-1',
+			),
+		);
+
+		return $this->remote_data_success( array_merge( $options, $tasks ) );
+	}
+
+	/**
+	 * Get event options.
+	 *
+	 * @return array
+	 */
+	public function get_event_options() {
+		return array(
+			array(
+				'text'  => esc_html_x( 'Task added', 'Asana', 'uncanny-automator' ),
+				'value' => 'task.added',
+			),
+			array(
+				'text'  => esc_html_x( 'Task changed', 'Asana', 'uncanny-automator' ),
+				'value' => 'task.changed',
+			),
+			array(
+				'text'  => esc_html_x( 'Comment added', 'Asana', 'uncanny-automator' ),
+				'value' => 'story.added',
+			),
+			array(
+				'text'  => esc_html_x( 'Approval status changed', 'Asana', 'uncanny-automator' ),
+				'value' => 'task.status_changed',
+			),
+		);
+	}
+
+	/**
+	 * Get a formatted link to the Asana settings page.
+	 *
+	 * @return string
+	 */
+	public function get_formatted_manage_webhooks_link() {
+		return sprintf(
+			// translators: %s is a link to the Asana settings page.
+			esc_html_x( 'Manage webhooks in your %s.', 'Asana', 'uncanny-automator' ),
+			sprintf(
+				// translators: %1$s is a link to the Asana settings page, %2$s is the text "Asana settings".
+				'<a href="%1$s" target="_blank">%2$s</a>',
+				esc_url( $this->get_settings_page_url() ),
+				esc_html_x( 'Asana settings', 'Asana', 'uncanny-automator' )
+			)
+		);
+	}
+
+	/**
+	 * Map a trigger meta code (the cascade pivot, `group_id` on the wire) to the
+	 * Asana webhook-event name we should filter projects against.
+	 * Returns `'all'` for unrecognized codes.
+	 *
+	 * @param string $option_code Trigger meta code (e.g. `COMMENT_ADDED_TO_TASK_META`).
+	 *
+	 * @return string
+	 */
+	private function get_event_filter( $option_code ) {
+		$triggers = array(
+			'COMMENT_ADDED_TO_TASK_META'     => 'story.added',
+			'TASK_CREATED_IN_PROJECT_META'   => 'task.added',
+			'TASK_UPDATED_IN_PROJECT_META'   => 'task.changed',
+			'APPROVAL_STATUS_CHANGED_META'   => 'task.status_changed',
+			'TASK_CUSTOM_FIELD_CHANGED_META' => 'task.changed',
+		);
+
+		return $triggers[ $option_code ] ?? 'all';
+	}
+
+	/**
+	 * Get project options for webhooks.
+	 *
+	 * @param string $workspace_id
+	 * @param string $event
+	 *
+	 * @return array
+	 */
+	public function get_webhook_project_options( $workspace_id, $event = 'all' ) {
+		$webhook_config = $this->webhooks->get_webhook_manager_config();
+		$options        = array();
+		foreach ( $webhook_config as $project_id => $project ) {
+
+			// Ensure the project is in the workspace.
+			if ( ( $project['meta']['workspace_id'] ?? '' ) !== $workspace_id ) {
+				continue;
+			}
+
+			// Ensure the webhook has been connected.
+			if ( empty( $project['events'] ) || empty( $project['hook_id'] ) ) {
+				continue;
+			}
+
+			// Ensure the event is in the webhook's events.
+			if ( 'all' !== $event && ! in_array( $event, $project['events'], true ) ) {
+				continue;
+			}
+
+			$options[] = array(
+				'text'  => $project['name'],
+				'value' => $project_id,
+			);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Fetch the custom-field options for the project picked in a webhook trigger
+	 * (used by the `task-custom-field-changed` trigger's custom-field selector).
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_webhook_project_custom_fields( $request ): array {
+		$project_id    = $request->get_field_value( self::ACTION_PROJECT_META_KEY );
+		$custom_fields = $this->api->get_project_custom_fields( $project_id, $request->is_refresh() );
+		return $this->remote_data_success( $custom_fields );
+	}
+
+	////////////////////////////////////////////////////////////
+	// Trigger custom field helper methods.
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Extract custom field GIDs from webhook data.
+	 *
+	 * @param array $custom_fields Array of custom fields from webhook
+	 * @return array Array of custom field GIDs
+	 */
+	public function get_custom_field_gids_from_webhook( $custom_fields ) {
+		if ( empty( $custom_fields ) ) {
+			return array();
+		}
+
+		return wp_list_pluck( $custom_fields, 'gid' );
+	}
+
+	/**
+	 * Extract custom field value from task custom fields array.
+	 *
+	 * @param array  $custom_fields Array of custom fields from task details
+	 * @param string $field_gid     GID of the custom field to extract
+	 * @return string Custom field value or empty string
+	 */
+	public function get_custom_field_value_from_task( $custom_fields, $field_gid ) {
+		if ( empty( $custom_fields ) || empty( $field_gid ) ) {
+			return '';
+		}
+
+		foreach ( $custom_fields as $field ) {
+			if ( $field['gid'] === $field_gid ) {
+				// Handle enum fields (dropdown/multi-select)
+				if ( ! empty( $field['enum_value']['name'] ) ) {
+					return $field['enum_value']['name'];
+				}
+				// Handle text fields
+				if ( ! empty( $field['text_value'] ) ) {
+					return $field['text_value'];
+				}
+				// Handle number fields
+				if ( ! empty( $field['number_value'] ) ) {
+					return $field['number_value'];
+				}
+				// Field found but no value
+				return '';
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Format custom field GIDs for token display.
+	 *
+	 * @param array $custom_fields Array of custom fields from webhook
+	 * @return string Comma-separated list of GIDs
+	 */
+	public function format_custom_field_gids_for_tokens( $custom_fields ) {
+		if ( empty( $custom_fields ) ) {
+			return '';
+		}
+
+		$gids = $this->get_custom_field_gids_from_webhook( $custom_fields );
+		return implode( ', ', $gids );
 	}
 }

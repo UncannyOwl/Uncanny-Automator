@@ -99,7 +99,7 @@ class Brevo_Settings extends App_Integration_Settings {
 	 */
 	protected function after_authorization( $response = array(), $options = array() ) {
 		if ( ! empty( $this->account['status'] ) ) {
-			// Set initial transient data
+			// Pre-warm the app-option cache for each data source.
 			foreach ( $this->get_transient_config() as $key => $item ) {
 				$this->api->{ $item['api_method'] }();
 			}
@@ -133,9 +133,9 @@ class Brevo_Settings extends App_Integration_Settings {
 	 * @return array
 	 */
 	protected function after_disconnect( $response = array(), $data = array() ) {
-		// Clear all transients
+		// Clear all cached data sources.
 		foreach ( array_keys( $this->get_transient_config() ) as $key ) {
-			delete_transient( "automator_brevo_{$key}" );
+			$this->helpers->delete_prefixed_app_option( $key );
 		}
 
 		return $response;
@@ -198,17 +198,17 @@ class Brevo_Settings extends App_Integration_Settings {
 	 */
 	protected function get_transient_config() {
 		return array(
-			'contacts/lists'      => array(
+			'lists'          => array(
 				'icon'       => 'list',
 				'name'       => esc_html_x( 'Contact lists', 'Brevo', 'uncanny-automator' ),
 				'api_method' => 'get_lists',
 			),
-			'contacts/attributes' => array(
+			'attributes_raw' => array(
 				'icon'       => 'user',
 				'name'       => esc_html_x( 'Custom contact attributes', 'Brevo', 'uncanny-automator' ),
-				'api_method' => 'get_contact_attributes',
+				'api_method' => 'fetch_raw_contact_attributes',
 			),
-			'templates'           => array(
+			'templates'      => array(
 				'icon'       => 'envelope',
 				'name'       => esc_html_x( 'Email templates', 'Brevo', 'uncanny-automator' ),
 				'api_method' => 'get_templates',
@@ -239,11 +239,16 @@ class Brevo_Settings extends App_Integration_Settings {
 		$config = $this->get_transient_config();
 		$data   = array();
 		foreach ( $config as $key_part => $item ) {
-			// Check if transient exists.
-			$options = get_transient( "automator_brevo_{$key_part}" );
-			if ( false === $options ) {
-				// If not, get options from API.
-				$options = $this->api->{ $item['api_method'] }();
+			// API methods handle cache check + fetch + persist internally.
+			$options = $this->api->{ $item['api_method'] }();
+			// For the contact-attributes row, run the raw list through the same
+			// repeater-field generator the new action uses so the displayed
+			// count matches exactly what recipe authors see in the action UI.
+			if ( 'attributes_raw' === $key_part ) {
+				$options = Brevo_Contact_Attributes_Helper::generate_repeater_fields(
+					is_array( $options ) ? $options : array(),
+					$this->helpers
+				);
 			}
 			$count = ! empty( $options ) ? count( $options ) : 0;
 			$desc  = sprintf(
@@ -325,12 +330,9 @@ class Brevo_Settings extends App_Integration_Settings {
 			return $response;
 		}
 
-		// Delete existing transient.
-		delete_transient( "automator_brevo_{$key}" );
-
-		// Get selected options.
+		// Force-refresh: bypass cache and re-fetch from the API.
 		$message = $config[ $key ]['name'];
-		$options = $this->api->{ $config[ $key ]['api_method'] }();
+		$options = $this->api->{ $config[ $key ]['api_method'] }( true );
 
 		// If no options are returned, return a warning alert.
 		if ( empty( $options ) ) {

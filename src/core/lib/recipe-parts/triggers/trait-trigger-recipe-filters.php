@@ -617,7 +617,7 @@ trait Trigger_Recipe_Filters {
 
 	}
 
-	protected function value_format( $value, callable $format = null ) {
+	protected function value_format( $value, ?callable $format = null ) {
 
 		return $format( $value );
 

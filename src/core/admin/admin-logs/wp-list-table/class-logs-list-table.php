@@ -439,9 +439,12 @@ class Logs_List_Table extends WP_List_Table {
 			// Recipe status
 			$recipe_status_class = sprintf( 'uap-logs-recipe-status--%s', $this->get_status_class_name( $recipe->recipe_completed ) );
 
+			$replay_badge = $this->get_replay_badge( $recipe->recipe_log_id );
+
 			$recipe_status = '
 				<div class="uap-logs-recipe-status ' . sanitize_html_class( $recipe_status_class ) . '">' .
-					esc_html( $this->get_status_name( (int) $recipe->recipe_completed ) ) . '
+					esc_html( $this->get_status_name( (int) $recipe->recipe_completed ) ) .
+					$replay_badge . '
 				</div>';
 
 			// Recipe complation date
@@ -615,6 +618,32 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	private function get_log_number( $recipe ) {
 		return $recipe->log_number ?? '';
+	}
+
+	/**
+	 * Get a "Replayed" badge if this run was replayed from another.
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return string HTML badge or empty string.
+	 */
+	private function get_replay_badge( $recipe_log_id ) {
+
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$source = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->prefix}uap_recipe_log_meta WHERE recipe_log_id = %d AND meta_key = 'replay_source' LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				absint( $recipe_log_id )
+			)
+		);
+
+		if ( empty( $source ) ) {
+			return '';
+		}
+
+		return ' <span class="uap-logs-replay-badge" title="' . esc_attr__( 'Replayed', 'uncanny-automator' ) . '"><uo-icon id="repeat" style="font-size: 11px; opacity: 0.6;"></uo-icon></span>';
 	}
 
 	/**

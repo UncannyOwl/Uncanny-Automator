@@ -96,14 +96,9 @@ class Store {
 		}
 
 		// Hydrate the token. This is for simple actions. Loops are handled in its own run. Check Process_Hooks_Callback@hydrate_action_tokens (Pro)
-		$hydrator = Automator()->action_tokens()->hydrator();
+		$bridge = new \Uncanny_Automator\App\Bridge\Automator_Action_Tokens_Bridge();
 
-		$hydrator->set_user_id( $user_id );
-		$hydrator->set_action_id( $action_id );
-		$hydrator->set_action_log_id( $action_log_id );
-		$hydrator->set_process_args( $args );
-
-		$hydrator->hydrate( $action_token['value'], false );
+		$bridge->hydrate_action_tokens( (int) $user_id, (int) $action_id, (int) $action_log_id, $args, $action_token['value'], false );
 
 		return true;
 

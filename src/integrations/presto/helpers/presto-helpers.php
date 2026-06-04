@@ -4,9 +4,6 @@ namespace Uncanny_Automator\Integrations\Presto;
 
 use Uncanny_Automator_Pro\Presto_Pro_Helpers;
 
-// Backwards compatibility aliases for Pro integration
-class_alias( 'Uncanny_Automator\Integrations\Presto\Presto_Helpers', 'Uncanny_Automator\Presto_Helpers' );
-
 /**
  * Class Presto_Helpers
  *
@@ -186,3 +183,6 @@ class Presto_Helpers {
 		return $video ? $video->id : false;
 	}
 }
+
+// BC alias — must run after the class declaration (before, PHP autoload fails).
+class_alias( 'Uncanny_Automator\Integrations\Presto\Presto_Helpers', 'Uncanny_Automator\Presto_Helpers' );

@@ -6,7 +6,9 @@
 namespace Uncanny_Automator\Integrations\Github;
 
 use Uncanny_Automator\Settings\App_Integration_Settings;
+use Uncanny_Automator\Settings\App_Integration_Webhook_Manager_Settings;
 use Uncanny_Automator\Settings\OAuth_App_Integration;
+use Uncanny_Automator\Settings\Premium_Integration_Webhook_Settings;
 
 /**
  * Github_Settings
@@ -14,10 +16,74 @@ use Uncanny_Automator\Settings\OAuth_App_Integration;
  * @package Uncanny_Automator
  *
  * @property Github_App_Helpers $helpers
+ * @property Github_Api_Caller $api
+ * @property Github_Webhooks $webhooks
  */
 class Github_Settings extends App_Integration_Settings {
 
 	use OAuth_App_Integration;
+	use Premium_Integration_Webhook_Settings;
+	use App_Integration_Webhook_Manager_Settings;
+
+	////////////////////////////////////////////////////////////
+	// Setup
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Wire up settings-page properties — currently just the webhook-manager disconnect cleanup.
+	 *
+	 * @return void
+	 */
+	public function set_properties() {
+		$this->register_webhook_manager_disconnect_cleanup();
+	}
+
+	////////////////////////////////////////////////////////////
+	// Webhook manager overrides
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Resource label used by the webhook-manager UI for column headers and copy.
+	 *
+	 * @return string
+	 */
+	public function get_webhook_manager_resource_label() {
+		return esc_html_x( 'Repository', 'GitHub', 'uncanny-automator' );
+	}
+
+	/**
+	 * Plural form of the resource label — overridden because the trait default
+	 * (`$singular . 's'`) would produce "Repositorys" instead of "Repositories".
+	 *
+	 * @return string
+	 */
+	public function get_webhook_manager_resource_label_plural() {
+		return esc_html_x( 'Repositories', 'GitHub', 'uncanny-automator' );
+	}
+
+	/**
+	 * Group manager rows by repository owner — first row of each owner renders a header line.
+	 * GitHub stores the owner as a single string on each row, so the same field is used
+	 * for both grouping value and label.
+	 *
+	 * @return array
+	 */
+	public function get_webhook_manager_grouping() {
+		return array(
+			'field'       => 'owner',
+			'label_field' => 'owner',
+		);
+	}
+
+	/**
+	 * Render the connected-state main content
+	 *
+	 * @return void
+	 */
+	public function output_main_connected_content() {
+		$this->output_single_account_message();
+		$this->output_webhook_manager();
+	}
 
 	////////////////////////////////////////////////////////////
 	// Required abstract method

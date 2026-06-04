@@ -43,7 +43,7 @@ class Thrive_Quiz_Builder_Helpers {
 			'post_status'    => 'publish',
 		);
 
-		$quizzes = Automator()->helpers->recipe->options->wp_query( $query_args );
+		$quizzes = automator_wp_query( $query_args, 'legacy' );
 
 		foreach ( $quizzes as $id => $label ) {
 			$options[] = array(

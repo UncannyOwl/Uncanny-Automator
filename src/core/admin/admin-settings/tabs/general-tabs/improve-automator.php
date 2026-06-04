@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Admin_Settings_General_Improve_Automator
  *
@@ -74,7 +76,7 @@ class Admin_Settings_General_Improve_Automator {
 
 			// Make sure it's NOT connected
 			// Connected sites have this enabled by default
-			&& false === Api_Server::get_license_type()
+			&& '' === automator_license_manager()->get_type()
 		) {
 			// Register the setting
 			add_action(

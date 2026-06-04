@@ -1,0 +1,3668 @@
+{
+    "integration_id": "LD",
+    "updated_at": "2026-03-09T20:02:50Z",
+    "triggers": [
+        {
+            "code": "LD_TOPICDONE",
+            "meta": "LDTOPIC",
+            "tokens": [
+                {
+                    "id": "LDTOPIC",
+                    "name": "Topic title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_TOPICDONE:LDTOPIC"
+                },
+                {
+                    "id": "LDTOPIC_ID",
+                    "name": "Topic ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_TOPICDONE:LDTOPIC_ID"
+                },
+                {
+                    "id": "LDTOPIC_URL",
+                    "name": "Topic URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_TOPICDONE:LDTOPIC_URL"
+                },
+                {
+                    "id": "LDTOPIC_THUMB_ID",
+                    "name": "Topic featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_TOPICDONE:LDTOPIC_THUMB_ID"
+                },
+                {
+                    "id": "LDTOPIC_THUMB_URL",
+                    "name": "Topic featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_TOPICDONE:LDTOPIC_THUMB_URL"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_TOPICDONE:NUMTIMES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_PASSQUIZ",
+            "meta": "LDQUIZ",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_PASSQUIZ:NUMTIMES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_QUIZSCORE",
+            "meta": "LDQUIZ",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZSCORE:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ_achieved_score",
+                    "name": "User&#039;s quiz score",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:LDQUIZ:LDQUIZ_achieved_score"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "COURSEDONE",
+            "meta": "LDCOURSE",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:NUMTIMES"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:COURSEDONE:NUMTIMES"
+                },
+                {
+                    "id": "LDCOURSE_course_completed_on",
+                    "name": "Course completion date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LDCOURSE:LDCOURSE_course_completed_on"
+                },
+                {
+                    "id": "LDCOURSE_course_points",
+                    "name": "Course points",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LDCOURSE:LDCOURSE_course_points"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_QUIZDONE",
+            "meta": "LDQUIZ",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZDONE:NUMTIMES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_COURSE_PROGRESS_PERCENTAGE",
+            "meta": "LD_COURSE_PROGRESS_PERCENTAGE_META",
+            "tokens": [
+                {
+                    "id": "CURRENT_PERCENTAGE",
+                    "name": "Current percentage",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSE_PROGRESS_PERCENTAGE:CURRENT_PERCENTAGE"
+                },
+                {
+                    "id": "COURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSE_PROGRESS_PERCENTAGE:COURSE_ID"
+                },
+                {
+                    "id": "COURSE_TITLE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSE_PROGRESS_PERCENTAGE:COURSE_TITLE"
+                },
+                {
+                    "id": "COURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSE_PROGRESS_PERCENTAGE:COURSE_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_FAILQUIZ",
+            "meta": "LDQUIZ",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_FAILQUIZ:NUMTIMES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_QUIZPERCENT",
+            "meta": "LDQUIZ",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPERCENT:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ_achieved_percent",
+                    "name": "User&#039;s quiz percentage",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LDQUIZ:LDQUIZ_achieved_percent"
+                },
+                {
+                    "id": "LDQUIZ_quiz_passing_percentage",
+                    "name": "Passing score %",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:LDQUIZ:LDQUIZ_quiz_passing_percentage"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_QUIZPOINT",
+            "meta": "LDQUIZ",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_TIME",
+                    "name": "Quiz time spent",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_TIME"
+                },
+                {
+                    "id": "LDQUIZ_SCORE",
+                    "name": "Quiz score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_SCORE"
+                },
+                {
+                    "id": "LDQUIZ_CORRECT",
+                    "name": "Quiz number of correct answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_CORRECT"
+                },
+                {
+                    "id": "LDQUIZ_CATEGORY_SCORES",
+                    "name": "Quiz category scores",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_CATEGORY_SCORES"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A",
+                    "name": "Quiz questions and answers",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_Q_AND_A"
+                },
+                {
+                    "id": "LDQUIZ_Q_AND_A_CSV",
+                    "name": "Quiz question &amp; answers (unformatted)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:LDQUIZ_Q_AND_A_CSV"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_QUIZPOINT:NUMTIMES"
+                },
+                {
+                    "id": "LDQUIZ_achieved_points",
+                    "name": "User&#039;s quiz points",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:LDQUIZ:LDQUIZ_achieved_points"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LESSONDONE",
+            "meta": "LDLESSON",
+            "tokens": [
+                {
+                    "id": "LDLESSON",
+                    "name": "Lesson title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LESSONDONE:LDLESSON"
+                },
+                {
+                    "id": "LDLESSON_ID",
+                    "name": "Lesson ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LESSONDONE:LDLESSON_ID"
+                },
+                {
+                    "id": "LDLESSON_URL",
+                    "name": "Lesson URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LESSONDONE:LDLESSON_URL"
+                },
+                {
+                    "id": "LDLESSON_THUMB_ID",
+                    "name": "Lesson featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LESSONDONE:LDLESSON_THUMB_ID"
+                },
+                {
+                    "id": "LDLESSON_THUMB_URL",
+                    "name": "Lesson featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LESSONDONE:LDLESSON_THUMB_URL"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LESSONDONE:NUMTIMES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_GROUPLEADERREMOVEDGROUP",
+            "meta": "LDGROUPLEADER",
+            "tokens": [
+                {
+                    "id": "LDGROUPLEADER",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER"
+                },
+                {
+                    "id": "LDGROUPLEADER_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER_ID"
+                },
+                {
+                    "id": "LDGROUPLEADER_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER_URL"
+                },
+                {
+                    "id": "LDGROUPLEADER_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUPLEADER_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUPLEADER",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER"
+                },
+                {
+                    "id": "LDGROUPLEADER_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER_ID"
+                },
+                {
+                    "id": "LDGROUPLEADER_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER_URL"
+                },
+                {
+                    "id": "LDGROUPLEADER_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUPLEADER_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:LDGROUPLEADER_THUMB_URL"
+                },
+                {
+                    "id": "GROUP_LEADER_ID",
+                    "name": "Group Leader ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:GROUP_LEADER_ID"
+                },
+                {
+                    "id": "GROUP_LEADER_NAME",
+                    "name": "Group Leader name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:GROUP_LEADER_NAME"
+                },
+                {
+                    "id": "GROUP_LEADER_EMAIL",
+                    "name": "Group Leader email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERREMOVEDGROUP:GROUP_LEADER_EMAIL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_USERCOMPLETESGROUPSCOURSE",
+            "meta": "LDGROUPCOURSES",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:NUMTIMES"
+                },
+                {
+                    "id": "LDGROUPCOURSES",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES"
+                },
+                {
+                    "id": "LDGROUPCOURSES_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_ID"
+                },
+                {
+                    "id": "LDGROUPCOURSES_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_URL"
+                },
+                {
+                    "id": "LDGROUPCOURSES_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUPCOURSES_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUPCOURSES",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES"
+                },
+                {
+                    "id": "LDGROUPCOURSES_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_ID"
+                },
+                {
+                    "id": "LDGROUPCOURSES_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_URL"
+                },
+                {
+                    "id": "LDGROUPCOURSES_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUPCOURSES_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_THUMB_URL"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:NUMTIMES"
+                },
+                {
+                    "id": "GROUP_COURSES",
+                    "name": "Group courses",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:GROUP_COURSES"
+                },
+                {
+                    "id": "LDGROUPCOURSES_course_points",
+                    "name": "Course points",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERCOMPLETESGROUPSCOURSE:LDGROUPCOURSES_course_points"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_ANON_COURSEADDEDTOGROUP",
+            "meta": "LD_ANON_COURSEADDEDTOGROUP_META",
+            "tokens": [
+                {
+                    "id": "LD_COURSE_TITLE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_COURSE_TITLE"
+                },
+                {
+                    "id": "LD_COURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_COURSE_ID"
+                },
+                {
+                    "id": "LD_COURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_COURSE_URL"
+                },
+                {
+                    "id": "LD_COURSE_FEATURED_IMAGE_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_COURSE_FEATURED_IMAGE_ID"
+                },
+                {
+                    "id": "LD_COURSE_FEATURED_IMAGE_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_COURSE_FEATURED_IMAGE_URL"
+                },
+                {
+                    "id": "LD_GROUP_TITLE",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_GROUP_TITLE"
+                },
+                {
+                    "id": "LD_GROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_GROUP_ID"
+                },
+                {
+                    "id": "LD_GROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_GROUP_URL"
+                },
+                {
+                    "id": "LD_GROUP_FEATURED_IMAGE_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_GROUP_FEATURED_IMAGE_ID"
+                },
+                {
+                    "id": "LD_GROUP_FEATURED_IMAGE_URL",
+                    "name": "Group featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LD_GROUP_FEATURED_IMAGE_URL"
+                },
+                {
+                    "id": "LDGROUP_LEADER_EMAIL",
+                    "name": "Group leader email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ANON_COURSEADDEDTOGROUP:LDGROUP_LEADER_EMAIL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_GROUPLEADERADDEDGROUP",
+            "meta": "LDGROUPLEADER",
+            "tokens": [
+                {
+                    "id": "LDGROUPLEADER",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER"
+                },
+                {
+                    "id": "LDGROUPLEADER_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER_ID"
+                },
+                {
+                    "id": "LDGROUPLEADER_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER_URL"
+                },
+                {
+                    "id": "LDGROUPLEADER_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUPLEADER_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUPLEADER",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER"
+                },
+                {
+                    "id": "LDGROUPLEADER_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER_ID"
+                },
+                {
+                    "id": "LDGROUPLEADER_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER_URL"
+                },
+                {
+                    "id": "LDGROUPLEADER_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUPLEADER_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:LDGROUPLEADER_THUMB_URL"
+                },
+                {
+                    "id": "GROUP_LEADER_ID",
+                    "name": "Group Leader ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:GROUP_LEADER_ID"
+                },
+                {
+                    "id": "GROUP_LEADER_NAME",
+                    "name": "Group Leader name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:GROUP_LEADER_NAME"
+                },
+                {
+                    "id": "GROUP_LEADER_EMAIL",
+                    "name": "Group Leader email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:LD_GROUPLEADERADDEDGROUP:GROUP_LEADER_EMAIL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_SUBMITASSIGNMENT",
+            "meta": "LDLESSONTOPIC",
+            "tokens": [
+                {
+                    "id": "LDLESSONTOPIC",
+                    "name": "Lesson/Topic title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITASSIGNMENT:LDLESSONTOPIC"
+                },
+                {
+                    "id": "LDLESSONTOPIC_ID",
+                    "name": "Lesson/Topic ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITASSIGNMENT:LDLESSONTOPIC_ID"
+                },
+                {
+                    "id": "LDLESSONTOPIC_URL",
+                    "name": "Lesson/Topic URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITASSIGNMENT:LDLESSONTOPIC_URL"
+                },
+                {
+                    "id": "LDLESSONTOPIC_THUMB_ID",
+                    "name": "Lesson/Topic featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITASSIGNMENT:LDLESSONTOPIC_THUMB_ID"
+                },
+                {
+                    "id": "LDLESSONTOPIC_THUMB_URL",
+                    "name": "Lesson/Topic featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITASSIGNMENT:LDLESSONTOPIC_THUMB_URL"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITASSIGNMENT:NUMTIMES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_ESSAY_GRADED",
+            "meta": "LDESSAYQUESTION",
+            "tokens": [
+                {
+                    "id": "LDESSAYQUESTION",
+                    "name": "Question",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ESSAY_GRADED:LDESSAYQUESTION"
+                },
+                {
+                    "id": "LDESSAYQUESTION_POINTS_EARNED",
+                    "name": "Points earned",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ESSAY_GRADED:LDESSAYQUESTION_POINTS_EARNED"
+                },
+                {
+                    "id": "LDESSAYQUESTION_POINTS_POSSIBLE",
+                    "name": "Points possible (total points possible for the essay)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ESSAY_GRADED:LDESSAYQUESTION_POINTS_POSSIBLE"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_GROUP_OR_ITS_CHILD",
+            "meta": "LDGROUP",
+            "tokens": [
+                {
+                    "id": "LDGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP"
+                },
+                {
+                    "id": "LDGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP_ID"
+                },
+                {
+                    "id": "LDGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP_URL"
+                },
+                {
+                    "id": "LDGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP"
+                },
+                {
+                    "id": "LDGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP_ID"
+                },
+                {
+                    "id": "LDGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP_URL"
+                },
+                {
+                    "id": "LDGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_GROUP_OR_ITS_CHILD:LDGROUP_THUMB_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_CORRECT_ANSWER",
+            "meta": "LD_QUESTIONS",
+            "tokens": [
+                {
+                    "id": "LD_QUESTIONS",
+                    "name": "Question",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_CORRECT_ANSWER:LD_QUESTIONS"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_CORRECT_ANSWER:NUMTIMES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_SUBMITESSAYQUIZ",
+            "meta": "LDESSAYQUIZ",
+            "tokens": [
+                {
+                    "id": "LDESSAYQUIZ_ID",
+                    "name": "Essay ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_ID"
+                },
+                {
+                    "id": "LDESSAYQUIZ_TITLE",
+                    "name": "Essay title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_TITLE"
+                },
+                {
+                    "id": "LDESSAYQUIZ_SUBMISSION_DATE",
+                    "name": "Essay submission date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_SUBMISSION_DATE"
+                },
+                {
+                    "id": "LDESSAYQUIZ_CONTENT",
+                    "name": "Essay content",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_CONTENT"
+                },
+                {
+                    "id": "LDESSAYQUIZ_LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_LDQUIZ_ID"
+                },
+                {
+                    "id": "LDESSAYQUIZ_LDQUIZ_TITLE",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_LDQUIZ_TITLE"
+                },
+                {
+                    "id": "LDESSAYQUIZ_LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_LDCOURSE_ID"
+                },
+                {
+                    "id": "LDESSAYQUIZ_LDCOURSE_TITLE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_LDCOURSE_TITLE"
+                },
+                {
+                    "id": "LDESSAYQUIZ_LDLESSON_ID",
+                    "name": "Lesson ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_LDLESSON_ID"
+                },
+                {
+                    "id": "LDESSAYQUIZ_LDLESSON_TITLE",
+                    "name": "Lesson title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_LDLESSON_TITLE"
+                },
+                {
+                    "id": "LDESSAYQUIZ_LDQUESTION_ID",
+                    "name": "Question ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_LDQUESTION_ID"
+                },
+                {
+                    "id": "LDESSAYQUIZ_LDQUESTION_TITLE",
+                    "name": "Question title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_SUBMITESSAYQUIZ:LDESSAYQUIZ_LDQUESTION_TITLE"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_INCORRECT_ANSWER",
+            "meta": "LD_QUESTIONS",
+            "tokens": [
+                {
+                    "id": "LD_QUESTIONS",
+                    "name": "Question",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_INCORRECT_ANSWER:LD_QUESTIONS"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_INCORRECT_ANSWER:NUMTIMES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_COURSEACCESSEXPIRED",
+            "meta": "LDCOURSE",
+            "tokens": [
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_COURSEACCESSEXPIRED:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_ASSIGNMENT_GRADED",
+            "meta": "LDASSIGNMENT",
+            "tokens": [
+                {
+                    "id": "LDASSIGNMENT",
+                    "name": "Assignment title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ASSIGNMENT_GRADED:LDASSIGNMENT"
+                },
+                {
+                    "id": "LDASSIGNMENT_AUTHOR",
+                    "name": "Assignment author",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ASSIGNMENT_GRADED:LDASSIGNMENT_AUTHOR"
+                },
+                {
+                    "id": "LDASSIGNMENT_STATUS",
+                    "name": "Assignment status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ASSIGNMENT_GRADED:LDASSIGNMENT_STATUS"
+                },
+                {
+                    "id": "LDASSIGNMENT_COURSE",
+                    "name": "Assignment assigned course",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ASSIGNMENT_GRADED:LDASSIGNMENT_COURSE"
+                },
+                {
+                    "id": "LDASSIGNMENT_STEP",
+                    "name": "Assignment assigned lesson/topic",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ASSIGNMENT_GRADED:LDASSIGNMENT_STEP"
+                },
+                {
+                    "id": "LDASSIGNMENT_URL",
+                    "name": "Assignment URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ASSIGNMENT_GRADED:LDASSIGNMENT_URL"
+                },
+                {
+                    "id": "LDASSIGNMENT_POINTS_EARNED",
+                    "name": "Points earned",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ASSIGNMENT_GRADED:LDASSIGNMENT_POINTS_EARNED"
+                },
+                {
+                    "id": "LDASSIGNMENT_POINTS_POSSIBLE",
+                    "name": "Points possible (total points possible for the assignment)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_ASSIGNMENT_GRADED:LDASSIGNMENT_POINTS_POSSIBLE"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_USERENROLLEDGROUP",
+            "meta": "LDGROUP",
+            "tokens": [
+                {
+                    "id": "LDGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP"
+                },
+                {
+                    "id": "LDGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP_ID"
+                },
+                {
+                    "id": "LDGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP_URL"
+                },
+                {
+                    "id": "LDGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP"
+                },
+                {
+                    "id": "LDGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP_ID"
+                },
+                {
+                    "id": "LDGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP_URL"
+                },
+                {
+                    "id": "LDGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDGROUP:LDGROUP_THUMB_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_USERENROLLEDCOURSE",
+            "meta": "LDCOURSE",
+            "tokens": [
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERENROLLEDCOURSE:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_USERUNENROLLEDCOURSE",
+            "meta": "LDCOURSE",
+            "tokens": [
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERUNENROLLEDCOURSE:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_USERREMOVEDGROUP",
+            "meta": "LDUSERGROUP",
+            "tokens": [
+                {
+                    "id": "LDUSERGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP"
+                },
+                {
+                    "id": "LDUSERGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP_ID"
+                },
+                {
+                    "id": "LDUSERGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP_URL"
+                },
+                {
+                    "id": "LDUSERGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDUSERGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP_THUMB_URL"
+                },
+                {
+                    "id": "LDUSERGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP"
+                },
+                {
+                    "id": "LDUSERGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP_ID"
+                },
+                {
+                    "id": "LDUSERGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP_URL"
+                },
+                {
+                    "id": "LDUSERGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDUSERGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERREMOVEDGROUP:LDUSERGROUP_THUMB_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "LD_USERADDEDGROUPCOURSEACCESS",
+            "meta": "LDCOURSE",
+            "tokens": [
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP"
+                },
+                {
+                    "id": "LDGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_ID"
+                },
+                {
+                    "id": "LDGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_URL"
+                },
+                {
+                    "id": "LDGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUP_LEADERS",
+                    "name": "Group Leader email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_LEADERS"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDCOURSE_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP"
+                },
+                {
+                    "id": "LDGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_ID"
+                },
+                {
+                    "id": "LDGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_URL"
+                },
+                {
+                    "id": "LDGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_THUMB_URL"
+                },
+                {
+                    "id": "LDGROUP_LEADERS",
+                    "name": "Group Leader email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:LD_USERADDEDGROUPCOURSEACCESS:LDGROUP_LEADERS"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "code": "MARKCOURSEDONE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKCOURSEDONE:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKCOURSEDONE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKCOURSEDONE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKCOURSEDONE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKCOURSEDONE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKCOURSEDONE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKCOURSEDONE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKCOURSEDONE:LDCOURSE_THUMB_URL"
+                }
+            ]
+        },
+        {
+            "code": "LDACHIEVEMENTS",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:LDACHIEVEMENTS:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "MARKTOPICDONE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "LDTOPIC",
+                    "name": "Topic title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDTOPIC"
+                },
+                {
+                    "id": "LDTOPIC_ID",
+                    "name": "Topic ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDTOPIC_ID"
+                },
+                {
+                    "id": "LDTOPIC_URL",
+                    "name": "Topic URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDTOPIC_URL"
+                },
+                {
+                    "id": "LDTOPIC_THUMB_ID",
+                    "name": "Topic featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDTOPIC_THUMB_ID"
+                },
+                {
+                    "id": "LDTOPIC_THUMB_URL",
+                    "name": "Topic featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDTOPIC_THUMB_URL"
+                },
+                {
+                    "id": "LDLESSON",
+                    "name": "Lesson title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDLESSON"
+                },
+                {
+                    "id": "LDLESSON_ID",
+                    "name": "Lesson ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDLESSON_ID"
+                },
+                {
+                    "id": "LDLESSON_URL",
+                    "name": "Lesson URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDLESSON_URL"
+                },
+                {
+                    "id": "LDLESSON_THUMB_ID",
+                    "name": "Lesson featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDLESSON_THUMB_ID"
+                },
+                {
+                    "id": "LDLESSON_THUMB_URL",
+                    "name": "Lesson featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDLESSON_THUMB_URL"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICDONE:LDCOURSE_THUMB_URL"
+                }
+            ]
+        },
+        {
+            "code": "MARKLESSONDONE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "LDLESSON",
+                    "name": "Lesson title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDLESSON"
+                },
+                {
+                    "id": "LDLESSON_ID",
+                    "name": "Lesson ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDLESSON_ID"
+                },
+                {
+                    "id": "LDLESSON_URL",
+                    "name": "Lesson URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDLESSON_URL"
+                },
+                {
+                    "id": "LDLESSON_THUMB_ID",
+                    "name": "Lesson featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDLESSON_THUMB_ID"
+                },
+                {
+                    "id": "LDLESSON_THUMB_URL",
+                    "name": "Lesson featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDLESSON_THUMB_URL"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONDONE:LDCOURSE_THUMB_URL"
+                }
+            ]
+        },
+        {
+            "code": "ENRLCOURSE-A",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLCOURSE-A:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLCOURSE-A:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLCOURSE-A:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLCOURSE-A:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLCOURSE-A:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLCOURSE-A:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLCOURSE-A:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLCOURSE-A:LDCOURSE_THUMB_URL"
+                }
+            ]
+        },
+        {
+            "code": "CREATEGROUP",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:CREATEGROUP:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "GROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:CREATEGROUP:GROUP_ID"
+                },
+                {
+                    "id": "GROUP_COURSES",
+                    "name": "Group courses",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:CREATEGROUP:GROUP_COURSES"
+                },
+                {
+                    "id": "GROUP_LEADER_EMAILS",
+                    "name": "Group Leader emails",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:CREATEGROUP:GROUP_LEADER_EMAILS"
+                }
+            ]
+        },
+        {
+            "code": "MAKEUSERLEADER",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MAKEUSERLEADER:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "GROUP_TITLE",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MAKEUSERLEADER:GROUP_TITLE"
+                }
+            ]
+        },
+        {
+            "code": "UNENROLLGROUPCOURSES_CODE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UNENROLLGROUPCOURSES_CODE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "MARKQUIZINCOMPLETE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_STATUS",
+                    "name": "Quiz status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_STATUS"
+                },
+                {
+                    "id": "LDQUIZ_COURSE_TITLE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_COURSE_TITLE"
+                },
+                {
+                    "id": "LDQUIZ_COURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_COURSE_ID"
+                },
+                {
+                    "id": "LDQUIZ_COURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_COURSE_URL"
+                },
+                {
+                    "id": "LDQUIZ_STEP_TITLE",
+                    "name": "Lesson/Topic title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_STEP_TITLE"
+                },
+                {
+                    "id": "LDQUIZ_STEP_ID",
+                    "name": "Lesson/Topic ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_STEP_ID"
+                },
+                {
+                    "id": "LDQUIZ_STEP_URL",
+                    "name": "Lesson/Topic URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZINCOMPLETE:LDQUIZ_STEP_URL"
+                }
+            ]
+        },
+        {
+            "code": "UNENRLCOURSE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UNENRLCOURSE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "LD_RESET_ALL_COURSES_PROGRESS",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:LD_RESET_ALL_COURSES_PROGRESS:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "LD_ANON_ADDCOURSETOGROUP",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:LD_ANON_ADDCOURSETOGROUP:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "REPAIRDONECOURSES",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REPAIRDONECOURSES:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "UNENROLLCOURSES_CODE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UNENROLLCOURSES_CODE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "LD_ANON_REMOVECOURSEFROMGROUP",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:LD_ANON_REMOVECOURSEFROMGROUP:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "EMAILGROUPSLEADERS",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:EMAILGROUPSLEADERS:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "RESETPROGRESS",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETPROGRESS:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "LDCOURSE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETPROGRESS:LDCOURSE"
+                },
+                {
+                    "id": "LDCOURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETPROGRESS:LDCOURSE_ID"
+                },
+                {
+                    "id": "LDCOURSE_STATUS",
+                    "name": "Course status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETPROGRESS:LDCOURSE_STATUS"
+                },
+                {
+                    "id": "LDCOURSE_ACCESS_EXPIRY",
+                    "name": "Course access expiry date",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETPROGRESS:LDCOURSE_ACCESS_EXPIRY"
+                },
+                {
+                    "id": "LDCOURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETPROGRESS:LDCOURSE_URL"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_ID",
+                    "name": "Course featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETPROGRESS:LDCOURSE_THUMB_ID"
+                },
+                {
+                    "id": "LDCOURSE_THUMB_URL",
+                    "name": "Course featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETPROGRESS:LDCOURSE_THUMB_URL"
+                }
+            ]
+        },
+        {
+            "code": "LD_EXTEND_USER_COURSE_ACCESS",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:LD_EXTEND_USER_COURSE_ACCESS:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "REMOVE_USER_FROM_GROUP_HIERARCHY",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REMOVE_USER_FROM_GROUP_HIERARCHY:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "REMOVE_GROUP_LEADER_FROM_HIERARCHY",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REMOVE_GROUP_LEADER_FROM_HIERARCHY:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "REMOVEGROUP_A",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REMOVEGROUP_A:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "RESETQUIZ",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETQUIZ:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "REMOVEGROUPLEADER_CODE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REMOVEGROUPLEADER_CODE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "REMOVEGROUPS_CODE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REMOVEGROUPS_CODE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "EMAILACERTIFICATE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:EMAILACERTIFICATE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "MARKTOPICNOTCOMPLETE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKTOPICNOTCOMPLETE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "MARKQUIZCOMPLETE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "LDQUIZ",
+                    "name": "Quiz title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ"
+                },
+                {
+                    "id": "LDQUIZ_ID",
+                    "name": "Quiz ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_ID"
+                },
+                {
+                    "id": "LDQUIZ_URL",
+                    "name": "Quiz URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_URL"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_ID",
+                    "name": "Quiz featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_THUMB_ID"
+                },
+                {
+                    "id": "LDQUIZ_THUMB_URL",
+                    "name": "Quiz featured image URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_THUMB_URL"
+                },
+                {
+                    "id": "LDQUIZ_STATUS",
+                    "name": "Quiz status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_STATUS"
+                },
+                {
+                    "id": "LDQUIZ_COURSE_TITLE",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_COURSE_TITLE"
+                },
+                {
+                    "id": "LDQUIZ_COURSE_ID",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_COURSE_ID"
+                },
+                {
+                    "id": "LDQUIZ_COURSE_URL",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_COURSE_URL"
+                },
+                {
+                    "id": "LDQUIZ_STEP_TITLE",
+                    "name": "Lesson/Topic title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_STEP_TITLE"
+                },
+                {
+                    "id": "LDQUIZ_STEP_ID",
+                    "name": "Lesson/Topic ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_STEP_ID"
+                },
+                {
+                    "id": "LDQUIZ_STEP_URL",
+                    "name": "Lesson/Topic URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKQUIZCOMPLETE:LDQUIZ_STEP_URL"
+                }
+            ]
+        },
+        {
+            "code": "MARKLESSONNOTCOMPLETE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:MARKLESSONNOTCOMPLETE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "LD_EMAILGROUPLEADERS",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:LD_EMAILGROUPLEADERS:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "ENRLGROUP_A",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLGROUP_A:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "LDGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLGROUP_A:LDGROUP"
+                },
+                {
+                    "id": "LDGROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLGROUP_A:LDGROUP_ID"
+                },
+                {
+                    "id": "LDGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLGROUP_A:LDGROUP_URL"
+                },
+                {
+                    "id": "LDGROUP_THUMB_ID",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLGROUP_A:LDGROUP_THUMB_ID"
+                },
+                {
+                    "id": "LDGROUP_THUMB_URL",
+                    "name": "Group featured image ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ENRLGROUP_A:LDGROUP_THUMB_URL"
+                }
+            ]
+        }
+    ]
+}

@@ -1,117 +1,72 @@
 <?php
-
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Mailchimp;
 
 /**
  * Class AUDIENCE_ADDUSERNOTE
  *
  * @package Uncanny_Automator
+ * @property Mailchimp_App_Helpers $helpers
+ * @property Mailchimp_Api_Caller $api
  */
-class AUDIENCE_ADDUSERNOTE {
+class AUDIENCE_ADDUSERNOTE extends \Uncanny_Automator\Recipe\App_Action {
+
+	use Mailchimp_Audience_Fields;
+	use Mailchimp_Email_Fields;
+	use Mailchimp_Note_Fields;
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'MAILCHIMP';
-
-	private $action_code;
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'MCHIMPAUDIENCEADDUSERNOTE';
-		$this->action_meta = 'AUDIENCEADDUSERNOTE';
-		$this->define_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
-			'is_pro'                => false,
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			// translators: Note
-			'sentence'              => sprintf( esc_html__( 'Add {{a note:%1$s}} to the user', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( 'Add {{a note}} to the user', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'options_callback'      => array( $this, 'load_options' ),
-			'execution_function'    => array( $this, 'add_note_audience_member' ),
-			'background_processing' => true,
-		);
-
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * load_options
+	 * Setup action.
 	 *
 	 * @return void
 	 */
-	public function load_options() {
-
-		$textarea                     = Automator()->helpers->recipe->field->text_field( 'MCNOTE', esc_html__( 'Note', 'uncanny-automator' ), true, 'textarea', null, false, __( 'Note length is limited to 1,000 characters.', 'uncanny-automator' ) );
-		$textarea['supports_tinymce'] = false;
-
-		return array(
-			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						esc_html__( 'Audience', 'uncanny-automator' ),
-						'MCLIST'
-					),
-					$textarea,
-				),
-			),
+	protected function setup_action() {
+		$this->set_integration( 'MAILCHIMP' );
+		$this->set_action_code( 'MCHIMPAUDIENCEADDUSERNOTE' );
+		$this->set_action_meta( 'AUDIENCEADDUSERNOTE' );
+		$this->set_is_pro( false );
+		$this->set_requires_user( true );
+		$this->set_background_processing( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/mailchimp/' ) );
+		$this->set_readable_sentence( esc_html_x( 'Add {{a note}} to the user', 'Mailchimp', 'uncanny-automator' ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s is the note
+				esc_html_x( 'Add {{a note:%1$s}} to the user', 'Mailchimp', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
 		);
 	}
 
 	/**
-	 * Validation function when the action is hit
+	 * Define action options.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @return array
 	 */
-	public function add_note_audience_member( $user_id, $action_data, $recipe_id, $args ) {
+	public function options() {
+		return array(
+			$this->get_audience_select_config(),
+			$this->get_note_textarea_config(),
+		);
+	}
 
-		$helpers = Automator()->helpers->recipe->mailchimp->options;
+	/**
+	 * Process the action.
+	 *
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        The arguments.
+	 * @param array $parsed      The parsed values.
+	 *
+	 * @return bool
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$list_id    = $this->get_audience_from_parsed();
+		$note       = $this->get_note_from_parsed();
+		$user_email = $this->get_email_from_user( $user_id );
 
-		try {
-			// Here add note
-			$list_id = $action_data['meta']['MCLIST'];
-			$note    = Automator()->parse->text( $action_data['meta']['MCNOTE'], $recipe_id, $user_id, $args );
+		$this->api->add_note_to_contact( $list_id, $user_email, $note );
 
-			// get current user email
-			$user      = get_userdata( $user_id );
-			$user_hash = md5( strtolower( trim( $user->user_email ) ) );
-
-			$note_body = array(
-				'note' => substr( wp_strip_all_tags( $note ), 0, 1000 ),
-			);
-
-			$request_params = array(
-				'action'    => 'add_subscriber_note',
-				'list_id'   => $list_id,
-				'user_hash' => $user_hash,
-				'note'      => wp_json_encode( $note_body ),
-			);
-
-			$response = $helpers->api_request( $request_params, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
-		}
+		return true;
 	}
 }

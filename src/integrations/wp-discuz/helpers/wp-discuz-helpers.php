@@ -68,7 +68,8 @@ class Wp_Discuz_Helpers {
 			'suppress_filters' => true,
 			'fields'           => array( 'ids', 'titles' ),
 		);
-		$posts_list = Automator()->helpers->recipe->options->wp_query( $args, true, esc_html__( 'Any post', 'uncanny-automator' ) );
+		$params     = array_merge( $args, array( 'include_any' => true, 'any_label' => esc_html__( 'Any post', 'uncanny-automator' ) ) );
+		$posts_list = automator_wp_query( $params, 'legacy' );
 
 		foreach ( $posts_list as $post_id => $post_title ) {
 			// Check if the post title is defined

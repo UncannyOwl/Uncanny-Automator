@@ -1,113 +1,182 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Codes;
 
 /**
  * Class UC_CODEREDEEMED
  *
  * @package Uncanny_Automator
+ * @property \Uncanny_Automator\Integrations\Uncanny_Codes\Uc_Helpers $item_helpers
  */
-class UC_CODEREDEEMED {
+class UC_CODEREDEEMED extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Integration code
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	public static $integration = 'UNCANNYCODE';
-
-	private $trigger_code;
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->trigger_code = 'CODEREDEEMED';
-		$this->trigger_meta = 'UNCANNYCODES';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'CODEREDEEMED', 'UNCANNYCODE' )
+			->trigger_meta( 'UNCANNYCODES' )
+			->hook( 'ulc_user_redeemed_code', 20, 3 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup trigger configuration.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
+		$this->set_is_pro( false );
+		/* translators: Logged-in trigger - Uncanny Codes */
+		$this->set_sentence( esc_html_x( 'A user redeems a code', 'Uncanny Codes', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'A user redeems a code', 'Uncanny Codes', 'uncanny-automator' ) );
+	}
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-codes/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			'meta'                => $this->trigger_meta,
-			/* translators: Logged-in trigger - Uncanny Codes */
-			'sentence'            => sprintf( esc_attr__( 'A user redeems a code', 'uncanny-automator' ) ),
-			/* translators: Logged-in trigger - Uncanny Codes */
-			'select_option_name'  => esc_attr__( 'A user redeems a code', 'uncanny-automator' ),
-			'action'              => 'ulc_user_redeemed_code',
-			'priority'            => 20,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'user_redeemed_code' ),
-			'options'             => array(),
+	/**
+	 * Define trigger options.
+	 *
+	 * @return array[]
+	 */
+	public function options() {
+		return array();
+	}
+
+	/**
+	 * Define available tokens.
+	 *
+	 * @param array $trigger The trigger settings.
+	 * @param array $tokens  Existing tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+		return array(
+			array(
+				'tokenId'   => 'CODE_REDEEMED',
+				'tokenName' => esc_html_x( 'Code', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'CODE_BATCH_ID',
+				'tokenName' => esc_html_x( 'Batch ID', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'REMAINING_CODES',
+				'tokenName' => esc_html_x( 'Remaining codes', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'TOTAL_CODES',
+				'tokenName' => esc_html_x( 'Total codes', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
 		);
-
-		Automator()->register->trigger( $trigger );
 	}
 
 	/**
-	 * @param $user_id
-	 * @param $coupon_id
-	 * @param $result
+	 * Validate trigger against hook arguments.
+	 *
+	 * @param array $trigger   The trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool
 	 */
-	public function user_redeemed_code( $user_id, $coupon_id, $result ) {
+	public function validate( $trigger, $hook_args ) {
+
+		list( $user_id, $coupon_id, $result ) = $hook_args;
 
 		if ( ! $user_id ) {
 			$user_id = get_current_user_id();
 		}
+
 		if ( empty( $user_id ) ) {
-			return;
+			return false;
 		}
 
-		$args = array(
-			'code'           => $this->trigger_code,
-			'meta'           => $this->trigger_meta,
-			'ignore_post_id' => true,
-			'user_id'        => $user_id,
+		return true;
+	}
+
+	/**
+	 * Hydrate token values from hook arguments.
+	 *
+	 * @param array $trigger   The completed trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		list( $user_id, $coupon_id, $result ) = $hook_args;
+
+		$code     = $this->item_helpers->uc_get_code_redeemed( $coupon_id );
+		$batch_id = $this->get_batch_id_by_coupon( $coupon_id );
+
+		return array(
+			'CODE_REDEEMED'  => $code,
+			'CODE_BATCH_ID'  => $batch_id,
+			'REMAINING_CODES' => $this->get_remaining_codes( $batch_id ),
+			'TOTAL_CODES'     => $this->get_total_codes( $batch_id ),
 		);
+	}
 
-		$args = Automator()->maybe_add_trigger_entry( $args, false );
+	/**
+	 * Get batch ID by coupon ID.
+	 *
+	 * @param int $coupon_id The coupon ID.
+	 *
+	 * @return int
+	 */
+	private function get_batch_id_by_coupon( $coupon_id ) {
 
-		// Save trigger meta
-		if ( $args ) {
-			foreach ( $args as $res ) {
-				if ( true === $res['result'] && $res['args']['trigger_id'] && $res['args']['get_trigger_id'] ) {
+		global $wpdb;
 
-					$run_number = Automator()->get->trigger_run_number( $res['args']['trigger_id'], $res['args']['get_trigger_id'], $user_id );
-					$save_meta  = array(
-						'user_id'        => $user_id,
-						'trigger_id'     => $res['args']['trigger_id'],
-						'run_number'     => $run_number, //get run number
-						'trigger_log_id' => $res['args']['get_trigger_id'],
-					);
-
-					$code = Automator()->helpers->recipe->uncanny_codes->options->uc_get_code_redeemed( $coupon_id );
-					Automator()->db->token->save( 'CODE_REDEEMED', $code, $save_meta );
-					global $wpdb;
-					$batch = $wpdb->get_var(
-						$wpdb->prepare(
-							"SELECT g.id
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT g.id
 FROM `{$wpdb->prefix}uncanny_codes_groups` g
 	LEFT JOIN `{$wpdb->prefix}uncanny_codes_codes` c
 		ON g.ID = c.code_group
 WHERE c.ID = %d",
-							$coupon_id
-						)
-					);
+				$coupon_id
+			)
+		);
+	}
 
-					Automator()->db->token->save( 'CODE_BATCH_ID', $batch, $save_meta );
+	/**
+	 * Get remaining codes count for a batch.
+	 *
+	 * @param int $batch_id The batch ID.
+	 *
+	 * @return int
+	 */
+	private function get_remaining_codes( $batch_id ) {
 
-					Automator()->maybe_trigger_complete( $res['args'] );
-				}
-			}
+		if ( empty( $batch_id ) ) {
+			return 0;
 		}
+
+		$redeemed_count = absint( \uncanny_learndash_codes\Database::get_group_redeemed_count( $batch_id ) );
+		$issue          = absint( \uncanny_learndash_codes\SharedFunctionality::ulc_get_issue_count( $batch_id ) );
+
+		return $issue - $redeemed_count;
+	}
+
+	/**
+	 * Get total codes count for a batch.
+	 *
+	 * @param int $batch_id The batch ID.
+	 *
+	 * @return int
+	 */
+	private function get_total_codes( $batch_id ) {
+
+		if ( empty( $batch_id ) ) {
+			return 0;
+		}
+
+		return absint( \uncanny_learndash_codes\SharedFunctionality::ulc_get_issue_count( $batch_id ) );
 	}
 }

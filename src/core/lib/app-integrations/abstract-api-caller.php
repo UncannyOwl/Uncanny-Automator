@@ -44,6 +44,13 @@ abstract class Api_Caller {
 	protected $error_messages = array();
 
 	/**
+	 * The new API client instance (null = use legacy Api_Server path).
+	 *
+	 * @var \Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client|null
+	 */
+	protected $api_client = null;
+
+	/**
 	 * The credential request key.
 	 * - property name for applying credentials to the request.
 	 * - Added dynamically to allow extending classes to override it.
@@ -174,6 +181,17 @@ abstract class Api_Caller {
 	}
 
 	/**
+	 * Set the new API client for this caller.
+	 * When set, api_request() will use Api_Client::send() instead of Api_Server::api_call().
+	 *
+	 * @param \Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client $api_client The API client.
+	 * @return void
+	 */
+	public function set_api_client( $api_client ): void {
+		$this->api_client = $api_client;
+	}
+
+	/**
 	 * API request - Common method to make API requests to API server.
 	 *
 	 * @param mixed $body        The body of the request or the single action string
@@ -227,7 +245,7 @@ abstract class Api_Caller {
 			}
 
 			// Make the API request.
-			$response = Api_Server::api_call( $params );
+			$response = $this->make_api_call( $params );
 
 		} catch ( Exception $e ) {
 			// If errors are not specifically skipped, check for them.
@@ -250,6 +268,36 @@ abstract class Api_Caller {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Make the API call — uses new Api_Client if available, falls back to legacy Api_Server.
+	 *
+	 * @param array $params The request parameters.
+	 * @return array The response array.
+	 * @throws \Exception On API errors.
+	 */
+	protected function make_api_call( array $params ): array {
+		// Use new Api_Client if injected.
+		if ( null !== $this->api_client ) {
+			$request  = \Uncanny_Automator\App\Infrastructure\Api_Client\Api_Request::from_legacy_params( $params );
+			$response = $this->api_client->send( $request );
+
+			/**
+			 * Fires when an API call uses the new Api_Client path.
+			 *
+			 * @since 7.1
+			 *
+			 * @param array  $params   The legacy params array.
+			 * @param object $response The Api_Response object.
+			 */
+			do_action( 'automator_api_call_via_client', $params, $response );
+
+			return $response->to_legacy_array();
+		}
+
+		// Legacy path — will be removed when all integrations use the new client.
+		return Api_Server::api_call( $params );
 	}
 
 	/**

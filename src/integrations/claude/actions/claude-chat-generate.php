@@ -100,28 +100,36 @@ class Claude_Chat_Generate extends App_Action {
 
 		$models = array(
 			array(
+				'text'  => 'Claude Opus 4.8',
+				'value' => 'claude-opus-4-8',
+			),
+			array(
+				'text'  => 'Claude Opus 4.7',
+				'value' => 'claude-opus-4-7',
+			),
+			array(
+				'text'  => 'Claude Opus 4.6',
+				'value' => 'claude-opus-4-6',
+			),
+			array(
+				'text'  => 'Claude Sonnet 4.6',
+				'value' => 'claude-sonnet-4-6',
+			),
+			array(
+				'text'  => 'Claude Sonnet 4.5 (20250929)',
+				'value' => 'claude-sonnet-4-5-20250929',
+			),
+			array(
+				'text'  => 'Claude Haiku 4.5 (20251001)',
+				'value' => 'claude-haiku-4-5-20251001',
+			),
+			array(
 				'text'  => 'Claude Opus 4 (20250514)',
 				'value' => 'claude-opus-4-20250514',
 			),
 			array(
 				'text'  => 'Claude Sonnet 4 (20250514)',
 				'value' => 'claude-sonnet-4-20250514',
-			),
-			array(
-				'text'  => 'Claude Sonnet 3.7 (20250219)',
-				'value' => 'claude-3-7-sonnet-20250219',
-			),
-			array(
-				'text'  => 'Claude Sonnet 3.5 (20241022)',
-				'value' => 'claude-3-5-sonnet-20241022',
-			),
-			array(
-				'text'  => 'Claude Haiku 3.5 (20241022)',
-				'value' => 'claude-3-5-haiku-20241022',
-			),
-			array(
-				'text'  => 'Claude Opus 3 (20240229)',
-				'value' => 'claude-3-opus-20240229',
 			),
 		);
 
@@ -204,15 +212,21 @@ class Claude_Chat_Generate extends App_Action {
 			),
 		);
 
-		$payload = $payload_builder
+		$payload_builder
 			->endpoint( 'https://api.anthropic.com/v1/messages' )
 			->body( 'system', $system_content )
 			->model( $model )
-			->temperature( (float) $temperature )
 			->max_tokens( (int) $max_tokens )
 			->messages( $message )
-			->json_content()
-			->build();
+			->json_content();
+
+		// Claude Opus 4.7 and later reject a non-default temperature with a 400 error.
+		// See https://platform.claude.com/docs/en/docs/about-claude/model-deprecations
+		if ( $this->model_supports_temperature( $model ) ) {
+			$payload_builder->temperature( (float) $temperature );
+		}
+
+		$payload = $payload_builder->build();
 
 		$response    = $provider->send_request( $payload );
 		$ai_response = $provider->parse_response( $response );
@@ -220,6 +234,27 @@ class Claude_Chat_Generate extends App_Action {
 		$this->hydrate_tokens_from_response( $ai_response );
 
 		return true;
+	}
+
+	/**
+	 * Whether the given model accepts a temperature parameter.
+	 *
+	 * Claude Opus 4.7 and later return a 400 error when temperature (or top_p /
+	 * top_k) is set to a non-default value, so the parameter must be omitted for
+	 * those models. Add future temperature-restricted model IDs to the list below.
+	 *
+	 * @param string $model The Claude model ID.
+	 *
+	 * @return bool True when temperature can be sent.
+	 */
+	private function model_supports_temperature( $model ) {
+
+		$restricted = array(
+			'claude-opus-4-7',
+			'claude-opus-4-8',
+		);
+
+		return ! in_array( $model, $restricted, true );
 	}
 
 	/**

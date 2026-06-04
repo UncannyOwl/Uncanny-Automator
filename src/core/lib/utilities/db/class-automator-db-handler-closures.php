@@ -140,6 +140,10 @@ class Automator_DB_Handler_Closures {
 	 */
 	public function add_entry( $args = array() ) {
 
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->add_closure_entry( (array) $args );
+		}
+
 		global $wpdb;
 
 		$args = wp_parse_args(
@@ -195,6 +199,11 @@ class Automator_DB_Handler_Closures {
 	 * @return int|false
 	 */
 	public function add_entry_meta( $args = array(), $meta_key = '', $meta_value = '' ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			Automator()->recipe_runner->log_store()->add_closure_entry_meta( (array) $args, (string) $meta_key, (string) $meta_value );
+			return;
+		}
 
 		if ( empty( $meta_key ) ) {
 			_doing_it_wrong( esc_html( self::class . '::add_entry_meta' ), 'The parameter $meta_key must not be empty.', 4.12 );

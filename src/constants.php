@@ -38,7 +38,7 @@
 // ──────────────────────────────────────────────
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
-	define( 'AUTOMATOR_DATABASE_VERSION', '7.2.0' );
+	define( 'AUTOMATOR_DATABASE_VERSION', '7.3.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_MANIFEST_SCHEMA_VERSION' ) ) {

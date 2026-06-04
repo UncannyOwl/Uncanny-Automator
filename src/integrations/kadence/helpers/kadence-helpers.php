@@ -69,7 +69,7 @@ class Kadence_Helpers {
 				'posts_per_page' => 99999,
 			);
 
-			$forms = Automator()->helpers->recipe->options->wp_query( $args );
+			$forms = automator_wp_query( $args, 'legacy' );
 			foreach ( $forms as $k => $form ) {
 				$all_forms[] = array(
 					'text'  => $form,

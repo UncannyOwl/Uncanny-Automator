@@ -172,6 +172,16 @@ class Initialize_Automator extends Set_Up_Automator {
 		// Phase 4: Load helpers.
 		$this->load_helpers();
 
+		// Phase 4.5 (backward-compat): guarantee legacy add-on helper-chain contracts for
+		// OLD Pro (< 7.3) NOW — after helpers are wired, BEFORE recipe parts load — so a
+		// Free/Pro version mismatch degrades gracefully instead of WSOD-ing, even for Pro
+		// versions that eager-boot their triggers. Demand-independent backstop to the
+		// per-integration aliases. New file, not in the prebuilt classmap, so require it.
+		if ( ! class_exists( '\Uncanny_Automator\Integration_Loader\Backward_Compat_Reconciler', false ) ) {
+			require_once UA_ABSPATH . 'src/core/integration-loader/class-backward-compat-reconciler.php';
+		}
+		\Uncanny_Automator\Integration_Loader\Backward_Compat_Reconciler::bridge_legacy_helper_contracts();
+
 		// Phase 5: Load recipe parts (triggers, actions, closures, conditions, loop-filters, tokens).
 		// Deferred to a later init priority for 6.7 translation fix with trigger engine.
 		add_action( 'init', array( $this, 'load_recipe_parts' ), AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE );
@@ -304,6 +314,14 @@ class Initialize_Automator extends Set_Up_Automator {
 	 * @throws Automator_Exception On loading failure.
 	 */
 	public function load_recipe_parts() {
+
+		// Populate the registry with lazy stubs for triggers that declared a
+		// Trigger_Definition. Runs before eager loading so each integration's
+		// Abstract_Integration::load_recipe_parts() can skip triggers already
+		// registered here. No-op unless AUTOMATOR_LAZY_TRIGGERS is enabled and
+		// targeted loading is active (should_load_all() === false).
+		( new \Uncanny_Automator\Recipe\Trigger_Metadata_Loader() )->load();
+
 		try {
 			$this->loader->load_recipe_parts( $this->active_directories, $this->directories_to_include );
 		} catch ( Error $e ) {

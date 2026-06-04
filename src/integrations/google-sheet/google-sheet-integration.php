@@ -54,20 +54,6 @@ class Google_Sheet_Integration extends App_Integration {
 	}
 
 	/**
-	 * Register AJAX hooks - called automatically by App Integration framework.
-	 * Following App Integration migration guidelines - AJAX hooks in register_hooks method.
-	 *
-	 * @return void
-	 */
-	public function register_hooks() {
-		// Recipe builder AJAX endpoints.
-		add_action( 'wp_ajax_automator_fetch_googlesheets_spreadsheets', array( $this->helpers, 'fetch_spreadsheets_ajax' ) );
-		add_action( 'wp_ajax_automator_fetch_googlesheets_worksheets', array( $this->helpers, 'fetch_worksheets_ajax' ) );
-		add_action( 'wp_ajax_automator_fetch_googlesheets_worksheets_columns', array( $this->helpers, 'fetch_worksheets_columns_ajax' ) );
-		add_action( 'wp_ajax_automator_fetch_googlesheets_worksheets_columns_search', array( $this->helpers, 'fetch_worksheets_columns_search_ajax' ) );
-	}
-
-	/**
 	 * Check if the app is connected.
 	 *
 	 * @return bool

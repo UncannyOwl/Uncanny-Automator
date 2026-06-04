@@ -45,10 +45,7 @@ class Create_Page extends \Uncanny_Automator\Recipe\App_Action {
 			'label'       => esc_html_x( 'Parent', 'Notion', 'uncanny-automator' ),
 			'required'    => true,
 			'options'     => array(),
-			'ajax'        => array(
-				'endpoint' => 'automator_notion_list_pages',
-				'event'    => 'on_load',
-			),
+			'remote_data' => $this->helpers->remote_data_load_config( 'pages' ),
 		);
 
 		// The "Redirect type" field.

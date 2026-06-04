@@ -38,6 +38,11 @@ class Automator_DB_Handler_Recipes {
 	 * @since 3.0
 	 */
 	public function add( $user_id, $recipe_id, $completed, $run_number ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->add_recipe_log( (int) $user_id, (int) $recipe_id, (int) $completed, (int) $run_number );
+		}
+
 		global $wpdb;
 
 		$table_name = isset( Automator()->db->tables->recipe ) ? Automator()->db->tables->recipe : 'uap_recipe_log';
@@ -92,6 +97,12 @@ class Automator_DB_Handler_Recipes {
 	 * @param $recipe_log_id
 	 */
 	public function mark_incomplete( $recipe_id, $recipe_log_id ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			Automator()->recipe_runner->log_store()->mark_recipe_incomplete( (int) $recipe_id, (int) $recipe_log_id );
+			return;
+		}
+
 		$this->update(
 			array(
 				'completed' => 0,
@@ -129,6 +140,12 @@ class Automator_DB_Handler_Recipes {
 	 * @return void
 	 */
 	public function mark_complete( $recipe_log_id, $completed ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			Automator()->recipe_runner->log_store()->mark_recipe_complete( (int) $recipe_log_id, (int) $completed );
+			return;
+		}
+
 		$updated = $this->update(
 			array(
 				'date_time' => current_time( 'mysql' ),
@@ -195,6 +212,12 @@ class Automator_DB_Handler_Recipes {
 	 * @return void
 	 */
 	public function mark_complete_with_error( $recipe_id, $recipe_log_id, $complete ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			Automator()->recipe_runner->log_store()->mark_recipe_complete_with_error( (int) $recipe_id, (int) $recipe_log_id, (int) $complete );
+			return;
+		}
+
 		$updated = $this->update(
 			array(
 				'completed' => $complete,
@@ -247,10 +270,40 @@ class Automator_DB_Handler_Recipes {
 	 * @return string|null
 	 */
 	public function log_run_pre_exists( $recipe_id, $user_id ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->recipe_log_pre_exists( (int) $recipe_id, (int) $user_id );
+		}
+
 		global $wpdb;
 		$tbl = Automator()->db->tables->recipe;
 
 		return $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}{$tbl} WHERE completed = %d AND automator_recipe_id = %d AND user_id = %d", '-1', $recipe_id, $user_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	}
+
+	/**
+	 * Get recipe_id and user_id from a recipe log row.
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return object|null Object with automator_recipe_id and user_id, or null.
+	 */
+	public function get_log_row( int $recipe_log_id ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->get_recipe_log_row( $recipe_log_id );
+		}
+
+		global $wpdb;
+		$tbl = Automator()->db->tables->recipe;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT automator_recipe_id, user_id FROM {$wpdb->prefix}{$tbl} WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_log_id
+			)
+		);
 	}
 
 	/**
@@ -262,6 +315,10 @@ class Automator_DB_Handler_Recipes {
 	 * @return void
 	 */
 	public function get_scheduled_actions_count( $recipe_log_id, $args ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->get_scheduled_actions_count( (int) $recipe_log_id, (array) $args );
+		}
 
 		global $wpdb;
 
@@ -292,6 +349,12 @@ class Automator_DB_Handler_Recipes {
 	public function delete_logs( $recipe_id, $automator_recipe_log_id ) {
 
 		global $wpdb;
+
+		// Delete from uap_error_log.
+		$wpdb->delete(
+			$wpdb->prefix . 'uap_error_log',
+			array( 'recipe_log_id' => $automator_recipe_log_id )
+		);
 
 		// Delete from uap_recipe_log_meta.
 		$wpdb->delete(
@@ -329,6 +392,15 @@ class Automator_DB_Handler_Recipes {
 	public function clear_activity_log_by_recipe_id( $recipe_id ) {
 		global $wpdb;
 
+		// Delete from error log (by recipe_log_ids for this recipe).
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE e FROM {$wpdb->prefix}uap_error_log e INNER JOIN {$wpdb->prefix}uap_recipe_log r ON e.recipe_log_id = r.ID WHERE r.automator_recipe_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_id
+			)
+		);
+
 		// Delete from closures
 		Automator()->db->closure->delete_by_recipe_id( $recipe_id );
 		// Delete from actions
@@ -358,6 +430,12 @@ class Automator_DB_Handler_Recipes {
 	 * @return void
 	 */
 	public function update_count( $recipe_id ) {
+
+		if ( isset( Automator()->recipe_runner ) ) {
+			Automator()->recipe_runner->log_store()->update_recipe_count( (int) $recipe_id );
+			return;
+		}
+
 		global $wpdb;
 
 		$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}uap_recipe_count SET runs = runs + 1 WHERE recipe_id = %d", $recipe_id ) );

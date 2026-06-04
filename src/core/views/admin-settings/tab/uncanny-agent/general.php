@@ -10,7 +10,7 @@
 
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Api\Application\Mcp\Handshake\Handshake_Handler;
+use Uncanny_Automator\App\Application\Mcp\Handshake\Handshake_Handler;
 
 // Check for handshake connect_token.
 $handshake         = new Handshake_Handler();

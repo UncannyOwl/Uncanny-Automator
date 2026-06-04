@@ -10,6 +10,7 @@ use Exception;
  * @package Uncanny_Automator
  *
  * @property Github_Api_Caller $api
+ * @property Github_Webhooks $webhooks
  */
 class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers {
 
@@ -65,24 +66,22 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 			'options'         => array(),
 			'options_show_id' => false,
 			'relevant_tokens' => array(),
-			'ajax'            => array(
-				'endpoint' => 'automator_github_get_repo_options',
-				'event'    => 'on_load',
-			),
+			'remote_data'     => $this->remote_data_load_config( 'repos' ),
 		);
 	}
 
 	/**
-	 * Get repo options AJAX.
+	 * Fetch the user's repositories, prepended with an empty placeholder when
+	 * more than one repo exists so the dropdown can show "Select a repository".
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_repo_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$repos   = $this->api->get_user_repos( $this->is_ajax_refresh() );
+	protected function remote_data_get_repos( $request ): array {
+		$repos   = $this->api->get_user_repos( $request->is_refresh() );
 		$options = $this->format_repo_options( $repos );
 
-		// Add empty option if more than one repo.
 		if ( count( $repos ) > 1 ) {
 			$empty = array(
 				'value' => '',
@@ -91,12 +90,7 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 			array_unshift( $options, $empty );
 		}
 
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $options,
-			)
-		);
+		return $this->remote_data_success( $options );
 	}
 
 	/**
@@ -137,6 +131,20 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 		return ! empty( $full_repo )
 			? $this->get_repo_parts( $full_repo )
 			: array();
+	}
+
+	/**
+	 * Resolve the {owner, name} repo parts from a remote-data request's selected
+	 * repo value. Mirrors {@see self::get_repo_from_ajax()} for the new framework.
+	 *
+	 * @param Remote_Data_Request $request  The remote-data request.
+	 * @param string              $meta_key Meta key holding the `owner/name` value.
+	 *
+	 * @return array {owner, name} or empty when no repo is selected.
+	 */
+	private function get_repo_from_request( $request, $meta_key = self::ACTION_REPO_META_KEY ) {
+		$full_repo = $request->get_field_value( $meta_key );
+		return ! empty( $full_repo ) ? $this->get_repo_parts( $full_repo ) : array();
 	}
 
 	/**
@@ -189,11 +197,7 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 			'required'        => true,
 			'options'         => array(),
 			'relevant_tokens' => array(),
-			'ajax'            => array(
-				'endpoint'      => 'automator_github_get_repo_issues_and_pr_options',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $repo_meta_key ),
-			),
+			'remote_data'     => $this->remote_data_parent_config( 'repo_issues_and_prs', array( $repo_meta_key ) ),
 		);
 	}
 
@@ -234,11 +238,7 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 			'options'         => array(),
 			'options_show_id' => false,
 			'relevant_tokens' => array(),
-			'ajax'            => array(
-				'endpoint'      => 'automator_github_get_repo_label_options',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $repo_meta_key ),
-			),
+			'remote_data'     => $this->remote_data_parent_config( 'repo_labels', array( $repo_meta_key ) ),
 			'description'     => $is_adding
 				? esc_html_x( 'To create a new label enter it as a custom value', 'GitHub', 'uncanny-automator' )
 				: esc_html_x( 'Select an existing label to remove', 'GitHub', 'uncanny-automator' ),
@@ -281,23 +281,19 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 	}
 
 	/**
-	 * Get tag options AJAX.
+	 * Fetch tags for the selected repository.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_repo_tag_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$repo_parts = $this->get_repo_from_ajax();
+	protected function remote_data_get_repo_tags( $request ): array {
+		$repo_parts = $this->get_repo_from_request( $request );
 		$tags       = empty( $repo_parts )
 			? array()
-			: $this->api->get_repo_tags( $repo_parts['name'], $repo_parts['owner'], $this->is_ajax_refresh() );
+			: $this->api->get_repo_tags( $repo_parts['name'], $repo_parts['owner'], $request->is_refresh() );
 
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $tags,
-			)
-		);
+		return $this->remote_data_success( $tags );
 	}
 
 	/**
@@ -320,39 +316,28 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 	}
 
 	/**
-	 * Get repo issues and pull requests options AJAX.
+	 * Fetch a 50/50 mix of issues and pull requests for the selected repo,
+	 * each prefixed with `[Issue]` / `[PR]`, capped at 1000 combined items.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_repo_issues_and_pr_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$repo_parts = $this->get_repo_from_ajax();
+	protected function remote_data_get_repo_issues_and_prs( $request ): array {
+		$repo_parts = $this->get_repo_from_request( $request );
 
 		if ( empty( $repo_parts ) ) {
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => array(),
-				)
-			);
+			return $this->remote_data_success( array() );
 		}
 
-		// Get both issues and pull requests
-		$issues = $this->api->get_repo_issues( $repo_parts['name'], $repo_parts['owner'], $this->is_ajax_refresh() );
-		$prs    = $this->api->get_repo_pull_requests( $repo_parts['name'], $repo_parts['owner'], $this->is_ajax_refresh() );
+		$issues = $this->api->get_repo_issues( $repo_parts['name'], $repo_parts['owner'], $request->is_refresh() );
+		$prs    = $this->api->get_repo_pull_requests( $repo_parts['name'], $repo_parts['owner'], $request->is_refresh() );
 
-		// Format issues and PRs with prefixes
 		$issues = $this->prefix_issue_pr_options( $issues, '[Issue]' );
 		$prs    = $this->prefix_issue_pr_options( $prs, '[PR]' );
 
-		// Merge with equal distribution and 1000 limit.
-		$combined_options = $this->merge_arrays_with_equal_distribution( $issues, $prs, 1000 );
-
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $combined_options,
-			)
+		return $this->remote_data_success(
+			$this->merge_arrays_with_equal_distribution( $issues, $prs, 1000 )
 		);
 	}
 
@@ -418,42 +403,291 @@ class Github_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helpers
 	}
 
 	/**
-	 * Get repo branches options AJAX.
+	 * Fetch branches for the selected repository.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_repo_branches_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$repo_parts = $this->get_repo_from_ajax();
+	protected function remote_data_get_repo_branches( $request ): array {
+		$repo_parts = $this->get_repo_from_request( $request );
 		$branches   = empty( $repo_parts )
 			? array()
-			: $this->api->get_repo_branches( $repo_parts['name'], $repo_parts['owner'], $this->is_ajax_refresh() );
+			: $this->api->get_repo_branches( $repo_parts['name'], $repo_parts['owner'], $request->is_refresh() );
 
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $branches,
-			)
+		return $this->remote_data_success( $branches );
+	}
+
+	/**
+	 * Fetch labels for the selected repository.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_repo_labels( $request ): array {
+		$repo_parts = $this->get_repo_from_request( $request );
+		$labels     = empty( $repo_parts )
+			? array()
+			: $this->api->get_repo_labels( $repo_parts['name'], $repo_parts['owner'], $request->is_refresh() );
+
+		return $this->remote_data_success( $labels );
+	}
+
+	////////////////////////////////////////////////////////////
+	// Webhook trigger UI helper methods
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Get repository options.
+	 *
+	 * @param string $event
+	 *
+	 * @return array
+	 */
+	public function get_webhook_repo_options( $event = 'all' ) {
+		$webhook_config = $this->webhooks->get_webhook_manager_config();
+		$options        = array();
+		foreach ( $webhook_config as $repo_id => $repo ) {
+			// Ensure the webhook has been connected.
+			if ( empty( $repo['events'] ) || empty( $repo['hook_id'] ) ) {
+				continue;
+			}
+
+			// Ensure the event is in the webhook's events.
+			if ( 'all' !== $event && ! in_array( $event, $repo['events'], true ) ) {
+				continue;
+			}
+
+			$options[] = array(
+				'text'  => ( $repo['meta']['owner'] ?? '' ) . ' : ' . $repo['name'],
+				'value' => $repo_id,
+			);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Get repository option config.
+	 *
+	 * @param string $option_code
+	 * @param string $event
+	 *
+	 * @return array
+	 */
+	public function get_webhook_repo_option_config( $option_code, $event ) {
+		return array(
+			'input_type'      => 'select',
+			'option_code'     => $option_code,
+			'label'           => esc_html_x( 'Repository', 'GitHub', 'uncanny-automator' ),
+			'required'        => true,
+			'options'         => $this->get_webhook_repo_options( $event ),
+			'options_show_id' => false,
+			'relevant_tokens' => array(),
 		);
 	}
 
 	/**
-	 * Get repo labels options AJAX.
+	 * Get event options.
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public function get_repo_label_options_ajax() {
-		Automator()->utilities->verify_nonce();
-		$repo_parts = $this->get_repo_from_ajax();
-		$labels     = empty( $repo_parts )
-			? array()
-			: $this->api->get_repo_labels( $repo_parts['name'], $repo_parts['owner'], $this->is_ajax_refresh() );
-
-		wp_send_json(
+	public function get_event_options() {
+		$events = array(
 			array(
-				'success' => true,
-				'options' => $labels,
-			)
+				'text'  => esc_html_x( 'Push', 'GitHub', 'uncanny-automator' ),
+				'value' => 'push',
+			),
+			array(
+				'text'  => esc_html_x( 'Pull request', 'GitHub', 'uncanny-automator' ),
+				'value' => 'pull_request',
+			),
+			array(
+				'text'  => esc_html_x( 'Issues', 'GitHub', 'uncanny-automator' ),
+				'value' => 'issues',
+			),
+			array(
+				'text'  => esc_html_x( 'Issue comment', 'GitHub', 'uncanny-automator' ),
+				'value' => 'issue_comment',
+			),
+			array(
+				'text'  => esc_html_x( 'Pull request review', 'GitHub', 'uncanny-automator' ),
+				'value' => 'pull_request_review',
+			),
+			array(
+				'text'  => esc_html_x( 'Release', 'GitHub', 'uncanny-automator' ),
+				'value' => 'release',
+			),
+
+			array(
+				'text'  => esc_html_x( 'Delete', 'GitHub', 'uncanny-automator' ),
+				'value' => 'delete',
+			),
+			array(
+				'text'  => esc_html_x( 'Fork', 'GitHub', 'uncanny-automator' ),
+				'value' => 'fork',
+			),
+			array(
+				'text'  => esc_html_x( 'Star', 'GitHub', 'uncanny-automator' ),
+				'value' => 'star',
+			),
+			array(
+				'text'  => esc_html_x( 'Commit comment', 'GitHub', 'uncanny-automator' ),
+				'value' => 'commit_comment',
+			),
+			array(
+				'text'  => esc_html_x( 'Workflow run', 'GitHub', 'uncanny-automator' ),
+				'value' => 'workflow_run',
+			),
 		);
+
+		/**
+		 * Filter GitHub webhook events.
+		 *
+		 * @link https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
+		 *
+		 * @param array $events
+		 * @property text - The text to display for the event.
+		 * @property value - The value to use for the event.
+		 *
+		 * @return array
+		 *
+		 * @example:
+		 * add_filter( 'automator_github_pro_webhook_events', function( $events ) {
+		 *     $events[] = array(
+		 *         'text'  => esc_html_x( 'Team member added', 'GitHub', 'uncanny-automator' ),
+		 *         'value' => 'team_add',
+		 *     );
+		 *     return $events;
+		 * } );
+		 */
+		$events = apply_filters( 'automator_github_pro_webhook_events', $events );
+
+		return $events;
+	}
+
+	/**
+	 * Get event action options.
+	 *
+	 * @return array
+	 */
+	/**
+	 * Fetch the available event-action options for the selected `EVENT_TYPE`,
+	 * prepended with the "Any action" sentinel (`-1`).
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_event_actions( $request ): array {
+		$actions = $this->get_event_actions_options( $request->get_field_value( 'EVENT_TYPE' ) );
+		$options = array(
+			array(
+				'text'  => esc_html_x( 'Any action', 'GitHub', 'uncanny-automator' ),
+				'value' => '-1',
+			),
+		);
+
+		if ( ! empty( $actions ) ) {
+			$options = array_merge( $options, $actions );
+		}
+
+		return $this->remote_data_success( $options );
+	}
+
+	/**
+	 * Get event actions options by event type.
+	 *
+	 * @param string $event
+	 *
+	 * @return array
+	 */
+	public function get_event_actions_options( $event ) {
+
+		// Bail if empty or invalid type.
+		if ( empty( $event ) || ! is_string( $event ) ) {
+			return array();
+		}
+
+		// Build filterable event type action options.
+		switch ( $event ) {
+			case 'release':
+				$actions = array(
+					array(
+						'text'  => esc_html_x( 'Published', 'GitHub', 'uncanny-automator' ),
+						'value' => 'published',
+					),
+					array(
+						'text'  => esc_html_x( 'Unpublished', 'GitHub', 'uncanny-automator' ),
+						'value' => 'unpublished',
+					),
+					array(
+						'text'  => esc_html_x( 'Created', 'GitHub', 'uncanny-automator' ),
+						'value' => 'created',
+					),
+					array(
+						'text'  => esc_html_x( 'Edited', 'GitHub', 'uncanny-automator' ),
+						'value' => 'edited',
+					),
+					array(
+						'text'  => esc_html_x( 'Deleted', 'GitHub', 'uncanny-automator' ),
+						'value' => 'deleted',
+					),
+					array(
+						'text'  => esc_html_x( 'Prereleased', 'GitHub', 'uncanny-automator' ),
+						'value' => 'prereleased',
+					),
+					array(
+						'text'  => esc_html_x( 'Released', 'GitHub', 'uncanny-automator' ),
+						'value' => 'released',
+					),
+				);
+				break;
+			case 'workflow_run':
+				$actions = array(
+					array(
+						'text'  => esc_html_x( 'Completed', 'GitHub', 'uncanny-automator' ),
+						'value' => 'completed',
+					),
+					array(
+						'text'  => esc_html_x( 'Requested', 'GitHub', 'uncanny-automator' ),
+						'value' => 'requested',
+					),
+					array(
+						'text'  => esc_html_x( 'In progress', 'GitHub', 'uncanny-automator' ),
+						'value' => 'in_progress',
+					),
+				);
+				break;
+			default:
+				$actions = array();
+				break;
+		}
+
+		/**
+		 * Filter GitHub webhook event type actions.
+		 *
+		 * @link https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
+		 *
+		 * @param array $actions
+		 * @property text - The text to display for the event.
+		 * @property value - The value to use for the event.
+		 *
+		 * @return array
+		 *
+		 * @example:
+		 * add_filter( 'automator_github_pro_webhook_event_actions', function( $actions, $event ) {
+		 *     if ( 'workflow_run' === $event ) {
+		 *         $actions[] = array(
+		 *             'text'  => esc_html_x( 'Completed', 'GitHub', 'uncanny-automator' ),
+		 *             'value' => 'completed',
+		 *         );
+		 *     }
+		 *     return $actions;
+		 * }, 10, 2 );
+		 * } );
+		 */
+		return apply_filters( 'automator_github_pro_webhook_event_actions', $actions, $event );
 	}
 }

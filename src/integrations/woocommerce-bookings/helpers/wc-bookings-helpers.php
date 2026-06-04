@@ -4,8 +4,6 @@ namespace Uncanny_Automator\Integrations\WooCommerce_Bookings;
 
 use Uncanny_Automator\Wc_Tokens;
 
-class_alias( 'Uncanny_Automator\Integrations\WooCommerce_Bookings\Wc_Bookings_Helpers', 'Uncanny_Automator\Wc_Bookings_Helpers' );
-
 /**
  * Class Wc_Bookings_Helpers
  *
@@ -324,3 +322,6 @@ class Wc_Bookings_Helpers {
 		return $order_token_values;
 	}
 }
+
+// BC alias — must run after the class declaration (before, PHP autoload fails).
+class_alias( 'Uncanny_Automator\Integrations\WooCommerce_Bookings\Wc_Bookings_Helpers', 'Uncanny_Automator\Wc_Bookings_Helpers' );

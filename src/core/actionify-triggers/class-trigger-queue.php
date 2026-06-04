@@ -56,9 +56,25 @@ class Trigger_Queue {
 	 * Late shutdown priority — catches triggers that fire during shutdown
 	 * (e.g. app webhook handlers at priority 10).
 	 *
+	 * Deliberately kept BELOW WP core's shutdown@1000 work (wp_ob_end_flush_all
+	 * and friends) so our closures can still touch headers/body without the
+	 * header-sent noise. Do not raise this — add a later pass instead.
+	 *
 	 * @var int
 	 */
 	const SHUTDOWN_PRIORITY_LATE = 900;
+
+	/**
+	 * Final shutdown pass — runs AFTER plugins that dispatch their own work at
+	 * shutdown priority 1000+ (e.g. WP Webhooks' delayed trigger dispatch, which
+	 * sends webhooks and fires its trigger hooks from shutdown@1000). Such late
+	 * dispatchers enqueue triggers only after the @900 pass has already drained,
+	 * so without this catch-all those events sit in the queue and never fire.
+	 * PHP_INT_MAX guarantees this is the last shutdown callback to run.
+	 *
+	 * @var int
+	 */
+	const SHUTDOWN_PRIORITY_FINAL = PHP_INT_MAX;
 
 	/**
 	 * In-memory queue for current request.
@@ -168,6 +184,16 @@ class Trigger_Queue {
 		);
 
 		$this->ensure_shutdown_hooks();
+
+		// If wp_loaded has already fired, the deferred wp_loaded drain is dead and the
+		// shutdown passes run after wp_footer — too late for actions that must affect
+		// page output (e.g. footer JS injection). Drain now so they run in time. By
+		// wp_loaded, recipe parts are loaded (init:30 < wp_loaded), so process_queue_item
+		// processes inline rather than falling back to the loopback. The $processing
+		// guard and the bounded drain loop in process_queue() handle re-entry.
+		if ( did_action( 'wp_loaded' ) ) {
+			$this->process_queue();
+		}
 
 		return true;
 	}
@@ -516,8 +542,12 @@ class Trigger_Queue {
 			return;
 		}
 
-		// Try to process the queue after init.
-		add_action( 'wp_loaded', array( $this, 'process_queue' ), self::WP_LOADED_PRIORITY );
+		// Early drain for triggers enqueued before wp_loaded. Once wp_loaded has
+		// fired, this hook is dead (WordPress won't fire it again this request) —
+		// late triggers drain inline from enqueue() instead.
+		if ( ! did_action( 'wp_loaded' ) ) {
+			add_action( 'wp_loaded', array( $this, 'process_queue' ), self::WP_LOADED_PRIORITY );
+		}
 
 		// Early pass: process triggers that fired before shutdown (form submissions, etc.).
 		// Runs before wp_ob_end_flush_all (priority 1) so response headers are writable.
@@ -525,6 +555,14 @@ class Trigger_Queue {
 
 		// Late pass: process triggers that fire during shutdown (app webhook handlers, etc.).
 		add_action( 'shutdown', array( $this, 'process_queue' ), self::SHUTDOWN_PRIORITY_LATE );
+
+		// Final pass: catch triggers enqueued by late dispatchers that fire at
+		// shutdown priority 1000+ (e.g. WP Webhooks delayed triggers). By the time
+		// they enqueue, the @900 pass has already drained, so these would otherwise
+		// be orphaned. Safe even when ensure_shutdown_hooks() runs late (during the
+		// @1000 dispatch itself): WP_Hook executes callbacks added at a not-yet-
+		// reached priority within the same do_action(), so PHP_INT_MAX still fires.
+		add_action( 'shutdown', array( $this, 'process_queue' ), self::SHUTDOWN_PRIORITY_FINAL );
 
 		$this->hooks_registered = true;
 	}

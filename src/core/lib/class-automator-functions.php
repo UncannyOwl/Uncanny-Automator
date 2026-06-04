@@ -124,6 +124,15 @@ class Automator_Functions {
 	 * @var Automator_Recipe_Process_Complete
 	 */
 	public $complete;
+
+	/**
+	 * Unified recipe execution pipeline.
+	 *
+	 * @since    7.2
+	 * @access   public
+	 * @var \Uncanny_Automator\App\Recipe_Runner\Recipe_Runner
+	 */
+	public $recipe_runner;
 	/**
 	 * Composite Class of pre-defined Automator helper functions
 	 *
@@ -272,6 +281,9 @@ class Automator_Functions {
 		require_once __DIR__ . '/process/class-automator-action-status.php';
 		require_once __DIR__ . '/process/class-automator-recipe-process-complete.php';
 		$this->complete = Automator_Recipe_Process_Complete::get_instance();
+
+		// Unified recipe execution pipeline — single entry point for Abstract_Trigger.
+		$this->recipe_runner = new \Uncanny_Automator\App\Recipe_Runner\Recipe_Runner();
 
 		// Load pre-defined options for triggers, actions, and closures
 		require_once __DIR__ . '/helpers/class-automator-helpers.php';
@@ -933,7 +945,7 @@ class Automator_Functions {
 				},
 				$this->recipes_data
 			);
-			$ttl            = $this->cache->expires ?: 30 * MINUTE_IN_SECONDS;
+			$ttl            = $this->cache->expires ? $this->cache->expires : 30 * MINUTE_IN_SECONDS;
 			set_transient( $this->cache->recipes_data, $cacheable_data, $ttl );
 		}
 
@@ -1074,7 +1086,13 @@ class Automator_Functions {
 				// returned to the editor via $extra_options below — the stored
 				// value is only read by the execution-time resolver for label resolution.
 				$to_store = $this->strip_oversized_options( $this->strip_duplicate_options_from_group( $response ) );
-				automator_update_option( $cache_key, $to_store, false );
+
+				// Skip persisting an empty result. Fields_Resolver::get_cached_extra_options
+				// treats stored empty arrays as a miss, so writing [] is a pure DB-write cost
+				// that adds no value — the lazy-build path would ignore it anyway.
+				if ( ! empty( $to_store ) ) {
+					automator_update_option( $cache_key, $to_store, false );
+				}
 
 				$extra_options[ $integration ][ $item_code ] = $response;
 			}
@@ -1221,8 +1239,9 @@ class Automator_Functions {
 			global $wpdb;
 
 			// Fetch uo-trigger, uo-action, uo-closure — scoped to the recipes already in PHP.
-			$recipe_ids      = array_column( (array) $recipes, 'ID' );
-			$placeholders    = implode( ',', array_fill( 0, count( $recipe_ids ), '%d' ) );
+			$recipe_ids   = array_column( (array) $recipes, 'ID' );
+			$placeholders = implode( ',', array_fill( 0, count( $recipe_ids ), '%d' ) );
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is built from array_fill('%d') and values are spread via $wpdb->prepare().
 			$recipe_children = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT ID, post_status, post_type, menu_order, post_parent
@@ -1231,6 +1250,7 @@ class Automator_Functions {
 					...$recipe_ids
 				)
 			);
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 
 			if ( $recipe_children ) {
 				foreach ( $recipe_children as $p ) {
@@ -1274,7 +1294,8 @@ class Automator_Functions {
 			$related_metas = array();
 			$child_ids     = array_keys( $triggers + $actions + $closures );
 			if ( ! empty( $child_ids ) ) {
-				$placeholders  = implode( ',', array_fill( 0, count( $child_ids ), '%d' ) );
+				$placeholders = implode( ',', array_fill( 0, count( $child_ids ), '%d' ) );
+				// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is built from array_fill('%d') and values are spread via $wpdb->prepare().
 				$related_metas = $wpdb->get_results(
 					$wpdb->prepare(
 						"SELECT post_id, meta_key, meta_value
@@ -1283,6 +1304,7 @@ class Automator_Functions {
 						...$child_ids
 					)
 				);
+				// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 			}
 
 			if ( $related_metas ) {
@@ -2672,7 +2694,13 @@ class Automator_Functions {
 	 */
 	public function is_app_connected( $integration_code ) {
 
-		$all_integrations = Automator()->get_integrations();
+		// Forward to Integration_Registry — the recipe runner owns this logic now.
+		if ( isset( $this->recipe_runner ) ) {
+			return $this->recipe_runner->integration_registry()->is_app_connected( (string) $integration_code );
+		}
+
+		// Legacy fallback during early init.
+		$all_integrations = $this->get_integrations();
 
 		if ( false === $all_integrations[ $integration_code ]['connected'] ) {
 			return false;

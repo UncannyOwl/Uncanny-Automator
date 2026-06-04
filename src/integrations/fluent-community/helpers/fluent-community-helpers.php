@@ -1,9 +1,6 @@
 <?php
 namespace Uncanny_Automator\Integrations\Fluent_Community;
 
-use FluentCommunity\Modules\Course\Model\CourseLesson;
-
-
 /**
  * Class Fluent_Community_Helpers
  *
@@ -167,7 +164,7 @@ class Fluent_Community_Helpers {
 
 		return $options;
 	}
-	
+
 	/**
 	 * Ajax fetch lessons by course.
 	 */
@@ -186,6 +183,124 @@ class Fluent_Community_Helpers {
 	}
 
 	/**
+	 * Get all quiz-type lessons for a specific course as modern dropdown options.
+	 *
+	 * @param int  $course_id The course ID to get quizzes for.
+	 * @param bool $include_any Whether to include "Any quiz".
+	 * @return array
+	 */
+	public function all_quizzes( $course_id = -1, $include_any = true ) {
+		$options = array();
+
+		if ( ! class_exists( '\FluentCommunity\Modules\Course\Model\CourseLesson' ) ) {
+			return $options;
+		}
+
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => -1,
+				'text'  => esc_html_x( 'Any quiz', 'Fluent Community', 'uncanny-automator' ),
+			);
+		}
+
+		if ( -1 === $course_id ) {
+			return $options;
+		}
+
+		$quizzes = \FluentCommunity\Modules\Course\Model\CourseLesson::where( 'space_id', $course_id )
+			->where( 'type', 'course_lesson' )
+			->where( 'content_type', 'quiz' )
+			->where( 'status', 'published' )
+			->orderBy( 'priority', 'ASC' )
+			->get();
+
+		foreach ( $quizzes as $quiz ) {
+			$options[] = array(
+				'value' => $quiz->id,
+				'text'  => $quiz->title,
+			);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Ajax fetch quizzes by course.
+	 */
+	public function ajax_fetch_quizzes_by_course() {
+		Automator()->utilities->verify_nonce();
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$course_id = absint( $_POST['values']['COURSE'] ?? -1 );
+		$quizzes   = $this->all_quizzes( $course_id, true );
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $quizzes,
+			)
+		);
+	}
+
+	/**
+	 * Get all quiz-type lessons for a specific lesson (parent) as modern dropdown options.
+	 *
+	 * @param int  $lesson_id The lesson (parent) ID to get quizzes for.
+	 * @param bool $include_any Whether to include "Any quiz".
+	 * @return array
+	 */
+	public function all_quizzes_by_lesson( $lesson_id = -1, $include_any = true ) {
+		$options = array();
+
+		if ( ! class_exists( '\FluentCommunity\Modules\Course\Model\CourseLesson' ) ) {
+			return $options;
+		}
+
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => -1,
+				'text'  => esc_html_x( 'Any quiz', 'Fluent Community', 'uncanny-automator' ),
+			);
+		}
+
+		if ( -1 === $lesson_id ) {
+			return $options;
+		}
+
+		$quizzes = \FluentCommunity\Modules\Course\Model\CourseLesson::where( 'parent_id', $lesson_id )
+			->where( 'type', 'course_lesson' )
+			->where( 'content_type', 'quiz' )
+			->where( 'status', 'published' )
+			->orderBy( 'priority', 'ASC' )
+			->get();
+
+		foreach ( $quizzes as $quiz ) {
+			$options[] = array(
+				'value' => $quiz->id,
+				'text'  => $quiz->title,
+			);
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Ajax fetch quizzes by lesson.
+	 */
+	public function ajax_fetch_quizzes_by_lesson() {
+		Automator()->utilities->verify_nonce();
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$lesson_id = absint( $_POST['values']['LESSON'] ?? -1 );
+		$quizzes   = $this->all_quizzes_by_lesson( $lesson_id, true );
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $quizzes,
+			)
+		);
+	}
+
+	/**
 	 * Ajax fetch lessons by course.
 	 */
 	public function ajax_fetch_lessons_by_course_for_action() {
@@ -198,6 +313,23 @@ class Fluent_Community_Helpers {
 			array(
 				'success' => true,
 				'options' => $lessons,
+			)
+		);
+	}
+
+	/**
+	 * Ajax fetch quizzes by course for actions/conditions (no "Any quiz").
+	 */
+	public function ajax_fetch_quizzes_by_course_for_action() {
+		Automator()->utilities->verify_nonce();
+		//phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$course_id = absint( $_POST['values']['COURSE'] ?? -1 );
+		$quizzes   = $this->all_quizzes( $course_id, false );
+
+		wp_send_json(
+			array(
+				'success' => true,
+				'options' => $quizzes,
 			)
 		);
 	}

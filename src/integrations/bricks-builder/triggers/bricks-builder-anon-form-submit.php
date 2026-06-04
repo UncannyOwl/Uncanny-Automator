@@ -9,8 +9,6 @@ namespace Uncanny_Automator\Integrations\Bricks_Builder;
  */
 class BRICKS_BUILDER_ANON_FORM_SUBMIT extends \Uncanny_Automator\Recipe\Trigger {
 
-	protected $helpers;
-
 	/**
 	 * @return array[]
 	 */
@@ -22,7 +20,7 @@ class BRICKS_BUILDER_ANON_FORM_SUBMIT extends \Uncanny_Automator\Recipe\Trigger 
 					'label'           => esc_attr_x( 'Form', 'Bricks Builder', 'uncanny-automator' ),
 					'required'        => true,
 					// Load the options from the helpers file
-					'options'         => $this->helpers->get_all_bricks_builder_forms( true ),
+					'options'         => $this->get_item_helpers()->get_all_bricks_builder_forms( true ),
 					'relevant_tokens' => array(),
 				)
 			),
@@ -53,8 +51,8 @@ class BRICKS_BUILDER_ANON_FORM_SUBMIT extends \Uncanny_Automator\Recipe\Trigger 
 	 * @return array
 	 */
 	public function define_tokens( $trigger, $tokens ) {
-		$common_tokens = $this->helpers->get_form_common_tokens();
-		$field_tokens  = $this->helpers->get_from_field_tokens( $trigger['meta'][ $this->get_trigger_meta() ] );
+		$common_tokens = $this->get_item_helpers()->get_form_common_tokens();
+		$field_tokens  = $this->get_item_helpers()->get_from_field_tokens( $trigger['meta'][ $this->get_trigger_meta() ] );
 
 		return array_merge( $common_tokens, $field_tokens );
 	}
@@ -87,7 +85,6 @@ class BRICKS_BUILDER_ANON_FORM_SUBMIT extends \Uncanny_Automator\Recipe\Trigger 
 	 * @return mixed
 	 */
 	protected function setup_trigger() {
-		$this->helpers = array_shift( $this->dependencies );
 		$this->set_integration( 'BRICKS_BUILDER' );
 		$this->set_trigger_code( 'BB_ANON_SUBMITS_FORM' );
 		$this->set_trigger_meta( 'BB_FORMS' );
@@ -98,5 +95,4 @@ class BRICKS_BUILDER_ANON_FORM_SUBMIT extends \Uncanny_Automator\Recipe\Trigger 
 		$this->set_readable_sentence( esc_attr_x( '{{A form}} is submitted', 'Bricks Builder', 'uncanny-automator' ) );
 		$this->add_action( 'bricks/form/custom_action', 20, 1 );
 	}
-
 }

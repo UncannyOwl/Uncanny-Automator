@@ -94,10 +94,9 @@ class ASANA_GET_TASK_DETAILS extends \Uncanny_Automator\Recipe\App_Action {
 				'options_show_id'          => false,
 				'relevant_tokens'          => array(),
 				'supports_multiple_values' => true,
-				'ajax'                     => array(
-					'endpoint'      => 'automator_asana_get_field_options',
-					'event'         => 'parent_fields_change',
-					'listen_fields' => array( $this->project_meta_key ),
+				'remote_data'              => $this->helpers->remote_data_parent_config(
+					'task_fields',
+					array( $this->project_meta_key )
 				),
 			),
 		);

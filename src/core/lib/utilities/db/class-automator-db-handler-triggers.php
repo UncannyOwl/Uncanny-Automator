@@ -36,6 +36,10 @@ class Automator_DB_Handler_Triggers {
 	 * @return int|null
 	 */
 	public function add( $user_id = null, $trigger_id = null, $recipe_id = null, $completed = false, $recipe_log_id = null ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->add_trigger( (int) $user_id, (int) $trigger_id, (int) $recipe_id, (bool) $completed, (int) $recipe_log_id );
+		}
+
 		if ( null === $trigger_id ) {
 			return null;
 		}
@@ -103,6 +107,10 @@ class Automator_DB_Handler_Triggers {
 	 * @return bool|int|null
 	 */
 	public function add_meta( $trigger_id, $trigger_log_id, $run_number, $args ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->add_trigger_meta( (int) $trigger_id, (int) $trigger_log_id, (int) $run_number, (array) $args );
+		}
+
 		$user_id    = isset( $args['user_id'] ) ? absint( $args['user_id'] ) : 0;
 		$meta_key   = isset( $args['meta_key'] ) ? esc_attr( $args['meta_key'] ) : '';
 		$meta_value = isset( $args['meta_value'] ) ? $args['meta_value'] : '';
@@ -369,6 +377,11 @@ class Automator_DB_Handler_Triggers {
 	 * @return bool|int
 	 */
 	public function mark_complete( $trigger_id, $user_id, $recipe_id, $recipe_log_id, $trigger_log_id ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			Automator()->recipe_runner->log_store()->mark_trigger_complete( (int) $trigger_id, (int) $user_id, (int) $recipe_id, (int) $recipe_log_id, (int) $trigger_log_id );
+			return;
+		}
+
 		$update = array(
 			'completed' => true,
 			'date_time' => current_time( 'mysql' ),
@@ -443,6 +456,10 @@ class Automator_DB_Handler_Triggers {
 	 * @return bool|null
 	 */
 	public function is_completed( $user_id = null, $trigger_id = null, $recipe_id = null, $recipe_log_id = null, $process_recipe = false, $args = array() ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->is_trigger_completed( (int) $user_id, (int) $trigger_id, (int) $recipe_id, (int) $recipe_log_id, (bool) $process_recipe, (array) $args );
+		}
+
 		// Set user ID
 		if ( is_null( $user_id ) ) {
 			$user_id = get_current_user_id();
@@ -578,6 +595,10 @@ class Automator_DB_Handler_Triggers {
 	 * @return array|object|\stdClass[]|null
 	 */
 	public function get_triggers_by_recipe_log_id( $user_id, $recipe_id, $recipe_log_id, $run_number ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->get_triggers_by_recipe_log_id( (int) $user_id, (int) $recipe_id, (int) $recipe_log_id, $run_number );
+		}
+
 		global $wpdb;
 
 		return $wpdb->get_results(

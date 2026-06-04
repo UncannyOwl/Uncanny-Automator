@@ -1,123 +1,129 @@
 <?php
 
+namespace Uncanny_Automator\Integrations\Wp_Webhooks;
 
-namespace Uncanny_Automator;
-
-use Uncanny_Automator_Pro\Wpwh_Pro_Helpers;
+use Uncanny_Automator\Recipe\Abstract_Helpers;
 
 /**
  * Class Wpwh_Helpers
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Wp_Webhooks
  */
-class Wpwh_Helpers {
+class Wpwh_Helpers extends Abstract_Helpers {
 
 	/**
-	 * @var Wpwh_Helpers
-	 */
-	public $options;
-	/**
-	 * @var Wpwh_Helpers
-	 */
-	public $pro;
-	/**
-	 * @var bool
-	 */
-	public $load_options = true;
-
-
-	/**
-	 * Wpwh_Helpers constructor.
-	 */
-	public function __construct() {
-
-		$this->load_options = Automator()->helpers->recipe->maybe_load_trigger_options( __CLASS__ );
-
-	}
-
-	/**
-	 * @param Wpwh_Helpers $options
-	 */
-	public function setOptions( Wpwh_Helpers $options ) {
-		$this->options = $options;
-	}
-
-	/**
-	 * @param Wpwh_Pro_Helpers $pro
-	 */
-	public function setPro( Wpwh_Pro_Helpers $pro ) {
-		$this->pro = $pro;
-	}
-
-
-	/**
-	 * @param null   $label
-	 * @param string $option_code
-	 * @param array  $args
+	 * Lazy-instantiated tokens helper.
 	 *
-	 * @return mixed|void
+	 * @var Wpwh_Tokens|null
 	 */
-	public function list_webhook_triggers( $label = null, $option_code = 'WPWHTRIGGER', $args = array() ) {
+	private $tokens = null;
 
-		if ( ! $label ) {
-			$label = esc_html__( 'Webhook triggers', 'uncanny-automator' );
+	/**
+	 * Get the tokens helper.
+	 *
+	 * @return Wpwh_Tokens
+	 */
+	public function tokens() {
+
+		if ( null === $this->tokens ) {
+			$this->tokens = new Wpwh_Tokens( $this );
 		}
 
-		$token        = key_exists( 'token', $args ) ? $args['token'] : false;
-		$is_ajax      = key_exists( 'is_ajax', $args ) ? $args['is_ajax'] : false;
-		$target_field = key_exists( 'target_field', $args ) ? $args['target_field'] : '';
-		$end_point    = key_exists( 'endpoint', $args ) ? $args['endpoint'] : '';
+		return $this->tokens;
+	}
 
-		$options       = array();
-		$options['-1'] = esc_html__( 'Any trigger', 'uncanny-automator' );
+	/**
+	 * Build the webhook trigger select field config.
+	 *
+	 * @param string $option_code Field option_code (defaults to 'WPWHTRIGGER').
+	 * @param string $label       Optional override label.
+	 *
+	 * @return array
+	 */
+	public function webhook_trigger_field( $option_code = 'WPWHTRIGGER', $label = '' ) {
+
+		if ( '' === $label ) {
+			$label = esc_html_x( 'Webhook triggers', 'WP Webhooks', 'uncanny-automator' );
+		}
+
+		return array(
+			'option_code' => $option_code,
+			'label'       => $label,
+			'input_type'  => 'select',
+			'required'    => true,
+			'options'     => array(),
+			'remote_data' => $this->remote_data_load_config( 'webhook_triggers' ),
+		);
+	}
+
+	/**
+	 * Fetch the list of active WP Webhooks trigger names.
+	 *
+	 * Reachable via `POST /wp-json/uap/v2/remote-data/wpwebhooks/webhook_triggers`.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_webhook_triggers( $request ): array {
+
+		unset( $request );
+
+		$options = array(
+			array(
+				'text'  => esc_html_x( 'Any trigger', 'WP Webhooks', 'uncanny-automator' ),
+				'value' => '-1',
+			),
+		);
+
+		if ( ! function_exists( 'WPWHPRO' ) ) {
+			return $this->remote_data_success( $options );
+		}
 
 		$triggers        = WPWHPRO()->webhook->get_triggers();
 		$active_webhooks = WPWHPRO()->settings->get_active_webhooks( 'all' );
 
-		foreach ( $triggers as $trigger ) {
-			if ( isset( $active_webhooks['triggers'][ $trigger['trigger'] ] ) ) {
-				$options[ $trigger['trigger'] ] = $trigger['name'];
-			}
+		if ( empty( $triggers ) || ! is_array( $triggers ) ) {
+			return $this->remote_data_success( $options );
 		}
 
-		$option = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => 'select',
-			'required'        => true,
-			'supports_tokens' => $token,
-			'is_ajax'         => $is_ajax,
-			'fill_values_in'  => $target_field,
-			'endpoint'        => $end_point,
-			'options'         => $options,
-			'relevant_tokens' => array(),
-		);
+		foreach ( $triggers as $trigger ) {
+			if ( ! isset( $trigger['trigger'], $active_webhooks['triggers'][ $trigger['trigger'] ] ) ) {
+				continue;
+			}
+			$options[] = array(
+				'text'  => isset( $trigger['name'] ) ? $trigger['name'] : $trigger['trigger'],
+				'value' => $trigger['trigger'],
+			);
+		}
 
-		return apply_filters( 'uap_option_list_webhook_triggers', $option );
+		return $this->remote_data_success( $options );
 	}
 
 	/**
-	 * Match condition for form field and value.
+	 * Match recipe condition for the incoming webhook trigger name.
 	 *
-	 * @param             $action
-	 * @param null|array  $recipes             .
-	 * @param null|string $trigger_meta        .
-	 * @param null|string $trigger_code        .
-	 * @param null|string $trigger_second_code .
+	 * @param string      $action       The incoming webhook_name.
+	 * @param array|null  $recipes      The candidate recipes.
+	 * @param string|null $trigger_meta The trigger meta key.
 	 *
-	 * @return array|bool
+	 * @return array|false
 	 */
-	public function match_action_condition( $action, $recipes = null, $trigger_meta = null, $trigger_code = null, $trigger_second_code = null ) {
+	public function match_action_condition( $action, $recipes = null, $trigger_meta = null ) {
+
 		if ( null === $recipes ) {
 			return false;
 		}
 
 		$recipe_ids = array();
 
-		//Limiting to specific recipe IDs
 		foreach ( $recipes as $recipe ) {
 			foreach ( $recipe['triggers'] as $trigger ) {
-				if ( key_exists( $trigger_meta, $trigger['meta'] ) && $trigger['meta'][ $trigger_meta ] === $action ) {
+				if ( ! isset( $trigger['meta'][ $trigger_meta ] ) ) {
+					continue;
+				}
+				$saved = $trigger['meta'][ $trigger_meta ];
+				if ( $saved === $action || '-1' === (string) $saved ) {
 					$recipe_ids[ $recipe['ID'] ] = $recipe['ID'];
 					break;
 				}
@@ -135,54 +141,79 @@ class Wpwh_Helpers {
 	}
 
 	/**
-	 * @param $entry_id
-	 * @param $form_id
-	 * @param $args
+	 * Persist the raw webhook payload into the trigger log meta so tokens can hydrate.
 	 *
-	 * @return array
+	 * @param mixed $params The decoded payload.
+	 * @param array $args   Trigger log identifiers (trigger_id, user_id, trigger_log_id, run_number, meta_key).
+	 *
+	 * @return mixed
 	 */
 	public function extract_and_save_data( $params, $args ) {
+
 		$data = $params;
 
-		$trigger_id     = (int) $args['trigger_id'];
-		$user_id        = (int) $args['user_id'];
-		$trigger_log_id = (int) $args['trigger_log_id'];
-		$run_number     = (int) $args['run_number'];
-		$meta_key       = (string) $args['meta_key'];
-
-		if ( $data ) {
-
-			$insert = array(
-				'user_id'        => $user_id,
-				'trigger_id'     => $trigger_id,
-				'trigger_log_id' => $trigger_log_id,
-				'meta_key'       => $meta_key,
-				'meta_value'     => maybe_serialize( $data ),
-				'run_number'     => $run_number,
-			);
-
-			Automator()->insert_trigger_meta( $insert );
+		if ( ! $data ) {
+			return $data;
 		}
+
+		$insert = array(
+			'user_id'        => (int) $args['user_id'],
+			'trigger_id'     => (int) $args['trigger_id'],
+			'trigger_log_id' => (int) $args['trigger_log_id'],
+			'meta_key'       => (string) $args['meta_key'],
+			'meta_value'     => maybe_serialize( $data ),
+			'run_number'     => (int) $args['run_number'],
+		);
+
+		\Automator()->insert_trigger_meta( $insert );
 
 		return $data;
 	}
 
 	/**
-	 * @param $parent
+	 * Convert a SimpleXMLElement payload into a plain array.
+	 *
+	 * @param \SimpleXMLElement $parent The root element.
 	 *
 	 * @return array
 	 */
-	public function XML2Array( \SimpleXMLElement $parent ) {
+	public function xml_to_array( \SimpleXMLElement $parent ) {
+
 		$array = array();
 
 		foreach ( $parent as $name => $element ) {
 			( $node = &$array[ $name ] )
-			&& ( 1 === count( $node ) ? $node = array( $node ) : 1 )
-			&& $node = &$node[];
+				&& ( 1 === count( $node ) ? $node = array( $node ) : 1 )
+				&& $node = &$node[];
 
-			$node = $element->count() ? $this->XML2Array( $element ) : trim( $element );
+			$node = $element->count() ? $this->xml_to_array( $element ) : trim( $element );
 		}
 
 		return $array;
+	}
+
+	/**
+	 * Decode the webhook payload based on the trigger's response type.
+	 *
+	 * @param string $raw_body         Raw body string from the outbound request.
+	 * @param string $body_data_format 'json' | 'xml' | other (treated as JSON).
+	 *
+	 * @return mixed Decoded array on success, original string otherwise.
+	 */
+	public function decode_payload( $raw_body, $body_data_format = 'json' ) {
+
+		if ( 'xml' === $body_data_format ) {
+			try {
+				$xml = new \SimpleXMLElement( $raw_body );
+				return $this->xml_to_array( $xml );
+			} catch ( \Throwable $e ) {
+				unset( $e );
+				return array();
+			}
+		}
+
+		$decoded = json_decode( $raw_body, true );
+
+		return null === $decoded ? array() : $decoded;
 	}
 }

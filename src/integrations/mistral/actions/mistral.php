@@ -99,44 +99,44 @@ class Mistral_Chat_Generate extends App_Action {
 		// Model options
 		$model_options = array(
 			array(
-				'text'  => 'Mistral Medium',
-				'value' => 'mistral-medium-2505',
+				'text'  => 'Mistral Medium 3.5',
+				'value' => 'mistral-medium-latest',
+			),
+			array(
+				'text'  => 'Mistral Small',
+				'value' => 'mistral-small-latest',
+			),
+			array(
+				'text'  => 'Mistral Large',
+				'value' => 'mistral-large-latest',
 			),
 			array(
 				'text'  => 'Codestral',
-				'value' => 'codestral-2501',
+				'value' => 'codestral-latest',
+			),
+			array(
+				'text'  => 'Ministral 8B',
+				'value' => 'ministral-8b-latest',
+			),
+			array(
+				'text'  => 'Ministral 3B',
+				'value' => 'ministral-3b-latest',
+			),
+			array(
+				'text'  => 'Devstral Small (Free model)',
+				'value' => 'devstral-small-latest',
+			),
+			array(
+				'text'  => 'Mistral Medium (mistral-medium-2505)',
+				'value' => 'mistral-medium-2505',
 			),
 			array(
 				'text'  => 'Mistral OCR',
 				'value' => 'mistral-ocr-2505',
 			),
 			array(
-				'text'  => 'Mistral Saba',
-				'value' => 'mistral-saba-2502',
-			),
-			array(
-				'text'  => 'Mistral Large',
-				'value' => 'mistral-large-2411',
-			),
-			array(
-				'text'  => 'Ministral 3B',
-				'value' => 'ministral-3b-2410',
-			),
-			array(
-				'text'  => 'Ministral 8B',
-				'value' => 'ministral-8b-2410',
-			),
-			array(
 				'text'  => 'Mistral Moderation',
 				'value' => 'mistral-moderation-2411',
-			),
-			array(
-				'text'  => 'Devstral Small (Free model)',
-				'value' => 'devstral-small-2505',
-			),
-			array(
-				'text'  => 'Mistral Small (Free model)',
-				'value' => 'mistral-small-2503',
 			),
 			array(
 				'text'  => 'Mistral Nemo (Free model)',
@@ -224,7 +224,7 @@ class Mistral_Chat_Generate extends App_Action {
 			// Extract parameters using get_parsed_meta_value like Claude action
 			$temperature    = $this->get_parsed_meta_value( 'TEMPERATURE', '0.7' );
 			$max_tokens     = $this->get_parsed_meta_value( 'MAX_TOKENS', '2048' );
-			$model          = $this->get_parsed_meta_value( 'MODEL', 'mixtral-8x7b-instruct-v0.1' );
+			$model          = $this->get_parsed_meta_value( 'MODEL', 'mistral-small-latest' );
 			$system_content = $this->get_parsed_meta_value( 'SYSTEM_CONTENT', '' );
 			$prompt         = $this->get_parsed_meta_value( $this->get_action_meta(), '' );
 

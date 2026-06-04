@@ -71,6 +71,9 @@ class Automator_DB_Handler_Actions {
 	 * @return int|null
 	 */
 	public function get_action_log_completion_status( $action_log_id ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->get_action_completion_status( (int) $action_log_id );
+		}
 
 		$action_log_id = $this->wpdb()->get_var(
 			$this->wpdb()->prepare(
@@ -89,6 +92,10 @@ class Automator_DB_Handler_Actions {
 	 * @return bool|int
 	 */
 	public function add( $args ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->add_action( $args );
+		}
+
 		$user_id       = absint( $args['user_id'] );
 		$action_id     = absint( $args['action_id'] );
 		$recipe_id     = absint( $args['recipe_id'] );
@@ -168,6 +175,10 @@ class Automator_DB_Handler_Actions {
 	 * @return bool|int
 	 */
 	public function add_meta( $user_id, $action_log_id, $action_id, $meta_key, $meta_value ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			Automator()->recipe_runner->log_store()->add_action_meta( (int) $user_id, (int) $action_log_id, (int) $action_id, (string) $meta_key, (string) $meta_value );
+			return;
+		}
 
 		global $wpdb;
 
@@ -329,6 +340,17 @@ class Automator_DB_Handler_Actions {
 	 * @return void
 	 */
 	public function mark_complete( $action_id, $recipe_log_id, $completed = 1, $error_message = '' ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			// Forward $error_message through to Log_Store so the legacy 4-arg
+			// public API does not silently drop it. Log_Store persists the
+			// message to uap_error_log (SSOT) and fires the public hook
+			// `automator_action_completion_status_changed` with all 5 args
+			// populated — preserving the 6.7.0 contract for Pro and 3rd-party
+			// listeners.
+			Automator()->recipe_runner->log_store()->mark_action_complete( (int) $action_id, (int) $recipe_log_id, (int) $completed, (string) $error_message );
+			return;
+		}
+
 		$data = array(
 			'completed'     => $completed,
 			'date_time'     => current_time( 'mysql' ),
@@ -415,9 +437,21 @@ class Automator_DB_Handler_Actions {
 	 */
 	public function get_error_message( $recipe_log_id ) {
 		global $wpdb;
-		$tbl = Automator()->db->tables->action;
 
-		return $wpdb->get_row( $wpdb->prepare( "SELECT error_message, completed FROM {$wpdb->prefix}{$tbl} WHERE error_message != '' AND automator_recipe_log_id =%d", $recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// Read from uap_error_log (source of truth) joined with uap_action_log for completed status.
+		// Falls back to uap_action_log.error_message for pre-migration rows.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT COALESCE(e.error_message, a.error_message) as error_message, a.completed
+				FROM {$wpdb->prefix}uap_action_log a
+				LEFT JOIN {$wpdb->prefix}uap_error_log e ON e.action_log_id = a.ID
+				WHERE a.automator_recipe_log_id = %d
+				AND (e.error_message IS NOT NULL OR (a.error_message IS NOT NULL AND a.error_message != ''))
+				LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_log_id
+			)
+		);
 	}
 
 	/**
@@ -433,6 +467,10 @@ class Automator_DB_Handler_Actions {
 	 * @return array Array of objects with error_message and completed properties.
 	 */
 	public function get_error_messages( $recipe_log_id ) {
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->log_store()->get_action_error_messages( (int) $recipe_log_id );
+		}
+
 		global $wpdb;
 		$tbl = Automator()->db->tables->action;
 
@@ -444,6 +482,15 @@ class Automator_DB_Handler_Actions {
 	 */
 	public function delete( $action_id ) {
 		global $wpdb;
+
+		// Delete from uap_error_log (by action_log_ids for this action).
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE e FROM {$wpdb->prefix}uap_error_log e INNER JOIN {$wpdb->prefix}uap_action_log a ON e.action_log_id = a.ID WHERE a.automator_action_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$action_id
+			)
+		);
 
 		// delete from uap_action_log
 		$wpdb->delete(
@@ -466,7 +513,14 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 		$action_tbl      = $wpdb->prefix . Automator()->db->tables->action;
 		$action_meta_tbl = $wpdb->prefix . Automator()->db->tables->action_meta;
-		$actions         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		// Delete from uap_error_log.
+		$wpdb->delete(
+			$wpdb->prefix . 'uap_error_log',
+			array( 'recipe_log_id' => $automator_recipe_log_id )
+		);
+
+		$actions = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d AND automator_recipe_log_id=%d", $recipe_id, $automator_recipe_log_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $actions ) {
 			foreach ( $actions as $automator_action_log_id ) {
 				// delete from uap_action_log_meta
@@ -513,7 +567,17 @@ class Automator_DB_Handler_Actions {
 		global $wpdb;
 		$action_tbl      = $wpdb->prefix . Automator()->db->tables->action;
 		$action_meta_tbl = $wpdb->prefix . Automator()->db->tables->action_meta;
-		$actions         = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		// Delete from uap_error_log (by action_log_ids for this recipe).
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE e FROM {$wpdb->prefix}uap_error_log e INNER JOIN {$wpdb->prefix}uap_action_log a ON e.action_log_id = a.ID WHERE a.automator_recipe_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_id
+			)
+		);
+
+		$actions = $wpdb->get_col( $wpdb->prepare( "SELECT `ID` FROM $action_tbl WHERE automator_recipe_id=%d", $recipe_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $actions ) {
 			foreach ( $actions as $automator_action_log_id ) {
 				// delete from uap_action_log_meta

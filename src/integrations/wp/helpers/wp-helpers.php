@@ -31,8 +31,14 @@ class Wp_Helpers {
 
 	/**
 	 * __construct.
+	 *
+	 * @param bool $register_role_handlers Whether to register the role-change
+	 *        handlers. The modern Wp_Helpers (wp-helpers-new.php) instantiates this
+	 *        legacy helper with `false` purely to expose old Pro's admin-ajax field
+	 *        endpoints — it already owns the role-change handlers, so registering
+	 *        them here too would double-fire role triggers.
 	 */
-	public function __construct() {
+	public function __construct( $register_role_handlers = true ) {
 
 		add_action( 'wp_ajax_select_custom_post_by_type', array( $this, 'select_custom_post_func' ) );
 		add_action( 'wp_ajax_select_post_type_taxonomies', array( $this, 'select_post_type_taxonomies' ) );
@@ -54,8 +60,11 @@ class Wp_Helpers {
 		add_action( 'wp_ajax_select_all_post_from_SELECTEDPOSTTYPE', array( $this, 'select_posts_by_post_type_legacy' ) );
 		add_action( 'wp_ajax_select_posts_by_post_type', array( $this, 'select_posts_by_post_type' ) );
 
-		// Centralized role change handler for compatibility with User Role Editor and other plugins
-		$this->setup_role_change_handlers();
+		// Centralized role change handler for compatibility with User Role Editor and
+		// other plugins. Skipped when the modern Wp_Helpers owns these hooks.
+		if ( $register_role_handlers ) {
+			$this->setup_role_change_handlers();
+		}
 	}
 
 	/**

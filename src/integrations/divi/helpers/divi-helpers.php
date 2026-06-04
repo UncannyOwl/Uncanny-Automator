@@ -150,7 +150,7 @@ class Divi_Helpers {
 	}
 
 	/**
-	 *  Extract form info from the Divi shortcode
+	 *  Extract form info from Divi posts (Divi 4 shortcode and Divi 5 block formats).
 	 *
 	 * @param $update_form_id
 	 *
@@ -158,56 +158,372 @@ class Divi_Helpers {
 	 */
 	public static function extract_forms( $update_form_id = false ) {
 		global $wpdb;
-		$form_posts = $wpdb->get_results( $wpdb->prepare( "SELECT `ID`, `post_content`, `post_title` FROM $wpdb->posts WHERE post_status NOT IN('trash', 'inherit', 'auto-draft') AND post_type IS NOT NULL AND post_type NOT LIKE %s AND post_content LIKE %s", 'revision', '%%et_pb_contact_form%%' ) );
+		$form_posts = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT `ID`, `post_content`, `post_title` FROM $wpdb->posts
+				 WHERE post_status NOT IN('trash', 'inherit', 'auto-draft')
+				 AND post_type IS NOT NULL
+				 AND post_type NOT LIKE %s
+				 AND ( post_content LIKE %s OR post_content LIKE %s )",
+				'revision',
+				'%%et_pb_contact_form%%',
+				'%%wp:divi/contact-form%%'
+			)
+		);
 
 		$data = array();
 		if ( empty( $form_posts ) ) {
 			return $data;
 		}
+
+		// Track unique_ids we've already catalogued so a Divi Global Module
+		// used on N pages produces ONE picker entry instead of N. First post
+		// scanned wins. Runtime matching is unaffected: match_condition_v2()
+		// already has a loose-match pass that resolves by unique_id alone,
+		// so a recipe configured against any instance fires for every page.
+		$seen_uids = array();
+
 		foreach ( $form_posts as $form_post ) {
-			// Get forms
-			$pattern_regex = '/\[et_pb_contact_form(.*?)](.+?)\[\/et_pb_contact_form]/';
-			preg_match_all( $pattern_regex, $form_post->post_content, $forms, PREG_SET_ORDER );
-			if ( empty( $forms ) ) {
-				continue;
+			$is_theme_builder = self::is_theme_builder_post( $form_post );
+
+			if ( false !== strpos( $form_post->post_content, 'wp:divi/contact-form' ) ) {
+				$data += self::extract_forms_from_blocks( $form_post, $update_form_id, $is_theme_builder, $seen_uids );
 			}
 
-			// Check if the post content has the theme_builder_area attribute
-			$is_theme_builder = strpos( $form_post->post_content, 'theme_builder_area="' ) !== false;
-			if ( ! $is_theme_builder ) {
-				$is_theme_builder = strpos( $form_post->post_title, 'Theme Builder' ) !== false;
-			}
-
-			$form_index = 0;
-
-			foreach ( $forms as $form ) {
-				$pattern_form = get_shortcode_regex( array( 'et_pb_contact_form' ) );
-				preg_match_all( "/$pattern_form/", $form[0], $forms_extracted, PREG_SET_ORDER );
-
-				if ( empty( $forms_extracted ) ) {
-					continue;
-				}
-
-				foreach ( $forms_extracted as $form_extracted ) {
-					$form_attrs = shortcode_parse_atts( $form_extracted[3] );
-					$form_id    = isset( $form_attrs['_unique_id'] ) ? $form_attrs['_unique_id'] : '';
-
-					if ( empty( $form_id ) ) {
-						continue;
-					}
-
-					$form_id                    = ( true === $update_form_id ) ? self::generate_divi_form_unique_id( $form_post->ID, $form_attrs, $form_index, $is_theme_builder ) : sprintf( '%d-%s', $form_post->ID, $form_id );
-					$form_title                 = isset( $form_attrs['title'] ) ? $form_attrs['title'] : esc_html__( 'No form title', 'uncanny-automator' );
-					$form_title                 = sprintf( '%s - %s', $form_post->post_title, $form_title );
-					$fields                     = self::extract_fields( $form[0] );
-					$data[ $form_id ]['title']  = $form_title;
-					$data[ $form_id ]['fields'] = $fields;
-				}
-				$form_index ++;
+			if ( false !== strpos( $form_post->post_content, '[et_pb_contact_form' ) ) {
+				$data += self::extract_forms_from_shortcode( $form_post, $update_form_id, $is_theme_builder, $seen_uids );
 			}
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Detect whether a post represents a Theme Builder layout.
+	 *
+	 * @param object $form_post
+	 *
+	 * @return bool
+	 */
+	protected static function is_theme_builder_post( $form_post ) {
+		if ( false !== strpos( $form_post->post_content, 'theme_builder_area="' ) ) {
+			return true;
+		}
+
+		return false !== strpos( $form_post->post_title, 'Theme Builder' );
+	}
+
+	/**
+	 * Extract Divi 4 shortcode-based contact forms from a post.
+	 *
+	 * @param object $form_post
+	 * @param bool   $update_form_id
+	 * @param bool   $is_theme_builder
+	 * @param array  $seen_uids Mutable set of unique_ids already catalogued by an earlier post — Divi Global Modules dedupe here so the picker shows one entry per form.
+	 *
+	 * @return array
+	 */
+	protected static function extract_forms_from_shortcode( $form_post, $update_form_id, $is_theme_builder, array &$seen_uids = array() ) {
+		$data = array();
+
+		$pattern_regex = '/\[et_pb_contact_form(.*?)](.+?)\[\/et_pb_contact_form]/';
+		preg_match_all( $pattern_regex, $form_post->post_content, $forms, PREG_SET_ORDER );
+		if ( empty( $forms ) ) {
+			return $data;
+		}
+
+		$form_index = 0;
+		foreach ( $forms as $form ) {
+			$pattern_form = get_shortcode_regex( array( 'et_pb_contact_form' ) );
+			preg_match_all( "/$pattern_form/", $form[0], $forms_extracted, PREG_SET_ORDER );
+
+			if ( empty( $forms_extracted ) ) {
+				continue;
+			}
+
+			foreach ( $forms_extracted as $form_extracted ) {
+				$form_attrs = shortcode_parse_atts( $form_extracted[3] );
+				$unique_id  = isset( $form_attrs['_unique_id'] ) ? $form_attrs['_unique_id'] : '';
+
+				if ( empty( $unique_id ) ) {
+					continue;
+				}
+
+				if ( isset( $seen_uids[ $unique_id ] ) ) {
+					continue;
+				}
+				$seen_uids[ $unique_id ] = true;
+
+				$form_id    = ( true === $update_form_id )
+					? self::generate_divi_form_unique_id( $form_post->ID, $form_attrs, $form_index, $is_theme_builder )
+					: sprintf( '%d-%s', $form_post->ID, $unique_id );
+				$form_title = isset( $form_attrs['title'] ) ? $form_attrs['title'] : esc_html__( 'No form title', 'uncanny-automator' );
+
+				$data[ $form_id ] = array(
+					'title'  => sprintf( '%s - %s', $form_post->post_title, $form_title ),
+					'fields' => self::extract_fields( $form[0] ),
+				);
+			}
+			$form_index ++;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Extract Divi 5 block-based contact forms from a post.
+	 *
+	 * @param object $form_post
+	 * @param bool   $update_form_id
+	 * @param bool   $is_theme_builder
+	 * @param array  $seen_uids Mutable set of unique_ids already catalogued by an earlier post — Divi Global Modules dedupe here so the picker shows one entry per form.
+	 *
+	 * @return array
+	 */
+	protected static function extract_forms_from_blocks( $form_post, $update_form_id, $is_theme_builder, array &$seen_uids = array() ) {
+		$data = array();
+
+		if ( ! function_exists( 'parse_blocks' ) ) {
+			return $data;
+		}
+
+		$form_blocks = self::find_contact_form_instances( parse_blocks( $form_post->post_content ) );
+		$form_index  = 0;
+
+		foreach ( $form_blocks as $form_block ) {
+			$unique_id = self::form_block_unique_id( $form_block );
+			if ( empty( $unique_id ) ) {
+				continue;
+			}
+
+			if ( isset( $seen_uids[ $unique_id ] ) ) {
+				continue;
+			}
+			$seen_uids[ $unique_id ] = true;
+
+			$form_id = ( true === $update_form_id )
+				? self::generate_divi_form_unique_id( $form_post->ID, array( '_unique_id' => $unique_id ), $form_index, $is_theme_builder )
+				: sprintf( '%d-%s', $form_post->ID, $unique_id );
+
+			// Prefer the Display Title (rendered as a heading), then the Element Label set in
+			// the module's Meta panel, then a generic fallback.
+			$form_title = self::resolve_block_form_title( $form_block );
+
+			$data[ $form_id ] = array(
+				'title'  => sprintf( '%s - %s', $form_post->post_title, $form_title ),
+				'fields' => self::extract_fields_from_block( $form_block ),
+			);
+			$form_index ++;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Recursively find every contact-form instance in a parsed-blocks tree.
+	 *
+	 * Matches two block shapes Divi 5 emits for the same logical form:
+	 *
+	 *   1. `divi/contact-form` — the form is inlined directly on the page
+	 *      (or in an `et_pb_layout` post when it's the source of a global).
+	 *   2. `divi/global-layout` with `attrs.blockName === 'divi/contact-form'`
+	 *      — a page references a Library-saved global contact form. The
+	 *      block's own `attrs.localAttrs` carries the same `uniqueId` and
+	 *      `meta.adminLabel` overrides the underlying form would have, and
+	 *      the innerBlocks contain the contact-field blocks marked with a
+	 *      `globalParent` ID.
+	 *
+	 * Returning both shapes lets extract_forms_from_blocks() catalogue the
+	 * form on every post that references it — origin page, additional pages
+	 * using the global, and the `et_pb_layout` post itself. The seen_uids
+	 * dedupe in extract_forms() then collapses them into a single picker
+	 * entry whose form_id pins to the lowest-id post (typically the origin
+	 * page where the recipe was first configured).
+	 *
+	 * @param array $blocks
+	 *
+	 * @return array
+	 */
+	protected static function find_contact_form_instances( array $blocks ) {
+		$matches = array();
+
+		foreach ( $blocks as $block ) {
+			$name = $block['blockName'] ?? '';
+
+			if ( 'divi/contact-form' === $name ) {
+				$matches[] = $block;
+			} elseif ( 'divi/global-layout' === $name && 'divi/contact-form' === ( $block['attrs']['blockName'] ?? '' ) ) {
+				$matches[] = $block;
+			}
+
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				$matches = array_merge( $matches, self::find_contact_form_instances( $block['innerBlocks'] ) );
+			}
+		}
+
+		return $matches;
+	}
+
+	/**
+	 * Read the unique_id from a contact-form instance regardless of whether
+	 * it's a direct `divi/contact-form` block or a `divi/global-layout`
+	 * wrapper (which stores the override at `attrs.localAttrs.module
+	 * .advanced.uniqueId`).
+	 *
+	 * @param array $form_block
+	 *
+	 * @return string
+	 */
+	protected static function form_block_unique_id( array $form_block ) {
+		$attrs_source = self::form_block_attrs_source( $form_block );
+
+		return (string) self::block_attr_value( $attrs_source, array( 'module', 'advanced', 'uniqueId' ) );
+	}
+
+	/**
+	 * Return the attrs container for a contact-form instance.
+	 *
+	 * For a direct `divi/contact-form` block it's the block's own attrs;
+	 * for a `divi/global-layout` wrapper it's `attrs.localAttrs`, which
+	 * is where Divi stores the per-instance uniqueId and Meta-panel
+	 * adminLabel for the global module on that page.
+	 *
+	 * @param array $form_block
+	 *
+	 * @return array
+	 */
+	protected static function form_block_attrs_source( array $form_block ) {
+		$name = $form_block['blockName'] ?? '';
+
+		if ( 'divi/global-layout' === $name ) {
+			return is_array( $form_block['attrs']['localAttrs'] ?? null ) ? $form_block['attrs']['localAttrs'] : array();
+		}
+
+		return is_array( $form_block['attrs'] ?? null ) ? $form_block['attrs'] : array();
+	}
+
+	/**
+	 * Extract Divi 5 contact-field blocks from a parsed contact-form block.
+	 *
+	 * @param array $form_block
+	 *
+	 * @return array
+	 */
+	protected static function extract_fields_from_block( $form_block ) {
+		$fields = array();
+
+		if ( empty( $form_block['innerBlocks'] ) ) {
+			return $fields;
+		}
+
+		foreach ( self::find_blocks( $form_block['innerBlocks'], 'divi/contact-field' ) as $field_block ) {
+			$field_id = strtolower( self::block_attr_value( $field_block['attrs'], array( 'fieldItem', 'advanced', 'id' ) ) );
+			if ( empty( $field_id ) ) {
+				continue;
+			}
+
+			$fields[] = array(
+				'field_title'   => self::block_attr_value( $field_block['attrs'], array( 'fieldItem', 'innerContent' ), esc_html__( 'No title', 'uncanny-automator' ) ),
+				'field_type'    => self::normalize_field_type( self::block_attr_value( $field_block['attrs'], array( 'fieldItem', 'advanced', 'type' ), 'text' ) ),
+				'field_id'      => $field_id,
+				'required_mark' => self::block_attr_value( $field_block['attrs'], array( 'fieldItem', 'advanced', 'required' ), 'on' ),
+			);
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Resolve a Divi 5 contact-form block's display label, preferring the
+	 * frontend Display Title, then the Meta panel's Element Label.
+	 *
+	 * @param array $form_block
+	 *
+	 * @return string
+	 */
+	protected static function resolve_block_form_title( $form_block ) {
+		// Reads through form_block_attrs_source() so global-layout instances
+		// (where Divi stores per-page overrides in attrs.localAttrs) resolve
+		// the right adminLabel for the page using the global module.
+		$attrs_source = self::form_block_attrs_source( $form_block );
+
+		$display_title = self::block_attr_value( $attrs_source, array( 'title', 'innerContent' ) );
+		if ( '' !== $display_title ) {
+			return $display_title;
+		}
+
+		$element_label = self::block_attr_value( $attrs_source, array( 'module', 'meta', 'adminLabel' ) );
+		if ( '' !== $element_label ) {
+			return $element_label;
+		}
+
+		return esc_html__( 'No form title', 'uncanny-automator' );
+	}
+
+	/**
+	 * Recursively collect blocks matching $block_name from a parsed-blocks tree.
+	 *
+	 * @param array  $blocks
+	 * @param string $block_name
+	 *
+	 * @return array
+	 */
+	protected static function find_blocks( $blocks, $block_name ) {
+		$matches = array();
+
+		foreach ( $blocks as $block ) {
+			if ( isset( $block['blockName'] ) && $block_name === $block['blockName'] ) {
+				$matches[] = $block;
+			}
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				$matches = array_merge( $matches, self::find_blocks( $block['innerBlocks'], $block_name ) );
+			}
+		}
+
+		return $matches;
+	}
+
+	/**
+	 * Read a Divi 5 block-attribute value by path, unwrapping the
+	 * "{ desktop: { value: <scalar> } }" responsive wrapper when present.
+	 *
+	 * @param array $attrs
+	 * @param array $path
+	 * @param mixed $default
+	 *
+	 * @return mixed
+	 */
+	protected static function block_attr_value( $attrs, $path, $default = '' ) {
+		$node = $attrs;
+		foreach ( $path as $key ) {
+			if ( ! is_array( $node ) || ! array_key_exists( $key, $node ) ) {
+				return $default;
+			}
+			$node = $node[ $key ];
+		}
+
+		if ( is_array( $node ) && isset( $node['desktop']['value'] ) ) {
+			return $node['desktop']['value'];
+		}
+
+		return is_scalar( $node ) ? $node : $default;
+	}
+
+	/**
+	 * Normalize a Divi 5 field type to the value space used by the existing token layer.
+	 *
+	 * @param string $field_type
+	 *
+	 * @return string
+	 */
+	protected static function normalize_field_type( $field_type ) {
+		// Divi 5 labels single-line text inputs as "input"; Divi 4 (and the
+		// token layer) use "text".
+		if ( 'input' === $field_type ) {
+			return 'text';
+		}
+
+		return $field_type;
 	}
 
 	/**

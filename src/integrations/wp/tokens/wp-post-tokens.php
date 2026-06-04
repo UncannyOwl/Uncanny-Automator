@@ -23,6 +23,12 @@ class Wp_Post_Tokens {
 	 * WP_Anon_Tokens constructor.
 	 */
 	public function __construct() {
+		// Skip legacy token filters when the modern integration is active —
+		// migrated triggers use hydrate_tokens() directly.
+		if ( class_exists( '\Uncanny_Automator\Integrations\Wp\Wp_Integration', false ) ) {
+			return;
+		}
+
 		$codes = array(
 			'userspost',
 			'wpviewposttype',

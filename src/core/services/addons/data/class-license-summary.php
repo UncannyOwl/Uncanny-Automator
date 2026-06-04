@@ -2,9 +2,10 @@
 
 namespace Uncanny_Automator\Services\Addons\Data;
 
-use Uncanny_Automator\Api_Server;
-use Uncanny_Automator\Pricing_Plan_Resolver;
+use Uncanny_Automator\App\Infrastructure\License\License_Manager;
 use Uncanny_Automator\Services\Plugin\Info;
+
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
 /**
  * License Summary
@@ -24,6 +25,13 @@ class License_Summary {
 	private $plan_resolver;
 
 	/**
+	 * License manager (src/app source of truth).
+	 *
+	 * @var License_Manager
+	 */
+	private $license_manager;
+
+	/**
 	 * Connected user results.
 	 *
 	 * @var array
@@ -31,11 +39,18 @@ class License_Summary {
 	private $connected_user;
 
 	/**
-	 * The current plan.
+	 * The current plan slug (lite/basic/plus/elite).
 	 *
 	 * @var string
 	 */
 	private $plan;
+
+	/**
+	 * The current plan display name from the storefront.
+	 *
+	 * @var string
+	 */
+	private $plan_name;
 
 	/**
 	 * Is Pro active.
@@ -130,23 +145,20 @@ class License_Summary {
 	 * @return void
 	 */
 	private function set_class_properties() {
-		// Load addons plan resolver.
-		$this->plan_resolver = new Plan_Resolver();
+		$this->license_manager = automator_license_manager();
+		$this->plan_resolver   = new Plan_Resolver();
 
-		// Set plan details.
-		$plan_details        = Pricing_Plan_Resolver::get_plan_details();
-		$this->plan          = $plan_details['plan'];
-		$this->is_pro_active = $plan_details['is_pro_installed'];
+		$this->plan          = $this->license_manager->get_resolved_plan();
+		$this->plan_name     = $this->license_manager->get_resolved_plan_name();
+		$this->is_pro_active = $this->license_manager->is_pro_active();
 
-		// Set connected user info.
-		$this->connected_user = Api_Server::is_automator_connected();
+		$license              = $this->license_manager->get_license_data();
+		$this->connected_user = is_array( $license ) ? $license : null;
 
-		// Set available addons for connected user.
 		$this->addons_available_for_license = $this->connected_user
 			? $this->plan_resolver->get_number_of_addons_for_license()
 			: 0;
 
-		// Set not connected user minimum data.
 		if ( ! $this->connected_user ) {
 			$this->connected_user = array(
 				'license'        => 'invalid',
@@ -157,10 +169,7 @@ class License_Summary {
 			);
 		}
 
-		// Set license status.
 		$this->set_license_status();
-
-		// Set scenario ID.
 		$this->scenario_id = $this->get_scenario_id();
 	}
 
@@ -184,10 +193,11 @@ class License_Summary {
 	 * @return string
 	 */
 	private function validate_status_by_plan( $plan, $status ) {
-		// Check if the valid status is coming from Pro if the plan is not lite.
+		// Cross-check the API "valid" with the locally stored EDD Pro status.
+		// Guards against a stale cached payload that still reports valid after
+		// Pro was deactivated or its license key removed locally.
 		if ( 'valid' === $status && 'lite' !== $plan ) {
-			$license_type = Api_Server::get_license_type();
-			if ( 'pro' !== $license_type ) {
+			if ( 'pro' !== $this->license_manager->get_type() ) {
 				$status = 'invalid';
 			}
 		}
@@ -201,19 +211,20 @@ class License_Summary {
 	 */
 	private function generate_license_summary() {
 		return array(
-			'scenario_id'   => $this->scenario_id,
-			'license_owner' => array(
+			'scenario_id'       => $this->scenario_id,
+			'license_owner'     => array(
 				'name'  => $this->connected_user['customer_name'],
 				'email' => $this->connected_user['customer_email'],
 			),
-			'current_plan'  => $this->plan,
-			'addons'        => array(
+			'current_plan'      => $this->plan,
+			'current_plan_name' => $this->plan_name,
+			'addons'            => array(
 				'available' => $this->addons_available_for_license,
 				'total'     => $this->plan_resolver->get_total_number_of_available_addons(),
 			),
-			'status'        => $this->license_status,
-			'notice'        => $this->get_notice(),
-			'cta'           => $this->get_call_to_action(),
+			'status'            => $this->license_status,
+			'notice'            => $this->get_notice(),
+			'cta'               => $this->get_call_to_action(),
 		);
 	}
 
@@ -269,6 +280,30 @@ class License_Summary {
 	}
 
 	/**
+	 * Resolve the display label for the active plan.
+	 *
+	 * Prefers the storefront plan_name (e.g. "Plus AI + Automation Monthly").
+	 * Falls back to the capitalised tier slug ("Basic", "Plus", "Elite") when
+	 * plan_name is empty or simply echoes the slug — i.e. the storefront has
+	 * not yet synced plan_name on this license.
+	 *
+	 * @return string
+	 */
+	private function get_plan_display_label() {
+		// Keep aligned with the JS tierLabels map in
+		// src/assets/src/shared/components/license-summary/index.js — both
+		// sides treat these slugs as echo-backs so plan_name falls through
+		// to the localised tier label.
+		$tier_slugs = array( 'lite', 'basic', 'plus', 'elite' );
+
+		if ( ! empty( $this->plan_name ) && ! in_array( strtolower( $this->plan_name ), $tier_slugs, true ) ) {
+			return $this->plan_name;
+		}
+
+		return ucfirst( $this->plan );
+	}
+
+	/**
 	 * Get the notice.
 	 *
 	 * @return array
@@ -286,18 +321,14 @@ class License_Summary {
 					'type'    => 'warning',
 				);
 			case 'pro-installed-license-active-pro-basic':
-				return array(
-					'heading' => esc_html_x( 'Your Pro Basic license is active', 'Addons', 'uncanny-automator' ),
-					'type'    => 'success',
-				);
 			case 'pro-installed-license-active-pro-plus':
-				return array(
-					'heading' => esc_html_x( 'Your Pro Plus license is active', 'Addons', 'uncanny-automator' ),
-					'type'    => 'success',
-				);
 			case 'pro-installed-license-active-pro-elite':
 				return array(
-					'heading' => esc_html_x( 'Your Pro Elite license is active', 'Addons', 'uncanny-automator' ),
+					'heading' => sprintf(
+						/* translators: %s is the plan label, e.g. "Plus", "Plus AI + Automation Monthly", "Elite (Legacy)". */
+						esc_html_x( 'Your Pro %s license is active', 'Addons', 'uncanny-automator' ),
+						esc_html( $this->get_plan_display_label() )
+					),
 					'type'    => 'success',
 				);
 			case 'pro-installed-license-inactive':

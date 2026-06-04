@@ -4,6 +4,8 @@ namespace Uncanny_Automator;
 
 use WP_Error;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Background_Actions
  *
@@ -84,12 +86,9 @@ class Background_Actions {
 	 * @return void
 	 */
 	public static function renew_license_check() {
-		// Make sure the transients are renewed.
-		delete_transient( Api_Server::TRANSIENT_LICENSE_CHECK_FAILED );
-		delete_transient( 'automator_api_license' );
-
+		// Force-refresh wipes the success + failure transients and re-fetches.
 		try {
-			return Api_Server::get_license();
+			return automator_license_manager()->get_license_data( true );
 		} catch ( \Exception $e ) {
 			automator_log( $e->getMessage(), 'renew_license_check failed', AUTOMATOR_DEBUG_MODE );
 		}
@@ -333,6 +332,14 @@ class Background_Actions {
 
 		$this->action['process_further'] = false;
 
+		// Signal to Action_Run_Stage::is_action_skipped() that this is a
+		// deferred async dispatch, not a true skip. Consumer writes
+		// IN_PROGRESS to uap_action_log (resolver treats as "has_scheduled")
+		// so Stage 4 defers finalize_recipe() until the REST worker lands.
+		// Without this the row is marked SKIPPED and Stage 4 incorrectly
+		// finalizes the recipe as COMPLETED while async is in-flight.
+		$this->action['process_further_reason'] = 'background_dispatch';
+
 		return $this;
 	}
 
@@ -499,6 +506,37 @@ class Background_Actions {
 		} catch ( \Exception $e ) {
 			$this->complete_with_error( $action, $e->getMessage() );
 		}
+
+		// Finalize recipe status — action() no longer calls recipe().
+		$this->finalize_recipe_status( $action );
+	}
+
+	/**
+	 * Finalize recipe status after a background action completes.
+	 *
+	 * Uses finalize_recipe() which reads all action statuses from DB
+	 * in one pass via Recipe_Status_Resolver + severity guard.
+	 *
+	 * @param array $action The action array with recipe_id, user_id, args.
+	 *
+	 * @return void
+	 */
+	private function finalize_recipe_status( $action ) {
+
+		$recipe_id     = absint( $action['recipe_id'] ?? 0 );
+		$user_id       = absint( $action['user_id'] ?? 0 );
+		$recipe_log_id = absint( $action['args']['recipe_log_id'] ?? 0 );
+
+		if ( 0 === $recipe_log_id ) {
+			return;
+		}
+
+		Automator()->recipe_runner->finalize_recipe(
+			$recipe_id,
+			$user_id,
+			$recipe_log_id,
+			$action['args'] ?? array()
+		);
 	}
 
 	/**

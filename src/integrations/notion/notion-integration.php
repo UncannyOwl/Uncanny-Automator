@@ -78,16 +78,4 @@ class Notion_Integration extends App_Integration {
 		}
 	}
 
-	/**
-	 * Register hooks.
-	 *
-	 * @return void
-	 */
-	protected function register_hooks() {
-		add_action( 'wp_ajax_automator_notion_list_pages', array( $this->helpers, 'automator_notion_list_pages_handler' ) );
-		add_action( 'wp_ajax_automator_notion_list_databases', array( $this->helpers, 'automator_notion_list_databases_handler' ) );
-		add_action( 'wp_ajax_automator_notion_get_database', array( $this->helpers, 'automator_notion_get_database_handler' ) );
-		add_action( 'wp_ajax_automator_notion_get_database_columns', array( $this->helpers, 'automator_notion_get_database_columns_handler' ) );
-		add_action( 'wp_ajax_automator_notion_list_users', array( $this->helpers, 'automator_notion_list_users' ) );
-	}
 }

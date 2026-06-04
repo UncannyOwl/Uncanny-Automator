@@ -70,6 +70,32 @@ abstract class Integration {
 	protected $is_third_party = null;
 
 	/**
+	 * Integration instances keyed by integration code — the only bridge the
+	 * lazy trigger pipeline needs to reach pre-constructed helpers. Populated
+	 * in `__construct()`; read via `helpers_for()`.
+	 *
+	 * @var array<string, self>
+	 */
+	private static $instances_by_code = array();
+
+	/**
+	 * Resolve an integration's helpers object by code. Returns null when the
+	 * integration wasn't loaded this request or has no helpers class.
+	 *
+	 * Used by `Trigger_Metadata_Loader` to produce the same dependency shape
+	 * `get_load_arguments()` passes on the eager path, so lazy triggers see
+	 * the identical `$dependencies[0]` helpers reference.
+	 *
+	 * @param string $code Integration code (e.g. 'SEO_BY_RANK_MATH').
+	 *
+	 * @return mixed|null
+	 */
+	public static function helpers_for( $code ) {
+		$instance = isset( self::$instances_by_code[ $code ] ) ? self::$instances_by_code[ $code ] : null;
+		return null !== $instance ? $instance->helpers : null;
+	}
+
+	/**
 	 * __construct
 	 *
 	 * @param mixed $helpers
@@ -79,6 +105,15 @@ abstract class Integration {
 	final public function __construct( $helpers = null ) {
 		$this->helpers = $helpers;
 		$this->setup();
+
+		// Register self so the lazy trigger pipeline can find helpers by code.
+		// Only an instance that actually has helpers wins — prevents a
+		// helperless Pro integration (e.g. conditions/loop-filters only)
+		// from clobbering Free's helpers-bearing entry when both share a code.
+		$code = $this->get_integration();
+		if ( '' !== $code && null !== $this->helpers ) {
+			self::$instances_by_code[ $code ] = $this;
+		}
 
 		$registration_data = array(
 			'name'             => $this->get_name(),
@@ -103,6 +138,12 @@ abstract class Integration {
 		$plugin_active = apply_filters( 'automator_integration_plugin_active', $plugin_active, $this );
 		if ( $plugin_active ) {
 			Set_Up_Automator::set_active_integration_code( $this->get_integration() );
+
+			// Auto-register the remote-data filter for helpers that extend
+			// Abstract_Helpers. Runs unconditionally on active integrations
+			// because the registration is just a single add_filter() call —
+			// the actual handler is only invoked on REST dispatch.
+			$this->maybe_register_helpers_remote_data();
 
 			$this->load_recipe_parts();
 
@@ -184,6 +225,18 @@ abstract class Integration {
 
 				// Skip if already instantiated (e.g. Free loaded it, Pro re-encounters it).
 				if ( false !== Utilities::get_class_instance( $class ) ) {
+					continue;
+				}
+
+				// Lazy path: if the trigger class declares definition(), let
+				// Trigger_Metadata_Loader handle it. This check runs at init:1
+				// (Integration construction is inline), BEFORE the loader fires
+				// at init:30 — so we cannot rely on Automator()->has_trigger()
+				// here. The presence of a non-null definition() is a stable,
+				// code-level signal that the stub will be registered later.
+				// Actions / closures / conditions / loop filters have no
+				// definition() method and so never take this branch.
+				if ( 'triggers' === $type && class_exists( $class ) && null !== $class::definition() ) {
 					continue;
 				}
 
@@ -444,5 +497,29 @@ abstract class Integration {
 	private function uses_manifest_trait() {
 		$traits = class_uses( get_class( $this ) );
 		return in_array( 'Uncanny_Automator\Integration_Manifest', $traits, true );
+	}
+
+	/**
+	 * Auto-register the remote-data filter when helpers extend Abstract_Helpers.
+	 *
+	 * Defaults `remote_data_id` from the integration code when the helper
+	 * does not set it explicitly, then registers the
+	 * `automator_remote_data_instance_{id}` filter so the REST controller
+	 * can resolve this helper instance at dispatch time.
+	 *
+	 * @return void
+	 */
+	private function maybe_register_helpers_remote_data() {
+
+		if ( ! $this->helpers instanceof \Uncanny_Automator\Recipe\Abstract_Helpers ) {
+			return;
+		}
+
+		// Default remote_data_id from the integration code if not already set.
+		if ( empty( $this->helpers->get_remote_data_id() ) ) {
+			$this->helpers->set_remote_data_id( sanitize_key( $this->get_integration() ) );
+		}
+
+		$this->helpers->register_remote_data_filter();
 	}
 }

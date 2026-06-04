@@ -11,19 +11,28 @@ namespace Uncanny_Automator\Integrations\Edd_SL;
 class EDD_SL_LICENSE_EXPIRED_FOR_DOWNLOAD extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
+	 * Static definition — opts the trigger into lazy loading and declares
+	 * the WP hook in code so postmeta is no longer the source of truth for
+	 * which hook this trigger listens on.
+	 *
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
+	 */
+	public static function definition() {
+		return self::new_definition( 'EDD_SL_LICENSE_EXPIRED', 'EDD_SL' )
+			->trigger_meta( 'EDD_SL_LICENSES' )
+			->trigger_type( 'anonymous' )
+			->hook( 'edd_sl_post_set_status', 20, 2 );
+	}
+
+	/**
 	 * @return mixed|void
 	 */
 	protected function setup_trigger() {
-		$this->set_integration( 'EDD_SL' );
-		$this->set_trigger_code( 'EDD_SL_LICENSE_EXPIRED' );
-		$this->set_trigger_meta( 'EDD_SL_LICENSES' );
-		$this->set_trigger_type( 'anonymous' );
+		// integration / code / trigger_meta / trigger_type / hook are auto-applied from definition().
 		// Trigger sentence - EDD - Software Licensing
 		// translators: 1: Download name
 		$this->set_sentence( sprintf( esc_html_x( 'A license for {{a download:%1$s}} expires', 'EDD - Software Licensing', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_html_x( 'A license for {{a download}} expires', 'EDD - Software Licensing', 'uncanny-automator' ) );
-		// Use a hook that triggers when license status changes to expired
-		$this->add_action( 'edd_sl_post_set_status', 20, 2 );
 	}
 
 	/**

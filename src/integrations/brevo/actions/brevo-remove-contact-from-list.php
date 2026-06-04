@@ -51,21 +51,18 @@ class BREVO_REMOVE_CONTACT_FROM_LIST extends \Uncanny_Automator\Recipe\App_Actio
 	public function options() {
 		return array(
 			array(
-				'option_code'    => $this->prefix . '_EMAIL',
-				'label'          => esc_html_x( 'Email', 'Brevo', 'uncanny-automator' ),
-				'input_type'     => 'email',
-				'required'       => true,
-				'fill_values_in' => $this->prefix . '_EMAIL',
+				'option_code' => $this->prefix . '_EMAIL',
+				'label'       => esc_html_x( 'Email', 'Brevo', 'uncanny-automator' ),
+				'input_type'  => 'email',
+				'required'    => true,
 			),
 			array(
 				'option_code'           => $this->get_action_meta(),
 				'label'                 => esc_html_x( 'List', 'Brevo', 'uncanny-automator' ),
 				'input_type'            => 'select',
 				'required'              => true,
-				'is_ajax'               => true,
-				'endpoint'              => 'automator_brevo_get_lists',
+				'remote_data'           => $this->helpers->remote_data_load_config( 'lists' ),
 				'supports_custom_value' => false,
-				'fill_values_in'        => $this->get_action_meta(),
 			),
 		);
 	}

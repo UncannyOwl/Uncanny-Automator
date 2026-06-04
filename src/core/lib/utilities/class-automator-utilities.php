@@ -62,6 +62,13 @@ class Automator_Utilities {
 					&& ( isset( $option['options'] ) && ! empty( $option['options'] ) )
 				) {
 
+					// Idempotency guard — skip option sets already in [{value,text}] shape
+					// (e.g. a helper that ran modernize_field). Re-wrapping a modern list
+					// nests each option object into 'text' → renders as "[object Object]".
+					if ( $this->options_already_normalized( $option['options'] ) ) {
+						continue;
+					}
+
 					// Create array that will be used to create the new array of options
 					$select_options = array();
 					// Iterate each option
@@ -93,6 +100,13 @@ class Automator_Utilities {
 						&& isset( $option['options'] )
 					) {
 
+						// Idempotency guard — see options_already_normalized(): skip
+						// option sets already in [{value,text}] shape so we don't nest
+						// each option object into 'text' ("[object Object]").
+						if ( $this->options_already_normalized( $option['options'] ) ) {
+							continue;
+						}
+
 						// Create array that will be used to create the new array of options
 						$select_options = array();
 
@@ -112,6 +126,27 @@ class Automator_Utilities {
 		}
 
 		return $item;
+	}
+
+	/**
+	 * Whether a select/radio option set is already in the normalized
+	 * [ { 'value' => …, 'text' => … }, … ] shape (e.g. produced by a helper that ran
+	 * modernize_field). keep_order_of_options() must NOT re-wrap such a set — doing so
+	 * nests each option object into 'text' and renders as "[object Object]" in the builder.
+	 *
+	 * Inspecting the first element suffices: a single producer builds the whole set (all
+	 * legacy assoc, or all modernized), never a mix of the two shapes.
+	 *
+	 * @param array $options The option set.
+	 *
+	 * @return bool
+	 */
+	private function options_already_normalized( $options ) {
+		if ( ! is_array( $options ) || empty( $options ) ) {
+			return false;
+		}
+		$first = reset( $options );
+		return is_array( $first ) && array_key_exists( 'value', $first );
 	}
 
 	/**
@@ -157,6 +192,12 @@ class Automator_Utilities {
 	 */
 	public function recipe_number_times_completed( $recipe_id = null, $completed_times = 0 ) {
 
+		// Forward to Recipe_Data_Provider — the recipe runner owns this logic now.
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->data_provider()->recipe_number_times_completed( intval( $recipe_id ), intval( $completed_times ) );
+		}
+
+		// Legacy fallback during early init.
 		$user_threshold = new User_Run_Number_Threshold( new Field_Manager( new Settings_Repository() ) );
 
 		$user_threshold->set_recipe_id( intval( $recipe_id ) );
@@ -333,6 +374,12 @@ class Automator_Utilities {
 	 */
 	public function get_recipe_type( $recipe_id = 0 ) {
 
+		// Forward to Recipe_Data_Provider — the recipe runner owns this logic now.
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->data_provider()->get_recipe_type( absint( $recipe_id ) );
+		}
+
+		// Legacy fallback during early init.
 		$recipe_id = absint( $recipe_id );
 
 		if ( 0 === $recipe_id ) {

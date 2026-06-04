@@ -2,12 +2,14 @@
 
 namespace Uncanny_Automator\Integrations\Aioseo;
 
+use Uncanny_Automator\Recipe\Abstract_Helpers;
+
 /**
  * Class Aioseo_Helpers
  *
  * @package Uncanny_Automator
  */
-class Aioseo_Helpers {
+class Aioseo_Helpers extends Abstract_Helpers {
 
 	/**
 	 * Get all public post types as dropdown options.
@@ -80,71 +82,48 @@ class Aioseo_Helpers {
 	}
 
 	/**
-	 * AJAX handler to fetch posts by type (for actions - no "Any" option).
+	 * Fetch posts by type for actions (no "Any" option).
 	 *
-	 * @return void
+	 * Reachable via `POST /wp-json/uap/v2/remote-data/aioseo/posts`.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function ajax_fetch_posts_by_type() {
-
-		Automator()->utilities->verify_nonce();
-
-		$values    = automator_filter_input_array( 'values', INPUT_POST );
-		$post_type = isset( $values['AIOSEO_POST_TYPE'] ) ? sanitize_text_field( $values['AIOSEO_POST_TYPE'] ) : '';
+	protected function remote_data_get_posts( $request ): array {
+		$post_type = $request->get_field_value( 'AIOSEO_POST_TYPE' );
 
 		if ( empty( $post_type ) ) {
-			echo wp_json_encode(
-				array(
-					'success' => true,
-					'options' => array(),
-				)
-			);
-			die();
+			return $this->remote_data_success( array() );
 		}
 
-		echo wp_json_encode(
-			array(
-				'success' => true,
-				'options' => $this->get_posts_by_type( $post_type, false ),
-			)
-		);
-		die();
+		return $this->remote_data_success( $this->get_posts_by_type( $post_type, false ) );
 	}
 
 	/**
-	 * AJAX handler to fetch posts by type (for triggers - with "Any" option).
+	 * Fetch posts by type for triggers (with "Any" option).
 	 *
-	 * @return void
+	 * Reachable via `POST /wp-json/uap/v2/remote-data/aioseo/posts_for_triggers`.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function ajax_fetch_posts_for_triggers() {
+	protected function remote_data_get_posts_for_triggers( $request ): array {
+		$post_type = $request->get_field_value( 'AIOSEO_POST_TYPE' );
 
-		Automator()->utilities->verify_nonce();
-
-		$values    = automator_filter_input_array( 'values', INPUT_POST );
-		$post_type = isset( $values['AIOSEO_POST_TYPE'] ) ? sanitize_text_field( $values['AIOSEO_POST_TYPE'] ) : '';
-
-		// If no type or "Any" selected, return only the "Any post" option.
 		if ( empty( $post_type ) || '-1' === $post_type ) {
-			echo wp_json_encode(
+			return $this->remote_data_success(
 				array(
-					'success' => true,
-					'options' => array(
-						array(
-							'text'  => esc_html_x( 'Any post', 'All in One SEO', 'uncanny-automator' ),
-							'value' => '-1',
-						),
+					array(
+						'text'  => esc_html_x( 'Any post', 'All in One SEO', 'uncanny-automator' ),
+						'value' => '-1',
 					),
 				)
 			);
-			die();
 		}
 
-		echo wp_json_encode(
-			array(
-				'success' => true,
-				'options' => $this->get_posts_by_type( $post_type, true ),
-			)
-		);
-		die();
+		return $this->remote_data_success( $this->get_posts_by_type( $post_type, true ) );
 	}
 
 	/**
@@ -172,11 +151,7 @@ class Aioseo_Helpers {
 				'required'              => true,
 				'options'               => array(),
 				'supports_custom_value' => true,
-				'ajax'                  => array(
-					'endpoint'      => 'automator_aioseo_fetch_posts',
-					'event'         => 'parent_fields_change',
-					'listen_fields' => array( 'AIOSEO_POST_TYPE' ),
-				),
+				'remote_data'           => $this->remote_data_parent_config( 'posts', array( 'AIOSEO_POST_TYPE' ) ),
 			),
 		);
 	}
@@ -204,11 +179,7 @@ class Aioseo_Helpers {
 				'input_type'  => 'select',
 				'required'    => true,
 				'options'     => array(),
-				'ajax'        => array(
-					'endpoint'      => 'automator_aioseo_fetch_posts_for_trigger',
-					'event'         => 'parent_fields_change',
-					'listen_fields' => array( 'AIOSEO_POST_TYPE' ),
-				),
+				'remote_data' => $this->remote_data_parent_config( 'posts_for_triggers', array( 'AIOSEO_POST_TYPE' ) ),
 			),
 		);
 	}

@@ -50,10 +50,15 @@ class Divi_Tokens {
 		);
 
 		if ( intval( '-1' ) !== intval( $form_id ) ) {
-			$form_fields = Divi_Helpers::get_form_by_id( $form_id );
-			if ( 'ANON_DIVI_SUBMIT_FORM' === $trigger_code || 'DIVI_SUBMIT_FORM' === $trigger_code ) {
-				$form_fields = Divi_Helpers::get_form_by_id( $form_id, true );
-			}
+			$updated_form_id_codes = array(
+				'ANON_DIVI_SUBMIT_FORM',
+				'DIVI_SUBMIT_FORM',
+				'ANON_DIVI_SUBMIT_FORM_FIELD',
+				'DIVI_SUBMIT_FORM_FIELD',
+			);
+			$form_fields           = in_array( $trigger_code, $updated_form_id_codes, true )
+				? Divi_Helpers::get_form_by_id( $form_id, true )
+				: Divi_Helpers::get_form_by_id( $form_id );
 			if ( empty( $form_fields ) ) {
 				return $tokens;
 			}

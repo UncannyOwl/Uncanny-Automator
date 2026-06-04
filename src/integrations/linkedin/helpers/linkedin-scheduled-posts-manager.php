@@ -217,8 +217,8 @@ class Linkedin_Scheduled_Posts_Manager {
 		}
 
 		// Mark the action and recipe logs as complete.
-		Automator()->db->action->mark_complete( $action_id, $recipe_log_id, $completed, $error_message );
-		Automator()->db->recipe->mark_complete( $recipe_log_id, $completed );
+		Automator()->recipe_runner->complete_action( $action_id, $recipe_log_id, $completed, $error_message );
+		Automator()->recipe_runner->finalize_recipe_by_log_id( absint( $recipe_log_id ) );
 	}
 
 	/**
@@ -235,10 +235,10 @@ class Linkedin_Scheduled_Posts_Manager {
 		$status = \Uncanny_Automator\Automator_Status::COMPLETED_WITH_ERRORS;
 
 		if ( ! empty( $action_id ) ) {
-			Automator()->db->action->mark_complete( $action_id, $recipe_log_id, $status, $error_message );
+			Automator()->recipe_runner->complete_action( absint( $action_id ), absint( $recipe_log_id ), $status, $error_message );
 		}
 
-		Automator()->db->recipe->mark_complete( $recipe_log_id, $status );
+		Automator()->recipe_runner->finalize_recipe_by_log_id( absint( $recipe_log_id ) );
 
 		automator_log( $error_message, 'LINKEDIN_POST_SCHEDULE', true, 'linkedin' );
 	}

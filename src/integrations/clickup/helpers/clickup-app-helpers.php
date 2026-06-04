@@ -55,11 +55,7 @@ class ClickUp_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helper
 			'options'               => array(),
 			'options_show_id'       => false,
 			'relevant_tokens'       => array(),
-			'ajax'                  => array(
-				'endpoint'      => 'automator_clickup_fetch_lists',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( self::META_FOLDER ),
-			),
+			'remote_data'           => $this->remote_data_parent_config( 'lists', array( self::META_FOLDER ) ),
 		);
 	}
 
@@ -83,11 +79,7 @@ class ClickUp_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helper
 			'relevant_tokens'          => array(),
 			'supports_custom_value'    => true,
 			'custom_value_description' => esc_html_x( 'Task ID', 'ClickUp', 'uncanny-automator' ),
-			'ajax'                     => array(
-				'endpoint'      => 'automator_clickup_fetch_tasks',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $listen_field ),
-			),
+			'remote_data'              => $this->remote_data_parent_config( 'tasks', array( $listen_field ) ),
 		);
 	}
 
@@ -110,11 +102,7 @@ class ClickUp_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helper
 			'options_show_id'          => false,
 			'supports_custom_value'    => true,
 			'custom_value_description' => esc_html_x( 'ClickUp User ID', 'ClickUp', 'uncanny-automator' ),
-			'ajax'                     => array(
-				'endpoint'      => 'automator_clickup_fetch_assignees_list',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $listen_field ),
-			),
+			'remote_data'              => $this->remote_data_parent_config( 'assignees_list', array( $listen_field ) ),
 		);
 	}
 
@@ -136,11 +124,7 @@ class ClickUp_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helper
 			'options'               => array(),
 			'options_show_id'       => false,
 			'relevant_tokens'       => array(),
-			'ajax'                  => array(
-				'endpoint'      => 'automator_clickup_fetch_statuses',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( self::META_SPACE ),
-			),
+			'remote_data'           => $this->remote_data_parent_config( 'statuses', array( self::META_SPACE ) ),
 		);
 	}
 
@@ -251,12 +235,14 @@ class ClickUp_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helper
 	 * Returns the cached data array when valid and not expired,
 	 * or null when a fresh API fetch is needed.
 	 *
-	 * @param string $suffix The option key suffix (e.g. 'spaces_123').
+	 * @param string $suffix  The option key suffix (e.g. 'spaces_123').
+	 * @param bool   $refresh Caller-supplied refresh flag (typically `$request->is_refresh()`).
+	 *                        When true, bypasses the cache and forces a fetch.
 	 *
 	 * @return array|null Cached data or null if a fetch is needed.
 	 */
-	private function get_cached_option_data( $suffix ) {
-		if ( $this->is_ajax_refresh() ) {
+	private function get_cached_option_data( $suffix, $refresh = false ) {
+		if ( $refresh ) {
 			return null;
 		}
 
@@ -285,63 +271,70 @@ class ClickUp_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helper
 	}
 
 	////////////////////////////////////////////////////////////
-	// AJAX handlers
+	// Remote-data REST handlers
+	//
+	// Reachable via POST /wp-json/uap/v2/remote-data/clickup/{data},
+	// where {data} matches the suffix on the method name. Dispatched
+	// through Abstract_Helpers::process_remote_data_request().
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * Fetch teams (workspaces) AJAX handler.
+	 * Fetch teams (workspaces).
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_teams_ajax() {
-		Automator()->utilities->verify_nonce();
-
-		$cached = $this->get_cached_option_data( 'workspaces' );
+	protected function remote_data_get_teams( $request ): array {
+		$cached = $this->get_cached_option_data( 'workspaces', $request->is_refresh() );
 
 		if ( null !== $cached ) {
-			$this->ajax_success( $cached );
+			return $this->remote_data_success( $cached );
 		}
 
 		$teams = $this->api->get_team_workspaces();
 		$this->save_option_data_to_cache( 'workspaces', $teams );
-		$this->ajax_success( $teams );
+
+		return $this->remote_data_success( $teams );
 	}
 
 	/**
-	 * Fetch spaces AJAX handler.
+	 * Fetch spaces for the selected team.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_spaces_ajax() {
-		Automator()->utilities->verify_nonce();
-
-		$team_id   = $this->get_values_field_from_ajax( self::META_TEAM );
+	protected function remote_data_get_spaces( $request ): array {
+		$team_id   = $request->get_field_value( self::META_TEAM );
 		$cache_key = 'spaces_' . $team_id;
-		$cached    = $this->get_cached_option_data( $cache_key );
+		$cached    = $this->get_cached_option_data( $cache_key, $request->is_refresh() );
 
 		if ( null !== $cached ) {
-			$this->ajax_success( $cached );
+			return $this->remote_data_success( $cached );
 		}
 
 		$spaces = $this->api->get_spaces( $team_id );
 		$this->save_option_data_to_cache( $cache_key, $spaces );
-		$this->ajax_success( $spaces );
+
+		return $this->remote_data_success( $spaces );
 	}
 
 	/**
-	 * Fetch folders AJAX handler.
+	 * Fetch folders for the selected space, with the
+	 * "Folderless lists" pseudo-option prepended.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_folders_ajax() {
-		Automator()->utilities->verify_nonce();
-
-		$space_id  = $this->get_values_field_from_ajax( self::META_SPACE );
+	protected function remote_data_get_folders( $request ): array {
+		$space_id  = $request->get_field_value( self::META_SPACE );
 		$cache_key = 'folders_' . $space_id;
-		$cached    = $this->get_cached_option_data( $cache_key );
+		$cached    = $this->get_cached_option_data( $cache_key, $request->is_refresh() );
 
 		if ( null !== $cached ) {
-			$this->ajax_success( $cached );
+			return $this->remote_data_success( $cached );
 		}
 
 		$folders = $this->api->get_folders( $space_id );
@@ -365,77 +358,80 @@ class ClickUp_App_Helpers extends \Uncanny_Automator\App_Integrations\App_Helper
 		}
 
 		$this->save_option_data_to_cache( $cache_key, $options );
-		$this->ajax_success( $options );
+
+		return $this->remote_data_success( $options );
 	}
 
 	/**
-	 * Fetch lists AJAX handler.
+	 * Fetch lists for the selected folder.
 	 *
 	 * Not cached — lists are the terminal node before task selection
 	 * and are more volatile than structural data (spaces, folders, statuses).
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_lists_ajax() {
-		Automator()->utilities->verify_nonce();
-
-		$folder_id = $this->get_values_field_from_ajax( self::META_FOLDER );
+	protected function remote_data_get_lists( $request ): array {
+		$folder_id = $request->get_field_value( self::META_FOLDER );
 		$lists     = $this->api->get_lists( $folder_id );
 
-		$this->ajax_success( $lists );
+		return $this->remote_data_success( $lists );
 	}
 
 	/**
-	 * Fetch assignees from list AJAX handler.
+	 * Fetch assignees for the selected list.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_assignees_list_ajax() {
-		Automator()->utilities->verify_nonce();
+	protected function remote_data_get_assignees_list( $request ): array {
+		$list_id = $request->get_field_value( self::META_LIST );
 
-		$list_id = $this->get_values_field_from_ajax( self::META_LIST );
-
-		// Also check for create task action meta.
+		// Also check for create-task action meta.
 		if ( empty( $list_id ) ) {
-			$list_id = $this->get_values_field_from_ajax( 'CLICKUP_SPACE_LIST_TASK_CREATE_META' );
+			$list_id = $request->get_field_value( 'CLICKUP_SPACE_LIST_TASK_CREATE_META' );
 		}
 
 		$options = $this->api->get_list_members( $list_id );
-		$this->ajax_success( $options );
+
+		return $this->remote_data_success( $options );
 	}
 
 	/**
-	 * Fetch statuses AJAX handler.
+	 * Fetch statuses for the selected space.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_statuses_ajax() {
-		Automator()->utilities->verify_nonce();
-
-		$space_id  = $this->get_values_field_from_ajax( self::META_SPACE );
+	protected function remote_data_get_statuses( $request ): array {
+		$space_id  = $request->get_field_value( self::META_SPACE );
 		$cache_key = 'statuses_' . $space_id;
-		$cached    = $this->get_cached_option_data( $cache_key );
+		$cached    = $this->get_cached_option_data( $cache_key, $request->is_refresh() );
 
 		if ( null !== $cached ) {
-			$this->ajax_success( $cached );
+			return $this->remote_data_success( $cached );
 		}
 
 		$statuses = $this->api->get_space_statuses( $space_id );
 		$this->save_option_data_to_cache( $cache_key, $statuses );
-		$this->ajax_success( $statuses );
+
+		return $this->remote_data_success( $statuses );
 	}
 
 	/**
-	 * Fetch tasks AJAX handler.
+	 * Fetch tasks for the selected list.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_tasks_ajax() {
-		Automator()->utilities->verify_nonce();
-
-		$list_id = $this->get_values_field_from_ajax( self::META_LIST );
+	protected function remote_data_get_tasks( $request ): array {
+		$list_id = $request->get_field_value( self::META_LIST );
 		$tasks   = $this->api->get_list_tasks( $list_id );
 
-		$this->ajax_success( $tasks );
+		return $this->remote_data_success( $tasks );
 	}
 }

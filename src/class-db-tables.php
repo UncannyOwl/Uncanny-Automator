@@ -107,6 +107,8 @@ class DB_Tables {
 				'recipe_count'      => 'uap_recipe_count',
 				'uap_options'       => 'uap_options',
 				'recipe_throttle'   => 'uap_recipe_throttle_log',
+				'error_log'         => 'uap_error_log',
+				'run_snapshots'     => 'uap_run_snapshots',
 			)
 		);
 		// Add all tables to $wpdb object

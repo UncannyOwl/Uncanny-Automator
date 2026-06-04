@@ -63,6 +63,17 @@ class Import_Recipe {
 	private $modify_urls = false;
 
 	/**
+	 * Post IDs created by the current import_recipe_json() call.
+	 *
+	 * Accumulated as `copy()` runs, then handed to the shared
+	 * `automator_migrate_recipe_part_meta` action so each integration's
+	 * migration class can normalise the freshly-inserted postmeta.
+	 *
+	 * @var int[]
+	 */
+	private $imported_post_ids = array();
+
+	/**
 	 * Import_Recipe constructor.
 	 *
 	 * @return void
@@ -311,6 +322,11 @@ class Import_Recipe {
 		$this->site_url                     = get_site_url();
 		$this->modify_urls                  = ! empty( $this->import_url ) && $this->import_url !== $this->site_url;
 
+		// Fresh ID accumulator for this import. Populated by every copy()
+		// below + import_loop(). Fed to automator_migrate_recipe_part_meta
+		// at the end so integration migrations can scope their rewrites.
+		$this->imported_post_ids = array();
+
 		// Set imported meta message.
 		$recipe_meta                                       = (array) $recipe->meta;
 		$recipe_meta[ self::IMPORTED_RECIPE_WARNING_META ] = array(
@@ -329,6 +345,8 @@ class Import_Recipe {
 			return new WP_Error( 'error-copying-recipe', _x( 'Unable to create imported recipe.', 'Import Recipe', 'uncanny-automator' ) );
 		}
 
+		$this->imported_post_ids[] = (int) $new_recipe_id;
+
 		// Copy the recipe parts.
 		$parts = array( 'triggers', 'actions', 'loops', 'closure' );
 		foreach ( $parts as $part ) {
@@ -344,9 +362,13 @@ class Import_Recipe {
 				$status       = $this->maybe_adjust_recipe_part_status( $recipe_part );
 				$part_post_id = $this->copy_recipe_parts->copy( $recipe_part->post->ID, $new_recipe_id, $status, $recipe_part->post, (array) $recipe_part->meta );
 
-				// Handle loops.
-				if ( ! empty( $part_post_id ) && 'loops' === $part ) {
-					$this->import_loop( $recipe_part, $part_post_id );
+				if ( ! empty( $part_post_id ) ) {
+					$this->imported_post_ids[] = (int) $part_post_id;
+
+					// Handle loops.
+					if ( 'loops' === $part ) {
+						$this->import_loop( $recipe_part, $part_post_id );
+					}
 				}
 			}
 		}
@@ -355,6 +377,26 @@ class Import_Recipe {
 		$this->copy_recipe_parts->copy_action_conditions( $recipe->post->ID, $new_recipe_id );
 
 		$this->copy_recipe_parts->is_import = false;
+
+		/**
+		 * Fires once per imported recipe with every newly-created post ID
+		 * (recipe + triggers + actions + loops + loop items + closure).
+		 *
+		 * Integrations subscribe to scope their own data migrations to
+		 * imports without rescanning the whole site. The site-wide pass
+		 * gates itself on a one-shot flag; this targeted dispatch
+		 * intentionally bypasses that gate.
+		 *
+		 * @since 7.5
+		 *
+		 * @param int[] $imported_post_ids Fresh post IDs from this import.
+		 * @param int   $new_recipe_id     The new top-level recipe ID.
+		 */
+		do_action(
+			'automator_migrate_recipe_part_meta',
+			array_values( array_unique( array_map( 'absint', $this->imported_post_ids ) ) ),
+			(int) $new_recipe_id
+		);
 
 		return $new_recipe_id;
 	}
@@ -424,6 +466,10 @@ class Import_Recipe {
 				}
 				$status       = $this->maybe_adjust_recipe_part_status( $item );
 				$item_post_id = $this->copy_recipe_parts->copy( $item->post->ID, $new_loop_id, $status, $item->post, (array) $item->meta );
+
+				if ( ! empty( $item_post_id ) ) {
+					$this->imported_post_ids[] = (int) $item_post_id;
+				}
 			}
 		}
 	}

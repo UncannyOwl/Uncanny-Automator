@@ -17,6 +17,15 @@ class Wpjm_Submitresume extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( self::TRIGGER_CODE, 'WPJM' )
+			->trigger_meta( self::TRIGGER_META )
+			->hook( 'resume_manager_resume_submitted', 10, 1 );
+	}
+
+	/**
 	 * Check if requirements are met
 	 */
 	public function requirements_met() {
@@ -27,16 +36,10 @@ class Wpjm_Submitresume extends \Uncanny_Automator\Recipe\Trigger {
 	 * Setup trigger
 	 */
 	protected function setup_trigger() {
-		$this->set_integration( 'WPJM' );
-		$this->set_trigger_code( self::TRIGGER_CODE );
-		$this->set_trigger_meta( self::TRIGGER_META );
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_pro( false );
-		$this->set_is_login_required( true );
-		$this->set_trigger_type( 'user' );
+		$this->set_is_login_required( false );
 		$this->set_uses_api( false );
-
-		$this->add_action( 'resume_manager_resume_submitted' );
-		$this->set_action_args_count( 1 );
 
 		$this->set_sentence( esc_html_x( 'A user submits a resume', 'WP Job Manager', 'uncanny-automator' ) );
 
@@ -59,6 +62,23 @@ class Wpjm_Submitresume extends \Uncanny_Automator\Recipe\Trigger {
 		if ( empty( $resume_id ) ) {
 			return false;
 		}
+
+		// Credit the resume's author. resume_manager_resume_submitted fires
+		// for guest submissions and programmatic inserts too, so resolve the
+		// user from the resume post instead of the current request.
+		$resume = get_post( $resume_id );
+
+		if ( ! $resume instanceof \WP_Post ) {
+			return false;
+		}
+
+		$author_id = (int) $resume->post_author;
+
+		if ( $author_id <= 0 || false === get_user_by( 'ID', $author_id ) ) {
+			return false;
+		}
+
+		$this->set_user_id( $author_id );
 
 		return true;
 	}

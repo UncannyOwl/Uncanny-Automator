@@ -1,10 +1,6 @@
 <?php
 namespace Uncanny_Automator\Integrations\Thrive_Apprentice;
 
-
-// Create class alias for backward compatibility with Pro plugin
-class_alias( 'Uncanny_Automator\Integrations\Thrive_Apprentice\Thrive_Apprentice_Helpers', 'Uncanny_Automator\Thrive_Apprentice_Helpers' );
-
 /**
  * Class Thrive_Apprentice_Helpers
  *
@@ -1129,3 +1125,6 @@ class Thrive_Apprentice_Helpers {
 		);
 	}
 }
+
+// BC alias — must run after the class declaration (before, PHP autoload fails).
+class_alias( 'Uncanny_Automator\Integrations\Thrive_Apprentice\Thrive_Apprentice_Helpers', 'Uncanny_Automator\Thrive_Apprentice_Helpers' );

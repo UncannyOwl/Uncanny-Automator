@@ -6,19 +6,87 @@
 namespace Uncanny_Automator\Integrations\Asana;
 
 use Uncanny_Automator\Settings\App_Integration_Settings;
+use Uncanny_Automator\Settings\App_Integration_Webhook_Manager_Settings;
 use Uncanny_Automator\Settings\OAuth_App_Integration;
-
-use Exception;
+use Uncanny_Automator\Settings\Premium_Integration_Webhook_Settings;
 
 /**
  * Asana_Settings
  *
  * @property Asana_App_Helpers $helpers
  * @property Asana_Api_Caller $api
+ * @property Asana_Webhooks $webhooks
  */
 class Asana_Settings extends App_Integration_Settings {
 
 	use OAuth_App_Integration;
+	use Premium_Integration_Webhook_Settings;
+	use App_Integration_Webhook_Manager_Settings;
+
+	////////////////////////////////////////////////////////////
+	// Setup
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Wire up settings-page properties — currently just the webhook-manager disconnect cleanup.
+	 *
+	 * @return void
+	 */
+	public function set_properties() {
+		$this->register_webhook_manager_disconnect_cleanup();
+	}
+
+	////////////////////////////////////////////////////////////
+	// Webhook manager overrides
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Resource label used by the webhook-manager UI for column headers and copy.
+	 *
+	 * @return string
+	 */
+	public function get_webhook_manager_resource_label() {
+		return esc_html_x( 'Project', 'Asana', 'uncanny-automator' );
+	}
+
+	/**
+	 * Group manager rows by workspace — first row of each workspace renders a header line.
+	 *
+	 * @return array
+	 */
+	public function get_webhook_manager_grouping() {
+		return array(
+			'field'       => 'workspace_id',
+			'label_field' => 'workspace_name',
+		);
+	}
+
+	/**
+	 * Asana-specific intro copy that sits above the manager table.
+	 *
+	 * @return void
+	 */
+	public function output_webhook_manager_intro() {
+		$this->output_panel_subtitle(
+			esc_html_x( 'Asana Webhooks', 'Asana', 'uncanny-automator' )
+		);
+		$this->output_subtle_panel_paragraph(
+			esc_html_x( "To use Asana triggers in your recipes, you'll need to authorize webhooks for each project with the events you want to listen for.", 'Asana', 'uncanny-automator' )
+		);
+		$this->output_subtle_panel_paragraph(
+			esc_html_x( "You don't need to authorize projects to use actions.", 'Asana', 'uncanny-automator' )
+		);
+	}
+
+	/**
+	 * Render the connected-state main content
+	 *
+	 * @return void
+	 */
+	public function output_main_connected_content() {
+		$this->output_single_account_message();
+		$this->output_webhook_manager();
+	}
 
 	////////////////////////////////////////////////////////////
 	// Required abstract method

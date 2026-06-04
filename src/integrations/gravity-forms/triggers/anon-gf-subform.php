@@ -12,20 +12,23 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 	private $gf;
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( 'ANONGFSUBFORM', 'GF' )
+			->trigger_type( 'anonymous' )
+			->trigger_meta( 'ANONGFFORMS' )
+			->hook( 'gform_after_submission', 10, 2 );
+	}
+
+	/**
 	 * Define and register the trigger by pushing it into the Automator object
 	 */
 	public function setup_trigger() {
 
 		$this->gf = array_shift( $this->dependencies );
 
-		$this->set_integration( 'GF' );
-
-		$this->set_trigger_code( 'ANONGFSUBFORM' );
-
-		$this->set_trigger_meta( 'ANONGFFORMS' );
-
-		$this->set_trigger_type( 'anonymous' );
-
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_sentence(
 			sprintf(
 				/* translators: Anonymous trigger - Gravity Forms */
@@ -38,8 +41,6 @@ class ANON_GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 			/* translators: Anonymous trigger - Gravity Forms */
 			esc_html_x( '{{A form}} is submitted', 'Gravity Forms', 'uncanny-automator' )
 		);
-
-		$this->add_action( 'gform_after_submission', 10, 2 );
 
 		$this->set_author( Automator()->get_author_name( $this->trigger_code ) );
 

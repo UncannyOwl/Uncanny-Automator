@@ -118,7 +118,7 @@ class DISCORD_ASSIGN_ROLE_TO_MEMBER extends \Uncanny_Automator\Recipe\App_Action
 
 		// Check for errors.
 		$status_code = isset( $response['statusCode'] ) ? absint( $response['statusCode'] ) : 0;
-		if ( 204 !== $status_code ) {
+		if ( ! in_array( $status_code, array( 200, 204 ), true ) ) {
 			throw new Exception( esc_html_x( 'Error adding role to user.', 'Discord', 'uncanny-automator' ) );
 		}
 

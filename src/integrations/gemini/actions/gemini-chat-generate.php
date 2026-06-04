@@ -78,32 +78,36 @@ class Gemini_Chat_Generate extends App_Action {
 
 		$model_options = array(
 			array(
-				'text'  => 'Gemini 2.5 Flash Preview 05-20',
-				'value' => 'gemini-2.5-flash-preview-05-20',
+				'text'  => 'Gemini 3.5 Flash',
+				'value' => 'gemini-3.5-flash',
 			),
 			array(
-				'text'  => 'Gemini 2.5 Pro Preview',
-				'value' => 'gemini-2.5-pro-preview-05-06',
+				'text'  => 'Gemini 3.1 Pro Preview',
+				'value' => 'gemini-3.1-pro-preview',
 			),
 			array(
-				'text'  => 'Gemini 2.0 Flash',
-				'value' => 'gemini-2.0-flash',
+				'text'  => 'Gemini 3.1 Flash-Lite',
+				'value' => 'gemini-3.1-flash-lite',
 			),
 			array(
-				'text'  => 'Gemini 2.0 Flash-Lite',
-				'value' => 'gemini-2.0-flash-lite',
+				'text'  => 'Gemini 3 Pro Preview',
+				'value' => 'gemini-3-pro-preview',
 			),
 			array(
-				'text'  => 'Gemini 1.5 Flash',
-				'value' => 'gemini-1.5-flash',
+				'text'  => 'Gemini 3 Flash Preview',
+				'value' => 'gemini-3-flash-preview',
 			),
 			array(
-				'text'  => 'Gemini 1.5 Flash-8B',
-				'value' => 'gemini-1.5-flash-8b',
+				'text'  => 'Gemini 2.5 Flash',
+				'value' => 'gemini-2.5-flash',
 			),
 			array(
-				'text'  => 'Gemini 1.5 Pro',
-				'value' => 'gemini-1.5-pro',
+				'text'  => 'Gemini 2.5 Flash Lite',
+				'value' => 'gemini-2.5-flash-lite',
+			),
+			array(
+				'text'  => 'Gemini 2.5 Pro',
+				'value' => 'gemini-2.5-pro',
 			),
 		);
 
@@ -114,7 +118,7 @@ class Gemini_Chat_Generate extends App_Action {
 			'required'        => true,
 			'options'         => $model_options,
 			'options_show_id' => false,
-			'description'     => esc_html_x( 'Select the Gemini model to use. Gemini 1.5 Pro has the largest context window (1 million tokens).', 'Gemini', 'uncanny-automator' ),
+			'description'     => esc_html_x( 'Select the Gemini model to use. Gemini 3 and 2.5 models support up to 1 million token context windows.', 'Gemini', 'uncanny-automator' ),
 			'relevant_tokens' => array(),
 		);
 
@@ -176,7 +180,7 @@ class Gemini_Chat_Generate extends App_Action {
 
 		$temperature    = $this->get_parsed_meta_value( 'TEMPERATURE', '0.7' );
 		$max_tokens     = $this->get_parsed_meta_value( 'MAX_TOKENS', '2048' );
-		$model          = $this->get_parsed_meta_value( 'MODEL', 'gemini-2.0-flash' );
+		$model          = $this->get_parsed_meta_value( 'MODEL', 'gemini-2.5-flash' );
 		$system_content = $this->get_parsed_meta_value( 'SYSTEM_CONTENT', '' );
 		$prompt         = $this->get_parsed_meta_value( $this->get_action_meta(), '' );
 

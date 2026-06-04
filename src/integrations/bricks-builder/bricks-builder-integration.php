@@ -3,8 +3,6 @@
 namespace Uncanny_Automator\Integrations\Bricks_Builder;
 
 use Uncanny_Automator\Bricks_Builder_Helpers;
-use UncannyAutomator\Integrations\Bricks_Builder\BB_USER_SUBMITS_FORM;
-use UncannyAutomator\Integrations\Bricks_Builder\BRICKS_BUILDER_USER_SUBMITS_FORM;
 
 /**
  * Class Bricks_Builder_Integration

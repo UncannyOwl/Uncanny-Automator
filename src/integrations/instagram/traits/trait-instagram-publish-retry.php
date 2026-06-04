@@ -139,12 +139,8 @@ trait Instagram_Publish_Retry {
 			);
 
 			// Success - mark completed.
-			Automator()->db->action->mark_complete(
-				$retry_data['action_id'],
-				$retry_data['recipe_log_id'],
-				Automator_Status::COMPLETED
-			);
-			Automator()->db->recipe->mark_complete( $retry_data['recipe_log_id'], Automator_Status::COMPLETED );
+			Automator()->recipe_runner->complete_action( absint( $retry_data['action_id'] ), absint( $retry_data['recipe_log_id'] ), Automator_Status::COMPLETED );
+			Automator()->recipe_runner->finalize_recipe_by_log_id( absint( $retry_data['recipe_log_id'] ) );
 
 		} catch ( \Exception $e ) {
 			$this->handle_retry_failure( $retry_data, $e );
@@ -172,16 +168,8 @@ trait Instagram_Publish_Retry {
 				)
 				: $e->getMessage();
 
-			Automator()->db->action->mark_complete(
-				$retry_data['action_id'],
-				$retry_data['recipe_log_id'],
-				Automator_Status::COMPLETED_WITH_ERRORS,
-				$error_msg
-			);
-			Automator()->db->recipe->mark_complete(
-				$retry_data['recipe_log_id'],
-				Automator_Status::COMPLETED_WITH_ERRORS
-			);
+			Automator()->recipe_runner->complete_action( absint( $retry_data['action_id'] ), absint( $retry_data['recipe_log_id'] ), Automator_Status::COMPLETED_WITH_ERRORS, $error_msg );
+			Automator()->recipe_runner->finalize_recipe_by_log_id( absint( $retry_data['recipe_log_id'] ) );
 
 			return;
 		}
@@ -197,17 +185,13 @@ trait Instagram_Publish_Retry {
 		wp_schedule_single_event( time() + $this->retry_delay, $this->retry_hook, array( $retry_data ) );
 
 		// Update action log with retry status.
-		Automator()->db->action->mark_complete(
-			$retry_data['action_id'],
-			$retry_data['recipe_log_id'],
-			Automator_Status::COMPLETED_AWAITING,
-			sprintf(
-				// translators: 1: Current attempt number, 2: Max attempts
-				esc_html_x( 'Publishing in progress. Retry attempt %1$d of %2$d.', 'Instagram', 'uncanny-automator' ),
-				$retry_data['attempt'],
-				$this->max_retry_attempts
-			)
+		$retry_msg = sprintf(
+			// translators: 1: Current attempt number, 2: Max attempts
+			esc_html_x( 'Publishing in progress. Retry attempt %1$d of %2$d.', 'Instagram', 'uncanny-automator' ),
+			$retry_data['attempt'],
+			$this->max_retry_attempts
 		);
+		Automator()->recipe_runner->complete_action( absint( $retry_data['action_id'] ), absint( $retry_data['recipe_log_id'] ), Automator_Status::COMPLETED_AWAITING, $retry_msg );
 	}
 
 	/**

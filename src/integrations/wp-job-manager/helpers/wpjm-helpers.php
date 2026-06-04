@@ -2,15 +2,14 @@
 
 namespace Uncanny_Automator\Integrations\Wpjm;
 
-// Backwards compatibility for old helper classes.
-class_alias( 'Uncanny_Automator\Integrations\Wpjm\Wpjm_Helpers', 'Uncanny_Automator\Wpjm_Helpers' );
+use Uncanny_Automator\Recipe\Abstract_Helpers;
 
 /**
  * Class Wpjm_Helpers
  *
  * @package Uncanny_Automator\Integrations\Wpjm
  */
-class Wpjm_Helpers {
+class Wpjm_Helpers extends Abstract_Helpers {
 
 	/**
 	 * @var bool
@@ -99,3 +98,7 @@ class Wpjm_Helpers {
 		return $options;
 	}
 }
+
+// BC alias — must run after the class declaration (before, PHP autoload fails).
+class_alias( 'Uncanny_Automator\Integrations\Wpjm\Wpjm_Helpers', 'Uncanny_Automator\Wpjm_Helpers' );
+

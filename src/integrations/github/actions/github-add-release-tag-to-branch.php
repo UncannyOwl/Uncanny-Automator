@@ -76,10 +76,9 @@ class GITHUB_ADD_RELEASE_TAG_TO_BRANCH extends \Uncanny_Automator\Recipe\App_Act
 				'required'        => true,
 				'options'         => array(),
 				'relevant_tokens' => array(),
-				'ajax'            => array(
-					'endpoint'      => 'automator_github_get_repo_branches_options',
-					'event'         => 'parent_fields_change',
-					'listen_fields' => array( $this->repo_meta_key ),
+				'remote_data'     => $this->helpers->remote_data_parent_config(
+					'repo_branches',
+					array( $this->repo_meta_key )
 				),
 			),
 			array(
@@ -90,10 +89,9 @@ class GITHUB_ADD_RELEASE_TAG_TO_BRANCH extends \Uncanny_Automator\Recipe\App_Act
 				'options'         => array(),
 				'relevant_tokens' => array(),
 				'description'     => esc_html_x( 'To create a new tag enter it as a custom value', 'GitHub', 'uncanny-automator' ),
-				'ajax'            => array(
-					'endpoint'      => 'automator_github_get_repo_tag_options',
-					'event'         => 'parent_fields_change',
-					'listen_fields' => array( $this->repo_meta_key ),
+				'remote_data'     => $this->helpers->remote_data_parent_config(
+					'repo_tags',
+					array( $this->repo_meta_key )
 				),
 			),
 			array(

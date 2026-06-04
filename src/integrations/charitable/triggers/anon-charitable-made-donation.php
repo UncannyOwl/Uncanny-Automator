@@ -4,15 +4,20 @@ namespace Uncanny_Automator\Integrations\Charitable;
 
 /**
  * Class ANON_CHARITABLE_MADE_DONATION
+ *
+ * @property \Uncanny_Automator\Integrations\Charitable\Charitable_Helpers $item_helpers
  */
 class ANON_CHARITABLE_MADE_DONATION extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Charitable_Integration Instance.
-	 *
-	 * @var object
+	 * Opt this trigger into the lazy loading path.
 	 */
-	private $charitable;
+	public static function definition() {
+		return self::new_definition( 'ANON_MADE_DONATION', 'CHARITABLE' )
+			->trigger_type( 'anonymous' )
+			->trigger_meta( 'POST' )
+			->hook( 'automator_charitable_donation_made', 10, 1 );
+	}
 
 	/**
 	 * Anonymous trigger that will fire even if no user is logged in.
@@ -21,16 +26,10 @@ class ANON_CHARITABLE_MADE_DONATION extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	protected function setup_trigger() {
 
-		$this->charitable = array_shift( $this->dependencies );
-
-		$this->set_trigger_type( 'anonymous' );
-		$this->set_integration( 'CHARITABLE' );
-		$this->set_trigger_code( 'ANON_MADE_DONATION' );
-		$this->set_trigger_meta( 'POST' );
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		// translators: Trigger sentence - Charitable
 		$this->set_sentence( esc_html_x( 'A donation is made', 'Charitable', 'uncanny-automator' ) );
 		$this->set_readable_sentence( esc_html_x( 'A donation is made', 'Charitable', 'uncanny-automator' ) );
-		$this->add_action( 'automator_charitable_donation_made', 10, 1 );
 
 	}
 
@@ -43,7 +42,8 @@ class ANON_CHARITABLE_MADE_DONATION extends \Uncanny_Automator\Recipe\Trigger {
 	 * @return bool
 	 */
 	public function validate( $trigger, $hook_args ) {
-		return $this->charitable->helpers()->validate_approved_donation( $hook_args[0] ) ? true : false;
+		// Sentence is "A donation is made" — fire on creation, do not require approved status.
+		return $this->item_helpers->get_donation( $hook_args[0] ) ? true : false;
 	}
 
 	/**
@@ -55,7 +55,7 @@ class ANON_CHARITABLE_MADE_DONATION extends \Uncanny_Automator\Recipe\Trigger {
 	 * @return array
 	 */
 	public function define_tokens( $trigger, $tokens ) {
-		return array_merge( $tokens, $this->charitable->helpers()->get_donation_tokens_config() );
+		return array_merge( $tokens, $this->item_helpers->get_donation_tokens_config() );
 	}
 
 	/**
@@ -67,7 +67,7 @@ class ANON_CHARITABLE_MADE_DONATION extends \Uncanny_Automator\Recipe\Trigger {
 	 * @return array
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
-		return $this->charitable->helpers()->hydrate_donation_tokens( $hook_args[0] );
+		return $this->item_helpers->hydrate_donation_tokens( $hook_args[0] );
 	}
 
 }

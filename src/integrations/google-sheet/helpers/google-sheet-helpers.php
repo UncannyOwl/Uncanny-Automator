@@ -175,18 +175,22 @@ class Google_Sheet_Helpers extends App_Helpers {
 		return true;
 	}
 
+	////////////////////////////////////////////////////////////
+	// Remote-data REST handlers
 	//
-	// AJAX methods
-	//
+	// Reachable via POST /wp-json/uap/v2/remote-data/googlesheet/{data},
+	// where {data} matches the suffix on the method name. Dispatched
+	// through Abstract_Helpers::process_remote_data_request().
+	////////////////////////////////////////////////////////////
 
 	/**
-	 * AJAX: Fetch spreadsheets for dropdown.
+	 * Fetch spreadsheets for the top-level select.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_spreadsheets_ajax() {
-		Automator()->utilities->ajax_auth_check();
-
+	protected function remote_data_get_spreadsheets( $request ): array {
 		try {
 			$spreadsheets = $this->get_spreadsheets();
 			$options      = array(
@@ -203,81 +207,59 @@ class Google_Sheet_Helpers extends App_Helpers {
 				);
 			}
 
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $options,
-				)
-			);
+			return $this->remote_data_success( $options );
 
 		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => $e->getMessage(),
-				)
-			);
+			return $this->remote_data_error( $e->getMessage() );
 		}
 	}
 
 	/**
-	 * AJAX: Fetch worksheets for dropdown.
+	 * Fetch worksheets for the selected spreadsheet.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_worksheets_ajax() {
-		Automator()->utilities->ajax_auth_check();
-
-		$values         = automator_filter_input_array( 'values', INPUT_POST );
-		$spreadsheet_id = sanitize_text_field( $values['GSSPREADSHEET'] ?? '' );
+	protected function remote_data_get_worksheets( $request ): array {
+		$spreadsheet_id = $request->get_field_value( 'GSSPREADSHEET' );
 
 		if ( empty( $spreadsheet_id ) ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => esc_html_x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' ),
-				)
+			return $this->remote_data_error(
+				esc_html_x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' )
 			);
 		}
 
 		$worksheets = $this->get_worksheets_from_spreadsheet( $spreadsheet_id );
 
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $worksheets,
-			)
-		);
+		return $this->remote_data_success( $worksheets );
 	}
 
 	/**
-	 * AJAX: Fetch worksheet columns.
+	 * Fetch worksheet columns as repeater rows.
 	 *
-	 * @return void
+	 * Returns rows under the `rows` key (not `options`) — `mapping_column` on
+	 * the field config tells the repeater to key each row by `GS_COLUMN_NAME`.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_worksheets_columns_ajax() {
-		Automator()->utilities->ajax_auth_check();
-
-		$fields         = array();
-		$values         = automator_filter_input_array( 'values', INPUT_POST );
-		$spreadsheet_id = sanitize_text_field( $values['GSSPREADSHEET'] ?? '' );
-		$worksheet_id   = sanitize_text_field( $values['GSWORKSHEET'] ?? '' );
+	protected function remote_data_get_worksheets_columns( $request ): array {
+		$spreadsheet_id = $request->get_field_value( 'GSSPREADSHEET' );
+		$worksheet_id   = $request->get_field_value( 'GSWORKSHEET' );
 
 		if ( empty( $spreadsheet_id ) ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => esc_html_x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' ),
-				)
+			return $this->remote_data_error(
+				esc_html_x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' ),
+				'rows'
 			);
 		}
 
 		if ( empty( $worksheet_id ) ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => esc_html_x( 'Please select a worksheet', 'Google Sheets', 'uncanny-automator' ),
-				)
+			return $this->remote_data_error(
+				esc_html_x( 'Please select a worksheet', 'Google Sheets', 'uncanny-automator' ),
+				'rows'
 			);
 		}
 
@@ -286,12 +268,7 @@ class Google_Sheet_Helpers extends App_Helpers {
 		$response     = $this->api->get_rows( $spreadsheet_id, $worksheet_id );
 
 		if ( false === $response->success ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => $response->error,
-				)
-			);
+			return $this->remote_data_error( $response->error, 'rows' );
 		}
 
 		$fields = array();
@@ -307,48 +284,33 @@ class Google_Sheet_Helpers extends App_Helpers {
 			}
 		}
 
-		wp_send_json(
-			array(
-				'success' => true,
-				'rows'    => $fields,
-			)
-		);
+		return $this->remote_data_success( $fields, 'rows' );
 	}
 
 	/**
-	 * AJAX: Fetch worksheet columns for search.
+	 * Fetch worksheet columns as a flat select list for the lookup-match column
+	 * picker on the update-row action.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function fetch_worksheets_columns_search_ajax() {
-		Automator()->utilities->ajax_auth_check();
-
-		$values         = automator_filter_input_array( 'values', INPUT_POST );
-		$spreadsheet_id = sanitize_text_field( $values['GSSPREADSHEET'] ?? '' );
-		$worksheet_id   = sanitize_text_field( $values['GSWORKSHEET'] ?? '' );
+	protected function remote_data_get_lookup_columns( $request ): array {
+		$spreadsheet_id = $request->get_field_value( 'GSSPREADSHEET' );
+		$worksheet_id   = $request->get_field_value( 'GSWORKSHEET' );
 
 		if ( empty( $spreadsheet_id ) || empty( $worksheet_id ) ) {
 			$error = empty( $spreadsheet_id )
 				? esc_html_x( 'Please select a spreadsheet', 'Google Sheets', 'uncanny-automator' )
 				: esc_html_x( 'Please select a worksheet', 'Google Sheets', 'uncanny-automator' );
 
-			wp_send_json(
-				array(
-					'success' => false,
-					'error'   => $error,
-				)
-			);
+			return $this->remote_data_error( $error );
 		}
 
 		$worksheet_id = $this->calculate_hash( $worksheet_id );
 		$fields       = $this->api->get_columns( $spreadsheet_id, $worksheet_id );
 
-		wp_send_json(
-			array(
-				'success' => true,
-				'options' => $fields,
-			)
-		);
+		return $this->remote_data_success( $fields );
 	}
 
 	//
@@ -564,10 +526,7 @@ class Google_Sheet_Helpers extends App_Helpers {
 			'options'               => array(),
 			'supports_custom_value' => false,
 			'options_show_id'       => false,
-			'ajax'                  => array(
-				'endpoint' => 'automator_fetch_googlesheets_spreadsheets',
-				'event'    => 'on_load',
-			),
+			'remote_data'           => $this->remote_data_load_config( 'spreadsheets' ),
 		);
 	}
 
@@ -585,11 +544,7 @@ class Google_Sheet_Helpers extends App_Helpers {
 			'options'               => array(),
 			'options_show_id'       => false,
 			'supports_custom_value' => false,
-			'ajax'                  => array(
-				'endpoint'      => 'automator_fetch_googlesheets_worksheets',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( 'GSSPREADSHEET' ),
-			),
+			'remote_data'           => $this->remote_data_parent_config( 'worksheets', array( 'GSSPREADSHEET' ) ),
 		);
 	}
 }

@@ -1,289 +1,226 @@
 <?php
 
+namespace Uncanny_Automator\Integrations\Uncanny_Codes;
 
-namespace Uncanny_Automator;
+use Uncanny_Automator\Recipe\Abstract_Helpers;
 
 /**
- * Class Uncanny_Codes_Helpers
+ * Class Uc_Helpers
  *
  * @package Uncanny_Automator
  */
-class Uncanny_Codes_Helpers {
+class Uc_Helpers extends Abstract_Helpers {
 
 	/**
-	 * @var Uncanny_Codes_Helpers
-	 */
-	public $options;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options = true;
-
-	/**
-	 * Uoa_Helpers constructor.
+	 * Uc_Helpers constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
-	 * @param Uncanny_Codes_Helpers $options
-	 */
-	public function setOptions( Uncanny_Codes_Helpers $options ) {
-		$this->options = $options;
-	}
-
-	/**
-	 * @param $label
-	 * @param $option_code
+	 * Remote-data handler: load batches with "Any batch" sentinel (triggers).
 	 *
-	 * @return array|mixed|void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function get_all_codes( $label = null, $option_code = 'UNCANNYCODES' ) {
+	protected function remote_data_get_batches( $request ): array {
+		return $this->remote_data_success( $this->build_batch_options( true ) );
+	}
 
-		if ( ! $label ) {
-			$label = esc_attr__( 'Code', 'uncanny-automator' );
-		}
+	/**
+	 * Remote-data handler: load batches without "Any" sentinel (actions).
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_batches_strict( $request ): array {
+		return $this->remote_data_success( $this->build_batch_options( false ) );
+	}
+
+	/**
+	 * Remote-data handler: load distinct prefixes for dropdown.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_prefixes( $request ): array {
+		return $this->remote_data_success( $this->build_distinct_options( 'prefix' ) );
+	}
+
+	/**
+	 * Remote-data handler: load distinct suffixes for dropdown.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_suffixes( $request ): array {
+		return $this->remote_data_success( $this->build_distinct_options( 'suffix' ) );
+	}
+
+	/**
+	 * Build batch options array.
+	 *
+	 * @param bool $include_any Whether to prepend "Any batch" sentinel.
+	 *
+	 * @return array
+	 */
+	private function build_batch_options( $include_any = true ) {
 
 		global $wpdb;
 
 		$options = array();
 
-		$all_codes = $wpdb->get_results( 'SELECT ID,code FROM ' . $wpdb->prefix . 'uncanny_codes_codes', ARRAY_A );
-
-		foreach ( $all_codes as $code ) {
-			$options[ $code['ID'] ] = $code['code'];
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => '-1',
+				'text'  => esc_html_x( 'Any batch', 'Uncanny Codes', 'uncanny-automator' ),
+			);
 		}
 
-		$option = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => 'select',
-			'required'        => true,
-			'options'         => $options,
-			'relevant_tokens' => array(
-				$option_code         => esc_attr__( 'Code', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_attr__( 'Code ID', 'uncanny-automator' ),
-			),
-		);
-
-		return apply_filters( 'uap_option_get_all_codes', $option );
-	}
-
-	/**
-	 * @param $label
-	 * @param $option_code
-	 *
-	 * @return array|mixed|void
-	 */
-	public function get_all_code_prefix( $label = null, $option_code = 'UCPREFIX' ) {
-
-		if ( ! $label ) {
-			$label = esc_attr__( 'Prefix', 'uncanny-automator' );
-		}
-
-		global $wpdb;
-
-		$options = array();
-
-		$all_codes = $wpdb->get_results( 'SELECT DISTINCT prefix FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
-		if ( ! $all_codes ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-		foreach ( $all_codes as $code ) {
-			if ( ! empty( $code['prefix'] ) ) {
-				$prefix             = Automator()->utilities->automator_sanitize( $code['prefix'] );
-				$options[ $prefix ] = $code['prefix'];
-			}
-		}
-
-		$option = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => 'select',
-			'required'        => true,
-			'options'         => $options,
-			'relevant_tokens' => array(
-				$option_code => esc_attr__( 'Prefix', 'uncanny-automator' ),
-			),
-		);
-
-		return apply_filters( 'uap_option_get_all_code_prefix', $option );
-	}
-
-	/**
-	 * @param $label
-	 * @param $option_code
-	 *
-	 * @return array|mixed|void
-	 */
-	public function get_all_code_suffix( $label = null, $option_code = 'UCSUFFIX' ) {
-
-		if ( ! $label ) {
-			$label = esc_attr__( 'Suffix', 'uncanny-automator' );
-		}
-
-		global $wpdb;
-
-		$options = array();
-
-		$all_codes = $wpdb->get_results( 'SELECT DISTINCT suffix FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
-		if ( ! $all_codes ) {
-			return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		}
-
-		foreach ( $all_codes as $code ) {
-			if ( ! empty( $code['suffix'] ) ) {
-				$suffix             = Automator()->utilities->automator_sanitize( $code['suffix'] );
-				$options[ $suffix ] = $code['suffix'];
-			}
-		}
-
-		$option = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => 'select',
-			'required'        => true,
-			'options'         => $options,
-			'relevant_tokens' => array(
-				$option_code => esc_attr__( 'Suffix', 'uncanny-automator' ),
-			),
-		);
-
-		return apply_filters( 'uap_option_get_all_code_suffix', $option );
-	}
-
-	/**
-	 * @param null $label
-	 * @param string $option_code
-	 * @param bool $is_any
-	 *
-	 * @return array|mixed|void
-	 */
-	public function get_all_code_batch( $label = null, $option_code = 'UCBATCH', $is_any = false ) {
-
-		if ( ! $label ) {
-			$label = esc_attr__( 'Prefix', 'uncanny-automator' );
-		}
-
-		global $wpdb;
-
-		$options = array();
-		if ( $is_any ) {
-			$options['-1'] = esc_html__( 'Any batch', 'uncanny-automator' );
-		}
-		$option      = array(
-			'option_code'     => $option_code,
-			'label'           => $label,
-			'input_type'      => 'select',
-			'required'        => true,
-			'options'         => $options,
-			'relevant_tokens' => array(
-				$option_code              => esc_attr__( 'Batch', 'uncanny-automator' ),
-				'UNCANNYCODESBATCHEXPIRY' => esc_attr__( 'Batch expiry date', 'uncanny-automator' ),
-			),
-		);
 		$all_batches = $wpdb->get_results( 'SELECT DISTINCT id, name FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
 
-		if ( empty( $all_batches ) ) {
-			return apply_filters( 'uap_option_get_all_code_batch', $option );
-		}
-		foreach ( $all_batches as $batch ) {
-			if ( ! empty( $batch['name'] ) ) {
-				$options[ $batch['id'] ] = $batch['name'];
+		if ( ! empty( $all_batches ) ) {
+			foreach ( $all_batches as $batch ) {
+				if ( ! empty( $batch['name'] ) ) {
+					$options[] = array(
+						'value' => $batch['id'],
+						'text'  => $batch['name'],
+					);
+				}
 			}
 		}
 
-		natcasesort( $options );
-		$option['options'] = $options;
-
-		return apply_filters( 'uap_option_get_all_code_batch', $option );
+		return $options;
 	}
 
 	/**
-	 * Method uc_get_batch_info.
+	 * Build distinct option list for a single column on uncanny_codes_groups.
 	 *
-	 * @return array A list of data returned with batch info.
+	 * @param string $column The whitelisted column name (`prefix` or `suffix`).
+	 *
+	 * @return array
+	 */
+	private function build_distinct_options( $column ) {
+
+		global $wpdb;
+
+		// Whitelist columns to keep the query safe.
+		if ( ! in_array( $column, array( 'prefix', 'suffix' ), true ) ) {
+			return array();
+		}
+
+		$options = array();
+		$rows    = $wpdb->get_results( 'SELECT DISTINCT ' . $column . ' FROM ' . $wpdb->prefix . 'uncanny_codes_groups', ARRAY_A );
+
+		if ( ! empty( $rows ) ) {
+			foreach ( $rows as $row ) {
+				if ( ! empty( $row[ $column ] ) ) {
+					$options[] = array(
+						'value' => $row[ $column ],
+						'text'  => $row[ $column ],
+					);
+				}
+			}
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Get batch info by batch ID.
+	 *
+	 * @param int $batch_id The batch ID.
+	 *
+	 * @return array Associative array with 'batch_data' and 'codes_data'.
 	 */
 	public function uc_get_batch_info( $batch_id ) {
+
 		global $wpdb;
 
 		$tbl_groups = $wpdb->prefix . 'uncanny_codes_groups';
 		$tbl_codes  = $wpdb->prefix . 'uncanny_codes_codes';
 
-		$batch_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl_groups} WHERE `ID` = %d GROUP BY ID", $batch_id ), OBJECT );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$codes_data = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT(`code`) as codes FROM {$tbl_codes} WHERE `code_group` = %d", $batch_id ), OBJECT );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$batch_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$tbl_groups} WHERE `ID` = %d GROUP BY ID", $batch_id ), OBJECT ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$codes_data = $wpdb->get_row( $wpdb->prepare( "SELECT GROUP_CONCAT(`code`) as codes FROM {$tbl_codes} WHERE `code_group` = %d", $batch_id ), OBJECT ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return array(
 			'batch_data' => $batch_data,
 			'codes_data' => $codes_data,
 		);
-
 	}
 
 	/**
-	 * @param $coupon_id
+	 * Get code string by coupon ID.
 	 *
-	 * @return string code
+	 * @param int $coupon_id The coupon ID.
+	 *
+	 * @return string The code string.
 	 */
 	public function uc_get_code_redeemed( $coupon_id ) {
+
 		global $wpdb;
+
 		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
-		$code      = $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM {$tbl_codes} WHERE `ID` = %d", $coupon_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		return $code;
-
+		return (string) $wpdb->get_var( $wpdb->prepare( "SELECT `code` FROM {$tbl_codes} WHERE `ID` = %d", $coupon_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	}
 
-
 	/**
-	 * @param $code
+	 * Get code_group ID by code string.
 	 *
-	 * @return int code_group
+	 * @param string $code The code string.
+	 *
+	 * @return int The code group ID.
 	 */
 	public function uc_get_code_group_by_code( $code ) {
+
 		global $wpdb;
-		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
-		$code      = $wpdb->get_var( $wpdb->prepare( "SELECT `code_group` FROM {$tbl_codes} WHERE `code` = %s", $code ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		return (int) $code;
+		$tbl_codes  = $wpdb->prefix . 'uncanny_codes_codes';
+		$code_group = $wpdb->get_var( $wpdb->prepare( "SELECT `code_group` FROM {$tbl_codes} WHERE `code` = %s", $code ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
+		return (int) $code_group;
 	}
 
-
-
 	/**
-	 * @param $code
+	 * Get code ID by code string.
 	 *
-	 * @return int ID (coupon_id)
+	 * @param string $code The code string.
+	 *
+	 * @return int The code ID.
 	 */
 	public function uc_get_id_by_code( $code ) {
+
 		global $wpdb;
+
 		$tbl_codes = $wpdb->prefix . 'uncanny_codes_codes';
-		$id        = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM {$tbl_codes} WHERE `code` = %s", $code ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$id        = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM {$tbl_codes} WHERE `code` = %s", $code ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return (int) $id;
-
 	}
 
-
 	/**
-	 * @param $group_id
+	 * Get full code group row by group ID.
 	 *
-	 * @return array
+	 * @param int $group_id The code group ID.
+	 *
+	 * @return object|array The group row object or empty array.
 	 */
 	public function uc_get_code_group_row( $group_id ) {
+
 		global $wpdb;
+
 		$tbl_groups = $wpdb->prefix . 'uncanny_codes_groups';
-		$group      = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $tbl_groups . ' WHERE ID = %d', $group_id ) );   // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$group      = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . $tbl_groups . ' WHERE ID = %d', $group_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( empty( $group ) ) {
 			return array();
 		}
 
 		return $group;
-
 	}
-
 }

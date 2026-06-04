@@ -76,7 +76,7 @@ trait Premium_Integration_Items {
 		// Validate type.
 		$this->validate_item_type( $type );
 
-		$query_service = \Uncanny_Automator\Api\Services\Integration\Integration_Query_Service::get_instance();
+		$query_service = \Uncanny_Automator\App\Integration_Catalog\Services\Integration_Query_Service::get_instance();
 		$integration   = $query_service->get_integration( $this->get_integration() );
 
 		if ( null === $integration ) {

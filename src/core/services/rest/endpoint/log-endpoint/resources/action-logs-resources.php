@@ -387,8 +387,8 @@ class Action_Logs_Resources {
 		$action_meta = $this->resolve_action_meta( $action_meta, $params, $action_id, $action_log_record );
 
 		$action_log = array(
-			'action_log_id'    => $action_log_record['ID'] ?? null,
-			'action_completed' => $action_log_record['completed'] ?? null,
+			'action_log_id'    => $action_log_record['ID'] ?? 0,
+			'action_completed' => $action_log_record['completed'] ?? 0,
 		);
 
 		$status = $this->automator_factory->status();
@@ -416,7 +416,7 @@ class Action_Logs_Resources {
 			)
 		);
 
-		$end_date = isset( $action_runs[ count( $action_runs ) - 1 ]['date'] ) /** @phpstan-ignore-line False positive. */
+		$end_date      = isset( $action_runs[ count( $action_runs ) - 1 ]['date'] ) /** @phpstan-ignore-line False positive. */
 			? $action_runs[ count( $action_runs ) - 1 ]['date'] /** @phpstan-ignore-line False positive. */
 			: null;
 		$end_date_full = isset( $action_runs[ count( $action_runs ) - 1 ]['date_full'] ) /** @phpstan-ignore-line False positive. */
@@ -467,6 +467,37 @@ class Action_Logs_Resources {
 			$last_action_run = $action_runs[ count( $action_runs ) - 1 ];
 			if ( ! empty( $last_action_run['result_message'] ) ) {
 				$item['result_message'] = $last_action_run['result_message'];
+			}
+		}
+
+		// Append structured errors from uap_error_log when available.
+		$errors = array();
+		if ( isset( Automator()->recipe_runner ) ) {
+			$action_log_id_int = absint( $action_log['action_log_id'] );
+			$error_rows        = Automator()->recipe_runner->error_store()->get_by_action_log( $action_log_id_int );
+			foreach ( $error_rows as $row ) {
+				$errors[] = array(
+					'code'          => $row->error_code,
+					'message'       => $row->error_message,
+					'is_actionable' => (bool) $row->is_actionable,
+					'context'       => ! empty( $row->error_context ) ? json_decode( $row->error_context, true ) : null,
+					'date_time'     => $row->date_time,
+				);
+			}
+		}
+		$item['errors'] = $errors;
+
+		// Populate result_message from structured errors when available.
+		// Falls back to legacy error_message column for unmigrated data.
+		if ( ! empty( $errors ) ) {
+			$messages = array();
+			foreach ( $errors as $err ) {
+				if ( ! empty( $err['message'] ) ) {
+					$messages[] = $err['message'];
+				}
+			}
+			if ( ! empty( $messages ) ) {
+				$item['result_message'] = implode( ' ', $messages );
 			}
 		}
 

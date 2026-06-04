@@ -1,145 +1,132 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Wp_Webhooks;
+
+use Uncanny_Automator\Recipe\Trigger;
+use Uncanny_Automator\Recipe\Trigger_Definition;
 
 /**
  * Class WPWH_TRIGGERTRIGGERED
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Wp_Webhooks
+ *
+ * @property Wpwh_Helpers $item_helpers
  */
-class WPWH_TRIGGERTRIGGERED {
+class WPWH_TRIGGERTRIGGERED extends Trigger {
 
 	/**
-	 * Integration code
+	 * Opt this trigger into the lazy-loading path.
 	 *
-	 * @var string
+	 * @return Trigger_Definition
 	 */
-	public static $integration = 'WPWEBHOOKS';
-
-	/**
-	 * @var string
-	 */
-	private $trigger_code;
-	/**
-	 * @var string
-	 */
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->trigger_code = 'WPWHTRIGGERTRIGGERED';
-		$this->trigger_meta = 'WPWHTRIGGER';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'WPWHTRIGGERTRIGGERED', 'WPWEBHOOKS' )
+			->trigger_meta( 'WPWHTRIGGER' )
+			->hook( 'wpwhpro/admin/webhooks/webhook_trigger_sent', 10, 4 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup the trigger.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
+	protected function setup_trigger() {
+		$this->set_is_pro( false );
+		$this->set_is_login_required( false );
+		// translators: %1$s is the selected webhook trigger.
+		$this->set_sentence( sprintf( esc_html_x( '{{A webhook trigger:%1$s}} is triggered', 'WP Webhooks', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		$this->set_readable_sentence( esc_html_x( '{{A webhook trigger}} is triggered', 'WP Webhooks', 'uncanny-automator' ) );
+	}
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/automator-core/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			'meta'                => $this->trigger_meta,
-			// translators: 1: Webhook trigger
-			'sentence'            => sprintf( esc_html__( '{{A webhook trigger:%1$s}} is triggered', 'uncanny-automator' ), $this->trigger_meta ),
-			'select_option_name'  => esc_html__( '{{A webhook trigger}} is triggered', 'uncanny-automator' ),
-			'action'              => 'wpwhpro/admin/webhooks/webhook_trigger_sent',
-			'priority'            => 10,
-			'accepted_args'       => 4,
-			'validation_function' => array( $this, 'save_data' ),
-			'options_callback'    => array( $this, 'load_options' ),
+	/**
+	 * Define trigger options.
+	 *
+	 * @return array[]
+	 */
+	public function options() {
+		return array(
+			$this->item_helpers->webhook_trigger_field( $this->get_trigger_meta() ),
 		);
-
-		Automator()->register->trigger( $trigger );
 	}
 
 	/**
+	 * Define tokens — dynamic per selected webhook trigger.
+	 *
+	 * @param array $trigger The trigger settings.
+	 * @param array $tokens  Existing tokens.
+	 *
 	 * @return array
 	 */
-	public function load_options() {
-		$options = array(
-			'options' => array(
-				Automator()->helpers->recipe->wp_webhooks->options->list_webhook_triggers( null, $this->trigger_meta ),
-			),
-		);
+	public function define_tokens( $trigger, $tokens ) {
 
-		return Automator()->utilities->keep_order_of_options( $options );
+		$webhook_value = isset( $trigger['meta'][ $this->get_trigger_meta() ] ) ? (string) $trigger['meta'][ $this->get_trigger_meta() ] : '';
+
+		if ( '' === $webhook_value || '-1' === $webhook_value ) {
+			return $tokens;
+		}
+
+		return array_merge(
+			$tokens,
+			$this->item_helpers->tokens()->webhook_trigger_tokens( $webhook_value, $this->get_trigger_meta() )
+		);
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Validate trigger against hook arguments.
+	 *
+	 * Hook: wpwhpro/admin/webhooks/webhook_trigger_sent
+	 * Args: ( $response, $url, $http_args, $webhook )
+	 *
+	 * @param array $trigger   The trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool
 	 */
-	public function save_data( $response, $url, $http_args, $webhook ) {
+	public function validate( $trigger, $hook_args ) {
 
-		if ( ! isset( $webhook['webhook_name'] ) || empty( $webhook['webhook_name'] ) ) {
-			return;
-		}
-		$trigger = $webhook['webhook_name'];
-
-		$body_data_format = 'json';
-		if ( isset( $webhook['settings']['wpwhpro_trigger_response_type'] ) ) {
-			$body_data_format = $webhook['settings']['wpwhpro_trigger_response_type'];
+		if ( ! isset( $trigger['meta'][ $this->get_trigger_meta() ] ) ) {
+			return false;
 		}
 
-		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
+		$webhook = isset( $hook_args[3] ) ? $hook_args[3] : null;
 
-		$conditions = Automator()->helpers->recipe->wp_webhooks->options->match_action_condition( $trigger, $recipes, $this->trigger_meta, $this->trigger_code );
-
-		if ( ! $conditions ) {
-			return;
+		if ( ! is_array( $webhook ) || empty( $webhook['webhook_name'] ) ) {
+			return false;
 		}
 
-		$user_id = get_current_user_id();
-		if ( ! empty( $conditions ) ) {
-			foreach ( $conditions['recipe_ids'] as $recipe_id ) {
-				if ( ! Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-					$args = array(
-						'code'            => $this->trigger_code,
-						'meta'            => $this->trigger_meta,
-						'recipe_to_match' => $recipe_id,
-						'ignore_post_id'  => true,
-						'user_id'         => $user_id,
-					);
+		$incoming = (string) $webhook['webhook_name'];
+		$saved    = (string) $trigger['meta'][ $this->get_trigger_meta() ];
 
-					$result = Automator()->maybe_add_trigger_entry( $args, false );
-
-					if ( $result ) {
-						foreach ( $result as $r ) {
-							if ( true === $r['result'] ) {
-								$_args = array();
-								if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
-									//Saving params in trigger log meta for token parsing!
-									$_args = array(
-										'trigger_id'     => (int) $r['args']['trigger_id'],
-										'meta_key'       => $this->trigger_meta . '_request_body',
-										'user_id'        => $user_id,
-										'trigger_log_id' => $r['args']['get_trigger_id'],
-										'run_number'     => $r['args']['run_number'],
-									);
-
-									$params = $http_args['body'];
-									if ( 'json' === $body_data_format ) {
-										// convert json to array
-										$params = json_decode( $params, true );
-									} elseif ( 'xml' === $body_data_format ) {
-										// convert xml to array
-										$xml_data = new \SimpleXMLElement( $params );
-										$params   = Automator()->helpers->recipe->wp_webhooks->options->XML2Array( $xml_data );
-									}
-
-									Automator()->helpers->recipe->wp_webhooks->options->extract_and_save_data( $params, $_args );
-								}
-								Automator()->maybe_trigger_complete( $r['args'] );
-							}
-						}
-					}
-				}
-			}
+		if ( '-1' === $saved ) {
+			return true;
 		}
+
+		return $incoming === $saved;
+	}
+
+	/**
+	 * Hydrate token values from the webhook payload.
+	 *
+	 * @param array $trigger   The completed trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		$http_args = isset( $hook_args[2] ) && is_array( $hook_args[2] ) ? $hook_args[2] : array();
+		$webhook   = isset( $hook_args[3] ) && is_array( $hook_args[3] ) ? $hook_args[3] : array();
+
+		$incoming         = isset( $webhook['webhook_name'] ) ? (string) $webhook['webhook_name'] : '';
+		$body_data_format = isset( $webhook['settings']['wpwhpro_trigger_response_type'] ) ? (string) $webhook['settings']['wpwhpro_trigger_response_type'] : 'json';
+		$raw_body         = isset( $http_args['body'] ) ? $http_args['body'] : '';
+
+		$payload = $this->item_helpers->decode_payload( $raw_body, $body_data_format );
+
+		$base = array(
+			$this->get_trigger_meta() => $incoming,
+		);
+
+		return array_merge( $base, $this->item_helpers->tokens()->hydrate_dynamic_payload_tokens( $incoming, $payload ) );
 	}
 }

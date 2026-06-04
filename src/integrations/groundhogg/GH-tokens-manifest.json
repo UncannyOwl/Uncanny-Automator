@@ -1,0 +1,363 @@
+{
+    "integration_id": "GH",
+    "updated_at": "2026-03-09T20:39:38Z",
+    "triggers": [
+        {
+            "code": "GHTAGREMOVED",
+            "meta": "GHTAG",
+            "tokens": [
+                {
+                    "id": "GHTAG",
+                    "name": "Tag title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GHTAGREMOVED:GHTAG"
+                },
+                {
+                    "id": "GHTAG_ID",
+                    "name": "Tag ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GHTAGREMOVED:GHTAG_ID"
+                },
+                {
+                    "id": "GHTAG",
+                    "name": "Tag title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GHTAGREMOVED:GHTAG"
+                },
+                {
+                    "id": "GHTAG_ID",
+                    "name": "Tag ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GHTAGREMOVED:GHTAG_ID"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "ANON_GH_CONTACT_NOTE",
+            "meta": "GH_CONTACT",
+            "tokens": [
+                {
+                    "id": "GH_CONTACT_ID",
+                    "name": "Contact ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_ID"
+                },
+                {
+                    "id": "GH_CONTACT_FNAME",
+                    "name": "Contact first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_FNAME"
+                },
+                {
+                    "id": "GH_CONTACT_LNAME",
+                    "name": "Contact last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_LNAME"
+                },
+                {
+                    "id": "GH_CONTACT_EMAIL",
+                    "name": "Contact email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_EMAIL"
+                },
+                {
+                    "id": "GH_CONTACT_NOTE",
+                    "name": "Note",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_NOTE"
+                },
+                {
+                    "id": "GH_CONTACT_ID",
+                    "name": "Contact ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_ID"
+                },
+                {
+                    "id": "GH_CONTACT_FNAME",
+                    "name": "Contact first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_FNAME"
+                },
+                {
+                    "id": "GH_CONTACT_LNAME",
+                    "name": "Contact last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_LNAME"
+                },
+                {
+                    "id": "GH_CONTACT_EMAIL",
+                    "name": "Contact email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_EMAIL"
+                },
+                {
+                    "id": "GH_CONTACT_NOTE",
+                    "name": "Note",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_GH_CONTACT_NOTE:GH_CONTACT_NOTE"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "ANONGHTAGAPPLIED",
+            "meta": "GHTAG",
+            "tokens": [
+                {
+                    "id": "GHTAG",
+                    "name": "Tags",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGAPPLIED:GHTAG"
+                },
+                {
+                    "id": "GHTAG",
+                    "name": "Tags",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGAPPLIED:GHTAG"
+                },
+                {
+                    "id": "CONTACT_EMAIL",
+                    "name": "Contact email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:ANONGHTAGAPPLIED:CONTACT_EMAIL"
+                },
+                {
+                    "id": "CONTACT_FIRST_NAME",
+                    "name": "Contact first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGAPPLIED:CONTACT_FIRST_NAME"
+                },
+                {
+                    "id": "CONTACT_LAST_NAME",
+                    "name": "Contact last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGAPPLIED:CONTACT_LAST_NAME"
+                },
+                {
+                    "id": "CONTACT_ID",
+                    "name": "Contact ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGAPPLIED:CONTACT_ID"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "ANONGHTAGREMOVED",
+            "meta": "GHTAG",
+            "tokens": [
+                {
+                    "id": "GHTAG",
+                    "name": "Tags",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGREMOVED:GHTAG"
+                },
+                {
+                    "id": "GHTAG",
+                    "name": "Tags",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGREMOVED:GHTAG"
+                },
+                {
+                    "id": "CONTACT_EMAIL",
+                    "name": "Contact email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:ANONGHTAGREMOVED:CONTACT_EMAIL"
+                },
+                {
+                    "id": "CONTACT_FIRST_NAME",
+                    "name": "Contact first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGREMOVED:CONTACT_FIRST_NAME"
+                },
+                {
+                    "id": "CONTACT_LAST_NAME",
+                    "name": "Contact last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGREMOVED:CONTACT_LAST_NAME"
+                },
+                {
+                    "id": "CONTACT_ID",
+                    "name": "Contact ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONGHTAGREMOVED:CONTACT_ID"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "GHTAGAPPLIED",
+            "meta": "GHTAG",
+            "tokens": [
+                {
+                    "id": "GHTAG",
+                    "name": "Tag title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GHTAGAPPLIED:GHTAG"
+                },
+                {
+                    "id": "GHTAG_ID",
+                    "name": "Tag ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GHTAGAPPLIED:GHTAG_ID"
+                },
+                {
+                    "id": "GHTAG",
+                    "name": "Tag title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GHTAGAPPLIED:GHTAG"
+                },
+                {
+                    "id": "GHTAG_ID",
+                    "name": "Tag ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GHTAGAPPLIED:GHTAG_ID"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "code": "GHADDTAG",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:GHADDTAG:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "GH_CREATE_UPDATE_CONTACT",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:GH_CREATE_UPDATE_CONTACT:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "GHREMOVETAG",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:GHREMOVETAG:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "GH_REMOVE_TAG_FROM_CONTACT",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:GH_REMOVE_TAG_FROM_CONTACT:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "GH_ADD_TAG_TO_CONTACT",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:GH_ADD_TAG_TO_CONTACT:ACTION_RUN_STATUS"
+                }
+            ]
+        }
+    ]
+}

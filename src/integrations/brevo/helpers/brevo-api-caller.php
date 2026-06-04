@@ -228,15 +228,17 @@ class Brevo_Api_Caller extends Api_Caller {
 	/**
 	 * Get contact attributes.
 	 *
+	 * @param bool $force_refresh When true, bypasses the cache and re-fetches from the API.
+	 *
 	 * @return array
 	 */
-	public function get_contact_attributes() {
+	public function get_contact_attributes( $force_refresh = false ) {
 
-		$transient  = 'automator_brevo_contacts/attributes';
-		$attributes = get_transient( $transient );
-
-		if ( ! empty( $attributes ) ) {
-			return $attributes;
+		if ( ! $force_refresh ) {
+			$cached = $this->helpers->get_app_option( $this->helpers->get_option_key( 'attributes' ) );
+			if ( ! empty( $cached['data'] ) && ! $cached['refresh'] ) {
+				return $cached['data'];
+			}
 		}
 
 		try {
@@ -296,63 +298,145 @@ class Brevo_Api_Caller extends Api_Caller {
 			}
 		);
 
-		set_transient( $transient, $attributes, DAY_IN_SECONDS );
+		$this->helpers->save_app_option( $this->helpers->get_option_key( 'attributes' ), $attributes );
 
 		return $attributes;
 	}
 
 	/**
+	 * Fetch raw writable Brevo contact attributes.
+	 *
+	 * Returns the unmodified Brevo attribute objects (name, category, type, enumeration,
+	 * multiCategoryOptions, ...) filtered only to writable entries — i.e. excluding
+	 * global / calculatedValue / type-less entries. Unlike get_contact_attributes(), this
+	 * keeps the language-localized default attributes (FIRSTNAME / VORNAME / PRENOM / SMS
+	 * / …) so the new transposed repeater can render an input per attribute.
+	 *
+	 * @param bool $force_refresh When true, bypasses the cache and re-fetches from the API.
+	 *
+	 * @return array Raw Brevo attribute objects, or false on API error.
+	 */
+	public function fetch_raw_contact_attributes( $force_refresh = false ) {
+
+		if ( ! $force_refresh ) {
+			$cached = $this->helpers->get_app_option( $this->helpers->get_option_key( 'attributes_raw' ) );
+			if ( ! empty( $cached['data'] ) && ! $cached['refresh'] ) {
+				return $cached['data'];
+			}
+		}
+
+		try {
+			$response = $this->api_request( 'get_contact_attributes' );
+
+			if ( ! isset( $response['data']['attributes'] ) ) {
+				throw new Exception(
+					esc_html_x( 'No attributes were returned from the API', 'Brevo API', 'uncanny-automator' )
+				);
+			}
+		} catch ( Exception $e ) {
+			automator_log( $e->getMessage(), 'Brevo::fetch_raw_contact_attributes Error', true, 'brevo' );
+			return false;
+		}
+
+		// Brevo's internal consent-tracking attribute names are English-coded and
+		// stable across all account languages (unlike FIRSTNAME → VORNAME / PRENOM).
+		// Exclude them from the manual-attributes repeater — DOUBLE_OPT-IN is
+		// maintained by Brevo's own DOI flow; OPT_IN is set by external sign-up
+		// integrations. Recipe authors who want to gate DOI should use this
+		// action's dedicated Double-opt-in fields.
+		$system_excluded = array( 'DOUBLE_OPT-IN', 'OPT_IN' );
+
+		$writable = array();
+		foreach ( $response['data']['attributes'] as $attribute ) {
+			// Skip system-managed attributes (cannot be set via API).
+			if ( 'global' === ( $attribute['category'] ?? '' ) || ! empty( $attribute['calculatedValue'] ) ) {
+				continue;
+			}
+			if ( in_array( $attribute['name'] ?? '', $system_excluded, true ) ) {
+				continue;
+			}
+			// Skip user-type attributes — they reference internal Brevo team-member IDs.
+			// Surfacing them as a text input would require recipe authors to memorize
+			// numeric user IDs. Revisit if/when we add a Brevo users remote_data source.
+			if ( 'user' === ( $attribute['type'] ?? '' ) ) {
+				continue;
+			}
+			$type = $attribute['type'] ?? '';
+			// Some category attributes arrive type-less but with an enumeration; treat as category.
+			if ( empty( $type ) && isset( $attribute['enumeration'] ) ) {
+				$attribute['type'] = 'category';
+			}
+			if ( empty( $attribute['type'] ) ) {
+				continue;
+			}
+			$writable[] = $attribute;
+		}
+
+		usort(
+			$writable,
+			function ( $a, $b ) {
+				return strcmp( $a['name'] ?? '', $b['name'] ?? '' );
+			}
+		);
+
+		$this->helpers->save_app_option( $this->helpers->get_option_key( 'attributes_raw' ), $writable );
+
+		return $writable;
+	}
+
+	/**
 	 * Get templates.
+	 *
+	 * @param bool $force_refresh When true, bypasses the cache and re-fetches from the API.
 	 *
 	 * @return array
 	 */
-	public function get_templates() {
-		return $this->get_transient_options( 'templates' );
+	public function get_templates( $force_refresh = false ) {
+		return $this->get_cached_options( 'templates', $force_refresh );
 	}
 
 	/**
 	 * Get list options.
 	 *
+	 * @param bool $force_refresh When true, bypasses the cache and re-fetches from the API.
+	 *
 	 * @return array
 	 */
-	public function get_lists() {
-		return $this->get_transient_options( 'contacts/lists' );
+	public function get_lists( $force_refresh = false ) {
+		return $this->get_cached_options( 'lists', $force_refresh );
 	}
 
 	/**
-	 * Get transient options - Retrieve from transient or loop api requests with offset and limits.
+	 * Get cached options — read from app_option or fall back to a paged API fetch and persist.
 	 *
-	 * @param  string $type - templates or contacts/lists
+	 * @param string $type          'templates' or 'lists' — also used as the option-key suffix.
+	 * @param bool   $force_refresh When true, bypasses the cache and re-fetches from the API.
 	 *
 	 * @return array
 	 */
-	public function get_transient_options( $type ) {
+	public function get_cached_options( $type, $force_refresh = false ) {
 
-		$transient = "automator_brevo_{$type}";
-		$options   = get_transient( $transient );
-
-		if ( $options ) {
-			return $options;
+		if ( ! $force_refresh ) {
+			$cached = $this->helpers->get_app_option( $this->helpers->get_option_key( $type ) );
+			if ( ! empty( $cached['data'] ) && ! $cached['refresh'] ) {
+				return $cached['data'];
+			}
 		}
 
-		$results  = array();
-		$param    = 'templates' === $type ? $type : 'lists';
-		$error_id = "sync_{$param}";
+		$error_id = "sync_{$type}";
 
 		try {
-			if ( 'templates' === $type ) {
-				$response = $this->api_request( 'get_templates' );
-			} else {
-				$response = $this->api_request( 'get_lists' );
-			}
+			$response = 'templates' === $type
+				? $this->api_request( 'get_templates' )
+				: $this->api_request( 'get_lists' );
 
-			$items = ! empty( $response['data'][ $param ] ) ? $response['data'][ $param ] : array();
+			$items = ! empty( $response['data'][ $type ] ) ? $response['data'][ $type ] : array();
 			if ( empty( $items ) ) {
 				throw new Exception(
 					sprintf(
 						// translators: %s - type of item templates or lists
 						esc_html_x( 'No %s were found', 'Brevo API', 'uncanny-automator' ),
-						$param
+						$type
 					)
 				);
 			}
@@ -378,8 +462,7 @@ class Brevo_Api_Caller extends Api_Caller {
 			}
 		);
 
-		// Set transient.
-		set_transient( $transient, $options, DAY_IN_SECONDS );
+		$this->helpers->save_app_option( $this->helpers->get_option_key( $type ), $options );
 
 		return $options;
 	}

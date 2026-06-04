@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Recipe_Post_Functions
  *
@@ -351,6 +353,9 @@ class Recipe_Post_Utilities {
 			 * Creates a conflict with select2 dropdowns
 			 */
 			'groundhogg-select2',
+
+			// Divi Supreme Pro
+			'dsm-select-two',
 		);
 
 		$conflictive_styles = array(
@@ -380,6 +385,9 @@ class Recipe_Post_Utilities {
 			 * Creates a conflict with select2 dropdowns
 			 */
 			'learndash-memberpress-edit-membership',
+
+			// Divi Supreme Pro
+			'dsm-select-two',
 		);
 
 		$conflictive_assets = array(
@@ -577,7 +585,7 @@ class Recipe_Post_Utilities {
 					'version_pro'           => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? AUTOMATOR_PRO_PLUGIN_VERSION : '',
 
 					// UncannyAutomator._site.automator.has_account_connected
-					'has_account_connected' => ( ! Api_Server::is_automator_connected( automator_filter_has_var( 'ua_connecting_integration' ) ) ? false : true ),
+					'has_account_connected' => automator_license_manager()->is_connected( automator_filter_has_var( 'ua_connecting_integration' ) ),
 
 					// UncannyAutomator._site.automator.has_valid_pro_license
 					'has_valid_pro_license' => ( defined( 'AUTOMATOR_PRO_FILE' ) && 'valid' === automator_get_option( 'uap_automator_pro_license_status' ) ),
@@ -809,7 +817,7 @@ class Recipe_Post_Utilities {
 	 * @param $post_ID
 	 */
 	public static function delete_recipe_logs( $post_ID ) {
-		Automator()->db->recipe->delete( $post_ID );
+		Automator()->db->recipe->clear_activity_log_by_recipe_id( $post_ID );
 
 		$args = array(
 			'post_parent'    => $post_ID,
