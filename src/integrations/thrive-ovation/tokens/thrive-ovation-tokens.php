@@ -1,206 +1,126 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Thrive_Ovation;
 
 /**
  * Class Thrive_Ovation_Tokens
  *
- * @package Uncanny_Automator
+ * Token definitions and hydration for Thrive Ovation triggers.
+ *
+ * @package Uncanny_Automator\Integrations\Thrive_Ovation
  */
 class Thrive_Ovation_Tokens {
 
 	/**
-	 * __construct
+	 * Helper container that owns this tokens collaborator.
 	 *
-	 * @return void
+	 * @var Thrive_Ovation_Helpers
 	 */
-	public function __construct() {
-		add_action( 'automator_before_trigger_completed', array( $this, 'save_token_data' ), 20, 2 );
-		add_filter(
-			'automator_maybe_trigger_thrive_ovation_tokens',
-			array(
-				$this,
-				'thrive_ovation_possible_tokens',
-			),
-			20,
-			2
-		);
-		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_thrive_ovation_tokens' ), 20, 6 );
+	private $helpers;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Thrive_Ovation_Helpers $helpers The integration helper container.
+	 */
+	public function __construct( Thrive_Ovation_Helpers $helpers ) {
+		$this->helpers = $helpers;
 	}
 
 	/**
-	 * save_token_data
+	 * Token definitions for the testimonial trigger.
 	 *
-	 * @param mixed $args
-	 * @param mixed $trigger
-	 *
-	 * @return void
+	 * @return array[]
 	 */
-	public function save_token_data( $args, $trigger ) {
-		if ( ! isset( $args['trigger_args'], $args['entry_args']['code'] ) ) {
-			return;
-		}
+	public function testimonial_tokens() {
 
-		$trigger_meta_validations = apply_filters(
-			'automator_thrive_ovation_validate_common_triggers_tokens_save',
-			array( 'TVO_TESTIMONIAL_SUBMITTED' ),
-			$args
+		return array(
+			array(
+				'tokenId'   => 'TESTIMONIAL_ID',
+				'tokenName' => esc_html_x( 'Testimonial ID', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'TESTIMONIAL_TITLE',
+				'tokenName' => esc_html_x( 'Testimonial title', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'TESTIMONIAL_CONTENT',
+				'tokenName' => esc_html_x( 'Testimonial content', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'TESTIMONIAL_DATE',
+				'tokenName' => esc_html_x( 'Date', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'date',
+			),
+			array(
+				'tokenId'   => 'TESTIMONIAL_AUTHOR',
+				'tokenName' => esc_html_x( 'Full name', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'TESTIMONIAL_AUTHOR_EMAIL',
+				'tokenName' => esc_html_x( 'Email', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'email',
+			),
+			array(
+				'tokenId'   => 'TESTIMONIAL_AUTHOR_ROLE',
+				'tokenName' => esc_html_x( 'Role/Occupation', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'TESTIMONIAL_AUTHOR_WEBSITE',
+				'tokenName' => esc_html_x( 'Website URL', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'url',
+			),
+			array(
+				'tokenId'   => 'TESTIMONIAL_STATUS',
+				'tokenName' => esc_html_x( 'Testimonial status', 'Thrive Ovation', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
 		);
+	}
 
-		if ( in_array( $args['entry_args']['code'], $trigger_meta_validations, true ) ) {
-			$testimonial_data  = $args['trigger_args'][0];
-			$trigger_log_entry = $args['trigger_entry'];
-			if ( ! empty( $testimonial_data ) ) {
-				Automator()->db->token->save( 'testimonial_data', maybe_serialize( $testimonial_data ), $trigger_log_entry );
+	/**
+	 * Hydrate testimonial token values from the submitted payload.
+	 *
+	 * @param array $testimonial_data The testimonial payload from the hook.
+	 *
+	 * @return array Key-value pairs of tokenId => value (full keyset).
+	 */
+	public function hydrate_testimonial_tokens( $testimonial_data ) {
+
+		$testimonial_data = is_array( $testimonial_data ) ? $testimonial_data : array();
+
+		$testimonial_id = isset( $testimonial_data['testimonial_id'] ) ? (int) $testimonial_data['testimonial_id'] : 0;
+
+		$testimonial_date = '';
+		if ( 0 !== $testimonial_id ) {
+			$testimonial_date = get_the_date( '', $testimonial_id );
+			if ( false === $testimonial_date ) {
+				$testimonial_date = '';
 			}
 		}
-	}
 
-	/**
-	 * @param array $tokens
-	 * @param array $args
-	 *
-	 * @return array|array[]|mixed
-	 */
-	public function thrive_ovation_possible_tokens( $tokens = array(), $args = array() ) {
-		$trigger_code             = (string) $args['triggers_meta']['code'];
-		$trigger_meta_validations = apply_filters(
-			'automator_thrive_ovation_validate_common_possible_triggers_tokens',
-			array( 'TVO_TESTIMONIAL_SUBMITTED' ),
-			$args
+		$testimonial_status = '';
+		if ( 0 !== $testimonial_id && defined( 'TVO_STATUS_META_KEY' ) && function_exists( 'tvo_get_testimonial_status_text' ) ) {
+			$testimonial_status = tvo_get_testimonial_status_text(
+				get_post_meta( $testimonial_id, TVO_STATUS_META_KEY, true )
+			);
+		}
+
+		return array(
+			'TESTIMONIAL_ID'             => $testimonial_id,
+			'TESTIMONIAL_TITLE'          => isset( $testimonial_data['testimonial_title'] ) ? $testimonial_data['testimonial_title'] : '',
+			'TESTIMONIAL_CONTENT'        => isset( $testimonial_data['testimonial_content'] ) ? $testimonial_data['testimonial_content'] : '',
+			'TESTIMONIAL_DATE'           => $testimonial_date,
+			'TESTIMONIAL_AUTHOR'         => isset( $testimonial_data['testimonial_author'] ) ? $testimonial_data['testimonial_author'] : '',
+			'TESTIMONIAL_AUTHOR_EMAIL'   => isset( $testimonial_data['testimonial_author_email'] ) ? $testimonial_data['testimonial_author_email'] : '',
+			'TESTIMONIAL_AUTHOR_ROLE'    => isset( $testimonial_data['testimonial_author_role'] ) ? $testimonial_data['testimonial_author_role'] : '',
+			'TESTIMONIAL_AUTHOR_WEBSITE' => isset( $testimonial_data['testimonial_author_website'] ) ? $testimonial_data['testimonial_author_website'] : '',
+			'TESTIMONIAL_STATUS'         => $testimonial_status,
 		);
-
-		if ( ! in_array( $trigger_code, $trigger_meta_validations, true ) ) {
-			return $tokens;
-		}
-
-		$fields = array(
-			array(
-				'tokenId'         => 'TESTIMONIAL_ID',
-				'tokenName'       => esc_html__( 'Testimonial ID', 'uncanny-automator' ),
-				'tokenType'       => 'int',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'TESTIMONIAL_TITLE',
-				'tokenName'       => esc_html__( 'Testimonial title', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'TESTIMONIAL_CONTENT',
-				'tokenName'       => esc_html__( 'Testimonial content', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'TESTIMONIAL_DATE',
-				'tokenName'       => esc_html__( 'Date', 'uncanny-automator' ),
-				'tokenType'       => 'date',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'TESTIMONIAL_AUTHOR',
-				'tokenName'       => esc_html__( 'Full name', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'TESTIMONIAL_AUTHOR_EMAIL',
-				'tokenName'       => esc_html__( 'Email', 'uncanny-automator' ),
-				'tokenType'       => 'email',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'TESTIMONIAL_AUTHOR_ROLE',
-				'tokenName'       => esc_html__( 'Role/Occupation', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'TESTIMONIAL_AUTHOR_WEBSITE',
-				'tokenName'       => esc_html__( 'Website URL', 'uncanny-automator' ),
-				'tokenType'       => 'url',
-				'tokenIdentifier' => $trigger_code,
-			),
-			array(
-				'tokenId'         => 'TESTIMONIAL_STATUS',
-				'tokenName'       => esc_html__( 'Testimonial status', 'uncanny-automator' ),
-				'tokenType'       => 'text',
-				'tokenIdentifier' => $trigger_code,
-			),
-		);
-
-		$tokens = array_merge( $tokens, $fields );
-
-		return $tokens;
 	}
-
-	/**
-	 * @param $value
-	 * @param $pieces
-	 * @param $recipe_id
-	 * @param $trigger_data
-	 * @param $user_id
-	 * @param $replace_args
-	 *
-	 * @return mixed
-	 */
-	public function parse_thrive_ovation_tokens( $value, $pieces, $recipe_id, $trigger_data, $user_id, $replace_args ) {
-
-		if ( ! is_array( $pieces ) || ! isset( $pieces[1], $pieces[2] ) ) {
-			return $value;
-		}
-
-		$trigger_meta_validations = apply_filters(
-			'automator_thrive_ovation_validate_common_triggers_tokens_parse',
-			array( 'TVO_TESTIMONIAL_SUBMITTED' ),
-			array(
-				'pieces'       => $pieces,
-				'recipe_id'    => $recipe_id,
-				'trigger_data' => $trigger_data,
-				'user_id'      => $user_id,
-				'replace_args' => $replace_args,
-			)
-		);
-
-		if ( ! array_intersect( $trigger_meta_validations, $pieces ) ) {
-			return $value;
-		}
-
-		$testimonial_data = maybe_unserialize( Automator()->db->token->get( 'testimonial_data', $replace_args ) );
-
-		switch ( $pieces[2] ) {
-			case 'TESTIMONIAL_ID':
-				$value = $testimonial_data['testimonial_id'];
-				break;
-			case 'TESTIMONIAL_TITLE':
-				$value = $testimonial_data['testimonial_title'];
-				break;
-			case 'TESTIMONIAL_CONTENT':
-				$value = $testimonial_data['testimonial_content'];
-				break;
-			case 'TESTIMONIAL_DATE':
-				$value = get_the_date( '', $testimonial_data['testimonial_id'] );
-				break;
-			case 'TESTIMONIAL_AUTHOR':
-				$value = $testimonial_data['testimonial_author'];
-				break;
-			case 'TESTIMONIAL_AUTHOR_EMAIL':
-				$value = $testimonial_data['testimonial_author_email'];
-				break;
-			case 'TESTIMONIAL_AUTHOR_ROLE':
-				$value = $testimonial_data['testimonial_author_role'];
-				break;
-			case 'TESTIMONIAL_AUTHOR_WEBSITE':
-				$value = $testimonial_data['testimonial_author_website'];
-				break;
-			case 'TESTIMONIAL_STATUS':
-				$value = tvo_get_testimonial_status_text( get_post_meta( $testimonial_data['testimonial_id'], TVO_STATUS_META_KEY, true ) );
-				break;
-		}
-
-		return $value;
-	}
-
 }

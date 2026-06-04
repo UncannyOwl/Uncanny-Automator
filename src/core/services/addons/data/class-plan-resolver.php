@@ -2,8 +2,7 @@
 
 namespace Uncanny_Automator\Services\Addons\Data;
 
-use Uncanny_Automator\Pricing_Plan_Resolver;
-use Uncanny_Automator\Api_Server as Automator_Api;
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
 /**
  * Plan Resolver
@@ -143,8 +142,9 @@ class Plan_Resolver {
 			return 0;
 		}
 
-		// Check the license_plan property of the connected user.
-		$plan = Automator_Api::get_license_plan();
+		// Use the resolved plan so an invalid/expired license cannot leak a
+		// stale license_plan value through this counter.
+		$plan = automator_license_manager()->get_resolved_plan();
 		switch ( $plan ) {
 			case 'basic':
 				return $this->total_basic_addons;
@@ -188,8 +188,10 @@ class Plan_Resolver {
 	 */
 	public function has_access_to_plan( $plan_to_check ) {
 
-		// Check the license_plan property of the connected user.
-		$user_plan = Automator_Api::get_license_plan();
+		// Resolved plan validates Pro is active and the license is valid,
+		// so callers reached without an upstream gate (e.g. the REST list
+		// endpoint) cannot grant access from a stale license_plan value.
+		$user_plan = automator_license_manager()->get_resolved_plan();
 
 		switch ( $user_plan ) {
 			case 'elite':

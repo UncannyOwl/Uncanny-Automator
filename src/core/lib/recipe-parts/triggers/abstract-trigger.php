@@ -15,6 +15,7 @@
 namespace Uncanny_Automator\Recipe;
 
 use Exception;
+use Uncanny_Automator\Token_Identifier_Partitioner;
 
 /**
  * Abstract Triggers
@@ -27,6 +28,17 @@ abstract class Trigger {
 	 * Trigger Setup. This trait handles trigger definitions.
 	 */
 	use Trigger_Setup;
+
+	/**
+	 * True while constructing via late_construct(). When set, the constructor
+	 * skips the `automator_triggers` filter registration — the registry stub
+	 * was already placed by Trigger_Metadata_Loader.
+	 *
+	 * Static because the gate is checked once per class during construction.
+	 *
+	 * @var bool
+	 */
+	protected static $deferred_construction = false;
 
 	/**
 	 * dependencies
@@ -160,6 +172,15 @@ abstract class Trigger {
 	protected $trigger_records;
 
 	/**
+	 * Token definitions for the current trigger fire, with tokenIdentifier and
+	 * tokenType defaults applied. Populated by process() before save_tokens()
+	 * runs; read by save_tokens() to bucket runtime values by identifier.
+	 *
+	 * @var array
+	 */
+	protected $token_definitions = array();
+
+	/**
 	 * run_number
 	 *
 	 * @var mixed
@@ -195,11 +216,129 @@ abstract class Trigger {
 		// Automatically set up helpers from dependencies
 		$this->set_helpers_from_dependencies( $this->dependencies );
 
+		// Apply identity fields from definition() — integration, code,
+		// trigger_meta, trigger_type — BEFORE setup_trigger() runs so the
+		// concrete class can drop the redundant setter calls and still
+		// build sentences that reference get_trigger_meta() etc. When a
+		// trigger does not declare definition(), nothing is applied and
+		// setup_trigger() continues to be the source as it is today.
+		$this->apply_definition();
+
 		$this->setup_trigger();
 
-		add_filter( 'automator_triggers', array( $this, 'register_trigger' ) );
+		// Deferred mode: the registry stub is already in place via
+		// Trigger_Metadata_Loader, AND the loader already registered a lazy
+		// proxy on `automator_parse_token_for_trigger_{code}` at priority 20.
+		// Running register_token_filters() here would bind a SECOND callback
+		// at the same priority — on every subsequent filter apply, both the
+		// proxy (which delegates to fetch_token_data) AND the direct binding
+		// (which also calls fetch_token_data with the proxy's return as
+		// $value) would fire. Any trigger override that conditions output on
+		// the incoming $value would silently produce wrong data.
+		//
+		// The `automator_maybe_trigger_{code}_tokens` filter that
+		// register_token_filters() also adds is editor-only and the editor
+		// path uses should_load_all() → eager construction → this branch
+		// registers it normally.
+		if ( false === static::$deferred_construction ) {
+			add_filter( 'automator_triggers', array( $this, 'register_trigger' ) );
+			$this->register_token_filters();
+		}
+	}
 
-		$this->register_token_filters();
+	/**
+	 * Declare the static metadata needed to register this trigger without
+	 * constructing it. Override in concrete triggers to enable lazy loading.
+	 *
+	 * Returning null keeps the eager path — the integration constructs the
+	 * trigger at boot as it does today.
+	 *
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition|null
+	 */
+	public static function definition() {
+		return null;
+	}
+
+	/**
+	 * Factory for Trigger_Definition — so concrete triggers don't need a
+	 * `use Uncanny_Automator\Recipe\Trigger_Definition;` at the top of every
+	 * file just to return one from definition().
+	 *
+	 * Populates the definition's `class` field via late static binding so
+	 * the returned object is a complete metadata entry (ready for
+	 * `to_array()` to be dumped straight into the cache file).
+	 *
+	 * Example:
+	 *   public static function definition() {
+	 *       return self::new_definition( self::TRIGGER_CODE, 'WPJM' )
+	 *           ->trigger_meta( self::TRIGGER_META );
+	 *   }
+	 *
+	 * @param string $code        Unique trigger code.
+	 * @param string $integration Integration code.
+	 *
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
+	 */
+	protected static function new_definition( $code, $integration ) {
+		return Trigger_Definition::create( $code, $integration )->for_class( static::class );
+	}
+
+	/**
+	 * Apply the identity fields declared by `definition()` so concrete
+	 * triggers can drop the redundant setter calls from setup_trigger().
+	 *
+	 * Runs before setup_trigger() so sentence builders that reference
+	 * `get_trigger_meta()` / `get_trigger_code()` still resolve correctly.
+	 * No-op when the trigger returns null from definition().
+	 *
+	 * @return void
+	 */
+	protected function apply_definition() {
+
+		$definition = static::definition();
+
+		if ( null === $definition ) {
+			return;
+		}
+
+		$this->set_integration( $definition->integration );
+		$this->set_trigger_code( $definition->code );
+		$this->set_trigger_meta( $definition->get_trigger_meta() );
+		$this->set_trigger_type( $definition->trigger_type );
+
+		foreach ( $definition->hooks as $hook ) {
+			list( $name, $priority, $accepted_args ) = $hook;
+			$this->add_action( $name, $priority, $accepted_args );
+		}
+	}
+
+	/**
+	 * Construct the trigger for deferred execution.
+	 *
+	 * Invoked by the lazy proxy when `Trigger_Queue` drains a queued event
+	 * or when the `automator_parse_token_for_trigger_{code}` filter fires.
+	 * The constructor gate observes `static::$deferred_construction` and
+	 * skips the `automator_triggers` filter registration so the registry
+	 * stub stays authoritative.
+	 *
+	 * @param mixed ...$dependencies Same signature as the public constructor.
+	 *
+	 * @return static
+	 */
+	public static function late_construct( ...$dependencies ) {
+
+		static::$deferred_construction = true;
+
+		try {
+			$instance = new static( ...$dependencies );
+		} finally {
+			// Always reset even if the constructor throws — a leaked flag
+			// would make subsequent eager constructions silently skip the
+			// filter registration.
+			static::$deferred_construction = false;
+		}
+
+		return $instance;
 	}
 
 	/**
@@ -362,21 +501,67 @@ abstract class Trigger {
 
 		$trigger['meta'] = $trigger['triggers_meta'];
 
-		$additional_tokens = $this->define_tokens( $trigger, $tokens );
+		// Pass the accumulated filter-chain tokens through as $existing so
+		// legacy define_tokens() impls that append with `$tokens[] = ...`
+		// don't clobber prior filter contributions when this method loops
+		// their return back into the outer $tokens array.
+		//
+		// Read-only on the $this->token_definitions cache. The cache lives
+		// on $this and is populated exclusively by process() because trigger
+		// objects are singletons in the registry — caching from this filter
+		// callback would let one row's definitions leak into another row's
+		// runtime fire.
+		return $this->resolve_token_definitions( $trigger, $tokens );
+	}
 
-		foreach ( $additional_tokens as $key => $additonal_token ) {
-			if ( empty( $additonal_token['tokenIdentifier'] ) ) {
-				$additonal_token['tokenIdentifier'] = $this->get_code();
+	/**
+	 * Resolve the full token definition list for a trigger row, applying the
+	 * default tokenIdentifier (trigger code) and tokenType ('text') to any
+	 * definition that omits them.
+	 *
+	 * Shared by register_tokens() (recipe-rendering filter callback) and
+	 * process() (runtime fire path):
+	 *  - register_tokens() passes the current filter-chain tokens as
+	 *    $existing so legacy define_tokens() impls that append don't lose
+	 *    prior-filter contributions.
+	 *  - process() omits the arg so $this->token_definitions holds only
+	 *    this trigger's own contribution, isolated for partitioning at
+	 *    save_tokens() time.
+	 *
+	 * @param array $trigger
+	 * @param array $existing
+	 *
+	 * @return array
+	 */
+	protected function resolve_token_definitions( $trigger, $existing = array() ) {
+
+		$defined = $this->define_tokens( $trigger, $existing );
+
+		// Start from $existing so return-only define_tokens() impls
+		// (`return array( $a, $b );` — common in AIOSEO, EDD, Fluent
+		// Community, LearnDash, Rank Math et al.) don't drop prior filter
+		// contributions. The loop then layers $defined on top:
+		//  - append-style impls already contain $existing inside $defined,
+		//    so the loop overwrites prior entries with themselves
+		//    (idempotent after defaulting is re-applied).
+		//  - return-only impls return just their own tokens; the loop
+		//    adds them on top of $existing without clobbering siblings
+		//    that live under different keys.
+		// Same-key collisions still lose prior entries — unchanged from
+		// pre-patch behaviour and no worse than the old single-row save.
+		$out = $existing;
+
+		foreach ( $defined as $key => $token ) {
+			if ( empty( $token['tokenIdentifier'] ) ) {
+				$token['tokenIdentifier'] = $this->get_code();
 			}
-
-			if ( empty( $additonal_token['tokenType'] ) ) {
-				$additonal_token['tokenType'] = 'text';
+			if ( empty( $token['tokenType'] ) ) {
+				$token['tokenType'] = 'text';
 			}
-
-			$tokens[ $key ] = $additonal_token;
+			$out[ $key ] = $token;
 		}
 
-		return $tokens;
+		return $out;
 	}
 
 	/**
@@ -514,9 +699,17 @@ abstract class Trigger {
 			return;
 		}
 
-		$this->recipe_log_id = $this->maybe_create_recipe_log_entry( $this->recipe_id );
+		// Single call replaces maybe_create_recipe_log_entry + maybe_create_trigger_log_entry.
+		$result = Automator()->recipe_runner->process_trigger(
+			absint( $this->recipe_id ),
+			absint( $this->user_id ),
+			$this->trigger
+		);
 
-		$this->trigger_log_entry = $this->maybe_create_trigger_log_entry( $this->recipe_id, $this->recipe_log_id, $this->trigger );
+		$this->recipe_log_id     = $result['recipe_log_id'];
+		$this->trigger_log_entry = $result['trigger_log_id'];
+		$this->run_number        = $result['run_number'];
+		$this->trigger_log_id    = $result['trigger_log_id'];
 
 		$this->trigger_records = array(
 			'code'           => $this->get_code(),
@@ -528,8 +721,25 @@ abstract class Trigger {
 			'run_number'     => (int) Automator()->get->next_run_number( $this->recipe_id, $this->user_id, true ),
 			'meta'           => $this->get_trigger_meta(),
 			'get_trigger_id' => $this->trigger_log_entry,
+			'engine'         => 'recipe_runner',
 		);
 
+		// Populate the token-definitions cache for save_tokens() to read.
+		// Always re-resolve here, scoped to the row that's actually firing:
+		// trigger objects are singletons in Automator's registry, so caching
+		// across calls would let one row's definitions leak into another row's
+		// fire. Empty $existing because process() needs only this trigger's
+		// own contribution — isolated from filter-chain accumulation.
+		//
+		// Normalize triggers_meta -> meta to match register_tokens(): the recipe
+		// row stores selected option_codes under triggers_meta but define_tokens()
+		// reads $trigger['meta'][$option_code]. Without this swap, dynamic
+		// per-field token discovery sees an empty form_id and emits no tokens.
+		$trigger_for_defs         = $this->trigger;
+		$trigger_for_defs['meta'] = $trigger_for_defs['triggers_meta'] ?? ( $trigger_for_defs['meta'] ?? array() );
+		$this->token_definitions  = $this->resolve_token_definitions( $trigger_for_defs );
+
+		// Token hydration — trigger-specific, stays here.
 		$this->token_values = $this->hydrate_tokens( $this->trigger, $this->hook_args );
 		$this->save_tokens( $this->get_code(), $this->token_values );
 
@@ -544,18 +754,32 @@ abstract class Trigger {
 		$process_further = apply_filters( 'automator_trigger_should_complete', true, $do_action, $this );
 
 		if ( $process_further ) {
-			// Register the hook.
 			$this->register_loopable_trigger_tokens_hooks( $do_action );
-			// Fire the hook.
 			do_action( 'automator_loopable_token_hydrate', $do_action['entry_args'], $do_action['trigger_args'] );
-			// Complete the trigger.
-			Automator()->complete->trigger( $this->trigger_records );
+			// Direct Recipe_Runner call — bypasses facade entirely.
+			Automator()->recipe_runner->complete_trigger( $this->trigger_records );
 		}
 
 		do_action( 'automator_after_maybe_trigger_complete', $do_action, $this );
 	}
 
 	/**
+	 * Register the loopable-token filter/action hooks for this trigger.
+	 *
+	 * Source `$loopable_tokens` from the constructed trigger instance
+	 * rather than the registry entry. Eager-registered triggers carry the
+	 * field on the registry array, but lazy triggers don't — their stub
+	 * (`Trigger_Metadata_Loader::register_stub()`) only emits
+	 * `code/integration/meta_code/type/validation_function`, and the
+	 * `automator_triggers` filter that would have populated the rest is
+	 * intentionally skipped in deferred-construction mode. Reading from
+	 * `$this->get_loopable_tokens()` works for both paths because by the
+	 * time `process()` reaches here the trigger is fully constructed.
+	 *
+	 * The `$trigger` array is still passed to `register_hooks()` /
+	 * `set_trigger()` because the loopable token classes only read
+	 * `$trigger['code']` from it — which the lazy stub does carry.
+	 *
 	 * @param mixed $args
 	 * @return void
 	 */
@@ -563,7 +787,7 @@ abstract class Trigger {
 
 		$trigger_code    = $args['entry_args']['code'] ?? null;
 		$trigger         = Automator()->get_trigger( $trigger_code );
-		$loopable_tokens = $trigger['loopable_tokens'] ?? array();
+		$loopable_tokens = $this->get_loopable_tokens();
 
 		foreach ( (array) $loopable_tokens as $token_class ) {
 			if ( is_string( $token_class ) && class_exists( $token_class ) ) {
@@ -572,68 +796,6 @@ abstract class Trigger {
 				$token_class->set_trigger( $trigger );
 			}
 		}
-	}
-
-	/**
-	 * maybe_create_recipe_log_entry
-	 *
-	 * @param mixed $recipe_id
-	 *
-	 * @return int
-	 */
-	private function maybe_create_recipe_log_entry( $recipe_id ) {
-
-		if ( Automator()->is_recipe_completed( $this->recipe_id, $this->user_id ) ) {
-			throw new Exception( 'Recipe has already been completed' );
-		}
-
-		$result = Automator()->process->user->maybe_create_recipe_log_entry( $this->recipe_id, $this->user_id );
-
-		if ( empty( $result['recipe_log_id'] ) ) {
-			throw new Exception( 'Unable to create recipe log entry' );
-		}
-
-		return absint( $result['recipe_log_id'] );
-	}
-
-	/**
-	 * maybe_create_trigger_log_entry
-	 *
-	 * @param mixed $recipe_id
-	 * @param mixed $recipe_log_id
-	 * @param mixed $trigger
-	 *
-	 * @return int
-	 */
-	private function maybe_create_trigger_log_entry( $recipe_id, $recipe_log_id, $trigger ) {
-
-		$result = Automator()->process->user->maybe_get_trigger_id( $this->user_id, $trigger['ID'], $this->recipe_id, $recipe_log_id );
-
-		if ( empty( $result['trigger_log_id'] ) ) {
-			throw new Exception( 'Unable to create trigger log entry' );
-		}
-
-		$this->trigger_log_id = $result['trigger_log_id'];
-
-		$times_completed_args = array(
-			'recipe_id'      => $this->recipe_id,
-			'trigger_id'     => $this->trigger['ID'],
-			'trigger'        => $this->trigger,
-			'user_id'        => $this->user_id,
-			'recipe_log_id'  => $this->recipe_log_id,
-			'trigger_log_id' => $this->trigger_log_id,
-			'is_signed_in'   => is_user_logged_in(),
-		);
-
-		$result = Automator()->process->user->maybe_trigger_num_times_completed( $times_completed_args );
-
-		if ( ! isset( $result['run_number'] ) ) {
-			throw new Exception( 'Number of times condition is not completed' );
-		}
-
-		$this->run_number = $result['run_number'];
-
-		return absint( $this->trigger_log_id );
 	}
 
 	/**
@@ -649,16 +811,45 @@ abstract class Trigger {
 	}
 
 	/**
-	 * save_tokens
+	 * Persist hydrated token values, bucketed by tokenIdentifier so existing
+	 * recipe references resolve regardless of whether the token uses the
+	 * default trigger-code identifier or a custom one.
 	 *
-	 * @param  string $code
-	 * @param  array $values
+	 * @param string $code
+	 * @param array  $values
+	 *
 	 * @return void
 	 */
 	public function save_tokens( $code, $values ) {
-		Automator()->db->token->save(
+
+		// Defensive fallback: if token_definitions never got populated but we
+		// have values to persist, fall back to the pre-patch single-row save
+		// so data isn't silently dropped. This is a misuse path — a subclass
+		// overrode process() without populating the cache, OR save_tokens()
+		// was called outside process(). Surface it loudly so it gets fixed.
+		if ( empty( $this->token_definitions ) && ! empty( $values ) ) {
+
+			_doing_it_wrong(
+				__METHOD__,
+				sprintf(
+					'save_tokens() called with an empty $token_definitions cache for trigger code "%s". '
+					. 'This usually means process() was overridden without calling parent::process() '
+					. 'or without populating $this->token_definitions. Any tokens declared with a '
+					. 'custom tokenIdentifier will fail to resolve for this trigger fire. Falling '
+					. 'back to the pre-patch single-row save under the trigger code so data is not lost.',
+					esc_html( $code )
+				),
+				'7.3'
+			);
+
+			Automator()->db->token->save( $code, wp_json_encode( $values ), $this->trigger_records );
+			return;
+		}
+
+		Token_Identifier_Partitioner::partition_and_save(
+			$this->token_definitions,
+			$values,
 			$code,
-			wp_json_encode( $values ),
 			$this->trigger_records
 		);
 	}

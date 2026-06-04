@@ -11,6 +11,7 @@ use Exception;
  * @package Uncanny_Automator
  *
  * @property Github_App_Helpers $helpers
+ * @property Github_Webhooks $webhooks
  */
 class Github_Api_Caller extends Api_Caller {
 
@@ -172,6 +173,174 @@ class Github_Api_Caller extends Api_Caller {
 		set_transient( $cache_key, $data, 5 * MINUTE_IN_SECONDS );
 
 		return $data;
+	}
+
+	/**
+	 * Issue the remote `create_webhook` action against GitHub for a repository.
+	 * Pure API I/O — config persistence is owned by `Github_Webhooks` via the manager trait.
+	 *
+	 * @param string $owner       Repository owner.
+	 * @param string $repo_name   Repository name.
+	 * @param string $target_url  The webhook target URL the manager will receive events on.
+	 * @param string $secret      The webhook secret for HMAC signature verification.
+	 * @param array  $events      The events to subscribe to.
+	 *
+	 * @return array {
+	 *     hook_id: int|string|null,
+	 * }
+	 *
+	 * @throws Exception When events are empty or the API rejects the request.
+	 */
+	public function do_create_webhook( $owner, $repo_name, $target_url, $secret, $events ) {
+
+		if ( empty( $events ) ) {
+			throw new Exception( esc_html_x( 'Please select at least one event to subscribe your webhook to.', 'GitHub', 'uncanny-automator' ) );
+		}
+
+		$args = array(
+			'action'      => 'create_webhook',
+			'owner'       => $owner,
+			'repo'        => $repo_name,
+			'webhook_url' => $target_url,
+			'events'      => wp_json_encode( $events ),
+			'secret'      => $secret,
+		);
+
+		$response = $this->api_request( $args );
+		if ( 201 !== $response['statusCode'] ) {
+			throw new Exception( esc_html( $response['data']['message'] ) );
+		}
+
+		return array(
+			'hook_id' => $response['data']['id'] ?? null,
+		);
+	}
+
+	/**
+	 * Issue the remote `update_webhook` action against GitHub — change the events the remote hook fires on.
+	 * Pure API I/O — config persistence is owned by `Github_Webhooks` via the manager trait.
+	 *
+	 * @param string     $owner      Repository owner.
+	 * @param string     $repo_name  Repository name.
+	 * @param string     $target_url The webhook target URL.
+	 * @param string     $secret     The webhook secret for HMAC signature verification.
+	 * @param array      $events     The events to subscribe to.
+	 * @param int|string $hook_id    The remote webhook ID.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception When events are empty or the API rejects the request.
+	 */
+	public function do_update_webhook( $owner, $repo_name, $target_url, $secret, $events, $hook_id ) {
+
+		if ( empty( $events ) ) {
+			throw new Exception( esc_html_x( 'Please select at least one event to subscribe your webhook to.', 'GitHub', 'uncanny-automator' ) );
+		}
+
+		$args = array(
+			'action'      => 'update_webhook',
+			'webhook_id'  => $hook_id,
+			'owner'       => $owner,
+			'repo'        => $repo_name,
+			'webhook_url' => $target_url,
+			'events'      => wp_json_encode( $events ),
+			'secret'      => $secret,
+		);
+
+		$response = $this->api_request( $args );
+		if ( 200 !== $response['statusCode'] ) {
+			throw new Exception( esc_html( $response['data']['message'] ) );
+		}
+	}
+
+	/**
+	 * Issue the remote `delete_webhook` action against GitHub for a repository.
+	 * Pure API I/O — config persistence is owned by `Github_Webhooks` via the manager trait.
+	 *
+	 * @param string     $owner     Repository owner.
+	 * @param string     $repo_name Repository name.
+	 * @param int|string $hook_id   The remote webhook ID.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception When the API rejects the request.
+	 */
+	public function do_delete_webhook( $owner, $repo_name, $hook_id ) {
+
+		$args = array(
+			'action'     => 'delete_webhook',
+			'owner'      => $owner,
+			'repo'       => $repo_name,
+			'webhook_id' => $hook_id,
+		);
+
+		$response = $this->api_request( $args );
+		if ( 204 !== (int) $response['statusCode'] && 200 !== (int) $response['statusCode'] ) {
+			throw new Exception( esc_html( $response['data']['message'] ) );
+		}
+	}
+
+	/*
+	 * --------------------------------------------------------------------
+	 * LSP-compat shims for pre-7.3.0 Uncanny_Automator_Pro
+	 * --------------------------------------------------------------------
+	 * The block below is dead-code-by-design. It exists so that PHP 8+ accepts
+	 * the class declaration when pre-7.3.0 Pro's `Github_Pro_Api_Caller` (which
+	 * extends this class) overrides `create_webhook`, `update_webhook`, and
+	 * `delete_webhook` at its narrower arity. Without these signature stubs
+	 * on the parent, PHP raises an LSP "must be compatible" fatal at class
+	 * declaration time and the site refuses to boot, blocking the user from
+	 * updating Pro from wp-admin.
+	 *
+	 * When old Pro is active, Pro's override runs and the bodies below are
+	 * never reached. When Pro is updated to 7.3.0+, the override disappears
+	 * and Free no longer calls these names (it uses `do_create_webhook` /
+	 * `do_update_webhook` / `do_delete_webhook` above), so the bodies are
+	 * still unreachable.
+	 *
+	 * Safe to delete this entire block once Pro ≥ 7.3.0 is the supported floor.
+	 * --------------------------------------------------------------------
+	 */
+
+	/**
+	 * LSP-compat shim. See block comment above. Do not invoke directly.
+	 *
+	 * @param string $repo_id Unused.
+	 * @param array  $events  Unused.
+	 *
+	 * @return void
+	 *
+	 * @throws \BadMethodCallException Always.
+	 */
+	public function create_webhook( $repo_id, $events ) {
+		throw new \BadMethodCallException( 'Github_Api_Caller::create_webhook is a pre-7.3.0 Pro LSP-compat stub; use do_create_webhook() instead.' );
+	}
+
+	/**
+	 * LSP-compat shim. See block comment above. Do not invoke directly.
+	 *
+	 * @param string $repo_id Unused.
+	 * @param array  $events  Unused.
+	 *
+	 * @return void
+	 *
+	 * @throws \BadMethodCallException Always.
+	 */
+	public function update_webhook( $repo_id, $events ) {
+		throw new \BadMethodCallException( 'Github_Api_Caller::update_webhook is a pre-7.3.0 Pro LSP-compat stub; use do_update_webhook() instead.' );
+	}
+
+	/**
+	 * LSP-compat shim. See block comment above. Do not invoke directly.
+	 *
+	 * @param string $repo_id Unused.
+	 *
+	 * @return void
+	 *
+	 * @throws \BadMethodCallException Always.
+	 */
+	public function delete_webhook( $repo_id ) {
+		throw new \BadMethodCallException( 'Github_Api_Caller::delete_webhook is a pre-7.3.0 Pro LSP-compat stub; use do_delete_webhook() instead.' );
 	}
 
 	/**

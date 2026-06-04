@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator\Services\Recipe\Structure\Triggers\Tokens\Common;
 
+use Uncanny_Automator\Recipe\Trigger_Late_Resolver;
+
 /**
  * Class Parser
  *
@@ -129,27 +131,73 @@ class Parser {
 	}
 
 	/**
-	 * Retrieves the trigger's sentence based on its code.
+	 * Retrieves the trigger's readable sentence.
+	 *
+	 * Resolution order (each fallback covers a distinct failure mode):
+	 *
+	 *   1. Per-recipe `sentence_human_readable` post meta on the trigger
+	 *      post. Set by the recipe builder at save time with placeholders
+	 *      already resolved to the user's actual choice (e.g. "Any subsite"
+	 *      for the `-1` sentinel, or the selected entity's title). The
+	 *      registry's static `sentence` carries unresolved
+	 *      `{{Label:OPTION_CODE}}` placeholders that the outer action-side
+	 *      parser treats as unmatched tokens and strips entirely, leaving
+	 *      bare prose (e.g. " is deactivated"). The per-recipe meta avoids
+	 *      that round-trip.
+	 *
+	 *   2. Registry — eager-registered triggers (admin / editor contexts via
+	 *      `should_load_all()`) carry `select_option_name` and `sentence`
+	 *      pre-baked at boot.
+	 *
+	 *   3. Lazy resolver — frontend / cron requests register stub-only
+	 *      entries via `Trigger_Metadata_Loader`. The stub has no sentence
+	 *      because sentences are i18n strings set inside `setup_trigger()`,
+	 *      which requires the trigger to be constructed. `Trigger_Late_Resolver`
+	 *      memoises that construction per-code per-request so the cost is
+	 *      paid once and shared with the queue's validation_function and
+	 *      the token-parse filter proxy.
 	 *
 	 * @param string $trigger_code The trigger code.
 	 * @return string The trigger sentence or an empty string if not found.
 	 */
 	protected function get_trigger_sentence( $trigger_code ) {
 
+		// Preferred path: per-recipe rendered sentence on the trigger post.
+		if ( $this->trigger_id > 0 ) {
+			$rendered = (string) get_post_meta( $this->trigger_id, 'sentence_human_readable', true );
+			if ( '' !== $rendered ) {
+				return $rendered;
+			}
+		}
+
+		// Fallback: static template from the trigger registry. Only reached
+		// when the trigger post is missing the rendered meta (older recipes
+		// saved before the human-readable column existed).
 		if ( empty( $trigger_code ) ) {
 			return '';
 		}
 
 		$trigger = Automator()->get_trigger( $trigger_code );
 
-		if ( empty( $trigger ) || ! is_array( $trigger ) ) {
+		if ( is_array( $trigger ) ) {
+			$eager = (string) ( $trigger['select_option_name'] ?? $trigger['sentence'] ?? '' );
+			if ( '' !== $eager ) {
+				return $eager;
+			}
+		}
+
+		$instance = Trigger_Late_Resolver::get( $trigger_code );
+
+		if ( null === $instance ) {
 			automator_log( 'Parser: Automator returned an invalid trigger for code "' . $trigger_code . '".' );
 			return '';
 		}
 
-		$select_option_name = $trigger['select_option_name'] ?? '';
-		$sentence           = $trigger['sentence'] ?? '';
+		$readable = method_exists( $instance, 'get_readable_sentence' ) ? (string) $instance->get_readable_sentence() : '';
+		if ( '' !== $readable ) {
+			return $readable;
+		}
 
-		return ! empty( $select_option_name ) ? $select_option_name : $sentence;
+		return method_exists( $instance, 'get_sentence' ) ? (string) $instance->get_sentence() : '';
 	}
 }

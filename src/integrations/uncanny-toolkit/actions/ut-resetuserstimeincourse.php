@@ -1,137 +1,95 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
-namespace Uncanny_Automator;
-
-use uncanny_pro_toolkit;
+namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
 
 /**
- * Class UT_RESETUSERSTIMEINCOURSE
+ * Action: Reset a user's time in a course.
  *
- * @package Uncanny_Automator
+ * @property \Uncanny_Automator\Integrations\Uncanny_Toolkit\Ut_Helpers $item_helpers
  */
-class UT_RESETUSERSTIMEINCOURSE {
+class UT_RESETUSERSTIMEINCOURSE extends \Uncanny_Automator\Recipe\Action {
 
 	/**
-	 * Integration code
+	 * Setup action configuration.
 	 *
-	 * @var string
+	 * @return void
 	 */
-	public static $integration = 'UNCANNYTOOLKIT';
-
-	/**
-	 * Action code
-	 *
-	 * @var string
-	 */
-	private $action_code;
-	/**
-	 * Action meta
-	 *
-	 * @var string
-	 */
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) ) {
-			return;
-		}
-
-		$this->action_code = 'RESETUSERSTIMEINCOURSE';
-		$this->action_meta = 'UTRESETUSERSTIMEINCOURSE';
-		$this->define_action();
+	protected function setup_action() {
+		$this->set_integration( 'UNCANNYTOOLKIT' );
+		$this->set_action_code( 'RESETUSERSTIMEINCOURSE' );
+		$this->set_action_meta( 'UTRESETUSERSTIMEINCOURSE' );
+		// translators: %1$s is a course.
+		$this->set_sentence( sprintf( esc_html_x( "Reset a user's time in {{a course:%1\$s}}", 'Uncanny Toolkit', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( "Reset a user's time in {{a course}}", 'Uncanny Toolkit', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * Define and register the action by pushing it into the Automator object
+	 * Check if Toolkit Pro is active.
+	 *
+	 * @return bool
 	 */
-	public function define_action() {
-
-		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/uncanny-toolkit/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			/* translators: Logged-in action - Uncanny Groups */
-			'sentence'           => sprintf( esc_attr__( "Reset a user's time in {{a course:%1\$s}}", 'uncanny-automator' ), $this->action_meta ),
-			/* translators: Logged-in action - Uncanny Groups */
-			'select_option_name' => esc_attr__( "Reset a user's time in {{a course}}", 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'process_action' ),
-			'options_callback'   => array( $this, 'load_options' ),
-		);
-
-		Automator()->register->action( $action );
+	public function requirements_met() {
+		return defined( 'UNCANNY_TOOLKIT_PRO_VERSION' );
 	}
 
 	/**
-	 * Load options
+	 * Define action options.
 	 *
-	 * @return array
+	 * @return array[]
 	 */
-	public function load_options() {
-
-		$all_courses = Automator()->helpers->recipe->learndash->options->get_all_ld_courses( 'Course', $this->action_meta, false );
-		$options     = array(
-			'options' => array(
-				$all_courses,
+	public function options() {
+		return array(
+			array(
+				'option_code'           => $this->get_action_meta(),
+				'label'                 => esc_html_x( 'Course', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'required'              => true,
+				'supports_custom_value' => true,
+				'remote_data'           => $this->item_helpers->remote_data_load_config( 'courses_strict' ),
+				'options'               => array(),
 			),
 		);
-
-		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Process the action.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        Additional args.
+	 * @param array $parsed      Parsed field values.
+	 *
+	 * @return bool
 	 */
-	public function process_action( $user_id, $action_data, $recipe_id, $args ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
 		$active_modules = get_option( 'uncanny_toolkit_active_classes', true );
+
 		if ( ! isset( $active_modules['uncanny_pro_toolkit\CourseTimer'] ) && empty( $active_modules['uncanny_pro_toolkit\CourseTimer'] ) ) {
-			$error_message                       = esc_html__( 'Simple course timer module is not active.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
-			return;
+			$this->add_log_error( esc_html_x( 'Simple course timer module is not active.', 'Uncanny Toolkit', 'uncanny-automator' ) );
+			return false;
 		}
 
-		$ut_course_id = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
-		if ( empty( $ut_course_id ) ) {
-			$error_message                       = esc_html__( 'The selected course is not found.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+		$ut_course_id = isset( $parsed[ $this->get_action_meta() ] ) ? absint( $parsed[ $this->get_action_meta() ] ) : 0;
 
-			return;
+		if ( empty( $ut_course_id ) ) {
+			$this->add_log_error( esc_html_x( 'The selected course is not found.', 'Uncanny Toolkit', 'uncanny-automator' ) );
+			return false;
 		}
 
 		if ( ! class_exists( '\uncanny_pro_toolkit\CourseTimer' ) ) {
-			$error_message                       = esc_html__( 'Simple course timer module is not active.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+			$this->add_log_error( esc_html_x( 'Simple course timer module is not active.', 'Uncanny Toolkit', 'uncanny-automator' ) );
+			return false;
 		}
+
 		if ( ! method_exists( '\uncanny_pro_toolkit\CourseTimer', 'delete_user_course_data' ) ) {
-			$error_message                       = esc_html__( 'A required method is not available. Please update Uncanny Toolkit Pro to the latest version.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+			$this->add_log_error( esc_html_x( 'A required method is not available. Please update Uncanny Toolkit Pro to the latest version.', 'Uncanny Toolkit', 'uncanny-automator' ) );
+			return false;
 		}
 
-		uncanny_pro_toolkit\CourseTimer::delete_user_course_data( $user_id, $ut_course_id );
+		\uncanny_pro_toolkit\CourseTimer::delete_user_course_data( $user_id, $ut_course_id );
 
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		return true;
 	}
-
 }

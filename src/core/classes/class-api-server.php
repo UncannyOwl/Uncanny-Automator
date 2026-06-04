@@ -158,6 +158,7 @@ class Api_Server {
 	/**
 	 * Method get_license_type
 	 *
+	 * @deprecated Use License_Manager::get_type().
 	 * @return string
 	 */
 	public static function get_license_type() {
@@ -173,6 +174,7 @@ class Api_Server {
 	/**
 	 * Method get_license_key
 	 *
+	 * @deprecated Use License_Manager::get_key().
 	 * @return string
 	 */
 	public static function get_license_key() {
@@ -184,6 +186,7 @@ class Api_Server {
 	/**
 	 * Method get_item_name
 	 *
+	 * @deprecated Use License_Manager::get_item_name().
 	 * @return string
 	 */
 	public static function get_item_name() {
@@ -208,6 +211,7 @@ class Api_Server {
 	/**
 	 * Method get_license_plan
 	 *
+	 * @deprecated Use License_Manager::get_plan().
 	 * @return string
 	 */
 	public static function get_license_plan() {
@@ -256,6 +260,7 @@ class Api_Server {
 	 * Method get_site_name
 	 * For sites like https://your-site:8888/
 	 *
+	 * @deprecated Use License_Manager::get_site_name().
 	 * @return string
 	 */
 	public static function get_site_name() {
@@ -265,6 +270,7 @@ class Api_Server {
 	/**
 	 * Get formatted license renewal/expiry date for MCP payload.
 	 *
+	 * @deprecated Use License_Manager::get_renewal_date().
 	 * @return string Formatted date like "January 1, 2026" or empty string if lifetime/unavailable.
 	 */
 	public static function get_renewal_date_formatted(): string {
@@ -341,6 +347,7 @@ class Api_Server {
 	/**
 	 * api_call
 	 *
+	 * @deprecated Use Api_Client::send() directly.
 	 * @param string $endpoint
 	 * @param array $body
 	 *
@@ -424,6 +431,7 @@ class Api_Server {
 	/**
 	 * call
 	 *
+	 * @deprecated Use Api_Client::send() directly.
 	 * @param string $method
 	 * @param string $url
 	 * @param array $body
@@ -516,6 +524,7 @@ class Api_Server {
 	/**
 	 * get_license
 	 *
+	 * @deprecated Use License_Manager::get_license_data().
 	 * @return mixed false||array
 	 */
 	public static function get_license() {
@@ -580,6 +589,7 @@ class Api_Server {
 	/**
 	 * has_valid_license
 	 *
+	 * @deprecated Use License_Manager::validate().
 	 * @return mixed false||array
 	 */
 	public static function has_valid_license() {
@@ -596,6 +606,7 @@ class Api_Server {
 	/**
 	 * has_credits
 	 *
+	 * @deprecated Use Credit_Manager::has_credits().
 	 * @return bool
 	 */
 	public static function has_credits() {
@@ -616,6 +627,7 @@ class Api_Server {
 	/**
 	 * charge_credit
 	 *
+	 * @deprecated Use Credit_Manager::charge().
 	 * @return mixed false||array
 	 */
 	public function charge_usage( $trigger_data = null ) {
@@ -817,6 +829,7 @@ class Api_Server {
 	/**
 	 * is_automator_connected
 	 *
+	 * @deprecated Use License_Manager::is_connected().
 	 * @return void
 	 */
 	public static function is_automator_connected( $force_refresh = false ) {
@@ -863,6 +876,33 @@ class Api_Server {
 	public static function set_connection_error_message( $error_message ) {
 
 		set_transient( 'automator_setup_wizard_error', $error_message, MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * Get the API client service.
+	 *
+	 * @return \Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client
+	 */
+	public static function get_api_client() {
+		return \Uncanny_Automator\App\Infrastructure\automator_api_client();
+	}
+
+	/**
+	 * Get the license manager service.
+	 *
+	 * @return \Uncanny_Automator\App\Infrastructure\License\License_Manager
+	 */
+	public static function get_license_manager() {
+		return \Uncanny_Automator\App\Infrastructure\automator_license_manager();
+	}
+
+	/**
+	 * Get the credit manager service.
+	 *
+	 * @return \Uncanny_Automator\App\Infrastructure\License\Credit_Manager
+	 */
+	public static function get_credit_manager() {
+		return \Uncanny_Automator\App\Infrastructure\automator_credit_manager();
 	}
 }
 

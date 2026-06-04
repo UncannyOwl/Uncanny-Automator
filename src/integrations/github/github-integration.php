@@ -60,6 +60,14 @@ class Github_Integration extends \Uncanny_Automator\App_Integrations\App_Integra
 		new GITHUB_ADD_RELEASE_TAG_TO_BRANCH( $this->dependencies );
 		new GITHUB_ADD_LABEL_TO_ISSUE_PR( $this->dependencies );
 		new GITHUB_REMOVE_LABEL_FROM_ISSUE_PR( $this->dependencies );
+
+		// Load triggers.
+		new EVENT_OCCURS_IN_REPO( $this->dependencies );
+		new ISSUE_CREATED_IN_REPO( $this->dependencies );
+		new RELEASE_CREATED_IN_REPO( $this->dependencies );
+		new PULL_REQUEST_OPENED_IN_REPO( $this->dependencies );
+		new PULL_REQUEST_MERGED_IN_REPO( $this->dependencies );
+		new PUSH_TO_REPO( $this->dependencies );
 	}
 
 	/**
@@ -74,19 +82,5 @@ class Github_Integration extends \Uncanny_Automator\App_Integrations\App_Integra
 		} catch ( Exception $e ) {
 			return false;
 		}
-	}
-
-	/**
-	 * Register hooks.
-	 *
-	 * @return void
-	 */
-	public function register_hooks() {
-		// Recipe options AJAX handlers.
-		add_action( 'wp_ajax_automator_github_get_repo_options', array( $this->helpers, 'get_repo_options_ajax' ) );
-		add_action( 'wp_ajax_automator_github_get_repo_issues_and_pr_options', array( $this->helpers, 'get_repo_issues_and_pr_options_ajax' ) );
-		add_action( 'wp_ajax_automator_github_get_repo_tag_options', array( $this->helpers, 'get_repo_tag_options_ajax' ) );
-		add_action( 'wp_ajax_automator_github_get_repo_branches_options', array( $this->helpers, 'get_repo_branches_options_ajax' ) );
-		add_action( 'wp_ajax_automator_github_get_repo_label_options', array( $this->helpers, 'get_repo_label_options_ajax' ) );
 	}
 }

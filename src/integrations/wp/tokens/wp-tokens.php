@@ -31,6 +31,12 @@ class Wp_Tokens {
 			);
 		}
 
+		// Skip legacy token filters when the modern integration is active —
+		// migrated triggers use hydrate_tokens() directly.
+		if ( class_exists( '\Uncanny_Automator\Integrations\Wp\Wp_Integration', false ) ) {
+			return;
+		}
+
 		add_filter( 'automator_maybe_parse_token', array( $this, 'parse_wproles_token' ), 20, 6 );
 	}
 

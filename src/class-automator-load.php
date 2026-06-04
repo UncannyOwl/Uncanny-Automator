@@ -15,6 +15,8 @@ namespace Uncanny_Automator;
 
 use Uncanny_Automator\Services\CLI\Logs\Prune_Command;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Automator_Load
  *
@@ -110,6 +112,8 @@ class Automator_Load {
 		add_action( 'admin_init', array( $this, 'automator_schedule_healthchecks' ) );
 
 		add_action( 'admin_init', array( $this, 'maybe_cleanup_legacy_crons' ) );
+
+		add_action( 'admin_init', array( $this, 'maybe_cleanup_hook_migration_tombstones' ) );
 
 		add_action( 'admin_notices', array( $this, 'check_runtime_environment' ) );
 
@@ -342,7 +346,7 @@ class Automator_Load {
 		}
 
 		// If the site is not previously connected, let's redirect to Setup Wizard
-		if ( class_exists( '\Uncanny_Automator\Api_Server' ) && empty( Api_Server::get_license_key() ) ) {
+		if ( class_exists( '\Uncanny_Automator\Api_Server' ) && empty( automator_license_manager()->get_key() ) ) {
 			wp_redirect( esc_url_raw( admin_url( 'admin.php?page=uncanny-automator-setup-wizard' ) ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 			exit();
 		}
@@ -750,6 +754,9 @@ class Automator_Load {
 		 */
 		do_action( 'automator_before_autoloader' );
 
+		// WP admin toolbar entry (admin + frontend for logged-in users).
+		$classes['Automator_WP_Admin_Bar'] = UA_ABSPATH . 'src/core/admin/class-automator-wp-admin-bar.php';
+
 		// Webhooks
 		$classes['Automator_Send_Webhook_Ajax_Handler'] = UA_ABSPATH . 'src/core/lib/webhooks/class-automator-send-webhook-ajax-handler.php';
 		$classes['Recipe_Post_Rest_Api']                = UA_ABSPATH . 'src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php';
@@ -758,13 +765,15 @@ class Automator_Load {
 		$classes['Copy_Recipe_Parts']                   = UA_ABSPATH . 'src/core/admin/class-copy-recipe-parts.php';
 		$classes['Export_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-export-recipe.php';
 		$classes['Import_Recipe']                       = UA_ABSPATH . 'src/core/admin/class-import-recipe.php';
-		$classes['Pricing_Plan_Resolver']               = UA_ABSPATH . 'src/core/admin/class-pricing-plan-resolver.php';
 
 		// Load migrations
 		$this->load_migrations();
 
 		// Load migrations that uses hooks.
 		$this->load_migrations_hooks();
+
+		// Load cron handlers.
+		$this->load_cron_handlers();
 
 		// Only initialize classes if there're any active recipes OR if user is editing recipe
 		$classes = $this->maybe_initialize_automator( $classes );
@@ -851,7 +860,33 @@ class Automator_Load {
 	 * @return void
 	 */
 	public function load_migrations() {
-		// Migration classes are covered by "classmap": ["src/"] in composer.json.
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-error-log.php';
+	}
+
+	/**
+	 * Load cron handlers for background tasks.
+	 *
+	 * @return void
+	 */
+	public function load_cron_handlers() {
+		$recovery = new \Uncanny_Automator\App\Recipe_Runner\Cron\Stuck_Recipe_Recovery();
+		$recovery->register();
+
+		register_deactivation_hook( AUTOMATOR_BASE_FILE, array( '\Uncanny_Automator\App\Recipe_Runner\Cron\Stuck_Recipe_Recovery', 'unregister' ) );
+
+		// Purge expired run snapshots hourly.
+		add_action(
+			'automator_purge_run_snapshots',
+			function () {
+				if ( isset( Automator()->recipe_runner ) ) {
+					Automator()->recipe_runner->snapshot_store()->purge_expired();
+				}
+			}
+		);
+
+		if ( ! wp_next_scheduled( 'automator_purge_run_snapshots' ) ) {
+			wp_schedule_event( time(), 'hourly', 'automator_purge_run_snapshots' );
+		}
 	}
 
 	/**
@@ -1020,7 +1055,7 @@ class Automator_Load {
 	public function maybe_cleanup_legacy_crons() {
 		$cleaned_version = automator_get_option( 'automator_legacy_crons_cleaned_version', '' );
 
-		if ( $cleaned_version === AUTOMATOR_PLUGIN_VERSION ) {
+		if ( AUTOMATOR_PLUGIN_VERSION === $cleaned_version ) {
 			return;
 		}
 
@@ -1048,6 +1083,79 @@ class Automator_Load {
 
 		foreach ( $legacy_cron_hooks as $cron_hook ) {
 			wp_unschedule_hook( $cron_hook );
+		}
+	}
+
+	/**
+	 * Runs once per plugin version to delete option-table tombstones left by the
+	 * three hook-rename migrations retired in 7.4 (EDD_SL, LearnDash quiz action,
+	 * WP USERROLEREMOVED).
+	 *
+	 * The migration classes were deleted because their target triggers now declare
+	 * the post-rename hook in their Trigger_Definition (code-defined hooks). The
+	 * "already migrated" flags they left in the options table are dead rows.
+	 *
+	 * EDD_SL stored a standalone uap_edd_sl_hook_migrated option. The other two
+	 * extended the shared Migration abstract, which writes its sentinel into a
+	 * key inside the automator_migrations array option — we strip those keys but
+	 * leave the array (other migrations still use it).
+	 *
+	 * Fires on admin_init so it catches every install path: WP admin updater,
+	 * upload-replace, WP-CLI, and manual file replacement.
+	 *
+	 * @since 7.4
+	 * @return void
+	 */
+	public function maybe_cleanup_hook_migration_tombstones() {
+		$cleaned_version = automator_get_option( 'automator_hook_migration_tombstones_cleaned_version', '' );
+
+		if ( AUTOMATOR_PLUGIN_VERSION === $cleaned_version ) {
+			return;
+		}
+
+		self::cleanup_hook_migration_tombstones();
+
+		automator_update_option( 'automator_hook_migration_tombstones_cleaned_version', AUTOMATOR_PLUGIN_VERSION );
+	}
+
+	/**
+	 * Delete the three hook-rename migration sentinels.
+	 *
+	 * Idempotent: missing keys are no-ops on both option helpers.
+	 *
+	 * @since 7.4
+	 * @return void
+	 */
+	public static function cleanup_hook_migration_tombstones() {
+
+		// EDD_SL stored its own standalone option flag.
+		automator_delete_option( 'uap_edd_sl_hook_migrated' );
+
+		// LearnDash and WP USERROLEREMOVED migrations registered themselves under
+		// the shared Migration abstract, which writes to the automator_migrations
+		// array option keyed by the migration name.
+		$migrations = automator_get_option( 'automator_migrations', array() );
+
+		if ( ! is_array( $migrations ) ) {
+			return;
+		}
+
+		$tombstone_keys = array(
+			'learndash_quiz_action_v2',
+			'wp_user_role_removed_action_v2',
+		);
+
+		$changed = false;
+
+		foreach ( $tombstone_keys as $key ) {
+			if ( array_key_exists( $key, $migrations ) ) {
+				unset( $migrations[ $key ] );
+				$changed = true;
+			}
+		}
+
+		if ( $changed ) {
+			automator_update_option( 'automator_migrations', $migrations );
 		}
 	}
 }

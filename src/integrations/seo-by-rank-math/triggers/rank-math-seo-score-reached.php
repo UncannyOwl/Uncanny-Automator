@@ -11,16 +11,23 @@ namespace Uncanny_Automator\Integrations\Seo_By_Rank_Math;
 class Rank_Math_Seo_Score_Reached extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( 'RANK_MATH_SEO_SCORE_REACHED', 'SEO_BY_RANK_MATH' )
+			->trigger_type( 'anonymous' )
+			->trigger_meta( 'RANK_MATH_POST' )
+			->hook( 'automator_rank_math_seo_data_saved', 10, 1 );
+	}
+
+	/**
 	 * Setup trigger.
 	 *
 	 * @return void
 	 */
 	protected function setup_trigger() {
-		$this->set_integration( 'SEO_BY_RANK_MATH' );
-		$this->set_trigger_code( 'RANK_MATH_SEO_SCORE_REACHED' );
-		$this->set_trigger_meta( 'RANK_MATH_POST' );
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_login_required( false );
-		$this->set_trigger_type( 'anonymous' );
 		// translators: %1$s is the post, %2$s is the condition, %3$s is the score threshold.
 		$this->set_sentence(
 			sprintf(
@@ -31,7 +38,6 @@ class Rank_Math_Seo_Score_Reached extends \Uncanny_Automator\Recipe\Trigger {
 			)
 		);
 		$this->set_readable_sentence( esc_html_x( "{{A post's}} SEO score is {{greater than, less than, or equal to}} {{a value}}", 'Rank Math SEO', 'uncanny-automator' ) );
-		$this->add_action( 'automator_rank_math_seo_data_saved' );
 	}
 
 	/**

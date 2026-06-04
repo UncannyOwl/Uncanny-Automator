@@ -1,0 +1,325 @@
+{
+    "integration_id": "UNCANNYTOOLKIT",
+    "updated_at": "2026-03-09T20:02:50Z",
+    "triggers": [
+        {
+            "code": "UTUSERIMPORTEDCOURSE",
+            "meta": "UOUSERIMPORTEDCOURSE",
+            "tokens": [
+                {
+                    "id": "user_id",
+                    "name": "Imported user ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDCOURSE:user_id"
+                },
+                {
+                    "id": "user_login",
+                    "name": "Imported user login",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDCOURSE:user_login"
+                },
+                {
+                    "id": "user_email",
+                    "name": "Imported user email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDCOURSE:user_email"
+                },
+                {
+                    "id": "first_name",
+                    "name": "Imported user first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDCOURSE:first_name"
+                },
+                {
+                    "id": "last_name",
+                    "name": "Imported user last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDCOURSE:last_name"
+                },
+                {
+                    "id": "display_name",
+                    "name": "Imported user display name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDCOURSE:display_name"
+                },
+                {
+                    "id": "wp_role",
+                    "name": "Imported user WordPress role",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDCOURSE:wp_role"
+                },
+                {
+                    "id": "learndash_course_id",
+                    "name": "Course ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDCOURSE:learndash_course_id"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "UTUSERIMPORTED",
+            "meta": "UOUSERIMPORTED",
+            "tokens": [
+                {
+                    "id": "user_id",
+                    "name": "Imported user ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTED:user_id"
+                },
+                {
+                    "id": "user_login",
+                    "name": "Imported user login",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTED:user_login"
+                },
+                {
+                    "id": "user_email",
+                    "name": "Imported user email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTED:user_email"
+                },
+                {
+                    "id": "first_name",
+                    "name": "Imported user first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTED:first_name"
+                },
+                {
+                    "id": "last_name",
+                    "name": "Imported user last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTED:last_name"
+                },
+                {
+                    "id": "display_name",
+                    "name": "Imported user display name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTED:display_name"
+                },
+                {
+                    "id": "wp_role",
+                    "name": "Imported user WordPress role",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTED:wp_role"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "UTGROUPLEADERIMPORTED",
+            "meta": "UOGROUPLEADERIMPORTED",
+            "tokens": [
+                {
+                    "id": "user_id",
+                    "name": "Imported user ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTGROUPLEADERIMPORTED:user_id"
+                },
+                {
+                    "id": "user_login",
+                    "name": "Imported user login",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTGROUPLEADERIMPORTED:user_login"
+                },
+                {
+                    "id": "user_email",
+                    "name": "Imported user email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTGROUPLEADERIMPORTED:user_email"
+                },
+                {
+                    "id": "first_name",
+                    "name": "Imported user first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTGROUPLEADERIMPORTED:first_name"
+                },
+                {
+                    "id": "last_name",
+                    "name": "Imported user last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTGROUPLEADERIMPORTED:last_name"
+                },
+                {
+                    "id": "display_name",
+                    "name": "Imported user display name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTGROUPLEADERIMPORTED:display_name"
+                },
+                {
+                    "id": "wp_role",
+                    "name": "Imported user WordPress role",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTGROUPLEADERIMPORTED:wp_role"
+                },
+                {
+                    "id": "learndash_group_id",
+                    "name": "Group ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:UTGROUPLEADERIMPORTED:learndash_group_id"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "UTUSERIMPORTEDGROUP",
+            "meta": "UOUSERIMPORTEDGROUP",
+            "tokens": [
+                {
+                    "id": "user_id",
+                    "name": "Imported user ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDGROUP:user_id"
+                },
+                {
+                    "id": "user_login",
+                    "name": "Imported user login",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDGROUP:user_login"
+                },
+                {
+                    "id": "user_email",
+                    "name": "Imported user email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDGROUP:user_email"
+                },
+                {
+                    "id": "first_name",
+                    "name": "Imported user first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDGROUP:first_name"
+                },
+                {
+                    "id": "last_name",
+                    "name": "Imported user last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDGROUP:last_name"
+                },
+                {
+                    "id": "display_name",
+                    "name": "Imported user display name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDGROUP:display_name"
+                },
+                {
+                    "id": "wp_role",
+                    "name": "Imported user WordPress role",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDGROUP:wp_role"
+                },
+                {
+                    "id": "learndash_group_id",
+                    "name": "Group ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:UTUSERIMPORTEDGROUP:learndash_group_id"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "UTUSERSTIMEINCOURSEEXCEEDS",
+            "meta": "UOUSERSTIMEINCOURSEEXCEEDS",
+            "tokens": [
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "code": "RESETUSERSTIMEINCOURSE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:RESETUSERSTIMEINCOURSE:ACTION_RUN_STATUS"
+                }
+            ]
+        }
+    ]
+}

@@ -78,11 +78,9 @@ class GOOGLESHEET_ADD_ROW_V2 extends App_Action {
 						'options'     => array(),
 					),
 				),
-				'ajax'              => array(
-					'endpoint'       => 'automator_fetch_googlesheets_worksheets_columns',
-					'event'          => 'parent_fields_change',
-					'listen_fields'  => array( 'GSWORKSHEET' ),
-					'mapping_column' => 'GS_COLUMN_NAME',
+				'remote_data'       => $this->helpers->remote_data_with_mapping_column(
+					$this->helpers->remote_data_parent_config( 'worksheets_columns', array( 'GSWORKSHEET' ) ),
+					'GS_COLUMN_NAME'
 				),
 			),
 		);

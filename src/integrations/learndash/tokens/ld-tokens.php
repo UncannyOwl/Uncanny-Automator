@@ -18,6 +18,12 @@ class Ld_Tokens {
 			return;
 		}
 
+		// Skip legacy token filters when the modern integration is active —
+		// migrated triggers use hydrate_tokens() directly.
+		if ( class_exists( '\Uncanny_Automator\Integrations\Learndash\Ld_Integration', false ) ) {
+			return;
+		}
+
 		add_filter(
 			'automator_maybe_trigger_ld_ldquiz_tokens',
 			array(

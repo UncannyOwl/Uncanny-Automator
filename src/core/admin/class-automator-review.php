@@ -12,6 +12,8 @@ namespace Uncanny_Automator;
 use WP_REST_Response;
 use WP_REST_Request;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Automator_Review
  *
@@ -316,7 +318,7 @@ class Automator_Review {
 		$response->success       = true;
 		$response->credits_left  = 0;
 		$response->total_credits = 0;
-		$existing_data           = Api_Server::is_automator_connected();
+		$existing_data           = automator_license_manager()->get_license_data();
 
 		if ( empty( $existing_data ) ) {
 			return new \WP_REST_Response( $response, 200 );
@@ -1011,11 +1013,11 @@ class Automator_Review {
 	}
 
 	/**
-	 * @return false|null
+	 * @return array|null
 	 */
 	public function get_connected_user() {
 
-		return Api_Server::is_automator_connected();
+		return automator_license_manager()->get_license_data();
 	}
 
 	/**
@@ -1044,7 +1046,7 @@ class Automator_Review {
 	 */
 	protected function get_usage_count() {
 
-		$credits = Api_Server::is_automator_connected();
+		$credits = automator_license_manager()->get_license_data();
 
 		$usage_count = isset( $credits['paid_usage_count'] ) ? absint( $credits['paid_usage_count'] ) : false;
 

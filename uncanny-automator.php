@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             7.2.5
+ * Version:             7.3.0
  * Requires at least:   5.8
  * Requires PHP:        7.4
  */
@@ -18,13 +18,13 @@ use Uncanny_Automator\Actionify_Triggers;
 use Uncanny_Automator\Automator_Functions;
 use Uncanny_Automator\Automator_Load;
 use Uncanny_Automator\DB_Tables;
-use Uncanny_Automator\Api\Application\Application_Bootstrap;
+use Uncanny_Automator\App\Application\Application_Bootstrap;
 
 if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '7.2.5' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '7.3.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -151,8 +151,15 @@ function automator_autoloader( $class ) {
 }
 spl_autoload_register( 'automator_autoloader' );
 
+// Back-compat: synthesize flat Free base classes a modernized integration removed
+// (e.g. *_Tokens / *_Helpers) that an OLD Pro (< 7.3) still `extends`, so a Free/Pro
+// version mismatch degrades gracefully instead of a class-not-found WSOD at declaration
+// time. Last-resort autoloader; no-op unless old Pro (< 7.3) is active (checked lazily).
+require_once UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'integration-loader' . DIRECTORY_SEPARATOR . 'class-legacy-pro-class-shim.php';
+\Uncanny_Automator\Integration_Loader\Legacy_Pro_Class_Shim::register();
+
 // Add API functions.
-require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'api' . DIRECTORY_SEPARATOR . 'functions.php';
+require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'functions.php';
 // Add InitializePlugin class for other plugins checking for version.
 require UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'legacy.php';
 
@@ -190,7 +197,7 @@ if ( ! class_exists( 'Automator_Load', false ) ) {
 
 // Initialize API applications (MCP, RESTful).
 if ( ! class_exists( 'Application_Bootstrap', false ) ) {
-	include_once UA_ABSPATH . 'src/api/application/class-application-bootstrap.php';
+	include_once UA_ABSPATH . 'src/app/Application/Application_Bootstrap.php';
 }
 $application_bootstrap = new Application_Bootstrap();
 $application_bootstrap->init();

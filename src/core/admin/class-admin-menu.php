@@ -1027,6 +1027,7 @@ class Admin_Menu {
 				'allocation_name' => $llm_allocation_name,
 				'expires_on'      => $llm_expires_on,
 			),
+			'show_agent_usage'   => defined( 'AUTOMATOR_PRO_FILE' ),
 		);
 	}
 

@@ -1,0 +1,334 @@
+{
+    "integration_id": "UNCANNYCODE",
+    "updated_at": "2026-03-09T20:02:50Z",
+    "triggers": [
+        {
+            "code": "CODEREDEEMED",
+            "meta": "UNCANNYCODES",
+            "tokens": [
+                {
+                    "id": "CODE_REDEEMED",
+                    "name": "Code",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:CODEREDEEMED:CODE_REDEEMED"
+                },
+                {
+                    "id": "REMAINING_CODES",
+                    "name": "Remaining codes",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:CODEREDEEMED:REMAINING_CODES"
+                },
+                {
+                    "id": "TOTAL_CODES",
+                    "name": "Total codes",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:CODEREDEEMED:TOTAL_CODES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "UCSUFFIX",
+            "meta": "UNCANNYCODESSUFFIX",
+            "tokens": [
+                {
+                    "id": "UNCANNYCODESSUFFIX",
+                    "name": "Suffix",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCSUFFIX:UNCANNYCODESSUFFIX"
+                },
+                {
+                    "id": "UNCANNYCODESSUFFIX",
+                    "name": "Suffix",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCSUFFIX:UNCANNYCODESSUFFIX"
+                },
+                {
+                    "id": "CODE_REDEEMED",
+                    "name": "Code",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCSUFFIX:CODE_REDEEMED"
+                },
+                {
+                    "id": "REMAINING_CODES",
+                    "name": "Remaining codes",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCSUFFIX:REMAINING_CODES"
+                },
+                {
+                    "id": "TOTAL_CODES",
+                    "name": "Total codes",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCSUFFIX:TOTAL_CODES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "ANONCODEBATCHCREATED",
+            "meta": "UNCANNYCODES",
+            "tokens": [
+                {
+                    "id": "UNCANNYCODESBATCH_ID",
+                    "name": "Batch ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESBATCH_ID"
+                },
+                {
+                    "id": "UNCANNYCODESTYPE",
+                    "name": "Type",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESTYPE"
+                },
+                {
+                    "id": "UNCANNYCODESPREFIXBATCH",
+                    "name": "Prefix",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESPREFIXBATCH"
+                },
+                {
+                    "id": "UNCANNYCODESSUFFIXBATCH",
+                    "name": "Suffix",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESSUFFIXBATCH"
+                },
+                {
+                    "id": "UNCANNYCODESLD_TYPE",
+                    "name": "LD Type",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESLD_TYPE"
+                },
+                {
+                    "id": "UNCANNYCODESMAX_PER_CODE",
+                    "name": "Max per code",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESMAX_PER_CODE"
+                },
+                {
+                    "id": "UNCANNYCODESCODES_GENERATED",
+                    "name": "Codes generated",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESCODES_GENERATED"
+                },
+                {
+                    "id": "UNCANNYCODESEXPIRY_DATE",
+                    "name": "Expiry date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESEXPIRY_DATE"
+                },
+                {
+                    "id": "UNCANNYCODESLIST_OF_CODES",
+                    "name": "Codes (CSV list of codes)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONCODEBATCHCREATED:UNCANNYCODESLIST_OF_CODES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "UCBATCH",
+            "meta": "UNCANNYCODESBATCH",
+            "tokens": [
+                {
+                    "id": "CODE_REDEEMED",
+                    "name": "Code",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCBATCH:CODE_REDEEMED"
+                },
+                {
+                    "id": "REMAINING_CODES",
+                    "name": "Remaining codes",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCBATCH:REMAINING_CODES"
+                },
+                {
+                    "id": "TOTAL_CODES",
+                    "name": "Total codes",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCBATCH:TOTAL_CODES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "UCPREFIX",
+            "meta": "UNCANNYCODESPREFIX",
+            "tokens": [
+                {
+                    "id": "UNCANNYCODESPREFIX",
+                    "name": "Prefix",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCPREFIX:UNCANNYCODESPREFIX"
+                },
+                {
+                    "id": "UNCANNYCODESPREFIX",
+                    "name": "Prefix",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCPREFIX:UNCANNYCODESPREFIX"
+                },
+                {
+                    "id": "CODE_REDEEMED",
+                    "name": "Code",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCPREFIX:CODE_REDEEMED"
+                },
+                {
+                    "id": "REMAINING_CODES",
+                    "name": "Remaining codes",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCPREFIX:REMAINING_CODES"
+                },
+                {
+                    "id": "TOTAL_CODES",
+                    "name": "Total codes",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UCPREFIX:TOTAL_CODES"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "code": "UCCANCELCODE",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UCCANCELCODE:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "UCGENERATECODES",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UCGENERATECODES:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "BATCH_ID",
+                    "name": "Batch ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UCGENERATECODES:BATCH_ID"
+                },
+                {
+                    "id": "CODES_GENERATED",
+                    "name": "Generated codes",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UCGENERATECODES:CODES_GENERATED"
+                }
+            ]
+        },
+        {
+            "code": "UCADDBATCHCODES",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UCADDBATCHCODES:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "UCDELETEBATCHCODES",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:UCDELETEBATCHCODES:ACTION_RUN_STATUS"
+                }
+            ]
+        }
+    ]
+}

@@ -48,10 +48,13 @@ class Brevo_Integration extends App_Integration {
 	 */
 	public function load() {
 		// Load actions.
-		new BREVO_ADD_UPDATE_CONTACT( $this->dependencies );
+		new BREVO_CREATE_OR_UPDATE_CONTACT( $this->dependencies );
 		new BREVO_DELETE_CONTACT( $this->dependencies );
 		new BREVO_ADD_CONTACT_TO_LIST( $this->dependencies );
 		new BREVO_REMOVE_CONTACT_FROM_LIST( $this->dependencies );
+
+		// Deprecated since May 2026 — kept registered so existing recipes still execute.
+		new BREVO_ADD_UPDATE_CONTACT( $this->dependencies );
 
 		// Load settings.
 		new Brevo_Settings(
@@ -68,16 +71,5 @@ class Brevo_Integration extends App_Integration {
 	protected function is_app_connected() {
 		$account = $this->helpers->get_saved_account_details();
 		return ! empty( $account['status'] ) && 'success' === $account['status'];
-	}
-
-	/**
-	 * Register hooks.
-	 *
-	 * @return void
-	 */
-	public function register_hooks() {
-		// Recipe UI ajax endpoints.
-		add_action( 'wp_ajax_automator_brevo_get_lists', array( $this->helpers, 'ajax_get_list_options' ) );
-		add_action( 'wp_ajax_automator_brevo_get_templates', array( $this->helpers, 'ajax_get_templates' ) );
 	}
 }

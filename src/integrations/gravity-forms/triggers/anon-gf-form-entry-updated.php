@@ -11,6 +11,17 @@ class ANON_GF_FORM_ENTRY_UPDATED extends \Uncanny_Automator\Recipe\Trigger {
 	private $gf;
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( 'ANON_GF_FORM_ENTRY_UPDATED', 'GF' )
+			->trigger_type( 'anonymous' )
+			->trigger_meta( 'ANON_GF_FORM_ENTRY_UPDATED_META' )
+			->hook( 'gform_after_update_entry', 10, 3 )
+			->hook( 'gform_post_update_entry', 10, 3 );
+	}
+
+	/**
 	 * setup_trigger
 	 *
 	 * @return void
@@ -19,21 +30,12 @@ class ANON_GF_FORM_ENTRY_UPDATED extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->gf = array_shift( $this->dependencies );
 
-		$this->set_integration( 'GF' );
-
-		$this->set_trigger_code( 'ANON_GF_FORM_ENTRY_UPDATED' );
-
-		$this->set_trigger_meta( 'ANON_GF_FORM_ENTRY_UPDATED_META' );
-
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_login_required( false );
 
-		$this->set_trigger_type( 'anonymous' );
-
 		// The action hook to attach this trigger into.
-		$this->add_action( array( 'gform_after_update_entry', 'gform_post_update_entry' ) );
 
 		// The number of arguments that the action hook accepts.
-		$this->set_action_args_count( 3 );
 
 		$this->set_sentence(
 			sprintf(

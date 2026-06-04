@@ -96,6 +96,10 @@ class Automator_Cache_Handler {
 			0
 		);
 
+		// Append the cache-flush sub-item to the Automator admin-bar menu owned by Automator_WP_Admin_Bar.
+		// Priority 1010 ensures the parent node (registered at 999) already exists.
+		add_action( 'admin_bar_menu', array( $this, 'add_flush_cache_admin_bar_node' ), 1010 );
+
 		if ( false === $this->is_cache_enabled() ) {
 			return;
 		}
@@ -185,24 +189,6 @@ class Automator_Cache_Handler {
 		);
 
 		add_action( 'admin_init', array( $this, 'remove_all_cache' ) );
-
-		add_action( 'admin_bar_menu', array( $this, 'add_cache_clear' ), 999 );
-
-		// Enqueue assets for the admin bar
-		add_action(
-			'wp_enqueue_scripts',
-			array(
-				$this,
-				'enqueue_admin_bar_assets',
-			)
-		);
-		add_action(
-			'admin_enqueue_scripts',
-			array(
-				$this,
-				'enqueue_admin_bar_assets',
-			)
-		);
 	}
 
 	/**
@@ -466,112 +452,40 @@ class Automator_Cache_Handler {
 	}
 
 	/**
-	 * @param $wp_admin_bar
+	 * Append the "Flush cache" sub-item to the Automator admin-bar menu when the object cache is enabled.
+	 *
+	 * The parent node ("automator-bar") is registered by Automator_WP_Admin_Bar at priority 999.
+	 *
+	 * @param \WP_Admin_Bar $wp_admin_bar Admin bar instance.
+	 *
+	 * @return void
 	 */
-	public function add_cache_clear( $wp_admin_bar ) {
-		// If not logged in, bail.
-		// Mainly to avoid adding menu for BuddyBoss platform
+	public function add_flush_cache_admin_bar_node( $wp_admin_bar ) {
+
 		if ( ! is_user_logged_in() ) {
 			return;
 		}
 
-		// If user not admin, bail
 		if ( ! current_user_can( automator_get_capability() ) ) {
 			return;
 		}
 
-		// Let users hide this menu item
 		if ( true === apply_filters( 'automator_hide_wp_admin_header_menu', false ) ) {
 			return;
 		}
 
-		$parent_id = 'automator-bar';
-		$icon_url  = 'data:image/svg+xml;base64,' . base64_encode( '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="m42.63 28.37c-0.27 2.32-0.27 4.67 0 6.99 0.4 3.44 6.7 3.44 7.27 0 0.37-2.31 0.37-4.65 0-6.96-0.56-3.44-6.9-3.44-7.27-0.03z" fill="#a7aaad"/><path d="m14.04 28.41c-0.37 2.31-0.37 4.65 0 6.96 0.57 3.44 6.88 3.44 7.28 0 0.27-2.32 0.27-4.67 0-6.99-0.37-3.42-6.67-3.42-7.28 0.03z" fill="#a7aaad"/><path d="m37.07 39.61c-3.13 0.82-6.41 0.82-9.54 0 0.29 5.9 9.25 5.9 9.54 0z" fill="#a7aaad"/><path d="m63.5 19.04c-0.34-3.07-2.25-4.75-5.15-5.4-8.67-1.82-17.51-2.69-26.38-2.58-8.84-0.08-17.66 0.78-26.32 2.58-2.96 0.65-4.86 2.33-5.2 5.4-0.39 4-0.53 8.01-0.4 12.02 0.09 4.27 0.61 8.52 1.56 12.69 0.65 2.73 3.6 4.49 6.05 5.52 11.5 4.91 37.1 4.91 48.65 0 2.45-1.04 5.36-2.79 6.05-5.52 0.96-4.16 1.5-8.42 1.6-12.69 0.13-4.01-0.02-8.03-0.46-12.02zm-5.42 23.64c-0.25 0.99-2.75 2.24-3.52 2.53-10.4 4.48-34.86 4.48-45.25 0-0.78-0.32-3.24-1.51-3.52-2.53-1.46-6.05-1.84-15.43-1.01-23.2 0.12-1.19 0.82-1.36 1.73-1.56 5.08-1.18 10.25-1.89 15.46-2.16 0.18-0.01 0.36 0.06 0.5 0.18 0.13 0.12 0.21 0.29 0.24 0.47 0.37 2.86 0.99 5.67 1.84 8.43 0.62 1.23 4.58 1.76 7.42 1.76 2.87 0 6.84-0.53 7.36-1.76 0.85-2.75 1.48-5.57 1.85-8.43 0.02-0.18 0.11-0.35 0.25-0.47 0.13-0.11 0.31-0.18 0.49-0.18 5.2 0.24 10.35 0.96 15.42 2.16 0.94 0.2 1.64 0.37 1.76 1.56 0.82 7.74 0.45 17.11-1.02 23.2z" fill="#a7aaad"/></svg>' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-
-		$args = array(
-			'id'    => $parent_id,
-			'title' => '<div id="uncanny-automator-ab-icon" class="ab-item ab-item-uncanny-automator-logo svg" style="background-image: url(\'' . $icon_url . '\') !important;"></div> ' . esc_html__( 'Automator', 'uncanny-automator' ),
-			'href'  => admin_url( 'admin.php?page=uncanny-automator-dashboard' ),
-			'meta'  => array(
-				'class' => 'automator',
-				'title' => esc_html__( 'Automator', 'uncanny-automator' ),
-			),
-		);
-		$wp_admin_bar->add_node( $args );
-
-		$wp_admin_bar->add_node(
-			array(
-				'id'     => 'automator-all-recipes',
-				'parent' => $parent_id,
-				'title'  => esc_html__( 'All recipes', 'uncanny-automator' ),
-				'group'  => false,
-				'href'   => admin_url( 'edit.php?post_type=uo-recipe' ),
-			)
-		);
-		$wp_admin_bar->add_node(
-			array(
-				'id'     => 'automator-add-recipe',
-				'parent' => $parent_id,
-				'title'  => esc_html__( 'Add new recipe', 'uncanny-automator' ),
-				'group'  => false,
-				'href'   => admin_url( 'post-new.php?post_type=uo-recipe' ),
-			)
-		);
-		$wp_admin_bar->add_node(
-			array(
-				'id'     => 'automator-recipe-logs',
-				'parent' => $parent_id,
-				'title'  => esc_html__( 'Logs', 'uncanny-automator' ),
-				'group'  => false,
-				'href'   => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-admin-logs' ),
-			)
-		);
-		$wp_admin_bar->add_node(
-			array(
-				'id'     => 'automator-settings',
-				'parent' => $parent_id,
-				'title'  => esc_html__( 'Settings', 'uncanny-automator' ),
-				'group'  => false,
-				'href'   => admin_url( 'edit.php?post_type=uo-recipe&page=uncanny-automator-config' ),
-			)
-		);
-
-		if ( true === (bool) $this->is_cache_enabled() ) {
-			$wp_admin_bar->add_node(
-				array(
-					'id'     => 'automator-clear-cache',
-					'parent' => $parent_id,
-					'title'  => esc_html__( 'Flush cache', 'uncanny-automator' ),
-					'group'  => false,
-					'href'   => admin_url( 'admin.php?page=uncanny-automator-dashboard&automator_flush_all=true&_wpnonce=' ) . wp_create_nonce( AUTOMATOR_BASE_FILE ),
-				)
-			);
-		}
-	}
-
-	/**
-	 * Enqueue a CSS file to add the Automator icon to the sidebar and admin bar
-	 */
-	public function enqueue_admin_bar_assets() {
-		// If not logged in, bail.
-		// Mainly to avoid adding menu for BuddyBoss platform
-		if ( ! is_user_logged_in() ) {
+		if ( false === (bool) $this->is_cache_enabled() ) {
 			return;
 		}
 
-		// Check if the admin bar is showing, otherwise we don't need the file
-		if ( ! is_admin_bar_showing() ) {
-			return;
-		}
-
-		// If the current user can't write posts, it can't use Automator, so let's not output an admin menu
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			return;
-		}
-
-		Utilities::enqueue_asset(
-			'uncanny-automator-admin-bar',
-			'admin-bar',
+		$wp_admin_bar->add_node(
+			array(
+				'id'     => 'automator-clear-cache',
+				'parent' => Automator_WP_Admin_Bar::PARENT_ID,
+				'title'  => esc_html__( 'Flush cache', 'uncanny-automator' ),
+				'group'  => false,
+				'href'   => admin_url( 'admin.php?page=uncanny-automator-dashboard&automator_flush_all=true&_wpnonce=' ) . wp_create_nonce( AUTOMATOR_BASE_FILE ),
+			)
 		);
 	}
 
@@ -745,9 +659,9 @@ class Automator_Cache_Handler {
 	/**
 	 * Get the condition popularity tracker instance.
 	 *
-	 * @return \Uncanny_Automator\Api\Services\Integration\Utilities\Popularity\Filter_Condition_Popularity_Tracker
+	 * @return \Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Popularity\Filter_Condition_Popularity_Tracker
 	 */
 	private function get_condition_popularity_tracker() {
-		return \Uncanny_Automator\Api\Services\Integration\Utilities\Popularity\Filter_Condition_Popularity_Tracker::get_instance();
+		return \Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Popularity\Filter_Condition_Popularity_Tracker::get_instance();
 	}
 }

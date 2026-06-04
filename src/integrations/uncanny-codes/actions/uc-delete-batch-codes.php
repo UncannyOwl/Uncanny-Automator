@@ -1,28 +1,21 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Codes;
 
-use Uncanny_Automator\Recipe;
 use uncanny_learndash_codes;
 
 /**
  * Class UC_DELETE_BATCH_CODES
  *
- * @package Uncanny_Automator_Pro
+ * @package Uncanny_Automator
+ * @property \Uncanny_Automator\Integrations\Uncanny_Codes\Uc_Helpers $item_helpers
  */
-class UC_DELETE_BATCH_CODES {
-
-	use Recipe\Actions;
+class UC_DELETE_BATCH_CODES extends \Uncanny_Automator\Recipe\Action {
 
 	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->setup_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
+	 * Setup action configuration.
+	 *
+	 * @return void
 	 */
 	protected function setup_action() {
 		$this->set_integration( 'UNCANNYCODE' );
@@ -30,89 +23,81 @@ class UC_DELETE_BATCH_CODES {
 		$this->set_action_meta( 'WPUCDELETEBATCHCODES' );
 		$this->set_requires_user( false );
 		$this->set_is_pro( false );
-
-		/* translators: Action - Uncanny Codes */
-		$this->set_sentence( sprintf( esc_attr__( 'Remove {{a number of:%1$s}} unused codes from {{a batch:%2$s}}', 'uncanny-automator' ), 'UCNUMBERS:' . $this->get_action_meta(), $this->get_action_meta() ) );
-
-		/* translators: Action - Uncanny Codes */
-		$this->set_readable_sentence( esc_attr__( 'Remove {{a number of}} unused codes from {{a batch}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-		$this->register_action();
+		// translators: %1$s is the number of codes, %2$s is the batch.
+		$this->set_sentence( sprintf( esc_html_x( 'Remove {{a number of:%1$s}} unused codes from {{a batch:%2$s}}', 'Uncanny Codes', 'uncanny-automator' ), 'UCNUMBERS:' . $this->get_action_meta(), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Remove {{a number of}} unused codes from {{a batch}}', 'Uncanny Codes', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * load_options
+	 * Define action options.
 	 *
-	 * @return array
+	 * @return array[]
 	 */
-	public function load_options() {
-
-		$options = array(
-			'options_group' => array(
-				$this->get_action_meta() => array(
-					Automator()->helpers->recipe->field->int(
-						array(
-							'option_code' => 'UCNUMBERS',
-							'label'       => esc_attr__( 'Number', 'uncanny-automator' ),
-							'placeholder' => '',
-						)
-					),
-					Automator()->helpers->recipe->uncanny_codes->options->get_all_code_batch(
-						esc_html__( 'Batch', 'uncanny-automator' ),
-						$this->get_action_meta(),
-						false
-					),
-				),
+	public function options() {
+		return array(
+			array(
+				'option_code'           => 'UCNUMBERS',
+				'label'                 => esc_html_x( 'Number', 'Uncanny Codes', 'uncanny-automator' ),
+				'input_type'            => 'int',
+				'required'              => true,
+				'supports_custom_value' => true,
+			),
+			array(
+				'option_code'           => $this->get_action_meta(),
+				'label'                 => esc_html_x( 'Batch', 'Uncanny Codes', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'required'              => true,
+				'remote_data'           => $this->item_helpers->remote_data_load_config( 'batches_strict' ),
+				'options'               => array(),
+				'supports_custom_value' => true,
 			),
 		);
-
-		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**
 	 * Process the action.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action configuration.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        Additional arguments.
+	 * @param array $parsed      Parsed token values.
 	 *
-	 * @return void.
-	 * @throws \Exception
+	 * @return bool
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+
 		$batch_id = isset( $parsed[ $this->get_action_meta() ] ) ? absint( wp_strip_all_tags( $parsed[ $this->get_action_meta() ] ) ) : 0;
 		$limit    = isset( $parsed['UCNUMBERS'] ) ? absint( sanitize_text_field( $parsed['UCNUMBERS'] ) ) : 0;
 
 		if ( $batch_id <= 0 || $limit <= 0 ) {
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_html__( 'Invalid request.', 'uncanny-automator' ) );
-
-			return;
+			$this->add_log_error( esc_html_x( 'Invalid request.', 'Uncanny Codes', 'uncanny-automator' ) );
+			return false;
 		}
 
 		$inactive_codes_count = absint( $this->get_unused_group_codes_count( $batch_id, $limit ) );
 
 		// Check if unused codes are available in the batch.
 		if ( $inactive_codes_count <= 0 ) {
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, esc_html__( 'No codes found in the batch.', 'uncanny-automator' ) );
-
-			return;
+			$this->add_log_error( esc_html_x( 'No codes found in the batch.', 'Uncanny Codes', 'uncanny-automator' ) );
+			return false;
 		}
 
 		$this->delete_unused_group_codes( $batch_id, $limit );
 
-		Automator()->complete->action( $user_id, $action_data, $recipe_id );
+		return true;
 	}
 
 	/**
+	 * Get count of unused codes in a group.
 	 *
-	 * @param mixed $group
-	 * @param mixed $limit
-	 * @return mixed
+	 * @param int $group The group ID.
+	 * @param int $limit The limit.
+	 *
+	 * @return int
 	 */
 	private function get_unused_group_codes_count( $group, $limit = 0 ) {
+
 		global $wpdb;
 
 		if ( is_numeric( $limit ) && $limit > 0 ) {
@@ -125,11 +110,15 @@ class UC_DELETE_BATCH_CODES {
 	}
 
 	/**
+	 * Delete unused codes from a group.
 	 *
-	 * @param mixed $group
-	 * @param mixed $limit
+	 * @param int $group The group ID.
+	 * @param int $limit The limit.
+	 *
+	 * @return bool|int
 	 */
 	private function delete_unused_group_codes( $group, $limit ) {
+
 		global $wpdb;
 
 		if ( ! is_numeric( $group ) || ! is_numeric( $limit ) ) {

@@ -1,33 +1,20 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\WhatsApp;
 
-use Uncanny_Automator\Recipe;
+use Uncanny_Automator\Recipe\App_Trigger;
 
 /**
  * Class WA_MESSAGE_NOT_DELIVERED_NO_OPTIN
  *
  * @package Uncanny_Automator
+ * @property WhatsApp_Helpers $helpers
+ * @property WhatsApp_Api_Caller $api
+ * @property WhatsApp_Webhooks $webhooks
  */
-class WA_MESSAGE_NOT_DELIVERED_NO_OPTIN {
-
-	use Recipe\Triggers;
+class WA_MESSAGE_NOT_DELIVERED_NO_OPTIN extends App_Trigger {
 
 	/**
-	 * Constant TRIGGER_CODE.
-	 *
-	 * @var string
-	 */
-	const TRIGGER_CODE = 'WA_MESSAGE_NOT_DELIVERED_NO_OPTIN';
-
-	/**
-	 * Constant TRIGGER_META.
-	 *
-	 * @var string
-	 */
-	const TRIGGER_META = 'WA_MESSAGE_NOT_DELIVERED_NO_OPTIN_META';
-
-	/**
-	 * Constant NO_OPTIN_ERR_CODE
+	 * Error code for no opt-in.
 	 *
 	 * @see https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes/
 	 *
@@ -35,89 +22,97 @@ class WA_MESSAGE_NOT_DELIVERED_NO_OPTIN {
 	 */
 	const NO_OPTIN_ERR_CODE = 131047;
 
-	public function __construct() {
-
-		if ( class_exists( '\Uncanny_Automator\WhatsApp_Helpers' ) ) {
-
-			$this->setup_trigger();
-
-		}
-
+	/**
+	 * Static trigger definition for lazy-loading.
+	 *
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
+	 */
+	public static function definition() {
+		return self::new_definition( 'WA_MESSAGE_NOT_DELIVERED_NO_OPTIN', 'WHATSAPP' )
+			->trigger_meta( 'WA_MESSAGE_NOT_DELIVERED_NO_OPTIN_META' )
+			->trigger_type( 'anonymous' )
+			->hook( 'automator_whatsapp_message_delivery_failed' );
 	}
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object.
 	 *
-	 * @return void.
+	 * @return void
 	 */
-	public function setup_trigger() {
-
-		$this->set_integration( 'WHATSAPP' );
-
-		$this->set_trigger_code( self::TRIGGER_CODE );
-
-		$this->set_trigger_meta( self::TRIGGER_META );
-
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type / hook are auto-applied from definition().
 		$this->set_is_pro( false );
-
 		$this->set_is_login_required( false );
-
-		$this->set_trigger_type( 'anonymous' );
-
-		// The action hook to attach this trigger into.
-		$this->add_action( 'automator_whatsapp_message_delivery_failed' );
-
 		$this->set_uses_api( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_trigger_code(), 'knowledge-base/whatsapp/' ) );
 
-		// The number of arguments that the action hook accepts.
-		$this->set_action_args_count( 1 );
+		$this->set_sentence(
+			esc_html_x( 'A message to a recipient is not delivered because they have not opted in', 'WhatsApp', 'uncanny-automator' )
+		);
 
-		// translators: Trigger sentence
-		$this->set_sentence( sprintf( esc_html_x( 'A message to a recipient is not delivered because they have not opted in', 'WhatsApp', 'uncanny-automator' ) ) );
-		$this->set_readable_sentence( esc_html_x( 'A message to a recipient is not delivered because they have not opted in', 'WhatsApp', 'uncanny-automator' ) );
-
-		// Register the trigger.
-		$this->register_trigger();
-
+		$this->set_readable_sentence(
+			esc_html_x( 'A message to a recipient is not delivered because they have not opted in', 'WhatsApp', 'uncanny-automator' )
+		);
 	}
 
 	/**
 	 * Validate the trigger.
 	 *
-	 * @return boolean True.
+	 * @param array $trigger The trigger data.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool True if trigger should fire, false otherwise.
 	 */
-	public function validate_trigger( ...$args ) {
-
-		$response = $args[0][0];
-
-		$error_code = isset( $response['errors']['code'] ) ? $response['errors']['code'] : null;
+	public function validate( $trigger, $hook_args ) {
+		$response   = $hook_args[0] ?? array();
+		$error_code = $response['errors']['code'] ?? null;
 
 		return ! empty( $error_code ) && self::NO_OPTIN_ERR_CODE === $error_code;
-
 	}
 
 	/**
-	 * Prepare to run.
+	 * Define tokens for the trigger.
 	 *
-	 * Sets the conditional trigger to true.
+	 * @param array $trigger The trigger data.
+	 * @param array $tokens The existing tokens.
 	 *
-	 * @return void.
+	 * @return array The tokens.
 	 */
-	public function prepare_to_run( $data ) {
+	public function define_tokens( $trigger, $tokens ) {
+		// Token IDs are intentionally lowercase for backwards compatibility with legacy token class.
+		$tokens[] = array(
+			'tokenId'   => 'recipient_number',
+			'tokenName' => esc_attr_x( 'Recipient number', 'WhatsApp', 'uncanny-automator' ),
+			'tokenType' => 'text',
+		);
+		$tokens[] = array(
+			'tokenId'   => 'message',
+			'tokenName' => esc_attr_x( 'Message', 'WhatsApp', 'uncanny-automator' ),
+			'tokenType' => 'text',
+		);
+		$tokens[] = array(
+			'tokenId'   => 'delivery_error',
+			'tokenName' => esc_attr_x( 'Delivery error', 'WhatsApp', 'uncanny-automator' ),
+			'tokenType' => 'text',
+		);
 
-		$this->set_conditional_trigger( false );
-
+		return $tokens;
 	}
 
 	/**
-	 * Continue trigger process even for logged-in user.
+	 * Hydrate tokens with their values.
 	 *
-	 * @return boolean True.
+	 * @param array $trigger The trigger data.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array The token values.
 	 */
-	public function do_continue_anon_trigger( ...$args ) {
-
-		return true;
-
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		$response = $hook_args[0] ?? array();
+		return array(
+			'recipient_number' => sanitize_text_field( $response['to'] ?? '' ),
+			'message'          => sanitize_text_field( $response['errors']['message'] ?? '' ),
+			'delivery_error'   => sanitize_text_field( $response['errors']['code'] ?? '' ),
+		);
 	}
-
 }

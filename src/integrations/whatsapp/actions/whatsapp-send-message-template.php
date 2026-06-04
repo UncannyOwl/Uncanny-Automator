@@ -1,327 +1,151 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\WhatsApp;
 
-use Uncanny_Automator\Recipe\Actions;
+use Uncanny_Automator\Recipe\App_Action;
+use Exception;
 
 /**
  * Class WHATSAPP_SEND_MESSAGE_TEMPLATE
  *
  * @package Uncanny_Automator
+ * @property WhatsApp_Helpers $helpers
+ * @property WhatsApp_Api_Caller $api
+ * @property WhatsApp_Webhooks $webhooks
  */
-class WHATSAPP_SEND_MESSAGE_TEMPLATE {
-
-	use Actions;
+class WHATSAPP_SEND_MESSAGE_TEMPLATE extends App_Action {
 
 	/**
-	 * The prefix for the action fields.
-	 *
-	 * @var string
-	 */
-	const PREFIX = 'WHATSAPP_SEND_MESSAGE_TEMPLATE';
-
-	public function __construct() {
-
-		// Set the action status to await.
-		add_filter( 'automator_get_action_completed_status', array( $this, 'set_completed_status' ), 10, 7 );
-
-		// Set the action status to error.
-		add_filter( 'automator_get_action_error_message', array( $this, 'set_error_message' ), 10, 7 );
-
-		// Set the action status to `Completed, pending response`
-		add_filter( 'automator_pro_get_action_completed_labels', array( $this, 'set_action_completed_label' ), 10, 1 );
-
-		// Persist the wamid.id.
-		add_action( 'automator_action_created', array( $this, 'action_meta_persist_wamid_data' ), 10, 1 );
-
-		// No response closure.
-		add_action( 'automator_whatsapp_webhook_noresponse_closure', array( $this, 'noresponse_closure' ), 10, 3 );
-
-		// Load addition JS scripts.
-		add_action( 'admin_enqueue_scripts', array( $this, 'load_scripts' ) );
-
-		$this->setup_action();
-
-	}
-
-	/**
-	 * Load scripts.
-	 *
-	 * @param string $hook
+	 * Setup the action.
 	 *
 	 * @return void
 	 */
-	public function load_scripts( $hook ) {
-
-		if ( 'post.php' !== $hook ) {
-			return;
-		}
-
-		if ( 'uo-recipe' !== get_current_screen()->post_type ) {
-			return;
-		}
-
-		$script_uri = plugin_dir_url( __FILE__ ) . '../settings/scripts/fields-renderer.js';
-
-		wp_enqueue_script( 'whatsapp-field-renderer', $script_uri, array( 'jquery' ), '1.0', true );
-
-	}
-
-	public function noresponse_closure( $response ) {
-
-		if ( ! empty( $response['data']['messages'][0]['id'] ) ) {
-
-			$helper = Automator()->helpers->recipe->whatsapp->options;
-
-			$action_data = $helper->get_action_data_by_wamid( $response['data']['messages'][0]['id'] );
-
-			$error_message = esc_html__( 'No response was received from Meta after 1 minute. Make sure you have set-up your webhook configuration correctly.', 'uncanny-automator' );
-
-			$recipe_error_message = Automator()->db->action->get_error_message( $action_data['recipe_log_id'] );
-
-			if ( ! empty( $recipe_error_message ) && 10 === intval( $recipe_error_message->completed ) ) {
-
-				Automator()->db->action->mark_complete( $action_data['action_id'], $action_data['recipe_log_id'], 1, $error_message );
-
-				Automator()->db->recipe->mark_complete( $action_data['recipe_log_id'], 1 );
-
-			}
-		}
-
-	}
-
-	/**
-	 * Persist the WAMID after the action creation.
-	 *
-	 * @param array $entry
-	 *
-	 * @return void
-	 */
-	public function action_meta_persist_wamid_data( $action_arguments = array() ) {
-
-		// Check if action has `await` argument.
-		if ( empty( $action_arguments['args']['await'] ) ) {
-			return;
-		}
-
-		// Add `whatsapp_meta` to {uap_action_log_meta}.
-		Automator()->db->action->add_meta(
-			$action_arguments['user_id'],
-			$action_arguments['action_log_id'],
-			$action_arguments['action_id'],
-			'whatsapp_meta',
-			wp_json_encode( $action_arguments['args'] )
-		);
-
-		// Add `whatsapp_wamid` to {uap_action_log_meta}.
-		Automator()->db->action->add_meta(
-			$action_arguments['user_id'],
-			$action_arguments['action_log_id'],
-			$action_arguments['action_id'],
-			'whatsapp_wamid',
-			$action_arguments['args']['await']['whatsapp_response']['data']['messages'][0]['id']
-		);
-
-	}
-
-	public function set_action_completed_label( $labels = array() ) {
-
-		$labels[10] = esc_html__( 'Completed, pending response', 'uncanny-automator' );
-
-		return $labels;
-
-	}
-
-	public function set_error_message( $message, $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args ) {
-
-		// Only filter this action
-		if ( 'WHATSAPP_SEND_MESSAGE_TEMPLATE_CODE' !== $action_data['meta']['code'] ) {
-			return $message;
-		}
-
-		if ( key_exists( 'await', $args ) ) {
-			// Completed is stored as tiny int. Maybe update it to enum?
-			$message = esc_html__( 'Message template sent. Waiting for response. The status will be updated once the response is received.', 'uncanny-automator' );
-		}
-
-		return $message;
-
-	}
-
-	public function set_completed_status( $completed, $user_id, $action_data, $recipe_id, $error_message, $recipe_log_id, $args ) {
-
-		// Only filter this action
-		if ( 'WHATSAPP_SEND_MESSAGE_TEMPLATE_CODE' !== $action_data['meta']['code'] ) {
-			return $completed;
-		}
-
-		if ( key_exists( 'await', $args ) ) {
-			// Completed is stored as tiny int. Maybe update it to enum?
-			$completed = 10;
-		}
-
-		return $completed;
-
-	}
-
 	protected function setup_action() {
-
 		$this->set_integration( 'WHATSAPP' );
-
-		$this->set_action_code( self::PREFIX . '_CODE' );
-
-		$this->set_action_meta( self::PREFIX . '_META' );
-
+		$this->set_action_code( 'WHATSAPP_SEND_MESSAGE_TEMPLATE_CODE' );
+		$this->set_action_meta( 'WHATSAPP_SEND_MESSAGE_TEMPLATE_META' );
 		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/whatsapp/' ) );
-
 		$this->set_is_pro( false );
-
 		$this->set_requires_user( false );
 
 		$this->set_sentence(
 			sprintf(
-				/* translators: Action sentence */
-				esc_attr__( 'Send a WhatsApp {{message template:%1$s}} to {{a number:%2$s}}', 'uncanny-automator' ),
+				// translators: %1$s is the selected message template, %2$s is the recipient number.
+				esc_html_x( 'Send a WhatsApp {{message template:%1$s}} to {{a number:%2$s}}', 'WhatsApp', 'uncanny-automator' ),
 				$this->get_action_meta(),
-				'PHONE_NUMBER'
+				'PHONE_NUMBER:' . $this->get_action_meta()
 			)
 		);
 
-		/* translators: Action - WordPress */
-		$this->set_readable_sentence( esc_attr__( 'Send a WhatsApp {{message template}} to {{a number}}', 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-
-		$this->set_buttons(
-			array(
-				array(
-					'show_in'     => $this->get_action_meta(),
-					'text'        => esc_html__( 'Get variables', 'uncanny-automator' ),
-					'css_classes' => 'uap-btn uap-btn--red',
-					'on_click'    => 'uap_whatsapp_render_fields',
-					'modules'     => array( 'modal', 'markdown' ),
-				),
-			)
+		$this->set_readable_sentence(
+			esc_html_x( 'Send a WhatsApp {{message template}} to {{a number}}', 'WhatsApp', 'uncanny-automator' )
 		);
-
-		$this->register_action();
-
-	}
-
-	public function load_options() {
-
-		$options = array(
-			'options_group' => array(
-				$this->get_action_meta() => array(
-					array(
-						'option_code'           => $this->get_action_meta(),
-						'label'                 => esc_attr__( 'Message template', 'uncanny-automator' ),
-						'description'           => esc_attr__( "Select a message template and click Get variables to retrieve the template's dynamic variables.", 'uncanny-automator' ),
-						'input_type'            => 'select',
-						'required'              => true,
-						'supports_token'        => false,
-						'supports_custom_value' => false,
-						'is_ajax'               => true,
-						'endpoint'              => 'automator_whatsapp_list_message_templates',
-						'options_show_id'       => false,
-					),
-					array(
-						'option_code'     => 'HEADER_VARIABLES',
-						'label'           => esc_attr__( 'Header', 'uncanny-automator' ),
-						'input_type'      => 'repeater',
-						'relevant_tokens' => array(),
-						'hide_actions'    => true,
-						'fields'          => array(
-							array(
-								'option_code' => 'HEADER_VARIABLE_FORMAT',
-								'input_type'  => 'text',
-								'read_only'   => true,
-								'required'    => false,
-								'label'       => esc_html__( 'Type', 'uncanny-automator' ),
-							),
-							array(
-								'option_code' => 'HEADER_VARIABLE_VALUE',
-								'input_type'  => 'text',
-								'placeholder' => '{1}',
-								'required'    => false,
-								'label'       => esc_html__( 'Value', 'uncanny-automator' ),
-							),
-						),
-					),
-					array(
-						'option_code'     => 'BODY_VARIABLES',
-						'label'           => esc_attr__( 'Body variables', 'uncanny-automator' ),
-						'input_type'      => 'repeater',
-						'relevant_tokens' => array(),
-						'hide_actions'    => true,
-						'fields'          => array(
-							array(
-								'input_type'  => 'text',
-								'option_code' => 'BODY_VARIABLE',
-								'placeholder' => '{}',
-								'required'    => false,
-								'label'       => esc_html__( 'Value', 'uncanny-automator' ),
-							),
-						),
-					),
-
-					array(
-						'option_code'     => 'BUTTON_VARIABLES',
-						'label'           => esc_attr__( 'Buttons', 'uncanny-automator' ),
-						'input_type'      => 'repeater',
-						'relevant_tokens' => array(),
-						'hide_actions'    => true,
-						'fields'          => array(
-							array(
-								'input_type'  => 'text',
-								'option_code' => 'BUTTON_FORMAT',
-								'placeholder' => '{N/A}',
-								'read_only'   => true,
-								'required'    => false,
-								'label'       => esc_html__( 'Format', 'uncanny-automator' ),
-							),
-							array(
-								'input_type'  => 'text',
-								'option_code' => 'BUTTON_VARIABLE',
-								'placeholder' => '{1}',
-								'required'    => false,
-								'label'       => esc_html__( 'Value', 'uncanny-automator' ),
-							),
-						),
-					),
-				),
-			),
-			'options'       => array(
-				array(
-					'option_code'           => 'PHONE_NUMBER',
-					'label'                 => esc_attr__( 'To', 'uncanny-automator' ),
-					'input_type'            => 'text',
-					'placeholder'           => esc_attr__( '+1 123 345 6789', 'uncanny-automator' ),
-					'required'              => true,
-					'supports_token'        => true,
-					'supports_custom_value' => true,
-				),
-
-			),
-		);
-
-		$options = Automator()->utilities->keep_order_of_options( $options );
-
-		return $options;
 	}
 
 	/**
-	 * Get formatted code.
+	 * Load the options for the action.
 	 *
-	 * @param  string $option_code The option code.
-	 *
-	 * @return string The prefix underscore option code string.
+	 * @return array
 	 */
-	protected function get_formatted_code( $option_code = '' ) {
-
-		return sprintf( '%1$s_%2$s', self::PREFIX, $option_code );
-
+	public function options() {
+		return array(
+			array(
+				'option_code'           => 'PHONE_NUMBER',
+				'label'                 => esc_attr_x( 'To', 'WhatsApp', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'placeholder'           => esc_attr_x( '+1 123 345 6789', 'WhatsApp', 'uncanny-automator' ),
+				'required'              => true,
+				'supports_token'        => true,
+				'supports_custom_value' => true,
+			),
+			array(
+				'option_code'           => $this->get_action_meta(),
+				'label'                 => esc_attr_x( 'Message template', 'WhatsApp', 'uncanny-automator' ),
+				'description'           => esc_attr_x( 'Select a message template to send.', 'WhatsApp', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'required'              => true,
+				'supports_token'        => false,
+				'supports_custom_value' => false,
+				'options'               => array(),
+				'options_show_id'       => false,
+				'relevant_tokens'       => array(),
+				'remote_data'           => $this->helpers->remote_data_load_config( 'message_templates' ),
+			),
+			// Header variables repeater.
+			array(
+				'option_code'     => 'HEADER_VARIABLES',
+				'label'           => esc_attr_x( 'Header', 'WhatsApp', 'uncanny-automator' ),
+				'description'     => esc_attr_x( 'Provide a value for each header variable in the order they appear in your template (e.g., {{1}}, {{2}}). For media headers, enter a public URL to the image, video, or document.', 'WhatsApp', 'uncanny-automator' ),
+				'input_type'      => 'repeater',
+				'relevant_tokens' => array(),
+				'hide_actions'    => true,
+				'fields'          => array(
+					array(
+						'option_code' => 'HEADER_VARIABLE_FORMAT',
+						'input_type'  => 'text',
+						'read_only'   => true,
+						'required'    => false,
+						'label'       => esc_html_x( 'Type', 'WhatsApp', 'uncanny-automator' ),
+					),
+					array(
+						'option_code' => 'HEADER_VARIABLE_VALUE',
+						'input_type'  => 'text',
+						'required'    => false,
+						'label'       => esc_html_x( 'Value', 'WhatsApp', 'uncanny-automator' ),
+					),
+				),
+				'remote_data'     => $this->helpers->remote_data_with_mapping_column(
+					$this->helpers->remote_data_parent_config( 'template_repeater_data', array( $this->get_action_meta() ) ),
+					'HEADER_VARIABLE_FORMAT'
+				),
+			),
+			// Body variables repeater.
+			array(
+				'option_code'     => 'BODY_VARIABLES',
+				'label'           => esc_attr_x( 'Body variables', 'WhatsApp', 'uncanny-automator' ),
+				'description'     => esc_attr_x( 'Provide a value for each body variable in the order they appear in your template (e.g., row 1 = {{1}}, row 2 = {{2}}, row 3 = {{3}}).', 'WhatsApp', 'uncanny-automator' ),
+				'input_type'      => 'repeater',
+				'relevant_tokens' => array(),
+				'hide_actions'    => true,
+				'fields'          => array(
+					array(
+						'option_code' => 'BODY_VARIABLE',
+						'input_type'  => 'text',
+						'required'    => false,
+						'label'       => esc_html_x( 'Value', 'WhatsApp', 'uncanny-automator' ),
+					),
+				),
+				'remote_data'     => $this->helpers->remote_data_parent_config( 'template_repeater_data', array( $this->get_action_meta() ) ),
+			),
+			// Button variables repeater.
+			array(
+				'option_code'     => 'BUTTON_VARIABLES',
+				'label'           => esc_attr_x( 'Buttons', 'WhatsApp', 'uncanny-automator' ),
+				'description'     => esc_attr_x( 'Provide a value for each dynamic URL parameter in your button links (e.g., {{1}} in https://example.com/?code={{1}}).', 'WhatsApp', 'uncanny-automator' ),
+				'input_type'      => 'repeater',
+				'relevant_tokens' => array(),
+				'hide_actions'    => true,
+				'fields'          => array(
+					array(
+						'option_code' => 'BUTTON_FORMAT',
+						'input_type'  => 'text',
+						'read_only'   => true,
+						'required'    => false,
+						'label'       => esc_html_x( 'Type', 'WhatsApp', 'uncanny-automator' ),
+					),
+					array(
+						'option_code' => 'BUTTON_VARIABLE',
+						'input_type'  => 'text',
+						'required'    => false,
+						'label'       => esc_html_x( 'Value', 'WhatsApp', 'uncanny-automator' ),
+					),
+				),
+				'remote_data'     => $this->helpers->remote_data_with_mapping_column(
+					$this->helpers->remote_data_parent_config( 'template_repeater_data', array( $this->get_action_meta() ) ),
+					'BUTTON_FORMAT'
+				),
+			),
+		);
 	}
-
 
 	/**
 	 * Process the action.
@@ -330,52 +154,214 @@ class WHATSAPP_SEND_MESSAGE_TEMPLATE {
 	 * @param array $action_data
 	 * @param int $recipe_id
 	 * @param array $args
-	 * @param $parsed
+	 * @param array $parsed
 	 *
-	 * @return void.
+	 * @return bool
+	 * @throws Exception If the API request fails.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-
-		$helper = Automator()->helpers->recipe->whatsapp->options;
-
-		$to = isset( $parsed['PHONE_NUMBER'] ) ? sanitize_text_field( $parsed['PHONE_NUMBER'] ) : null;
-
-		$template = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ) : null;
-
+		$to                             = sanitize_text_field( $parsed['PHONE_NUMBER'] ?? '' );
+		$template                       = sanitize_textarea_field( $parsed[ $this->get_action_meta() ] ?? '' );
 		list( $template_name, $locale ) = explode( '|', $template );
 
+		// Prepare the body.
+		$body = array(
+			'action'               => 'send_template',
+			'to'                   => $to,
+			'template'             => $template_name,
+			'template_composition' => wp_json_encode( $parsed ),
+			'language'             => $locale,
+			'phone_id'             => $this->helpers->get_phone_number_id(),
+		);
+
 		try {
-
-			$body = array(
-				'action'               => 'send_template',
-				'to'                   => $to,
-				'template'             => $template_name,
-				'template_composition' => wp_json_encode( $parsed ),
-				'language'             => $locale,
-				'phone_id'             => $helper->get_phone_number_id(),
-				'access_token'         => $helper->get_access_token(),
-			);
-
-			$response = $helper->api_call( $body, $action_data );
-
-			$action_data['args']['await'] = array(
+			$response = $this->api->api_request( $body, $action_data );
+			// Set custom data on $this->action_data for use in filters/completion
+			$this->action_data['args']['await'] = array(
 				'whatsapp_response' => $response,
 			);
-
 			wp_schedule_single_event( time() + 60, 'automator_whatsapp_webhook_noresponse_closure', array( $response ) );
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-
-			return;
-
+			return true;
+		} catch ( Exception $e ) {
+			throw new Exception( esc_html( $e->getMessage() ) );
 		}
-
 	}
 
+	////////////////////////////////////////////////////////////
+	// Template repeater row formatting (called from WhatsApp_Helpers).
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * Format repeater rows for a given template section.
+	 *
+	 * Called by the remote-data handler in WhatsApp_Helpers.
+	 *
+	 * @param array  $components The template components from the Meta API.
+	 * @param string $field_id   The repeater field ID (HEADER_VARIABLES, BODY_VARIABLES, BUTTON_VARIABLES).
+	 * @param array  $values     The full request field values, used by BODY rows to preserve existing entries.
+	 *
+	 * @return array The formatted repeater rows.
+	 */
+	public static function format_repeater_rows( $components, $field_id, $values = array() ) {
+		switch ( $field_id ) {
+			case 'HEADER_VARIABLES':
+				return self::format_header_rows( $components );
+			case 'BODY_VARIABLES':
+				return self::format_body_rows( $components, $values );
+			case 'BUTTON_VARIABLES':
+				return self::format_button_rows( $components );
+			default:
+				return array();
+		}
+	}
+
+	/**
+	 * Format header repeater rows.
+	 *
+	 * - For media headers (IMAGE/VIDEO/DOCUMENT): 1 row for URL input
+	 * - For TEXT headers: 1 row per {{n}} token, or 0 if no tokens
+	 *
+	 * @param array $components The template components.
+	 *
+	 * @return array The repeater rows.
+	 */
+	private static function format_header_rows( $components ) {
+		$rows = array();
+
+		foreach ( $components as $component ) {
+			if ( 'HEADER' !== $component['type'] ) {
+				continue;
+			}
+
+			$format = $component['format'] ?? 'TEXT';
+
+			// Media headers (IMAGE, VIDEO, DOCUMENT) need 1 row for URL input.
+			if ( in_array( strtoupper( $format ), array( 'IMAGE', 'VIDEO', 'DOCUMENT' ), true ) ) {
+				$rows[] = array(
+					'HEADER_VARIABLE_FORMAT' => $format,
+					'HEADER_VARIABLE_VALUE'  => '',
+				);
+				break;
+			}
+
+			// TEXT headers - only add rows if there are {{n}} tokens.
+			$text   = $component['text'] ?? '';
+			$tokens = self::extract_unique_tokens( $text );
+
+			foreach ( $tokens as $token ) {
+				$rows[] = array(
+					'HEADER_VARIABLE_FORMAT' => $format,
+					'HEADER_VARIABLE_VALUE'  => '',
+				);
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Format body repeater rows.
+	 *
+	 * 1 row per unique {{n}} token in body text.
+	 *
+	 * @param array $components The template components.
+	 * @param array $values     The full request field values, used to preserve existing BODY_VARIABLES entries.
+	 *
+	 * @return array The repeater rows.
+	 */
+	private static function format_body_rows( $components, $values = array() ) {
+		$rows = array();
+
+		foreach ( $components as $component ) {
+			if ( 'BODY' !== $component['type'] ) {
+				continue;
+			}
+
+			$text   = $component['text'] ?? '';
+			$tokens = self::extract_unique_tokens( $text );
+
+			foreach ( $tokens as $token ) {
+				$rows[] = array(
+					'BODY_VARIABLE' => '',
+				);
+			}
+		}
+
+		// Merge existing saved values by position for backwards compatibility.
+		// This repeater lacks an identifier column, so we preserve values on page load template listener.
+		return self::merge_existing_body_values( $rows, $values );
+	}
+
+	/**
+	 * Merge existing saved body variable values into rows.
+	 *
+	 * Preserves user-entered values when the cascade fires on page load,
+	 * preventing saved data from being wiped out by empty template rows.
+	 *
+	 * @param array $rows   The template rows with empty values.
+	 * @param array $values The full request field values.
+	 *
+	 * @return array The rows with existing values merged in.
+	 */
+	private static function merge_existing_body_values( $rows, $values = array() ) {
+		$existing_values = $values['BODY_VARIABLES'] ?? array();
+
+		if ( empty( $existing_values ) || ! is_array( $existing_values ) ) {
+			return $rows;
+		}
+
+		foreach ( $rows as $index => $row ) {
+			if ( isset( $existing_values[ $index ]['BODY_VARIABLE'] ) && '' !== $existing_values[ $index ]['BODY_VARIABLE'] ) {
+				$rows[ $index ]['BODY_VARIABLE'] = $existing_values[ $index ]['BODY_VARIABLE'];
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Format button repeater rows.
+	 *
+	 * 1 row per button that has {{n}} tokens in its URL.
+	 *
+	 * @param array $components The template components.
+	 *
+	 * @return array The repeater rows.
+	 */
+	private static function format_button_rows( $components ) {
+		$rows = array();
+
+		foreach ( $components as $component ) {
+			if ( 'BUTTONS' !== $component['type'] || empty( $component['buttons'] ) ) {
+				continue;
+			}
+
+			foreach ( $component['buttons'] as $button ) {
+				$url = $button['url'] ?? '';
+				preg_match_all( '/\{\{\d+\}\}/', $url, $matches );
+
+				// Only add row if button URL has tokens.
+				if ( ! empty( $matches[0] ) ) {
+					$rows[] = array(
+						'BUTTON_FORMAT'   => $button['type'] ?? 'URL',
+						'BUTTON_VARIABLE' => '',
+					);
+				}
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Extract unique {{n}} template tokens from text.
+	 *
+	 * @param string $text The text to extract tokens from.
+	 *
+	 * @return array Unique tokens (e.g., ['{{1}}', '{{2}}']).
+	 */
+	private static function extract_unique_tokens( $text ) {
+		preg_match_all( '/\{\{\d+\}\}/', $text, $matches );
+		return array_unique( $matches[0] ?? array() );
+	}
 }

@@ -226,8 +226,63 @@ final class Tokens implements \JsonSerializable {
 		$tokens_common   = $this->generate_common_tokens();
 		$loopable_tokens = $this->generate_loopable_tokens();
 
-		$this->tokens = array_merge( $tokens_fields, $tokens_custom, $tokens_common, $loopable_tokens );
+		$merged = array_merge( $tokens_fields, $tokens_custom, $tokens_common, $loopable_tokens );
+
+		$this->tokens = $this->deduplicate_by_id( $merged );
 
 		return $this->tokens;
+	}
+
+	/**
+	 * Collapse tokens that share the same `id` to a single first-occurrence
+	 * entry.
+	 *
+	 * Token id is the natural uniqueness key — the recipe builder keys its
+	 * picker on it and the parser routes by it. Two entries with the same
+	 * id mean the UI shows duplicate rows and the parser sees an ambiguous
+	 * data_type / name. The id encodes all three components
+	 * (`{trigger_id}:{tokenIdentifier}:{tokenId}` for custom tokens, distinct
+	 * shapes for the other generators) so this single rule catches:
+	 *
+	 *   * Same-trigger duplicate custom registrations — typically from a
+	 *     `define_tokens()` that merges overlapping helper arrays
+	 *     (e.g. WP's `post_tokens()` + `taxonomy_tokens()` both declare
+	 *     WPTAXONOMIES / WPTAXONOMYTERM).
+	 *   * Accidental cross-source collisions where a field_code matches a
+	 *     tokenId on the same identifier — rare but possible during
+	 *     migrations.
+	 *
+	 * First occurrence wins so the order callers declared their tokens
+	 * in is preserved. Entries without an `id` are defensive and pass
+	 * through untouched — a malformed token still surfaces rather than
+	 * silently disappear.
+	 *
+	 * @param object[] $tokens Merged token list from the four generators.
+	 *
+	 * @return object[] Deduplicated list with original order preserved.
+	 */
+	private function deduplicate_by_id( array $tokens ) {
+
+		$seen   = array();
+		$unique = array();
+
+		foreach ( $tokens as $token ) {
+
+			if ( ! isset( $token->id ) ) {
+				$unique[] = $token;
+				continue;
+			}
+
+			$id = (string) $token->id;
+
+			if ( isset( $seen[ $id ] ) ) {
+				continue;
+			}
+
+			$seen[ $id ] = true;
+			$unique[]    = $token;
+		}
+
+		return $unique;
 	}
 }

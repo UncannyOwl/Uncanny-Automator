@@ -353,6 +353,8 @@ class Automator_System_Report {
 					'recipe_count'       => 'uap_recipe_count',
 					'automator_options'  => 'uap_options',
 					'automator_throttle' => 'uap_recipe_throttle_log',
+					'error_log'          => 'uap_error_log',
+					'run_snapshots'      => 'uap_run_snapshots',
 				)
 			);
 

@@ -1,230 +1,177 @@
 <?php
-
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Mailchimp;
 
 /**
  * Class CAMPAIGN_CREATEANDSEND
  *
  * @package Uncanny_Automator
+ * @property Mailchimp_App_Helpers $helpers
+ * @property Mailchimp_Api_Caller $api
  */
-class CAMPAIGN_CREATEANDSEND {
+class CAMPAIGN_CREATEANDSEND extends \Uncanny_Automator\Recipe\App_Action {
+
+	use Mailchimp_Audience_Fields;
 
 	/**
-	 * Integration code
+	 * Setup action.
 	 *
-	 * @var string
+	 * @return void
 	 */
-	public static $integration = 'MAILCHIMP';
-
-	private $action_code;
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-
-		$this->action_code = 'MCHIMPCAMPAIGNCREATEANDSEND';
-
-		$this->action_meta = 'CAMPAIGNCREATEANDSEND';
-
-		add_filter( 'automator_option_text_field', array( $this, 'add_supports_fullpage_editing' ), 10, 1 );
-
-		$this->define_action();
-
-	}
-
-	/**
-	 * Adds fullpage editing to `MCEMAILCONTENT` field.
-	 *
-	 * @param $option The accepted argument from `automator_option_text_field` filter.
-	 * @since 4.1.1
-	 *
-	 * @return array $option The option.
-	 */
-	public function add_supports_fullpage_editing( $option ) {
-
-		if ( 'MCEMAILCONTENT' === $option['option_code'] ) {
-
-			$option['supports_fullpage_editing'] = true;
-
-		}
-
-		return $option;
-
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
-			'is_pro'                => false,
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			'requires_user'         => false,
-			// translators: Campaign
-			'sentence'              => sprintf( esc_html__( 'Create and send {{a campaign:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( 'Create and send {{a campaign}}', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'requires_user'         => false,
-			'options_callback'      => array( $this, 'load_options' ),
-			'execution_function'    => array( $this, 'create_send_campaign' ),
-			'background_processing' => true,
+	protected function setup_action() {
+		$this->set_integration( 'MAILCHIMP' );
+		$this->set_action_code( 'MCHIMPCAMPAIGNCREATEANDSEND' );
+		$this->set_action_meta( 'CAMPAIGNCREATEANDSEND' );
+		$this->set_is_pro( false );
+		$this->set_requires_user( false );
+		$this->set_background_processing( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/mailchimp/' ) );
+		$this->set_readable_sentence( esc_html_x( 'Create and send {{a campaign}}', 'Mailchimp', 'uncanny-automator' ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s is the campaign
+				esc_html_x( 'Create and send {{a campaign:%1$s}}', 'Mailchimp', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
 		);
-
-		Automator()->register->action( $action );
 	}
 
-	public function load_options() {
-
+	/**
+	 * Define action options.
+	 *
+	 * @return array
+	 */
+	public function options() {
 		$from_email_description = sprintf(
+			// translators: %1$s is the text, %2$s is the link URL, %3$s is the link text
 			'%1$s. <a target="_blank" href="%2$s" title="%3$s">%3$s</a>',
-			esc_html__( 'The from email must be from a verified domain', 'uncanny-automator' ),
-			Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
-			esc_html__( 'Learn more', 'uncanny-automator' )
+			esc_html_x( 'The from email must be from a verified domain', 'Mailchimp', 'uncanny-automator' ),
+			Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/mailchimp/' ),
+			esc_html_x( 'Learn more', 'Mailchimp', 'uncanny-automator' )
 		);
 
-		$client = automator_get_option( '_uncannyowl_mailchimp_settings', array() );
-
-		$user_email = ! empty( $client['login']->email ) ? $client['login']->email : '';
+		$account_info = $this->helpers->get_account_info();
 
 		return array(
-			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->field->text_field( 'MCCAMPAIGNTITLE', esc_html__( 'Campaign name', 'uncanny-automator' ), true, 'text', null ),
-					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						esc_html__( 'Audience', 'uncanny-automator' ),
-						'MCLIST',
-						array(
-							'is_ajax'      => true,
-							'target_field' => 'MCLISTTAGS',
-							'endpoint'     => 'select_segments_from_list',
-						)
-					),
-					Automator()->helpers->recipe->mailchimp->options->get_list_tags(
-						esc_html__( 'Segment or Tag', 'uncanny-automator' ),
-						'MCLISTTAGS',
-						array(
-							'required'    => false,
-							'is_ajax'     => true,
-							'description' => esc_html__( 'If no segment/tag is selected, the campaign will be sent to the entire audience.', 'uncanny-automator' ),
-						)
-					),
-					Automator()->helpers->recipe->field->text_field( 'MCEMAILSUBJECT', esc_html__( 'Email subject', 'uncanny-automator' ), true, 'text', null ),
-					Automator()->helpers->recipe->field->text_field( 'MCPREVIEWTEXT', esc_html__( 'Preview text', 'uncanny-automator' ), true, 'text', null, false ),
-					Automator()->helpers->recipe->field->text_field( 'MCFROMNAME', esc_html__( 'From name', 'uncanny-automator' ), true, 'text', null ),
-					Automator()->helpers->recipe->field->text_field( 'MCFROMEMAILADDRESS', esc_html__( 'From email address', 'uncanny-automator' ), true, 'email', $user_email, false, $from_email_description, null ),
-					//   $required = true, $description = '', $placeholder = null
-					Automator()->helpers->recipe->field->text_field( 'MCTONAME', esc_html__( 'To name', 'uncanny-automator' ), true, 'text', null, false, __( 'Supports merge tags such as *|FNAME|*, *|LNAME|*, *|FNAME|* *|LNAME|*, etc.', 'uncanny-automator' ) ),
-					Automator()->helpers->recipe->mailchimp->options->get_all_email_templates(
-						esc_html__( 'Template', 'uncanny-automator' ),
-						'MCEMAILTEMPLATE',
-						array(
-							'description' => esc_html__( 'If a template is selected, the Email Content field below will be ignored.', 'uncanny-automator' ),
-						)
-					),
-					Automator()->helpers->recipe->field->text_field( 'MCEMAILCONTENT', esc_html__( 'Email content', 'uncanny-automator' ), true, 'textarea', null, false ),
-				),
+			array(
+				'option_code' => 'MCCAMPAIGNTITLE',
+				'label'       => esc_html_x( 'Campaign name', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => true,
+				'tokens'      => true,
+			),
+			$this->get_audience_select_config(),
+			array(
+				'option_code'     => 'MCLISTTAGS',
+				'label'           => esc_html_x( 'Segment or Tag', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'      => 'select',
+				'required'        => false,
+				'options'         => array(),
+				'options_show_id' => false,
+				'description'     => esc_html_x( 'If no segment/tag is selected, the campaign will be sent to the entire audience.', 'Mailchimp', 'uncanny-automator' ),
+				'remote_data'     => $this->helpers->remote_data_parent_config( 'segments', array( 'MCLIST' ) ),
+			),
+			array(
+				'option_code' => 'MCEMAILSUBJECT',
+				'label'       => esc_html_x( 'Email subject', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => true,
+				'tokens'      => true,
+			),
+			array(
+				'option_code' => 'MCPREVIEWTEXT',
+				'label'       => esc_html_x( 'Preview text', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => false,
+				'tokens'      => true,
+			),
+			array(
+				'option_code' => 'MCFROMNAME',
+				'label'       => esc_html_x( 'From name', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => true,
+				'tokens'      => true,
+			),
+			array(
+				'option_code'   => 'MCFROMEMAILADDRESS',
+				'label'         => esc_html_x( 'From email address', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'    => 'email',
+				'required'      => true,
+				'tokens'        => true,
+				'default_value' => $account_info['email'] ?? '',
+				'description'   => $from_email_description,
+			),
+			array(
+				'option_code' => 'MCTONAME',
+				'label'       => esc_html_x( 'To name', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => true,
+				'tokens'      => true,
+				'description' => esc_html_x( 'Supports Mailchimp merge tags such as *|FNAME|* and *|LNAME|*.', 'Mailchimp', 'uncanny-automator' ),
+			),
+			array(
+				'option_code'     => 'MCEMAILTEMPLATE',
+				'label'           => esc_html_x( 'Template', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'      => 'select',
+				'required'        => false,
+				'options'         => array(),
+				'options_show_id' => false,
+				'description'     => esc_html_x( 'If a template is selected, the Email content field below will be ignored.', 'Mailchimp', 'uncanny-automator' ),
+				'remote_data'     => $this->helpers->remote_data_load_config( 'templates' ),
+			),
+			array(
+				'option_code'               => 'MCEMAILCONTENT',
+				'label'                     => esc_html_x( 'Email content', 'Mailchimp', 'uncanny-automator' ),
+				'input_type'                => 'textarea',
+				'required'                  => false,
+				'tokens'                    => true,
+				'supports_tinymce'          => true,
+				'supports_fullpage_editing' => true,
 			),
 		);
 	}
 
-
 	/**
-	 * Validation function when the action is hit
+	 * Process the action.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        The arguments.
+	 * @param array $parsed      The parsed values.
+	 *
+	 * @return bool
 	 */
-	public function create_send_campaign( $user_id, $action_data, $recipe_id, $args ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$campaign_title     = sanitize_text_field( trim( $this->get_parsed_meta_value( 'MCCAMPAIGNTITLE' ) ) );
+		$list_id            = $this->get_audience_from_parsed();
+		$segment_id         = sanitize_text_field( $this->get_parsed_meta_value( 'MCLISTTAGS' ) );
+		$template_id        = sanitize_text_field( $this->get_parsed_meta_value( 'MCEMAILTEMPLATE' ) );
+		$email_subject      = sanitize_text_field( trim( $this->get_parsed_meta_value( 'MCEMAILSUBJECT' ) ) );
+		$preview_text       = sanitize_text_field( trim( $this->get_parsed_meta_value( 'MCPREVIEWTEXT' ) ) );
+		$from_name          = sanitize_text_field( trim( $this->get_parsed_meta_value( 'MCFROMNAME' ) ) );
+		$from_email_address = sanitize_email( trim( $this->get_parsed_meta_value( 'MCFROMEMAILADDRESS' ) ) );
+		$to_name            = sanitize_text_field( trim( $this->get_parsed_meta_value( 'MCTONAME' ) ) );
+		$email_content      = wp_kses_post( $this->get_parsed_meta_value( 'MCEMAILCONTENT' ) );
 
-		$helpers = Automator()->helpers->recipe->mailchimp->options;
-
-		try {
-
-			// Here campaign info.
-			$campaign_title     = Automator()->parse->text( $action_data['meta']['MCCAMPAIGNTITLE'], $recipe_id, $user_id, $args );
-			$list_id            = $action_data['meta']['MCLIST'];
-			$segment_id         = $action_data['meta']['MCLISTTAGS'];
-			$template_id        = $action_data['meta']['MCEMAILTEMPLATE'];
-			$email_subject      = Automator()->parse->text( $action_data['meta']['MCEMAILSUBJECT'], $recipe_id, $user_id, $args );
-			$preview_text       = Automator()->parse->text( $action_data['meta']['MCPREVIEWTEXT'], $recipe_id, $user_id, $args );
-			$from_name          = Automator()->parse->text( $action_data['meta']['MCFROMNAME'], $recipe_id, $user_id, $args );
-			$from_email_address = Automator()->parse->text( $action_data['meta']['MCFROMEMAILADDRESS'], $recipe_id, $user_id, $args );
-			$to_name            = Automator()->parse->text( $action_data['meta']['MCTONAME'], $recipe_id, $user_id, $args );
-			$email_content      = Automator()->parse->text( $action_data['meta']['MCEMAILCONTENT'], $recipe_id, $user_id, $args );
-
-			// First create a campaign
-			$campaign_schema = array(
-				'type'       => 'regular',
-				'recipients' => array(
-					'list_id' => $list_id,
-				),
-				'settings'   => array(
-					'subject_line' => $email_subject,
-					'preview_text' => $preview_text,
-					'title'        => $campaign_title,
-					'from_name'    => $from_name,
-					'reply_to'     => $from_email_address,
-					'to_name'      => $to_name,
-				),
-			);
-
-			if ( ! empty( $segment_id ) && '-1' !== $segment_id ) {
-				$campaign_schema['recipients']['segment_opts']['saved_segment_id'] = (int) $segment_id;
-			}
-
-			if ( ! empty( $template_id ) && '-1' !== $template_id ) {
-				$campaign_schema['settings']['template_id'] = (int) $template_id;
-				$campaign_schema['content_type']            = 'template';
-			} else {
-				$campaign_schema['content_type'] = 'multichannel';
-			}
-
-			$request_params = array(
-				'action'          => 'add_campaign',
-				'campaign_schema' => wp_json_encode( $campaign_schema ),
-			);
-
-			$add_campaign_response = $helpers->api_request( $request_params );
-
-			$campaign_id = $add_campaign_response['data']['id'];
-
-			// Put content if template was not set.
-			if ( empty( $template_id ) || '-1' === $template_id ) {
-				$campaign_content = array(
-					'html' => $email_content,
-				);
-
-				$request_params = array(
-					'action'           => 'update_campaign_content',
-					'campaign_content' => wp_json_encode( $campaign_content ),
-					'campaign_id'      => $campaign_id,
-				);
-
-				$update_campaign_content_response = $helpers->api_request( $request_params );
-			}
-
-			$request_params = array(
-				'action'      => 'send_campaign',
-				'campaign_id' => $campaign_id,
-			);
-
-			// Now all set so send campaign.
-			$send_campaign_response = $helpers->api_request( $request_params, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
+		if ( empty( $campaign_title ) || empty( $email_subject ) || empty( $from_name ) || empty( $from_email_address ) || empty( $to_name ) ) {
+			throw new \Exception( esc_html_x( 'Campaign title, email subject, from name, from email address, and to name are required.', 'Mailchimp', 'uncanny-automator' ) );
 		}
+
+		$campaign_data = array(
+			'title'              => $campaign_title,
+			'list_id'            => $list_id,
+			'segment_id'         => $segment_id,
+			'template_id'        => $template_id,
+			'subject_line'       => $email_subject,
+			'preview_text'       => $preview_text,
+			'from_name'          => $from_name,
+			'from_email_address' => $from_email_address,
+			'to_name'            => $to_name,
+			'email_content'      => $email_content,
+		);
+
+		$this->api->create_and_send_campaign( $campaign_data );
+
+		return true;
 	}
-
-
 }

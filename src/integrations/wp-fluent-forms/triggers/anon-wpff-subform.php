@@ -1,178 +1,96 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Wp_Fluent_Forms;
 
 /**
- * Class ANON_WPFF_SUBFIELD
+ * Anonymous trigger: a Fluent Forms form is submitted (logged-out friendly).
+ *
+ * @property Wp_Fluent_Forms_Helpers $item_helpers
  *
  * @package Uncanny_Automator
  */
-class ANON_WPFF_SUBFORM {
+class ANON_WPFF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Integration code
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	public static $integration = 'WPFF';
-
-	/**
-	 * @var string
-	 */
-	private $trigger_code;
-	/**
-	 * @var string
-	 */
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->trigger_code = 'ANONWPFFSUBFORM';
-		$this->trigger_meta = 'ANONWPFFFORMS';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'ANONWPFFSUBFORM', 'WPFF' )
+			->trigger_meta( 'ANONWPFFFORMS' )
+			->trigger_type( 'anonymous' )
+			->hook( 'fluentform/before_insert_submission', 20, 3 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Set up the trigger.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-fluent-forms/' ),
-			'is_pro'              => false,
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Anonymous trigger - Fluent Forms */
-			'sentence'            => sprintf( esc_html_x( '{{A form:%1$s}} is submitted', 'Wp Fluent Forms', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Anonymous trigger - Fluent Forms */
-			'select_option_name'  => esc_html_x( '{{A form}} is submitted', 'Wp Fluent Forms', 'uncanny-automator' ),
-			'action'              => 'fluentform/before_insert_submission',
-			'type'                => 'anonymous',
-			'priority'            => 20,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'wpffform_submit' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
-		Automator()->register->trigger( $trigger );
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
+		$this->set_is_login_required( false );
+
+		// translators: %1$s is the form name
+		$this->set_sentence( sprintf( esc_html_x( '{{A form:%1$s}} is submitted', 'Fluent Forms', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		$this->set_readable_sentence( esc_html_x( '{{A form}} is submitted', 'Fluent Forms', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * @return array[]
+	 * Define the trigger options.
+	 *
+	 * @return array
 	 */
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					Automator()->helpers->recipe->wp_fluent_forms->options->list_wp_fluent_forms( null, $this->trigger_meta ),
-				),
-			)
+	public function options() {
+		return array(
+			$this->item_helpers->form_select_field( $this->get_trigger_meta(), true ),
 		);
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Define the trigger tokens.
 	 *
-	 * @param $inser_data
-	 * @param $data
-	 * @param $form
+	 * @param array $trigger
+	 * @param array $tokens
+	 *
+	 * @return array
 	 */
-	public function wpffform_submit( $insert_data, $data, $form ) {
-		$user_id = get_current_user_id();
-
-		if ( empty( $form ) ) {
-			return;
-		}
-		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-		$matches = $this->match_condition( $form, $data, $recipes );
-
-		if ( ! $matches ) {
-			return;
-		}
-
-		$entry_data = json_decode( $insert_data['response'], true );
-
-		foreach ( $matches as $trigger_id => $match ) {
-			if ( Automator()->is_recipe_completed( $match['recipe_id'], $user_id ) ) {
-				continue;
-			}
-			$args = array(
-				'code'             => $this->trigger_code,
-				'meta'             => $this->trigger_meta,
-				'meta_key'         => $this->trigger_meta,
-				'recipe_to_match'  => $match['recipe_id'],
-				'trigger_to_match' => $trigger_id,
-				'ignore_post_id'   => true,
-				'user_id'          => $user_id,
-			);
-
-			$result = Automator()->process->user->maybe_add_trigger_entry( $args, false );
-
-			if ( $result ) {
-				foreach ( $result as $r ) {
-					if ( true === $r['result'] ) {
-						if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
-							//Saving form values in trigger log meta for token parsing!
-							$wp_ff_args = array(
-								'code'           => $this->trigger_code,
-								'meta'           => $this->trigger_meta,
-								'post_id'        => absint( $form->id ),
-								'trigger_id'     => (int) $r['args']['trigger_id'],
-								'user_id'        => $user_id,
-								'trigger_log_id' => $r['args']['get_trigger_id'],
-								'run_number'     => $r['args']['run_number'],
-							);
-
-							$wp_ff_args['meta_key'] = $this->trigger_meta;
-							Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $entry_data, $form, $wp_ff_args );
-							Automator()->helpers->recipe->wp_fluent_forms->save_wp_fluent_form_entry_data( $insert_data, $wp_ff_args, $this->trigger_meta . '_ID', $form->id );
-
-							Automator()->process->user->maybe_trigger_complete( $r['args'] );
-						}
-					}
-				}
-			}
-		}
+	public function define_tokens( $trigger, $tokens ) {
+		return $this->item_helpers->tokens()->define_trigger_tokens( $trigger, $tokens, $this->get_trigger_meta() );
 	}
 
 	/**
-	 * @param      $form_data
-	 * @param      $submitted_data
-	 * @param null $recipes
-	 * @param null $trigger_meta
-	 * @param null $trigger_code
-	 * @param null $trigger_second_code
+	 * Validate the trigger and associate the run with the current user when present.
 	 *
-	 * @return array|bool
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
+	 * @return bool
 	 */
-	public function match_condition( $form_data, $submitted_data, $recipes = null ) {
-
-		if ( null === $recipes ) {
+	public function validate( $trigger, $hook_args ) {
+		if ( ! $this->item_helpers->validate_form_id_match( $trigger, $hook_args, $this->get_trigger_meta() ) ) {
 			return false;
 		}
 
-		$matches = array();
-
-		foreach ( $recipes as $recipe ) {
-			foreach ( $recipe['triggers'] as $trigger ) {
-				//  Validate that all needed feilds and value are set
-				if (
-					isset( $trigger['meta'] ) && ! empty( $trigger['meta'] )
-					&& isset( $trigger['meta']['ANONWPFFFORMS'] ) && ! empty( $trigger['meta']['ANONWPFFFORMS'] )
-					&& ( (int) $form_data->id === (int) $trigger['meta']['ANONWPFFFORMS'] || '-1' === $trigger['meta']['ANONWPFFFORMS'] )
-				) {
-					$matches[ $trigger['ID'] ] = array(
-						'recipe_id' => $recipe['ID'],
-					);
-				}
-			}
+		// Anonymous trigger: associate the run with the current user if any.
+		$user_id = get_current_user_id();
+		if ( $user_id > 0 ) {
+			$this->set_user_id( $user_id );
 		}
 
-		if ( ! empty( $matches ) ) {
-			return $matches;
-		}
+		return true;
+	}
 
-		return false;
+	/**
+	 * Hydrate the trigger tokens.
+	 *
+	 * @param array $completed_trigger
+	 * @param array $hook_args
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $completed_trigger, $hook_args ) {
+		return $this->item_helpers->tokens()->hydrate_trigger_tokens( $completed_trigger, $hook_args, $this->get_trigger_meta() );
 	}
 }

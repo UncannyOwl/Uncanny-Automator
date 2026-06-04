@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Admin_Settings_Premium_Integrations
  *
@@ -47,7 +49,7 @@ class Admin_Settings_Premium_Integrations {
 		// Check if the user has access to the premium integrations
 		// This will be true if the site is connected (Automator Free) or if the
 		// user has Automator Pro activated
-		$user_can_use_premium_integrations = Api_Server::is_automator_connected() || is_automator_pro_active();
+		$user_can_use_premium_integrations = automator_license_manager()->is_connected() || is_automator_pro_active();
 
 		// Get the link to upgrade to Pro
 		$upgrade_to_pro_url = add_query_arg(

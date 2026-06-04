@@ -1,114 +1,87 @@
 <?php
 
-namespace Uncanny_Automator;
-
-use uncanny_learndash_codes;
+namespace Uncanny_Automator\Integrations\Uncanny_Codes;
 
 /**
  * Class UC_CANCEL_CODE
  *
  * @package Uncanny_Automator
+ * @property \Uncanny_Automator\Integrations\Uncanny_Codes\Uc_Helpers $item_helpers
  */
-class UC_CANCEL_CODE {
-
-	use Recipe\Action_Tokens;
+class UC_CANCEL_CODE extends \Uncanny_Automator\Recipe\Action {
 
 	/**
-	 * Integration code
+	 * Setup action configuration.
 	 *
-	 * @var string
+	 * @return void
 	 */
-	public static $integration = 'UNCANNYCODE';
-	/**
-	 * @var string
-	 */
-	private $action_code;
-	/**
-	 * @var string
-	 */
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'UCCANCELCODE';
-		$this->action_meta = 'WPUCCANCELCODE';
-		$this->define_action();
+	protected function setup_action() {
+		$this->set_integration( 'UNCANNYCODE' );
+		$this->set_action_code( 'UCCANCELCODE' );
+		$this->set_action_meta( 'WPUCCANCELCODE' );
+		$this->set_is_pro( false );
+		$this->set_requires_user( false );
+		// translators: %1$s is the code.
+		$this->set_sentence( sprintf( esc_html_x( 'Cancel {{a code:%1$s}}', 'Uncanny Codes', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'Cancel {{a code}}', 'Uncanny Codes', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * Define and register the action by pushing it into the Automator object
+	 * Define action options.
+	 *
+	 * @return array[]
 	 */
-	public function define_action() {
-
-		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/set-up-uncanny-codes-for-wordpress/' ),
-			'integration'        => self::$integration,
-			'requires_user'      => false,
-			'code'               => $this->action_code,
-			/* translators: Logged-in trigger - Uncanny Codes. */
-			'sentence'           => sprintf( esc_attr__( 'Cancel {{a code:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			/* translators: Logged-in trigger - Uncanny Codes. */
-			'select_option_name' => esc_attr__( 'Cancel {{a code}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'cancel_a_code' ),
-			'options_callback'   => array( $this, 'load_options' ),
-		);
-
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * load_options
-	 */
-	public function load_options() {
-		$options = array(
-			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->field->text_field( $this->action_meta, esc_attr__( 'Code', 'uncanny-automator' ), true, 'text', '', true ),
-				),
+	public function options() {
+		return array(
+			array(
+				'option_code'           => $this->get_action_meta(),
+				'label'                 => esc_html_x( 'Code', 'Uncanny Codes', 'uncanny-automator' ),
+				'input_type'            => 'text',
+				'required'              => true,
+				'supports_custom_value' => true,
 			),
 		);
-
-		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Process the action.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action configuration.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        Additional arguments.
+	 * @param array $parsed      Parsed token values.
+	 *
+	 * @return bool
 	 */
-	public function cancel_a_code( $user_id, $action_data, $recipe_id, $args ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$code_name = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
+		$code_name = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
 
 		$code_data = \uncanny_learndash_codes\Database::is_coupon_valid( $code_name );
 
-		if ( is_null( $code_data ) || ! is_object( $code_data ) ) {
-			$error_message = esc_attr__( 'Invalid code provided.', 'uncanny-automator' );
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+		if ( null === $code_data || ! is_object( $code_data ) ) {
+			$this->add_log_error( esc_html_x( 'Invalid code provided.', 'Uncanny Codes', 'uncanny-automator' ) );
+			return false;
 		}
 
 		$cancelled = $this->cancel_code( $code_data );
 
 		if ( true !== $cancelled ) {
-			$error_message = esc_attr__( 'Something went wrong! Codes was not cancelled, try again.', 'uncanny-automator' );
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+			$this->add_log_error( esc_html_x( 'Something went wrong! Code was not cancelled, try again.', 'Uncanny Codes', 'uncanny-automator' ) );
+			return false;
 		}
 
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		return true;
 	}
 
+	/**
+	 * Cancel a code by marking it inactive.
+	 *
+	 * @param object $code_details The code details object.
+	 *
+	 * @return bool
+	 */
 	private function cancel_code( $code_details ) {
 
 		if ( empty( $code_details ) || ! is_object( $code_details ) || ! isset( $code_details->ID ) || ! isset( $code_details->code_group ) ) {

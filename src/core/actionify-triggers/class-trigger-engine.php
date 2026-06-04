@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator\Actionify_Triggers;
 
+use Uncanny_Automator\Recipe_Manifest;
+
 /**
  * Main Trigger Engine - orchestrates the entire system.
  *
@@ -47,12 +49,37 @@ class Trigger_Engine {
 	/**
 	 * Initialize the trigger engine.
 	 *
-	 * Call this method to start listening for triggers.
+	 * Defers WP-listener registration to `automator_after_add_integrations`
+	 * so the build-time metadata filter (`automator_lazy_trigger_metadata_files`)
+	 * has every addon's contribution wired before the engine reads it. Free's
+	 * own bootstrap runs at plugin-file-load time — earlier than any Pro/addon
+	 * hook callback can possibly register — so reading the filter eagerly
+	 * would miss Pro's metadata file entirely.
+	 *
+	 * `automator_after_add_integrations` fires once Free's
+	 * `Initialize_Automator::automator_configure()` has finished the addon
+	 * registration ceremony (`automator_add_integration` → priority 11
+	 * addon callbacks → `automator_after_add_integrations`). At that point
+	 * every addon that wants to contribute trigger metadata has already
+	 * called `Addon_Registry::register_addon()` → `hook_trigger_metadata()`.
+	 *
+	 * The `did_action` guard handles late callers (tests, addons initializing
+	 * after `init`) by firing immediately rather than missing the hook.
 	 *
 	 * @return void
 	 */
 	public function init() {
-		$this->register_automation_hooks();
+
+		if ( did_action( 'automator_after_add_integrations' ) ) {
+			$this->register_automation_hooks();
+			return;
+		}
+
+		add_action(
+			'automator_after_add_integrations',
+			array( $this, 'register_automation_hooks' ),
+			99
+		);
 	}
 
 	/**
@@ -65,25 +92,148 @@ class Trigger_Engine {
 	 */
 	public function register_automation_hooks() {
 
-		$active_triggers = $this->query->get_active_triggers();
+		$covered_codes = array();
+		$code_defined  = $this->collect_code_defined_hooks();
 
-		if ( empty( $active_triggers ) ) {
-			return;
+		foreach ( $code_defined as $row ) {
+			$this->register_single_trigger( $row );
+			$covered_codes[ $row['code'] ] = true;
 		}
 
-		$flattened_triggers = $this->flatten_trigger_array( $active_triggers );
-		$unique_triggers    = $this->remove_duplicate_triggers( $flattened_triggers );
+		$active_triggers = $this->query->get_active_triggers();
 
-		foreach ( $unique_triggers as $trigger ) {
-			$this->register_single_trigger( (array) $trigger );
+		if ( ! empty( $active_triggers ) ) {
+
+			$flattened_triggers = $this->flatten_trigger_array( $active_triggers );
+			$unique_triggers    = $this->remove_duplicate_triggers( $flattened_triggers );
+
+			foreach ( $unique_triggers as $trigger ) {
+				$code = (string) ( isset( $trigger['code'] ) ? $trigger['code'] : '' );
+				if ( '' !== $code && isset( $covered_codes[ $code ] ) ) {
+					continue;
+				}
+				$this->register_single_trigger( (array) $trigger );
+			}
 		}
 
 		/**
 		 * Fires after all automation triggers have been registered.
 		 *
-		 * @param array $unique_triggers List of unique triggers that were registered.
+		 * Signature changed in 7.4: previously fired with a single argument
+		 * (the unique triggers list from the postmeta path). Now fires with
+		 * the covered-codes set and the per-hook rows from the build-time
+		 * metadata cache so listeners can see which codes came from code vs.
+		 * postmeta.
+		 *
+		 * @since 7.4
+		 *
+		 * @param array $covered_codes Trigger codes registered from definition() (map<code, true>).
+		 * @param array $code_defined  Per-hook rows registered from the metadata cache.
 		 */
-		do_action( 'automator_triggers_registered', $unique_triggers );
+		do_action( 'automator_triggers_registered', $covered_codes, $code_defined );
+	}
+
+	/**
+	 * Read code-defined hook tuples from the build-time metadata cache.
+	 *
+	 * Emits one row per (code, hook) pair, filtered by Recipe_Manifest so
+	 * only active codes register WP listeners. Returns the same `{code, hook}`
+	 * shape Trigger_Query produces so register_single_trigger() can consume
+	 * both. Priority and accepted_args from the metadata cache are NOT
+	 * propagated — register_single_trigger() hardcodes WP priority 10 with
+	 * accepted_args=99 (shared-callback design). The cache still carries
+	 * the priority/args tuples because Abstract_Trigger::apply_definition()
+	 * reads them off the live `Trigger_Definition` object to set instance
+	 * metadata; they just don't influence the WP listener.
+	 *
+	 * @return array<int, array{code: string, hook: string}>
+	 */
+	private function collect_code_defined_hooks() {
+
+		// Kill switch — emergency fallback to pure postmeta path.
+		$enabled = ! defined( 'AUTOMATOR_CODE_DEFINED_HOOKS' ) || true === AUTOMATOR_CODE_DEFINED_HOOKS;
+
+		/**
+		 * Filter: automator_code_defined_hooks_enabled
+		 *
+		 * Emergency kill switch for code-defined trigger hooks. When false,
+		 * the engine returns an empty set and falls back to the pure postmeta
+		 * path. Mirrors `AUTOMATOR_LAZY_TRIGGERS` from the lazy plan.
+		 *
+		 * @since 7.4
+		 *
+		 * @param bool $enabled Whether code-defined hooks are enabled.
+		 */
+		$enabled = (bool) apply_filters( 'automator_code_defined_hooks_enabled', $enabled );
+
+		if ( false === $enabled ) {
+			return array();
+		}
+
+		$default_file = UA_ABSPATH . 'vendor/composer/autoload_trigger_metadata.php';
+
+		/**
+		 * Filter: automator_lazy_trigger_metadata_files
+		 *
+		 * Mirrored from Trigger_Metadata_Loader — Pro / addons register
+		 * their own metadata cache files here via Addon_Registry.
+		 *
+		 * @since 7.4
+		 *
+		 * @param string[] $files Absolute paths to autoload_trigger_metadata.php files.
+		 */
+		$files = (array) apply_filters( 'automator_lazy_trigger_metadata_files', array( $default_file ) );
+
+		$merged = array();
+		foreach ( $files as $file ) {
+			if ( ! is_string( $file ) || ! file_exists( $file ) ) {
+				continue;
+			}
+			$data = include $file;
+			if ( is_array( $data ) ) {
+				// First-write wins on code collisions — mirrors the loader.
+				foreach ( $data as $code => $entry ) {
+					if ( isset( $merged[ $code ] ) ) {
+						continue;
+					}
+					$merged[ $code ] = $entry;
+				}
+			}
+		}
+
+		if ( empty( $merged ) ) {
+			return array();
+		}
+
+		$manifest = Recipe_Manifest::get_instance();
+		$rows     = array();
+
+		foreach ( $merged as $code => $entry ) {
+
+			if ( empty( $entry['hooks'] ) || ! is_array( $entry['hooks'] ) ) {
+				continue;
+			}
+
+			if ( empty( $entry['integration'] ) ) {
+				continue;
+			}
+
+			// Composite key is `INTEGRATION_CODE` (e.g. WC_WCPURCHPROD) —
+			// matches the shape Recipe_Manifest stores internally.
+			$composite_key = $entry['integration'] . '_' . $code;
+			if ( ! $manifest->is_code_active( $composite_key ) ) {
+				continue;
+			}
+
+			foreach ( $entry['hooks'] as $hook ) {
+				$rows[] = array(
+					'code' => (string) $code,
+					'hook' => (string) ( isset( $hook[0] ) ? $hook[0] : '' ),
+				);
+			}
+		}
+
+		return $rows;
 	}
 
 	/**
@@ -102,6 +252,27 @@ class Trigger_Engine {
 
 		// Find triggers that should respond to this hook.
 		$matching_triggers = $this->find_triggers_for_hook( $hook_name );
+
+		// Opt-in firehose: logs EVERY monitored hook as it fires, the trigger
+		// codes it mapped to, and the raw args — the single chokepoint for all
+		// code-defined triggers, so no per-trigger instrumentation is needed.
+		// Enable with `define( 'AUTOMATOR_DEBUG_TRIGGERS', true )` (or the
+		// filter). Writes to the `trigger-engine` log. No-op otherwise.
+		if (
+			( defined( 'AUTOMATOR_DEBUG_TRIGGERS' ) && AUTOMATOR_DEBUG_TRIGGERS )
+			|| apply_filters( 'automator_debug_triggers', false, $hook_name )
+		) {
+			automator_log(
+				array(
+					'hook'    => $hook_name,
+					'matched' => $matching_triggers,
+					'args'    => $args,
+				),
+				'Trigger hook fired',
+				true,
+				'hook-' . $hook_name
+			);
+		}
 
 		foreach ( $matching_triggers as $trigger_code ) {
 			$this->queue->enqueue( $trigger_code, $hook_name, $args );

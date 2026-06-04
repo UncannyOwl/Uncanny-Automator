@@ -1,135 +1,160 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Codes;
 
 /**
  * Class UC_ANON_CODEBATCHCREATED
  *
  * @package Uncanny_Automator
+ * @property \Uncanny_Automator\Integrations\Uncanny_Codes\Uc_Helpers $item_helpers
  */
-class UC_ANON_CODEBATCHCREATED {
+class UC_ANON_CODEBATCHCREATED extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Integration code
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	public static $integration = 'UNCANNYCODE';
-
-	private $trigger_code;
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->trigger_code = 'ANONCODEBATCHCREATED';
-		$this->trigger_meta = 'UNCANNYCODES';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'ANONCODEBATCHCREATED', 'UNCANNYCODE' )
+			->trigger_meta( 'UNCANNYCODES' )
+			->trigger_type( 'anonymous' )
+			->hook( 'ulc_codes_group_generated', 20, 1 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup trigger configuration.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
+		$this->set_is_pro( false );
+		$this->set_is_login_required( false );
+		/* translators: Anonymous trigger - Uncanny Codes */
+		$this->set_sentence( esc_html_x( 'A code batch is created', 'Uncanny Codes', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'A code batch is created', 'Uncanny Codes', 'uncanny-automator' ) );
+	}
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-codes/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			'meta'                => $this->trigger_meta,
-			/* translators: Logged-in trigger - Uncanny Codes */
-			'sentence'            => sprintf( esc_attr__( 'A code batch is created', 'uncanny-automator' ) ),
-			/* translators: Logged-in trigger - Uncanny Codes */
-			'select_option_name'  => esc_attr__( 'A code batch is created', 'uncanny-automator' ),
-			'action'              => 'ulc_codes_group_generated',
-			'type'                => 'anonymous',
-			'priority'            => 20,
-			'accepted_args'       => 1,
-			'validation_function' => array(
-				$this,
-				'ulc_codes_group_generated',
+	/**
+	 * Define trigger options.
+	 *
+	 * @return array[]
+	 */
+	public function options() {
+		return array();
+	}
+
+	/**
+	 * Define available tokens.
+	 *
+	 * @param array $trigger The trigger settings.
+	 * @param array $tokens  Existing tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+		return array(
+			array(
+				'tokenId'   => 'CODE_BATCH_ID',
+				'tokenName' => esc_html_x( 'Batch ID', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'int',
 			),
-			'options'             => array(),
+			array(
+				'tokenId'   => 'UNCANNYCODESBATCH_ID',
+				'tokenName' => esc_html_x( 'Batch ID', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'UNCANNYCODESTYPE',
+				'tokenName' => esc_html_x( 'Type', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYCODESPREFIXBATCH',
+				'tokenName' => esc_html_x( 'Prefix', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYCODESSUFFIXBATCH',
+				'tokenName' => esc_html_x( 'Suffix', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYCODESLD_TYPE',
+				'tokenName' => esc_html_x( 'LD Type', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYCODESMAX_PER_CODE',
+				'tokenName' => esc_html_x( 'Max per code', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYCODESCODES_GENERATED',
+				'tokenName' => esc_html_x( 'Codes generated', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYCODESEXPIRY_DATE',
+				'tokenName' => esc_html_x( 'Expiry date', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYCODESLIST_OF_CODES',
+				'tokenName' => esc_html_x( 'Codes (CSV list of codes)', 'Uncanny Codes', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
 		);
-
-		Automator()->register->trigger( $trigger );
 	}
 
 	/**
-	 * @param $user_id
-	 * @param $coupon_id
-	 * @param $result
+	 * Validate trigger against hook arguments.
+	 *
+	 * @param array $trigger   The trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool
 	 */
-	public function ulc_codes_group_generated( $batch_id ) {
+	public function validate( $trigger, $hook_args ) {
+
+		list( $batch_id ) = $hook_args;
 
 		if ( empty( $batch_id ) ) {
-			return;
+			return false;
 		}
 
-		$user_id = get_current_user_id();
-
-		$args = array(
-			'code'           => $this->trigger_code,
-			'meta'           => $this->trigger_meta,
-			'post_id'        => - 1,
-			'ignore_post_id' => true,
-			'user_id'        => $user_id,
-		);
-
-		$args = Automator()->maybe_add_trigger_entry( $args, false );
-
-		// Save trigger meta
-		if ( $args ) {
-			foreach ( $args as $result ) {
-				if ( true === $result['result'] && $result['args']['trigger_id'] && $result['args']['get_trigger_id'] ) {
-
-					$run_number = Automator()->get->trigger_run_number( $result['args']['trigger_id'], $result['args']['get_trigger_id'], $user_id );
-					$save_meta  = array(
-						'user_id'        => $user_id,
-						'trigger_id'     => $result['args']['trigger_id'],
-						'run_number'     => $run_number, //get run number
-						'trigger_log_id' => $result['args']['get_trigger_id'],
-						'ignore_user_id' => true,
-					);
-
-					// Batch ID
-					Automator()->db->token->save( 'CODE_BATCH_ID', $batch_id, $save_meta );
-
-					// Batch ID
-					Automator()->db->token->save( 'UNCANNYCODESBATCH_ID', $batch_id, $save_meta );
-
-					$batch_content = Automator()->helpers->recipe->uncanny_codes->options->uc_get_batch_info( $batch_id );
-					// Code Type
-					Automator()->db->token->save( 'UNCANNYCODESTYPE', $batch_content['batch_data']->paid_unpaid, $save_meta );
-
-					// Prefix
-					Automator()->db->token->save( 'UNCANNYCODESPREFIXBATCH', $batch_content['batch_data']->prefix, $save_meta );
-
-					// Suffix
-					Automator()->db->token->save( 'UNCANNYCODESSUFFIXBATCH', $batch_content['batch_data']->suffix, $save_meta );
-
-					// LD Type
-					Automator()->db->token->save( 'UNCANNYCODESLD_TYPE', ucfirst( $batch_content['batch_data']->code_for ), $save_meta );
-
-					// Match Per Code
-					Automator()->db->token->save( 'UNCANNYCODESMAX_PER_CODE', $batch_content['batch_data']->issue_max_count, $save_meta );
-
-					// Codes generated
-					Automator()->db->token->save( 'UNCANNYCODESCODES_GENERATED', $batch_content['batch_data']->issue_count, $save_meta );
-
-					// Expiry date
-					Automator()->db->token->save( 'UNCANNYCODESEXPIRY_DATE', $batch_content['batch_data']->expire_date, $save_meta );
-
-					// List of codes
-					Automator()->db->token->save( 'UNCANNYCODESLIST_OF_CODES', $batch_content['codes_data']->codes, $save_meta );
-
-					Automator()->maybe_trigger_complete( $result['args'] );
-				}
-			}
-		}
-
+		return true;
 	}
 
+	/**
+	 * Hydrate token values from hook arguments.
+	 *
+	 * @param array $trigger   The completed trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		list( $batch_id ) = $hook_args;
+
+		$batch_content = $this->item_helpers->uc_get_batch_info( $batch_id );
+
+		$batch_data = $batch_content['batch_data'];
+		$codes_data = $batch_content['codes_data'];
+
+		return array(
+			'CODE_BATCH_ID'                => $batch_id,
+			'UNCANNYCODESBATCH_ID'         => $batch_id,
+			'UNCANNYCODESTYPE'             => isset( $batch_data->paid_unpaid ) ? $batch_data->paid_unpaid : '',
+			'UNCANNYCODESPREFIXBATCH'      => isset( $batch_data->prefix ) ? $batch_data->prefix : '',
+			'UNCANNYCODESSUFFIXBATCH'      => isset( $batch_data->suffix ) ? $batch_data->suffix : '',
+			'UNCANNYCODESLD_TYPE'          => isset( $batch_data->code_for ) ? ucfirst( $batch_data->code_for ) : '',
+			'UNCANNYCODESMAX_PER_CODE'     => isset( $batch_data->issue_max_count ) ? $batch_data->issue_max_count : '',
+			'UNCANNYCODESCODES_GENERATED'  => isset( $batch_data->issue_count ) ? $batch_data->issue_count : '',
+			'UNCANNYCODESEXPIRY_DATE'      => isset( $batch_data->expire_date ) ? $batch_data->expire_date : '',
+			'UNCANNYCODESLIST_OF_CODES'    => isset( $codes_data->codes ) ? $codes_data->codes : '',
+		);
+	}
 }

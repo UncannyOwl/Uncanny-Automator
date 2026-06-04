@@ -19,13 +19,6 @@ trait Premium_Integration_Templating {
 	protected $show_connect_arrow = false;
 
 	/**
-	 * Whether to show the warning unsaved message in the settings page
-	 *
-	 * @var bool
-	 */
-	protected $warn_unsaved = true;
-
-	/**
 	 * Get available actions
 	 *
 	 * @return array
@@ -151,22 +144,11 @@ trait Premium_Integration_Templating {
 	 * @return void - Outputs HTML directly
 	 */
 	public function output_panel_content() {
-		// Dynamic hook status key.
-		$status = $this->get_hook_status_key();
-		$id     = $this->get_id();
-
-		// Hook before main content based on integration and connection status.
-		do_action( "automator_app_settings_{$id}_before_{$status}_panel_content", $this );
-
-		// Output main content based on connection status
 		if ( $this->is_connected ) {
 			$this->output_main_connected_content();
 		} else {
 			$this->output_main_disconnected_content();
 		}
-
-		// Hook after main content based on integration and connection status.
-		do_action( "automator_app_settings_{$id}_after_{$status}_panel_content", $this );
 	}
 
 	/**
@@ -175,12 +157,6 @@ trait Premium_Integration_Templating {
 	 * @return void - Outputs HTML directly
 	 */
 	public function output_panel_bottom() {
-		// Dynamic hook status key.
-		$status = $this->get_hook_status_key();
-		$id     = $this->get_id();
-
-		// Hook before bottom panel output.
-		do_action( "automator_app_settings_{$id}_before_{$status}_panel_bottom", $this );
 		?>
 		<div class="uap-settings-panel-bottom-left">
 			<?php $this->output_panel_bottom_left(); ?>
@@ -189,8 +165,6 @@ trait Premium_Integration_Templating {
 			<?php $this->output_panel_bottom_right(); ?>
 		</div>
 		<?php
-		// Hook after bottom panel output.
-		do_action( "automator_app_settings_{$id}_after_{$status}_panel_bottom", $this );
 	}
 
 	/**
@@ -199,22 +173,11 @@ trait Premium_Integration_Templating {
 	 * @return void - Outputs HTML directly
 	 */
 	public function output_panel_bottom_left() {
-		// Dynamic hook status key.
-		$status = $this->get_hook_status_key();
-		$id     = $this->get_id();
-
-		// Hook before bottom left content based on integration and connection status.
-		do_action( "automator_app_settings_{$id}_before_{$status}_panel_bottom_left", $this );
-
-		// Output bottom left content based on connection status
 		if ( $this->is_connected ) {
 			$this->output_bottom_left_connected_content();
 		} else {
 			$this->output_bottom_left_disconnected_content();
 		}
-
-		// Hook after bottom left content based on integration and connection status.
-		do_action( "automator_app_settings_{$id}_after_{$status}_panel_bottom_left", $this );
 	}
 
 	/**
@@ -223,22 +186,11 @@ trait Premium_Integration_Templating {
 	 * @return void - Outputs HTML directly
 	 */
 	public function output_panel_bottom_right() {
-		// Dynamic hook status key.
-		$status = $this->get_hook_status_key();
-		$id     = $this->get_id();
-
-		// Hook before bottom right content based on integration and connection status.
-		do_action( "automator_app_settings_{$id}_before_{$status}_panel_bottom_right", $this );
-
-		// Output bottom right content based on connection status
 		if ( $this->is_connected ) {
 			$this->output_bottom_right_connected_content();
 		} else {
 			$this->output_bottom_right_disconnected_content();
 		}
-
-		// Hook after bottom right content based on integration and connection status.
-		do_action( "automator_app_settings_{$id}_after_{$status}_panel_bottom_right", $this );
 	}
 
 	/**

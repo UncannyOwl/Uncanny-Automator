@@ -19,7 +19,6 @@ class Aioseo_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'AIOSEO' );
 		$this->set_name( 'All in One SEO' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/aioseo-icon.svg' );
-		$this->register_hooks();
 	}
 
 	/**
@@ -50,15 +49,5 @@ class Aioseo_Integration extends \Uncanny_Automator\Integration {
 	 */
 	public function plugin_active() {
 		return function_exists( 'aioseo' );
-	}
-
-	/**
-	 * Register AJAX hooks.
-	 *
-	 * @return void
-	 */
-	protected function register_hooks() {
-		add_action( 'wp_ajax_automator_aioseo_fetch_posts', array( $this->helpers, 'ajax_fetch_posts_by_type' ) );
-		add_action( 'wp_ajax_automator_aioseo_fetch_posts_for_trigger', array( $this->helpers, 'ajax_fetch_posts_for_triggers' ) );
 	}
 }

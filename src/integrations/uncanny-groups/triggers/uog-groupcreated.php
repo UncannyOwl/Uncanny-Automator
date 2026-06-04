@@ -1,68 +1,106 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Groups;
+
+use Uncanny_Automator\Integrations\Uncanny_Toolkit\Ut_Helpers as Uncanny_Toolkit_Helpers;
 
 /**
  * Class UOG_GROUPCREATED
  *
  * @package Uncanny_Automator
+ * @property \Uncanny_Automator\Integrations\Uncanny_Groups\Uog_Helpers $item_helpers
  */
-class UOG_GROUPCREATED {
+class UOG_GROUPCREATED extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Integration code
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	public static $integration = 'UOG';
-
-	/**
-	 * @var string
-	 */
-	private $trigger_code;
-	/**
-	 * @var string
-	 */
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->trigger_code = 'GROUPCREATED';
-		$this->trigger_meta = 'UNCANNYGROUPS';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'GROUPCREATED', 'UOG' )
+			->trigger_meta( 'UNCANNYGROUPS' )
+			->hook( 'uo_new_group_created', 20, 2 )
+			->hook( 'uo_new_group_purchased', 20, 2 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup trigger configuration.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
+		$this->set_sentence( esc_html_x( 'A group is created', 'Uncanny Groups', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'A group is created', 'Uncanny Groups', 'uncanny-automator' ) );
+	}
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-groups/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			'meta'                => $this->trigger_meta,
-			/* translators: Logged-in trigger - Uncanny Groups */
-			'sentence'            => esc_attr__( 'A group is created', 'uncanny-automator' ),
-			/* translators: Logged-in trigger - Uncanny Groups */
-			'select_option_name'  => esc_attr__( 'A group is created', 'uncanny-automator' ),
-			'action'              => array( 'uo_new_group_created', 'uo_new_group_purchased' ),
-			'priority'            => 20,
-			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'group_created' ),
+	/**
+	 * Define available tokens.
+	 *
+	 * @param array $trigger The trigger settings.
+	 * @param array $tokens  Existing tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+
+		$tokens = array(
+			array(
+				'tokenId'   => 'UNCANNYGROUP',
+				'tokenName' => esc_html_x( 'Group title', 'Uncanny Groups', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYGROUP_ID',
+				'tokenName' => esc_html_x( 'Group ID', 'Uncanny Groups', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'UNCANNYGROUP_URL',
+				'tokenName' => esc_html_x( 'Group URL', 'Uncanny Groups', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYGROUP_SEATS',
+				'tokenName' => esc_html_x( 'Group seats', 'Uncanny Groups', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'UNCANNYGROUP_COURSES',
+				'tokenName' => esc_html_x( 'Group courses', 'Uncanny Groups', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'UNCANNYGROUP_LEADER',
+				'tokenName' => esc_html_x( 'Group leader email', 'Uncanny Groups', 'uncanny-automator' ),
+				'tokenType' => 'email',
+			),
 		);
 
-		Automator()->register->trigger( $trigger );
+		if ( class_exists( '\Uncanny_Automator\Integrations\Uncanny_Toolkit\Ut_Helpers' ) && Uncanny_Toolkit_Helpers::is_group_sign_up_activated() ) {
+			$tokens[] = array(
+				'tokenId'   => 'UNCANNYGROUP_SIGNUP_URL',
+				'tokenName' => esc_html_x( 'Group signup URL', 'Uncanny Groups', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			);
+		}
+
+		return $tokens;
 	}
 
 	/**
-	 * @param $user_id
-	 * @param $code
+	 * Validate trigger against hook arguments.
+	 *
+	 * @param array $trigger   The trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool
 	 */
-	public function group_created( $group_id, $leader_id ) {
+	public function validate( $trigger, $hook_args ) {
+
+		list( $group_id, $leader_id ) = $hook_args;
+
 		if ( empty( $leader_id ) ) {
 			$user_id = get_current_user_id();
 		} else {
@@ -70,42 +108,53 @@ class UOG_GROUPCREATED {
 		}
 
 		if ( empty( $user_id ) ) {
-			return;
+			return false;
 		}
 
-		$pass_args = array(
-			'code'           => $this->trigger_code,
-			'meta'           => $this->trigger_meta,
-			'user_id'        => $user_id,
-			'ignore_post_id' => true,
-			'is_signed_in'   => true,
-		);
-
-		$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
-
-		if ( isset( $args ) ) {
-			foreach ( $args as $result ) {
-				if ( true === $result['result'] ) {
-
-					$trigger_meta = array(
-						'user_id'        => $user_id,
-						'trigger_id'     => $result['args']['trigger_id'],
-						'trigger_log_id' => $result['args']['get_trigger_id'],
-						'run_number'     => $result['args']['run_number'],
-					);
-
-					$trigger_meta['meta_key']   = 'group_id';
-					$trigger_meta['meta_value'] = maybe_serialize( $group_id );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					$trigger_meta['meta_key']   = 'leader_id';
-					$trigger_meta['meta_value'] = maybe_serialize( $leader_id );
-					Automator()->insert_trigger_meta( $trigger_meta );
-
-					Automator()->maybe_trigger_complete( $result['args'] );
-				}
-			}
-		}
+		return true;
 	}
 
+	/**
+	 * Hydrate token values from hook arguments.
+	 *
+	 * @param array $trigger   The completed trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		list( $group_id, $leader_id ) = $hook_args;
+
+		if ( empty( $leader_id ) ) {
+			$leader_id = get_current_user_id();
+		}
+
+		$leader       = get_userdata( $leader_id );
+		$leader_email = false !== $leader ? $leader->user_email : '';
+
+		$courses_ids = learndash_group_enrolled_courses( $group_id );
+		$courses     = array();
+
+		if ( ! empty( $courses_ids ) ) {
+			foreach ( $courses_ids as $course_id ) {
+				$courses[] = get_the_title( $course_id );
+			}
+		}
+
+		$tokens = array(
+			'UNCANNYGROUP'         => get_the_title( $group_id ),
+			'UNCANNYGROUP_ID'      => $group_id,
+			'UNCANNYGROUP_URL'     => get_permalink( $group_id ),
+			'UNCANNYGROUP_SEATS'   => ulgm()->group_management->seat->total_seats( $group_id ),
+			'UNCANNYGROUP_COURSES' => implode( ', ', $courses ),
+			'UNCANNYGROUP_LEADER'  => $leader_email,
+		);
+
+		if ( class_exists( '\Uncanny_Automator\Integrations\Uncanny_Toolkit\Ut_Helpers' ) && Uncanny_Toolkit_Helpers::is_group_sign_up_activated() ) {
+			$tokens['UNCANNYGROUP_SIGNUP_URL'] = Uncanny_Toolkit_Helpers::get_group_sign_up_url( $group_id );
+		}
+
+		return $tokens;
+	}
 }

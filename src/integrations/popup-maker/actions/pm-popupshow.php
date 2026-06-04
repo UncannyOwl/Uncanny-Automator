@@ -1,134 +1,113 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Popup_Maker;
+
+use Uncanny_Automator\Recipe\Action;
 
 /**
  * Class PM_POPUPSHOW
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Popup_Maker
+ *
+ * @property Popup_Maker_Helpers $item_helpers
  */
-class PM_POPUPSHOW {
+class PM_POPUPSHOW extends Action {
 
 	/**
-	 * Integration code
+	 * Set up the action.
 	 *
-	 * @var string
+	 * @return void
 	 */
-	public static $integration = 'PM';
+	protected function setup_action() {
 
-	private $action_code;
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'POPUPSHOW';
-		$this->action_meta = 'POPUPID';
-		$this->define_action();
-
-		add_filter(
-			'automator_option_updated',
-			array(
-				$this,
-				'automator_option_updated',
-			),
-			10,
-			4
-		);
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'             => 'Uncanny Automator',
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/working-with-popup-maker-actions' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'requires_user'      => false,
-			/* translators: Logged-in trigger - Popup Maker */
-			'sentence'           => sprintf( esc_attr__( 'Show {{a popup:%1$s}}', 'uncanny-automator' ), $this->action_meta ),
-			/* translators: Logged-in trigger - Popup Maker */
-			'select_option_name' => esc_attr__( 'Show {{a popup}}', 'uncanny-automator' ),
-			'priority'           => 11,
-			'accepted_args'      => 3,
-			'execution_function' => array( $this, 'display_pop_up' ),
-			'options_callback'   => array( $this, 'load_options' ),
+		$this->set_integration( 'PM' );
+		$this->set_action_code( 'POPUPSHOW' );
+		$this->set_action_meta( 'POPUPID' );
+		$this->set_requires_user( false );
+		$this->set_support_link(
+			\Automator()->get_author_support_link( 'POPUPSHOW', 'knowledge-base/working-with-popup-maker-actions' )
 		);
 
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * @return array[]
-	 */
-	public function load_options() {
-
-		$args = array(
-			'post_type'      => 'popup',
-			'posts_per_page' => 999,
-			'orderby'        => 'title',
-			'order'          => 'ASC',
-			'post_status'    => 'publish',
-		);
-
-		$options = Automator()->helpers->recipe->options->wp_query( $args, false, esc_attr__( 'Any popup', 'uncanny-automator' ) );
-
-		$option = array(
-			'option_code'              => 'POPUPID',
-			'label'                    => esc_attr__( 'Popup', 'uncanny-automator' ),
-			'input_type'               => 'select',
-			'required'                 => true,
-			'options'                  => $options,
-			'custom_value_description' => esc_attr__( 'Popup ID', 'uncanny-automator' ),
-		);
-
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					$option,
-				),
+		$this->set_sentence(
+			sprintf(
+				/* translators: Action sentence: Show a popup */
+				esc_html_x( 'Show {{a popup:%1$s}}', 'Popup Maker', 'uncanny-automator' ),
+				$this->get_action_meta()
 			)
 		);
+
+		$this->set_readable_sentence(
+			esc_html_x( 'Show {{a popup}}', 'Popup Maker', 'uncanny-automator' )
+		);
+
+		// Keep the popup_settings.triggers entry in sync whenever the user saves this action.
+		add_filter( 'automator_option_updated', array( $this, 'sync_popup_recipe_trigger' ), 10, 4 );
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Define options.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
+	 * @return array
 	 */
-	public function display_pop_up( $user_id, $action_data, $recipe_id, $args ) {
+	public function options() {
 
-		$popup_id = absint( $action_data['meta']['POPUPID'] );
+		return array(
+			array(
+				'option_code'              => $this->get_action_meta(),
+				'label'                    => esc_html_x( 'Popup', 'Popup Maker', 'uncanny-automator' ),
+				'input_type'               => 'select',
+				'required'                 => true,
+				'options'                  => array(),
+				'supports_custom_value'    => true,
+				'custom_value_description' => esc_html_x( 'Popup ID', 'Popup Maker', 'uncanny-automator' ),
+				'remote_data'              => $this->item_helpers->remote_data_load_config( 'popups' ),
+			),
+		);
+	}
+
+	/**
+	 * Process the action.
+	 *
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
+	 *
+	 * @return bool|null
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+
+		$popup_id = absint( $parsed[ $this->get_action_meta() ] ?? 0 );
 		$popup    = get_post( $popup_id );
 
 		if ( ! $popup instanceof \WP_Post ) {
-			$error_message                       = sprintf( '%s: %d', esc_html__( 'The popup no longer exists. Popup ID', 'uncanny-automator' ), $popup_id );
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+			$this->add_log_error(
+				sprintf(
+					'%s: %d',
+					esc_html_x( 'The popup no longer exists. Popup ID', 'Popup Maker', 'uncanny-automator' ),
+					$popup_id
+				)
+			);
+			return false;
 		}
 
-		// update Popup triggers
 		$settings = get_post_meta( $popup->ID, 'popup_settings', true );
 
 		if ( empty( $settings ) || ! isset( $settings['triggers'] ) ) {
-			$error_message                       = sprintf( '%s: %d', esc_html__( 'No settings found with this popup. Popup ID', 'uncanny-automator' ), $popup_id );
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+			$this->add_log_error(
+				sprintf(
+					'%s: %d',
+					esc_html_x( 'No settings found with this popup. Popup ID', 'Popup Maker', 'uncanny-automator' ),
+					$popup_id
+				)
+			);
+			return false;
 		}
 
 		$found         = false;
 		$found_recipes = array();
+
 		foreach ( $settings['triggers'] as $_trigger ) {
 			if ( 'auto_open' !== $_trigger['type'] ) {
 				continue;
@@ -143,54 +122,75 @@ class PM_POPUPSHOW {
 			$found_recipes = array_merge( $found_recipes, $_trigger['settings']['recipe'] );
 		}
 
-		if ( ! $found || empty( $found_recipes ) ) {
-			$error_message                       = sprintf( '%s: %d', esc_html__( 'Recipes are not set for this popup. Popup ID', 'uncanny-automator' ), $popup_id );
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+		if ( false === $found || empty( $found_recipes ) ) {
+			$this->add_log_error(
+				sprintf(
+					'%s: %d',
+					esc_html_x( 'Recipes are not set for this popup. Popup ID', 'Popup Maker', 'uncanny-automator' ),
+					$popup_id
+				)
+			);
+			return false;
 		}
 
 		if ( 'publish' !== $popup->post_status || 0 === absint( get_post_meta( $popup_id, 'enabled', true ) ) ) {
-			$error_message                       = sprintf( '%s: %d', esc_html__( 'The popup is no longer active. Popup ID', 'uncanny-automator' ), $popup_id );
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+			$this->add_log_error(
+				sprintf(
+					'%s: %d',
+					esc_html_x( 'The popup is no longer active. Popup ID', 'Popup Maker', 'uncanny-automator' ),
+					$popup_id
+				)
+			);
+			return false;
 		}
 
 		$popup_recipes = array_map( 'absint', $found_recipes );
 
 		if ( ! in_array( absint( $recipe_id ), $popup_recipes, true ) ) {
-			$error_message                       = sprintf( '%s: %d', esc_html__( 'The recipe is not linked with this popup. Popup ID', 'uncanny-automator' ), $popup_id );
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
-
-			return;
+			$this->add_log_error(
+				sprintf(
+					'%s: %d',
+					esc_html_x( 'The recipe is not linked with this popup. Popup ID', 'Popup Maker', 'uncanny-automator' ),
+					$popup_id
+				)
+			);
+			return false;
 		}
+
 		if ( 0 !== (int) $user_id ) {
 			update_user_meta( $user_id, 'display_pop_up_' . $popup_id, $popup_id );
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-			return;
-		} elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
-			$md5 = md5( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
-			automator_update_option( 'automator_display_popup_' . $md5, $popup_id );
-			Automator()->complete->action( $user_id, $action_data, $recipe_id );
-
-			return;
+			return true;
 		}
 
-		$error_message                       = sprintf( '%s: %d', esc_html__( 'The popup failed to display. Popup ID', 'uncanny-automator' ), $popup_id );
-		$action_data['complete_with_errors'] = true;
-		$action_data['do_nothing']           = true;
-		Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
+		if ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+			$md5 = md5( sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) );
+			automator_update_option( 'automator_display_popup_' . $md5, $popup_id );
+			return true;
+		}
+
+		$this->add_log_error(
+			sprintf(
+				'%s: %d',
+				esc_html_x( 'The popup failed to display. Popup ID', 'Popup Maker', 'uncanny-automator' ),
+				$popup_id
+			)
+		);
+		return false;
 	}
 
 	/**
+	 * Keep the chosen popup's `popup_settings.triggers` in sync when the user
+	 * saves this action's options. Adds an `auto_open` trigger entry linking the
+	 * popup to the parent recipe, if one isn't already present.
 	 *
+	 * @param mixed  $return     The pass-through value of the filter.
+	 * @param mixed  $item       The post object the option was saved against.
+	 * @param string $meta_key   The post meta key being updated.
+	 * @param mixed  $meta_value The new meta value.
+	 *
+	 * @return mixed
 	 */
-	public function automator_option_updated( $return, $item, $meta_key, $meta_value ) {
+	public function sync_popup_recipe_trigger( $return, $item, $meta_key, $meta_value ) {
 
 		if ( ! isset( $item->post_type ) ) {
 			return $return;
@@ -204,20 +204,16 @@ class PM_POPUPSHOW {
 			return $return;
 		}
 
-		if ( is_array( $meta_value ) ) {
-			$pop_id = $meta_value['POPUPID'];
-		} else {
-			$pop_id = $meta_value;
-		}
+		$pop_id = is_array( $meta_value ) ? $meta_value['POPUPID'] : $meta_value;
 
 		$popup = get_post( $pop_id );
 		if ( ! $popup instanceof \WP_Post ) {
 			return $return;
 		}
 
-		// update Popup triggers
 		$settings = get_post_meta( $pop_id, 'popup_settings', true );
 		$found_it = false;
+
 		if ( isset( $settings['triggers'] ) ) {
 			foreach ( $settings['triggers'] as $trigger ) {
 				if ( 'auto_open' !== $trigger['type'] ) {
@@ -236,7 +232,8 @@ class PM_POPUPSHOW {
 				$found_it = true;
 			}
 		}
-		if ( $found_it ) {
+
+		if ( true === $found_it ) {
 			return $return;
 		}
 
@@ -252,5 +249,4 @@ class PM_POPUPSHOW {
 
 		return $return;
 	}
-
 }

@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
-Tested up to: 6.9.4
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 7.2.5
+Stable tag: 7.3.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -219,6 +219,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Restrict Content](https://automatorplugin.com/integration/restrict-content-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
 - [Run Code](https://automatorplugin.com/integration/run-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Run Now](https://automatorplugin.com/integration/run-now/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [SaveTo Wishlist](https://automatorplugin.com/integration/saveto-wishlist/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -418,176 +419,136 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 7.2.5 [2026-05-08] =
+= 7.3.0 [2026-06-04] =
 
-**Added:**
+**New Plugin Integration**
 
-* Uncanny Agent - Support for translating conversation starters into 12 languages #7289
+* [SaveTo Wishlist](https://automatorplugin.com/integration/saveto-wishlist/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7260
 
-**Fixed:**
+**New Triggers**
 
-* Advanced - Post meta token now gracefully acknowledges "0" with an empty string. #7292
-* Loopable Tokens bid farewell to their geeky Unicode escape disguises. #7280
-* Twilio - Send an SMS to a number now sans HTML `<p>` shenanigans. #7282
+* Charitable - A campaign ends #7086
+* Charitable - A campaign reaches its goal #7087
+* Charitable - A donation to a campaign is completed #7082
+* Charitable - A donation to a campaign is refunded #7083
+* Charitable - A donation's status is changed to a status #7081
+* Charitable - A donor is created #7084
+* Charitable - A user registers as a donor #7085
+* FluentCommunity - A user achieves a percentage greater than, less than or equal to a value on a quiz #6859
+* FluentCommunity - A user completes a quiz in a course #6860
+* FluentCommunity - A user passes or fails a quiz in a course #6860
+* Popup Maker - A conversion is recorded on a popup #7353
+* Popup Maker - A form provider is submitted in a popup #7355
+* Popup Maker - A newsletter form is submitted in a popup #7357
+* Popup Maker - A popup is opened #7352
+* Popup Maker - A user submits a form provider in a popup #7354
+* Popup Maker - A user submits a newsletter form in a popup #7356
+* SaveTo Wishlist - A guest wishlist is synced to a user account on login #7424
+* SaveTo Wishlist - A user adds a product from their wishlist to their cart #7423
+* SaveTo Wishlist - A user adds a product to a wishlist #7420
+* SaveTo Wishlist - A user creates a wishlist #7421
+* SaveTo Wishlist - A user removes a product from a wishlist #7422
+* The Events Calendar - A venue is created #7099
+* The Events Calendar - A venue is updated #7100
+* The Events Calendar - An event is linked to a related post #7101
+* The Events Calendar - An event is unlinked from a related post #7102
+* The Events Calendar - An organizer is created #7097
+* The Events Calendar - An organizer is updated #7098
+* The Events Calendar - Event Tickets - A check-in for an event is reversed #7104
+* The Events Calendar - Event Tickets - A ticket is added to an event #7106
+* The Events Calendar - Event Tickets - A ticket is removed from an event #7107
+* The Events Calendar - Event Tickets - An attendee is checked in to an event #7103
+* The Events Calendar - Event Tickets - RSVP tickets are generated for a ticket type on an event with a status #7105
 
-= 7.2.4 [2026-05-06] =
+**New Actions**
 
-**New Feature:**
+* Charitable - Add a tag to a donor #7092
+* Charitable - Create a donor #7090
+* Charitable - Create an offline donation to a campaign #7088
+* Charitable - Update a donation's status to a status #7089
+* Charitable - Update a donor's profile #7091
+* Groundhogg - Add a note to a contact #6986
+* SaveTo Wishlist - Add a product to a wishlist #7425
+* SaveTo Wishlist - Create a wishlist #7427
+* SaveTo Wishlist - Remove a product from a wishlist #7426
+* The Events Calendar - Add a venue to an event #7114
+* The Events Calendar - Add an organizer to an event #7113
+* The Events Calendar - Create a venue #7112
+* The Events Calendar - Create an event #7108
+* The Events Calendar - Create an organizer #7111
+* The Events Calendar - Delete an event #7110
+* The Events Calendar - Event Tickets - Check in an attendee #7115
+* The Events Calendar - Event Tickets - Create an RSVP attendee for an event #7117
+* The Events Calendar - Event Tickets - Reset the check-in for an attendee #7116
+* The Events Calendar - Update an event #7109
+* WordPress Core - Add a file to the media library #6951
+* WordPress Core - Add a menu #6932
+* WordPress Core - Add an item to a menu #6935
+* WordPress Core - Assign a menu to a location #6938
+* WordPress Core - Create a term in a taxonomy #6945
+* WordPress Core - Delete a comment #6960
+* WordPress Core - Delete a media item from the media library #6953
+* WordPress Core - Delete a menu #6934
+* WordPress Core - Delete a term from a taxonomy #6956
+* WordPress Core - Delete an item from a menu #6937
+* WordPress Core - Delete a meta key from a post #6955
+* WordPress Core - Generate a password reset link for a user #6964
+* WordPress Core - Get a media item from the media library #6952
+* WordPress Core - Get the value of a meta key from a post #6971
+* WordPress Core - Get the value of a meta key from a user #6972
+* WordPress Core - Rename a menu to a new name #6933
+* WordPress Core - Restore a post from trash #6958
+* WordPress Core - Set the password of a post to a password #6959
+* WordPress Core - Set the status of a comment to a status #6961
+* WordPress Core - Update a term in a taxonomy #6957
+* WordPress Core - Update an item in a menu #6936
+* WordPress Core - Update a media item in the media library #6931
 
-* Uncanny Agent - Officially launched for all Automator Pro users
+**Updated**
 
-**Added:**
+* AI Integrations - Refreshed model options for Claude, Cohere, Gemini and Mistral. Claude Opus 4.7 and 4.8 no longer error out, since Automator no longer sends the temperature parameter those models don't support. #7792
+* Asana and GitHub integrations moved from Automator Pro to Automator Lite. #7236
+* Groundhogg - Create or update a contact - Now supports address fields and custom contact properties. #6985
+* RSS - Thumbnail URL token now resolves correctly when restoring media. #7244
+* Telegram - A text message is received from a chat/channel - New Text (HTML) token preserves message formatting. #7466
 
-* Dashboard - Uncanny Agent Usage meter #6635
+**Fixed**
 
-**Under the hood:**
+* Brevo - Create or update a contact - Now loads your account's actual contact attributes, so default attributes work on non-English accounts. #7408
+* Bricks Builder - Banished the deprecation warning ghost. #7126
+* Divi - Forms created in Divi 5 and later now appear in the form selection dropdown. #7454
+* Licensing - Plan names on the Addons page no longer living in an alternate reality. #7794
+* MemberPress - A user is added to a membership - Trigger stopped firing after a hook change, so users weren't added. #7793
+* Recipe Import - Tokens that reference another action's output now remap to the new action IDs, so they no longer appear broken. #7410
+* Recipe Import - Common tokens now resolve correctly in imported recipes. #7384
+* Recipe status toggle - Live/Draft checkbox value now serializes and saves correctly. #7469
+* Run JavaScript code & Trigger Engine - Action firing after wp_loaded run too late #7797
+* Trigger Engine - Triggers queued late in the shutdown sequence (e.g. delayed triggers) are now processed instead of being dropped. #7407
+* WP Job Manager - A user applies for a job / A user submits a resume - Triggers fire again for user-owned submissions. #7378
 
-* Uncanny Agent - Default conversation starters based on the page context #7251
-* Core – Total table size now gets a well-deserved refresh after log table resets. #7272
+**Under the hood**
 
-= 7.2.3 [2026-05-01] =
+* Core - Restored missing option dropdowns on legacy trigger and integration settings. #7315
+* Core - Improved recipe completion and reliability with the new execution Pipeline. #6889, #7047, #7048, #7049, #7050, #7051, #7052, #7053, #7054, #7055, #7056, #7198, #7208, #7209
+* Uncanny Automator Lite users no longer seeing Uncanny Agent launcher tab. #7308
+* Recipe UI - A loop token group now nests where it belongs. #7394
+* Recipe UI - Divi Supreme Pro no longer clashes with Select2. #7404
+* Recipe import now feels the love from automator_migrate_recipe_part_meta hook. #7385
+* Uncanny Agent link added to WP Admin Bar. #7306
+* Framework migrations - Integrations modernized to the new framework:
+    * Fluent Forms #7072
+    * GoTo Training #6294
+    * Groundhogg #6928
+    * LearnDash #7377
+    * Mailchimp #6299
+    * Popup Maker #7339
+    * Thrive Ovation #7340
+    * Uncanny CEUs #7343
+    * UserFeedback #7341
+    * WhatsApp #6285
+    * WordPress #5920
+    * WP Webhooks #7342
 
-**Updated:**
-
-* Kit - Added a v4 API key option. #7214
-
-**Fixed:**
-
-* Closure – Stopped removing `$` from URL queries during redirects. #7213
-* LearnDash - Pass/fail quiz triggers now respond to essay grades. #7210
-* Loopable tokens - Closed leaks in the Action Store to prevent recipe data issues. #7224
-* Loopable tokens - Fixed phantom results caused by out-of-bounds token hydration. #7222
-* Loopable tokens - Fixed trigger token child misindexing under loop filters. #7223
-
-**Under the hood:**
-
-* App Integrations - Improved app connected status load order. #7151
-* Loopable RSS - Added support for Atom feeds (requires the latest Automator Pro). #7200
-* Uncanny Agent - Bearer Auth - Fixed an infinite loop during token metadata update in a specific situation #7234
-* Switched to the new framework:
-    * AWeber #6564
-    * Keap #6284
-
-= 7.2.2.1 [2026-04-22] =
-
-**Fixed:**
-
-* MemberPress Courses – Banished the "Undefined array key 'ID'" gremlin. #7204
-* Uncanny Agent - Resolves authentication conflicts between Agent REST endpoints and JWT apps. #7202
-* Token Parser – Banished undefined "ID" warnings from empty `$trigger_data`. #7206
-
-= 7.2.2 [2026-04-20] =
-
-**Fixed:**
-
-* Gravity Forms - Triggers - Hidden fields now generate tokens. #7153
-* RSS - Process an RSS feed – Media thumbnails found their way; URL tokens resolved. #7191
-* Repeater fields with Uncanny Agent - Fixed an issue where meta unslashing was corrupting repeater JSON data. Data now stays intact. #7166
-
-**Under the hood:**
-
-* Core – Windows/IIS path drama solved; legacy integrations breathe easy again. #7194
-
-= 7.2.1 [2026-04-09] =
-
-**Fixed:**
-
-* Microsoft Teams - Some integration items were missing from v7.2.0 release, so the integration has been re-pushed to ensure everything is available.
-
-**Under the hood:**
-
-* Legacy Helper chaining - Added a defensive code guard to method and property handling. #7125
-* Switched to the new framework:
-    * Facebook Lead Ads #6642
-    * Facebook Page #6563
-    * Instagram #6563
-    * Ontraport #6303
-    * Trello #6831
-
-= 7.2.0.1 [2026-04-09] =
-
-**Fixed:**
-
-* Pro integration helpers overwriting Free helpers, causing fatal "undefined property $options" on trigger/action load. #7123
-
-= 7.2.0 [2026-04-07] =
-
-**New Triggers:**
-
-* AffiliateWP - An affiliate's unpaid referral count is greater than, less than, or equal to a specific number #7004
-* AffiliateWP - An affiliate's visit count is greater than, less than, or equal to a specific number #7003
-
-**New Actions:**
-
-* Kit - Create a broadcast #6821
-* Kit - Create a custom field #6825
-* Kit - Create a purchase #6822
-* Kit - Create a tag #6824
-* Kit - Unsubscribe a subscriber #6823
-* LinkedIn - Schedule a post on LinkedIn profile #6683
-* Mautic - Add tags to a contact #6838
-* Mautic - Create a tag #6837
-* Mautic - Remove tags from a contact #6839
-* Microsoft Teams - Add a user to a tag in a team #6906
-* Microsoft Teams - Add a user to a team as a role #6905
-* Microsoft Teams - Archive a team #6907
-* Microsoft Teams - Create a group chat #6908
-* Microsoft Teams - Create a tag in a team #6910
-* Microsoft Teams - Create an online meeting #6909
-* Microsoft Teams - Delete a channel from a team #6911
-* Microsoft Teams - Remove a user from a team #6912
-* Microsoft Teams - Reply to a channel message #6913
-* Microsoft Teams - Update settings for a team #6914
-
-**Updated:**
-
-* LinkedIn - Posting to personal pages now supported! #6769
-* Bluesky - Error messages are improved and external links can now strut without images. #7026
-* Closure - Only the current tab gets a redirect, others relax. #4486
-* Closure - Now storing redirects in privacy-friendly sessions, no more cookies. #6870
-* FluentCRM - Triggers can now play "Any" tag/list bingo. #6764
-* Recipe logs - Paginated loop runs now sprint through large datasets. #6866
-* Recipe logs - Timestamps now speak human instead of robot. #7005
-* Stripe - Invoices dropped their empty line items—going lean and mean. #6855
-* SG Optimizer and SG Security got their names updated. #7016
-
-**Fixed:**
-
-* Action conditions - Double quotes no longer play charades. #6997
-* Activity log - Trigger and action counts now speak the correct language. #6874
-* Bitly - API calls tamed on settings page. #6878
-* Database queries - Action count query's new best friend is a prepared statement. #6875
-* Gravity Forms - Radio fields tuned to parse token labels correctly. #7017
-* MemberPress - Array key "ID" got found in the token hunt. #6988
-* MemberPress - Trigger now pops for trial subscriptions via Stripe. #6786
-* OptinMonster - Campaign scripts now know their way home. #6876
-* Scheduled actions no longer stuck when new users are created, user selector mischief managed. #7024
-* SureCart - Argument counts between checkout and webhook now shake hands. #6817
-* Twilio - Phone numbers trimmed of HTML frills. #6979
-* Uncaught TypeError - Undefined triggers now politely decline. #7023
-* WordPress - Profile updates won't retrigger recipes after role changes. #6805
-* `is_action_or_trigger_active()` - Query streamlined for the data packrats. #6880
-* WordPress - Titles now truly live up to their unique promise when creating posts with "Title must be unique" setting. #7067
-* Memory leaks plugged, code tightened like a drum. #6755
-* Security improvements - The usual suspects got rounded up. #6976
-
-**Under the hood:**
-
-* Core improvements - Smarter integrations, leaner storage, faster caching, safer triggers, lighter memory use, quicker database lookups, speedier plugin loading, more reliable trigger queues, and redirects that finally speak up—everything’s running fitter, faster, and just a bit more chatty. #7034 #6756 #6808 #6868 #6871 #6865 #6867 #6869 #6877 #6853 #6872 #6873
-* Recipe UI - Sentence tokens now behave when added via API. #7020
-* Recipe log - Pagination plays nice, and constants got cozy. #6882
-* Automator Views Schema - SQL SECURITY INVOKER keeps DEFINER errors at bay during migrations. #6881
-* Repeater - Textareas keep their formatting cool during edits. #6350
-* REST functionality is back, even when permalinks are in their plainest form. #7041
-* New framework party
-    * Drip #6829
-    * ClickUp #6842
-    * Kit (ConvertKit) #6832
-    * LinkedIn #6833
-    * Mautic #6830
-    * Microsoft Teams #6844
-    * OpenAI #6843
-    * Zoho Campaigns #6307
 
 [View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

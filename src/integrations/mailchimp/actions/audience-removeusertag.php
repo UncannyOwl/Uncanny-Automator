@@ -1,137 +1,72 @@
 <?php
-
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Mailchimp;
 
 /**
  * Class AUDIENCE_REMOVEUSERTAG
  *
  * @package Uncanny_Automator
+ * @property Mailchimp_App_Helpers $helpers
+ * @property Mailchimp_Api_Caller $api
  */
-class AUDIENCE_REMOVEUSERTAG {
+class AUDIENCE_REMOVEUSERTAG extends \Uncanny_Automator\Recipe\App_Action {
+
+	use Mailchimp_Audience_Fields;
+	use Mailchimp_Email_Fields;
+	use Mailchimp_Tag_Fields;
 
 	/**
-	 * Integration code
-	 *
-	 * @var string
-	 */
-	public static $integration = 'MAILCHIMP';
-
-	private $action_code;
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'MCHIMPAUDIENCEREMOVEUSERTAG';
-		$this->action_meta = 'AUDIENCEREMOVEUSERTAG';
-		$this->define_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/mailchimp/' ),
-			'is_pro'                => false,
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			// translators: Mailchimp tag
-			'sentence'              => sprintf( esc_html__( 'Remove {{a tag:%1$s}} from the user', 'uncanny-automator' ), $this->action_meta ),
-			'select_option_name'    => esc_html__( 'Remove {{a tag}} from the user', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'options_callback'      => array( $this, 'load_options' ),
-			'execution_function'    => array( $this, 'remove_tag_audience_member' ),
-			'background_processing' => true,
-		);
-
-		Automator()->register->action( $action );
-	}
-
-	/**
-	 * Load options.
+	 * Setup action.
 	 *
 	 * @return void
 	 */
-	public function load_options() {
-		return array(
-			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->mailchimp->options->get_all_lists(
-						esc_html__( 'Audience', 'uncanny-automator' ),
-						'MCLIST',
-						array(
-							'is_ajax'      => true,
-							'target_field' => 'MCLISTTAGS',
-							'endpoint'     => 'select_mctagslist_from_mclist',
-						)
-					),
-					Automator()->helpers->recipe->mailchimp->options->get_list_tags(
-						esc_html__( 'Tags', 'uncanny-automator' ),
-						'MCLISTTAGS',
-						array(
-							'is_ajax'                  => true,
-							'token'                    => true,
-							'custom_value_description' => esc_html__( 'Enter a tag name.', 'uncanny-automator' ),
-						)
-					),
-
-				),
-			),
+	protected function setup_action() {
+		$this->set_integration( 'MAILCHIMP' );
+		$this->set_action_code( 'MCHIMPAUDIENCEREMOVEUSERTAG' );
+		$this->set_action_meta( 'AUDIENCEREMOVEUSERTAG' );
+		$this->set_is_pro( false );
+		$this->set_requires_user( true );
+		$this->set_background_processing( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/mailchimp/' ) );
+		$this->set_readable_sentence( esc_html_x( 'Remove {{a tag}} from the user', 'Mailchimp', 'uncanny-automator' ) );
+		$this->set_sentence(
+			sprintf(
+				// translators: %1$s is the tag
+				esc_html_x( 'Remove {{a tag:%1$s}} from the user', 'Mailchimp', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
 		);
 	}
 
 	/**
-	 * Validation function when the action is hit
+	 * Define action options.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @return array
 	 */
-	public function remove_tag_audience_member( $user_id, $action_data, $recipe_id, $args ) {
-
-		$helpers = Automator()->helpers->recipe->mailchimp->options;
-
-		try {
-			// Here add note
-			$list_id = $action_data['meta']['MCLIST'];
-			$tag     = $action_data['meta']['MCLISTTAGS'];
-
-			if ( empty( $tag ) ) {
-				throw new \Exception( esc_html__( 'No tag selected.', 'uncanny-automator' ) );
-			}
-
-			// get current user email
-			$user      = get_userdata( $user_id );
-			$user_hash = md5( strtolower( trim( $user->user_email ) ) );
-
-			$tags_body = array(
-				'tags' => array(
-					array(
-						'name'   => $tag,
-						'status' => 'inactive',
-					),
-				),
-			);
-
-			$request_params = array(
-				'action'    => 'update_subscriber_tags',
-				'list_id'   => $list_id,
-				'user_hash' => $user_hash,
-				'tags'      => wp_json_encode( $tags_body ),
-			);
-
-			$response = $helpers->api_request( $request_params, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-			$helpers->complete_with_error( $e->getMessage(), $user_id, $action_data, $recipe_id );
-		}
+	public function options() {
+		return array(
+			$this->get_audience_select_config(),
+			$this->get_tags_select_config( 'MCLISTTAGS', true ),
+		);
 	}
 
+	/**
+	 * Process the action.
+	 *
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action data.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        The arguments.
+	 * @param array $parsed      The parsed values.
+	 *
+	 * @return bool
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
+		$list_id    = $this->get_audience_from_parsed();
+		$tag        = $this->get_tag_from_parsed( 'MCLISTTAGS' );
+		$user_email = $this->get_email_from_user( $user_id );
+
+		$this->api->remove_tag_from_contact( $list_id, $user_email, array( $tag ) );
+
+		return true;
+	}
 }

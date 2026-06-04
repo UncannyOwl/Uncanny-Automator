@@ -1,76 +1,95 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Thrive_Ovation;
+
+use Uncanny_Automator\Recipe\Trigger;
+use Uncanny_Automator\Recipe\Trigger_Definition;
 
 /**
  * Class THRIVE_OVATION_TESTIMONIAL_CREATED
  *
- * @package Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Thrive_Ovation
+ *
+ * @property Thrive_Ovation_Helpers $item_helpers
  */
-class THRIVE_OVATION_TESTIMONIAL_CREATED {
-
-	use Recipe\Triggers;
+class THRIVE_OVATION_TESTIMONIAL_CREATED extends Trigger {
 
 	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->setup_trigger();
-	}
-
-	/**
-	 * Define and register the trigger by pushing it into the Automator object
-	 */
-	public function setup_trigger() {
-		$this->set_integration( 'THRIVE_OVATION' );
-		$this->set_trigger_code( 'TVO_TESTIMONIAL_SUBMITTED' );
-		$this->set_trigger_meta( 'TVO_TESTIMONIALS' );
-		$this->set_is_login_required( false );
-		$this->set_trigger_type( 'anonymous' );
-
-		/* Translators: Trigger sentence - Thrive leads */
-		$this->set_sentence( esc_html__( 'A testimonial is submitted', 'uncanny-automator' ) );
-
-		/* Translators: Trigger sentence - Thrive leads */
-		$this->set_readable_sentence( esc_html__( 'A testimonial is submitted', 'uncanny-automator' ) ); // Non-active state sentence to show
-
-		$this->set_action_hook( 'thrive_ovation_testimonial_submit' );
-		$this->set_action_args_count( 2 );
-		$this->register_trigger();
-	}
-
-	/**
-	 * @param ...$args
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @return bool
+	 * @return Trigger_Definition
 	 */
-	public function validate_trigger( ...$args ) {
-		list( $testimonial_data, $user_data ) = $args[0];
-
-		if ( isset( $testimonial_data ) ) {
-			return true;
-		}
-
-		return false;
-
+	public static function definition() {
+		return self::new_definition( 'TVO_TESTIMONIAL_SUBMITTED', 'THRIVE_OVATION' )
+			->trigger_type( 'anonymous' )
+			->trigger_meta( 'TVO_TESTIMONIALS' )
+			->hook( 'thrive_ovation_testimonial_submit', 10, 2 );
 	}
 
 	/**
-	 * @param $args
+	 * Setup trigger.
 	 *
 	 * @return void
 	 */
-	public function prepare_to_run( $args ) {
-		$this->set_conditional_trigger( false );
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type / hook are auto-applied from definition().
+		$this->set_is_login_required( false );
+
+		$this->set_sentence( esc_html_x( 'A testimonial is submitted', 'Thrive Ovation', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_html_x( 'A testimonial is submitted', 'Thrive Ovation', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * @param ...$args
+	 * Trigger options — no user-facing fields for this trigger.
+	 *
+	 * @return array
+	 */
+	public function options() {
+		return array();
+	}
+
+	/**
+	 * Define available tokens.
+	 *
+	 * @param array $trigger The trigger settings.
+	 * @param array $tokens  Existing tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+
+		return array_merge( $tokens, $this->item_helpers->tokens()->testimonial_tokens() );
+	}
+
+	/**
+	 * Validate whether the trigger should fire.
+	 *
+	 * @param array $trigger   The trigger settings.
+	 * @param array $hook_args The hook arguments.
 	 *
 	 * @return bool
 	 */
-	public function do_continue_anon_trigger( ...$args ) {
-		return true;
+	public function validate( $trigger, $hook_args ) {
+
+		// $hook_args is func_get_args() of `thrive_ovation_testimonial_submit`
+		// ( $testimonial_data, $user_data ), so the testimonial array is arg[0].
+		$testimonial_data = isset( $hook_args[0] ) && is_array( $hook_args[0] ) ? $hook_args[0] : array();
+
+		return ! empty( $testimonial_data );
 	}
 
+	/**
+	 * Hydrate token values from the testimonial payload.
+	 *
+	 * @param array $trigger   The completed trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		$testimonial_data = isset( $hook_args[0] ) && is_array( $hook_args[0] ) ? $hook_args[0] : array();
+
+		return $this->item_helpers->tokens()->hydrate_testimonial_tokens( $testimonial_data );
+	}
 }

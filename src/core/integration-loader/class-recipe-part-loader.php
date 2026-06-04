@@ -178,6 +178,16 @@ class Recipe_Part_Loader {
 			$this->load_tokens( $dir_name, $directories_to_include );
 			$this->load_gated_files( $dir_name, $object, $directories_to_include, $manifest, $load_all );
 		}
+
+		// Backward-compat: recover legacy add-on (e.g. Pro < 7.3) items orphaned by a
+		// modern-Free + legacy-add-on version mismatch. Isolated in its own class so the
+		// transitional nature is explicit and removal is a one-liner; it self-neutralizes
+		// to a no-op once the add-on modernizes. New file → not in the prebuilt classmap,
+		// so require it explicitly (the build regenerates the classmap on release).
+		if ( ! class_exists( __NAMESPACE__ . '\\Backward_Compat_Reconciler', false ) ) {
+			require_once __DIR__ . '/class-backward-compat-reconciler.php';
+		}
+		( new Backward_Compat_Reconciler( $this->error_handler ) )->reconcile( $manifest, $load_all );
 	}
 
 	/**

@@ -329,6 +329,22 @@ class Automator_Input_Parser {
 
 		$pieces = explode( ':', $matching_token );
 
+		/**
+		 * Filter the exploded token pieces before hydration.
+		 *
+		 * Receives the `[trigger_id, trigger_code, token_id, ...]` array and
+		 * returns the same array with `token_id` (or other positions, if
+		 * needed) rewritten. Integrations register their own alias maps via
+		 * this filter — for example `Wp_Token_Aliases::rewrite_pieces()`
+		 * rewrites legacy WP token IDs (e.g. `WPPOSTTYPES_ID` → `POSTID`) to
+		 * keep saved recipes resolving after Step 1 / Step 2 normalization.
+		 *
+		 * @since 7.5
+		 *
+		 * @param array $pieces Exploded token pieces.
+		 */
+		$pieces = (array) apply_filters( 'automator_resolve_token_pieces', $pieces );
+
 		$replace_args = array(
 			'pieces'          => (array) $pieces,
 			'recipe_id'       => $context['recipe_id'] ?? null,

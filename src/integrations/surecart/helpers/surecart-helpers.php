@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator\Integrations\SureCart;
 
-class_alias( 'Uncanny_Automator\Integrations\SureCart\SureCart_Helpers', 'Uncanny_Automator\SureCart_Helpers' );
-
 use SureCart\Models\Product;
 
 /**
@@ -122,3 +120,6 @@ class SureCart_Helpers {
 		return Automator()->get_author_support_link( $code, 'integration/surecart/' );
 	}
 }
+
+// BC alias — must run after the class declaration (before, PHP autoload fails).
+class_alias( 'Uncanny_Automator\Integrations\SureCart\SureCart_Helpers', 'Uncanny_Automator\SureCart_Helpers' );

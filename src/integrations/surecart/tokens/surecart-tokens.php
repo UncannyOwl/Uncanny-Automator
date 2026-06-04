@@ -2,8 +2,6 @@
 
 namespace Uncanny_Automator\Integrations\SureCart;
 
-class_alias( 'Uncanny_Automator\Integrations\SureCart\SureCart_Tokens', 'Uncanny_Automator\SureCart_Tokens' );
-
 /**
  * Class SureCart_Tokens
  *
@@ -645,3 +643,6 @@ class SureCart_Tokens {
 		return \SureCart\Models\Purchase::with( array( 'initial_order', 'order.checkout', 'checkout.shipping_address', 'checkout.payment_method', 'checkout.discount', 'discount.coupon', 'checkout.charge', 'product', 'product.downloads', 'download.media', 'license.activations', 'line_items', 'line_item.price', 'subscription' ) )->find( $id );
 	}
 }
+
+// BC alias — must run after the class declaration (before, PHP autoload fails).
+class_alias( 'Uncanny_Automator\Integrations\SureCart\SureCart_Tokens', 'Uncanny_Automator\SureCart_Tokens' );

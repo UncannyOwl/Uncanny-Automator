@@ -8,13 +8,10 @@ namespace Uncanny_Automator\Integrations\Mailster;
  */
 class MAILSTER_SUBSCRIBER_ADDED_TO_LIST extends \Uncanny_Automator\Recipe\Trigger {
 
-	protected $helpers;
-
 	/**
 	 * @return mixed|void
 	 */
 	protected function setup_trigger() {
-		$this->helpers = array_shift( $this->dependencies );
 		$this->set_integration( 'MAILSTER' );
 		$this->set_trigger_code( 'SUBSCRIBER_ADDED_TO_LIST' );
 		$this->set_trigger_meta( 'MAILSTER_LISTS' );
@@ -35,7 +32,7 @@ class MAILSTER_SUBSCRIBER_ADDED_TO_LIST extends \Uncanny_Automator\Recipe\Trigge
 				'option_code'     => $this->get_trigger_meta(),
 				'label'           => esc_html_x( 'List', 'Mailster', 'uncanny-automator' ),
 				'required'        => true,
-				'options'         => $this->helpers->get_all_mailster_lists( true ),
+				'options'         => $this->get_item_helpers()->get_all_mailster_lists( true ),
 				'relevant_tokens' => array(),
 			),
 		);

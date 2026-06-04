@@ -42,7 +42,24 @@ class Automator_Integrations_Status {
 	 */
 	public function get( $integration = null ) {
 
-		// Sanity check that there was a trigger passed
+		// Forward to Integration_Registry — the recipe runner owns this logic now.
+		// Falls back to legacy during early init before recipe_runner is constructed.
+		if ( isset( Automator()->recipe_runner ) ) {
+			return Automator()->recipe_runner->integration_registry()->get_plugin_status( $integration );
+		}
+
+		return $this->get_legacy( $integration );
+	}
+
+	/**
+	 * Legacy implementation — used during early init before recipe_runner exists.
+	 *
+	 * @param mixed $integration The integration code.
+	 *
+	 * @return int|null
+	 */
+	private function get_legacy( $integration ) {
+
 		if ( null === $integration || ! is_string( $integration ) ) {
 			Automator()->wp_error->add_error( 'get_plugin_status', 'ERROR: You are try to get a plugin\'s status without passing its proper integration code.', $this );
 
@@ -57,5 +74,4 @@ class Automator_Integrations_Status {
 
 		return absint( apply_filters( 'uncanny_automator_maybe_add_integration', $active, $integration ) );
 	}
-
 }

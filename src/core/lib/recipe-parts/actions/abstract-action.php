@@ -60,6 +60,18 @@ abstract class Action {
 	public $errors = array();
 
 	/**
+	 * Structured errors — typed Action_Error objects.
+	 *
+	 * Populated alongside $errors by add_log_error() (auto-inferred)
+	 * and add_error() (explicit code). Carried on $action_data['structured_errors']
+	 * for downstream consumers.
+	 *
+	 * @var \Uncanny_Automator\App\Recipe_Runner\Value_Objects\Action_Error[]
+	 * @since 7.3
+	 */
+	public $structured_errors = array();
+
+	/**
 	 * user_id
 	 *
 	 * @var mixed
@@ -262,6 +274,7 @@ abstract class Action {
 	 * add_log_error
 	 *
 	 * Any errors added using this method will display in the error log if the action failed.
+	 * Also creates a structured Action_Error via from_legacy_message() for code-based classification.
 	 *
 	 * @param string $error
 	 *
@@ -269,6 +282,26 @@ abstract class Action {
 	 */
 	public function add_log_error( $error ) {
 		$this->errors[] = $error;
+
+		if ( is_string( $error ) && '' !== $error ) {
+			$this->structured_errors[] = \Uncanny_Automator\App\Recipe_Runner\Value_Objects\Action_Error::from_legacy_message( $error );
+		}
+	}
+
+	/**
+	 * Add a structured error with an explicit error code.
+	 *
+	 * Preferred over add_log_error() for new integrations — provides
+	 * code-based classification without message string inference.
+	 *
+	 * @param \Uncanny_Automator\App\Recipe_Runner\Value_Objects\Action_Error $error The structured error.
+	 *
+	 * @return void
+	 * @since 7.3
+	 */
+	public function add_error( \Uncanny_Automator\App\Recipe_Runner\Value_Objects\Action_Error $error ) {
+		$this->errors[]            = $error->get_message();
+		$this->structured_errors[] = $error;
 	}
 
 	/**
@@ -334,7 +367,8 @@ abstract class Action {
 	public function do_action( $user_id, $action_data, $recipe_id, $args ) {
 
 		// Clear errors in case there are some left from a previous action.
-		$this->errors = array();
+		$this->errors            = array();
+		$this->structured_errors = array();
 
 		$this->user_id     = $user_id;
 		$this->action_data = $action_data;
@@ -372,6 +406,11 @@ abstract class Action {
 		if ( null === $result && $this->is_complete_with_notice() ) {
 			$this->action_data['complete_with_notice'] = true;
 			$error                                     = $this->get_log_errors();
+		}
+
+		// Carry structured errors on action_data for downstream consumers.
+		if ( ! empty( $this->structured_errors ) ) {
+			$this->action_data['structured_errors'] = $this->structured_errors;
 		}
 
 		Automator()->complete->action( $this->user_id, $this->action_data, $this->recipe_id, $error );

@@ -2,6 +2,8 @@
 
 namespace Uncanny_Automator;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Admin_Settings
  *
@@ -56,10 +58,9 @@ class Admin_Settings {
 	/**
 	 * Whether the Uncanny Agent settings tab should load.
 	 *
-	 * Pro must be active and the cached license (`automator_api_license` transient,
-	 * populated by Api_Server::get_license()) must report a valid Pro license. The
-	 * transient is read directly so the settings page render avoids the network
-	 * hop and the exceptions Api_Server::get_license() throws on failure.
+	 * Pro must be active and the cached license must report a valid Pro license.
+	 * License_Manager::get_license_data() reads the cached transient without
+	 * triggering a network hop, keeping the settings page render synchronous.
 	 *
 	 * @return bool
 	 */
@@ -73,7 +74,7 @@ class Admin_Settings {
 			return false;
 		}
 
-		$license = get_transient( 'automator_api_license' );
+		$license = automator_license_manager()->get_license_data();
 
 		if ( ! is_array( $license ) ) {
 			return false;

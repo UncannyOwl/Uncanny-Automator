@@ -333,34 +333,4 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 
 		return null; // Return null if the pattern doesn't match
 	}
-
-
-	/**
-	 * @param mixed $array_value
-	 * @param mixed $dot_notation
-	 * @return mixed
-	 */
-	public static function get_value_by_dot_notation( $array_value, $dot_notation ) {
-
-		$keys = explode( '.', $dot_notation ); // Split dot notation into array keys
-
-		foreach ( $keys as $key ) {
-
-			if ( isset( $array_value[ $key ] ) ) {
-				$array_value = $array_value[ $key ]; // Move deeper into the array
-			}
-
-			// XML Support.
-			if ( isset( $array_value[0]['_loopable_xml_text'] ) ) {
-				$array_value = $array_value[0]['_loopable_xml_text'];
-			}
-
-			// If the key doesn't exist, stop further processing by returning null
-			if ( ! isset( $array_value ) ) {
-				return null; // Early exit without using else
-			}
-		}
-
-		return $array_value; // Return the final value
-	}
 }

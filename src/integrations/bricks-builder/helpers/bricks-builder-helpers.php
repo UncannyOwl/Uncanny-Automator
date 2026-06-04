@@ -66,16 +66,20 @@ class Bricks_Builder_Helpers {
 		return $form_data;
 	}
 
+	/**
+	 * common tokens for form
+	 * @return array
+	 */
 	public function get_form_common_tokens() {
 		return array(
 			array(
 				'tokenId'   => 'FORM_ID',
-				'tokenName' => esc_html__( 'Form ID', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Form ID', 'Bricks Builder', 'uncanny-automator' ),
 				'tokenType' => 'int',
 			),
 			array(
 				'tokenId'   => 'FORM_NAME',
-				'tokenName' => esc_html__( 'Form title', 'uncanny-automator' ),
+				'tokenName' => esc_html_x( 'Form title', 'Bricks Builder', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
 		);

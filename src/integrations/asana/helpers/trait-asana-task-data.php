@@ -214,10 +214,9 @@ trait Asana_Task_Data {
 			'options_show_id'          => false,
 			'relevant_tokens'          => array(),
 			'custom_value_description' => esc_html_x( 'Asana user ID or email', 'Asana', 'uncanny-automator' ),
-			'ajax'                     => array(
-				'endpoint'      => 'automator_asana_get_user_options',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $this->workspace_meta_key ),
+			'remote_data'              => $this->helpers->remote_data_parent_config(
+				'users',
+				array( $this->workspace_meta_key )
 			),
 			'description'              => $this->is_update_action
 				? esc_html_x( "Don't select anything to keep current assignee", 'Asana', 'uncanny-automator' )
@@ -329,10 +328,9 @@ trait Asana_Task_Data {
 			'required'        => true,
 			'layout'          => 'transposed',
 			'fields'          => array(),
-			'ajax'            => array(
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $this->project_meta_key ),
-				'endpoint'      => 'automator_asana_get_custom_fields_repeater',
+			'remote_data'     => $this->helpers->remote_data_parent_config(
+				'custom_fields',
+				array( $this->project_meta_key )
 			),
 			'description'     => $this->is_update_action
 				? esc_html_x( 'Leave empty to keep current custom field values or use [DELETE] to remove', 'Asana', 'uncanny-automator' )

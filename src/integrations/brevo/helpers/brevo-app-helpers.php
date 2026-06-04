@@ -39,6 +39,13 @@ class Brevo_App_Helpers extends App_Helpers {
 	const BREVO_IP_SECURITY_LINK = 'https://app.brevo.com/security/authorised_ips';
 
 	/**
+	 * Sentinel string a recipe author can submit to explicitly clear an attribute on Brevo.
+	 *
+	 * @var string
+	 */
+	const DELETE_VALUE = '[DELETE]';
+
+	/**
 	 * Set properties.
 	 *
 	 * @return void
@@ -101,35 +108,51 @@ class Brevo_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * Ajax get list options.
+	 * Get list options for the remote-data dropdown.
 	 *
-	 * @return json
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function ajax_get_list_options() {
+	protected function remote_data_get_lists( $request ): array {
 
-		Automator()->utilities->ajax_auth_check();
+		$lists = $this->api->get_lists( $request->is_refresh() );
 
-		$lists = $this->api->get_lists();
-
-		wp_send_json( $lists );
-
-		die();
+		return $this->remote_data_success( is_array( $lists ) ? $lists : array() );
 	}
 
 	/**
-	 * Ajax get templates.
+	 * Get email template options for the remote-data dropdown.
 	 *
-	 * @return json
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	public function ajax_get_templates() {
+	protected function remote_data_get_templates( $request ): array {
 
-		Automator()->utilities->ajax_auth_check();
+		$templates = $this->api->get_templates( $request->is_refresh() );
 
-		$templates = $this->api->get_templates();
+		return $this->remote_data_success( is_array( $templates ) ? $templates : array() );
+	}
 
-		wp_send_json( $templates );
+	/**
+	 * Get writable contact attributes as transposed-repeater sub-fields.
+	 *
+	 * Returns the `field_properties.fields` envelope so the recipe builder's
+	 * repeater renders one input per Brevo attribute with the correct input
+	 * type (text / date / select with the attribute's enumeration). The shape
+	 * is built by Brevo_Contact_Attributes_Helper::generate_repeater_fields().
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_contact_attributes( $request ): array {
 
-		die();
+		$raw    = $this->api->fetch_raw_contact_attributes( $request->is_refresh() );
+		$fields = Brevo_Contact_Attributes_Helper::generate_repeater_fields( is_array( $raw ) ? $raw : array(), $this );
+
+		return $this->remote_data_success( array( 'fields' => $fields ), 'field_properties' );
 	}
 
 	/**
@@ -183,6 +206,54 @@ class Brevo_App_Helpers extends App_Helpers {
 	 */
 	public function get_invalid_key_message() {
 		return esc_html_x( 'Invalid API Key : ', 'Brevo', 'uncanny-automator' );
+	}
+
+	/**
+	 * Check if a value is the [DELETE] sentinel.
+	 *
+	 * @param mixed $value Single value or array of values.
+	 *
+	 * @return bool
+	 */
+	public function is_delete_value( $value ) {
+		if ( is_array( $value ) ) {
+			return in_array( self::DELETE_VALUE, $value, true );
+		}
+		return self::DELETE_VALUE === $value;
+	}
+
+	/**
+	 * Prepend the "Select option" empty default to a list of select options.
+	 *
+	 * @param array $options
+	 *
+	 * @return array
+	 */
+	public function prepend_empty_option( $options ) {
+		return array_merge(
+			array(
+				array(
+					'value' => '',
+					'text'  => esc_html_x( 'Select option', 'Brevo', 'uncanny-automator' ),
+				),
+			),
+			$options
+		);
+	}
+
+	/**
+	 * Append the [DELETE] option to a list of select options.
+	 *
+	 * @param array $options
+	 *
+	 * @return array
+	 */
+	public function append_delete_option( $options ) {
+		$options[] = array(
+			'value' => self::DELETE_VALUE,
+			'text'  => esc_html_x( 'Delete value', 'Brevo', 'uncanny-automator' ),
+		);
+		return $options;
 	}
 
 	/**

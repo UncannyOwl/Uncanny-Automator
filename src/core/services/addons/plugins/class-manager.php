@@ -3,11 +3,12 @@
 namespace Uncanny_Automator\Services\Addons\Plugins;
 
 use Uncanny_Automator\Addons as Addons_Admin;
-use Uncanny_Automator\Api_Server;
 use Uncanny_Automator\Services\Plugin\Manager as Plugin_Manager;
 use Uncanny_Automator\Services\Addons\Data\Plan_Resolver;
 use Uncanny_Automator\Services\Addons\Lists\Plan_List;
 use Uncanny_Automator\Services\Addons\Data\Calls_To_Action;
+
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
 use Exception;
 use WP_Error;
@@ -197,7 +198,7 @@ class Manager {
 	 * @throws Exception - with code 422
 	 */
 	private function set_connected_user() {
-		$this->connected_user = Api_Server::is_automator_connected();
+		$this->connected_user = automator_license_manager()->get_license_data();
 		if ( empty( $this->connected_user ) ) {
 			$this->error_call_to_action = Calls_To_Action::get_fix_license();
 			throw new Exception( esc_html_x( 'License invalid', 'Addons', 'uncanny-automator' ), 422 );

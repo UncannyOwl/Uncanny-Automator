@@ -18,7 +18,7 @@ class EDD_Zip_URL_Exception extends Exception {
 	 * @param int $code The exception code
 	 * @param \Throwable|null $previous Previous exception
 	 */
-	public function __construct( $message = '', $code = 0, Exception $previous = null ) {
+	public function __construct( $message = '', $code = 0, ?Exception $previous = null ) {
 		parent::__construct( $message, $code, $previous ); // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
 	}
 }

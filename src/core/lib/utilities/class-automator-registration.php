@@ -4,6 +4,8 @@ namespace Uncanny_Automator;
 
 use Exception;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Automator_Registration
  *
@@ -49,9 +51,9 @@ class Automator_Registration {
 			return $integration;
 		}
 		// Check if the site is connected
-		$is_connected = Api_Server::get_license_type();
+		$license_type = automator_license_manager()->get_type();
 		// Site is no longer connected
-		if ( false === $is_connected ) {
+		if ( '' === $license_type ) {
 			$integration['connected'] = false;
 		}
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Uncanny_Automator\Integrations\EDD_SL;
+namespace Uncanny_Automator\Integrations\Edd_SL;
 
 use Uncanny_Automator\Integration;
 
@@ -35,9 +35,6 @@ class Edd_Software_Licensing_Integration extends Integration {
 
 		new EDD_SL_USERS_LICENSE_CREATED_FOR_DOWNLOAD( $this->helpers );
 		new EDD_SL_USERS_LICENSE_EXPIRED_FOR_DOWNLOAD( $this->helpers );
-
-		// Handle migrations.
-		EDD_SL_Hook_Migration::migrate();
 	}
 
 	/**

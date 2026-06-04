@@ -153,10 +153,19 @@ return array(
 			$baseDir . '/src/integrations/asana/helpers/asana-api-caller.php',
 			$baseDir . '/src/integrations/asana/helpers/asana-app-helpers.php',
 			$baseDir . '/src/integrations/asana/helpers/asana-custom-fields-helper.php',
+			$baseDir . '/src/integrations/asana/helpers/asana-webhook-processor.php',
+			$baseDir . '/src/integrations/asana/helpers/asana-webhooks.php',
 			$baseDir . '/src/integrations/asana/helpers/trait-asana-task-data.php',
 		),
 		'tokens' => array(
 			$baseDir . '/src/integrations/asana/tokens/asana-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/asana/triggers/approval-status-changed.php',
+			$baseDir . '/src/integrations/asana/triggers/comment-added-to-task.php',
+			$baseDir . '/src/integrations/asana/triggers/task-created-in-project.php',
+			$baseDir . '/src/integrations/asana/triggers/task-custom-field-changed.php',
+			$baseDir . '/src/integrations/asana/triggers/task-updated-in-project.php',
 		),
 	),
 	'autonami' => array(
@@ -240,13 +249,14 @@ return array(
 	'brevo' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/brevo/actions/brevo-add-contact-to-list.php',
-			$baseDir . '/src/integrations/brevo/actions/brevo-add-update-contact.php',
+			$baseDir . '/src/integrations/brevo/actions/brevo-create-or-update-contact.php',
 			$baseDir . '/src/integrations/brevo/actions/brevo-delete-contact.php',
 			$baseDir . '/src/integrations/brevo/actions/brevo-remove-contact-from-list.php',
 		),
 		'helpers' => array(
 			$baseDir . '/src/integrations/brevo/helpers/brevo-api-caller.php',
 			$baseDir . '/src/integrations/brevo/helpers/brevo-app-helpers.php',
+			$baseDir . '/src/integrations/brevo/helpers/brevo-contact-attributes-helper.php',
 		),
 	),
 	'bricks-builder' => array(
@@ -331,12 +341,27 @@ return array(
 		),
 	),
 	'charitable' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/charitable/actions/charitable-add-donor-tag.php',
+			$baseDir . '/src/integrations/charitable/actions/charitable-create-donor.php',
+			$baseDir . '/src/integrations/charitable/actions/charitable-create-offline-donation.php',
+			$baseDir . '/src/integrations/charitable/actions/charitable-update-donation-status.php',
+			$baseDir . '/src/integrations/charitable/actions/charitable-update-donor.php',
+		),
 		'helpers' => array(
 			$baseDir . '/src/integrations/charitable/helpers/charitable-helpers.php',
+			$baseDir . '/src/integrations/charitable/helpers/donor-fields.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/charitable/triggers/anon-charitable-made-donation.php',
+			$baseDir . '/src/integrations/charitable/triggers/charitable-campaign-ended.php',
+			$baseDir . '/src/integrations/charitable/triggers/charitable-campaign-goal-reached.php',
+			$baseDir . '/src/integrations/charitable/triggers/charitable-donation-completed.php',
+			$baseDir . '/src/integrations/charitable/triggers/charitable-donation-refunded.php',
+			$baseDir . '/src/integrations/charitable/triggers/charitable-donation-status-changed.php',
+			$baseDir . '/src/integrations/charitable/triggers/charitable-donor-created.php',
 			$baseDir . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
+			$baseDir . '/src/integrations/charitable/triggers/charitable-user-registered.php',
 		),
 	),
 	'claude' => array(
@@ -611,18 +636,6 @@ return array(
 			$baseDir . '/src/integrations/emails/helpers/emails-helpers.php',
 		),
 	),
-	'event-tickets' => array(
-		'main' => $baseDir . '/src/integrations/event-tickets/add-et-integration.php',
-		'helpers' => array(
-			$baseDir . '/src/integrations/event-tickets/helpers/event-tickets-helpers.php',
-		),
-		'tokens' => array(
-			$baseDir . '/src/integrations/event-tickets/tokens/ec-tokens.php',
-		),
-		'triggers' => array(
-			$baseDir . '/src/integrations/event-tickets/triggers/ec-register.php',
-		),
-	),
 	'events-manager' => array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/events-manager/helpers/events-manager-helpers.php',
@@ -706,6 +719,9 @@ return array(
 			$baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-course-completed.php',
 			$baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-course-enrolled.php',
 			$baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-lesson-completed.php',
+			$baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-completed.php',
+			$baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-pass-fail.php',
+			$baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-percentage.php',
 			$baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-space-joined.php',
 			$baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-space-posted.php',
 		),
@@ -819,9 +835,18 @@ return array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/github/helpers/github-api-caller.php',
 			$baseDir . '/src/integrations/github/helpers/github-app-helpers.php',
+			$baseDir . '/src/integrations/github/helpers/github-webhooks.php',
 		),
 		'tokens' => array(
 			$baseDir . '/src/integrations/github/tokens/github-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/github/triggers/event-occurs-in-repo.php',
+			$baseDir . '/src/integrations/github/triggers/issue-created-in-repo.php',
+			$baseDir . '/src/integrations/github/triggers/pull-request-merged-in-repo.php',
+			$baseDir . '/src/integrations/github/triggers/pull-request-opened-in-repo.php',
+			$baseDir . '/src/integrations/github/triggers/push-to-repo.php',
+			$baseDir . '/src/integrations/github/triggers/release-created-in-repo.php',
 		),
 	),
 	'give' => array(
@@ -870,23 +895,23 @@ return array(
 		),
 	),
 	'gototraining' => array(
-		'main' => $baseDir . '/src/integrations/gototraining/add-gtt-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/gototraining/actions/gtt-registeruser.php',
 			$baseDir . '/src/integrations/gototraining/actions/gtt-unregisteruser.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/gototraining/helpers/gototraining-helpers.php',
+			$baseDir . '/src/integrations/gototraining/helpers/gototraining-api-caller.php',
+			$baseDir . '/src/integrations/gototraining/helpers/gototraining-app-helpers.php',
 		),
 	),
 	'gotowebinar' => array(
-		'main' => $baseDir . '/src/integrations/gotowebinar/add-gtw-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/gotowebinar/actions/gtw-registeruser.php',
 			$baseDir . '/src/integrations/gotowebinar/actions/gtw-unregisteruser.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/gotowebinar/helpers/gotowebinar-helpers.php',
+			$baseDir . '/src/integrations/gotowebinar/helpers/gotowebinar-api-caller.php',
+			$baseDir . '/src/integrations/gotowebinar/helpers/gotowebinar-app-helpers.php',
 		),
 	),
 	'gravity-forms' => array(
@@ -912,13 +937,13 @@ return array(
 		),
 	),
 	'groundhogg' => array(
-		'main' => $baseDir . '/src/integrations/groundhogg/add-groundhogg-integration.php',
 		'actions' => array(
-			$baseDir . '/src/integrations/groundhogg/actions/gh-add-tag-to-contact.php',
-			$baseDir . '/src/integrations/groundhogg/actions/gh-addtag.php',
-			$baseDir . '/src/integrations/groundhogg/actions/gh-create-update-contact.php',
-			$baseDir . '/src/integrations/groundhogg/actions/gh-remove-tag-from-contact.php',
-			$baseDir . '/src/integrations/groundhogg/actions/gh-removetag.php',
+			$baseDir . '/src/integrations/groundhogg/actions/groundhogg-add-note-to-contact.php',
+			$baseDir . '/src/integrations/groundhogg/actions/groundhogg-add-tag-to-contact.php',
+			$baseDir . '/src/integrations/groundhogg/actions/groundhogg-add-tag-to-user.php',
+			$baseDir . '/src/integrations/groundhogg/actions/groundhogg-create-update-contact.php',
+			$baseDir . '/src/integrations/groundhogg/actions/groundhogg-remove-tag-from-contact.php',
+			$baseDir . '/src/integrations/groundhogg/actions/groundhogg-remove-tag-from-user.php',
 		),
 		'helpers' => array(
 			$baseDir . '/src/integrations/groundhogg/helpers/groundhogg-helpers.php',
@@ -1087,33 +1112,41 @@ return array(
 		),
 	),
 	'learndash' => array(
-		'main' => $baseDir . '/src/integrations/learndash/add-ld-integration.php',
 		'actions' => array(
-			$baseDir . '/src/integrations/learndash/actions/ld-achievements-award.php',
-			$baseDir . '/src/integrations/learndash/actions/ld-creategroup.php',
-			$baseDir . '/src/integrations/learndash/actions/ld-enrlcourse-a.php',
-			$baseDir . '/src/integrations/learndash/actions/ld-makeuserleader.php',
-			$baseDir . '/src/integrations/learndash/actions/ld-markcoursedone.php',
-			$baseDir . '/src/integrations/learndash/actions/ld-marklessondone.php',
-			$baseDir . '/src/integrations/learndash/actions/ld-marktopicdone.php',
+			$baseDir . '/src/integrations/learndash/actions/learndash-create-group.php',
+			$baseDir . '/src/integrations/learndash/actions/learndash-enroll-in-course.php',
+			$baseDir . '/src/integrations/learndash/actions/learndash-make-group-leader.php',
+			$baseDir . '/src/integrations/learndash/actions/learndash-mark-course-complete.php',
+			$baseDir . '/src/integrations/learndash/actions/learndash-mark-lesson-complete.php',
+			$baseDir . '/src/integrations/learndash/actions/learndash-mark-topic-complete.php',
 		),
 		'helpers' => array(
+			$baseDir . '/src/integrations/learndash/helpers/learndash-helpers-new.php',
 			$baseDir . '/src/integrations/learndash/helpers/learndash-helpers.php',
 		),
 		'tokens' => array(
+			$baseDir . '/src/integrations/learndash/tokens/ld-tokens-new-framework.php',
 			$baseDir . '/src/integrations/learndash/tokens/ld-tokens.php',
 		),
 		'triggers' => array(
-			$baseDir . '/src/integrations/learndash/triggers/ld-course-progress-percentage.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-coursedone.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-failquiz.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-lessondone.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-passquiz.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-quizdone.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-quizpercent.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-quizpoint.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-quizscore.php',
-			$baseDir . '/src/integrations/learndash/triggers/ld-topicdone.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-course-completed.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-course-progress-percentage.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-lesson-completed.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-quiz-completed.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-quiz-failed.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-quiz-passed.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-quiz-percentage.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-quiz-points.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-quiz-score.php',
+			$baseDir . '/src/integrations/learndash/triggers/learndash-topic-completed.php',
+		),
+	),
+	'learndash-achievements' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/learndash-achievements/actions/learndash-award-achievement.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/learndash-achievements/helpers/learndash-achievements-helpers.php',
 		),
 	),
 	'learnpress' => array(
@@ -1181,7 +1214,6 @@ return array(
 		),
 	),
 	'mailchimp' => array(
-		'main' => $baseDir . '/src/integrations/mailchimp/add-mailchimp-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/mailchimp/actions/audience-addauser.php',
 			$baseDir . '/src/integrations/mailchimp/actions/audience-addusernote.php',
@@ -1196,7 +1228,15 @@ return array(
 			$baseDir . '/src/integrations/mailchimp/actions/mc-everyone-user-remove-tag.php',
 		),
 		'helpers' => array(
-			$baseDir . '/src/integrations/mailchimp/helpers/mailchimp-helpers.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/mailchimp-api-caller.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/mailchimp-app-helpers.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/mailchimp-webhooks.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/trait-mailchimp-audience-fields.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/trait-mailchimp-email-fields.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/trait-mailchimp-note-fields.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/trait-mailchimp-subscriber-fields.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/trait-mailchimp-tag-fields.php',
+			$baseDir . '/src/integrations/mailchimp/helpers/trait-mailchimp-trigger-audience.php',
 		),
 		'tokens' => array(
 			$baseDir . '/src/integrations/mailchimp/tokens/mailchimp-tokens.php',
@@ -1503,9 +1543,19 @@ return array(
 		),
 	),
 	'popup-maker' => array(
-		'main' => $baseDir . '/src/integrations/popup-maker/add-popup-maker-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/popup-maker/actions/pm-popupshow.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/popup-maker/helpers/popup-maker-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/popup-maker/triggers/anon-pm-form-submitted.php',
+			$baseDir . '/src/integrations/popup-maker/triggers/anon-pm-popup-conversion.php',
+			$baseDir . '/src/integrations/popup-maker/triggers/anon-pm-popup-opened.php',
+			$baseDir . '/src/integrations/popup-maker/triggers/anon-pm-sub-form-submitted.php',
+			$baseDir . '/src/integrations/popup-maker/triggers/user-pm-form-submitted.php',
+			$baseDir . '/src/integrations/popup-maker/triggers/user-pm-sub-form-submitted.php',
 		),
 	),
 	'presto' => array(
@@ -1553,6 +1603,23 @@ return array(
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/restrict-content/triggers/restrict-content-purchasesmembership.php',
+		),
+	),
+	'saveto-wishlist' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/saveto-wishlist/actions/saveto-wishlist-add-product.php',
+			$baseDir . '/src/integrations/saveto-wishlist/actions/saveto-wishlist-create-wishlist.php',
+			$baseDir . '/src/integrations/saveto-wishlist/actions/saveto-wishlist-remove-product.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/saveto-wishlist/helpers/saveto-wishlist-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-guest-synced.php',
+			$baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-adds-product.php',
+			$baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-creates-wishlist.php',
+			$baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-moves-to-cart.php',
+			$baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-removes-product.php',
 		),
 	),
 	'seedprod' => array(
@@ -1737,10 +1804,52 @@ return array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/telegram/helpers/telegram-api-caller.php',
 			$baseDir . '/src/integrations/telegram/helpers/telegram-app-helpers.php',
+			$baseDir . '/src/integrations/telegram/helpers/telegram-entity-renderer.php',
 			$baseDir . '/src/integrations/telegram/helpers/telegram-webhooks.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/telegram/triggers/telegram-message-received.php',
+		),
+	),
+	'the-events-calendar' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-assign-organizer.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-assign-venue.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-check-in-attendee.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-create-event.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-create-organizer.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-create-venue.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-delete-event.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-uncheck-in-attendee.php',
+			$baseDir . '/src/integrations/the-events-calendar/actions/tec-update-event.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/the-events-calendar/helpers/class-ec-attendee-meta-keys.php',
+			$baseDir . '/src/integrations/the-events-calendar/helpers/class-ec-attendee-resolver.php',
+			$baseDir . '/src/integrations/the-events-calendar/helpers/class-ec-provider-constants.php',
+			$baseDir . '/src/integrations/the-events-calendar/helpers/class-has-dependency-state.php',
+			$baseDir . '/src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php',
+			$baseDir . '/src/integrations/the-events-calendar/helpers/trait-has-dependency.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/the-events-calendar/tokens/the-events-calendar-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-attendee-checked-in.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-attendee-unchecked-in.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-event-created-or-updated.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-event-linked.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-event-unlinked.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-event-updated.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-organizer-created.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-organizer-updated.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-ticket-added.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-ticket-deleted.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-user-registers-for-event.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-venue-created.php',
+			$baseDir . '/src/integrations/the-events-calendar/triggers/tec-venue-updated.php',
 		),
 	),
 	'threads' => array(
@@ -1796,7 +1905,9 @@ return array(
 		),
 	),
 	'thrive-ovation' => array(
-		'main' => $baseDir . '/src/integrations/thrive-ovation/add-thrive-ovation-integration.php',
+		'helpers' => array(
+			$baseDir . '/src/integrations/thrive-ovation/helpers/thrive-ovation-helpers.php',
+		),
 		'tokens' => array(
 			$baseDir . '/src/integrations/thrive-ovation/tokens/thrive-ovation-tokens.php',
 		),
@@ -1920,12 +2031,14 @@ return array(
 		),
 	),
 	'uncanny-ceus' => array(
-		'main' => $baseDir . '/src/integrations/uncanny-ceus/add-uncannyceus-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php',
 		),
 		'helpers' => array(
 			$baseDir . '/src/integrations/uncanny-ceus/helpers/uncanny-ceus-helpers.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/uncanny-ceus/tokens/uncanny-ceus-tokens.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php',
@@ -1934,7 +2047,6 @@ return array(
 		),
 	),
 	'uncanny-codes' => array(
-		'main' => $baseDir . '/src/integrations/uncanny-codes/add-uc-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/uncanny-codes/actions/uc-add-batch-codes.php',
 			$baseDir . '/src/integrations/uncanny-codes/actions/uc-cancel-code.php',
@@ -1956,7 +2068,6 @@ return array(
 		),
 	),
 	'uncanny-groups' => array(
-		'main' => $baseDir . '/src/integrations/uncanny-groups/add-uog-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/uncanny-groups/actions/uog-addseatstogroup.php',
 			$baseDir . '/src/integrations/uncanny-groups/actions/uog-createuncannygroup.php',
@@ -1977,7 +2088,6 @@ return array(
 		),
 	),
 	'uncanny-tincanny' => array(
-		'main' => $baseDir . '/src/integrations/uncanny-tincanny/add-uotc-integration.php',
 		'helpers' => array(
 			$baseDir . '/src/integrations/uncanny-tincanny/helpers/uncanny-tincanny-helpers.php',
 		),
@@ -1990,7 +2100,6 @@ return array(
 		),
 	),
 	'uncanny-toolkit' => array(
-		'main' => $baseDir . '/src/integrations/uncanny-toolkit/add-ut-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/uncanny-toolkit/actions/ut-resetuserstimeincourse.php',
 		),
@@ -2030,7 +2139,9 @@ return array(
 		),
 	),
 	'userfeedback' => array(
-		'main' => $baseDir . '/src/integrations/userfeedback/add-userfeedback-integration.php',
+		'helpers' => array(
+			$baseDir . '/src/integrations/userfeedback/helpers/userfeedback-helpers.php',
+		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/userfeedback/triggers/anon-userfeedback-survey-submitted.php',
 			$baseDir . '/src/integrations/userfeedback/triggers/user-userfeedback-survey-submitted.php',
@@ -2068,18 +2179,14 @@ return array(
 		),
 	),
 	'whatsapp' => array(
-		'main' => $baseDir . '/src/integrations/whatsapp/add-whatsapp-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/whatsapp/actions/whatsapp-send-message-template.php',
 			$baseDir . '/src/integrations/whatsapp/actions/whatsapp-send-message.php',
 		),
 		'helpers' => array(
+			$baseDir . '/src/integrations/whatsapp/helpers/whatsapp-api-caller.php',
 			$baseDir . '/src/integrations/whatsapp/helpers/whatsapp-helpers.php',
-		),
-		'tokens' => array(
-			$baseDir . '/src/integrations/whatsapp/tokens/wa-message-delivery-tokens.php',
-			$baseDir . '/src/integrations/whatsapp/tokens/wa-message-received-tokens.php',
-			$baseDir . '/src/integrations/whatsapp/tokens/wa-message-status-tokens.php',
+			$baseDir . '/src/integrations/whatsapp/helpers/whatsapp-webhooks.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/whatsapp/triggers/wa-message-not-delivered-no-optin.php',
@@ -2161,46 +2268,70 @@ return array(
 		),
 	),
 	'wp' => array(
-		'main' => $baseDir . '/src/integrations/wp/add-wp-integration.php',
 		'actions' => array(
-			$baseDir . '/src/integrations/wp/actions/wp-add-reply-to-comment.php',
-			$baseDir . '/src/integrations/wp/actions/wp-addrole.php',
-			$baseDir . '/src/integrations/wp/actions/wp-change-post-type.php',
-			$baseDir . '/src/integrations/wp/actions/wp-create-role.php',
-			$baseDir . '/src/integrations/wp/actions/wp-createpost.php',
-			$baseDir . '/src/integrations/wp/actions/wp-duplicate-page.php',
-			$baseDir . '/src/integrations/wp/actions/wp-duplicate-post.php',
-			$baseDir . '/src/integrations/wp/actions/wp-erase-personal-user-data.php',
-			$baseDir . '/src/integrations/wp/actions/wp-logout-user.php',
-			$baseDir . '/src/integrations/wp/actions/wp-update-post-excerpt.php',
-			$baseDir . '/src/integrations/wp/actions/wp-userrole.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-add-file-to-media-library.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-add-menu-item.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-add-menu.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-add-reply-to-comment.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-add-role.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-assign-menu-to-location.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-change-post-type.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-create-post.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-create-role.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-create-taxonomy-term.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-delete-comment.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-delete-media-item.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-delete-menu-item.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-delete-menu.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-delete-post-meta.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-delete-taxonomy-term.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-duplicate-page.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-duplicate-post.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-erase-personal-user-data.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-generate-password-reset-link.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-get-media-item.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-get-post-meta.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-get-user-meta.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-logout-user.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-rename-menu.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-restore-post-from-trash.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-set-comment-status.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-set-post-password.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-set-user-role.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-update-media-item.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-update-menu-item.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-update-post-excerpt.php',
+			$baseDir . '/src/integrations/wp/actions/wordpress-update-taxonomy-term.php',
 		),
 		'helpers' => array(
+			$baseDir . '/src/integrations/wp/helpers/wp-helpers-new.php',
 			$baseDir . '/src/integrations/wp/helpers/wp-helpers.php',
 		),
 		'tokens' => array(
 			$baseDir . '/src/integrations/wp/tokens/wp-post-tokens.php',
+			$baseDir . '/src/integrations/wp/tokens/wp-shared-tokens.php',
+			$baseDir . '/src/integrations/wp/tokens/wp-token-aliases.php',
 			$baseDir . '/src/integrations/wp/tokens/wp-tokens.php',
 		),
 		'triggers' => array(
-			$baseDir . '/src/integrations/wp/triggers/anon-wp-post-published-in-taxonomy.php',
-			$baseDir . '/src/integrations/wp/triggers/anon-wp-reset-password-link-sent.php',
-			$baseDir . '/src/integrations/wp/triggers/anon-wp-updates-post-in-taxonomy.php',
-			$baseDir . '/src/integrations/wp/triggers/anon-wp-viewposttype.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-anon-updates-post.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-login.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-logout.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-post-published.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-postreceivescomment.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-submitcomment.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-user-updates-post.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-usercreatespost.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-userroleadded.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-userroleupdated.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-users-post-published.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-viewcustompost.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-viewpage.php',
-			$baseDir . '/src/integrations/wp/triggers/wp-viewpost.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-anon-post-type-viewed.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-anon-post-updated.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-anon-reset-password-link-sent.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-post-published.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-post-receives-comment.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-creates-post.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-login.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-logout.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-post-published.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-role-added.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-role-updated.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-submits-comment.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-updates-post.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-views-custom-post.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-views-page.php',
+			$baseDir . '/src/integrations/wp/triggers/wordpress-user-views-post.php',
 		),
 		'closures' => array(
 			$baseDir . '/src/integrations/wp/closures/closure-redirect.php',
@@ -2270,12 +2401,11 @@ return array(
 		),
 	),
 	'wp-fluent-forms' => array(
-		'main' => $baseDir . '/src/integrations/wp-fluent-forms/add-wpff-integration.php',
 		'helpers' => array(
 			$baseDir . '/src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php',
 		),
 		'tokens' => array(
-			$baseDir . '/src/integrations/wp-fluent-forms/tokens/wpff-tokens.php',
+			$baseDir . '/src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/wp-fluent-forms/triggers/anon-wpff-subform.php',
@@ -2379,7 +2509,6 @@ return array(
 		),
 	),
 	'wp-webhooks' => array(
-		'main' => $baseDir . '/src/integrations/wp-webhooks/add-wpwh-integration.php',
 		'helpers' => array(
 			$baseDir . '/src/integrations/wp-webhooks/helpers/wpwh-helpers.php',
 		),

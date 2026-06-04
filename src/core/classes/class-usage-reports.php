@@ -6,6 +6,8 @@ use Uncanny_Automator\Automator_System_Report;
 
 use WP_REST_Response;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Class Usage_Reports.
  *
@@ -428,12 +430,14 @@ class Usage_Reports {
 	 */
 	public function get_license_info() {
 
-		$license = array();
+		$license_manager = automator_license_manager();
 
-		$license['license_key']  = Api_Server::get_license_key();
-		$license['license_type'] = Api_Server::get_license_type();
-		$license['item_name']    = Api_Server::get_item_name();
-		$license['site_name']    = Api_Server::get_site_name();
+		$license = array(
+			'license_key'  => $license_manager->get_key(),
+			'license_type' => $license_manager->get_type(),
+			'item_name'    => $license_manager->get_item_name(),
+			'site_name'    => $license_manager->get_site_name(),
+		);
 
 		$this->report['license'] = $license;
 	}

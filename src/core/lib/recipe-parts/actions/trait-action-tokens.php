@@ -38,7 +38,7 @@ trait Action_Tokens {
 	 * Trigger format: [ [ 'tokenId' => 'TOKEN_ID', 'tokenName' => 'Label', 'tokenType' => 'text' ], ... ]
 	 *
 	 * Trigger-format arrays are auto-converted so that shared token definitions
-	 * (e.g. Wp_Shared_Tokens::post_tokens()) work in both triggers and actions.
+	 * (e.g. Wp_Shared_Tokens::post_core_tokens()) work in both triggers and actions.
 	 *
 	 * @param array  $tokens      Tokens to be registered.
 	 * @param string $action_code Action code associated with tokens.

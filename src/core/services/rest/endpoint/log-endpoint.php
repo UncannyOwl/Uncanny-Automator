@@ -228,6 +228,9 @@ class Log_Endpoint {
 			),
 			'recipe_edit_url'   => get_edit_post_link( $recipe_id, '&' ),
 			'log_delete_url'    => $this->get_delete_url(),
+			'is_replayable'     => isset( Automator()->recipe_runner ) ? Automator()->recipe_runner->snapshot_store()->is_replayable( absint( $this->params['recipe_log_id'] ) ) : false,
+			'replay_url'        => rest_url( 'automator/v1/replay/' . absint( $this->params['recipe_log_id'] ) ),
+			'replay_source'     => $this->get_replay_source( absint( $this->params['recipe_log_id'] ) ),
 		);
 
 		return apply_filters( 'uncanny_automator_log_serve_json', $json, $recipe, $triggers_items, $flow_items );
@@ -339,6 +342,46 @@ class Log_Endpoint {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Get replay source info if this run was replayed from another.
+	 *
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return array|null Array with source_recipe_log_id and source_run_number, or null if not a replay.
+	 */
+	private function get_replay_source( int $recipe_log_id ) {
+
+		global $wpdb;
+
+		$source_log_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->prefix}uap_recipe_log_meta WHERE recipe_log_id = %d AND meta_key = 'replay_source'", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$recipe_log_id
+			)
+		);
+
+		if ( empty( $source_log_id ) ) {
+			return null;
+		}
+
+		$source_row = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT run_number, log_number FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				absint( $source_log_id )
+			)
+		);
+
+		if ( null === $source_row ) {
+			return null;
+		}
+
+		return array(
+			'source_recipe_log_id' => absint( $source_log_id ),
+			'source_run_number'    => absint( $source_row->run_number ),
+			'source_log_number'    => absint( $source_row->log_number ),
+		);
 	}
 
 	/**

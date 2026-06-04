@@ -3,14 +3,19 @@
 namespace Uncanny_Automator\App_Integrations;
 
 use Exception;
+use Uncanny_Automator\Recipe\Abstract_Helpers;
 
 /**
  * Abstract class for App integration helpers.
  * - Common methods to support the App integration to normalize naming and methods.
  *
+ * Extends Abstract_Helpers so every App Integration helper inherits the
+ * remote-data REST framework (filter registration, REST dispatcher,
+ * field-option config builders, response shapers).
+ *
  * @package Uncanny_Automator
  */
-abstract class App_Helpers {
+abstract class App_Helpers extends Abstract_Helpers {
 
 	// Option data: prefix, key building, cached get/save, and common AJAX helpers.
 	use App_Helpers_Option_Data;

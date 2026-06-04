@@ -353,6 +353,15 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 				$field_args['ajax'] = $args['ajax'];
 			}
 
+			// remote_data — REST-based options loader. The JS applyRemoteDataDefaults()
+			// reads .id / .data / .event / .listen_fields / .clear_on_change_fields off
+			// this block to wire the REST path. Without this passthrough the entire
+			// remote_data block is silently dropped by the allow-list above and the
+			// dropdown renders empty.
+			if ( isset( $args['remote_data'] ) && is_array( $args['remote_data'] ) ) {
+				$field_args['remote_data'] = $args['remote_data'];
+			}
+
 			// Is AJAX
 			// Check if "is_ajax" is defined, if it's true, and if "endpoint"
 			// is defined, which is required when "is_ajax" is true

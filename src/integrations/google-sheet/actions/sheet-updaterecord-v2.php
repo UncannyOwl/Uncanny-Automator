@@ -53,10 +53,9 @@ class GOOGLESHEET_UPDATERECORD_V2 extends App_Action {
 				'required'              => true,
 				'options'               => array(),
 				'supports_custom_value' => false,
-				'ajax'                  => array(
-					'endpoint'      => 'automator_fetch_googlesheets_worksheets_columns_search',
-					'event'         => 'parent_fields_change',
-					'listen_fields' => array( 'GSWORKSHEET' ),
+				'remote_data'           => $this->helpers->remote_data_parent_config(
+					'lookup_columns',
+					array( 'GSWORKSHEET' )
 				),
 			),
 			array(
@@ -101,11 +100,9 @@ class GOOGLESHEET_UPDATERECORD_V2 extends App_Action {
 						'options'     => array(),
 					),
 				),
-				'ajax'            => array(
-					'endpoint'       => 'automator_fetch_googlesheets_worksheets_columns',
-					'event'          => 'parent_fields_change',
-					'listen_fields'  => array( 'GSWORKSHEET' ),
-					'mapping_column' => 'GS_COLUMN_NAME',
+				'remote_data'     => $this->helpers->remote_data_with_mapping_column(
+					$this->helpers->remote_data_parent_config( 'worksheets_columns', array( 'GSWORKSHEET' ) ),
+					'GS_COLUMN_NAME'
 				),
 			),
 			array(

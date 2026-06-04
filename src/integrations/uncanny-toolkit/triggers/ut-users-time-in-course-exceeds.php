@@ -1,255 +1,174 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Toolkit;
 
 /**
- * Uncanny Toolkit: Trigger - A Group Leader is imported to {{a LearnDash
- * Group}}
+ * Trigger: A user's time in a course exceeds a specific number of minutes.
+ *
+ * @property \Uncanny_Automator\Integrations\Uncanny_Toolkit\Ut_Helpers $item_helpers
  */
-class UT_USERS_TIME_IN_COURSE_EXCEEDS {
+class UT_USERS_TIME_IN_COURSE_EXCEEDS extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Integration code
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	public static $integration = 'UNCANNYTOOLKIT';
-
-	/**
-	 * Trigger Code
-	 *
-	 * @var string
-	 */
-	private $trigger_code;
-	/**
-	 * Trigger Meta
-	 *
-	 * @var string
-	 */
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		if ( ! defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) || ! defined( 'LEARNDASH_VERSION' ) ) {
-			return;
-		}
-		$this->trigger_code = 'UTUSERSTIMEINCOURSEEXCEEDS';
-		$this->trigger_meta = 'UOUSERSTIMEINCOURSEEXCEEDS';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'UTUSERSTIMEINCOURSEEXCEEDS', 'UNCANNYTOOLKIT' )
+			->trigger_meta( 'UOUSERSTIMEINCOURSEEXCEEDS' )
+			->hook( 'uo_course_timer_add_timer', 20, 3 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Setup trigger configuration.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
-
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/uncanny-toolkit/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			'meta'                => $this->trigger_meta,
-			/* translators: Logged-in trigger - Uncanny Toolkit */
-			'sentence'            => sprintf( esc_attr__( "A user's time in {{a course:%1\$s}} exceeds {{a specific number of:%2\$s}} minutes", 'uncanny-automator' ), $this->trigger_meta, $this->trigger_meta . '_COURSEMINUTES' ),
-			/* translators: Logged-in trigger - Uncanny Toolkit */
-			'select_option_name'  => esc_attr__( "A user's time in {{a course}} exceeds {{a specific number of}} minutes", 'uncanny-automator' ),
-			'action'              => 'uo_course_timer_add_timer',
-			'priority'            => 20,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'users_limit_exceeds' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
-
-		Automator()->register->trigger( $trigger );
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
+		// translators: %1$s is a course, %2$s is a number of minutes.
+		$this->set_sentence( sprintf( esc_html_x( "A user's time in {{a course:%1\$s}} exceeds {{a specific number of:%2\$s}} minutes", 'Uncanny Toolkit', 'uncanny-automator' ), $this->get_trigger_meta(), $this->get_trigger_meta() . '_COURSEMINUTES' ) );
+		$this->set_readable_sentence( esc_html_x( "A user's time in {{a course}} exceeds {{a specific number of}} minutes", 'Uncanny Toolkit', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * load_options
+	 * Check if Toolkit Pro and LearnDash are active.
+	 *
+	 * @return bool
 	 */
-	public function load_options() {
+	public function requirements_met() {
+		return defined( 'UNCANNY_TOOLKIT_PRO_VERSION' ) && defined( 'LEARNDASH_VERSION' );
+	}
 
-		$all_courses = Automator()->helpers->recipe->learndash->options->get_all_ld_courses( 'Course', $this->trigger_meta );
-
-		$minutes_args = array(
-			'option_code' => $this->trigger_meta . '_COURSEMINUTES',
-			'input_type'  => 'text',
-			'label'       => esc_attr__( 'Minutes', 'uncanny-automator' ),
-			'required'    => true,
-			'token_name'  => esc_html__( 'Time in minutes', 'uncanny-automator' ),
-		);
-
-		$options = array(
-			'options' => array(
-				$all_courses,
-				Automator()->helpers->recipe->field->text( $minutes_args ),
+	/**
+	 * Define trigger options.
+	 *
+	 * @return array[]
+	 */
+	public function options() {
+		return array(
+			array(
+				'option_code' => $this->get_trigger_meta(),
+				'label'       => esc_html_x( 'Course', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'input_type'  => 'select',
+				'required'    => true,
+				'remote_data' => $this->item_helpers->remote_data_load_config( 'courses' ),
+				'options'     => array(),
+			),
+			array(
+				'option_code' => $this->get_trigger_meta() . '_COURSEMINUTES',
+				'label'       => esc_html_x( 'Minutes', 'Uncanny Toolkit', 'uncanny-automator' ),
+				'input_type'  => 'text',
+				'required'    => true,
+				'token_name'  => esc_html_x( 'Time in minutes', 'Uncanny Toolkit', 'uncanny-automator' ),
 			),
 		);
-
-		return Automator()->utilities->keep_order_of_options( $options );
 	}
 
 	/**
-	 * Running an actual function on the trigger
+	 * Define available tokens.
 	 *
-	 * @param $user_id
-	 * @param $csv_data
-	 * @param $csv_header
-	 * @param $key_location
+	 * @param array $trigger The trigger settings.
+	 * @param array $tokens  Existing tokens.
+	 *
+	 * @return array
 	 */
-	public function users_limit_exceeds( $course_ID, $post_ID, $timer_interval ) {
-		if ( ! is_numeric( $course_ID ) ) {
-			return;
-		}
-
-		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-
-		if ( empty( $recipes ) ) {
-			return;
-		}
-
-		$required_course = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );
-		$course_minutes  = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta . '_COURSEMINUTES' );
-		if ( empty( $required_course ) ) {
-			return;
-		}
-
-		$matched_recipe_ids = array();
-		$user_id            = get_current_user_id();
-
-		foreach ( $recipes as $recipe_id => $recipe ) {
-			foreach ( $recipe['triggers'] as $trigger ) {
-				$trigger_id = $trigger['ID'];
-
-				if ( ! method_exists( '\uncanny_pro_toolkit\CourseTimer', 'get_course_time_in_seconds' ) && ! class_exists( '\uncanny_pro_toolkit\CourseTimer' ) ) {
-					$error_message                       = esc_html__( 'A required method is not available. Please update Uncanny Toolkit Pro to the latest version.', 'uncanny-automator' );
-					$action_data['do-nothing']           = true;
-					$action_data['complete_with_errors'] = true;
-					Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
-
-					return;
-				}
-				$timer = \uncanny_pro_toolkit\CourseTimer::get_course_time_in_seconds( $course_ID, $user_id );
-
-				if ( intval( $timer ) > ( intval( $course_minutes[ $recipe_id ][ $trigger_id ] ) * 60 ) ) {
-					$matched_recipe_ids[] = array(
-						'recipe_id'  => $recipe_id,
-						'trigger_id' => $trigger_id,
-					);
-				}
-			}
-		}
-
-		if ( empty( $matched_recipe_ids ) ) {
-			return;
-		}
-
-		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
-			$recipe_id  = $matched_recipe_id['recipe_id'];
-			$trigger_id = $matched_recipe_id['trigger_id'];//return early for all products
-			if ( ! isset( $required_course[ $recipe_id ] ) ) {
-				continue;
-			}
-			if ( ! isset( $required_course[ $recipe_id ][ $trigger_id ] ) ) {
-				continue;
-			}
-			if ( intval( '-1' ) === intval( $required_course[ $recipe_id ][ $trigger_id ] ) || (int) $required_course[ $recipe_id ][ $trigger_id ] === (int) $course_ID ) {
-
-				$pass_args = array(
-					'code'             => $this->trigger_code,
-					'meta'             => $this->trigger_meta,
-					'ignore_post_id'   => true,
-					'user_id'          => $user_id,
-					'is_signed_in'     => true,
-					'recipe_to_match'  => $recipe_id,
-					'trigger_to_match' => $trigger_id,
-				);
-
-				$args = Automator()->maybe_add_trigger_entry( $pass_args, false );
-
-				if ( $args ) {
-					foreach ( $args as $result ) {
-						if ( true === $result['result'] ) {
-
-							// Add token for course title
-							Automator()->insert_trigger_meta(
-								array(
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'meta_key'       => $this->trigger_meta,
-									'meta_value'     => get_the_title( $course_ID ),
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								)
-							);
-
-							// Add token for course id
-							Automator()->insert_trigger_meta(
-								array(
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'meta_key'       => $this->trigger_meta . '_ID',
-									'meta_value'     => $course_ID,
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								)
-							);
-
-							// Add token for course spent minutes
-							Automator()->insert_trigger_meta(
-								array(
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'meta_key'       => $this->trigger_meta . '_COURSEMINUTES',
-									'meta_value'     => ( isset( $course_minutes[ $recipe_id ][ $trigger_id ] ) ) ? $course_minutes[ $recipe_id ][ $trigger_id ] : 0,
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								)
-							);
-
-							// Add token for course url
-							Automator()->insert_trigger_meta(
-								array(
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'meta_key'       => $this->trigger_meta . '_URL',
-									'meta_value'     => get_the_permalink( $course_ID ),
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								)
-							);
-
-							// Add token for course url
-							Automator()->insert_trigger_meta(
-								array(
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'meta_key'       => $this->trigger_meta . '_THUMB_ID',
-									'meta_value'     => get_post_thumbnail_id( $course_ID ),
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								)
-							);
-
-							// Add token for course url
-							Automator()->insert_trigger_meta(
-								array(
-									'user_id'        => $user_id,
-									'trigger_id'     => $result['args']['trigger_id'],
-									'meta_key'       => $this->trigger_meta . '_THUMB_URL',
-									'meta_value'     => get_the_post_thumbnail_url( $course_ID ),
-									'trigger_log_id' => $result['args']['get_trigger_id'],
-									'run_number'     => $result['args']['run_number'],
-								)
-							);
-
-							Automator()->maybe_trigger_complete( $result['args'] );
-						}
-					}
-				}
-			}
-		}
+	public function define_tokens( $trigger, $tokens ) {
+		return array_merge(
+			$tokens,
+			array(
+				array(
+					'tokenId'   => $this->get_trigger_meta() . '_ID',
+					'tokenName' => esc_html_x( 'Course ID', 'Uncanny Toolkit', 'uncanny-automator' ),
+					'tokenType' => 'int',
+				),
+				array(
+					'tokenId'   => $this->get_trigger_meta() . '_URL',
+					'tokenName' => esc_html_x( 'Course URL', 'Uncanny Toolkit', 'uncanny-automator' ),
+					'tokenType' => 'url',
+				),
+				array(
+					'tokenId'   => $this->get_trigger_meta() . '_THUMB_ID',
+					'tokenName' => esc_html_x( 'Course thumbnail ID', 'Uncanny Toolkit', 'uncanny-automator' ),
+					'tokenType' => 'int',
+				),
+				array(
+					'tokenId'   => $this->get_trigger_meta() . '_THUMB_URL',
+					'tokenName' => esc_html_x( 'Course thumbnail URL', 'Uncanny Toolkit', 'uncanny-automator' ),
+					'tokenType' => 'url',
+				),
+			)
+		);
 	}
 
+	/**
+	 * Validate trigger against hook arguments.
+	 *
+	 * The old code uses a custom "greater than" comparison (timer > minutes * 60),
+	 * NOT match_condition_vs_number(). We preserve that exact logic.
+	 *
+	 * @param array $trigger   The trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return bool
+	 */
+	public function validate( $trigger, $hook_args ) {
+
+		list( $course_id, $post_id, $timer_interval ) = $hook_args;
+
+		if ( ! is_numeric( $course_id ) ) {
+			return false;
+		}
+
+		// Ensure CourseTimer class and method are available.
+		if ( ! class_exists( '\uncanny_pro_toolkit\CourseTimer' ) || ! method_exists( '\uncanny_pro_toolkit\CourseTimer', 'get_course_time_in_seconds' ) ) {
+			return false;
+		}
+
+		$selected_course = $trigger['meta'][ $this->get_trigger_meta() ] ?? '';
+
+		// Check course match (Any or specific).
+		if ( '-1' !== $selected_course && (int) $selected_course !== (int) $course_id ) {
+			return false;
+		}
+
+		// Get the configured minutes threshold.
+		$minutes = isset( $trigger['meta'][ $this->get_trigger_meta() . '_COURSEMINUTES' ] )
+			? intval( $trigger['meta'][ $this->get_trigger_meta() . '_COURSEMINUTES' ] )
+			: 0;
+
+		// Get actual time spent.
+		$user_id = get_current_user_id();
+		$timer   = intval( \uncanny_pro_toolkit\CourseTimer::get_course_time_in_seconds( $course_id, $user_id ) );
+
+		// Original logic: timer exceeds threshold (strictly greater than).
+		return $timer > ( $minutes * 60 );
+	}
+
+	/**
+	 * Hydrate token values from hook arguments.
+	 *
+	 * @param array $trigger   The completed trigger settings.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		list( $course_id ) = $hook_args;
+
+		$minutes = isset( $trigger['meta'][ $this->get_trigger_meta() . '_COURSEMINUTES' ] )
+			? $trigger['meta'][ $this->get_trigger_meta() . '_COURSEMINUTES' ]
+			: 0;
+
+		return array(
+			$this->get_trigger_meta()                    => get_the_title( $course_id ),
+			$this->get_trigger_meta() . '_ID'            => $course_id,
+			$this->get_trigger_meta() . '_COURSEMINUTES' => $minutes,
+			$this->get_trigger_meta() . '_URL'           => get_the_permalink( $course_id ),
+			$this->get_trigger_meta() . '_THUMB_ID'      => get_post_thumbnail_id( $course_id ),
+			$this->get_trigger_meta() . '_THUMB_URL'     => get_the_post_thumbnail_url( $course_id ),
+		);
+	}
 }

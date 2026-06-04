@@ -1,6 +1,6 @@
-<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
+<?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Groups;
 
 use uncanny_learndash_groups\SharedFunctions;
 
@@ -8,173 +8,146 @@ use uncanny_learndash_groups\SharedFunctions;
  * Class UOG_REMOVESEATSFROMGROUP
  *
  * @package Uncanny_Automator
+ * @property \Uncanny_Automator\Integrations\Uncanny_Groups\Uog_Helpers $item_helpers
  */
-class UOG_REMOVESEATSFROMGROUP {
-
-	use Recipe\Action_Tokens;
+class UOG_REMOVESEATSFROMGROUP extends \Uncanny_Automator\Recipe\Action {
 
 	/**
-	 * Integration code
+	 * Setup action configuration.
 	 *
-	 * @var string
+	 * @return void
 	 */
-	public static $integration = 'UOG';
-	/**
-	 * @var
-	 */
-	public static $number_of_keys;
-	/**
-	 * @var string
-	 */
-	private $action_code;
-	/**
-	 * @var string
-	 */
-	private $action_meta;
+	protected function setup_action() {
 
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->action_code = 'REMOVESEATSFROMGROUP';
-		$this->action_meta = 'UNCANNYGROUP';
-		$this->define_action();
-	}
+		$this->set_integration( 'UOG' );
+		$this->set_action_code( 'REMOVESEATSFROMGROUP' );
+		$this->set_action_meta( 'UNCANNYGROUP' );
+		$this->set_requires_user( false );
 
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'             => Automator()->get_author_name( $this->action_code ),
-			'support_link'       => Automator()->get_author_support_link( $this->action_code, 'integration/uncanny-groups/' ),
-			'integration'        => self::$integration,
-			'code'               => $this->action_code,
-			'requires_user'      => false,
-			/* translators: Logged-in action - Uncanny Groups */
-			'sentence'           => sprintf( esc_attr__( 'Remove {{a number of:%1$s}} seats from {{an Uncanny group:%2$s}}', 'uncanny-automator' ), 'NUMOFSEATS', $this->action_meta ),
-			/* translators: Logged-in action - Uncanny Groups */
-			'select_option_name' => esc_attr__( 'Remove {{a number of}} seats from {{an Uncanny group}}', 'uncanny-automator' ),
-			'priority'           => 10,
-			'accepted_args'      => 1,
-			'execution_function' => array( $this, 'remove_seats_from_a_group' ),
-			'options_callback'   => array( $this, 'load_options' ),
+		// translators: %1$s is the number of seats, %2$s is the group.
+		$this->set_sentence(
+			sprintf(
+				esc_html_x( 'Remove {{a number of:%1$s}} seats from {{an Uncanny group:%2$s}}', 'Uncanny Groups', 'uncanny-automator' ),
+				'NUMOFSEATS',
+				$this->get_action_meta()
+			)
 		);
+
+		$this->set_readable_sentence( esc_html_x( 'Remove {{a number of}} seats from {{an Uncanny group}}', 'Uncanny Groups', 'uncanny-automator' ) );
 
 		$this->set_action_tokens(
 			array(
-				$this->action_meta . '_TOTAL_SEATS'     => array(
-					'name' => esc_html__( 'Total seats', 'uncanny-automator' ),
+				$this->get_action_meta() . '_TOTAL_SEATS'     => array(
+					'name' => esc_html_x( 'Total seats', 'Uncanny Groups', 'uncanny-automator' ),
 					'type' => 'int',
 				),
-				$this->action_meta . '_REMAINING_SEATS' => array(
-					'name' => esc_html__( 'Remaining seats', 'uncanny-automator' ),
+				$this->get_action_meta() . '_REMAINING_SEATS' => array(
+					'name' => esc_html_x( 'Remaining seats', 'Uncanny Groups', 'uncanny-automator' ),
 					'type' => 'int',
 				),
 			),
-			$this->action_code
+			$this->get_action_code()
 		);
-
-		Automator()->register->action( $action );
 	}
 
 	/**
-	 * @return array
-	 */
-	public function load_options() {
-		$options = array(
-			'options_group' => array(
-				$this->action_meta => array(
-					Automator()->helpers->recipe->uncanny_groups->options->all_ld_groups( '', 'UNCANNYGROUP', false ),
-				),
-				'NUMOFSEATS'       => array(
-					array(
-						'input_type'      => 'int',
-						'option_code'     => 'NUMOFSEATS',
-						'label'           => esc_attr__( 'Quantity', 'uncanny-automator' ),
-						'supports_tokens' => true,
-						'required'        => true,
-					),
-				),
-			),
-		);
-
-		return Automator()->utilities->keep_order_of_options( $options );
-	}
-
-	/**
-	 * Validation function when the trigger action is hit
+	 * Define action options.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @return array[]
 	 */
-	public function remove_seats_from_a_group( $user_id, $action_data, $recipe_id, $args ) {
+	public function options() {
+
+		return array(
+			array(
+				'option_code'           => $this->get_action_meta(),
+				'label'                 => esc_html_x( 'Group', 'Uncanny Groups', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'required'              => true,
+				'options'               => array(),
+				'supports_custom_value' => true,
+				'remote_data'           => $this->item_helpers->remote_data_load_config( 'groups_strict' ),
+			),
+			array(
+				'option_code'     => 'NUMOFSEATS',
+				'label'           => esc_html_x( 'Quantity', 'Uncanny Groups', 'uncanny-automator' ),
+				'input_type'      => 'int',
+				'required'        => true,
+				'supports_tokens' => true,
+			),
+		);
+	}
+
+	/**
+	 * Process the action.
+	 *
+	 * @param int   $user_id     The user ID.
+	 * @param array $action_data The action configuration.
+	 * @param int   $recipe_id   The recipe ID.
+	 * @param array $args        Additional arguments.
+	 * @param array $parsed      Parsed token values.
+	 *
+	 * @return bool
+	 */
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 		global $wpdb;
 
-		$uo_group_id = Automator()->parse->text( $action_data['meta']['UNCANNYGROUP'], $recipe_id, $user_id, $args );
-		$check_group = Automator()->helpers->recipe->uncanny_groups->options->learndash_validate_groups( array( $uo_group_id ) );
-		if ( empty( $check_group ) || ! is_array( $check_group ) ) {
-			$error_message                       = esc_html__( 'The selected group is not found.', 'uncanny-automator' );
-			$action_data['do-nothing']           = true;
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
+		$uo_group_id = $parsed[ $this->get_action_meta() ] ?? '';
+		$check_group = $this->item_helpers->learndash_validate_groups( array( $uo_group_id ) );
 
-			return;
+		if ( empty( $check_group ) || ! is_array( $check_group ) ) {
+			$this->add_log_error( esc_html_x( 'The selected group is not found.', 'Uncanny Groups', 'uncanny-automator' ) );
+			return false;
 		}
-		$uo_remove_seats = absint( Automator()->parse->text( $action_data['meta']['NUMOFSEATS'], $recipe_id, $user_id, $args ) );
+
+		$uo_remove_seats = absint( $parsed['NUMOFSEATS'] ?? 0 );
 
 		$code_group_id = ulgm()->group_management->seat->get_code_group_id( $uo_group_id );
-		if ( empty( $code_group_id ) ) {
-			$error_message                       = esc_html__( 'Group management is not enabled on the selected group.', 'uncanny-automator' );
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
-			return;
+		if ( empty( $code_group_id ) ) {
+			$this->add_log_error( esc_html_x( 'Group management is not enabled on the selected group.', 'Uncanny Groups', 'uncanny-automator' ) );
+			return false;
 		}
+
 		$existing_seats = ulgm()->group_management->seat->total_seats( $uo_group_id );
 		$empty_seats    = ulgm()->group_management->seat->available_seats( $uo_group_id );
-		if ( empty( $empty_seats ) ) {
-			$error_message                       = esc_html__( 'No empty seats in the selected group.', 'uncanny-automator' );
-			$action_data['complete_with_errors'] = true;
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $error_message );
 
-			return;
+		if ( empty( $empty_seats ) ) {
+			$this->add_log_error( esc_html_x( 'No empty seats in the selected group.', 'Uncanny Groups', 'uncanny-automator' ) );
+			return false;
 		}
-		// Seats removed
+
+		// Seats removed.
 		$tbl = SharedFunctions::$db_group_codes_tbl;
 
-		// If seats to remove are less than empty seats
+		// If seats to remove are less than empty seats.
 		if ( $uo_remove_seats < $empty_seats ) {
 			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL LIMIT %d", $code_group_id, $uo_remove_seats ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			update_post_meta( $uo_group_id, '_ulgm_total_seats', $empty_seats );
 
 			$this->hydrate_tokens(
 				array(
-					$this->action_meta . '_TOTAL_SEATS' => ulgm()->group_management->seat->total_seats( $uo_group_id ),
-					$this->action_meta . '_REMAINING_SEATS' => ulgm()->group_management->seat->remaining_seats( $uo_group_id ),
+					$this->get_action_meta() . '_TOTAL_SEATS'     => ulgm()->group_management->seat->total_seats( $uo_group_id ),
+					$this->get_action_meta() . '_REMAINING_SEATS' => ulgm()->group_management->seat->remaining_seats( $uo_group_id ),
 				)
 			);
 
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-			return;
+			return true;
 		}
-		// if seats to remove are more than empty seats
+
+		// If seats to remove are more than or equal to empty seats.
 		if ( $uo_remove_seats >= $empty_seats ) {
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL", $code_group_id ) );  // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->prefix{$tbl} WHERE group_id = %d AND student_id IS NULL", $code_group_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 			$this->hydrate_tokens(
 				array(
-					$this->action_meta . '_TOTAL_SEATS' => ulgm()->group_management->seat->total_seats( $uo_group_id ),
-					$this->action_meta . '_REMAINING_SEATS' => ulgm()->group_management->seat->remaining_seats( $uo_group_id ),
+					$this->get_action_meta() . '_TOTAL_SEATS'     => ulgm()->group_management->seat->total_seats( $uo_group_id ),
+					$this->get_action_meta() . '_REMAINING_SEATS' => ulgm()->group_management->seat->remaining_seats( $uo_group_id ),
 				)
 			);
+
 			update_post_meta( $uo_group_id, '_ulgm_total_seats', $existing_seats - $uo_remove_seats );
 		}
 
-		Automator()->complete_action( $user_id, $action_data, $recipe_id );
+		return true;
 	}
-
 }

@@ -1,185 +1,85 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Wp_Fluent_Forms;
 
 /**
- * Class WPFF_SUBFORM
+ * Logged-in trigger: a user submits a Fluent Forms form a number of times.
+ *
+ * @property Wp_Fluent_Forms_Helpers $item_helpers
  *
  * @package Uncanny_Automator
  */
-class WPFF_SUBFORM {
+class WPFF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
-	 * Integration code
+	 * Static definition — opts the trigger into lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	public static $integration = 'WPFF';
-
-	/**
-	 * @var string
-	 */
-	private $trigger_code;
-	/**
-	 * @var string
-	 */
-	private $trigger_meta;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->trigger_code = 'WPFFSUBFORM';
-		$this->trigger_meta = 'WPFFFORMS';
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'WPFFSUBFORM', 'WPFF' )
+			->trigger_meta( 'WPFFFORMS' )
+			->hook( 'fluentform/before_insert_submission', 20, 3 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Set up the trigger.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 
-		$trigger = array(
-			'author'              => Automator()->get_author_name( $this->trigger_code ),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/wp-fluent-forms/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - Ninja Forms */
-			'sentence'            => sprintf( esc_attr_x( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'Wp Fluent Forms', 'uncanny-automator' ), $this->trigger_meta, 'NUMTIMES' ),
-			/* translators: Logged-in trigger - Ninja Forms */
-			'select_option_name'  => esc_attr_x( 'A user submits {{a form}}', 'Wp Fluent Forms', 'uncanny-automator' ),
-			'action'              => 'fluentform/before_insert_submission',
-			'priority'            => 20,
-			'accepted_args'       => 3,
-			'validation_function' => array( $this, 'wpffform_submit' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
-
-		Automator()->register->trigger( $trigger );
+		// translators: %1$s is the form name, %2$s is the number of times
+		$this->set_sentence( sprintf( esc_html_x( 'A user submits {{a form:%1$s}} {{a number of:%2$s}} time(s)', 'Fluent Forms', 'uncanny-automator' ), $this->get_trigger_meta(), 'NUMTIMES' ) );
+		$this->set_readable_sentence( esc_html_x( 'A user submits {{a form}} {{a number of}} time(s)', 'Fluent Forms', 'uncanny-automator' ) );
 	}
 
-
 	/**
-	 * @return array[]
+	 * Define the trigger options.
+	 *
+	 * @return array
 	 */
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					Automator()->helpers->recipe->wp_fluent_forms->options->list_wp_fluent_forms(),
-					Automator()->helpers->recipe->options->number_of_times(),
-				),
-			)
+	public function options() {
+		return array(
+			$this->item_helpers->form_select_field( $this->get_trigger_meta(), true ),
+			$this->item_helpers->number_of_times_field(),
 		);
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Define the trigger tokens.
 	 *
-	 * @param $inser_data
-	 * @param $data
-	 * @param $form
+	 * @param array $trigger
+	 * @param array $tokens
+	 *
+	 * @return array
 	 */
-	public function wpffform_submit( $insert_data, $data, $form ) {
-
-		$user_id = get_current_user_id();
-
-		// Logged in users only
-		if ( empty( $user_id ) ) {
-			return;
-		}
-		if ( empty( $form ) ) {
-			return;
-		}
-
-		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
-		$matches = $this->match_condition( $form, $data, $recipes );
-
-		if ( ! $matches ) {
-			return;
-		}
-
-		$entry_data = json_decode( $insert_data['response'], true );
-
-		if ( ! empty( $matches ) ) {
-			foreach ( $matches as $trigger_id => $recipe_id ) {
-
-				if ( Automator()->is_recipe_completed( $recipe_id, $user_id ) ) {
-					continue;
-				}
-
-				$args = array(
-					'code'             => $this->trigger_code,
-					'meta'             => $this->trigger_meta,
-					'meta_key'         => $this->trigger_meta,
-					'recipe_to_match'  => $recipe_id,
-					'trigger_to_match' => $trigger_id,
-					'ignore_post_id'   => true,
-					'user_id'          => $user_id,
-				);
-
-				$result = Automator()->maybe_add_trigger_entry( $args, false );
-
-				if ( $result ) {
-					foreach ( $result as $r ) {
-						if ( true === $r['result'] ) {
-							if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
-								//Saving form values in trigger log meta for token parsing!
-								$wp_ff_args = array(
-									'trigger_id'     => (int) $r['args']['trigger_id'],
-									'user_id'        => $user_id,
-									'trigger_log_id' => $r['args']['get_trigger_id'],
-									'run_number'     => $r['args']['run_number'],
-								);
-
-								$wp_ff_args['meta_key'] = $this->trigger_meta;
-								Automator()->helpers->recipe->wp_fluent_forms->extract_save_wp_fluent_form_fields( $entry_data, $form, $wp_ff_args );
-								Automator()->helpers->recipe->wp_fluent_forms->save_wp_fluent_form_entry_data( $insert_data, $wp_ff_args, $this->trigger_meta . '_ID', $form->id );
-
-								Automator()->maybe_trigger_complete( $r['args'] );
-							}
-						}
-					}
-				}
-			}
-		}
+	public function define_tokens( $trigger, $tokens ) {
+		return $this->item_helpers->tokens()->define_trigger_tokens( $trigger, $tokens, $this->get_trigger_meta() );
 	}
 
 	/**
-	 * @param      $form_data
-	 * @param      $submitted_data
-	 * @param null $recipes
-	 * @param null $trigger_meta
-	 * @param null $trigger_code
-	 * @param null $trigger_second_code
+	 * Validate the trigger.
 	 *
-	 * @return array|bool
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
+	 * @return bool
 	 */
-	public function match_condition( $form_data, $submitted_data, $recipes = null ) {
+	public function validate( $trigger, $hook_args ) {
+		return $this->item_helpers->validate_form_id_match( $trigger, $hook_args, $this->get_trigger_meta() );
+	}
 
-		if ( null === $recipes ) {
-			return false;
-		}
-
-		$matches = array();
-
-		foreach ( $recipes as $recipe ) {
-			foreach ( $recipe['triggers'] as $trigger ) {
-				//  Validate that all needed feilds and value are set
-				if (
-					isset( $trigger['meta'] ) && ! empty( $trigger['meta'] )
-					&& isset( $trigger['meta']['WPFFFORMS'] ) && ! empty( $trigger['meta']['WPFFFORMS'] )
-					&& ( (int) $form_data->id === (int) $trigger['meta']['WPFFFORMS'] || '-1' === $trigger['meta']['WPFFFORMS'] )
-				) {
-					$matches[ $trigger['ID'] ] = $recipe['ID'];
-				}
-			}
-		}
-
-		if ( ! empty( $matches ) ) {
-			return $matches;
-		}
-
-		return false;
+	/**
+	 * Hydrate the trigger tokens.
+	 *
+	 * @param array $completed_trigger
+	 * @param array $hook_args
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $completed_trigger, $hook_args ) {
+		return $this->item_helpers->tokens()->hydrate_trigger_tokens( $completed_trigger, $hook_args, $this->get_trigger_meta() );
 	}
 }

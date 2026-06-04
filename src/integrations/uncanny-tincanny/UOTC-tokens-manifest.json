@@ -1,0 +1,187 @@
+{
+    "integration_id": "UOTC",
+    "updated_at": "2026-03-09T20:02:50Z",
+    "triggers": [
+        {
+            "code": "USERATTAINSSCORE",
+            "meta": "TCUSERATTAINSSCORE",
+            "tokens": [
+                {
+                    "id": "TCUSERATTAINSSCORE",
+                    "name": "Module Score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERATTAINSSCORE:TCUSERATTAINSSCORE"
+                },
+                {
+                    "id": "TCUSERATTAINSSCORE",
+                    "name": "Module Score",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERATTAINSSCORE:TCUSERATTAINSSCORE"
+                },
+                {
+                    "id": "-1",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_course:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_course_id:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_course_url:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Lesson title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_lesson:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Lesson ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_lesson_id:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Lesson URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_lesson_url:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Topic title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_topic:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Topic ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_topic_id:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Topic URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCUSERATTAINSSCORE_maybe_topic_url:-TRIGGER_ID"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "MODULEINTERACTION",
+            "meta": "TCMODULEINTERACTION",
+            "tokens": [
+                {
+                    "id": "TCMODULEINTERACTION",
+                    "name": "Module",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:MODULEINTERACTION:TCMODULEINTERACTION"
+                },
+                {
+                    "id": "TCMODULEINTERACTION",
+                    "name": "Module",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:MODULEINTERACTION:TCMODULEINTERACTION"
+                },
+                {
+                    "id": "-1",
+                    "name": "Course title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_course:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Course ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_course_id:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Course URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_course_url:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Lesson title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_lesson:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Lesson ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_lesson_id:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Lesson URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_lesson_url:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Topic title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_topic:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Topic ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_topic_id:-TRIGGER_ID"
+                },
+                {
+                    "id": "-1",
+                    "name": "Topic URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:TCMODULEINTERACTION_maybe_topic_url:-TRIGGER_ID"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        }
+    ],
+    "actions": []
+}

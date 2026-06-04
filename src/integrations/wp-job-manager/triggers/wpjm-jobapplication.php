@@ -19,6 +19,15 @@ class Wpjm_Jobapplication extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( self::TRIGGER_CODE, 'WPJM' )
+			->trigger_meta( self::TRIGGER_META )
+			->hook( 'new_job_application', 10, 2 );
+	}
+
+	/**
 	 * Check if requirements are met
 	 */
 	public function requirements_met() {
@@ -29,17 +38,12 @@ class Wpjm_Jobapplication extends \Uncanny_Automator\Recipe\Trigger {
 	 * Setup trigger
 	 */
 	protected function setup_trigger() {
-		$this->set_integration( 'WPJM' );
-		$this->set_trigger_code( self::TRIGGER_CODE );
-		$this->set_trigger_meta( self::TRIGGER_META );
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_pro( false );
-		$this->set_is_login_required( true );
-		$this->set_trigger_type( 'user' );
+		$this->set_is_login_required( false );
 		$this->set_uses_api( false );
 
 		// Deprecated new_job_application hook, added a new hook job_manager_applications_new_job_application
-		$this->add_action( 'new_job_application' );
-		$this->set_action_args_count( 2 );
 
 		// translators: %1$s is the job
 		$this->set_sentence( sprintf( esc_html_x( 'A user applies for {{a job:%1$s}}', 'WP Job Manager', 'uncanny-automator' ), $this->get_trigger_meta() ) );
@@ -76,6 +80,23 @@ class Wpjm_Jobapplication extends \Uncanny_Automator\Recipe\Trigger {
 		if ( empty( $job_id ) || ! is_numeric( $job_id ) ) {
 			return false;
 		}
+
+		// Credit the application's author. new_job_application fires for
+		// guest applies and programmatic inserts too, so resolve the user
+		// from the application post instead of the current request.
+		$application = get_post( $application_id );
+
+		if ( ! $application instanceof \WP_Post ) {
+			return false;
+		}
+
+		$author_id = (int) $application->post_author;
+
+		if ( $author_id <= 0 || false === get_user_by( 'ID', $author_id ) ) {
+			return false;
+		}
+
+		$this->set_user_id( $author_id );
 
 		$selected_job = $trigger['meta'][ self::TRIGGER_META ];
 

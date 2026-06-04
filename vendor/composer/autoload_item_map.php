@@ -250,6 +250,33 @@ return array(
 		),
 	),
 	'ASANA' => array(
+		'triggers' => array(
+			'ASANA_APPROVAL_STATUS_CHANGED' => array(
+				'code'  => 'APPROVAL_STATUS_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Asana\\APPROVAL_STATUS_CHANGED',
+				'file'  => $baseDir . '/src/integrations/asana/triggers/approval-status-changed.php',
+			),
+			'ASANA_COMMENT_ADDED_TO_TASK' => array(
+				'code'  => 'COMMENT_ADDED_TO_TASK',
+				'class' => 'Uncanny_Automator\\Integrations\\Asana\\COMMENT_ADDED_TO_TASK',
+				'file'  => $baseDir . '/src/integrations/asana/triggers/comment-added-to-task.php',
+			),
+			'ASANA_TASK_CREATED_IN_PROJECT' => array(
+				'code'  => 'TASK_CREATED_IN_PROJECT',
+				'class' => 'Uncanny_Automator\\Integrations\\Asana\\TASK_CREATED_IN_PROJECT',
+				'file'  => $baseDir . '/src/integrations/asana/triggers/task-created-in-project.php',
+			),
+			'ASANA_TASK_CUSTOM_FIELD_CHANGED' => array(
+				'code'  => 'TASK_CUSTOM_FIELD_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Asana\\TASK_CUSTOM_FIELD_CHANGED',
+				'file'  => $baseDir . '/src/integrations/asana/triggers/task-custom-field-changed.php',
+			),
+			'ASANA_TASK_UPDATED_IN_PROJECT' => array(
+				'code'  => 'TASK_UPDATED_IN_PROJECT',
+				'class' => 'Uncanny_Automator\\Integrations\\Asana\\TASK_UPDATED_IN_PROJECT',
+				'file'  => $baseDir . '/src/integrations/asana/triggers/task-updated-in-project.php',
+			),
+		),
 		'actions' => array(
 			'ASANA_ASANA_ADD_COMMENT_TASK_CODE' => array(
 				'code'  => 'ASANA_ADD_COMMENT_TASK_CODE',
@@ -503,10 +530,10 @@ return array(
 				'class' => 'Uncanny_Automator\\Integrations\\Brevo\\BREVO_ADD_CONTACT_TO_LIST',
 				'file'  => $baseDir . '/src/integrations/brevo/actions/brevo-add-contact-to-list.php',
 			),
-			'BREVO_BREVO_ADD_UPDATE_CONTACT_CODE' => array(
-				'code'  => 'BREVO_ADD_UPDATE_CONTACT_CODE',
-				'class' => 'Uncanny_Automator\\Integrations\\Brevo\\BREVO_ADD_UPDATE_CONTACT',
-				'file'  => $baseDir . '/src/integrations/brevo/actions/brevo-add-update-contact.php',
+			'BREVO_BREVO_CREATE_OR_UPDATE_CONTACT_CODE' => array(
+				'code'  => 'BREVO_CREATE_OR_UPDATE_CONTACT_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Brevo\\BREVO_CREATE_OR_UPDATE_CONTACT',
+				'file'  => $baseDir . '/src/integrations/brevo/actions/brevo-create-or-update-contact.php',
 			),
 			'BREVO_BREVO_DELETE_CONTACT_CODE' => array(
 				'code'  => 'BREVO_DELETE_CONTACT_CODE',
@@ -529,7 +556,7 @@ return array(
 			),
 			'BRICKS_BUILDER_BB_USER_SUBMITS_FORM' => array(
 				'code'  => 'BB_USER_SUBMITS_FORM',
-				'class' => 'UncannyAutomator\\Integrations\\Bricks_Builder\\BRICKS_BUILDER_USER_SUBMITS_FORM',
+				'class' => 'Uncanny_Automator\\Integrations\\Bricks_Builder\\BRICKS_BUILDER_USER_SUBMITS_FORM',
 				'file'  => $baseDir . '/src/integrations/bricks-builder/triggers/bricks-builder-user-submits-form.php',
 			),
 		),
@@ -583,10 +610,72 @@ return array(
 				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\ANON_CHARITABLE_MADE_DONATION',
 				'file'  => $baseDir . '/src/integrations/charitable/triggers/anon-charitable-made-donation.php',
 			),
+			'CHARITABLE_CHARITABLE_CAMPAIGN_ENDED' => array(
+				'code'  => 'CHARITABLE_CAMPAIGN_ENDED',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_CAMPAIGN_ENDED',
+				'file'  => $baseDir . '/src/integrations/charitable/triggers/charitable-campaign-ended.php',
+			),
+			'CHARITABLE_CHARITABLE_CAMPAIGN_GOAL_REACHED' => array(
+				'code'  => 'CHARITABLE_CAMPAIGN_GOAL_REACHED',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_CAMPAIGN_GOAL_REACHED',
+				'file'  => $baseDir . '/src/integrations/charitable/triggers/charitable-campaign-goal-reached.php',
+			),
+			'CHARITABLE_CHARITABLE_DONATION_COMPLETED' => array(
+				'code'  => 'CHARITABLE_DONATION_COMPLETED',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_DONATION_COMPLETED',
+				'file'  => $baseDir . '/src/integrations/charitable/triggers/charitable-donation-completed.php',
+			),
+			'CHARITABLE_CHARITABLE_DONATION_REFUNDED' => array(
+				'code'  => 'CHARITABLE_DONATION_REFUNDED',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_DONATION_REFUNDED',
+				'file'  => $baseDir . '/src/integrations/charitable/triggers/charitable-donation-refunded.php',
+			),
+			'CHARITABLE_CHARITABLE_DONATION_STATUS_CHANGED' => array(
+				'code'  => 'CHARITABLE_DONATION_STATUS_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_DONATION_STATUS_CHANGED',
+				'file'  => $baseDir . '/src/integrations/charitable/triggers/charitable-donation-status-changed.php',
+			),
+			'CHARITABLE_CHARITABLE_DONOR_CREATED' => array(
+				'code'  => 'CHARITABLE_DONOR_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_DONOR_CREATED',
+				'file'  => $baseDir . '/src/integrations/charitable/triggers/charitable-donor-created.php',
+			),
+			'CHARITABLE_CHARITABLE_USER_REGISTERED' => array(
+				'code'  => 'CHARITABLE_USER_REGISTERED',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_REGISTERED',
+				'file'  => $baseDir . '/src/integrations/charitable/triggers/charitable-user-registered.php',
+			),
 			'CHARITABLE_USER_MADE_DONATION' => array(
 				'code'  => 'USER_MADE_DONATION',
 				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_USER_MADE_DONATION',
 				'file'  => $baseDir . '/src/integrations/charitable/triggers/charitable-user-made-donation.php',
+			),
+		),
+		'actions' => array(
+			'CHARITABLE_CHARITABLE_ADD_DONOR_TAG' => array(
+				'code'  => 'CHARITABLE_ADD_DONOR_TAG',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_ADD_DONOR_TAG',
+				'file'  => $baseDir . '/src/integrations/charitable/actions/charitable-add-donor-tag.php',
+			),
+			'CHARITABLE_CHARITABLE_CREATE_DONOR' => array(
+				'code'  => 'CHARITABLE_CREATE_DONOR',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_CREATE_DONOR',
+				'file'  => $baseDir . '/src/integrations/charitable/actions/charitable-create-donor.php',
+			),
+			'CHARITABLE_CHARITABLE_CREATE_OFFLINE_DONATION' => array(
+				'code'  => 'CHARITABLE_CREATE_OFFLINE_DONATION',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_CREATE_OFFLINE_DONATION',
+				'file'  => $baseDir . '/src/integrations/charitable/actions/charitable-create-offline-donation.php',
+			),
+			'CHARITABLE_CHARITABLE_UPDATE_DONATION_STATUS' => array(
+				'code'  => 'CHARITABLE_UPDATE_DONATION_STATUS',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_UPDATE_DONATION_STATUS',
+				'file'  => $baseDir . '/src/integrations/charitable/actions/charitable-update-donation-status.php',
+			),
+			'CHARITABLE_CHARITABLE_UPDATE_DONOR' => array(
+				'code'  => 'CHARITABLE_UPDATE_DONOR',
+				'class' => 'Uncanny_Automator\\Integrations\\Charitable\\CHARITABLE_UPDATE_DONOR',
+				'file'  => $baseDir . '/src/integrations/charitable/actions/charitable-update-donor.php',
 			),
 		),
 	),
@@ -907,10 +996,127 @@ return array(
 	),
 	'EC' => array(
 		'triggers' => array(
+			'EC_EC_EVENT_CREATED_OR_UPDATED' => array(
+				'code'  => 'EC_EVENT_CREATED_OR_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_EVENT_CREATED_OR_UPDATED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-event-created-or-updated.php',
+			),
+			'EC_EC_EVENT_LINKED' => array(
+				'code'  => 'EC_EVENT_LINKED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_EVENT_LINKED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-event-linked.php',
+			),
+			'EC_EC_EVENT_UNLINKED' => array(
+				'code'  => 'EC_EVENT_UNLINKED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_EVENT_UNLINKED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-event-unlinked.php',
+			),
+			'EC_EC_EVENT_UPDATED' => array(
+				'code'  => 'EC_EVENT_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_EVENT_UPDATED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-event-updated.php',
+			),
+			'EC_EC_ORGANIZER_CREATED' => array(
+				'code'  => 'EC_ORGANIZER_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_ORGANIZER_CREATED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-organizer-created.php',
+			),
+			'EC_EC_ORGANIZER_UPDATED' => array(
+				'code'  => 'EC_ORGANIZER_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_ORGANIZER_UPDATED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-organizer-updated.php',
+			),
+			'EC_EC_VENUE_CREATED' => array(
+				'code'  => 'EC_VENUE_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_VENUE_CREATED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-venue-created.php',
+			),
+			'EC_EC_VENUE_UPDATED' => array(
+				'code'  => 'EC_VENUE_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_VENUE_UPDATED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-venue-updated.php',
+			),
+			'EC_ET_ATTENDEE_CHECKED_IN' => array(
+				'code'  => 'ET_ATTENDEE_CHECKED_IN',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\ET_ATTENDEE_CHECKED_IN',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-attendee-checked-in.php',
+			),
+			'EC_ET_ATTENDEE_UNCHECKED_IN' => array(
+				'code'  => 'ET_ATTENDEE_UNCHECKED_IN',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\ET_ATTENDEE_UNCHECKED_IN',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-attendee-unchecked-in.php',
+			),
+			'EC_ET_RSVP_TICKETS_GENERATED_PRODUCT' => array(
+				'code'  => 'ET_RSVP_TICKETS_GENERATED_PRODUCT',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\ET_RSVP_TICKETS_GENERATED_PRODUCT',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php',
+			),
+			'EC_ET_TICKET_ADDED' => array(
+				'code'  => 'ET_TICKET_ADDED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\ET_TICKET_ADDED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-ticket-added.php',
+			),
+			'EC_ET_TICKET_DELETED' => array(
+				'code'  => 'ET_TICKET_DELETED',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\ET_TICKET_DELETED',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-ticket-deleted.php',
+			),
 			'EC_USERREGISTERED' => array(
 				'code'  => 'USERREGISTERED',
-				'class' => 'Uncanny_Automator\\EC_REGISTER',
-				'file'  => $baseDir . '/src/integrations/event-tickets/triggers/ec-register.php',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_REGISTER',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/triggers/tec-user-registers-for-event.php',
+			),
+		),
+		'actions' => array(
+			'EC_EC_ASSIGN_ORGANIZER' => array(
+				'code'  => 'EC_ASSIGN_ORGANIZER',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_ASSIGN_ORGANIZER',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-assign-organizer.php',
+			),
+			'EC_EC_ASSIGN_VENUE' => array(
+				'code'  => 'EC_ASSIGN_VENUE',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_ASSIGN_VENUE',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-assign-venue.php',
+			),
+			'EC_EC_CREATE_EVENT' => array(
+				'code'  => 'EC_CREATE_EVENT',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_CREATE_EVENT',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-create-event.php',
+			),
+			'EC_EC_CREATE_ORGANIZER' => array(
+				'code'  => 'EC_CREATE_ORGANIZER',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_CREATE_ORGANIZER',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-create-organizer.php',
+			),
+			'EC_EC_CREATE_VENUE' => array(
+				'code'  => 'EC_CREATE_VENUE',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_CREATE_VENUE',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-create-venue.php',
+			),
+			'EC_EC_DELETE_EVENT' => array(
+				'code'  => 'EC_DELETE_EVENT',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_DELETE_EVENT',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-delete-event.php',
+			),
+			'EC_EC_UPDATE_EVENT' => array(
+				'code'  => 'EC_UPDATE_EVENT',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\EC_UPDATE_EVENT',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-update-event.php',
+			),
+			'EC_ET_CHECK_IN_ATTENDEE' => array(
+				'code'  => 'ET_CHECK_IN_ATTENDEE',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\ET_CHECK_IN_ATTENDEE',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-check-in-attendee.php',
+			),
+			'EC_ET_CREATE_RSVP_ATTENDEE' => array(
+				'code'  => 'ET_CREATE_RSVP_ATTENDEE',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\ET_CREATE_RSVP_ATTENDEE',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php',
+			),
+			'EC_ET_UNCHECK_IN_ATTENDEE' => array(
+				'code'  => 'ET_UNCHECK_IN_ATTENDEE',
+				'class' => 'Uncanny_Automator\\Integrations\\The_Events_Calendar\\ET_UNCHECK_IN_ATTENDEE',
+				'file'  => $baseDir . '/src/integrations/the-events-calendar/actions/tec-uncheck-in-attendee.php',
 			),
 		),
 	),
@@ -1267,6 +1473,21 @@ return array(
 				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Community\\FLUENTCOMMUNITY_USER_LESSON_COMPLETED',
 				'file'  => $baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-lesson-completed.php',
 			),
+			'FLUENT_COMMUNITY_FLUENTCOMMUNITY_USER_QUIZ_COMPLETED_CODE' => array(
+				'code'  => 'FLUENTCOMMUNITY_USER_QUIZ_COMPLETED_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Community\\FLUENTCOMMUNITY_USER_QUIZ_COMPLETED',
+				'file'  => $baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-completed.php',
+			),
+			'FLUENT_COMMUNITY_FLUENTCOMMUNITY_USER_QUIZ_PASS_FAIL_CODE' => array(
+				'code'  => 'FLUENTCOMMUNITY_USER_QUIZ_PASS_FAIL_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Community\\FLUENTCOMMUNITY_USER_QUIZ_PASS_FAIL',
+				'file'  => $baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-pass-fail.php',
+			),
+			'FLUENT_COMMUNITY_FLUENTCOMMUNITY_USER_QUIZ_PERCENTAGE_CODE' => array(
+				'code'  => 'FLUENTCOMMUNITY_USER_QUIZ_PERCENTAGE_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Community\\FLUENTCOMMUNITY_USER_QUIZ_PERCENTAGE',
+				'file'  => $baseDir . '/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-percentage.php',
+			),
 			'FLUENT_COMMUNITY_FLUENTCOMMUNITY_USER_SPACE_JOINED_CODE' => array(
 				'code'  => 'FLUENTCOMMUNITY_USER_SPACE_JOINED_CODE',
 				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Community\\FLUENTCOMMUNITY_USER_SPACE_JOINED',
@@ -1361,32 +1582,69 @@ return array(
 		'actions' => array(
 			'GH_GHADDTAG' => array(
 				'code'  => 'GHADDTAG',
-				'class' => 'Uncanny_Automator\\GH_ADDTAG',
-				'file'  => $baseDir . '/src/integrations/groundhogg/actions/gh-addtag.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Groundhogg\\GH_ADDTAG',
+				'file'  => $baseDir . '/src/integrations/groundhogg/actions/groundhogg-add-tag-to-user.php',
 			),
 			'GH_GHREMOVETAG' => array(
 				'code'  => 'GHREMOVETAG',
-				'class' => 'Uncanny_Automator\\GH_REMOVETAG',
-				'file'  => $baseDir . '/src/integrations/groundhogg/actions/gh-removetag.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Groundhogg\\GH_REMOVETAG',
+				'file'  => $baseDir . '/src/integrations/groundhogg/actions/groundhogg-remove-tag-from-user.php',
+			),
+			'GH_GH_ADD_NOTE_TO_CONTACT' => array(
+				'code'  => 'GH_ADD_NOTE_TO_CONTACT',
+				'class' => 'Uncanny_Automator\\Integrations\\Groundhogg\\GH_ADD_NOTE_TO_CONTACT',
+				'file'  => $baseDir . '/src/integrations/groundhogg/actions/groundhogg-add-note-to-contact.php',
 			),
 			'GH_GH_ADD_TAG_TO_CONTACT' => array(
 				'code'  => 'GH_ADD_TAG_TO_CONTACT',
-				'class' => 'Uncanny_Automator\\GH_ADD_TAG_TO_CONTACT',
-				'file'  => $baseDir . '/src/integrations/groundhogg/actions/gh-add-tag-to-contact.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Groundhogg\\GH_ADD_TAG_TO_CONTACT',
+				'file'  => $baseDir . '/src/integrations/groundhogg/actions/groundhogg-add-tag-to-contact.php',
 			),
 			'GH_GH_CREATE_UPDATE_CONTACT' => array(
 				'code'  => 'GH_CREATE_UPDATE_CONTACT',
-				'class' => 'Uncanny_Automator\\GH_CREATE_UPDATE_CONTACT',
-				'file'  => $baseDir . '/src/integrations/groundhogg/actions/gh-create-update-contact.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Groundhogg\\GH_CREATE_UPDATE_CONTACT',
+				'file'  => $baseDir . '/src/integrations/groundhogg/actions/groundhogg-create-update-contact.php',
 			),
 			'GH_GH_REMOVE_TAG_FROM_CONTACT' => array(
 				'code'  => 'GH_REMOVE_TAG_FROM_CONTACT',
-				'class' => 'Uncanny_Automator\\GH_REMOVE_TAG_FROM_CONTACT',
-				'file'  => $baseDir . '/src/integrations/groundhogg/actions/gh-remove-tag-from-contact.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Groundhogg\\GH_REMOVE_TAG_FROM_CONTACT',
+				'file'  => $baseDir . '/src/integrations/groundhogg/actions/groundhogg-remove-tag-from-contact.php',
 			),
 		),
 	),
 	'GITHUB' => array(
+		'triggers' => array(
+			'GITHUB_EVENT_OCCURS_IN_REPO' => array(
+				'code'  => 'EVENT_OCCURS_IN_REPO',
+				'class' => 'Uncanny_Automator\\Integrations\\Github\\EVENT_OCCURS_IN_REPO',
+				'file'  => $baseDir . '/src/integrations/github/triggers/event-occurs-in-repo.php',
+			),
+			'GITHUB_GITHUB_PUSH_TO_REPO' => array(
+				'code'  => 'GITHUB_PUSH_TO_REPO',
+				'class' => 'Uncanny_Automator\\Integrations\\Github\\PUSH_TO_REPO',
+				'file'  => $baseDir . '/src/integrations/github/triggers/push-to-repo.php',
+			),
+			'GITHUB_ISSUE_CREATED_IN_REPO' => array(
+				'code'  => 'ISSUE_CREATED_IN_REPO',
+				'class' => 'Uncanny_Automator\\Integrations\\Github\\ISSUE_CREATED_IN_REPO',
+				'file'  => $baseDir . '/src/integrations/github/triggers/issue-created-in-repo.php',
+			),
+			'GITHUB_PULL_REQUEST_MERGED_IN_REPO' => array(
+				'code'  => 'PULL_REQUEST_MERGED_IN_REPO',
+				'class' => 'Uncanny_Automator\\Integrations\\Github\\PULL_REQUEST_MERGED_IN_REPO',
+				'file'  => $baseDir . '/src/integrations/github/triggers/pull-request-merged-in-repo.php',
+			),
+			'GITHUB_PULL_REQUEST_OPENED_IN_REPO' => array(
+				'code'  => 'PULL_REQUEST_OPENED_IN_REPO',
+				'class' => 'Uncanny_Automator\\Integrations\\Github\\PULL_REQUEST_OPENED_IN_REPO',
+				'file'  => $baseDir . '/src/integrations/github/triggers/pull-request-opened-in-repo.php',
+			),
+			'GITHUB_RELEASE_CREATED_IN_REPO' => array(
+				'code'  => 'RELEASE_CREATED_IN_REPO',
+				'class' => 'Uncanny_Automator\\Integrations\\Github\\RELEASE_CREATED_IN_REPO',
+				'file'  => $baseDir . '/src/integrations/github/triggers/release-created-in-repo.php',
+			),
+		),
 		'actions' => array(
 			'GITHUB_GITHUB_ADD_COMMENT_ISSUE_OR_PR_CODE' => array(
 				'code'  => 'GITHUB_ADD_COMMENT_ISSUE_OR_PR_CODE',
@@ -1520,12 +1778,12 @@ return array(
 		'actions' => array(
 			'GTT_GTTREGISTERUSER' => array(
 				'code'  => 'GTTREGISTERUSER',
-				'class' => 'Uncanny_Automator\\GTT_REGISTERUSER',
+				'class' => 'Uncanny_Automator\\Integrations\\Gototraining\\GTT_REGISTERUSER',
 				'file'  => $baseDir . '/src/integrations/gototraining/actions/gtt-registeruser.php',
 			),
 			'GTT_GTTUNREGISTERUSER' => array(
 				'code'  => 'GTTUNREGISTERUSER',
-				'class' => 'Uncanny_Automator\\GTT_UNREGISTERUSER',
+				'class' => 'Uncanny_Automator\\Integrations\\Gototraining\\GTT_UNREGISTERUSER',
 				'file'  => $baseDir . '/src/integrations/gototraining/actions/gtt-unregisteruser.php',
 			),
 		),
@@ -1534,12 +1792,12 @@ return array(
 		'actions' => array(
 			'GTW_GTWREGISTERUSER' => array(
 				'code'  => 'GTWREGISTERUSER',
-				'class' => 'Uncanny_Automator\\GTW_REGISTERUSER',
+				'class' => 'Uncanny_Automator\\Integrations\\Gotowebinar\\GTW_REGISTERUSER',
 				'file'  => $baseDir . '/src/integrations/gotowebinar/actions/gtw-registeruser.php',
 			),
 			'GTW_GTWUNREGISTERUSER' => array(
 				'code'  => 'GTWUNREGISTERUSER',
-				'class' => 'Uncanny_Automator\\GTW_UNREGISTERUSER',
+				'class' => 'Uncanny_Automator\\Integrations\\Gotowebinar\\GTW_UNREGISTERUSER',
 				'file'  => $baseDir . '/src/integrations/gotowebinar/actions/gtw-unregisteruser.php',
 			),
 		),
@@ -1814,90 +2072,94 @@ return array(
 		'triggers' => array(
 			'LD_COURSEDONE' => array(
 				'code'  => 'COURSEDONE',
-				'class' => 'Uncanny_Automator\\LD_COURSEDONE',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-coursedone.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_COURSEDONE',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-course-completed.php',
 			),
 			'LD_LD_COURSE_PROGRESS_PERCENTAGE' => array(
 				'code'  => 'LD_COURSE_PROGRESS_PERCENTAGE',
-				'class' => 'Uncanny_Automator\\LD_COURSE_PROGRESS_PERCENTAGE',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-course-progress-percentage.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_COURSE_PROGRESS_PERCENTAGE',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-course-progress-percentage.php',
 			),
 			'LD_LD_FAILQUIZ' => array(
 				'code'  => 'LD_FAILQUIZ',
-				'class' => 'Uncanny_Automator\\LD_FAILQUIZ',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-failquiz.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_FAILQUIZ',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-quiz-failed.php',
 			),
 			'LD_LD_PASSQUIZ' => array(
 				'code'  => 'LD_PASSQUIZ',
-				'class' => 'Uncanny_Automator\\LD_PASSQUIZ',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-passquiz.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_PASSQUIZ',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-quiz-passed.php',
 			),
 			'LD_LD_QUIZDONE' => array(
 				'code'  => 'LD_QUIZDONE',
-				'class' => 'Uncanny_Automator\\LD_QUIZDONE',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-quizdone.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_QUIZDONE',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-quiz-completed.php',
 			),
 			'LD_LD_QUIZPERCENT' => array(
 				'code'  => 'LD_QUIZPERCENT',
-				'class' => 'Uncanny_Automator\\LD_QUIZPERCENT',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-quizpercent.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_QUIZPERCENT',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-quiz-percentage.php',
 			),
 			'LD_LD_QUIZPOINT' => array(
 				'code'  => 'LD_QUIZPOINT',
-				'class' => 'Uncanny_Automator\\LD_QUIZPOINT',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-quizpoint.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_QUIZPOINT',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-quiz-points.php',
 			),
 			'LD_LD_QUIZSCORE' => array(
 				'code'  => 'LD_QUIZSCORE',
-				'class' => 'Uncanny_Automator\\LD_QUIZSCORE',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-quizscore.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_QUIZSCORE',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-quiz-score.php',
 			),
 			'LD_LD_TOPICDONE' => array(
 				'code'  => 'LD_TOPICDONE',
-				'class' => 'Uncanny_Automator\\LD_TOPICDONE',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-topicdone.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_TOPICDONE',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-topic-completed.php',
 			),
 			'LD_LESSONDONE' => array(
 				'code'  => 'LESSONDONE',
-				'class' => 'Uncanny_Automator\\LD_LESSONDONE',
-				'file'  => $baseDir . '/src/integrations/learndash/triggers/ld-lessondone.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_LESSONDONE',
+				'file'  => $baseDir . '/src/integrations/learndash/triggers/learndash-lesson-completed.php',
 			),
 		),
 		'actions' => array(
 			'LD_CREATEGROUP' => array(
 				'code'  => 'CREATEGROUP',
-				'class' => 'Uncanny_Automator\\LD_CREATEGROUP',
-				'file'  => $baseDir . '/src/integrations/learndash/actions/ld-creategroup.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_CREATEGROUP',
+				'file'  => $baseDir . '/src/integrations/learndash/actions/learndash-create-group.php',
 			),
 			'LD_ENRLCOURSE-A' => array(
 				'code'  => 'ENRLCOURSE-A',
-				'class' => 'Uncanny_Automator\\LD_ENRLCOURSE_A',
-				'file'  => $baseDir . '/src/integrations/learndash/actions/ld-enrlcourse-a.php',
-			),
-			'LD_LDACHIEVEMENTS' => array(
-				'code'  => 'LDACHIEVEMENTS',
-				'class' => 'Uncanny_Automator\\LD_ACHIEVEMENTS_AWARD',
-				'file'  => $baseDir . '/src/integrations/learndash/actions/ld-achievements-award.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_ENRLCOURSE_A',
+				'file'  => $baseDir . '/src/integrations/learndash/actions/learndash-enroll-in-course.php',
 			),
 			'LD_MAKEUSERLEADER' => array(
 				'code'  => 'MAKEUSERLEADER',
-				'class' => 'Uncanny_Automator\\LD_MAKEUSERLEADER',
-				'file'  => $baseDir . '/src/integrations/learndash/actions/ld-makeuserleader.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_MAKEUSERLEADER',
+				'file'  => $baseDir . '/src/integrations/learndash/actions/learndash-make-group-leader.php',
 			),
 			'LD_MARKCOURSEDONE' => array(
 				'code'  => 'MARKCOURSEDONE',
-				'class' => 'Uncanny_Automator\\LD_MARKCOURSEDONE',
-				'file'  => $baseDir . '/src/integrations/learndash/actions/ld-markcoursedone.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_MARKCOURSEDONE',
+				'file'  => $baseDir . '/src/integrations/learndash/actions/learndash-mark-course-complete.php',
 			),
 			'LD_MARKLESSONDONE' => array(
 				'code'  => 'MARKLESSONDONE',
-				'class' => 'Uncanny_Automator\\LD_MARKLESSONDONE',
-				'file'  => $baseDir . '/src/integrations/learndash/actions/ld-marklessondone.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_MARKLESSONDONE',
+				'file'  => $baseDir . '/src/integrations/learndash/actions/learndash-mark-lesson-complete.php',
 			),
 			'LD_MARKTOPICDONE' => array(
 				'code'  => 'MARKTOPICDONE',
-				'class' => 'Uncanny_Automator\\LD_MARKTOPICDONE',
-				'file'  => $baseDir . '/src/integrations/learndash/actions/ld-marktopicdone.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash\\LD_MARKTOPICDONE',
+				'file'  => $baseDir . '/src/integrations/learndash/actions/learndash-mark-topic-complete.php',
+			),
+		),
+	),
+	'LD_ACHIEVEMENTS' => array(
+		'actions' => array(
+			'LD_ACHIEVEMENTS_LDACHIEVEMENTS' => array(
+				'code'  => 'LDACHIEVEMENTS',
+				'class' => 'Uncanny_Automator\\Integrations\\Learndash_Achievements\\LD_ACHIEVEMENTS_AWARD',
+				'file'  => $baseDir . '/src/integrations/learndash-achievements/actions/learndash-award-achievement.php',
 			),
 		),
 	),
@@ -2043,74 +2305,74 @@ return array(
 		'triggers' => array(
 			'MAILCHIMP_ANON_MAILCHIMP_CONTACT_ADDED' => array(
 				'code'  => 'ANON_MAILCHIMP_CONTACT_ADDED',
-				'class' => 'Uncanny_Automator\\ANON_MAILCHIMP_CONTACT_ADDED',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\ANON_MAILCHIMP_CONTACT_ADDED',
 				'file'  => $baseDir . '/src/integrations/mailchimp/triggers/anon-mailchimp-contact-added.php',
 			),
 			'MAILCHIMP_ANON_MAILCHIMP_CONTACT_EMAIL_CHANGED' => array(
 				'code'  => 'ANON_MAILCHIMP_CONTACT_EMAIL_CHANGED',
-				'class' => 'Uncanny_Automator\\ANON_MAILCHIMP_CONTACT_EMAIL_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\ANON_MAILCHIMP_CONTACT_EMAIL_CHANGED',
 				'file'  => $baseDir . '/src/integrations/mailchimp/triggers/anon-mailchimp-contact-email-changed.php',
 			),
 			'MAILCHIMP_ANON_MAILCHIMP_CONTACT_UNSUBSCRIBED' => array(
 				'code'  => 'ANON_MAILCHIMP_CONTACT_UNSUBSCRIBED',
-				'class' => 'Uncanny_Automator\\ANON_MAILCHIMP_CONTACT_UNSUBSCRIBED',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\ANON_MAILCHIMP_CONTACT_UNSUBSCRIBED',
 				'file'  => $baseDir . '/src/integrations/mailchimp/triggers/anon-mailchimp-contact-unsubscribed.php',
 			),
 		),
 		'actions' => array(
 			'MAILCHIMP_MCHIMPAUDIENCEADDAUSER' => array(
 				'code'  => 'MCHIMPAUDIENCEADDAUSER',
-				'class' => 'Uncanny_Automator\\AUDIENCE_ADDAUSER',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\AUDIENCE_ADDAUSER',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/audience-addauser.php',
 			),
 			'MAILCHIMP_MCHIMPAUDIENCEADDUSERNOTE' => array(
 				'code'  => 'MCHIMPAUDIENCEADDUSERNOTE',
-				'class' => 'Uncanny_Automator\\AUDIENCE_ADDUSERNOTE',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\AUDIENCE_ADDUSERNOTE',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/audience-addusernote.php',
 			),
 			'MAILCHIMP_MCHIMPAUDIENCEADDUSERTAG' => array(
 				'code'  => 'MCHIMPAUDIENCEADDUSERTAG',
-				'class' => 'Uncanny_Automator\\AUDIENCE_ADDUSERTAG',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\AUDIENCE_ADDUSERTAG',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/audience-addusertag.php',
 			),
 			'MAILCHIMP_MCHIMPAUDIENCEREMOVEUSERTAG' => array(
 				'code'  => 'MCHIMPAUDIENCEREMOVEUSERTAG',
-				'class' => 'Uncanny_Automator\\AUDIENCE_REMOVEUSERTAG',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\AUDIENCE_REMOVEUSERTAG',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/audience-removeusertag.php',
 			),
 			'MAILCHIMP_MCHIMPAUDIENCEUNSUBSCRIBEAUSER' => array(
 				'code'  => 'MCHIMPAUDIENCEUNSUBSCRIBEAUSER',
-				'class' => 'Uncanny_Automator\\AUDIENCE_UNSUBSCRIBEAUSER',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\AUDIENCE_UNSUBSCRIBEAUSER',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/audience-unsubscribeauser.php',
 			),
 			'MAILCHIMP_MCHIMPCAMPAIGNCREATEANDSEND' => array(
 				'code'  => 'MCHIMPCAMPAIGNCREATEANDSEND',
-				'class' => 'Uncanny_Automator\\CAMPAIGN_CREATEANDSEND',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\CAMPAIGN_CREATEANDSEND',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/campaign-createandsend.php',
 			),
 			'MAILCHIMP_MC_EVERYONE_ADD_CONTACT' => array(
 				'code'  => 'MC_EVERYONE_ADD_CONTACT',
-				'class' => 'Uncanny_Automator\\MC_EVERYONE_ADD_CONTACT',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\MC_EVERYONE_ADD_CONTACT',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/mc-everyone-add-contact.php',
 			),
 			'MAILCHIMP_MC_EVERYONE_CONTACT_REMOVE' => array(
 				'code'  => 'MC_EVERYONE_CONTACT_REMOVE',
-				'class' => 'Uncanny_Automator\\MC_EVERYONE_CONTACT_REMOVE',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\MC_EVERYONE_CONTACT_REMOVE',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/mc-everyone-contact-remove.php',
 			),
 			'MAILCHIMP_MC_EVERYONE_USER_ADD_NOTE' => array(
 				'code'  => 'MC_EVERYONE_USER_ADD_NOTE',
-				'class' => 'Uncanny_Automator\\MC_EVERYONE_USER_ADD_NOTE',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\MC_EVERYONE_USER_ADD_NOTE',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/mc-everyone-user-add-note.php',
 			),
 			'MAILCHIMP_MC_EVERYONE_USER_ADD_TAG' => array(
 				'code'  => 'MC_EVERYONE_USER_ADD_TAG',
-				'class' => 'Uncanny_Automator\\MC_EVERYONE_USER_ADD_TAG',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\MC_EVERYONE_USER_ADD_TAG',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/mc-everyone-user-add-tag.php',
 			),
 			'MAILCHIMP_MC_EVERYONE_USER_REMOVE_TAG' => array(
 				'code'  => 'MC_EVERYONE_USER_REMOVE_TAG',
-				'class' => 'Uncanny_Automator\\MC_EVERYONE_USER_REMOVE_TAG',
+				'class' => 'Uncanny_Automator\\Integrations\\Mailchimp\\MC_EVERYONE_USER_REMOVE_TAG',
 				'file'  => $baseDir . '/src/integrations/mailchimp/actions/mc-everyone-user-remove-tag.php',
 			),
 		),
@@ -2641,10 +2903,42 @@ return array(
 		),
 	),
 	'PM' => array(
+		'triggers' => array(
+			'PM_ANON_PM_FORM_SUBMITTED' => array(
+				'code'  => 'ANON_PM_FORM_SUBMITTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Popup_Maker\\ANON_PM_FORM_SUBMITTED',
+				'file'  => $baseDir . '/src/integrations/popup-maker/triggers/anon-pm-form-submitted.php',
+			),
+			'PM_ANON_PM_POPUP_CONVERSION' => array(
+				'code'  => 'ANON_PM_POPUP_CONVERSION',
+				'class' => 'Uncanny_Automator\\Integrations\\Popup_Maker\\ANON_PM_POPUP_CONVERSION',
+				'file'  => $baseDir . '/src/integrations/popup-maker/triggers/anon-pm-popup-conversion.php',
+			),
+			'PM_ANON_PM_POPUP_OPENED' => array(
+				'code'  => 'ANON_PM_POPUP_OPENED',
+				'class' => 'Uncanny_Automator\\Integrations\\Popup_Maker\\ANON_PM_POPUP_OPENED',
+				'file'  => $baseDir . '/src/integrations/popup-maker/triggers/anon-pm-popup-opened.php',
+			),
+			'PM_ANON_PM_SUB_FORM_SUBMITTED' => array(
+				'code'  => 'ANON_PM_SUB_FORM_SUBMITTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Popup_Maker\\ANON_PM_SUB_FORM_SUBMITTED',
+				'file'  => $baseDir . '/src/integrations/popup-maker/triggers/anon-pm-sub-form-submitted.php',
+			),
+			'PM_USER_PM_FORM_SUBMITTED' => array(
+				'code'  => 'USER_PM_FORM_SUBMITTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Popup_Maker\\USER_PM_FORM_SUBMITTED',
+				'file'  => $baseDir . '/src/integrations/popup-maker/triggers/user-pm-form-submitted.php',
+			),
+			'PM_USER_PM_SUB_FORM_SUBMITTED' => array(
+				'code'  => 'USER_PM_SUB_FORM_SUBMITTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Popup_Maker\\USER_PM_SUB_FORM_SUBMITTED',
+				'file'  => $baseDir . '/src/integrations/popup-maker/triggers/user-pm-sub-form-submitted.php',
+			),
+		),
 		'actions' => array(
 			'PM_POPUPSHOW' => array(
 				'code'  => 'POPUPSHOW',
-				'class' => 'Uncanny_Automator\\PM_POPUPSHOW',
+				'class' => 'Uncanny_Automator\\Integrations\\Popup_Maker\\PM_POPUPSHOW',
 				'file'  => $baseDir . '/src/integrations/popup-maker/actions/pm-popupshow.php',
 			),
 		),
@@ -2751,6 +3045,52 @@ return array(
 				'code'  => 'RCADDMEMBERSHIPLEVEL',
 				'class' => 'Uncanny_Automator\\RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL',
 				'file'  => $baseDir . '/src/integrations/restrict-content/actions/restrict-content-add-membership-level.php',
+			),
+		),
+	),
+	'SAVETO_WISHLIST' => array(
+		'triggers' => array(
+			'SAVETO_WISHLIST_GUEST_SYNCED' => array(
+				'code'  => 'GUEST_SYNCED',
+				'class' => 'Uncanny_Automator\\Integrations\\Saveto_Wishlist\\SAVETO_WISHLIST_GUEST_SYNCED',
+				'file'  => $baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-guest-synced.php',
+			),
+			'SAVETO_WISHLIST_USER_ADDS_PRODUCT' => array(
+				'code'  => 'USER_ADDS_PRODUCT',
+				'class' => 'Uncanny_Automator\\Integrations\\Saveto_Wishlist\\SAVETO_WISHLIST_USER_ADDS_PRODUCT',
+				'file'  => $baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-adds-product.php',
+			),
+			'SAVETO_WISHLIST_USER_CREATES_WISHLIST' => array(
+				'code'  => 'USER_CREATES_WISHLIST',
+				'class' => 'Uncanny_Automator\\Integrations\\Saveto_Wishlist\\SAVETO_WISHLIST_USER_CREATES_WISHLIST',
+				'file'  => $baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-creates-wishlist.php',
+			),
+			'SAVETO_WISHLIST_USER_MOVES_TO_CART' => array(
+				'code'  => 'USER_MOVES_TO_CART',
+				'class' => 'Uncanny_Automator\\Integrations\\Saveto_Wishlist\\SAVETO_WISHLIST_USER_MOVES_TO_CART',
+				'file'  => $baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-moves-to-cart.php',
+			),
+			'SAVETO_WISHLIST_USER_REMOVES_PRODUCT' => array(
+				'code'  => 'USER_REMOVES_PRODUCT',
+				'class' => 'Uncanny_Automator\\Integrations\\Saveto_Wishlist\\SAVETO_WISHLIST_USER_REMOVES_PRODUCT',
+				'file'  => $baseDir . '/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-removes-product.php',
+			),
+		),
+		'actions' => array(
+			'SAVETO_WISHLIST_SAVETO_WISHLIST_ADD_PRODUCT' => array(
+				'code'  => 'SAVETO_WISHLIST_ADD_PRODUCT',
+				'class' => 'Uncanny_Automator\\Integrations\\Saveto_Wishlist\\SAVETO_WISHLIST_ADD_PRODUCT',
+				'file'  => $baseDir . '/src/integrations/saveto-wishlist/actions/saveto-wishlist-add-product.php',
+			),
+			'SAVETO_WISHLIST_SAVETO_WISHLIST_CREATE_WISHLIST' => array(
+				'code'  => 'SAVETO_WISHLIST_CREATE_WISHLIST',
+				'class' => 'Uncanny_Automator\\Integrations\\Saveto_Wishlist\\SAVETO_WISHLIST_CREATE_WISHLIST',
+				'file'  => $baseDir . '/src/integrations/saveto-wishlist/actions/saveto-wishlist-create-wishlist.php',
+			),
+			'SAVETO_WISHLIST_SAVETO_WISHLIST_REMOVE_PRODUCT' => array(
+				'code'  => 'SAVETO_WISHLIST_REMOVE_PRODUCT',
+				'class' => 'Uncanny_Automator\\Integrations\\Saveto_Wishlist\\SAVETO_WISHLIST_REMOVE_PRODUCT',
+				'file'  => $baseDir . '/src/integrations/saveto-wishlist/actions/saveto-wishlist-remove-product.php',
 			),
 		),
 	),
@@ -3249,7 +3589,7 @@ return array(
 		'triggers' => array(
 			'THRIVE_OVATION_TVO_TESTIMONIAL_SUBMITTED' => array(
 				'code'  => 'TVO_TESTIMONIAL_SUBMITTED',
-				'class' => 'Uncanny_Automator\\THRIVE_OVATION_TESTIMONIAL_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Thrive_Ovation\\THRIVE_OVATION_TESTIMONIAL_CREATED',
 				'file'  => $baseDir . '/src/integrations/thrive-ovation/triggers/thrive-ovation-testimonial-created.php',
 			),
 		),
@@ -3412,24 +3752,24 @@ return array(
 		'triggers' => array(
 			'UNCANNYCEUS_EARNSCEUS' => array(
 				'code'  => 'EARNSCEUS',
-				'class' => 'Uncanny_Automator\\UNCANNYCEUS_EARNSCEUS',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Ceus\\UNCANNYCEUS_EARNSCEUS',
 				'file'  => $baseDir . '/src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php',
 			),
 			'UNCANNYCEUS_EARNSCEUSNUMBER' => array(
 				'code'  => 'EARNSCEUSNUMBER',
-				'class' => 'Uncanny_Automator\\UNCANNYCEUS_EARNS_NUMBER_CEUS',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Ceus\\UNCANNYCEUS_EARNS_NUMBER_CEUS',
 				'file'  => $baseDir . '/src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php',
 			),
 			'UNCANNYCEUS_EARNS_NUMBERS_MORE_THAN' => array(
 				'code'  => 'EARNS_NUMBERS_MORE_THAN',
-				'class' => 'Uncanny_Automator\\UNCANNYCEUS_EARNS_NUMBERS_MORE_THAN',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Ceus\\UNCANNYCEUS_EARNS_NUMBERS_MORE_THAN',
 				'file'  => $baseDir . '/src/integrations/uncanny-ceus/triggers/uncannyceus-earns-numbers-more-than.php',
 			),
 		),
 		'actions' => array(
 			'UNCANNYCEUS_AWARDCEUS' => array(
 				'code'  => 'AWARDCEUS',
-				'class' => 'Uncanny_Automator\\UNCANNYCEUS_AWARDCEUS',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Ceus\\UNCANNYCEUS_AWARDCEUS',
 				'file'  => $baseDir . '/src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php',
 			),
 		),
@@ -3438,49 +3778,49 @@ return array(
 		'triggers' => array(
 			'UNCANNYCODE_ANONCODEBATCHCREATED' => array(
 				'code'  => 'ANONCODEBATCHCREATED',
-				'class' => 'Uncanny_Automator\\UC_ANON_CODEBATCHCREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_ANON_CODEBATCHCREATED',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/triggers/uc-anon-codebatchcreated.php',
 			),
 			'UNCANNYCODE_CODEREDEEMED' => array(
 				'code'  => 'CODEREDEEMED',
-				'class' => 'Uncanny_Automator\\UC_CODEREDEEMED',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_CODEREDEEMED',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/triggers/uc-coderedeemed.php',
 			),
 			'UNCANNYCODE_UCBATCH' => array(
 				'code'  => 'UCBATCH',
-				'class' => 'Uncanny_Automator\\UC_CODESBATCH',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_CODESBATCH',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/triggers/uc-codesbatch.php',
 			),
 			'UNCANNYCODE_UCPREFIX' => array(
 				'code'  => 'UCPREFIX',
-				'class' => 'Uncanny_Automator\\UC_CODESPREFIX',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_CODESPREFIX',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/triggers/uc-codesprefix.php',
 			),
 			'UNCANNYCODE_UCSUFFIX' => array(
 				'code'  => 'UCSUFFIX',
-				'class' => 'Uncanny_Automator\\UC_CODESSUFFIX',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_CODESSUFFIX',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/triggers/uc-codessuffix.php',
 			),
 		),
 		'actions' => array(
 			'UNCANNYCODE_UCADDBATCHCODES' => array(
 				'code'  => 'UCADDBATCHCODES',
-				'class' => 'Uncanny_Automator\\UC_ADD_BATCH_CODES',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_ADD_BATCH_CODES',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/actions/uc-add-batch-codes.php',
 			),
 			'UNCANNYCODE_UCCANCELCODE' => array(
 				'code'  => 'UCCANCELCODE',
-				'class' => 'Uncanny_Automator\\UC_CANCEL_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_CANCEL_CODE',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/actions/uc-cancel-code.php',
 			),
 			'UNCANNYCODE_UCDELETEBATCHCODES' => array(
 				'code'  => 'UCDELETEBATCHCODES',
-				'class' => 'Uncanny_Automator\\UC_DELETE_BATCH_CODES',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_DELETE_BATCH_CODES',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/actions/uc-delete-batch-codes.php',
 			),
 			'UNCANNYCODE_UCGENERATECODES' => array(
 				'code'  => 'UCGENERATECODES',
-				'class' => 'Uncanny_Automator\\UC_GENERATE_CODES',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Codes\\UC_GENERATE_CODES',
 				'file'  => $baseDir . '/src/integrations/uncanny-codes/actions/uc-generate-codes.php',
 			),
 		),
@@ -3489,34 +3829,34 @@ return array(
 		'triggers' => array(
 			'UNCANNYTOOLKIT_UTGROUPLEADERIMPORTED' => array(
 				'code'  => 'UTGROUPLEADERIMPORTED',
-				'class' => 'Uncanny_Automator\\UT_GROUP_LEADER_IMPORTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Toolkit\\UT_GROUP_LEADER_IMPORTED',
 				'file'  => $baseDir . '/src/integrations/uncanny-toolkit/triggers/ut-group-leader-imported.php',
 			),
 			'UNCANNYTOOLKIT_UTUSERIMPORTED' => array(
 				'code'  => 'UTUSERIMPORTED',
-				'class' => 'Uncanny_Automator\\UT_USER_IMPORTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Toolkit\\UT_USER_IMPORTED',
 				'file'  => $baseDir . '/src/integrations/uncanny-toolkit/triggers/ut-user-imported.php',
 			),
 			'UNCANNYTOOLKIT_UTUSERIMPORTEDCOURSE' => array(
 				'code'  => 'UTUSERIMPORTEDCOURSE',
-				'class' => 'Uncanny_Automator\\UT_USER_IMPORTED_IN_COURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Toolkit\\UT_USER_IMPORTED_IN_COURSE',
 				'file'  => $baseDir . '/src/integrations/uncanny-toolkit/triggers/ut-user-imported-in-course.php',
 			),
 			'UNCANNYTOOLKIT_UTUSERIMPORTEDGROUP' => array(
 				'code'  => 'UTUSERIMPORTEDGROUP',
-				'class' => 'Uncanny_Automator\\UT_USER_IMPORTED_IN_GROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Toolkit\\UT_USER_IMPORTED_IN_GROUP',
 				'file'  => $baseDir . '/src/integrations/uncanny-toolkit/triggers/ut-user-imported-in-group.php',
 			),
 			'UNCANNYTOOLKIT_UTUSERSTIMEINCOURSEEXCEEDS' => array(
 				'code'  => 'UTUSERSTIMEINCOURSEEXCEEDS',
-				'class' => 'Uncanny_Automator\\UT_USERS_TIME_IN_COURSE_EXCEEDS',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Toolkit\\UT_USERS_TIME_IN_COURSE_EXCEEDS',
 				'file'  => $baseDir . '/src/integrations/uncanny-toolkit/triggers/ut-users-time-in-course-exceeds.php',
 			),
 		),
 		'actions' => array(
 			'UNCANNYTOOLKIT_RESETUSERSTIMEINCOURSE' => array(
 				'code'  => 'RESETUSERSTIMEINCOURSE',
-				'class' => 'Uncanny_Automator\\UT_RESETUSERSTIMEINCOURSE',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Toolkit\\UT_RESETUSERSTIMEINCOURSE',
 				'file'  => $baseDir . '/src/integrations/uncanny-toolkit/actions/ut-resetuserstimeincourse.php',
 			),
 		),
@@ -3586,44 +3926,44 @@ return array(
 		'triggers' => array(
 			'UOG_GROUPCREATED' => array(
 				'code'  => 'GROUPCREATED',
-				'class' => 'Uncanny_Automator\\UOG_GROUPCREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Groups\\UOG_GROUPCREATED',
 				'file'  => $baseDir . '/src/integrations/uncanny-groups/triggers/uog-groupcreated.php',
 			),
 			'UOG_REDEEMSGROUPKEY' => array(
 				'code'  => 'REDEEMSGROUPKEY',
-				'class' => 'Uncanny_Automator\\UOG_USERREDEEMS_GROUPKEY',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Groups\\UOG_USERREDEEMS_GROUPKEY',
 				'file'  => $baseDir . '/src/integrations/uncanny-groups/triggers/uog-userredeems-groupkey.php',
 			),
 			'UOG_REGISTEREDWITHGROUPKEY' => array(
 				'code'  => 'REGISTEREDWITHGROUPKEY',
-				'class' => 'Uncanny_Automator\\UOG_REGISTERED_WITH_GROUPKEY',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Groups\\UOG_REGISTERED_WITH_GROUPKEY',
 				'file'  => $baseDir . '/src/integrations/uncanny-groups/triggers/uog-registered-with-groupkey.php',
 			),
 			'UOG_UOG_SEATSADDEDTOGROUP' => array(
 				'code'  => 'UOG_SEATSADDEDTOGROUP',
-				'class' => 'Uncanny_Automator\\UOG_SEATSADDEDTOGROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Groups\\UOG_SEATSADDEDTOGROUP',
 				'file'  => $baseDir . '/src/integrations/uncanny-groups/triggers/uog-seatsaddedtogroup.php',
 			),
 			'UOG_UOG_SEATSREMOVEDFROMGROUP' => array(
 				'code'  => 'UOG_SEATSREMOVEDFROMGROUP',
-				'class' => 'Uncanny_Automator\\UOG_SEATSREMOVEDFROMGROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Groups\\UOG_SEATSREMOVEDFROMGROUP',
 				'file'  => $baseDir . '/src/integrations/uncanny-groups/triggers/uog-seatsremovedfromgroup.php',
 			),
 		),
 		'actions' => array(
 			'UOG_ADDSEATSTOGROUP' => array(
 				'code'  => 'ADDSEATSTOGROUP',
-				'class' => 'Uncanny_Automator\\UOG_ADDSEATSTOGROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Groups\\UOG_ADDSEATSTOGROUP',
 				'file'  => $baseDir . '/src/integrations/uncanny-groups/actions/uog-addseatstogroup.php',
 			),
 			'UOG_CREATEUNCANNYGROUP' => array(
 				'code'  => 'CREATEUNCANNYGROUP',
-				'class' => 'Uncanny_Automator\\UOG_CREATEUNCANNYGROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Groups\\UOG_CREATEUNCANNYGROUP',
 				'file'  => $baseDir . '/src/integrations/uncanny-groups/actions/uog-createuncannygroup.php',
 			),
 			'UOG_REMOVESEATSFROMGROUP' => array(
 				'code'  => 'REMOVESEATSFROMGROUP',
-				'class' => 'Uncanny_Automator\\UOG_REMOVESEATSFROMGROUP',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Groups\\UOG_REMOVESEATSFROMGROUP',
 				'file'  => $baseDir . '/src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php',
 			),
 		),
@@ -3632,12 +3972,12 @@ return array(
 		'triggers' => array(
 			'UOTC_MODULEINTERACTION' => array(
 				'code'  => 'MODULEINTERACTION',
-				'class' => 'Uncanny_Automator\\UOTC_MODULEINTERACTION',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Tincanny\\UOTC_MODULEINTERACTION',
 				'file'  => $baseDir . '/src/integrations/uncanny-tincanny/triggers/uotc-moduleinteraction.php',
 			),
 			'UOTC_USERATTAINSSCORE' => array(
 				'code'  => 'USERATTAINSSCORE',
-				'class' => 'Uncanny_Automator\\UOTC_USERATTAINSSCORE',
+				'class' => 'Uncanny_Automator\\Integrations\\Uncanny_Tincanny\\UOTC_USERATTAINSSCORE',
 				'file'  => $baseDir . '/src/integrations/uncanny-tincanny/triggers/uotc-userattainsscore.php',
 			),
 		),
@@ -3669,12 +4009,12 @@ return array(
 		'triggers' => array(
 			'USERFEEDBACK_ANON_USERFEEDBACK_SURVEY_SUBMITTED' => array(
 				'code'  => 'ANON_USERFEEDBACK_SURVEY_SUBMITTED',
-				'class' => 'Uncanny_Automator\\ANON_USERFEEDBACK_SURVEY_SUBMITTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Userfeedback\\ANON_USERFEEDBACK_SURVEY_SUBMITTED',
 				'file'  => $baseDir . '/src/integrations/userfeedback/triggers/anon-userfeedback-survey-submitted.php',
 			),
 			'USERFEEDBACK_USER_USERFEEDBACK_SURVEY_SUBMITTED' => array(
 				'code'  => 'USER_USERFEEDBACK_SURVEY_SUBMITTED',
-				'class' => 'Uncanny_Automator\\USER_USERFEEDBACK_SURVEY_SUBMITTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Userfeedback\\USER_USERFEEDBACK_SURVEY_SUBMITTED',
 				'file'  => $baseDir . '/src/integrations/userfeedback/triggers/user-userfeedback-survey-submitted.php',
 			),
 		),
@@ -3769,34 +4109,34 @@ return array(
 		'triggers' => array(
 			'WHATSAPP_WA_MESSAGE_NOT_DELIVERED' => array(
 				'code'  => 'WA_MESSAGE_NOT_DELIVERED',
-				'class' => 'Uncanny_Automator\\WA_MESSAGE_NOT_DELIVERED',
+				'class' => 'Uncanny_Automator\\Integrations\\WhatsApp\\WA_MESSAGE_NOT_DELIVERED',
 				'file'  => $baseDir . '/src/integrations/whatsapp/triggers/wa-message-not-delivered.php',
 			),
 			'WHATSAPP_WA_MESSAGE_NOT_DELIVERED_NO_OPTIN' => array(
 				'code'  => 'WA_MESSAGE_NOT_DELIVERED_NO_OPTIN',
-				'class' => 'Uncanny_Automator\\WA_MESSAGE_NOT_DELIVERED_NO_OPTIN',
+				'class' => 'Uncanny_Automator\\Integrations\\WhatsApp\\WA_MESSAGE_NOT_DELIVERED_NO_OPTIN',
 				'file'  => $baseDir . '/src/integrations/whatsapp/triggers/wa-message-not-delivered-no-optin.php',
 			),
 			'WHATSAPP_WA_MESSAGE_RECEIVED' => array(
 				'code'  => 'WA_MESSAGE_RECEIVED',
-				'class' => 'Uncanny_Automator\\WA_MESSAGE_RECEIVED',
+				'class' => 'Uncanny_Automator\\Integrations\\WhatsApp\\WA_MESSAGE_RECEIVED',
 				'file'  => $baseDir . '/src/integrations/whatsapp/triggers/wa-message-received.php',
 			),
 			'WHATSAPP_WA_MESSAGE_STATUS_UPDATED' => array(
 				'code'  => 'WA_MESSAGE_STATUS_UPDATED',
-				'class' => 'Uncanny_Automator\\WA_MESSAGE_STATUS_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\WhatsApp\\WA_MESSAGE_STATUS_UPDATED',
 				'file'  => $baseDir . '/src/integrations/whatsapp/triggers/wa-message-status-updated.php',
 			),
 		),
 		'actions' => array(
 			'WHATSAPP_WHATSAPP_SEND_MESSAGE_CODE' => array(
 				'code'  => 'WHATSAPP_SEND_MESSAGE_CODE',
-				'class' => 'Uncanny_Automator\\WHATSAPP_SEND_MESSAGE',
+				'class' => 'Uncanny_Automator\\Integrations\\WhatsApp\\WHATSAPP_SEND_MESSAGE',
 				'file'  => $baseDir . '/src/integrations/whatsapp/actions/whatsapp-send-message.php',
 			),
 			'WHATSAPP_WHATSAPP_SEND_MESSAGE_TEMPLATE_CODE' => array(
 				'code'  => 'WHATSAPP_SEND_MESSAGE_TEMPLATE_CODE',
-				'class' => 'Uncanny_Automator\\WHATSAPP_SEND_MESSAGE_TEMPLATE',
+				'class' => 'Uncanny_Automator\\Integrations\\WhatsApp\\WHATSAPP_SEND_MESSAGE_TEMPLATE',
 				'file'  => $baseDir . '/src/integrations/whatsapp/actions/whatsapp-send-message-template.php',
 			),
 		),
@@ -3893,150 +4233,260 @@ return array(
 		'triggers' => array(
 			'WP_ANON_POST_UPDATED_IN_TAXONOMY' => array(
 				'code'  => 'ANON_POST_UPDATED_IN_TAXONOMY',
-				'class' => 'Uncanny_Automator\\ANON_WP_UPDATES_POST_IN_TAXONOMY',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/anon-wp-updates-post-in-taxonomy.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\ANON_WP_UPDATES_POST_IN_TAXONOMY',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php',
 			),
 			'WP_ANON_WP_RESET_PASSWORD_LINK_SENT' => array(
 				'code'  => 'ANON_WP_RESET_PASSWORD_LINK_SENT',
-				'class' => 'Uncanny_Automator\\ANON_WP_RESET_PASSWORD_LINK_SENT',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/anon-wp-reset-password-link-sent.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\ANON_WP_RESET_PASSWORD_LINK_SENT',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-anon-reset-password-link-sent.php',
 			),
 			'WP_LOGIN' => array(
 				'code'  => 'LOGIN',
-				'class' => 'Uncanny_Automator\\WP_LOGIN',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-login.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_LOGIN',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-login.php',
 			),
 			'WP_USERROLEADDED' => array(
 				'code'  => 'USERROLEADDED',
-				'class' => 'Uncanny_Automator\\WP_USERROLEADDED',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-userroleadded.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_USERROLEADDED',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-role-added.php',
 			),
 			'WP_USERROLEUPDATED' => array(
 				'code'  => 'USERROLEUPDATED',
-				'class' => 'Uncanny_Automator\\WP_USERROLEUPDATED',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-userroleupdated.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_USERROLEUPDATED',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-role-updated.php',
 			),
 			'WP_USERSPOST' => array(
 				'code'  => 'USERSPOST',
-				'class' => 'Uncanny_Automator\\WP_USERCREATESPOST',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-usercreatespost.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_USERCREATESPOST',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-creates-post.php',
 			),
 			'WP_VIEWCUSTOMPOST' => array(
 				'code'  => 'VIEWCUSTOMPOST',
-				'class' => 'Uncanny_Automator\\WP_VIEWCUSTOMPOST',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-viewcustompost.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_VIEWCUSTOMPOST',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-views-custom-post.php',
 			),
 			'WP_VIEWPAGE' => array(
 				'code'  => 'VIEWPAGE',
-				'class' => 'Uncanny_Automator\\WP_VIEWPAGE',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-viewpage.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_VIEWPAGE',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-views-page.php',
 			),
 			'WP_VIEWPOST' => array(
 				'code'  => 'VIEWPOST',
-				'class' => 'Uncanny_Automator\\WP_VIEWPOST',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-viewpost.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_VIEWPOST',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-views-post.php',
 			),
 			'WP_WPCOMMENTRECEIVED' => array(
 				'code'  => 'WPCOMMENTRECEIVED',
-				'class' => 'Uncanny_Automator\\WP_POSTRECEIVESCOMMENT',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-postreceivescomment.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_POSTRECEIVESCOMMENT',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-post-receives-comment.php',
 			),
 			'WP_WPSUBMITCOMMENT' => array(
 				'code'  => 'WPSUBMITCOMMENT',
-				'class' => 'Uncanny_Automator\\WP_SUBMITCOMMENT',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-submitcomment.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_SUBMITCOMMENT',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-submits-comment.php',
 			),
 			'WP_WPVIEWPOSTTYPE' => array(
 				'code'  => 'WPVIEWPOSTTYPE',
-				'class' => 'Uncanny_Automator\\ANON_WP_VIEWPOSTTYPE',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/anon-wp-viewposttype.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\ANON_WP_VIEWPOSTTYPE',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-anon-post-type-viewed.php',
 			),
 			'WP_WP_ANON_POST_UPDATED' => array(
 				'code'  => 'WP_ANON_POST_UPDATED',
-				'class' => 'Uncanny_Automator\\WP_ANON_UPDATES_POST',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-anon-updates-post.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_ANON_UPDATES_POST',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-anon-post-updated.php',
 			),
 			'WP_WP_LOGOUT_CODE' => array(
 				'code'  => 'WP_LOGOUT_CODE',
-				'class' => 'Uncanny_Automator\\WP_LOGOUT',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-logout.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_LOGOUT',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-logout.php',
 			),
 			'WP_WP_POST_PUBLISHED' => array(
 				'code'  => 'WP_POST_PUBLISHED',
-				'class' => 'Uncanny_Automator\\WP_POST_PUBLISHED',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-post-published.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_POST_PUBLISHED',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-post-published.php',
 			),
 			'WP_WP_POST_PUBLISHED_IN_TAXONOMY' => array(
 				'code'  => 'WP_POST_PUBLISHED_IN_TAXONOMY',
-				'class' => 'Uncanny_Automator\\ANON_WP_POST_PUBLISHED_IN_TAXONOMY',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/anon-wp-post-published-in-taxonomy.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\ANON_WP_POST_PUBLISHED_IN_TAXONOMY',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php',
 			),
 			'WP_WP_USER_POST_PUBLISHED' => array(
 				'code'  => 'WP_USER_POST_PUBLISHED',
-				'class' => 'Uncanny_Automator\\WP_USERS_POST_PUBLISHED',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-users-post-published.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_USERS_POST_PUBLISHED',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-post-published.php',
 			),
 			'WP_WP_USER_POST_UPDATED' => array(
 				'code'  => 'WP_USER_POST_UPDATED',
-				'class' => 'Uncanny_Automator\\WP_USER_UPDATES_POST',
-				'file'  => $baseDir . '/src/integrations/wp/triggers/wp-user-updates-post.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_USER_UPDATES_POST',
+				'file'  => $baseDir . '/src/integrations/wp/triggers/wordpress-user-updates-post.php',
 			),
 		),
 		'actions' => array(
 			'WP_ADDROLE' => array(
 				'code'  => 'ADDROLE',
-				'class' => 'Uncanny_Automator\\WP_ADDROLE',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-addrole.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_ADDROLE',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-add-role.php',
 			),
 			'WP_CREATEPOST' => array(
 				'code'  => 'CREATEPOST',
-				'class' => 'Uncanny_Automator\\WP_CREATEPOST',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-createpost.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_CREATEPOST',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-create-post.php',
 			),
 			'WP_USERROLE' => array(
 				'code'  => 'USERROLE',
-				'class' => 'Uncanny_Automator\\WP_USERROLE',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-userrole.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_USERROLE',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-set-user-role.php',
 			),
 			'WP_WPERASEUSERDATA' => array(
 				'code'  => 'WPERASEUSERDATA',
-				'class' => 'Uncanny_Automator\\WP_ERASE_PERSONAL_USER_DATA',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-erase-personal-user-data.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_ERASE_PERSONAL_USER_DATA',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-erase-personal-user-data.php',
+			),
+			'WP_WP_ADD_FILE_TO_LIBRARY' => array(
+				'code'  => 'WP_ADD_FILE_TO_LIBRARY',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_ADD_FILE_TO_MEDIA_LIBRARY',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-add-file-to-media-library.php',
+			),
+			'WP_WP_ADD_MENU' => array(
+				'code'  => 'WP_ADD_MENU',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_ADD_MENU',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-add-menu.php',
+			),
+			'WP_WP_ADD_MENU_ITEM' => array(
+				'code'  => 'WP_ADD_MENU_ITEM',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_ADD_MENU_ITEM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-add-menu-item.php',
+			),
+			'WP_WP_ASSIGN_MENU_LOCATION' => array(
+				'code'  => 'WP_ASSIGN_MENU_LOCATION',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_ASSIGN_MENU_TO_LOCATION',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-assign-menu-to-location.php',
 			),
 			'WP_WP_CHANGE_POST_TYPE' => array(
 				'code'  => 'WP_CHANGE_POST_TYPE',
-				'class' => 'Uncanny_Automator\\WP_CHANGE_POST_TYPE',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-change-post-type.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_CHANGE_POST_TYPE',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-change-post-type.php',
 			),
 			'WP_WP_CREATE_ROLE' => array(
 				'code'  => 'WP_CREATE_ROLE',
-				'class' => 'Uncanny_Automator\\WP_CREATE_ROLE',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-create-role.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_CREATE_ROLE',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-create-role.php',
+			),
+			'WP_WP_CREATE_TAX_TERM' => array(
+				'code'  => 'WP_CREATE_TAX_TERM',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_CREATE_TAXONOMY_TERM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-create-taxonomy-term.php',
+			),
+			'WP_WP_DELETE_COMMENT' => array(
+				'code'  => 'WP_DELETE_COMMENT',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_DELETE_COMMENT',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-delete-comment.php',
+			),
+			'WP_WP_DELETE_MEDIA' => array(
+				'code'  => 'WP_DELETE_MEDIA',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_DELETE_MEDIA_ITEM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-delete-media-item.php',
+			),
+			'WP_WP_DELETE_MENU' => array(
+				'code'  => 'WP_DELETE_MENU',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_DELETE_MENU',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-delete-menu.php',
+			),
+			'WP_WP_DELETE_MENU_ITEM' => array(
+				'code'  => 'WP_DELETE_MENU_ITEM',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_DELETE_MENU_ITEM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-delete-menu-item.php',
+			),
+			'WP_WP_DELETE_POST_META' => array(
+				'code'  => 'WP_DELETE_POST_META',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_DELETE_POST_META',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-delete-post-meta.php',
+			),
+			'WP_WP_DELETE_TAX_TERM' => array(
+				'code'  => 'WP_DELETE_TAX_TERM',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_DELETE_TAXONOMY_TERM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-delete-taxonomy-term.php',
 			),
 			'WP_WP_DUPLICATE_PAGE' => array(
 				'code'  => 'WP_DUPLICATE_PAGE',
-				'class' => 'Uncanny_Automator\\WP_DUPLICATE_PAGE',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-duplicate-page.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_DUPLICATE_PAGE',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-duplicate-page.php',
 			),
 			'WP_WP_DUPLICATE_POST' => array(
 				'code'  => 'WP_DUPLICATE_POST',
-				'class' => 'Uncanny_Automator\\WP_DUPLICATE_POST',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-duplicate-post.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_DUPLICATE_POST',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-duplicate-post.php',
+			),
+			'WP_WP_GENERATE_RESET_LINK' => array(
+				'code'  => 'WP_GENERATE_RESET_LINK',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_GENERATE_PASSWORD_RESET_LINK',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-generate-password-reset-link.php',
+			),
+			'WP_WP_GET_MEDIA' => array(
+				'code'  => 'WP_GET_MEDIA',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_GET_MEDIA_ITEM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-get-media-item.php',
+			),
+			'WP_WP_GET_POST_META' => array(
+				'code'  => 'WP_GET_POST_META',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_GET_POST_META',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-get-post-meta.php',
+			),
+			'WP_WP_GET_USER_META' => array(
+				'code'  => 'WP_GET_USER_META',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_GET_USER_META',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-get-user-meta.php',
 			),
 			'WP_WP_LOGOUT_USER' => array(
 				'code'  => 'WP_LOGOUT_USER',
-				'class' => 'Uncanny_Automator\\WP_LOGOUT_USER',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-logout-user.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_LOGOUT_USER',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-logout-user.php',
+			),
+			'WP_WP_RENAME_MENU' => array(
+				'code'  => 'WP_RENAME_MENU',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_RENAME_MENU',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-rename-menu.php',
 			),
 			'WP_WP_REPLY_TO_A_COMMENT' => array(
 				'code'  => 'WP_REPLY_TO_A_COMMENT',
-				'class' => 'Uncanny_Automator\\WP_ADD_REPLY_TO_COMMENT',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-add-reply-to-comment.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_ADD_REPLY_TO_COMMENT',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-add-reply-to-comment.php',
+			),
+			'WP_WP_RESTORE_POST' => array(
+				'code'  => 'WP_RESTORE_POST',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_RESTORE_POST_FROM_TRASH',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-restore-post-from-trash.php',
+			),
+			'WP_WP_SET_COMMENT_STATUS' => array(
+				'code'  => 'WP_SET_COMMENT_STATUS',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_SET_COMMENT_STATUS',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-set-comment-status.php',
+			),
+			'WP_WP_SET_POST_PASSWORD' => array(
+				'code'  => 'WP_SET_POST_PASSWORD',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_SET_POST_PASSWORD',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-set-post-password.php',
 			),
 			'WP_WP_UPDATE_EXCERPT' => array(
 				'code'  => 'WP_UPDATE_EXCERPT',
-				'class' => 'Uncanny_Automator\\WP_UPDATE_POST_EXCERPT',
-				'file'  => $baseDir . '/src/integrations/wp/actions/wp-update-post-excerpt.php',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_UPDATE_POST_EXCERPT',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-update-post-excerpt.php',
+			),
+			'WP_WP_UPDATE_MEDIA' => array(
+				'code'  => 'WP_UPDATE_MEDIA',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_UPDATE_MEDIA_ITEM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-update-media-item.php',
+			),
+			'WP_WP_UPDATE_MENU_ITEM' => array(
+				'code'  => 'WP_UPDATE_MENU_ITEM',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_UPDATE_MENU_ITEM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-update-menu-item.php',
+			),
+			'WP_WP_UPDATE_TAX_TERM' => array(
+				'code'  => 'WP_UPDATE_TAX_TERM',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp\\WP_UPDATE_TAXONOMY_TERM',
+				'file'  => $baseDir . '/src/integrations/wp/actions/wordpress-update-taxonomy-term.php',
 			),
 		),
 		'closures' => array(
@@ -4147,12 +4597,12 @@ return array(
 		'triggers' => array(
 			'WPFF_ANONWPFFSUBFORM' => array(
 				'code'  => 'ANONWPFFSUBFORM',
-				'class' => 'Uncanny_Automator\\ANON_WPFF_SUBFORM',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Fluent_Forms\\ANON_WPFF_SUBFORM',
 				'file'  => $baseDir . '/src/integrations/wp-fluent-forms/triggers/anon-wpff-subform.php',
 			),
 			'WPFF_WPFFSUBFORM' => array(
 				'code'  => 'WPFFSUBFORM',
-				'class' => 'Uncanny_Automator\\WPFF_SUBFORM',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Fluent_Forms\\WPFF_SUBFORM',
 				'file'  => $baseDir . '/src/integrations/wp-fluent-forms/triggers/wpff-subform.php',
 			),
 		),
@@ -4301,7 +4751,7 @@ return array(
 		'triggers' => array(
 			'WPWEBHOOKS_WPWHTRIGGERTRIGGERED' => array(
 				'code'  => 'WPWHTRIGGERTRIGGERED',
-				'class' => 'Uncanny_Automator\\WPWH_TRIGGERTRIGGERED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Webhooks\\WPWH_TRIGGERTRIGGERED',
 				'file'  => $baseDir . '/src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php',
 			),
 		),

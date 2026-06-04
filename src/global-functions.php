@@ -33,6 +33,8 @@ use Uncanny_Automator\Services\File\Extension_Support;
 use Uncanny_Automator\Set_Up_Automator;
 use Uncanny_Automator\Utilities;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 // Add other Automator functions.
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'helper-functions' . DIRECTORY_SEPARATOR . 'automator-helper-functions.php';
 
@@ -746,7 +748,7 @@ function is_mcp_rest_request() {
  * @return bool
  */
 function is_automator_pro_license_valid() {
-	if ( 'pro' === \Uncanny_Automator\Api_Server::get_license_type() ) {
+	if ( 'pro' === automator_license_manager()->get_type() ) {
 		return true;
 	}
 

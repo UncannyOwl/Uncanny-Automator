@@ -129,6 +129,10 @@ class Automator_DB {
 		$tbl_automator_options = $wpdb->prefix . 'uap_options';
 		// Automator throttle.
 		$tbl_automator_throttle = $wpdb->prefix . 'uap_recipe_throttle_log';
+		// Automator error log
+		$tbl_error_log = $wpdb->prefix . 'uap_error_log';
+		// Automator run snapshots
+		$tbl_run_snapshots = $wpdb->prefix . 'uap_run_snapshots';
 
 		return "CREATE TABLE {$tbl_recipe_log} (
 `ID` bigint unsigned NOT NULL auto_increment,
@@ -286,7 +290,7 @@ CREATE TABLE {$tbl_recipe_counts} (
 `recipe_id` bigint unsigned NOT NULL,
 `runs` bigint unsigned DEFAULT 0 NOT NULL,
 PRIMARY KEY  (`ID`),
-KEY recipe_id (`recipe_id`)
+UNIQUE KEY recipe_id (`recipe_id`)
 ) ENGINE=InnoDB {$charset_collate};
 CREATE TABLE {$tbl_automator_options} (
 `option_id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -308,6 +312,36 @@ CREATE TABLE {$tbl_automator_throttle} (
 PRIMARY KEY (`ID`),
 UNIQUE KEY `user_recipe_key` (`user_id`,`recipe_id`,`meta_key`),
 KEY `cleanup` (`last_run`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_error_log} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`recipe_log_id` bigint unsigned NOT NULL,
+`action_log_id` bigint unsigned NULL,
+`item_type` varchar(20) DEFAULT 'action' NOT NULL,
+`error_code` varchar(50) DEFAULT '' NOT NULL,
+`error_message` longtext NULL,
+`is_actionable` tinyint(1) unsigned NOT NULL DEFAULT 1,
+`error_context` longtext NULL,
+`date_time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY  (`ID`),
+KEY recipe_log_id (`recipe_log_id`),
+KEY action_log_id (`action_log_id`),
+KEY error_code (`error_code`),
+KEY actionable_by_recipe (`recipe_log_id`, `is_actionable`)
+) ENGINE=InnoDB {$charset_collate};
+CREATE TABLE {$tbl_run_snapshots} (
+`ID` bigint unsigned NOT NULL auto_increment,
+`recipe_log_id` bigint unsigned NOT NULL,
+`recipe_id` bigint unsigned NOT NULL,
+`user_id` bigint unsigned NOT NULL,
+`snapshot_data` longblob NOT NULL,
+`checksum` char(32) NOT NULL,
+`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+`expires_at` TIMESTAMP NOT NULL,
+PRIMARY KEY  (`ID`),
+UNIQUE KEY recipe_log_id (`recipe_log_id`),
+KEY expires_at (`expires_at`),
+KEY recipe_user (`recipe_id`, `user_id`)
 ) ENGINE=InnoDB {$charset_collate};
 ";
 	}
@@ -337,9 +371,64 @@ KEY `cleanup` (`last_run`)
 			return;
 		}
 
+		// 7.3.0: Deduplicate uap_recipe_count rows before adding UNIQUE KEY.
+		// dbDelta will fail to upgrade KEY→UNIQUE KEY if duplicates exist.
+		self::deduplicate_recipe_count();
+
 		self::create_tables();
 
 		do_action( 'automator_activation_after' );
+	}
+
+	/**
+	 * Remove duplicate recipe_id rows from uap_recipe_count.
+	 *
+	 * 7.3.0 adds a UNIQUE KEY on recipe_id. Existing sites may have
+	 * duplicate rows from the TOCTOU race in add_recipe_count(). This
+	 * keeps the row with the highest `runs` value for each recipe_id
+	 * and deletes the rest, so the ALTER TABLE succeeds.
+	 *
+	 * @since 7.3.0
+	 *
+	 * @return void
+	 */
+	public static function deduplicate_recipe_count() {
+
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'uap_recipe_count';
+
+		// Check if table exists first — fresh installs won't have it yet.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare( 'SHOW TABLES LIKE %s', $table )
+		);
+
+		if ( null === $table_exists ) {
+			return;
+		}
+
+		// Delete all rows except the one with the highest `runs` per recipe_id.
+		// Uses a subquery to find the ID of the row with MAX(runs) — not MAX(ID),
+		// which would keep the newest row regardless of its run count.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query(
+			"DELETE rc FROM {$table} rc
+			INNER JOIN (
+				SELECT recipe_id, (
+					SELECT ID FROM {$table} rc2
+					WHERE rc2.recipe_id = grouped.recipe_id
+					ORDER BY rc2.runs DESC, rc2.ID DESC
+					LIMIT 1
+				) AS keep_id
+				FROM (
+					SELECT recipe_id
+					FROM {$table}
+					GROUP BY recipe_id
+					HAVING COUNT(*) > 1
+				) grouped
+			) dup ON rc.recipe_id = dup.recipe_id AND rc.ID != dup.keep_id"
+		);
 	}
 
 	/**

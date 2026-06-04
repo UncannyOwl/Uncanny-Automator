@@ -10,6 +10,7 @@ use Exception;
  * @package Uncanny_Automator
  *
  * @property Asana_App_Helpers $helpers
+ * @property Asana_Webhooks $webhooks
  */
 class Asana_Api_Caller extends \Uncanny_Automator\App_Integrations\Api_Caller {
 
@@ -231,6 +232,195 @@ class Asana_Api_Caller extends \Uncanny_Automator\App_Integrations\Api_Caller {
 	}
 
 	/**
+	 * Issue the remote `create_webhook` action against Asana.
+	 * Pure API I/O — config persistence is owned by `Asana_Webhooks` via the manager trait.
+	 *
+	 * @param string $project_id The ID of the project (resource).
+	 * @param array  $events     The events to subscribe to.
+	 * @param string $target_url The webhook target URL the manager will receive events on.
+	 *
+	 * @return array {
+	 *     hook_id: string,
+	 *     secret:  string|null,
+	 * }
+	 *
+	 * @throws Exception When events are empty or the API rejects the request.
+	 */
+	public function do_create_webhook( $project_id, $events, $target_url ) {
+
+		if ( empty( $events ) ) {
+			throw new Exception( esc_html_x( 'Please select at least one event to subscribe your webhook to.', 'Asana', 'uncanny-automator' ) );
+		}
+
+		$args = array(
+			'action'   => 'create_webhook',
+			'resource' => $project_id,
+			'target'   => $target_url,
+			'filters'  => wp_json_encode( $this->convert_events_to_filters( $events ) ),
+		);
+
+		$response = $this->api_request( $args );
+
+		if ( 201 !== $response['statusCode'] ) {
+			throw new Exception( esc_html( $response['data']['message'] ) );
+		}
+
+		return array(
+			'hook_id' => $response['data']['data']['gid'] ?? null,
+			'secret'  => $response['data']['X-Hook-Secret'] ?? null,
+		);
+	}
+
+	/**
+	 * Issue the remote `update_webhook` action against Asana — change the events the remote hook fires on.
+	 * Pure API I/O — config persistence is owned by `Asana_Webhooks` via the manager trait.
+	 *
+	 * @param string $project_id The ID of the project (resource).
+	 * @param array  $events     The events to subscribe to.
+	 * @param string $hook_id    The remote webhook ID.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception When events are empty or the API rejects the request.
+	 */
+	public function do_update_webhook( $project_id, $events, $hook_id ) {
+
+		if ( empty( $events ) ) {
+			throw new Exception( esc_html_x( 'Please select at least one event to subscribe your webhook to.', 'Asana', 'uncanny-automator' ) );
+		}
+
+		$args = array(
+			'action'     => 'update_webhook',
+			'webhook_id' => $hook_id,
+			'filters'    => wp_json_encode( $this->convert_events_to_filters( $events ) ),
+		);
+
+		$response = $this->api_request( $args );
+		if ( 200 !== $response['statusCode'] ) {
+			throw new Exception( esc_html( $response['data']['message'] ) );
+		}
+	}
+
+	/**
+	 * Issue the remote `delete_webhook` action against Asana.
+	 * Pure API I/O — config persistence is owned by `Asana_Webhooks` via the manager trait.
+	 *
+	 * @param string $project_id The ID of the project (resource).
+	 * @param string $hook_id    The remote webhook ID.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception When the API rejects the request.
+	 */
+	public function do_delete_webhook( $project_id, $hook_id ) {
+
+		$args = array(
+			'action'     => 'delete_webhook',
+			'webhook_id' => $hook_id,
+		);
+
+		$response = $this->api_request( $args );
+
+		if ( 200 !== $response['statusCode'] ) {
+			$message = $response['data']['message'] ?? esc_html_x( 'Unknown error :', 'Asana', 'uncanny-automator' ) . ' ' . $response['statusCode'];
+			throw new Exception( esc_html( $message ) );
+		}
+	}
+
+	/*
+	 * --------------------------------------------------------------------
+	 * LSP-compat shims for pre-7.3.0 Uncanny_Automator_Pro
+	 * --------------------------------------------------------------------
+	 * The block below is dead-code-by-design. It exists so that PHP 8+ accepts
+	 * the class declaration when pre-7.3.0 Pro's `Asana_Pro_Api_Caller` (which
+	 * extends this class) overrides `create_webhook`, `update_webhook`, and
+	 * `delete_webhook` at its narrower arity. Without these signature stubs
+	 * on the parent, PHP raises an LSP "must be compatible" fatal at class
+	 * declaration time and the site refuses to boot, blocking the user from
+	 * updating Pro from wp-admin.
+	 *
+	 * When old Pro is active, Pro's override runs and the bodies below are
+	 * never reached. When Pro is updated to 7.3.0+, the override disappears
+	 * and Free no longer calls these names (it uses `do_create_webhook` /
+	 * `do_update_webhook` / `do_delete_webhook` above), so the bodies are
+	 * still unreachable.
+	 *
+	 * Safe to delete this entire block once Pro ≥ 7.3.0 is the supported floor.
+	 * --------------------------------------------------------------------
+	 */
+
+	/**
+	 * LSP-compat shim. See block comment above. Do not invoke directly.
+	 *
+	 * @param string $project_id Unused.
+	 * @param array  $events     Unused.
+	 *
+	 * @return void
+	 *
+	 * @throws \BadMethodCallException Always.
+	 */
+	public function create_webhook( $project_id, $events ) {
+		throw new \BadMethodCallException( 'Asana_Api_Caller::create_webhook is a pre-7.3.0 Pro LSP-compat stub; use do_create_webhook() instead.' );
+	}
+
+	/**
+	 * LSP-compat shim. See block comment above. Do not invoke directly.
+	 *
+	 * @param string $project_id Unused.
+	 * @param array  $events     Unused.
+	 *
+	 * @return void
+	 *
+	 * @throws \BadMethodCallException Always.
+	 */
+	public function update_webhook( $project_id, $events ) {
+		throw new \BadMethodCallException( 'Asana_Api_Caller::update_webhook is a pre-7.3.0 Pro LSP-compat stub; use do_update_webhook() instead.' );
+	}
+
+	/**
+	 * LSP-compat shim. See block comment above. Do not invoke directly.
+	 *
+	 * @param string $project_id Unused.
+	 *
+	 * @return void
+	 *
+	 * @throws \BadMethodCallException Always.
+	 */
+	public function delete_webhook( $project_id ) {
+		throw new \BadMethodCallException( 'Asana_Api_Caller::delete_webhook is a pre-7.3.0 Pro LSP-compat stub; use do_delete_webhook() instead.' );
+	}
+
+	/**
+	 * Get task.
+	 *
+	 * @param string $task_id The task ID.
+	 *
+	 * @return array
+	 */
+	public function get_task( $task_id ) {
+		if ( empty( $task_id ) ) {
+			return array();
+		}
+
+		try {
+			$args = array(
+				'action'  => 'get_task',
+				'task_id' => $task_id,
+			);
+
+			$response = $this->api_request( $args );
+
+			if ( 200 !== $response['statusCode'] ) {
+				return array();
+			}
+
+			return $response['data']['data'] ?? array();
+		} catch ( Exception $e ) {
+			return array();
+		}
+	}
+
+	/**
 	 * Get workspace cached data with fallback to API.
 	 *
 	 * @param string $option_key The option key to use
@@ -280,5 +470,49 @@ class Asana_Api_Caller extends \Uncanny_Automator\App_Integrations\Api_Caller {
 		} catch ( Exception $e ) {
 			return array();
 		}
+	}
+
+	/**
+	 * Convert events to Asana webhook filters.
+	 *
+	 * @param array $events The events array.
+	 *
+	 * @return array
+	 */
+	private function convert_events_to_filters( $events ) {
+		$filters = array();
+
+		foreach ( $events as $event ) {
+			switch ( $event ) {
+				case 'task.added':
+					$filters[] = array(
+						'resource_type' => 'task',
+						'action'        => 'added',
+					);
+					break;
+				case 'task.changed':
+					$filters[] = array(
+						'resource_type' => 'task',
+						'action'        => 'changed',
+						'fields'        => array( 'name', 'notes', 'due_on', 'custom_fields' ),
+					);
+					break;
+				case 'story.added':
+					$filters[] = array(
+						'resource_type' => 'story',
+						'action'        => 'added',
+					);
+					break;
+				case 'task.status_changed':
+					$filters[] = array(
+						'resource_type'    => 'task',
+						'resource_subtype' => 'approval',
+						'action'           => 'changed',
+					);
+					break;
+			}
+		}
+
+		return $filters;
 	}
 }

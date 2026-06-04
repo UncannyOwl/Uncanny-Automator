@@ -378,6 +378,94 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 	);
 
 	/**
+	 * Registers the replay endpoint.
+	 *
+	 * Re-executes a previous recipe run using its stored snapshot.
+	 * Creates a new recipe log with the same trigger data.
+	 *
+	 * #[Uncanny_Automator_Route('/wp-json/automator/v1/replay/:recipe_log_id')]
+	 */
+	register_rest_route(
+		'automator/v1',
+		'/replay/(?P<recipe_log_id>\d+)',
+		array(
+			'methods'             => 'POST',
+			'permission_callback' => $authentication,
+			'callback'            => function ( WP_REST_Request $request ) {
+
+				$recipe_log_id = absint( $request->get_param( 'recipe_log_id' ) );
+
+				if ( 0 === $recipe_log_id ) {
+					return new WP_REST_Response(
+						array(
+							'success' => false,
+							'message' => 'Missing recipe_log_id.',
+						),
+						400
+					);
+				}
+
+				// Check if snapshot exists and is replayable.
+				$snapshot_store = Automator()->recipe_runner->snapshot_store();
+
+				if ( ! $snapshot_store->is_replayable( $recipe_log_id ) ) {
+					return new WP_REST_Response(
+						array(
+							'success' => false,
+							'message' => 'Snapshot expired or not found. Replay is only available for 48 hours after the original run.',
+						),
+						410 // Gone — snapshot expired.
+					);
+				}
+
+				// Verify the recipe still exists and is published.
+				$snapshot = $snapshot_store->get( $recipe_log_id );
+				$recipe_id = $snapshot ? (int) ( $snapshot->to_array()['recipe_id'] ?? 0 ) : 0;
+
+				if ( 0 === $recipe_id || 'publish' !== get_post_status( $recipe_id ) ) {
+					return new WP_REST_Response(
+						array(
+							'success' => false,
+							'message' => esc_html__( 'Recipe no longer exists or is not published.', 'uncanny-automator' ),
+						),
+						404
+					);
+				}
+
+				// Execute the replay.
+				$result = Automator()->recipe_runner->replay( $recipe_log_id );
+
+				if ( $result->should_halt() ) {
+					// Log full reason internally, return generic message to client.
+					automator_log( 'Replay halted: ' . $result->get_halt_reason(), 'REST_Replay' );
+
+					return new WP_REST_Response(
+						array(
+							'success' => false,
+							'message' => esc_html__( 'Replay could not be completed.', 'uncanny-automator' ),
+						),
+						500
+					);
+				}
+
+				$status_int  = $result->get_recipe_status();
+				$status_name = null !== $status_int ? \Uncanny_Automator\Automator_Status::get_class_name( $status_int ) : 'unknown';
+
+				return new WP_REST_Response(
+					array(
+						'success'           => true,
+						'new_recipe_log_id' => $result->get_recipe_log_id(),
+						'recipe_id'         => $result->get_recipe_id(),
+						'status'            => $status_name,
+						'message'           => 'Recipe replayed successfully.',
+					),
+					200
+				);
+			},
+		)
+	);
+
+	/**
 	 * Registers the Addons Plugin Manager endpoint.
 	 *
 	 * #[Uncanny_Automator_Route('/wp-json/automator/v1/addons/plugin-manager/(?P<action>\w+)/(?P<addon_id>\d+)')]

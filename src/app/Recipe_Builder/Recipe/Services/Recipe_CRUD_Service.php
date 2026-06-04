@@ -1,0 +1,468 @@
+<?php
+/**
+ * Recipe CRUD Service
+ *
+ * Handles create, update, delete, and duplicate operations for recipes.
+ *
+ * @since 7.0.0
+ * @package Uncanny_Automator
+ */
+
+declare(strict_types=1);
+
+namespace Uncanny_Automator\App\Recipe_Builder\Recipe\Services;
+
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Recipe;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Recipe_Config;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Trigger_Logic;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Status;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Value_Objects\Recipe_Id;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Action_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Action_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Recipe_Trigger_Store;
+use Uncanny_Automator\App\Infrastructure\Database\Stores\WP_Recipe_Trigger_Store;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Validator;
+use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Utilities\Recipe_Formatter;
+use Uncanny_Automator\App\Recipe_Builder\Closure\Services\Closure_Service;
+use WP_Error;
+
+/**
+ * Recipe_CRUD_Service Class
+ *
+ * Handles recipe creation, updates, deletion, and duplication.
+ */
+class Recipe_CRUD_Service {
+
+	/**
+	 * Recipe store instance.
+	 *
+	 * @var Recipe_Store
+	 */
+	private $recipe_store;
+
+	/**
+	 * Recipe validator.
+	 *
+	 * @var Recipe_Validator
+	 */
+	private $validator;
+
+	/**
+	 * Recipe formatter.
+	 *
+	 * @var Recipe_Formatter
+	 */
+	private $formatter;
+
+	/**
+	 * Closure service instance.
+	 *
+	 * @var Closure_Service
+	 */
+	private $closure_service;
+
+	/**
+	 * @var Recipe_Trigger_Store
+	 */
+	private $trigger_store;
+
+	/**
+	 * @var Action_Store
+	 */
+	private $action_store;
+
+	/**
+	 * Singleton instance.
+	 *
+	 * @var self|null
+	 */
+	private static $instance = null;
+
+	/**
+	 * Get singleton instance.
+	 *
+	 * @return self
+	 */
+	public static function instance(): self {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Recipe_Store|null        $recipe_store   Recipe storage.
+	 * @param Recipe_Validator|null       $validator      Recipe validator.
+	 * @param Recipe_Formatter|null       $formatter      Recipe formatter.
+	 * @param Closure_Service|null        $closure_service Closure service.
+	 * @param Recipe_Trigger_Store|null $trigger_store  Trigger storage.
+	 * @param Action_Store|null        $action_store   Action storage.
+	 */
+	public function __construct( $recipe_store = null, $validator = null, $formatter = null, $closure_service = null, $trigger_store = null, $action_store = null ) {
+		global $wpdb;
+
+		$this->recipe_store    = $recipe_store ?? new WP_Recipe_Store();
+		$this->validator       = $validator ?? new Recipe_Validator();
+		$this->formatter       = $formatter ?? new Recipe_Formatter();
+		$this->closure_service = $closure_service ?? Closure_Service::instance();
+		$this->trigger_store   = $trigger_store ?? new WP_Recipe_Trigger_Store();
+		$this->action_store    = $action_store ?? new WP_Action_Store( $wpdb );
+	}
+
+	/**
+	 * Coerce recipe ID to integer type.
+	 *
+	 * Type coercion helper for application layer boundaries.
+	 * External inputs (HTTP, JSON, tests) provide strings, but domain stores require strict int types.
+	 *
+	 * @since 7.0.0
+	 * @param int|string $recipe_id Recipe ID to coerce.
+	 * @return int Coerced integer recipe ID.
+	 */
+	private function coerce_recipe_id( $recipe_id ): int {
+		return (int) $recipe_id;
+	}
+
+
+	/**
+	 * Create a new recipe.
+	 *
+	 * @param array $data Recipe data array.
+	 * @return array|\WP_Error Recipe data on success, WP_Error on failure.
+	 */
+	public function create_recipe( array $data ) {
+
+		try {
+			// Variable declarations
+			$title         = trim( $data['title'] ?? '' );
+			$status        = $data['status'] ?? Recipe_Status::DRAFT;
+			$type          = $data['type'] ?? 'user';
+			$trigger_logic = $data['trigger_logic'] ?? 'all';
+			$notes         = $data['notes'] ?? '';
+			$redirect_url  = $data['redirect_url'] ?? null;
+			$throttle      = $data['throttle'] ?? array(
+				'enabled'  => false,
+				'duration' => 1,
+				'unit'     => 'hours',
+				'scope'    => 'recipe',
+			);
+
+			// Validate and sanitize inputs
+			$title = $this->validator->validate_title( $title );
+			$notes = $this->validator->validate_notes( $notes );
+
+			// Create recipe config with basic properties
+			$recipe_config = ( new Recipe_Config() )
+				->title( $title )
+				->status( $status )
+				->user_type( $type )
+				->trigger_logic( $trigger_logic )
+				->notes( $notes )
+				->throttle( $throttle );
+
+			// Add type-specific execution limits with validation
+			if ( 'user' === $type ) {
+				$recipe_config->times_per_user( $data['times_per_user'] ?? null );
+				$recipe_config->total_times( $data['total_times'] ?? null );
+			}
+
+			// Add type-specific execution limits with validation
+			if ( 'anonymous' === $type ) {
+				$recipe_config->total_times( $data['total_times'] ?? null );
+			}
+
+			// Create and save recipe
+			$recipe        = new Recipe( $recipe_config );
+			$stored_recipe = $this->recipe_store->save( $recipe );
+
+			// Handle redirect closure if URL provided
+			if ( $redirect_url ) {
+				$this->closure_service->add_closure( $stored_recipe->get_recipe_id()->get_value(), $redirect_url );
+			}
+
+			return array(
+				'success'   => true,
+				'recipe_id' => $stored_recipe->get_recipe_id()->get_value(),
+				'title'     => $stored_recipe->get_recipe_title()->get_value(),
+				'status'    => $stored_recipe->get_recipe_status()->get_value(),
+				'type'      => $stored_recipe->get_recipe_type()->get_value(),
+				'message'   => sprintf(
+					'Successfully created recipe "%s" (ID: %d, Status: %s, Type: %s)',
+					$stored_recipe->get_recipe_title()->get_value(),
+					$stored_recipe->get_recipe_id()->get_value(),
+					$stored_recipe->get_recipe_status()->get_value(),
+					$stored_recipe->get_recipe_type()->get_value()
+				),
+				'recipe'    => $this->formatter->format_recipe_response( $stored_recipe->to_array() ),
+			);
+
+		} catch ( \Exception $e ) {
+			return $this->formatter->error_response( 'recipe_create_failed', 'Failed to create recipe: ' . $e->getMessage() );
+		}
+	}
+
+
+	/**
+	 * Update an existing recipe.
+	 *
+	 * @param int|string $recipe_id Recipe ID.
+	 * @param array      $data      Recipe data to update.
+	 * @return array|\WP_Error Updated recipe data on success, WP_Error on failure.
+	 */
+	public function update_recipe( $recipe_id, array $data ) {
+
+		// Get existing recipe
+		$existing_recipe = $this->recipe_store->get( $this->coerce_recipe_id( $recipe_id ) );
+
+		if ( null === $existing_recipe ) {
+			return $this->formatter->error_response( 'recipe_not_found', 'Update recipe failed: Recipe not found with ID: ' . $recipe_id, array( 'recipe_id' => $recipe_id ) );
+		}
+
+		// Trashed recipes may only be untrashed via a status change. Reject every
+		// other mutation until the recipe is restored. The `id` key is transport
+		// plumbing, not a user-facing field, so ignore it when deciding whether
+		// this is a pure status change.
+		if ( ! $existing_recipe->get_recipe_status()->is_writable() ) {
+			$mutating_keys = array_diff( array_keys( $data ), array( 'id' ) );
+			$is_untrash    = array( 'status' ) === $mutating_keys
+				&& in_array( $data['status'] ?? null, array( 'draft', 'publish' ), true );
+			if ( ! $is_untrash ) {
+				return $this->formatter->error_response(
+					'recipe_trashed',
+					sprintf( 'Recipe %d is trashed. Restore it by setting status to "draft" before making other changes.', $this->coerce_recipe_id( $recipe_id ) ),
+					array( 'recipe_id' => $recipe_id )
+				);
+			}
+		}
+
+		// Business rule: Recipe type cannot be changed after creation.
+		if ( isset( $data['type'] ) && $data['type'] !== $existing_recipe->get_recipe_type()->get_value() ) {
+			return $this->formatter->error_response(
+				'recipe_type_immutable',
+				sprintf(
+					'Recipe type cannot be changed. Current type: "%s". To change recipe type, create a new recipe.',
+					$existing_recipe->get_recipe_type()->get_value()
+				),
+				array(
+					'current_type'   => $existing_recipe->get_recipe_type()->get_value(),
+					'attempted_type' => $data['type'],
+				)
+			);
+		}
+
+		$existing_data = $this->formatter->format_recipe_response( $existing_recipe->to_array() );
+
+		// Merge with updates (preserving ID)
+		$updated_data       = array_merge( $existing_data, $data );
+		$updated_data['id'] = $recipe_id;
+
+		// Sanitize inputs
+		$sanitized    = $this->validator->sanitize_recipe_data( $updated_data );
+		$updated_data = array_merge( $updated_data, $sanitized );
+
+		$config = ( new Recipe_Config() )
+			->id( $updated_data['id'] )
+			->title( $updated_data['title'] )
+			->status( $updated_data['status'] )
+			->user_type( $updated_data['type'] )
+			->trigger_logic( $updated_data['trigger_logic'] ?? Recipe_Trigger_Logic::LOGIC_ALL )
+			->notes( $updated_data['notes'] ?? '' );
+
+		if ( ! empty( $existing_recipe->get_recipe_action_conditions()->to_array() ) ) {
+			$config->action_conditions( $existing_recipe->get_recipe_action_conditions()->to_array() );
+		}
+
+		// Add type-specific fields if present
+		if ( 'user' === $updated_data['type'] ) {
+			$config->times_per_user( $updated_data['times_per_user'] );
+			$config->total_times( $updated_data['total_times'] );
+		}
+
+		if ( 'anonymous' === $updated_data['type'] ) {
+			$config->total_times( $updated_data['total_times'] );
+		}
+
+		if ( isset( $updated_data['throttle'] ) ) {
+			$config->throttle( $updated_data['throttle'] );
+		}
+
+		// Handle redirect closure upsert: delete old, add new if provided
+		$redirect_url = ! empty( $data['redirect_url'] ) ? $data['redirect_url'] : null;
+		if ( null !== $redirect_url ) {
+			// Delete existing closures first
+			$this->closure_service->delete_recipe_closures( $recipe_id );
+			// Add new closure with updated URL
+			$this->closure_service->add_closure( $recipe_id, $redirect_url );
+		} elseif ( isset( $data['redirect_url'] ) && '' === $data['redirect_url'] ) {
+			// If explicitly set to empty string, delete closures
+			$this->closure_service->delete_recipe_closures( $recipe_id );
+		}
+
+		$recipe = new Recipe( $config );
+
+		// Save recipe.
+		$stored_recipe = $this->recipe_store->save( $recipe );
+
+		// Return recipe information using domain object
+		return $stored_recipe->to_array();
+	}
+
+
+	/**
+	 * Assign categories and tags to a recipe.
+	 *
+	 * @since 7.0.0
+	 *
+	 * @param int        $recipe_id  Recipe post ID.
+	 * @param array|null $categories Category slugs to assign (replaces existing). Null to skip.
+	 * @param array|null $tags       Tag slugs to assign (replaces existing). Null to skip.
+	 *
+	 * @return void
+	 */
+	public function assign_taxonomies( int $recipe_id, ?array $categories, ?array $tags ): void {
+
+		if ( $recipe_id <= 0 ) {
+			return;
+		}
+
+		// Assign categories if provided (replaces existing).
+		if ( is_array( $categories ) ) {
+			$sanitized_cats = array_map( 'sanitize_title', $categories );
+			wp_set_object_terms( $recipe_id, $sanitized_cats, 'recipe_category' );
+		}
+
+		// Assign tags if provided (replaces existing).
+		if ( is_array( $tags ) ) {
+			$sanitized_tags = array_map( 'sanitize_title', $tags );
+			wp_set_object_terms( $recipe_id, $sanitized_tags, 'recipe_tag' );
+		}
+	}
+
+
+	/**
+	 * Delete a recipe.
+	 *
+	 * @param int|string $recipe_id Recipe ID.
+	 * @param bool       $confirmed Confirmation flag for safety.
+	 * @return array|\WP_Error Success confirmation or error.
+	 */
+	public function delete_recipe( $recipe_id, bool $confirmed = false ) {
+
+		if ( ! $confirmed ) {
+			return $this->formatter->error_response( 'recipe_confirmation_required', 'You must confirm deletion by setting $confirmed parameter to true' );
+		}
+
+		try {
+			// Get recipe first to ensure it exists and get data for response
+			$recipe = $this->recipe_store->get( $this->coerce_recipe_id( $recipe_id ) );
+
+			if ( null === $recipe ) {
+				return $this->formatter->error_response( 'recipe_not_found', 'Delete recipe failed: Recipe not found with ID: ' . $recipe_id );
+			}
+
+			$recipe_data = $recipe->to_array();
+
+			// Delete any associated closures
+			$this->closure_service->delete_recipe_closures( $recipe_id );
+
+			// Delete the recipe
+			$this->recipe_store->delete( $recipe );
+
+			return array(
+				'success'           => true,
+				'message'           => 'Recipe successfully deleted',
+				'deleted_recipe_id' => $recipe_data['recipe_id'] ?? $recipe_id,
+				'title'             => $recipe_data['title'] ?? '',
+				'status'            => $recipe_data['status'] ?? '',
+				'type'              => $recipe_data['type'] ?? '',
+			);
+
+		} catch ( \Exception $e ) {
+			return $this->formatter->error_response( 'recipe_delete_failed', 'Failed to delete recipe: ' . $e->getMessage() );
+		}
+	}
+
+
+	/**
+	 * Duplicate a recipe.
+	 *
+	 * @param int|string $source_recipe_id Source recipe ID.
+	 * @param string     $new_title        New title for duplicated recipe.
+	 * @param string     $new_status       Status for duplicated recipe.
+	 * @return array|\WP_Error Duplication result or error.
+	 */
+	public function duplicate_recipe( $source_recipe_id, string $new_title = '', string $new_status = Recipe_Status::DRAFT ) {
+
+		// Get source recipe
+		$source_recipe = $this->recipe_store->get( $this->coerce_recipe_id( $source_recipe_id ) );
+
+		if ( null === $source_recipe ) {
+			return $this->formatter->error_response( 'recipe_not_found', 'Source recipe not found with ID: ' . $source_recipe_id );
+		}
+
+		$source_recipe_data = $this->formatter->format_recipe_response( $source_recipe->to_array() );
+
+		// Prepare data for new recipe
+		$duplicate_data = $source_recipe_data;
+		unset( $duplicate_data['id'] );
+		$duplicate_data['title']  = $new_title ? $new_title : $source_recipe_data['title'] . ' (Copy)';
+		$duplicate_data['status'] = $new_status;
+
+		return $this->create_recipe( $duplicate_data );
+	}
+
+	/**
+	 * Demote a published recipe to draft if it has no live triggers or actions.
+	 *
+	 * @param int $recipe_id Recipe post ID.
+	 *
+	 * @return string|null Message if demoted, null otherwise.
+	 */
+	public function demote_if_empty( int $recipe_id ): bool {
+
+		$recipe = $this->recipe_store->get( $recipe_id );
+
+		if ( ! $recipe || 'publish' !== $recipe->get_recipe_status()->get_value() ) {
+			return false;
+		}
+
+		$triggers         = $this->trigger_store->get_recipe_triggers( new Recipe_Id( $recipe_id ) )->get_triggers();
+		$has_live_trigger = $this->has_published_component( $triggers );
+
+		$actions         = $this->action_store->get_recipe_actions( $recipe_id );
+		$has_live_action = $this->has_published_component( $actions );
+
+		if ( $has_live_trigger && $has_live_action ) {
+			return false;
+		}
+
+		$this->update_recipe( $recipe_id, array( 'status' => 'draft' ) );
+
+		return true;
+	}
+
+	/**
+	 * Check if any component in the list is published.
+	 *
+	 * Works with both Trigger and Action objects (both expose get_status()->is_published()).
+	 *
+	 * @param array $components Array of Trigger or Action domain objects.
+	 *
+	 * @return bool
+	 */
+	private function has_published_component( array $components ): bool {
+
+		foreach ( $components as $component ) {
+			$status = $component->get_status();
+			if ( $status && $status->is_published() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+}

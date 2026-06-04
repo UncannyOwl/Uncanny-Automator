@@ -11,22 +11,28 @@ namespace Uncanny_Automator\Integrations\Aioseo;
 class Aioseo_Seo_Score_Reached extends \Uncanny_Automator\Recipe\Trigger {
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( 'AIOSEO_SEO_SCORE_REACHED', 'AIOSEO' )
+			->trigger_type( 'anonymous' )
+			->trigger_meta( 'AIOSEO_POST' )
+			->hook( 'aioseo_insert_post', 10, 1 );
+	}
+
+	/**
 	 * Setup trigger configuration.
 	 *
 	 * @return void
 	 */
 	protected function setup_trigger() {
-		$this->set_integration( 'AIOSEO' );
-		$this->set_trigger_code( 'AIOSEO_SEO_SCORE_REACHED' );
-		$this->set_trigger_meta( 'AIOSEO_POST' );
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_is_pro( false );
 		$this->set_is_login_required( false );
-		$this->set_trigger_type( 'anonymous' );
 		$this->set_uses_api( false );
 		// translators: %1$s is the post, %2$s is the condition, %3$s is the score threshold.
 		$this->set_sentence( sprintf( esc_html_x( "{{A post's:%1\$s}} SEO score is {{greater than, less than, or equal to:%2\$s}} {{a specific value:%3\$s}}", 'All in One SEO', 'uncanny-automator' ), $this->get_trigger_meta(), 'NUMBERCOND:' . $this->get_trigger_meta(), 'SCORE_THRESHOLD:' . $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_html_x( "{{A post's}} SEO score is {{greater than, less than, or equal to}} {{a specific value}}", 'All in One SEO', 'uncanny-automator' ) );
-		$this->add_action( 'aioseo_insert_post', 10, 1 );
 	}
 
 	/**

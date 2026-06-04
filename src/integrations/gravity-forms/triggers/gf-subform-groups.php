@@ -24,6 +24,16 @@ class GF_SUBFORM_GROUPS extends \Uncanny_Automator\Recipe\Trigger {
 	private $legacy_tokens;
 
 	/**
+	 * Opt this trigger into the lazy loading path.
+	 */
+	public static function definition() {
+		return self::new_definition( 'GF_SUBFORM_GROUPS', 'GF' )
+			->trigger_type( 'anonymous' )
+			->trigger_meta( 'GF_SUBFORM_GROUPS_METADATA' )
+			->hook( 'gform_after_submission', 10, 2 );
+	}
+
+	/**
 	 * requirements_met
 	 *
 	 * @return bool
@@ -40,9 +50,7 @@ class GF_SUBFORM_GROUPS extends \Uncanny_Automator\Recipe\Trigger {
 		$this->gf            = array_shift( $this->dependencies );
 		$this->legacy_tokens = array_shift( $this->dependencies );
 
-		$this->set_integration( 'GF' );
-		$this->set_trigger_code( 'GF_SUBFORM_GROUPS' );
-		$this->set_trigger_meta( 'GF_SUBFORM_GROUPS_METADATA' );
+		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
 		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/gravity-forms/' ) );
 		$this->set_sentence(
 			sprintf(
@@ -52,15 +60,12 @@ class GF_SUBFORM_GROUPS extends \Uncanny_Automator\Recipe\Trigger {
 				sprintf( '%s_GROUPS', $this->get_trigger_meta() )
 			)
 		);
-		$this->set_trigger_type( 'anonymous' );
 		$this->set_is_login_required( false );
 
 		// Non-active state sentence to show
 		$this->set_readable_sentence( esc_attr_x( '{{A form}} is submitted with a key from {{a specific group}}', 'Gravity Forms', 'uncanny-automator' ) );
 
 		// Which do_action() fires this trigger.
-		$this->add_action( 'gform_after_submission' );
-		$this->set_action_args_count( 2 );
 	}
 
 	/**

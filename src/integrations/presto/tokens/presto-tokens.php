@@ -2,7 +2,6 @@
 
 namespace Uncanny_Automator\Integrations\Presto;
 
-class_alias( 'Uncanny_Automator\Integrations\Presto\Presto_Tokens', 'Uncanny_Automator\Presto_Tokens' );
 /**
  * Class Presto_Tokens
  *
@@ -100,3 +99,6 @@ class Presto_Tokens {
 		return $value;
 	}
 }
+
+// BC alias — must run after the class declaration (before, PHP autoload fails).
+class_alias( 'Uncanny_Automator\Integrations\Presto\Presto_Tokens', 'Uncanny_Automator\Presto_Tokens' );

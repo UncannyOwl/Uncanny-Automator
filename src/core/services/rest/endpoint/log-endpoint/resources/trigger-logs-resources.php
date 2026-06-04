@@ -211,7 +211,7 @@ class Trigger_Logs_Resources {
 			$trigger_item = array(
 				'type'              => 'trigger',
 				'id'                => $trigger_id,
-				'integration_code'  => $trigger_meta['integration'],
+				'integration_code'  => $trigger_meta['integration'] ?? '',
 				'is_deleted'        => $is_deleted,
 				'status_id'         => $status_id,
 				'start_date'        => $start_date,

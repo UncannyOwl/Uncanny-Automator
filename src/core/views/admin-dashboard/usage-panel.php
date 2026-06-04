@@ -155,6 +155,7 @@ $recipes = Automator()->get->fetch_recipe_with_apps();
 					</div>
 				</div>
 
+				<?php if ( ! empty( $dashboard->show_agent_usage ) ) : ?>
 				<div class="uap-dashboard-usage__pane" data-state="<?php echo esc_attr( $agent_state ); ?>">
 					<div class="uap-dashboard-usage__pane-header">
 						<span class="uap-dashboard-usage__eyebrow">
@@ -231,6 +232,7 @@ $recipes = Automator()->get->fetch_recipe_with_apps();
 						<?php endif; ?>
 					</div>
 				</div>
+				<?php endif; ?>
 
 			</div>
 		</div>

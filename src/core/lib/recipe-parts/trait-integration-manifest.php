@@ -35,7 +35,7 @@
  *
  * To access data for internal integrations, use:
  * ```php
- * $store = \Uncanny_Automator\Api\Services\Integration\Integration_Store::get_instance();
+ * $store = \Uncanny_Automator\App\Integration_Catalog\Services\Integration_Store::get_instance();
  * $integration = $store->get_by_code( 'INTEGRATION_CODE' );
  * ```
  *
@@ -45,7 +45,7 @@
 
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\Api\Services\Integration\Integration_Registry_Service;
+use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use InvalidArgumentException;
 
 /**

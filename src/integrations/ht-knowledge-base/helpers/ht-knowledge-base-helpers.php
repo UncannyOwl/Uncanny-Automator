@@ -25,7 +25,8 @@ class Ht_Knowledge_Base_Helpers {
 			'post_status'    => 'publish',
 		);
 
-		$options  = Automator()->helpers->recipe->options->wp_query( $args, $is_any, esc_attr__( 'Any article', 'uncanny-automator' ) );
+		$params   = array_merge( $args, array( 'include_any' => $is_any, 'any_label' => esc_attr__( 'Any article', 'uncanny-automator' ) ) );
+		$options  = automator_wp_query( $params, 'legacy' );
 		$articles = array();
 
 		if ( true === $is_all ) {

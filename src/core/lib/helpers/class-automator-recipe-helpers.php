@@ -35,7 +35,8 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $edd;
 	/**
-	 * @var Event_Tickets_Helpers
+	 * @var mixed
+	 * @deprecated 7.2 Legacy singleton-chain slot — The Events Calendar integration no longer populates this.
 	 */
 	public $event_tickets;
 	/**
@@ -66,10 +67,10 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 * @var H5p_Helpers
 	 */
 	public $h5p;
-	/**
-	 * @var Learndash_Helpers
-	 */
-	public $learndash;
+	// /**
+	//  * @var Learndash_Helpers
+	//  */
+	// public $learndash;
 	/**
 	 * @var Learnpress_Helpers
 	 */
@@ -382,7 +383,15 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 
 		add_action( 'automator_add_integration_helpers', array( $this, 'load_helpers_for_recipes' ) );
 
-		if ( $this->is_edit_page() || $this->is_automator_ajax() ) {
+		// is_automator_ajax() uses a strict /wp-json/(uap/v2|automator/v1) regex that misses
+		// proxy-rewritten URIs; the global helpers use a substring match and cover those gaps.
+		// Keeping both gates symmetric prevents load_helpers=false while downstream fires.
+		if (
+			$this->is_edit_page()
+			|| $this->is_automator_ajax()
+			|| is_automator_rest_request()
+			|| is_mcp_rest_request()
+		) {
 			$this->load_helpers = true;
 		}
 	}

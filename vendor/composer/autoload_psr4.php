@@ -6,4 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Uncanny_Automator\\App\\' => array($baseDir . '/src/app'),
 );

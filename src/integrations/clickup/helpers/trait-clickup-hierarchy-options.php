@@ -29,10 +29,7 @@ trait ClickUp_Hierarchy_Options {
 			'options'               => array(),
 			'options_show_id'       => false,
 			'relevant_tokens'       => array(),
-			'ajax'                  => array(
-				'endpoint' => 'automator_clickup_fetch_teams',
-				'event'    => 'on_load',
-			),
+			'remote_data'           => $this->helpers->remote_data_load_config( 'teams' ),
 		);
 	}
 
@@ -52,10 +49,9 @@ trait ClickUp_Hierarchy_Options {
 			'options'               => array(),
 			'options_show_id'       => false,
 			'relevant_tokens'       => array(),
-			'ajax'                  => array(
-				'endpoint'      => 'automator_clickup_fetch_spaces',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( ClickUp_App_Helpers::META_TEAM ),
+			'remote_data'           => $this->helpers->remote_data_parent_config(
+				'spaces',
+				array( ClickUp_App_Helpers::META_TEAM )
 			),
 		);
 	}
@@ -76,10 +72,9 @@ trait ClickUp_Hierarchy_Options {
 			'options'               => array(),
 			'options_show_id'       => false,
 			'relevant_tokens'       => array(),
-			'ajax'                  => array(
-				'endpoint'      => 'automator_clickup_fetch_folders',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( ClickUp_App_Helpers::META_SPACE ),
+			'remote_data'           => $this->helpers->remote_data_parent_config(
+				'folders',
+				array( ClickUp_App_Helpers::META_SPACE )
 			),
 		);
 	}

@@ -1,0 +1,293 @@
+{
+    "integration_id": "WPFF",
+    "updated_at": "2026-03-09T20:02:50Z",
+    "triggers": [
+        {
+            "code": "WPFFSUBFORM",
+            "meta": "WPFFFORMS",
+            "tokens": [
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFSUBFORM:NUMTIMES"
+                },
+                {
+                    "id": "WPFFFORMS",
+                    "name": "Form title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFSUBFORM:WPFFFORMS"
+                },
+                {
+                    "id": "WPFFFORMS_ID",
+                    "name": "Form ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFSUBFORM:WPFFFORMS_ID"
+                },
+                {
+                    "id": "WPFFFORMS",
+                    "name": "Form title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFSUBFORM:WPFFFORMS"
+                },
+                {
+                    "id": "WPFFFORMS_ID",
+                    "name": "Form ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFSUBFORM:WPFFFORMS_ID"
+                },
+                {
+                    "id": "NUMTIMES",
+                    "name": "Number of times",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFSUBFORM:NUMTIMES"
+                },
+                {
+                    "id": "WPFFENTRYID",
+                    "name": "Entry ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYID"
+                },
+                {
+                    "id": "WPFFENTRYIP",
+                    "name": "User IP",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYIP"
+                },
+                {
+                    "id": "WPFFENTRYSOURCEURL",
+                    "name": "Entry source URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYSOURCEURL"
+                },
+                {
+                    "id": "WPFFENTRYDATE",
+                    "name": "Entry submission date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYDATE"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "ANONWPFFSUBFORM",
+            "meta": "ANONWPFFFORMS",
+            "tokens": [
+                {
+                    "id": "ANONWPFFFORMS",
+                    "name": "Form title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONWPFFSUBFORM:ANONWPFFFORMS"
+                },
+                {
+                    "id": "ANONWPFFFORMS_ID",
+                    "name": "Form ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONWPFFSUBFORM:ANONWPFFFORMS_ID"
+                },
+                {
+                    "id": "ANONWPFFFORMS",
+                    "name": "Form title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONWPFFSUBFORM:ANONWPFFFORMS"
+                },
+                {
+                    "id": "ANONWPFFFORMS_ID",
+                    "name": "Form ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONWPFFSUBFORM:ANONWPFFFORMS_ID"
+                },
+                {
+                    "id": "WPFFENTRYID",
+                    "name": "Entry ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYID"
+                },
+                {
+                    "id": "WPFFENTRYIP",
+                    "name": "User IP",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYIP"
+                },
+                {
+                    "id": "WPFFENTRYSOURCEURL",
+                    "name": "Entry source URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYSOURCEURL"
+                },
+                {
+                    "id": "WPFFENTRYDATE",
+                    "name": "Entry submission date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYDATE"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "ANONWPFFSUBFIELD",
+            "meta": "ANONWPFFFORMS",
+            "tokens": [
+                {
+                    "id": "ANONWPFFFORMS",
+                    "name": "Form title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONWPFFSUBFIELD:ANONWPFFFORMS"
+                },
+                {
+                    "id": "ANONWPFFFORMS_ID",
+                    "name": "Form ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONWPFFSUBFIELD:ANONWPFFFORMS_ID"
+                },
+                {
+                    "id": "WPFFENTRYID",
+                    "name": "Entry ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYID"
+                },
+                {
+                    "id": "WPFFENTRYIP",
+                    "name": "User IP",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYIP"
+                },
+                {
+                    "id": "WPFFENTRYSOURCEURL",
+                    "name": "Entry source URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYSOURCEURL"
+                },
+                {
+                    "id": "WPFFENTRYDATE",
+                    "name": "Entry submission date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYDATE"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "WPFFSUBFIELD",
+            "meta": "WPFFFORMS",
+            "tokens": [
+                {
+                    "id": "WPFFFORMS",
+                    "name": "Form title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFSUBFIELD:WPFFFORMS"
+                },
+                {
+                    "id": "WPFFFORMS_ID",
+                    "name": "Form ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFSUBFIELD:WPFFFORMS_ID"
+                },
+                {
+                    "id": "WPFFENTRYID",
+                    "name": "Entry ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYID"
+                },
+                {
+                    "id": "WPFFENTRYIP",
+                    "name": "User IP",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYIP"
+                },
+                {
+                    "id": "WPFFENTRYSOURCEURL",
+                    "name": "Entry source URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYSOURCEURL"
+                },
+                {
+                    "id": "WPFFENTRYDATE",
+                    "name": "Entry submission date",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:WPFFENTRYTOKENS:WPFFENTRYDATE"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        }
+    ],
+    "actions": []
+}

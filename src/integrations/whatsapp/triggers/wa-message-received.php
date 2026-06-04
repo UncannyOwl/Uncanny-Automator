@@ -1,132 +1,105 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\WhatsApp;
 
-use Uncanny_Automator\Recipe;
+use Uncanny_Automator\Recipe\App_Trigger;
 
 /**
  * Class WA_MESSAGE_RECEIVED
  *
  * @package Uncanny_Automator
+ * @property WhatsApp_Helpers $helpers
+ * @property WhatsApp_Api_Caller $api
+ * @property WhatsApp_Webhooks $webhooks
  */
-class WA_MESSAGE_RECEIVED {
-
-	use Recipe\Triggers;
+class WA_MESSAGE_RECEIVED extends App_Trigger {
 
 	/**
-	 * Constant TRIGGER_CODE.
+	 * Static trigger definition for lazy-loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	const TRIGGER_CODE = 'WA_MESSAGE_RECEIVED';
-
-	/**
-	 * Constant TRIGGER_META.
-	 *
-	 * @var string
-	 */
-	const TRIGGER_META = 'WA_MESSAGE_RECEIVED_META';
-
-	/**
-	 * The WhatsApp tokens.
-	 *
-	 * @var Wa_Message_Received_Tokens $whatsapp_tokens.
-	 */
-	public $whatsapp_tokens = array();
-
-	public function __construct() {
-
-		$this->whatsapp_tokens = new Wa_Message_Received_Tokens();
-
-		$this->setup_trigger();
-
+	public static function definition() {
+		return self::new_definition( 'WA_MESSAGE_RECEIVED', 'WHATSAPP' )
+			->trigger_meta( 'WA_MESSAGE_RECEIVED_META' )
+			->trigger_type( 'anonymous' )
+			->hook( 'automator_whatsapp_webhook_message_received' );
 	}
 
 	/**
 	 * Define and register the trigger by pushing it into the Automator object.
 	 *
-	 * @return void.
+	 * @return void
 	 */
-	public function setup_trigger() {
-
-		$this->set_integration( 'WHATSAPP' );
-
-		$this->set_trigger_code( self::TRIGGER_CODE );
-
-		$this->set_trigger_meta( self::TRIGGER_META );
-
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type / hook are auto-applied from definition().
 		$this->set_is_login_required( false );
-
-		$this->set_trigger_type( 'anonymous' );
-
-		// The action hook to attach this trigger into.
-		$this->add_action( 'automator_whatsapp_webhook_message_received' );
-
 		$this->set_uses_api( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_trigger_code(), 'knowledge-base/whatsapp/' ) );
 
-		// The number of arguments that the action hook accepts.
-		$this->set_action_args_count( 1 );
-
-		/* Translators: Trigger sentence */
-		$this->set_sentence( sprintf( esc_html__( 'A message is received', 'uncanny-automator' ) ) );
-
-		/* Translators: Trigger sentence */
-		$this->set_readable_sentence( esc_html__( 'A message is received', 'uncanny-automator' ) );
-
-		$this->set_tokens(
-			$this->whatsapp_tokens->message_received_tokens()
+		$this->set_sentence(
+			esc_html_x( 'A message is received', 'WhatsApp', 'uncanny-automator' )
 		);
 
-		// Register the trigger.
-		$this->register_trigger();
+		$this->set_readable_sentence(
+			esc_html_x( 'A message is received', 'WhatsApp', 'uncanny-automator' )
+		);
+	}
 
+	/**
+	 * Define tokens for the trigger.
+	 *
+	 * @param array $trigger The trigger data.
+	 * @param array $tokens The existing tokens.
+	 *
+	 * @return array The tokens.
+	 */
+	public function define_tokens( $trigger, $tokens ) {
+		$tokens[] = array(
+			'tokenId'   => 'MESSAGE',
+			'tokenName' => esc_html_x( 'Message', 'WhatsApp', 'uncanny-automator' ),
+			'tokenType' => 'text',
+		);
+		$tokens[] = array(
+			'tokenId'   => 'SENDER',
+			'tokenName' => esc_html_x( 'Sender', 'WhatsApp', 'uncanny-automator' ),
+			'tokenType' => 'text',
+		);
+		$tokens[] = array(
+			'tokenId'   => 'SENDER_PROFILE_NAME',
+			'tokenName' => esc_html_x( 'Sender profile name', 'WhatsApp', 'uncanny-automator' ),
+			'tokenType' => 'text',
+		);
+		return $tokens;
+	}
+
+	/**
+	 * Hydrate tokens with their values.
+	 *
+	 * @param array $trigger The trigger data.
+	 * @param array $hook_args The hook arguments.
+	 *
+	 * @return array The token values.
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+		$response = $hook_args[0] ?? array();
+		return array(
+			'MESSAGE'             => sanitize_text_field( $response['body'] ?? '' ),
+			'SENDER'              => sanitize_text_field( $response['from'] ?? '' ),
+			'SENDER_PROFILE_NAME' => sanitize_text_field( $response['_response']['entry'][0]['changes'][0]['value']['contacts'][0]['profile']['name'] ?? '' ),
+		);
 	}
 
 	/**
 	 * Validate the trigger.
 	 *
-	 * @return boolean True.
-	 */
-	public function validate_trigger( ...$args ) {
-
-		$response = $args[0][0];
-
-		$name = 'automator_whatsapp_' . $response['wamid'] . '_incoming';
-
-		if ( false !== get_transient( $name ) ) {
-			return false;
-		}
-
-		set_transient( $name, 'yes', 60 ); // Expire in 1 minute.
-
-		// Flush the transient after 60s.
-		wp_schedule_single_event( time() + 60, 'automator_whatsapp_flush_transient', array( $name ) );
-
-		return true;
-
-	}
-
-	/**
-	 * Prepare to run.
+	 * @param array $trigger The trigger data.
+	 * @param array $hook_args The hook arguments.
 	 *
-	 * Sets the conditional trigger to true.
-	 *
-	 * @return void.
+	 * @return bool True if trigger should fire, false otherwise.
 	 */
-	public function prepare_to_run( $data ) {
+	public function validate( $trigger, $hook_args ) {
+		$response = $hook_args[0] ?? array();
 
-		$this->set_conditional_trigger( false );
-
+		return $this->webhooks->is_unique_webhook_event( $response['wamid'] ?? '', 'incoming' );
 	}
-
-	/**
-	 * Continue trigger process even for logged-in user.
-	 *
-	 * @return boolean True.
-	 */
-	public function do_continue_anon_trigger( ...$args ) {
-
-		return true;
-
-	}
-
 }

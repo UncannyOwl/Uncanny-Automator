@@ -32,7 +32,7 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 		$this->trigger_code = 'USERADDEDTOMEMBERSHIP';
 		$this->trigger_meta = 'MPPRODUCT';
 		$this->define_trigger();
-		$this->maybe_migrate_trigger_hook();
+		self::maybe_migrate_trigger_hook();
 	}
 
 	/**
@@ -87,16 +87,6 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 		$product_id = $product->ID;
 		$user_id    = absint( $transaction->user()->ID );
 
-		// Idempotency: prevent the trigger from firing more than once per user + product.
-		// Keyed by user+product (not txn ID) so that when Stripe creates both a confirmation
-		// and a payment transaction via separate webhooks, the first request wins and the
-		// second is blocked — avoiding a race where both see count > 1 and neither fires.
-		$idempotency_key = 'uap_mp_added_' . $user_id . '_' . $product_id;
-		if ( get_transient( $idempotency_key ) ) {
-			return;
-		}
-		set_transient( $idempotency_key, true, HOUR_IN_SECONDS );
-
 		$recipes = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		if ( empty( $recipes ) ) {
 			return;
@@ -132,6 +122,16 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 		if ( ( $complete_count + $confirmed_count ) > 1 ) {
 			return;
 		}
+
+		// Idempotency: claim the user+product slot only when we're actually about to fire.
+		// Keyed by user+product (not txn ID) so that when Stripe creates both a confirmation
+		// and a payment transaction via separate webhooks for the same checkout, only the
+		// first request wins. Set AFTER the count guard so renewals don't burn the slot.
+		$idempotency_key = 'uap_mp_added_' . $user_id . '_' . $product_id;
+		if ( get_transient( $idempotency_key ) ) {
+			return;
+		}
+		set_transient( $idempotency_key, true, HOUR_IN_SECONDS );
 
 		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 			$recipe_args = array(
@@ -170,12 +170,25 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 	/**
 	 * One-time migration: update the stored `add_action` hook for any existing
 	 * USERADDEDTOMEMBERSHIP triggers that still reference the old hook. Without
-	 * this, Automator won't bind the validation callback for recipes created
-	 * before this change.
+	 * this, Automator's trigger binder filters the trigger out (post_meta is the
+	 * source of truth at bind time) and the validation callback never runs.
+	 *
+	 * The done-flag is set only when the UPDATE actually mutates rows or when
+	 * a verification SELECT confirms no stale rows remain. This keeps sites whose
+	 * pre-migration hook value differs from the expected old value from getting
+	 * permanently locked into "already migrated" state.
+	 *
+	 * On a successful migration we also bust the active-trigger cache so the
+	 * binder picks up the corrected post_meta on the very next request rather
+	 * than waiting for the 60s TTL.
 	 */
-	public function maybe_migrate_trigger_hook() {
+	public static function maybe_migrate_trigger_hook() {
 
-		$option_key = 'uap_mp_membership_trigger_hook_migrated';
+		// Keyed with a version suffix so a release can force the migration to
+		// re-run on sites that were locked into a half-migrated state by the
+		// previous, non-idempotent implementation. Bump the suffix any time
+		// the migration logic changes in a way that needs a one-shot replay.
+		$option_key = 'uap_mp_membership_trigger_hook_migrated_v2';
 
 		if ( automator_get_option( $option_key, '' ) ) {
 			return;
@@ -183,7 +196,8 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 
 		global $wpdb;
 
-		$wpdb->query(
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$updated = $wpdb->query(
 			$wpdb->prepare(
 				"UPDATE {$wpdb->postmeta} pm
 				INNER JOIN {$wpdb->postmeta} pm_code
@@ -198,8 +212,75 @@ class MP_USER_ADDED_TO_MEMBERSHIP {
 				'mepr-event-transaction-completed'
 			)
 		);
+		// phpcs:enable
+
+		// $wpdb->query returns false on error, otherwise the affected row count.
+		// Treat false as a transient failure — leave the flag unset so the next
+		// request retries instead of locking the site into a half-migrated state.
+		if ( false === $updated ) {
+			return;
+		}
+
+		// If nothing was updated, only mark migrated once we've confirmed there
+		// are no stale rows left to migrate (a fresh install, or a site already
+		// on the new hook). Otherwise re-attempt next request.
+		if ( 0 === (int) $updated && self::has_stale_hook_rows() ) {
+			return;
+		}
 
 		automator_update_option( $option_key, time() );
+
+		if ( $updated > 0 ) {
+			self::invalidate_active_trigger_cache();
+		}
+	}
+
+	/**
+	 * Detect any USERADDEDTOMEMBERSHIP trigger postmeta still bound to the
+	 * pre-7.2.0 hook. Used to gate the "no rows changed" branch of the
+	 * migration so we don't set the done-flag prematurely on sites whose
+	 * stored hook value never matched the expected legacy string.
+	 *
+	 * @return bool
+	 */
+	private static function has_stale_hook_rows() {
+
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$stale = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*)
+				FROM {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->postmeta} pm_code
+					ON pm_code.post_id = pm.post_id
+					AND pm_code.meta_key = 'code'
+					AND pm_code.meta_value = %s
+				WHERE pm.meta_key = 'add_action'
+				AND pm.meta_value <> %s",
+				'USERADDEDTOMEMBERSHIP',
+				'mepr-account-is-active'
+			)
+		);
+		// phpcs:enable
+
+		return (int) $stale > 0;
+	}
+
+	/**
+	 * Bust the cached active-trigger map so the binder re-reads post_meta
+	 * on the next request. Tolerant of either cache implementation present
+	 * in the codebase (transient or Automator cache wrapper).
+	 *
+	 * @return void
+	 */
+	private static function invalidate_active_trigger_cache() {
+
+		delete_transient( 'automator_actionified_triggers' );
+
+		if ( function_exists( 'Automator' ) && isset( Automator()->cache ) && method_exists( Automator()->cache, 'remove' ) ) {
+			Automator()->cache->remove( 'automator_actionified_triggers' );
+		}
 	}
 
 }

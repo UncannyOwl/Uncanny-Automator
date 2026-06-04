@@ -1,66 +1,69 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Uncanny_Groups;
+
+use Uncanny_Automator\Recipe\Abstract_Helpers;
 
 /**
- * Class Uncanny_Groups_Helpers
+ * Class Uog_Helpers
  *
  * @package Uncanny_Automator
  */
-class Uncanny_Groups_Helpers {
+class Uog_Helpers extends Abstract_Helpers {
 
 	/**
-	 * @var Uncanny_Groups_Helpers
+	 * Uog_Helpers constructor.
 	 */
-	public $options;
-
-	/**
-	 * @var bool
-	 */
-	public $load_options = true;
-
-	/**
-	 * Uncanny_Groups_Helpers constructor.
-	 */
-	public function __construct( $load_action_hook = true ) {
-
-		if ( true === $load_action_hook ) {
-			add_filter( 'uap_option_all_ld_groups', array( $this, 'uog_filter_groups_list' ) );
-		}
+	public function __construct() {
 	}
 
 	/**
-	 * @param Uncanny_Groups_Helpers $options
-	 */
-	public function setOptions( Uncanny_Groups_Helpers $options ) {
-		$this->options = $options;
-	}
-
-
-	/**
-	 * Filter for group list
+	 * Comparison operator options for numeric condition fields.
 	 *
-	 * @param $option
+	 * @return array[] Modern select options format.
+	 */
+	public static function comparison_operators() {
+		return array(
+			array( 'value' => '<', 'text' => esc_html_x( 'less than', 'Uncanny Groups', 'uncanny-automator' ) ),
+			array( 'value' => '>', 'text' => esc_html_x( 'greater than', 'Uncanny Groups', 'uncanny-automator' ) ),
+			array( 'value' => '=', 'text' => esc_html_x( 'equal to', 'Uncanny Groups', 'uncanny-automator' ) ),
+			array( 'value' => '!=', 'text' => esc_html_x( 'not equal to', 'Uncanny Groups', 'uncanny-automator' ) ),
+			array( 'value' => '>=', 'text' => esc_html_x( 'greater or equal to', 'Uncanny Groups', 'uncanny-automator' ) ),
+			array( 'value' => '<=', 'text' => esc_html_x( 'less or equal to', 'Uncanny Groups', 'uncanny-automator' ) ),
+		);
+	}
+
+	/**
+	 * Full NUMBERCOND field definition for numeric comparison triggers.
+	 *
+	 * @return array Field definition ready to include in options().
+	 */
+	public static function comparison_field() {
+		return array(
+			'option_code' => 'NUMBERCOND',
+			'label'       => esc_html_x( 'Condition', 'Uncanny Groups', 'uncanny-automator' ),
+			'input_type'  => 'select',
+			'required'    => true,
+			'options'     => self::comparison_operators(),
+		);
+	}
+
+	/**
+	 * Get all LearnDash groups as dropdown options.
+	 *
+	 * @param bool $include_any Whether to include "Any group" option.
 	 *
 	 * @return array
 	 */
-	public function uog_filter_groups_list( $option = array() ) {
-		if ( is_array( $option ) && isset( $option['option_code'] ) && ( 'UOG_SEATSADDEDTOGROUP_META' === $option['option_code'] || 'UOG_SEATSREMOVEDFROMGROUP_META' === $option['option_code'] ) ) {
-			$option['relevant_tokens'] = array();
-		}
-		return $option;
-	}
-	/**
-	 * @param string $label
-	 * @param string $option_code
-	 * @param bool $any_option
-	 *
-	 * @return mixed
-	 */
-	public function all_ld_groups( $label = null, $option_code = 'UOGROUP', $any_option = true ) {
+	public function all_ld_groups_options( $include_any = true ) {
 
-		if ( ! $label ) {
-			$label = esc_attr__( 'Group', 'uncanny-automator' );
+		$options = array();
+
+		if ( $include_any ) {
+			$options[] = array(
+				'value' => '-1',
+				'text'  => esc_html_x( 'Any group', 'Uncanny Groups', 'uncanny-automator' ),
+			);
 		}
 
 		$args = array(
@@ -71,81 +74,117 @@ class Uncanny_Groups_Helpers {
 			'post_status'    => 'publish',
 		);
 
-		$options = Automator()->helpers->recipe->options->wp_query( $args, $any_option, esc_attr__( 'Any group', 'uncanny-automator' ) );
+		$groups = get_posts( $args );
 
-		$option = array(
-			'option_code'              => $option_code,
-			'label'                    => $label,
-			'input_type'               => 'select',
-			'required'                 => true,
-			'options'                  => $options,
-			'relevant_tokens'          => array(
-				$option_code                   => esc_attr__( 'Group title', 'uncanny-automator' ),
-				$option_code . '_ID'           => esc_attr__( 'Group ID', 'uncanny-automator' ),
-				$option_code . '_URL'          => esc_attr__( 'Group URL', 'uncanny-automator' ),
-				$option_code . '_KEY'          => esc_attr__( 'Key redeemed', 'uncanny-automator' ),
-				$option_code . '_KEY_BATCH_ID' => esc_attr__( 'Key batch ID', 'uncanny-automator' ),
-			),
-			'custom_value_description' => _x( 'Group ID', 'LearnDash', 'uncanny-automator' ),
-		);
+		if ( ! empty( $groups ) ) {
+			foreach ( $groups as $group ) {
+				$options[] = array(
+					'value' => (string) $group->ID,
+					'text'  => $group->post_title,
+				);
+			}
+		}
 
-		return apply_filters( 'uap_option_all_ld_groups', $option );
+		return $options;
 	}
 
+	/**
+	 * Remote-data handler: load groups (with "Any group" option) for dropdown options.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 */
+	protected function remote_data_get_groups( $request ): array {
+		return $this->remote_data_success( $this->all_ld_groups_options( true ) );
+	}
 
 	/**
-	 * Getting all email addresses of group leaders
+	 * Remote-data handler: load groups (no "Any group" option) for action dropdown options.
 	 *
-	 * @param $group_id
+	 * @param Remote_Data_Request $request The remote-data request.
 	 *
-	 * @return mixed|void
+	 * @return array
+	 */
+	protected function remote_data_get_groups_strict( $request ): array {
+		return $this->remote_data_success( $this->all_ld_groups_options( false ) );
+	}
+
+	/**
+	 * Get all email addresses of group leaders for a given group.
+	 *
+	 * @param int $group_id The group ID.
+	 *
+	 * @return string Comma-separated email addresses.
 	 */
 	public function get_group_leaders_email_addresses( $group_id ) {
 
 		$group_leaders = learndash_get_groups_administrators( $group_id );
+		$emails        = array_column( $group_leaders, 'user_email' );
 
-		return ( is_array( array_column( $group_leaders, 'user_email' ) ) ) ? implode( ', ', array_column( $group_leaders, 'user_email' ) ) : array();
-
-	}
-
-	public function get_number_conditions_values( $key = '' ) {
-		if ( empty( $key ) ) {
-			return '';
+		if ( is_array( $emails ) && ! empty( $emails ) ) {
+			return implode( ', ', $emails );
 		}
 
-		return Automator()->helpers->recipe->field->less_or_greater_than()['options'][ $key ];
+		return '';
 	}
 
 	/**
 	 * Validate an array of Group post IDs.
 	 *
-	 * @param array $group_ids Array of Groups post IDs to check.
-	 * @return array validated Group post IDS.
+	 * @param array $group_ids Array of group post IDs to check.
+	 *
+	 * @return array Validated group post IDs.
 	 */
 	public function learndash_validate_groups( $group_ids = array() ) {
-		if ( ( is_array( $group_ids ) ) && ( ! empty( $group_ids ) ) ) {
-			$groups_query_args = array(
-				'no_found_rows'          => true,
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-				'post_type'              => learndash_get_post_type_slug( 'group' ),
-				'fields'                 => 'ids',
-				'orderby'                => 'title',
-				'order'                  => 'ASC',
-				'post__in'               => $group_ids,
-				'posts_per_page'         => -1,
-				'suppress_filters'       => true,
-			);
 
-			$groups_query_args = apply_filters( 'uap_option_learndash_validate_groups', $groups_query_args );
+		if ( ! is_array( $group_ids ) || empty( $group_ids ) ) {
+			return array();
+		}
 
-			$groups_query = new \WP_Query( $groups_query_args );
-			if ( ( is_a( $groups_query, '\WP_Query' ) ) && ( property_exists( $groups_query, 'posts' ) ) ) {
-				return $groups_query->posts;
-			}
+		$groups_query_args = array(
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'post_type'              => learndash_get_post_type_slug( 'group' ),
+			'fields'                 => 'ids',
+			'orderby'                => 'title',
+			'order'                  => 'ASC',
+			'post__in'               => $group_ids,
+			'posts_per_page'         => -1,
+			'suppress_filters'       => true,
+		);
+
+		$groups_query_args = apply_filters( 'uap_option_learndash_validate_groups', $groups_query_args );
+
+		$groups_query = new \WP_Query( $groups_query_args );
+
+		if ( is_a( $groups_query, '\WP_Query' ) && property_exists( $groups_query, 'posts' ) ) {
+			return $groups_query->posts;
 		}
 
 		return array();
 	}
 
+	/**
+	 * Get the human-readable label for a number condition value.
+	 *
+	 * @param string $value The condition value (e.g., '>=').
+	 *
+	 * @return string The condition label.
+	 */
+	public function get_number_conditions_values( $value = '' ) {
+
+		if ( '' === $value ) {
+			return '';
+		}
+
+		foreach ( self::comparison_operators() as $option ) {
+			if ( (string) $option['value'] === (string) $value ) {
+				return $option['text'];
+			}
+		}
+
+		return '';
+	}
 }

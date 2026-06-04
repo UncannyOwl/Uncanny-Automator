@@ -59,12 +59,13 @@ class Addon_Registry {
 	 * @param array $config {
 	 *     Addon configuration.
 	 *
-	 *     @type string $integrations_path Absolute path to the addon's integrations directory.
-	 *     @type string $namespace         Root namespace (e.g. 'Uncanny_Automator_Pro').
-	 *     @type array  $integrations      Integration file map (from autoload_integrations_map.php).
-	 *                                     Keys are directory names, values are arrays of file types.
-	 *     @type string $item_map_file     Path to autoload_item_map.php for demand-driven gating. Optional.
-	 *     @type string $filemap_file      Path to autoload_filemap.php for framework integrations. Optional.
+	 *     @type string $integrations_path     Absolute path to the addon's integrations directory.
+	 *     @type string $namespace             Root namespace (e.g. 'Uncanny_Automator_Pro').
+	 *     @type array  $integrations          Integration file map (from autoload_integrations_map.php).
+	 *                                         Keys are directory names, values are arrays of file types.
+	 *     @type string $item_map_file         Path to autoload_item_map.php for demand-driven gating. Optional.
+	 *     @type string $filemap_file          Path to autoload_filemap.php for framework integrations. Optional.
+	 *     @type string $trigger_metadata_file Path to autoload_trigger_metadata.php for lazy trigger definitions. Optional.
 	 * }
 	 *
 	 * @return bool True if registration succeeded, false if validation failed.
@@ -74,11 +75,12 @@ class Addon_Registry {
 		$config = wp_parse_args(
 			$config,
 			array(
-				'integrations_path' => '',
-				'namespace'         => '',
-				'integrations'      => array(),
-				'item_map_file'     => '',
-				'filemap_file'      => '',
+				'integrations_path'     => '',
+				'namespace'             => '',
+				'integrations'          => array(),
+				'item_map_file'         => '',
+				'filemap_file'          => '',
+				'trigger_metadata_file' => '',
 			)
 		);
 
@@ -92,6 +94,8 @@ class Addon_Registry {
 		// addon constructors calling get_item_map() see the merged map.
 		$this->hook_item_map( $config['item_map_file'] );
 		Recipe_Manifest::get_instance()->invalidate_item_map();
+
+		$this->hook_trigger_metadata( $config['trigger_metadata_file'] );
 
 		$this->load_framework_integrations( $config['filemap_file'] );
 
@@ -362,5 +366,42 @@ class Addon_Registry {
 		}
 
 		return $map;
+	}
+
+	// ──────────────────────────────────────────────
+	// Lazy trigger metadata registration
+	// ──────────────────────────────────────────────
+
+	/**
+	 * Hook an addon's lazy trigger metadata file into Free's Trigger_Metadata_Loader.
+	 *
+	 * Pro and third-party addons opt into the lazy trigger pipeline by
+	 * producing their own `vendor/composer/autoload_trigger_metadata.php`
+	 * at build time and passing the path here. This method appends it to
+	 * the filterable list Trigger_Metadata_Loader reads at boot.
+	 *
+	 * No-op when the file is missing (fresh install, dev env without the
+	 * metadata generator wired up), so older Free versions that lack the
+	 * loader are also safe — the filter just never fires.
+	 *
+	 * @since 7.3
+	 *
+	 * @param string $metadata_file Absolute path to the addon's autoload_trigger_metadata.php. Empty to skip.
+	 *
+	 * @return void
+	 */
+	public function hook_trigger_metadata( $metadata_file ) {
+
+		if ( empty( $metadata_file ) || ! file_exists( $metadata_file ) ) {
+			return;
+		}
+
+		add_filter(
+			'automator_lazy_trigger_metadata_files',
+			static function ( $files ) use ( $metadata_file ) {
+				$files[] = $metadata_file;
+				return $files;
+			}
+		);
 	}
 }

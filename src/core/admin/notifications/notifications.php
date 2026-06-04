@@ -1,6 +1,8 @@
 <?php
 namespace Uncanny_Automator;
 
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
+
 /**
  * Notifications.
  *
@@ -607,11 +609,11 @@ class Automator_Notifications {
 	}
 
 	/**
-	 * @return false|string
+	 * @return string
 	 */
 	public function get_license_type() {
 
-		return Api_Server::get_license_type();
+		return automator_license_manager()->get_type();
 	}
 
 

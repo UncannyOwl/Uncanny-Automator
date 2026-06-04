@@ -36,6 +36,9 @@ class Fluent_Community_Integration extends \Uncanny_Automator\Integration {
 		new FLUENTCOMMUNITY_USER_SPACE_JOINED( $this->helpers );
 		new FLUENTCOMMUNITY_USER_SPACE_POSTED( $this->helpers );
 		new FLUENTCOMMUNITY_USER_LESSON_COMPLETED( $this->helpers );
+		new FLUENTCOMMUNITY_USER_QUIZ_PERCENTAGE( $this->helpers );
+		new FLUENTCOMMUNITY_USER_QUIZ_COMPLETED( $this->helpers );
+		new FLUENTCOMMUNITY_USER_QUIZ_PASS_FAIL( $this->helpers );
 		//actions
 		new FLUENTCOMMUNITY_ENROLL_USER_COURSE( $this->helpers );
 		new FLUENTCOMMUNITY_ADD_USER_TO_SPACE( $this->helpers );
@@ -59,5 +62,8 @@ class Fluent_Community_Integration extends \Uncanny_Automator\Integration {
 	public function register_hooks() {
 		add_action( 'wp_ajax_automator_fluentcommunity_lessons_fetch', array( $this->helpers, 'ajax_fetch_lessons_by_course' ) );
 		add_action( 'wp_ajax_automator_fluentcommunity_lessons_fetch_for_action', array( $this->helpers, 'ajax_fetch_lessons_by_course_for_action' ) );
+		add_action( 'wp_ajax_automator_fluentcommunity_quizzes_fetch', array( $this->helpers, 'ajax_fetch_quizzes_by_course' ) );
+		add_action( 'wp_ajax_automator_fluentcommunity_quizzes_by_lesson_fetch', array( $this->helpers, 'ajax_fetch_quizzes_by_lesson' ) );
+		add_action( 'wp_ajax_automator_fluentcommunity_quizzes_fetch_for_action', array( $this->helpers, 'ajax_fetch_quizzes_by_course_for_action' ) );
 	}
 }

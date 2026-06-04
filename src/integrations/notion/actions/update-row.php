@@ -73,10 +73,7 @@ class Update_Row extends \Uncanny_Automator\Recipe\App_Action {
 			'options'         => array(),
 			'options_show_id' => false,
 			'token_name'      => esc_html_x( 'Database ID', 'Notion', 'uncanny-automator' ),
-			'ajax'            => array(
-				'endpoint' => 'automator_notion_list_databases',
-				'event'    => 'on_load',
-			),
+			'remote_data'     => $this->helpers->remote_data_load_config( 'databases' ),
 		);
 
 		$column_search = array(
@@ -87,10 +84,9 @@ class Update_Row extends \Uncanny_Automator\Recipe\App_Action {
 			'relevant_tokens' => array(),
 			'options_show_id' => false,
 			'fields'          => array(),
-			'ajax'            => array(
-				'event'         => 'parent_fields_change',
-				'endpoint'      => 'automator_notion_get_database_columns',
-				'listen_fields' => array( $this->get_action_meta() ),
+			'remote_data'     => $this->helpers->remote_data_parent_config(
+				'database_columns',
+				array( $this->get_action_meta() )
 			),
 		);
 
@@ -113,10 +109,9 @@ class Update_Row extends \Uncanny_Automator\Recipe\App_Action {
 			'hide_header'     => true,
 			'hide_actions'    => true,
 			'fields'          => array(),
-			'ajax'            => array(
-				'event'         => 'parent_fields_change',
-				'endpoint'      => 'automator_notion_get_database',
-				'listen_fields' => array( $this->get_action_meta() ),
+			'remote_data'     => $this->helpers->remote_data_parent_config(
+				'database_fields',
+				array( $this->get_action_meta() )
 			),
 		);
 

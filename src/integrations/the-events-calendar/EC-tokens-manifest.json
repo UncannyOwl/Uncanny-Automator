@@ -1,0 +1,524 @@
+{
+    "integration_id": "EC",
+    "updated_at": "2026-04-08T00:00:00Z",
+    "scope_note": "This manifest captures the legacy EC_REGISTER trigger contract for the migration baseline. The post-Phase-4 surface (40+ triggers/actions/conditions/loop-filters) is the source of truth in EXPANSION-PLAN.md and CANDIDATE-TRIGGERS-ACTIONS.md. Per-item token-row backfill into this manifest is deferred to Phase 6 (a tooling task that should re-derive each token row from the trigger/action source files automatically).",
+    "modern_groups": {
+        "event": ["ECEVENTS", "ECEVENTS_ID", "ECEVENTS_URL", "ECEVENTS_THUMB_ID", "ECEVENTS_THUMB_URL"],
+        "organizer": ["ECORG", "ECORG_ID", "ECORG_URL", "ECORG_PHONE", "ECORG_EMAIL", "ECORG_WEBSITE"],
+        "venue": ["ECVEN", "ECVEN_ID", "ECVEN_URL", "ECVEN_ADDRESS", "ECVEN_CITY", "ECVEN_STATE", "ECVEN_ZIP", "ECVEN_COUNTRY", "ECVEN_PHONE", "ECVEN_WEBSITE"],
+        "ticket": ["{prefix}_NAME", "{prefix}_ID", "{prefix}_PRICE", "{prefix}_CAPACITY", "{prefix}_STOCK"],
+        "series": ["{prefix}", "{prefix}_ID", "{prefix}_URL", "{prefix}_EVENT_COUNT"],
+        "waitlist": ["WAITLIST_SUBSCRIBER_EMAIL", "WAITLIST_SUBSCRIBER_NAME", "WAITLIST_SUBSCRIBER_USER_ID", "WAITLIST_JOINED_DATE", "WAITLIST_ID", "WAITLIST_EVENT_ID"],
+        "edd_order": ["EDD_TICKET_NAME", "EDD_ORDER_ID", "EDD_ORDER_STATUS", "EDD_ORDER_TOTAL", "EDD_BILLING_FIRST_NAME", "EDD_BILLING_LAST_NAME", "EDD_BILLING_EMAIL"],
+        "provider": ["EC_PROVIDER"]
+    },
+    "phase_4_summary": {
+        "triggers_total": 20,
+        "actions_total": 12,
+        "conditions_total": 15,
+        "loop_filters_total": 17,
+        "see_also": [
+            "src/integrations/the-events-calendar/EXPANSION-PLAN.md",
+            "src/integrations/the-events-calendar/CANDIDATE-TRIGGERS-ACTIONS.md"
+        ]
+    },
+    "triggers": [
+        {
+            "code": "USERREGISTERED",
+            "meta": "ECEVENTS",
+            "tokens": [
+                {
+                    "id": "ECEVENTS",
+                    "name": "Event title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS"
+                },
+                {
+                    "id": "ECEVENTS_ID",
+                    "name": "Event ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS_ID"
+                },
+                {
+                    "id": "ECEVENTS_URL",
+                    "name": "Event URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS_URL"
+                },
+                {
+                    "id": "ECEVENTS_THUMB_ID",
+                    "name": "Event featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS_THUMB_ID"
+                },
+                {
+                    "id": "ECEVENTS_THUMB_URL",
+                    "name": "Event featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS_THUMB_URL"
+                },
+                {
+                    "id": "ECEVENTS",
+                    "name": "Event title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS"
+                },
+                {
+                    "id": "ECEVENTS_ID",
+                    "name": "Event ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS_ID"
+                },
+                {
+                    "id": "ECEVENTS_URL",
+                    "name": "Event URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS_URL"
+                },
+                {
+                    "id": "ECEVENTS_THUMB_ID",
+                    "name": "Event featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS_THUMB_ID"
+                },
+                {
+                    "id": "ECEVENTS_THUMB_URL",
+                    "name": "Event featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERREGISTERED:ECEVENTS_THUMB_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "USERATTENDEVENT",
+            "meta": "ATTENDEVENT",
+            "tokens": [
+                {
+                    "id": "ATTENDEVENT",
+                    "name": "Event title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERATTENDEVENT:ATTENDEVENT"
+                },
+                {
+                    "id": "ATTENDEVENT_ID",
+                    "name": "Event ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERATTENDEVENT:ATTENDEVENT_ID"
+                },
+                {
+                    "id": "ATTENDEVENT_URL",
+                    "name": "Event URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERATTENDEVENT:ATTENDEVENT_URL"
+                },
+                {
+                    "id": "ATTENDEVENT_THUMB_ID",
+                    "name": "Event featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERATTENDEVENT:ATTENDEVENT_THUMB_ID"
+                },
+                {
+                    "id": "ATTENDEVENT_THUMB_URL",
+                    "name": "Event featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:USERATTENDEVENT:ATTENDEVENT_THUMB_URL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "REGISTEREDWITHWC",
+            "meta": "ECEVENTS",
+            "tokens": [
+                {
+                    "id": "ECEVENTS",
+                    "name": "Event title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ECEVENTS"
+                },
+                {
+                    "id": "ECEVENTS_ID",
+                    "name": "Event ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ECEVENTS_ID"
+                },
+                {
+                    "id": "ECEVENTS_URL",
+                    "name": "Event URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ECEVENTS_URL"
+                },
+                {
+                    "id": "ECEVENTS_THUMB_ID",
+                    "name": "Event featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ECEVENTS_THUMB_ID"
+                },
+                {
+                    "id": "ECEVENTS_THUMB_URL",
+                    "name": "Event featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ECEVENTS_THUMB_URL"
+                },
+                {
+                    "id": "holder_name",
+                    "name": "Attendee name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:holder_name"
+                },
+                {
+                    "id": "holder_email",
+                    "name": "Attendee email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:holder_email"
+                },
+                {
+                    "id": "TICKET_NAME",
+                    "name": "Ticket name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:TICKET_NAME"
+                },
+                {
+                    "id": "ORDER_ID",
+                    "name": "Order ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ORDER_ID"
+                },
+                {
+                    "id": "ORDER_STATUS",
+                    "name": "Order status",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ORDER_STATUS"
+                },
+                {
+                    "id": "ORDER_PAYMENT_METHOD",
+                    "name": "Payment method",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ORDER_PAYMENT_METHOD"
+                },
+                {
+                    "id": "ORDER_TOTAL",
+                    "name": "Order total",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:ORDER_TOTAL"
+                },
+                {
+                    "id": "BILLING_FIRST_NAME",
+                    "name": "Billing first name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_FIRST_NAME"
+                },
+                {
+                    "id": "BILLING_LAST_NAME",
+                    "name": "Billing last name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_LAST_NAME"
+                },
+                {
+                    "id": "BILLING_COMPANY",
+                    "name": "Billing company",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_COMPANY"
+                },
+                {
+                    "id": "BILLING_COUNTRY",
+                    "name": "Billing country",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_COUNTRY"
+                },
+                {
+                    "id": "BILLING_ADDRESS_1",
+                    "name": "Billing address line 1",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_ADDRESS_1"
+                },
+                {
+                    "id": "BILLING_ADDRESS_2",
+                    "name": "Billing address line 2",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_ADDRESS_2"
+                },
+                {
+                    "id": "BILLING_CITY",
+                    "name": "Billing city",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_CITY"
+                },
+                {
+                    "id": "BILLING_STATE",
+                    "name": "Billing state",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_STATE"
+                },
+                {
+                    "id": "BILLING_POSTCODE",
+                    "name": "Billing postcode",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_POSTCODE"
+                },
+                {
+                    "id": "BILLING_PHONE",
+                    "name": "Billing phone",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_PHONE"
+                },
+                {
+                    "id": "BILLING_EMAIL",
+                    "name": "Billing email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHWC:BILLING_EMAIL"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "ATTENDEEREGISTERED",
+            "meta": "ANONATTENDEE",
+            "tokens": [
+                {
+                    "id": "ANONATTENDEE",
+                    "name": "Event title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE"
+                },
+                {
+                    "id": "ANONATTENDEE_ID",
+                    "name": "Event ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE_ID"
+                },
+                {
+                    "id": "ANONATTENDEE_URL",
+                    "name": "Event URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE_URL"
+                },
+                {
+                    "id": "ANONATTENDEE_THUMB_ID",
+                    "name": "Event featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE_THUMB_ID"
+                },
+                {
+                    "id": "ANONATTENDEE_THUMB_URL",
+                    "name": "Event featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE_THUMB_URL"
+                },
+                {
+                    "id": "ANONATTENDEE",
+                    "name": "Event title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE"
+                },
+                {
+                    "id": "ANONATTENDEE_ID",
+                    "name": "Event ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE_ID"
+                },
+                {
+                    "id": "ANONATTENDEE_URL",
+                    "name": "Event URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE_URL"
+                },
+                {
+                    "id": "ANONATTENDEE_THUMB_ID",
+                    "name": "Event featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE_THUMB_ID"
+                },
+                {
+                    "id": "ANONATTENDEE_THUMB_URL",
+                    "name": "Event featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:ANONATTENDEE_THUMB_URL"
+                },
+                {
+                    "id": "holder_name",
+                    "name": "Attendee name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:holder_name"
+                },
+                {
+                    "id": "holder_email",
+                    "name": "Attendee email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:ATTENDEEREGISTERED:holder_email"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        },
+        {
+            "code": "EC_ATTENDEE_CHECKS_IN",
+            "meta": "EC_EVENTS",
+            "tokens": [
+                {
+                    "id": "EC_EVENTS",
+                    "name": "Event title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:EC_ATTENDEE_CHECKS_IN:EC_EVENTS"
+                },
+                {
+                    "id": "EC_EVENTS_ID",
+                    "name": "Event ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:EC_ATTENDEE_CHECKS_IN:EC_EVENTS_ID"
+                },
+                {
+                    "id": "EC_EVENTS_URL",
+                    "name": "Event URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:EC_ATTENDEE_CHECKS_IN:EC_EVENTS_URL"
+                },
+                {
+                    "id": "EC_EVENTS_THUMB_ID",
+                    "name": "Event featured image ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:EC_ATTENDEE_CHECKS_IN:EC_EVENTS_THUMB_ID"
+                },
+                {
+                    "id": "EC_EVENTS_THUMB_URL",
+                    "name": "Event featured image URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:EC_ATTENDEE_CHECKS_IN:EC_EVENTS_THUMB_URL"
+                },
+                {
+                    "id": "holder_name",
+                    "name": "Attendee name",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:EC_ATTENDEE_CHECKS_IN:holder_name"
+                },
+                {
+                    "id": "holder_email",
+                    "name": "Attendee email",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:EC_ATTENDEE_CHECKS_IN:holder_email"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "code": "ECRSVPEVENT",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ECRSVPEVENT:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "ECRSVPEVENTFORUSER",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ECRSVPEVENTFORUSER:ACTION_RUN_STATUS"
+                }
+            ]
+        },
+        {
+            "code": "ECRSVPATTENDEEFOREVNT",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ECRSVPATTENDEEFOREVNT:ACTION_RUN_STATUS"
+                }
+            ]
+        }
+    ]
+}

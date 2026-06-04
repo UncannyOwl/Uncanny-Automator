@@ -22,6 +22,22 @@ class Mapper {
 	protected $field = array();
 
 	/**
+	 * The Notion helpers instance, used for the remote-data field-config builders.
+	 *
+	 * @var Notion_App_Helpers
+	 */
+	protected $helpers;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Notion_App_Helpers $helpers The Notion helpers instance.
+	 */
+	public function __construct( $helpers ) {
+		$this->helpers = $helpers;
+	}
+
+	/**
 	 * List of not-supported fields.
 	 *
 	 * @var string[]
@@ -290,11 +306,6 @@ class Mapper {
 	 */
 	protected function create_people_field() {
 
-		$ajax_config = array(
-			'endpoint' => 'automator_notion_list_users',
-			'event'    => 'search_options',
-		);
-
 		$persons_cached = get_transient( Notion_App_Helpers::PERSONS_TRANSIENT_KEY );
 
 		$this->create_field_property( 'input_type', 'select' );
@@ -303,13 +314,13 @@ class Mapper {
 		$this->create_field_property( 'options_show_id', false );
 
 		if ( false !== $persons_cached ) {
-			// No need to send ajax request if it is cached already.
+			// No need to send a remote-data request if it is cached already.
 			$this->create_field_property( 'options', $persons_cached );
 			return;
 		}
 
 		$this->create_field_property( 'options', array() );
-		$this->create_field_property( 'ajax', $ajax_config );
+		$this->create_field_property( 'remote_data', $this->helpers->remote_data_search_config( 'users' ) );
 	}
 
 	/**

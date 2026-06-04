@@ -134,6 +134,11 @@ class TELEGRAM_MESSAGE_RECEIVED extends \Uncanny_Automator\Recipe\App_Trigger {
 				'tokenName' => esc_html_x( 'Text', 'Telegram', 'uncanny-automator' ),
 				'tokenType' => 'text',
 			),
+			array(
+				'tokenId'   => 'TEXT_HTML',
+				'tokenName' => esc_html_x( 'Text (HTML)', 'Telegram', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
 		);
 
 		return array_merge( $tokens, $telegram_tokens );
@@ -200,8 +205,12 @@ class TELEGRAM_MESSAGE_RECEIVED extends \Uncanny_Automator\Recipe\App_Trigger {
 		$output = array();
 
 		// Basic message data
-		$output['DATE'] = $message['date'] ?? '';
-		$output['TEXT'] = $message['text'] ?? '';
+		$output['DATE']      = $message['date'] ?? '';
+		$output['TEXT']      = $message['text'] ?? '';
+		$output['TEXT_HTML'] = Telegram_Entity_Renderer::render(
+			$output['TEXT'],
+			$message['entities'] ?? array()
+		);
 
 		// Chat information
 		if ( isset( $message['chat'] ) ) {

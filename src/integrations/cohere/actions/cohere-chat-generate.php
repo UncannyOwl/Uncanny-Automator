@@ -99,6 +99,10 @@ class Cohere_Chat_Generate extends App_Action {
 		// Model options
 		$model_options = array(
 			array(
+				'text'  => 'Command A+ (command-a-plus-05-2026)',
+				'value' => 'command-a-plus-05-2026',
+			),
+			array(
 				'text'  => 'Command A (command-a-03-2025)',
 				'value' => 'command-a-03-2025',
 			),
@@ -111,36 +115,8 @@ class Cohere_Chat_Generate extends App_Action {
 				'value' => 'command-r-plus-08-2024',
 			),
 			array(
-				'text'  => 'Command R+ (command-r-plus-04-2024)',
-				'value' => 'command-r-plus-04-2024',
-			),
-			array(
-				'text'  => 'Command R+ (command-r-plus)',
-				'value' => 'command-r-plus',
-			),
-			array(
 				'text'  => 'Command R (command-r-08-2024)',
 				'value' => 'command-r-08-2024',
-			),
-			array(
-				'text'  => 'Command R (command-r-03-2024)',
-				'value' => 'command-r-03-2024',
-			),
-			array(
-				'text'  => 'Command (command)',
-				'value' => 'command',
-			),
-			array(
-				'text'  => 'Command (light)',
-				'value' => 'command-light',
-			),
-			array(
-				'text'  => 'Command (nightly)',
-				'value' => 'command-nightly',
-			),
-			array(
-				'text'  => 'Command (light-nightly)',
-				'value' => 'command-light-nightly',
 			),
 		);
 

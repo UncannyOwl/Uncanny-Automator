@@ -1,0 +1,305 @@
+{
+    "integration_id": "UOG",
+    "updated_at": "2026-03-09T20:02:50Z",
+    "triggers": [
+        {
+            "code": "UOG_SEATSREMOVEDFROMGROUP",
+            "meta": "UOG_SEATSREMOVEDFROMGROUP_META",
+            "tokens": [
+                {
+                    "id": "GROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSREMOVEDFROMGROUP:GROUP_ID"
+                },
+                {
+                    "id": "GROUP_TITLE",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSREMOVEDFROMGROUP:GROUP_TITLE"
+                },
+                {
+                    "id": "SEATS_REMOVED",
+                    "name": "Seats removed",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSREMOVEDFROMGROUP:SEATS_REMOVED"
+                },
+                {
+                    "id": "GROUP_LEADER_EMAILS",
+                    "name": "Group leader email(s)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSREMOVEDFROMGROUP:GROUP_LEADER_EMAILS"
+                },
+                {
+                    "id": "GROUP_REMAINING_SEATS",
+                    "name": "Remaining seats",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSREMOVEDFROMGROUP:GROUP_REMAINING_SEATS"
+                },
+                {
+                    "id": "GROUP_TOTAL_SEATS",
+                    "name": "Total seats",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSREMOVEDFROMGROUP:GROUP_TOTAL_SEATS"
+                }
+            ]
+        },
+        {
+            "code": "GROUPCREATED",
+            "meta": "UNCANNYGROUPS",
+            "tokens": [
+                {
+                    "id": "UNCANNYGROUP",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GROUPCREATED:UNCANNYGROUP"
+                },
+                {
+                    "id": "UNCANNYGROUP_ID",
+                    "name": "Group ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:GROUPCREATED:UNCANNYGROUP_ID"
+                },
+                {
+                    "id": "UNCANNYGROUP_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GROUPCREATED:UNCANNYGROUP_URL"
+                },
+                {
+                    "id": "UNCANNYGROUP_SEATS",
+                    "name": "Group seats",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:GROUPCREATED:UNCANNYGROUP_SEATS"
+                },
+                {
+                    "id": "UNCANNYGROUP_COURSES",
+                    "name": "Group courses",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:GROUPCREATED:UNCANNYGROUP_COURSES"
+                },
+                {
+                    "id": "UNCANNYGROUP_LEADER",
+                    "name": "Group leader email",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:GROUPCREATED:UNCANNYGROUP_LEADER"
+                }
+            ]
+        },
+        {
+            "code": "REGISTEREDWITHGROUPKEY",
+            "meta": "UNCANNYGROUPS",
+            "tokens": [
+                {
+                    "id": "UNCANNYGROUPS",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHGROUPKEY:UNCANNYGROUPS"
+                },
+                {
+                    "id": "UNCANNYGROUPS_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHGROUPKEY:UNCANNYGROUPS_ID"
+                },
+                {
+                    "id": "UNCANNYGROUPS_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHGROUPKEY:UNCANNYGROUPS_URL"
+                },
+                {
+                    "id": "UNCANNYGROUPS_KEY",
+                    "name": "Key redeemed",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHGROUPKEY:UNCANNYGROUPS_KEY"
+                },
+                {
+                    "id": "UNCANNYGROUPS_KEY_BATCH_ID",
+                    "name": "Key batch ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHGROUPKEY:UNCANNYGROUPS_KEY_BATCH_ID"
+                },
+                {
+                    "id": "UNCANNYGROUPS_REMAINING_SEATS",
+                    "name": "Remaining seats",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHGROUPKEY:UNCANNYGROUPS_REMAINING_SEATS"
+                },
+                {
+                    "id": "UNCANNYGROUPS_TOTAL_SEATS",
+                    "name": "Total seats",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:REGISTEREDWITHGROUPKEY:UNCANNYGROUPS_TOTAL_SEATS"
+                }
+            ]
+        },
+        {
+            "code": "REDEEMSGROUPKEY",
+            "meta": "UNCANNYGROUPS",
+            "tokens": [
+                {
+                    "id": "UNCANNYGROUPS",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REDEEMSGROUPKEY:UNCANNYGROUPS"
+                },
+                {
+                    "id": "UNCANNYGROUPS_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REDEEMSGROUPKEY:UNCANNYGROUPS_ID"
+                },
+                {
+                    "id": "UNCANNYGROUPS_URL",
+                    "name": "Group URL",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REDEEMSGROUPKEY:UNCANNYGROUPS_URL"
+                },
+                {
+                    "id": "UNCANNYGROUPS_KEY",
+                    "name": "Key redeemed",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REDEEMSGROUPKEY:UNCANNYGROUPS_KEY"
+                },
+                {
+                    "id": "UNCANNYGROUPS_KEY_BATCH_ID",
+                    "name": "Key batch ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:REDEEMSGROUPKEY:UNCANNYGROUPS_KEY_BATCH_ID"
+                },
+                {
+                    "id": "UNCANNYGROUPS_REMAINING_SEATS",
+                    "name": "Remaining seats",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:REDEEMSGROUPKEY:UNCANNYGROUPS_REMAINING_SEATS"
+                },
+                {
+                    "id": "UNCANNYGROUPS_TOTAL_SEATS",
+                    "name": "Total seats",
+                    "type": "int",
+                    "full_id": "TRIGGER_ID:REDEEMSGROUPKEY:UNCANNYGROUPS_TOTAL_SEATS"
+                }
+            ]
+        },
+        {
+            "code": "UOG_SEATSADDEDTOGROUP",
+            "meta": "UOG_SEATSADDEDTOGROUP_META",
+            "tokens": [
+                {
+                    "id": "GROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSADDEDTOGROUP:GROUP_ID"
+                },
+                {
+                    "id": "GROUP_TITLE",
+                    "name": "Group title",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSADDEDTOGROUP:GROUP_TITLE"
+                },
+                {
+                    "id": "SEATS_ADDED",
+                    "name": "Seats added",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSADDEDTOGROUP:SEATS_ADDED"
+                },
+                {
+                    "id": "GROUP_LEADER_EMAILS",
+                    "name": "Group leader email(s)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSADDEDTOGROUP:GROUP_LEADER_EMAILS"
+                },
+                {
+                    "id": "GROUP_REMAINING_SEATS",
+                    "name": "Remaining seats",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSADDEDTOGROUP:GROUP_REMAINING_SEATS"
+                },
+                {
+                    "id": "GROUP_TOTAL_SEATS",
+                    "name": "Total seats",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:UOG_SEATSADDEDTOGROUP:GROUP_TOTAL_SEATS"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "code": "REMOVESEATSFROMGROUP",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REMOVESEATSFROMGROUP:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "UNCANNYGROUP_TOTAL_SEATS",
+                    "name": "Total seats",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REMOVESEATSFROMGROUP:UNCANNYGROUP_TOTAL_SEATS"
+                },
+                {
+                    "id": "UNCANNYGROUP_REMAINING_SEATS",
+                    "name": "Remaining seats",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:REMOVESEATSFROMGROUP:UNCANNYGROUP_REMAINING_SEATS"
+                }
+            ]
+        },
+        {
+            "code": "CREATEUNCANNYGROUP",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:CREATEUNCANNYGROUP:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "GROUP_ID",
+                    "name": "Group ID",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:CREATEUNCANNYGROUP:GROUP_ID"
+                },
+                {
+                    "id": "GROUP_COURSES",
+                    "name": "Group courses",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:CREATEUNCANNYGROUP:GROUP_COURSES"
+                },
+                {
+                    "id": "GROUP_LEADER_EMAILS",
+                    "name": "Group Leader emails",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:CREATEUNCANNYGROUP:GROUP_LEADER_EMAILS"
+                }
+            ]
+        },
+        {
+            "code": "ADDSEATSTOGROUP",
+            "tokens": [
+                {
+                    "id": "ACTION_RUN_STATUS",
+                    "name": "Completion status",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ADDSEATSTOGROUP:ACTION_RUN_STATUS"
+                },
+                {
+                    "id": "UNCANNYGROUP_TOTAL_SEATS",
+                    "name": "Total seats",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ADDSEATSTOGROUP:UNCANNYGROUP_TOTAL_SEATS"
+                },
+                {
+                    "id": "UNCANNYGROUP_REMAINING_SEATS",
+                    "name": "Remaining seats",
+                    "type": "text",
+                    "full_id": "ACTION_META:ACTION_ID:ADDSEATSTOGROUP:UNCANNYGROUP_REMAINING_SEATS"
+                }
+            ]
+        }
+    ]
+}

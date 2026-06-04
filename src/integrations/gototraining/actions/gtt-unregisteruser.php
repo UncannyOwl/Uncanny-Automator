@@ -1,126 +1,72 @@
 <?php
-namespace Uncanny_Automator;
+
+namespace Uncanny_Automator\Integrations\Gototraining;
+
+use Uncanny_Automator\Recipe\App_Action;
 
 /**
  * Class GTT_UNREGISTERUSER
  *
+ * @property Gototraining_App_Helpers $helpers
+ * @property Gototraining_Api_Caller $api
+ *
  * @package Uncanny_Automator
  */
-class GTT_UNREGISTERUSER {
+class GTT_UNREGISTERUSER extends App_Action {
 
 	/**
-	 * Integration code
+	 * Setup the action.
 	 *
-	 * @var string
+	 * @return void
 	 */
-	public static $integration = 'GTT';
+	protected function setup_action() {
+		$this->set_integration( 'GTT' );
+		$this->set_action_code( 'GTTUNREGISTERUSER' );
+		$this->set_action_meta( 'GTTTRAINING' );
+		$this->set_requires_user( true );
+		$this->set_is_pro( false );
 
-	private $action_code;
-
-	private $action_meta;
-
-	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-
-		$this->action_code = 'GTTUNREGISTERUSER';
-
-		$this->action_meta = 'GTTTRAINING';
-
-		$this->define_action();
-
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
-	 */
-	public function define_action() {
-
-		$action = array(
-			'author'                => Automator()->get_author_name( $this->action_code ),
-			'support_link'          => Automator()->get_author_support_link( $this->action_code, 'knowledge-base/gototraining/' ),
-			'integration'           => self::$integration,
-			'code'                  => $this->action_code,
-			'sentence'              => sprintf(
-				/* translators: Action sentence. */
-				esc_html__( 'Remove the user from {{a training session:%1$s}}', 'uncanny-automator' ),
-				$this->action_meta
-			),
-			'select_option_name'    => esc_html__( 'Remove the user from {{a training session}}', 'uncanny-automator' ),
-			'priority'              => 10,
-			'accepted_args'         => 1,
-			'execution_function'    => array( $this, 'gtt_unregister_user' ),
-			'options_callback'      => array( $this, 'load_options' ),
-			'background_processing' => true,
+		$this->set_sentence(
+			sprintf(
+				// translators: %s: Training session name
+				esc_html_x( 'Remove the user from {{a training session:%s}}', 'GoToTraining', 'uncanny-automator' ),
+				$this->get_action_meta()
+			)
 		);
 
-		Automator()->register->action( $action );
+		$this->set_readable_sentence( esc_html_x( 'Remove the user from {{a training session}}', 'GoToTraining', 'uncanny-automator' ) );
+
+		$this->set_background_processing( true );
 	}
 
 	/**
-	 * Callback function to `options_callback`.
+	 * Define action options.
+	 *
+	 * @return array
 	 */
-	public function load_options() {
-
+	public function options() {
 		return array(
-			'options_group' => array(
-				$this->action_meta => array(
-					array(
-						'option_code'     => 'GTTTRAINING',
-						'input_type'      => 'select',
-						'label'           => esc_html__( 'Training', 'uncanny-automator' ),
-						'description'     => '',
-						'required'        => true,
-						'supports_tokens' => true,
-						'options'         => Automator()->helpers->recipe->gototraining->get_trainings(),
-					),
-				),
-			),
+			$this->helpers->get_training_options_config( $this->get_action_meta() ),
 		);
-
 	}
 
 	/**
-	 * Validation function when the action is hit
+	 * Process the action.
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
+	 * @param int   $user_id     User ID.
+	 * @param array $action_data Action data.
+	 * @param int   $recipe_id   Recipe ID.
+	 * @param array $args        Action arguments.
+	 * @param array $parsed      Parsed action data.
+	 *
+	 * @return bool
 	 */
-	public function gtt_unregister_user( $user_id, $action_data, $recipe_id, $args ) {
+	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		try {
+		$training_key = $this->helpers->get_training_from_parsed( $parsed, $this->get_action_meta() );
 
-			$training_key = Automator()->parse->text( $action_data['meta'][ $this->action_meta ], $recipe_id, $user_id, $args );
+		$this->api->unregister_user_from_training( $user_id, $training_key, $action_data );
 
-			if ( empty( $user_id ) ) {
-				throw new \Exception( esc_html__( 'User not found.', 'uncanny-automator' ) );
-			}
-
-			if ( empty( $training_key ) ) {
-				throw new \Exception( esc_html__( 'Training not found.', 'uncanny-automator' ) );
-			}
-
-			$training_key = str_replace( '-objectkey', '', $training_key );
-
-			$user_registrant_key = get_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', true );
-
-			if ( empty( $user_registrant_key ) ) {
-				throw new \Exception( esc_html__( 'User was not registered for training session.', 'uncanny-automator' ) );
-			}
-
-			$result = Automator()->helpers->recipe->gototraining->gtt_unregister_user( $user_id, $training_key, $action_data );
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id );
-
-		} catch ( \Exception $e ) {
-
-			$action_data['do-nothing'] = true;
-
-			$action_data['complete_with_errors'] = true;
-
-			Automator()->complete_action( $user_id, $action_data, $recipe_id, $e->getMessage() );
-		}
+		return true;
 	}
 }
