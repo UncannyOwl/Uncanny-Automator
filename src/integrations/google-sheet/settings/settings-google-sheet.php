@@ -46,6 +46,27 @@ class Google_Sheet_Settings extends App_Integration_Settings {
 		}
 	}
 
+	/**
+	 * Clear Google Sheets specific data before the framework clears the connection.
+	 *
+	 * Removes the saved spreadsheet list so a freshly connected account does not
+	 * inherit the previous account's selected sheets. Credentials and cached
+	 * account info are cleared by the framework's disconnect handler.
+	 *
+	 * Intentionally scoped to explicit disconnect only (not the token
+	 * re-validation path in validate_user_transient_status), so re-authing the
+	 * same account preserves the user's spreadsheet selections.
+	 *
+	 * @param array $response The current response array.
+	 * @param array $data     The posted data.
+	 *
+	 * @return array
+	 */
+	protected function before_disconnect( $response = array(), $data = array() ) {
+		automator_delete_option( $this->helpers->get_const( 'SPREADSHEETS_OPTIONS_KEY' ) );
+		return $response;
+	}
+
 	//
 	// Enqueue JS Hooks
 	//
@@ -308,7 +329,6 @@ class Google_Sheet_Settings extends App_Integration_Settings {
 		$this->output_file_picker_button();
 	}
 
-
 	/**
 	 * Handle file picker authentication and token refresh.
 	 *
@@ -336,13 +356,6 @@ class Google_Sheet_Settings extends App_Integration_Settings {
 	 * @param array $data The request data.
 	 *
 	 * @return array The response with credentials or error.
-	 */
-	/**
-	 * Handle file picker auth.
-	 *
-	 * @param mixed $response The response.
-	 * @param mixed $data The data.
-	 * @return mixed
 	 */
 	public function handle_file_picker_auth( $response = array(), $data = array() ) {
 		try {

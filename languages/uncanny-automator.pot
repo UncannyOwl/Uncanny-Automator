@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.3.0\n"
+"Project-Id-Version: Uncanny Automator 7.3.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-04T17:24:18+00:00\n"
+"POT-Creation-Date: 2026-06-06T05:06:52+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -2490,27 +2490,27 @@ msgstr ""
 msgid "Changes you made may not be saved."
 msgstr ""
 
-#: src/app/Application/Mcp/Mcp_Client.php:681
+#: src/app/Application/Mcp/Mcp_Client.php:685
 msgctxt "MCP client validation error"
 msgid "A valid Automator Pro license is required to use Uncanny Agent."
 msgstr ""
 
-#: src/app/Application/Mcp/Mcp_Client.php:695
+#: src/app/Application/Mcp/Mcp_Client.php:699
 msgctxt "MCP client validation error"
 msgid "The supplied page URL must be a string."
 msgstr ""
 
-#: src/app/Application/Mcp/Mcp_Client.php:703
+#: src/app/Application/Mcp/Mcp_Client.php:707
 msgctxt "MCP client validation error"
 msgid "The supplied page URL is invalid."
 msgstr ""
 
-#: src/app/Application/Mcp/Mcp_Client.php:711
+#: src/app/Application/Mcp/Mcp_Client.php:715
 msgctxt "MCP client validation error"
 msgid "Unable to load the required encryption key."
 msgstr ""
 
-#: src/app/Application/Mcp/Mcp_Client.php:723
+#: src/app/Application/Mcp/Mcp_Client.php:727
 msgctxt "MCP client validation error"
 msgid "Could not generate the encrypted payload."
 msgstr ""
@@ -4601,23 +4601,23 @@ msgstr ""
 msgid "Action deleted: %1$s"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1037
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1052
 msgid "Please upgrade for unlimited app credits"
 msgstr ""
 
 #. translators: %s is a human-readable time difference, e.g. "17 minutes"
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1184
-#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:145
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1199
 #, php-format
+msgctxt "Recipe log relative time"
 msgid "%s ago"
 msgstr ""
 
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1230
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1245
 msgid "Deleted user"
 msgstr ""
 
 #. translators: Recipe log user ID column row value.
-#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1232
+#: src/core/admin/admin-logs/wp-list-table/class-logs-list-table.php:1247
 #, php-format
 msgid "User ID #%1$s"
 msgstr ""
@@ -8018,6 +8018,12 @@ msgstr ""
 
 #: src/core/services/rest/endpoint/log-endpoint.php:112
 msgid "The recipe log you are looking for was not found"
+msgstr ""
+
+#. translators: %s is a human-readable time difference, e.g. "17 minutes"
+#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:145
+#, php-format
+msgid "%s ago"
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:70
@@ -13814,7 +13820,7 @@ msgstr ""
 #: src/integrations/buddyboss/tokens/loopable/universal/user-groups.php:23
 #: src/integrations/learndash/actions/learndash-create-group.php:49
 #: src/integrations/learndash/helpers/learndash-helpers.php:507
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:484
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:507
 #: src/integrations/learndash/tokens/loopable/universal/user-enrolled-groups.php:23
 msgctxt "LearnDash"
 msgid "Group ID"
@@ -23690,157 +23696,157 @@ msgctxt "Google Sheet"
 msgid "%s failed"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:198
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:229
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:254
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:304
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:197
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:228
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:253
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:303
 msgctxt "Google Sheets"
 msgid "Please select a spreadsheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:261
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:305
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:260
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:304
 msgctxt "Google Sheets"
 msgid "Please select a worksheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:504
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:503
 #, php-format
 msgctxt "Google Sheets"
 msgid "If you don't see your spreadsheet or haven't selected any files yet, please go to the %1$ssettings page%2$s to add them."
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:522
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:521
 msgctxt "Google Sheets"
 msgid "Spreadsheet"
 msgstr ""
 
-#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:541
+#: src/integrations/google-sheet/helpers/google-sheet-helpers.php:540
 msgctxt "Google Sheets"
 msgid "Worksheet"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:170
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:191
 msgctxt "Google Sheets"
 msgid "An error has occurred while connecting to the Google API. Please try again later."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:175
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:196
 msgctxt "Google Sheets"
 msgid "Required permissions not granted."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:176
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:197
 msgctxt "Google Sheets"
 msgid "Make sure everything is checked off in the list of required permissions. Sometimes the last 2 checkboxes are unchecked by default."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:194
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:215
 msgctxt "Google Sheets"
 msgid "Connect Uncanny Automator to Google Sheets to automatically create and update spreadsheet rows when users perform actions like submitting forms, joining groups and making purchases on your site."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:214
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:235
 msgctxt "Google Sheets"
 msgid "Uncanny Automator only supports connecting to one Google Sheets account at a time."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:215
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:236
 msgctxt "Google Sheets"
 msgid "You can only link Google Sheets that you have read and write access to."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:225
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:246
 msgctxt "Google Sheets"
 msgid "Linked spreadsheets"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:240
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:261
 msgctxt "Google Sheets"
 msgid "Sign in with Google"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:265
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:286
 msgctxt "Google Sheets"
 msgid "Select new sheet(s)"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:270
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:291
 msgctxt "Google Sheets"
 msgid "An error occurred while authorizing the request to use File selection feature."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:292
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:313
 msgctxt "Google Sheets"
 msgid "No spreadsheets found."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:293
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:314
 msgctxt "Google Sheets"
 msgid "Please use the file picker to select spreadsheets from your Google Drive."
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:378
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:391
 msgctxt "Google Sheets"
 msgid "Failed to refresh access token"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:399
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:412
 msgctxt "Google Sheets"
 msgid "No spreadsheets provided"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:413
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:426
 msgctxt "Google Sheets"
 msgid "Failed to save spreadsheets"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:435
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:448
 msgctxt "Google Sheets"
 msgid "Unable to remove spreadsheet"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:436
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:449
 msgctxt "Google Sheets"
 msgid "Invalid spreadsheet ID"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:458
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:471
 msgctxt "Google Sheets"
 msgid "Spreadsheet not found"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:459
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:472
 msgctxt "Google Sheets"
 msgid "The specified spreadsheet could not be found"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:473
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:486
 msgctxt "Google Sheets"
 msgid "Spreadsheet removed"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:474
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:487
 msgctxt "Google Sheets"
 msgid "The spreadsheet has been successfully removed"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:528
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:541
 msgctxt "Google Sheet"
 msgid "Remove"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:532
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:545
 msgctxt "Google Sheet"
 msgid "This action is irreversible"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:533
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:546
 msgctxt "Google Sheet"
 msgid "Are you sure you want to remove this spreadsheet?"
 msgstr ""
 
-#: src/integrations/google-sheet/settings/settings-google-sheet.php:534
+#: src/integrations/google-sheet/settings/settings-google-sheet.php:547
 msgctxt "Google Sheet"
 msgid "Confirm"
 msgstr ""
@@ -24155,13 +24161,13 @@ msgid "You'll be asked to enter a redirect URL."
 msgstr ""
 
 #. translators: %s: The link to update the Pro plugin
-#: src/integrations/gravity-forms/class-gf-integration.php:134
+#: src/integrations/gravity-forms/class-gf-integration.php:164
 #, php-format
 msgctxt "Gravity Forms"
 msgid "Gravity Forms integration requires Uncanny Automator and Uncanny Automator Pro to be updated to version 7.0.0 or higher. Please %s to restore Gravity Forms functionality."
 msgstr ""
 
-#: src/integrations/gravity-forms/class-gf-integration.php:139
+#: src/integrations/gravity-forms/class-gf-integration.php:169
 msgctxt "Admin notice link text for updating Pro plugin"
 msgid "update the Pro plugin"
 msgstr ""
@@ -27221,7 +27227,7 @@ msgstr ""
 #: src/integrations/learndash/actions/learndash-mark-lesson-complete.php:70
 #: src/integrations/learndash/actions/learndash-mark-topic-complete.php:71
 #: src/integrations/learndash/helpers/learndash-helpers.php:144
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:28
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:29
 #: src/integrations/learndash/tokens/loopable/universal/user-completed-courses.php:23
 #: src/integrations/learndash/tokens/loopable/universal/user-enrolled-courses-tokens.php:23
 #: src/integrations/learndash/triggers/learndash-course-completed.php:57
@@ -27244,7 +27250,7 @@ msgid "Make the user the leader of {{a group}}"
 msgstr ""
 
 #: src/integrations/learndash/actions/learndash-make-group-leader.php:46
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:479
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:502
 msgctxt "LearnDash"
 msgid "Group title"
 msgstr ""
@@ -27292,7 +27298,7 @@ msgstr ""
 #: src/integrations/learndash/actions/learndash-mark-lesson-complete.php:80
 #: src/integrations/learndash/actions/learndash-mark-topic-complete.php:81
 #: src/integrations/learndash/helpers/learndash-helpers.php:279
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:162
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:177
 #: src/integrations/learndash/triggers/learndash-lesson-completed.php:78
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:75
 msgctxt "LearnDash"
@@ -27318,7 +27324,7 @@ msgstr ""
 
 #: src/integrations/learndash/actions/learndash-mark-topic-complete.php:91
 #: src/integrations/learndash/helpers/learndash-helpers.php:389
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:223
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:238
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:90
 msgctxt "LearnDash"
 msgid "Topic ID"
@@ -27577,7 +27583,7 @@ msgid "Any quiz"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:623
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:284
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:299
 #: src/integrations/learndash/triggers/learndash-quiz-completed.php:57
 #: src/integrations/learndash/triggers/learndash-quiz-failed.php:57
 #: src/integrations/learndash/triggers/learndash-quiz-passed.php:57
@@ -27674,7 +27680,7 @@ msgctxt "Learndash"
 msgid "No quiz data recorded"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:23
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:24
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:156
 #: src/integrations/learndash/triggers/learndash-lesson-completed.php:61
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:58
@@ -27682,17 +27688,17 @@ msgctxt "LearnDash"
 msgid "Course title"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:33
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:34
 msgctxt "LearnDash"
 msgid "Course status"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:38
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:39
 msgctxt "LearnDash"
 msgid "Course access expiry date"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:43
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:44
 #: src/integrations/learndash/tokens/loopable/universal/user-completed-courses.php:33
 #: src/integrations/learndash/tokens/loopable/universal/user-enrolled-courses-tokens.php:33
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:161
@@ -27702,175 +27708,175 @@ msgctxt "LearnDash"
 msgid "Course URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:48
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:49
 #: src/integrations/learndash/triggers/learndash-lesson-completed.php:64
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:61
 msgctxt "LearnDash"
 msgid "Course featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:53
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:54
 #: src/integrations/learndash/triggers/learndash-lesson-completed.php:65
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:62
 msgctxt "LearnDash"
 msgid "Course featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:111
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:120
 msgctxt "LearnDash"
 msgid "Course completion date"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:116
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:126
 msgctxt "LearnDash"
 msgid "Course points"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:157
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:172
 #: src/integrations/learndash/triggers/learndash-lesson-completed.php:77
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:74
 msgctxt "LearnDash"
 msgid "Lesson title"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:167
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:182
 #: src/integrations/learndash/triggers/learndash-lesson-completed.php:79
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:76
 msgctxt "LearnDash"
 msgid "Lesson URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:172
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:187
 #: src/integrations/learndash/triggers/learndash-lesson-completed.php:80
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:77
 msgctxt "LearnDash"
 msgid "Lesson featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:177
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:192
 #: src/integrations/learndash/triggers/learndash-lesson-completed.php:81
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:78
 msgctxt "LearnDash"
 msgid "Lesson featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:218
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:233
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:89
 msgctxt "LearnDash"
 msgid "Topic title"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:228
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:243
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:91
 msgctxt "LearnDash"
 msgid "Topic URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:233
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:248
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:92
 msgctxt "LearnDash"
 msgid "Topic featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:238
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:253
 #: src/integrations/learndash/triggers/learndash-topic-completed.php:93
 msgctxt "LearnDash"
 msgid "Topic featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:279
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:294
 msgctxt "LearnDash"
 msgid "Quiz title"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:289
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:304
 msgctxt "LearnDash"
 msgid "Quiz URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:294
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:309
 msgctxt "LearnDash"
 msgid "Quiz featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:299
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:314
 msgctxt "LearnDash"
 msgid "Quiz featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:304
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:319
 msgctxt "LearnDash"
 msgid "Quiz time spent"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:309
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:324
 msgctxt "LearnDash"
 msgid "Quiz score"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:314
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:329
 msgctxt "LearnDash"
 msgid "Quiz number of correct answers"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:319
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:334
 msgctxt "LearnDash"
 msgid "Quiz category scores"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:324
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:339
 msgctxt "LearnDash"
 msgid "Quiz questions and answers"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:329
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:344
 msgctxt "LearnDash"
 msgid "Quiz question & answers (unformatted)"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:382
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:397
 msgctxt "LearnDash"
 msgid "User's quiz score"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:412
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:429
 msgctxt "LearnDash"
 msgid "User's quiz percentage"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:417
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:436
 msgctxt "LearnDash"
 msgid "Passing score %"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:449
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:470
 msgctxt "LearnDash"
 msgid "User's quiz points"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:489
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:512
 #: src/integrations/learndash/tokens/loopable/universal/user-enrolled-groups.php:33
 msgctxt "LearnDash"
 msgid "Group URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:494
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:517
 msgctxt "LearnDash"
 msgid "Group featured image ID"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:499
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:522
 msgctxt "LearnDash"
 msgid "Group featured image URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:540
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:582
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:563
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:605
 msgctxt "LearnDash"
 msgid "Number of times"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:584
+#: src/integrations/learndash/tokens/ld-tokens-new-framework.php:607
 #: src/integrations/learndash/triggers/learndash-quiz-points.php:59
 #: src/integrations/learndash/triggers/learndash-quiz-score.php:60
 msgctxt "LearnDash"
@@ -48151,6 +48157,24 @@ msgctxt "WordPress"
 msgid "A {{specific type of post}} is viewed"
 msgstr ""
 
+#: src/integrations/wp/triggers/wordpress-anon-post-type-viewed.php:99
+#: src/integrations/wp/triggers/wordpress-user-views-custom-post.php:118
+msgctxt "WordPress"
+msgid "Post title (legacy)"
+msgstr ""
+
+#: src/integrations/wp/triggers/wordpress-anon-post-type-viewed.php:104
+#: src/integrations/wp/triggers/wordpress-user-views-custom-post.php:123
+msgctxt "WordPress"
+msgid "Post ID (legacy)"
+msgstr ""
+
+#: src/integrations/wp/triggers/wordpress-anon-post-type-viewed.php:109
+#: src/integrations/wp/triggers/wordpress-user-views-custom-post.php:128
+msgctxt "WordPress"
+msgid "Post URL (legacy)"
+msgstr ""
+
 #: src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php:40
 #, php-format
 msgctxt "WordPress"
@@ -48308,6 +48332,11 @@ msgstr ""
 #: src/integrations/wp/triggers/wordpress-user-views-custom-post.php:40
 msgctxt "WordPress"
 msgid "A user views {{a custom post type}} {{a number of}} time(s)"
+msgstr ""
+
+#: src/integrations/wp/triggers/wordpress-user-views-custom-post.php:133
+msgctxt "WordPress"
+msgid "Post excerpt (legacy)"
 msgstr ""
 
 #: src/integrations/wp/triggers/wordpress-user-views-page.php:35
@@ -48877,12 +48906,14 @@ msgstr ""
 
 #: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:44
 #: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:74
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:319
 msgctxt "Zoom Webinar"
 msgid "Webinar topic"
 msgstr ""
 
 #: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:48
 #: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:93
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:323
 msgctxt "Zoom Webinar"
 msgid "Start time"
 msgstr ""
@@ -48893,7 +48924,7 @@ msgid "Duration"
 msgstr ""
 
 #: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:56
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:147
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:144
 msgctxt "Zoom Webinar"
 msgid "Webinar password"
 msgstr ""
@@ -48934,217 +48965,217 @@ msgid "Duration in minutes"
 msgstr ""
 
 #: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:122
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:30
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:29
 msgctxt "Zoom Webinar"
 msgid "Account user"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:137
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:134
 msgctxt "Zoom Webinar"
 msgid "Webinar description"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:138
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:135
 msgctxt "Zoom Webinar"
 msgid "Enter webinar description"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:139
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:136
 msgctxt "Zoom Webinar"
 msgid "Optional description for the webinar"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:148
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:145
 msgctxt "Zoom Webinar"
 msgid "Enter webinar password"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:149
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:146
 msgctxt "Zoom Webinar"
 msgid "Optional password for the webinar"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:157
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:154
 msgctxt "Zoom Webinar"
 msgid "Host video on"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:158
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:155
 msgctxt "Zoom Webinar"
 msgid "Enable host video when joining"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:167
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:164
 msgctxt "Zoom Webinar"
 msgid "Panelists video on"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:168
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:165
 msgctxt "Zoom Webinar"
 msgid "Enable panelists video when joining"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:177
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:174
 msgctxt "Zoom Webinar"
 msgid "Practice session"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:178
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:175
 msgctxt "Zoom Webinar"
 msgid "Enable practice session before the webinar"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:187
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:184
 msgctxt "Zoom Webinar"
 msgid "HD video"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:188
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:185
 msgctxt "Zoom Webinar"
 msgid "Enable HD video for the webinar"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:197
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:194
 msgctxt "Zoom Webinar"
 msgid "Audio"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:198
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:195
 msgctxt "Zoom Webinar"
 msgid "Select audio options"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:203
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:200
 msgctxt "Zoom Webinar"
 msgid "Both"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:207
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:204
 msgctxt "Zoom Webinar"
 msgid "Telephony"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:211
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:208
 msgctxt "Zoom Webinar"
 msgid "Computer Audio"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:220
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:217
 msgctxt "Zoom Webinar"
 msgid "Auto recording"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:221
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:218
 msgctxt "Zoom Webinar"
 msgid "Select auto recording option"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:226
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:223
 msgctxt "Zoom Webinar"
 msgid "None"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:230
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:227
 msgctxt "Zoom Webinar"
 msgid "Local"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:234
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:231
 msgctxt "Zoom Webinar"
 msgid "Cloud"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:243
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:240
 msgctxt "Zoom Webinar"
 msgid "Alternative hosts"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:244
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:241
 msgctxt "Zoom Webinar"
 msgid "Enter email addresses separated by commas"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:245
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:242
 msgctxt "Zoom Webinar"
 msgid "Email addresses of alternative hosts (comma separated)"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:254
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:251
 msgctxt "Zoom Webinar"
 msgid "Registration type"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:255
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:252
 msgctxt "Zoom Webinar"
 msgid "How should attendees register for the webinar?"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:262
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:259
 msgctxt "Zoom Webinar"
 msgid "No registration required"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:266
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:263
 msgctxt "Zoom Webinar"
 msgid "Registration required"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:275
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:272
 msgctxt "Zoom Webinar"
 msgid "Approval type"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:276
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:273
 msgctxt "Zoom Webinar"
 msgid "How should registrations be approved?"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:299
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:296
 msgctxt "Zoom Webinar"
 msgid "Automatically approve"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:303
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:300
 msgctxt "Zoom Webinar"
 msgid "Manually approve"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:311
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:308
 msgctxt "Zoom Webinar"
 msgid "Close registration"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:312
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:309
 msgctxt "Zoom Webinar"
 msgid "Close registration after event date"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:374
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:371
 msgctxt "Zoom Webinar"
 msgid "Webinar topic is missing."
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:380
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:377
 msgctxt "Zoom Webinar"
 msgid "Start date is missing."
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:386
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:383
 msgctxt "Zoom Webinar"
 msgid "Start time is missing."
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:392
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:389
 msgctxt "Zoom Webinar"
 msgid "Duration is missing."
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:398
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:395
 msgctxt "Zoom Webinar"
 msgid "Webinar duration cannot exceed 1440 minutes (24 hours). Zoom does not allow longer webinars."
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:412
+#: src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php:409
 msgctxt "Zoom Webinar"
 msgid "Invalid date, time, or timezone format. Please use YYYY-MM-DD for date and HH:MM AM/PM for time."
 msgstr ""
@@ -49161,8 +49192,8 @@ msgctxt "Zoom Webinar"
 msgid "Add the user to {{a webinar}}"
 msgstr ""
 
-#: src/integrations/zoom-webinar/actions/zoom-webinar-registeruser.php:66
-#: src/integrations/zoom-webinar/actions/zoom-webinar-registeruserless.php:87
+#: src/integrations/zoom-webinar/actions/zoom-webinar-registeruser.php:75
+#: src/integrations/zoom-webinar/actions/zoom-webinar-registeruserless.php:96
 #: src/integrations/zoom-webinar/actions/zoom-webinar-unregisteruser.php:64
 #: src/integrations/zoom-webinar/actions/zoom-webinar-unregisteruserless.php:66
 msgctxt "Zoom Webinar"
@@ -49216,13 +49247,13 @@ msgid "Remove an attendee from {{a webinar}}"
 msgstr ""
 
 #: src/integrations/zoom-webinar/actions/zoom-webinar-unregisteruserless.php:70
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:211
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:195
 msgctxt "Zoom Webinar"
 msgid "Email address is missing."
 msgstr ""
 
 #: src/integrations/zoom-webinar/actions/zoom-webinar-unregisteruserless.php:74
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:215
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:199
 msgctxt "Zoom Webinar"
 msgid "Invalid email address."
 msgstr ""
@@ -49268,25 +49299,22 @@ msgctxt "Zoom Webinar"
 msgid "No occurrences found"
 msgstr ""
 
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-app-helpers.php:77
-#: src/integrations/zoom/helpers/zoom-app-helpers.php:75
-msgctxt "Zoom"
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-app-helpers.php:72
+msgctxt "Zoom Webinar"
 msgid "Please select a valid user"
 msgstr ""
 
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-app-helpers.php:111
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-app-helpers.php:180
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-app-helpers.php:94
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-app-helpers.php:149
 msgctxt "Zoom Webinar"
 msgid "Webinar ID is required"
 msgstr ""
 
 #. translators: %d Status code
-#. translators: %d Error status code
-#: src/integrations/zoom-webinar/helpers/zoom-webinar-app-helpers.php:121
-#: src/integrations/zoom/helpers/zoom-app-helpers.php:118
+#: src/integrations/zoom-webinar/helpers/zoom-webinar-app-helpers.php:104
 #, php-format
-msgctxt "Zoom"
-msgid "Could not fetch meeting questions from Zoom. Status code: %d"
+msgctxt "Zoom Webinar"
+msgid "Could not fetch webinar questions from Zoom. Status code: %d"
 msgstr ""
 
 #: src/integrations/zoom-webinar/settings/settings-zoom-webinar.php:75
@@ -49331,44 +49359,54 @@ msgctxt "Zoom Webinar"
 msgid "Client secret"
 msgstr ""
 
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:55
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:51
 msgctxt "Zoom Webinar"
 msgid "Webinar"
 msgstr ""
 
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:79
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:71
 msgctxt "Zoom Webinar"
 msgid "Occurrences"
 msgstr ""
 
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:106
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:94
 msgctxt "Zoom Webinar"
 msgid "Email address"
 msgstr ""
 
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:127
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:115
 msgctxt "Zoom Webinar"
 msgid "Webinar questions"
 msgstr ""
 
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:133
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:121
 msgctxt "Zoom Webinar"
 msgid "Question"
 msgstr ""
 
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:141
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:129
 msgctxt "Zoom Webinar"
 msgid "Value"
 msgstr ""
 
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:176
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:162
 msgctxt "Zoom Webinar"
 msgid "User was not found."
 msgstr ""
 
-#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:182
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:168
 msgctxt "Zoom Webinar"
 msgid "User not found."
+msgstr ""
+
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:311
+msgctxt "Zoom Webinar"
+msgid "Registration join link"
+msgstr ""
+
+#: src/integrations/zoom-webinar/traits/zoom-webinar-registration-trait.php:315
+msgctxt "Zoom Webinar"
+msgid "Registrant ID"
 msgstr ""
 
 #. translators: %1$s Meeting topic
@@ -49404,6 +49442,7 @@ msgstr ""
 #: src/integrations/zoom/actions/zoom-createmeeting.php:51
 #: src/integrations/zoom/actions/zoom-createrecurringmeeting.php:51
 #: src/integrations/zoom/traits/zoom-meeting-trait.php:25
+#: src/integrations/zoom/traits/zoom-registration-trait.php:184
 msgctxt "Zoom"
 msgid "Meeting topic"
 msgstr ""
@@ -49411,6 +49450,7 @@ msgstr ""
 #: src/integrations/zoom/actions/zoom-createmeeting.php:55
 #: src/integrations/zoom/actions/zoom-createrecurringmeeting.php:55
 #: src/integrations/zoom/traits/zoom-meeting-trait.php:58
+#: src/integrations/zoom/traits/zoom-registration-trait.php:188
 msgctxt "Zoom"
 msgid "Start time"
 msgstr ""
@@ -49473,6 +49513,16 @@ msgstr ""
 #: src/integrations/zoom/actions/zoom-registeruserless.php:34
 msgctxt "Zoom"
 msgid "Add an attendee to {{a meeting}}"
+msgstr ""
+
+#: src/integrations/zoom/actions/zoom-registeruserless.php:49
+msgctxt "Zoom"
+msgid "First name"
+msgstr ""
+
+#: src/integrations/zoom/actions/zoom-registeruserless.php:59
+msgctxt "Zoom"
+msgid "Last name"
 msgstr ""
 
 #. translators: %1$s Meeting topic
@@ -49541,10 +49591,22 @@ msgctxt "Zoom"
 msgid "No users were found in your account"
 msgstr ""
 
-#: src/integrations/zoom/helpers/zoom-app-helpers.php:108
-#: src/integrations/zoom/helpers/zoom-app-helpers.php:178
+#: src/integrations/zoom/helpers/zoom-app-helpers.php:70
+msgctxt "Zoom"
+msgid "Please select a valid user"
+msgstr ""
+
+#: src/integrations/zoom/helpers/zoom-app-helpers.php:92
+#: src/integrations/zoom/helpers/zoom-app-helpers.php:147
 msgctxt "Zoom"
 msgid "Meeting ID is required"
+msgstr ""
+
+#. translators: %d Error status code
+#: src/integrations/zoom/helpers/zoom-app-helpers.php:102
+#, php-format
+msgctxt "Zoom"
+msgid "Could not fetch meeting questions from Zoom. Status code: %d"
 msgstr ""
 
 #: src/integrations/zoom/settings/settings-zoom.php:75
@@ -49596,38 +49658,28 @@ msgctxt "Zoom"
 msgid "Account user"
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-common-trait.php:46
+#: src/integrations/zoom/traits/zoom-common-trait.php:43
 msgctxt "Zoom"
 msgid "Email address"
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-common-trait.php:64
-msgctxt "Zoom"
-msgid "First name"
-msgstr ""
-
-#: src/integrations/zoom/traits/zoom-common-trait.php:82
-msgctxt "Zoom"
-msgid "Last name"
-msgstr ""
-
-#: src/integrations/zoom/traits/zoom-common-trait.php:101
+#: src/integrations/zoom/traits/zoom-common-trait.php:62
 msgctxt "Zoom"
 msgid "Email address is missing."
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-common-trait.php:105
+#: src/integrations/zoom/traits/zoom-common-trait.php:66
 msgctxt "Zoom"
 msgid "Invalid email address."
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-common-trait.php:121
-#: src/integrations/zoom/traits/zoom-common-trait.php:157
+#: src/integrations/zoom/traits/zoom-common-trait.php:82
+#: src/integrations/zoom/traits/zoom-common-trait.php:118
 msgctxt "Zoom"
 msgid "User was not found."
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-common-trait.php:139
+#: src/integrations/zoom/traits/zoom-common-trait.php:100
 msgctxt "Zoom"
 msgid "Meeting was not found."
 msgstr ""
@@ -49898,24 +49950,34 @@ msgctxt "Zoom"
 msgid "Meeting"
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-registration-trait.php:49
+#: src/integrations/zoom/traits/zoom-registration-trait.php:45
 msgctxt "Zoom"
 msgid "Occurrences"
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-registration-trait.php:76
+#: src/integrations/zoom/traits/zoom-registration-trait.php:68
 msgctxt "Zoom"
 msgid "Meeting questions"
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-registration-trait.php:82
+#: src/integrations/zoom/traits/zoom-registration-trait.php:74
 msgctxt "Zoom"
 msgid "Question"
 msgstr ""
 
-#: src/integrations/zoom/traits/zoom-registration-trait.php:90
+#: src/integrations/zoom/traits/zoom-registration-trait.php:82
 msgctxt "Zoom"
 msgid "Value"
+msgstr ""
+
+#: src/integrations/zoom/traits/zoom-registration-trait.php:176
+msgctxt "Zoom"
+msgid "Registration join link"
+msgstr ""
+
+#: src/integrations/zoom/traits/zoom-registration-trait.php:180
+msgctxt "Zoom"
+msgid "Registrant ID"
 msgstr ""
 
 #. translators: %s: The version number of Uncanny Automator.

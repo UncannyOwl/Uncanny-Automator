@@ -11,6 +11,7 @@
 
 namespace Uncanny_Automator\App\Application\Mcp\Handshake;
 
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Client\Client_Context_Service;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
 
 class Handshake_Handler {
@@ -116,7 +117,9 @@ class Handshake_Handler {
 	public function handle_approval(): void {
 		check_ajax_referer( self::AJAX_ACTION, '_nonce' );
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		$capability = ( new Client_Context_Service() )->get_client_access_capability();
+
+		if ( ! current_user_can( $capability ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
 			wp_send_json_error( array( 'message' => 'Unauthorized.' ), 403 );
 		}
 

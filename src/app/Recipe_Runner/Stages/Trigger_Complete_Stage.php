@@ -521,6 +521,18 @@ class Trigger_Complete_Stage implements Stage {
 			if ( isset( $process['args'] ) ) {
 				$process['args']['user_id'] = $resolution->get_user_id();
 			}
+		} else {
+			// Legacy parity (Pro <= 7.2.x: "May be trigger $args has user, use
+			// that"). Resolution yielded no user, but the raw trigger args carry
+			// one — e.g. a form plugin registered and logged the visitor in
+			// before the trigger fired. Recover ATTRIBUTION from the args so the
+			// run's logs point at that user; the do-nothing flag below still
+			// skips the actions, exactly as legacy did.
+			$args_user_id = absint( $process['args']['user_id'] ?? 0 );
+
+			if ( 0 === absint( $process['user_id'] ?? 0 ) && $args_user_id > 0 ) {
+				$process['user_id'] = $args_user_id;
+			}
 		}
 
 		// Propagate flags so determine_recipe_status() / resolve_action_status() pick them up.

@@ -125,10 +125,7 @@ class ZOOM_WEBINAR_CREATEWEBINAR extends App_Action {
 			'options'               => array(),
 			'relevant_tokens'       => array(),
 			'supports_custom_value' => false,
-			'ajax'                  => array(
-				'endpoint' => 'uap_zoom_webinar_api_get_account_users',
-				'event'    => 'on_load',
-			),
+			'remote_data'           => $this->helpers->remote_data_load_config( 'account_users' ),
 		);
 
 		$webinar_description_field = array(
@@ -249,14 +246,14 @@ class ZOOM_WEBINAR_CREATEWEBINAR extends App_Action {
 
 		// Registration type field
 		$registration_type_field = array(
-			'input_type'  => 'select',
-			'option_code' => 'REGISTRATIONTYPE',
-			'label'       => esc_html_x( 'Registration type', 'Zoom Webinar', 'uncanny-automator' ),
-			'description' => esc_html_x( 'How should attendees register for the webinar?', 'Zoom Webinar', 'uncanny-automator' ),
-			'required'    => false,
-			'tokens'      => false,
+			'input_type'    => 'select',
+			'option_code'   => 'REGISTRATIONTYPE',
+			'label'         => esc_html_x( 'Registration type', 'Zoom Webinar', 'uncanny-automator' ),
+			'description'   => esc_html_x( 'How should attendees register for the webinar?', 'Zoom Webinar', 'uncanny-automator' ),
+			'required'      => false,
+			'tokens'        => false,
 			'default_value' => '1',
-			'options'     => array(
+			'options'       => array(
 				array(
 					'value' => 1,
 					'text'  => esc_html_x( 'No registration required', 'Zoom Webinar', 'uncanny-automator' ),
@@ -270,13 +267,13 @@ class ZOOM_WEBINAR_CREATEWEBINAR extends App_Action {
 
 		// Approval type field
 		$approval_type_field = array(
-			'input_type'        => 'select',
-			'option_code'       => 'APPROVALTYPE',
-			'label'             => esc_html_x( 'Approval type', 'Zoom Webinar', 'uncanny-automator' ),
-			'description'       => esc_html_x( 'How should registrations be approved?', 'Zoom Webinar', 'uncanny-automator' ),
-			'required'          => false,
-			'tokens'            => false,
-			'default_value'     => '0',
+			'input_type'         => 'select',
+			'option_code'        => 'APPROVALTYPE',
+			'label'              => esc_html_x( 'Approval type', 'Zoom Webinar', 'uncanny-automator' ),
+			'description'        => esc_html_x( 'How should registrations be approved?', 'Zoom Webinar', 'uncanny-automator' ),
+			'required'           => false,
+			'tokens'             => false,
+			'default_value'      => '0',
 			'dynamic_visibility' => array(
 				'default_state'    => 'hidden',
 				'visibility_rules' => array(
@@ -293,7 +290,7 @@ class ZOOM_WEBINAR_CREATEWEBINAR extends App_Action {
 					),
 				),
 			),
-			'options'           => array(
+			'options'            => array(
 				array(
 					'value' => '0',
 					'text'  => esc_html_x( 'Automatically approve', 'Zoom Webinar', 'uncanny-automator' ),

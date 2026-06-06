@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol;
 
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Client\Client_Context_Service;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
 use WP_Error;
 use WP_REST_Controller;
@@ -73,6 +74,14 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 	private $token_manager;
 
 	/**
+	 * Client context service instance.
+	 *
+	 * @since 7.3.0
+	 * @var Client_Context_Service
+	 */
+	private $context_service;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 7.0.0
@@ -81,6 +90,7 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 		$this->lifecycle_manager = new Lifecycle_Manager();
 		$this->message_router    = new Message_Router();
 		$this->token_manager     = new Token_Manager();
+		$this->context_service   = new Client_Context_Service();
 	}
 
 	/**
@@ -267,9 +277,10 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 			$token = $matches[1];
 
 			// Validate token using Token_Manager.
-			$user = $this->token_manager->get_user_from_token( $token );
+			$user       = $this->token_manager->get_user_from_token( $token );
+			$capability = $this->context_service->get_client_access_capability();
 
-			if ( $user && user_can( $user, 'manage_options' ) ) {
+			if ( $user && user_can( $user, $capability ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
 				// Set current user for the request.
 				wp_set_current_user( $user->ID );
 				return true;
@@ -283,7 +294,9 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 		}
 
 		// Fall back to WordPress native authentication (Application Passwords).
-		return current_user_can( 'manage_options' );
+		$capability = $this->context_service->get_client_access_capability();
+
+		return current_user_can( $capability ); // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
 	}
 
 	/**

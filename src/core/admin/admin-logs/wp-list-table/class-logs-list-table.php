@@ -919,9 +919,24 @@ class Logs_List_Table extends WP_List_Table {
 
 			}
 
-			$action_date_completed = $action->action_date;
+			// Only show a completion date once the action has actually completed.
+			// A Scheduled / In-progress action (e.g. a delayed action) has not run
+			// yet, so showing its log time under "Completion date" is misleading.
+			// Mirrors the recipe-row gate above.
+			$action_date_completed = in_array(
+				absint( $action->action_completed ),
+				array(
+					Automator_Status::COMPLETED,
+					Automator_Status::COMPLETED_WITH_ERRORS,
+					Automator_Status::DID_NOTHING,
+					Automator_Status::COMPLETED_WITH_NOTICE,
+				),
+				true
+			) ?
+				$action->action_date :
+				'';
 
-			$action_date_html = $this->get_completion_date_html( $action->action_date, 'action' );
+			$action_date_html = $this->get_completion_date_html( $action_date_completed, 'action' );
 
 			if ( false !== $action_date_html ) {
 				$action_date_completed = $action_date_html;
@@ -1181,7 +1196,7 @@ class Logs_List_Table extends WP_List_Table {
 
 			if ( $diff_seconds >= 0 && $diff_seconds < DAY_IN_SECONDS ) {
 				/* translators: %s is a human-readable time difference, e.g. "17 minutes" */
-				$relative = sprintf( __( '%s ago', 'uncanny-automator' ), human_time_diff( $timestamp_dt->getTimestamp(), $now_dt->getTimestamp() ) );
+				$relative = sprintf( esc_html_x( '%s ago', 'Recipe log relative time', 'uncanny-automator' ), human_time_diff( $timestamp_dt->getTimestamp(), $now_dt->getTimestamp() ) );
 
 				return sprintf(
 					'<div class="uap-logs-complation-date uap-logs-%s-complation-date">%s<div class="uap-logs-complation-date__time">(%s)</div></div>',
