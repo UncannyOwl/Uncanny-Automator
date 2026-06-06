@@ -388,7 +388,7 @@ class Mcp_Client {
 	 * @return bool
 	 */
 	public function ensure_admin_permissions(): bool {
-		return $this->context_service->user_has_capability();
+		return $this->context_service->user_has_capability( $this->context_service->get_client_access_capability() );
 	}
 
 	/**
@@ -434,6 +434,10 @@ class Mcp_Client {
 	public function render_launcher( $post ): void {
 
 		if ( ! self::get_uncanny_agent_settings() ) {
+			return;
+		}
+
+		if ( ! $this->context_service->can_access_client() ) {
 			return;
 		}
 

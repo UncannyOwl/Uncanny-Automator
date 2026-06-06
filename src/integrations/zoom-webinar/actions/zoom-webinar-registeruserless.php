@@ -69,6 +69,15 @@ class ZOOM_WEBINAR_REGISTERUSERLESS extends App_Action {
 	}
 
 	/**
+	 * Define the action tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens() {
+		return $this->get_registration_action_tokens();
+	}
+
+	/**
 	 * Process the action.
 	 *
 	 * @param int $user_id
@@ -88,7 +97,7 @@ class ZOOM_WEBINAR_REGISTERUSERLESS extends App_Action {
 		}
 
 		$webinar_key  = $this->parse_webinar_key( $webinar_key );
-		$webinar_user = $this->parse_user_data_from_fields( $action_data );
+		$webinar_user = $this->parse_user_data_from_fields();
 
 		$webinar_questions = $this->get_parsed_meta_value( 'WEBINARQUESTIONS' );
 		if ( ! empty( $webinar_questions ) ) {
@@ -98,7 +107,11 @@ class ZOOM_WEBINAR_REGISTERUSERLESS extends App_Action {
 		$occurrences         = $this->get_parsed_meta_value( 'OCCURRENCES' );
 		$webinar_occurrences = $this->parse_webinar_occurrences( $occurrences );
 
-		$this->api->register_user_for_webinar( $webinar_user, $webinar_key, $webinar_occurrences, $action_data );
+		$response = $this->api->register_user_for_webinar( $webinar_user, $webinar_key, $webinar_occurrences, $action_data );
+
+		if ( ! empty( $response['data'] ) ) {
+			$this->hydrate_registration_tokens( $response['data'] );
+		}
 
 		return true;
 	}

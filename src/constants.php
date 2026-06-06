@@ -38,7 +38,11 @@
 // ──────────────────────────────────────────────
 
 if ( ! defined( 'AUTOMATOR_DATABASE_VERSION' ) ) {
-	define( 'AUTOMATOR_DATABASE_VERSION', '7.3.0' );
+	// 7.3.1: uap_recipe_count legacy index upgraded to UNIQUE in place —
+	// sites already on stored version 7.3.0 must re-enter activation()
+	// once so upgrade_recipe_count_unique_key() runs (the 7.3.0 dbDelta
+	// ALTER failed with "Duplicate key name" and saved the version anyway).
+	define( 'AUTOMATOR_DATABASE_VERSION', '7.3.1' );
 }
 
 if ( ! defined( 'AUTOMATOR_MANIFEST_SCHEMA_VERSION' ) ) {

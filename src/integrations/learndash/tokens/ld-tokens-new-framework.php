@@ -1,6 +1,7 @@
 <?php
 
 namespace Uncanny_Automator\Integrations\Learndash;
+
 /**
  * Class Ld_Tokens_New_Framework
  *
@@ -71,7 +72,7 @@ class Ld_Tokens_New_Framework {
 		$course_title = $course->post_title ?? '';
 		$course_url   = null !== $course ? get_permalink( $course_id ) : '';
 
-		$course_status       = '';
+		$course_status        = '';
 		$course_access_expiry = '';
 
 		if ( 0 !== absint( $user_id ) && null !== $course ) {
@@ -101,20 +102,30 @@ class Ld_Tokens_New_Framework {
 	/**
 	 * Course completion extra token definitions (for COURSEDONE trigger).
 	 *
+	 * tokenIdentifier is the LEGACY identity (<= 7.2.5): Ld_Tokens added these
+	 * via the ldcourse relevant-tokens filter with tokenIdentifier = LDCOURSE,
+	 * so existing recipe pills are {trigger_id}:LDCOURSE:{tokenId}. Omitting it
+	 * lets resolve_token_definitions() default to the trigger CODE (COURSEDONE),
+	 * which orphans every pre-migration pill — red in the builder, and at parse
+	 * time the generic parser matches the LDCOURSE piece and returns the course
+	 * TITLE instead. Contract: tests/wpunit/migration snapshot.
+	 *
 	 * @return array[]
 	 */
 	public function course_completion_tokens() {
 
 		return array(
 			array(
-				'tokenId'   => 'LDCOURSE_course_completed_on',
-				'tokenName' => esc_html_x( 'Course completion date', 'LearnDash', 'uncanny-automator' ),
-				'tokenType' => 'text',
+				'tokenId'         => 'LDCOURSE_course_completed_on',
+				'tokenName'       => esc_html_x( 'Course completion date', 'LearnDash', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'LDCOURSE',
 			),
 			array(
-				'tokenId'   => 'LDCOURSE_course_points',
-				'tokenName' => esc_html_x( 'Course points', 'LearnDash', 'uncanny-automator' ),
-				'tokenType' => 'text',
+				'tokenId'         => 'LDCOURSE_course_points',
+				'tokenName'       => esc_html_x( 'Course points', 'LearnDash', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => 'LDCOURSE',
 			),
 		);
 	}
@@ -135,7 +146,11 @@ class Ld_Tokens_New_Framework {
 		$formatted_date = '';
 
 		if ( ! empty( $completed_date ) ) {
-			$formatted_date = gmdate( get_option( 'date_format', 'F j, Y' ), $completed_date );
+			// learndash_adjust_date_time_display() is the legacy (<= 7.2.5)
+			// formatter: date AND time, localized to the site timezone via
+			// LearnDash's own display settings. The interim gmdate(date_format)
+			// dropped the time component and rendered in UTC.
+			$formatted_date = learndash_adjust_date_time_display( $completed_date );
 		}
 
 		return array(
@@ -378,9 +393,11 @@ class Ld_Tokens_New_Framework {
 
 		return array(
 			array(
-				'tokenId'   => 'LDQUIZ_achieved_score',
-				'tokenName' => esc_html_x( "User's quiz score", 'LearnDash', 'uncanny-automator' ),
-				'tokenType' => 'int',
+				'tokenId'         => 'LDQUIZ_achieved_score',
+				'tokenName'       => esc_html_x( "User's quiz score", 'LearnDash', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				// Legacy identity (<= 7.2.5) — see course_completion_tokens().
+				'tokenIdentifier' => 'LDQUIZ',
 			),
 		);
 	}
@@ -408,14 +425,18 @@ class Ld_Tokens_New_Framework {
 
 		return array(
 			array(
-				'tokenId'   => 'LDQUIZ_achieved_percent',
-				'tokenName' => esc_html_x( "User's quiz percentage", 'LearnDash', 'uncanny-automator' ),
-				'tokenType' => 'text',
+				'tokenId'         => 'LDQUIZ_achieved_percent',
+				'tokenName'       => esc_html_x( "User's quiz percentage", 'LearnDash', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				// Legacy identity (<= 7.2.5) — see course_completion_tokens().
+				'tokenIdentifier' => 'LDQUIZ',
 			),
 			array(
-				'tokenId'   => 'LDQUIZ_quiz_passing_percentage',
-				'tokenName' => esc_html_x( 'Passing score %', 'LearnDash', 'uncanny-automator' ),
-				'tokenType' => 'int',
+				'tokenId'         => 'LDQUIZ_quiz_passing_percentage',
+				'tokenName'       => esc_html_x( 'Passing score %', 'LearnDash', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				// Legacy identity (<= 7.2.5) — see course_completion_tokens().
+				'tokenIdentifier' => 'LDQUIZ',
 			),
 		);
 	}
@@ -445,9 +466,11 @@ class Ld_Tokens_New_Framework {
 
 		return array(
 			array(
-				'tokenId'   => 'LDQUIZ_achieved_points',
-				'tokenName' => esc_html_x( "User's quiz points", 'LearnDash', 'uncanny-automator' ),
-				'tokenType' => 'int',
+				'tokenId'         => 'LDQUIZ_achieved_points',
+				'tokenName'       => esc_html_x( "User's quiz points", 'LearnDash', 'uncanny-automator' ),
+				'tokenType'       => 'int',
+				// Legacy identity (<= 7.2.5) — see course_completion_tokens().
+				'tokenIdentifier' => 'LDQUIZ',
 			),
 		);
 	}

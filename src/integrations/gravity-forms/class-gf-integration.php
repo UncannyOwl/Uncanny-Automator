@@ -17,24 +17,54 @@ class Gravity_Forms_Integration extends \Uncanny_Automator\Integration {
 		$this->set_name( 'Gravity Forms' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/gravity-forms-icon.svg' );
 
+		// Helpers MUST exist by the end of setup(): the Integration
+		// constructor registers $instances_by_code ONLY when helpers are
+		// non-null at construction, and Trigger_Late_Resolver feeds
+		// Integration::helpers_for('GF') to lazily-fired triggers as their
+		// sole dependency. Building this in load_shared_hooks() (after the
+		// registration window) left helpers_for('GF') null forever — lazy
+		// GF triggers constructed with no deps, $this->gf stayed null, and
+		// define_tokens() fataled mid-queue ("form_tokens() on null"),
+		// sticking recipes In Progress.
+		$this->build_dependencies();
+
 		// Register admin notice check
 		add_action( 'admin_init', array( $this, 'check_pro_compatibility_notice' ) );
 	}
 
 	/**
-	 * Build shared dependencies for triggers/actions.
+	 * Build the shared $gf dependency container (tokens + helpers).
 	 *
-	 * Creates the $gf stdClass and stores it in $this->helpers so that
-	 * get_load_arguments() can pass it to individual items in targeted mode.
+	 * Idempotent — called from setup() (registration window) and kept in
+	 * load_shared_hooks() as a belt-and-braces for any path that invokes
+	 * shared hooks on an instance whose setup was bypassed.
 	 *
 	 * @return void
 	 */
-	protected function load_shared_hooks() {
+	private function build_dependencies() {
+
+		if ( null !== $this->helpers ) {
+			return;
+		}
+
 		$gf          = new \stdClass();
 		$gf->tokens  = new Gravity_Forms_Tokens();
 		$gf->helpers = new \Uncanny_Automator\Gravity_Forms_Helpers();
 
 		$this->helpers = $gf;
+	}
+
+	/**
+	 * Shared dependencies for triggers/actions.
+	 *
+	 * The container is built in setup() — see build_dependencies(). Kept
+	 * here so targeted mode keeps its contract (get_load_arguments() passes
+	 * $this->helpers to individual items).
+	 *
+	 * @return void
+	 */
+	protected function load_shared_hooks() {
+		$this->build_dependencies();
 	}
 
 	/**

@@ -885,6 +885,26 @@ abstract class Trigger {
 			return $data[ $token_id ];
 		}
 
+		// Identifier-drift fallback: a pill's identifier is frozen at insert
+		// time, but a migration can re-home the token's declared identifier
+		// (legacy meta-keyed pills vs interim code-keyed pills — e.g. LD's
+		// LDCOURSE vs COURSEDONE). When the pill's bucket misses, retry the
+		// trigger's other canonical buckets (code, then meta) so recipes from
+		// either era keep resolving.
+		foreach ( array_unique( array( (string) $this->get_code(), (string) $this->get_trigger_meta() ) ) as $fallback_identifier ) {
+
+			if ( '' === $fallback_identifier || $fallback_identifier === $token_identifier ) {
+				continue;
+			}
+
+			$data = Automator()->db->token->get( $fallback_identifier, $replace_arg );
+			$data = is_array( $data ) ? $data : json_decode( $data, true );
+
+			if ( isset( $data[ $token_id ] ) ) {
+				return $data[ $token_id ];
+			}
+		}
+
 		return $value;
 	}
 

@@ -55,186 +55,116 @@ class Zoom_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * Ajax get meeting options.
+	 * Fetch the account's meetings for the selected user.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 * @throws Exception
 	 */
-	public function ajax_get_meetings() {
+	protected function remote_data_get_meetings( $request ): array {
 
-		// Nonce and post object validation.
-		Automator()->utilities->ajax_auth_check();
+		$user = $request->get_field_value( 'ZOOMUSER' );
 
-		// Extract the user from POST data.
-		$values = automator_filter_has_var( 'values', INPUT_POST )
-			? automator_filter_input_array( 'values', INPUT_POST )
-			: array();
-		$user   = $values['ZOOMUSER'] ?? '';
-
-		try {
-			if ( empty( $user ) ) {
-				throw new Exception( esc_html_x( 'Please select a valid user', 'Zoom', 'uncanny-automator' ) );
-			}
-			// Use API caller to get meetings.
-			$options = $this->api->get_meeting_options( $user );
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $options,
-				)
-			);
-		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'options' => array(),
-					'error'   => esc_html( $e->getMessage() ),
-				)
-			);
+		if ( empty( $user ) ) {
+			throw new Exception( esc_html_x( 'Please select a valid user', 'Zoom', 'uncanny-automator' ) );
 		}
+
+		$options = $this->api->get_meeting_options( $user );
+
+		return $this->remote_data_success( $options );
 	}
 
 	/**
-	 * AJAX get meeting questions repeater.
+	 * Fetch the selected meeting's registration questions as repeater rows.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 * @throws Exception
 	 */
-	public function ajax_get_meeting_questions_repeater() {
-		Automator()->utilities->ajax_auth_check();
+	protected function remote_data_get_meeting_questions( $request ): array {
 
-		$meeting_id = $this->get_group_id_value_from_ajax();
+		$values     = $request->get_values();
+		$meeting_id = $values[ $request->get_group_id() ] ?? '';
 
-		try {
-			if ( empty( $meeting_id ) ) {
-				throw new Exception( esc_html_x( 'Meeting ID is required', 'Zoom', 'uncanny-automator' ) );
-			}
+		if ( empty( $meeting_id ) ) {
+			throw new Exception( esc_html_x( 'Meeting ID is required', 'Zoom', 'uncanny-automator' ) );
+		}
 
-			$response = $this->api->get_meeting_questions( $meeting_id );
+		$response = $this->api->get_meeting_questions( $meeting_id );
 
-			if ( 200 !== $response['statusCode'] ) {
-				$message = $response['data']['message'] ?? '';
-				$message = empty( $message )
-					? sprintf(
-						// translators: %d Error status code
-						esc_html_x( 'Could not fetch meeting questions from Zoom. Status code: %d', 'Zoom', 'uncanny-automator' ),
-						absint( $response['statusCode'] )
-					)
-					: $message;
-				throw new Exception( esc_html( $message ) );
-			}
-
-			$rows      = array();
-			$questions = $response['data']['questions'] ?? array();
-			$custom    = $response['data']['custom_questions'] ?? array();
-
-			foreach ( $questions as $question ) {
-				// Do not add last name field because we already have it in the form.
-				if ( 'last_name' === $question['field_name'] ) {
-					continue;
-				}
-
-				$rows[] = array(
-					'QUESTION_NAME' => $question['field_name'],
-				);
-			}
-
-			foreach ( $custom as $question ) {
-				$rows[] = array(
-					'QUESTION_NAME' => $question['title'],
-				);
-			}
-
-			wp_send_json(
-				array(
-					'success' => true,
-					'rows'    => $rows,
+		if ( 200 !== $response['statusCode'] ) {
+			$message = $response['data']['message'] ?? '';
+			$message = empty( $message )
+				? sprintf(
+					// translators: %d Error status code
+					esc_html_x( 'Could not fetch meeting questions from Zoom. Status code: %d', 'Zoom', 'uncanny-automator' ),
+					absint( $response['statusCode'] )
 				)
-			);
+				: $message;
+			throw new Exception( esc_html( $message ) );
+		}
 
-		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'rows'    => array(),
-					'error'   => esc_html( $e->getMessage() ),
-				)
+		$rows      = array();
+		$questions = $response['data']['questions'] ?? array();
+		$custom    = $response['data']['custom_questions'] ?? array();
+
+		foreach ( $questions as $question ) {
+			// Do not add last name field because we already have it in the form.
+			if ( 'last_name' === $question['field_name'] ) {
+				continue;
+			}
+
+			$rows[] = array(
+				'QUESTION_NAME' => $question['field_name'],
 			);
 		}
+
+		foreach ( $custom as $question ) {
+			$rows[] = array(
+				'QUESTION_NAME' => $question['title'],
+			);
+		}
+
+		return $this->remote_data_success( $rows, 'rows' );
 	}
 
 	/**
-	 * AJAX get meeting occurrences.
+	 * Fetch the selected meeting's occurrences.
 	 *
-	 * @return void
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
+	 * @throws Exception
 	 */
-	public function ajax_get_meeting_occurrences() {
+	protected function remote_data_get_meeting_occurrences( $request ): array {
 
-		// Nonce and post object validation.
-		Automator()->utilities->ajax_auth_check();
+		$values     = $request->get_values();
+		$meeting_id = $values[ $request->get_group_id() ] ?? '';
 
-		$meeting_id = $this->get_group_id_value_from_ajax();
-
-		try {
-			if ( empty( $meeting_id ) ) {
-				throw new Exception( esc_html_x( 'Meeting ID is required', 'Zoom', 'uncanny-automator' ) );
-			}
-
-			$options = $this->api->get_meeting_occurrences_options( $meeting_id );
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $options,
-				)
-			);
-
-		} catch ( Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'options' => array(),
-					'error'   => esc_html( $e->getMessage() ),
-				)
-			);
+		if ( empty( $meeting_id ) ) {
+			throw new Exception( esc_html_x( 'Meeting ID is required', 'Zoom', 'uncanny-automator' ) );
 		}
+
+		$options = $this->api->get_meeting_occurrences_options( $meeting_id );
+
+		return $this->remote_data_success( $options );
 	}
 
 	/**
-	 * AJAX get account users.
+	 * Fetch the connected account's users.
 	 *
-	 * @return void
-	 */
-	public function ajax_get_account_users() {
-		Automator()->utilities->ajax_auth_check();
-
-		try {
-			$users = $this->api->get_account_user_options();
-			wp_send_json(
-				array(
-					'success' => true,
-					'options' => $users,
-				)
-			);
-		} catch ( \Exception $e ) {
-			wp_send_json(
-				array(
-					'success' => false,
-					'options' => array(),
-					'error'   => $e->getMessage(),
-				)
-			);
-		}
-	}
-
-	/**
-	 * Get group id value from AJAX.
+	 * @param Remote_Data_Request $request The remote-data request.
 	 *
-	 * @return string
+	 * @return array
+	 * @throws Exception
 	 */
-	private function get_group_id_value_from_ajax() {
-		$group_id = automator_filter_input( 'group_id', INPUT_POST );
-		$values   = automator_filter_has_var( 'values', INPUT_POST )
-			? automator_filter_input_array( 'values', INPUT_POST )
-			: array();
-		return $values[ $group_id ] ?? '';
+	protected function remote_data_get_account_users( $request ): array {
+
+		$users = $this->api->get_account_user_options();
+
+		return $this->remote_data_success( $users );
 	}
 
 	/**

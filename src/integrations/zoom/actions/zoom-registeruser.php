@@ -50,6 +50,15 @@ class ZOOM_REGISTERUSER extends App_Action {
 	}
 
 	/**
+	 * Define the action tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens() {
+		return $this->get_registration_action_tokens();
+	}
+
+	/**
 	 * Process the action.
 	 *
 	 * @param int $user_id
@@ -81,7 +90,11 @@ class ZOOM_REGISTERUSER extends App_Action {
 		}
 
 		// Register user for meeting.
-		$this->api->register_user_for_meeting( $meeting_user, $meeting_key, $meeting_occurrences, $action_data );
+		$response = $this->api->register_user_for_meeting( $meeting_user, $meeting_key, $meeting_occurrences, $action_data );
+
+		if ( ! empty( $response['data'] ) ) {
+			$this->hydrate_registration_tokens( $response['data'] );
+		}
 
 		return true;
 	}

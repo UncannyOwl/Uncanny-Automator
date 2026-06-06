@@ -28,11 +28,7 @@ trait Zoom_Registration_Trait {
 			'options'               => array(),
 			'supports_tokens'       => true,
 			'supports_custom_value' => true,
-			'ajax'                  => array(
-				'endpoint'      => 'uap_zoom_meetings_api_get_meetings',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $listen_field ),
-			),
+			'remote_data'           => $this->helpers->remote_data_parent_config( 'meetings', array( $listen_field ) ),
 		);
 	}
 
@@ -53,11 +49,7 @@ trait Zoom_Registration_Trait {
 			'supports_tokens'          => true,
 			'supports_custom_value'    => true,
 			'supports_multiple_values' => true,
-			'ajax'                     => array(
-				'endpoint'      => 'uap_zoom_meetings_api_get_meeting_occurrences',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $listen_field ),
-			),
+			'remote_data'              => $this->helpers->remote_data_parent_config( 'meeting_occurrences', array( $listen_field ) ),
 		);
 	}
 
@@ -92,11 +84,9 @@ trait Zoom_Registration_Trait {
 					'required'    => false,
 				),
 			),
-			'ajax'            => array(
-				'event'          => 'parent_fields_change',
-				'listen_fields'  => array( $listen_field ),
-				'endpoint'       => 'uap_zoom_meetings_api_get_meeting_questions',
-				'mapping_column' => 'QUESTION_NAME',
+			'remote_data'     => $this->helpers->remote_data_with_mapping_column(
+				$this->helpers->remote_data_parent_config( 'meeting_questions', array( $listen_field ) ),
+				'QUESTION_NAME'
 			),
 		);
 	}
@@ -169,5 +159,57 @@ trait Zoom_Registration_Trait {
 		);
 
 		return in_array( $question_name, $default_questions, true );
+	}
+
+	/**
+	 * Get the registration action tokens.
+	 *
+	 * Shared by the meeting register actions so the registrant's unique join link
+	 * and ID returned by Zoom are exposed to later actions in the recipe. The
+	 * unregister actions deliberately do not surface these.
+	 *
+	 * @return array
+	 */
+	protected function get_registration_action_tokens() {
+		return array(
+			'JOIN_URL'              => array(
+				'name' => esc_html_x( 'Registration join link', 'Zoom', 'uncanny-automator' ),
+				'type' => 'url',
+			),
+			'REGISTRANT_ID'         => array(
+				'name' => esc_html_x( 'Registrant ID', 'Zoom', 'uncanny-automator' ),
+				'type' => 'text',
+			),
+			'REGISTRANT_TOPIC'      => array(
+				'name' => esc_html_x( 'Meeting topic', 'Zoom', 'uncanny-automator' ),
+				'type' => 'text',
+			),
+			'REGISTRANT_START_TIME' => array(
+				'name' => esc_html_x( 'Start time', 'Zoom', 'uncanny-automator' ),
+				'type' => 'text',
+			),
+		);
+	}
+
+	/**
+	 * Hydrate the registration action tokens from the Zoom register response.
+	 *
+	 * Reads the documented registrant fields null-safely so an unexpected payload
+	 * never fatals the action. The per-registrant join_url Zoom returns carries the
+	 * passcode as its `tk` query param and is surfaced verbatim — never synthesized.
+	 *
+	 * @param array $data The decoded `data` payload from the register API response.
+	 *
+	 * @return void
+	 */
+	protected function hydrate_registration_tokens( $data ) {
+		$this->hydrate_tokens(
+			array(
+				'JOIN_URL'              => $data['join_url'] ?? '',
+				'REGISTRANT_ID'         => $data['registrant_id'] ?? '',
+				'REGISTRANT_TOPIC'      => $data['topic'] ?? '',
+				'REGISTRANT_START_TIME' => $data['start_time'] ?? '',
+			)
+		);
 	}
 }

@@ -118,6 +118,11 @@ class Backward_Compat_Reconciler {
 
 			$recovered = 0;
 
+			// Namespace roots that ship modern `…\Integrations\…` items for THIS
+			// integration. Used by reconcile_item() to recognize modern loop
+			// filters, which never carry the modern namespace themselves.
+			$modern_roots = self::modern_namespace_roots( $types );
+
 			foreach ( $gated_types as $type ) {
 
 				if ( empty( $types[ $type ] ) ) {
@@ -125,8 +130,8 @@ class Backward_Compat_Reconciler {
 				}
 
 				foreach ( $types[ $type ] as $composite_key => $entry ) {
-					if ( $this->reconcile_item( $entry, $composite_key, $manifest, $load_all, $type ) ) {
-						$recovered++;
+					if ( $this->reconcile_item( $entry, $composite_key, $manifest, $load_all, $type, $modern_roots ) ) {
+						++$recovered;
 					}
 				}
 			}
@@ -152,10 +157,11 @@ class Backward_Compat_Reconciler {
 	 * @param Recipe_Manifest $manifest      The manifest instance.
 	 * @param bool            $load_all      Whether full-load mode is active.
 	 * @param string          $type          Recipe-part type.
+	 * @param string[]        $modern_roots  Namespace roots with modern items for this integration.
 	 *
 	 * @return bool True if the class was instantiated.
 	 */
-	private function reconcile_item( $entry, $composite_key, $manifest, $load_all, $type ) {
+	private function reconcile_item( $entry, $composite_key, $manifest, $load_all, $type, $modern_roots = array() ) {
 
 		$class = isset( $entry['class'] ) ? $entry['class'] : '';
 		$file  = isset( $entry['file'] ) ? $entry['file'] : '';
@@ -174,6 +180,21 @@ class Backward_Compat_Reconciler {
 		// can miss them — the namespace is the reliable signal. Only LEGACY (flat-namespace)
 		// add-on orphans belong here; skip anything modern, its own integration loads it.
 		if ( false !== strpos( $class, '\\Integrations\\' ) ) {
+			return false;
+		}
+
+		// Loop filters NEVER match the modern-namespace check above — the loops
+		// framework pins them to a flat `{Addon}\Loop_Filters\` namespace
+		// (Class_Resolver::prepend_loop_filter_namespace()) no matter how modern
+		// the integration is. Infer modernity from the add-on instead: when the
+		// same namespace root ships modern `…\Integrations\…` items for this
+		// integration (true for Pro >= 7.3.0 on migrated integrations, e.g. EC),
+		// its own Integration::load() owns these filters — bare-constructing one
+		// here hands it a null helper and fatals in the Loop_Filter constructor's
+		// eager fields resolution. Scoped to the add-on root so a modern FREE
+		// integration never suppresses recovery of a legacy add-on's orphaned
+		// loop filters (new Free + old Pro).
+		if ( 'loop_filters' === $type && in_array( self::namespace_root( $class ), $modern_roots, true ) ) {
 			return false;
 		}
 
@@ -217,6 +238,56 @@ class Backward_Compat_Reconciler {
 			$this->error_handler->handle( $class, $e );
 			return false;
 		}
+	}
+
+	/**
+	 * Namespace roots that ship modern `…\Integrations\…` items within one
+	 * integration's item-map types (e.g. `Uncanny_Automator_Pro` once Pro 7.3+
+	 * migrates the integration). Integrations migrate atomically, so one modern
+	 * entry under a root means that root's own Integration::load() owns every
+	 * item of the integration — including its flat-namespace loop filters.
+	 *
+	 * @param array $types The integration's item-map types.
+	 *
+	 * @return string[] Unique namespace roots.
+	 */
+	private static function modern_namespace_roots( $types ) {
+
+		$roots = array();
+
+		foreach ( (array) $types as $items ) {
+
+			if ( ! is_array( $items ) ) {
+				continue;
+			}
+
+			foreach ( $items as $entry ) {
+
+				$class = isset( $entry['class'] ) ? ltrim( $entry['class'], '\\' ) : '';
+				$pos   = strpos( $class, '\\Integrations\\' );
+
+				if ( false !== $pos ) {
+					$roots[ substr( $class, 0, $pos ) ] = true;
+				}
+			}
+		}
+
+		return array_keys( $roots );
+	}
+
+	/**
+	 * Top-level namespace segment of an FQCN ('' when not namespaced).
+	 *
+	 * @param string $class_name The FQCN.
+	 *
+	 * @return string
+	 */
+	private static function namespace_root( $class_name ) {
+
+		$class_name = ltrim( $class_name, '\\' );
+		$pos        = strpos( $class_name, '\\' );
+
+		return false === $pos ? '' : substr( $class_name, 0, $pos );
 	}
 
 	/**

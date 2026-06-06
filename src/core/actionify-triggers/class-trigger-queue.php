@@ -185,16 +185,6 @@ class Trigger_Queue {
 
 		$this->ensure_shutdown_hooks();
 
-		// If wp_loaded has already fired, the deferred wp_loaded drain is dead and the
-		// shutdown passes run after wp_footer — too late for actions that must affect
-		// page output (e.g. footer JS injection). Drain now so they run in time. By
-		// wp_loaded, recipe parts are loaded (init:30 < wp_loaded), so process_queue_item
-		// processes inline rather than falling back to the loopback. The $processing
-		// guard and the bounded drain loop in process_queue() handle re-entry.
-		if ( did_action( 'wp_loaded' ) ) {
-			$this->process_queue();
-		}
-
 		return true;
 	}
 
@@ -542,12 +532,8 @@ class Trigger_Queue {
 			return;
 		}
 
-		// Early drain for triggers enqueued before wp_loaded. Once wp_loaded has
-		// fired, this hook is dead (WordPress won't fire it again this request) —
-		// late triggers drain inline from enqueue() instead.
-		if ( ! did_action( 'wp_loaded' ) ) {
-			add_action( 'wp_loaded', array( $this, 'process_queue' ), self::WP_LOADED_PRIORITY );
-		}
+		// Try to process the queue after init.
+		add_action( 'wp_loaded', array( $this, 'process_queue' ), self::WP_LOADED_PRIORITY );
 
 		// Early pass: process triggers that fired before shutdown (form submissions, etc.).
 		// Runs before wp_ob_end_flush_all (priority 1) so response headers are writable.

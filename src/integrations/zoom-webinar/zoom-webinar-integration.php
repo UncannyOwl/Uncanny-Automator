@@ -72,17 +72,4 @@ class Zoom_Webinar_Integration extends App_Integration {
 
 		return ! empty( $client['access_token'] ) && ! empty( $user );
 	}
-
-	/**
-	 * Register integration-specific hooks.
-	 *
-	 * @return void
-	 */
-	protected function register_hooks() {
-		// Recipe options AJAX handlers
-		add_action( 'wp_ajax_uap_zoom_webinar_api_get_webinar_questions', array( $this->helpers, 'ajax_get_meeting_questions_repeater' ) );
-		add_action( 'wp_ajax_uap_zoom_webinar_api_get_webinars', array( $this->helpers, 'ajax_get_webinars' ), 10 );
-		add_action( 'wp_ajax_uap_zoom_webinar_api_get_webinar_occurrences', array( $this->helpers, 'ajax_get_webinar_occurrences' ), 10 );
-		add_action( 'wp_ajax_uap_zoom_webinar_api_get_account_users', array( $this->helpers, 'ajax_get_account_users' ), 10 );
-	}
 }

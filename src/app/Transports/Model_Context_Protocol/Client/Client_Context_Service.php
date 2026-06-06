@@ -19,12 +19,32 @@ use WP_Post;
 class Client_Context_Service {
 
 	/**
+	 * Default capability required to use Uncanny Agent.
+	 *
+	 * @var string
+	 */
+	private const AGENT_ACCESS_CAPABILITY = 'manage_options';
+
+	/**
 	 * Determine whether the current user may access the client.
 	 *
 	 * @return bool
 	 */
 	public function can_access_client(): bool {
-		return is_admin() && current_user_can( 'manage_options' );
+		return is_admin() && $this->user_has_capability( $this->get_client_access_capability() );
+	}
+
+	/**
+	 * Resolve the capability required to use Uncanny Agent.
+	 *
+	 * This is intentionally not filterable. Uncanny Agent can inspect and operate
+	 * on privileged site data, so third-party code must not be able to lower the
+	 * access boundary at runtime.
+	 *
+	 * @return string
+	 */
+	public function get_client_access_capability(): string {
+		return self::AGENT_ACCESS_CAPABILITY;
 	}
 
 	/**

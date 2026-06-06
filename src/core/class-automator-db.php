@@ -375,6 +375,14 @@ KEY recipe_user (`recipe_id`, `user_id`)
 		// dbDelta will fail to upgrade KEY→UNIQUE KEY if duplicates exist.
 		self::deduplicate_recipe_count();
 
+		// 7.3.0: Upgrade the legacy non-unique index in place. dbDelta NEVER
+		// drops indexes, so on upgraded sites it emits ADD UNIQUE KEY while
+		// the old KEY of the same name still exists — MySQL rejects it with
+		// "Duplicate key name 'recipe_id'" on every DB-version bump, and the
+		// unique key (which insert_recipe_count()'s INSERT IGNORE relies on
+		// to dedupe) never lands.
+		self::upgrade_recipe_count_unique_key();
+
 		self::create_tables();
 
 		do_action( 'automator_activation_after' );
@@ -429,6 +437,61 @@ KEY recipe_user (`recipe_id`, `user_id`)
 				) grouped
 			) dup ON rc.recipe_id = dup.recipe_id AND rc.ID != dup.keep_id"
 		);
+	}
+
+	/**
+	 * Upgrade the legacy uap_recipe_count index to UNIQUE in place.
+	 *
+	 * Pre-7.3 schema shipped `KEY recipe_id` (non-unique); 7.3.0 declares
+	 * `UNIQUE KEY recipe_id`. dbDelta never drops indexes, so on upgraded
+	 * sites it emits `ADD UNIQUE KEY recipe_id` while the old key still
+	 * holds the name — MySQL rejects it with "Duplicate key name
+	 * 'recipe_id'" on every DB-version bump, and the unique key never
+	 * lands. Without it, insert_recipe_count()'s INSERT IGNORE inserts a
+	 * duplicate row per completion and get_recipe_total_runs() reads a
+	 * stale one.
+	 *
+	 * Must run AFTER deduplicate_recipe_count() (the ALTER fails on
+	 * duplicate recipe_id values) and BEFORE create_tables() (so dbDelta
+	 * sees a matching index and emits no ALTER).
+	 *
+	 * @since 7.3.1
+	 *
+	 * @return void
+	 */
+	public static function upgrade_recipe_count_unique_key() {
+
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'uap_recipe_count';
+
+		// Fresh installs have no table yet — dbDelta creates it with the
+		// UNIQUE KEY in one shot.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$table_exists = $wpdb->get_var(
+			$wpdb->prepare( 'SHOW TABLES LIKE %s', $table )
+		);
+
+		if ( null === $table_exists ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$index = $wpdb->get_row( "SHOW INDEX FROM {$table} WHERE Key_name = 'recipe_id'" );
+
+		// No index of that name — dbDelta can ADD the unique key cleanly.
+		if ( null === $index ) {
+			return;
+		}
+
+		// Already unique — nothing to upgrade.
+		if ( 0 === (int) $index->Non_unique ) {
+			return;
+		}
+
+		// One statement so the name is never left dangling between queries.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->query( "ALTER TABLE {$table} DROP INDEX `recipe_id`, ADD UNIQUE KEY `recipe_id` (`recipe_id`)" );
 	}
 
 	/**

@@ -418,7 +418,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/aioseo/triggers/aioseo-seo-data-updated.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'AIOSEO_SEO_DATA_UPDATED',
@@ -436,7 +436,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/aioseo/triggers/aioseo-seo-score-reached.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'AIOSEO_SEO_SCORE_REACHED',
@@ -742,7 +742,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/asana/triggers/approval-status-changed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'APPROVAL_STATUS_CHANGED',
@@ -760,7 +760,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/asana/triggers/comment-added-to-task.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'COMMENT_ADDED_TO_TASK',
@@ -778,7 +778,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/asana/triggers/task-created-in-project.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'TASK_CREATED_IN_PROJECT',
@@ -796,7 +796,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/asana/triggers/task-custom-field-changed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'TASK_CUSTOM_FIELD_CHANGED',
@@ -814,7 +814,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/asana/triggers/task-updated-in-project.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'TASK_UPDATED_IN_PROJECT',
@@ -886,7 +886,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/asana/actions/asana-get-task-details.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ASANA_TASK_DETAILS_CODE',
@@ -1048,7 +1048,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/aweber/actions/aweber-subscriber-add.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'AWEBER_SUBSCRIBER_ADD_CODE',
@@ -1066,7 +1066,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/aweber/actions/aweber-subscriber-tag-add.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'AWEBER_SUBSCRIBER_TAG_ADD_CODE',
@@ -1084,7 +1084,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/aweber/actions/aweber-subscriber-update.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'AWEBER_SUBSCRIBER_UPDATE_CODE',
@@ -1228,7 +1228,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/brevo/actions/brevo-add-contact-to-list.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'BREVO_ADD_CONTACT_TO_LIST_CODE',
@@ -1246,7 +1246,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/brevo/actions/brevo-create-or-update-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'BREVO_CREATE_OR_UPDATE_CONTACT_CODE',
@@ -1282,7 +1282,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/brevo/actions/brevo-remove-contact-from-list.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'REMOVE_CONTACT_FROM_LIST_CODE',
@@ -1300,7 +1300,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/bricks-builder/triggers/bricks-builder-anon-form-submit.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'BB_ANON_SUBMITS_FORM',
@@ -1318,7 +1318,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/bricks-builder/triggers/bricks-builder-user-submits-form.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'BB_USER_SUBMITS_FORM',
@@ -1750,7 +1750,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/anon-charitable-made-donation.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_MADE_DONATION',
@@ -1768,7 +1768,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/charitable-campaign-ended.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_CAMPAIGN_ENDED',
@@ -1786,7 +1786,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/charitable-campaign-goal-reached.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_CAMPAIGN_GOAL_REACHED',
@@ -1804,7 +1804,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/charitable-donation-completed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_DONATION_COMPLETED',
@@ -1822,7 +1822,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/charitable-donation-refunded.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_DONATION_REFUNDED',
@@ -1840,7 +1840,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/charitable-donation-status-changed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_DONATION_STATUS_CHANGED',
@@ -1858,7 +1858,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/charitable-donor-created.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_DONOR_CREATED',
@@ -1876,7 +1876,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/charitable-user-made-donation.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USER_MADE_DONATION',
@@ -1894,7 +1894,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/triggers/charitable-user-registered.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_USER_REGISTERED',
@@ -1912,7 +1912,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/actions/charitable-add-donor-tag.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_ADD_DONOR_TAG',
@@ -1930,7 +1930,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/actions/charitable-create-donor.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_CREATE_DONOR',
@@ -1948,7 +1948,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/actions/charitable-create-offline-donation.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_CREATE_OFFLINE_DONATION',
@@ -1966,7 +1966,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/actions/charitable-update-donation-status.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_UPDATE_DONATION_STATUS',
@@ -1984,7 +1984,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/charitable/actions/charitable-update-donor.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CHARITABLE_UPDATE_DONOR',
@@ -2002,7 +2002,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/claude/actions/claude-chat-generate.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CLAUDE_CHAT_GENERATE',
@@ -2236,7 +2236,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/cohere/actions/cohere-chat-generate.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'COHERE_CHAT_GENERATE',
@@ -2362,7 +2362,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/convertkit/actions/convertkit-broadcast-create.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'CONVERTKIT_BROADCAST_CREATE',
@@ -2416,7 +2416,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/convertkit/actions/convertkit-purchase-create.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'CONVERTKIT_PURCHASE_CREATE',
@@ -2542,7 +2542,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/discord/actions/discord-add-member-to-channel.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'DISCORD_ADD_MEMBER_TO_CHANNEL_CODE',
@@ -2560,7 +2560,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/discord/actions/discord-assign-role-member.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'DISCORD_ASSIGN_ROLE_TO_MEMBER_CODE',
@@ -2614,7 +2614,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/discord/actions/discord-remove-member.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'DISCORD_REMOVE_MEMBER_CODE',
@@ -2632,7 +2632,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/discord/actions/discord-remove-role-from-member.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'DISCORD_REMOVE_ROLE_FROM_MEMBER_CODE',
@@ -2704,7 +2704,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/divi/triggers/anon-divi-submitform-dep.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'ANONDIVISUBMITFORM',
@@ -2722,7 +2722,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/divi/triggers/anon-divi-submitform.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'ANON_DIVI_SUBMIT_FORM',
@@ -2740,7 +2740,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/divi/triggers/divi-submitform-dep.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'DIVISUBMITFORM',
@@ -2758,7 +2758,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/divi/triggers/divi-submitform.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'DIVI_SUBMIT_FORM',
@@ -2920,7 +2920,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/duplicator/actions/initiate-a-backup.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'DUP_CREATE_BACKUP',
@@ -3172,7 +3172,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/edd-sl/triggers/edd-sl-license-expired-for-download.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EDD_SL_LICENSE_EXPIRED',
@@ -3208,7 +3208,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/edd-sl/triggers/edd-sl-users-license-expired-for-download.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EDD_SL_USERS_LICENSE_EXPIRED',
@@ -3280,7 +3280,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/emails/actions/emails-send-emails.php' => 
   array (
-    'mtime' => 1780331512,
+    'mtime' => 1780621345,
     'extracted' => 
     array (
       'code' => 'SENDEMAIL',
@@ -3694,7 +3694,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-completed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'FLUENTCOMMUNITY_USER_QUIZ_COMPLETED_CODE',
@@ -3712,7 +3712,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-pass-fail.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'FLUENTCOMMUNITY_USER_QUIZ_PASS_FAIL_CODE',
@@ -3730,7 +3730,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/fluent-community/triggers/fluentcommunity-user-quiz-percentage.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'FLUENTCOMMUNITY_USER_QUIZ_PERCENTAGE_CODE',
@@ -4108,7 +4108,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/formidable/triggers/anon-fi-submitform.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'ANONFISUBMITFORM',
@@ -4126,7 +4126,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/formidable/triggers/fi-submitform.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'FISUBMITFORM',
@@ -4270,7 +4270,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gemini/actions/gemini-chat-generate.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GEMINI_CHAT_GENERATE',
@@ -4324,7 +4324,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/github/triggers/event-occurs-in-repo.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EVENT_OCCURS_IN_REPO',
@@ -4342,7 +4342,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/github/triggers/issue-created-in-repo.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ISSUE_CREATED_IN_REPO',
@@ -4360,7 +4360,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/github/triggers/pull-request-merged-in-repo.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'PULL_REQUEST_MERGED_IN_REPO',
@@ -4378,7 +4378,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/github/triggers/pull-request-opened-in-repo.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'PULL_REQUEST_OPENED_IN_REPO',
@@ -4396,7 +4396,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/github/triggers/push-to-repo.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GITHUB_PUSH_TO_REPO',
@@ -4414,7 +4414,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/github/triggers/release-created-in-repo.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'RELEASE_CREATED_IN_REPO',
@@ -4468,7 +4468,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/github/actions/github-add-release-tag-to-branch.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GITHUB_ADD_RELEASE_TAG_TO_BRANCH_CODE',
@@ -4648,7 +4648,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/google-sheet/actions/sheet-add-row-v2.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'SHEET_ADD_ROW_V2',
@@ -4666,7 +4666,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/google-sheet/actions/sheet-updaterecord-v2.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'SHEET_UPDATE_ROW_V2',
@@ -4684,7 +4684,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gototraining/actions/gtt-registeruser.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GTTREGISTERUSER',
@@ -4702,7 +4702,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gototraining/actions/gtt-unregisteruser.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GTTUNREGISTERUSER',
@@ -4720,7 +4720,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gotowebinar/actions/gtw-registeruser.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GTWREGISTERUSER',
@@ -4738,7 +4738,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gotowebinar/actions/gtw-unregisteruser.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GTWUNREGISTERUSER',
@@ -4756,7 +4756,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gravity-forms/triggers/anon-gf-form-entry-updated.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_GF_FORM_ENTRY_UPDATED',
@@ -4774,7 +4774,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gravity-forms/triggers/anon-gf-subform.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANONGFSUBFORM',
@@ -4792,7 +4792,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gravity-forms/triggers/gf-subform-codes.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GF_SUBFORM_CODES',
@@ -4810,7 +4810,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gravity-forms/triggers/gf-subform-groups.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GF_SUBFORM_GROUPS',
@@ -4828,7 +4828,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/gravity-forms/triggers/gf-subform.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GFSUBFORM',
@@ -4864,7 +4864,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/groundhogg/actions/groundhogg-add-note-to-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GH_ADD_NOTE_TO_CONTACT',
@@ -4882,7 +4882,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/groundhogg/actions/groundhogg-add-tag-to-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GH_ADD_TAG_TO_CONTACT',
@@ -4900,7 +4900,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/groundhogg/actions/groundhogg-add-tag-to-user.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GHADDTAG',
@@ -4918,7 +4918,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/groundhogg/actions/groundhogg-create-update-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GH_CREATE_UPDATE_CONTACT',
@@ -4936,7 +4936,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/groundhogg/actions/groundhogg-remove-tag-from-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GH_REMOVE_TAG_FROM_CONTACT',
@@ -4954,7 +4954,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/groundhogg/actions/groundhogg-remove-tag-from-user.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GHREMOVETAG',
@@ -5368,7 +5368,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/instagram/actions/instagram-publish-photo.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780692398,
     'extracted' => 
     array (
       'code' => 'INSTAGRAM_PUBLISH_PHOTO',
@@ -5620,7 +5620,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/keap/actions/keap-add-note-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'KEAP_ADD_NOTE_CONTACT_CODE',
@@ -5638,7 +5638,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/keap/actions/keap-add-tags-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'KEAP_ADD_TAGS_CONTACT_CODE',
@@ -5656,7 +5656,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/keap/actions/keap-add-update-company.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'KEAP_ADD_UPDATE_COMPANY_CODE',
@@ -5674,7 +5674,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/keap/actions/keap-add-update-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'KEAP_ADD_UPDATE_CONTACT_CODE',
@@ -5692,7 +5692,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/keap/actions/keap-remove-tags-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'KEAP_REMOVE_TAGS_CONTACT_CODE',
@@ -5728,7 +5728,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-course-completed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'COURSEDONE',
@@ -5746,7 +5746,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-course-progress-percentage.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LD_COURSE_PROGRESS_PERCENTAGE',
@@ -5764,7 +5764,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-lesson-completed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LESSONDONE',
@@ -5782,7 +5782,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-quiz-completed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LD_QUIZDONE',
@@ -5800,7 +5800,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-quiz-failed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LD_FAILQUIZ',
@@ -5818,7 +5818,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-quiz-passed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LD_PASSQUIZ',
@@ -5836,7 +5836,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-quiz-percentage.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LD_QUIZPERCENT',
@@ -5854,7 +5854,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-quiz-points.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LD_QUIZPOINT',
@@ -5872,7 +5872,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-quiz-score.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LD_QUIZSCORE',
@@ -5890,7 +5890,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/triggers/learndash-topic-completed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LD_TOPICDONE',
@@ -5908,7 +5908,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/actions/learndash-create-group.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CREATEGROUP',
@@ -5926,7 +5926,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/actions/learndash-enroll-in-course.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ENRLCOURSE-A',
@@ -5944,7 +5944,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/actions/learndash-make-group-leader.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MAKEUSERLEADER',
@@ -5962,7 +5962,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/actions/learndash-mark-course-complete.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MARKCOURSEDONE',
@@ -5980,7 +5980,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/actions/learndash-mark-lesson-complete.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MARKLESSONDONE',
@@ -5998,7 +5998,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash/actions/learndash-mark-topic-complete.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MARKTOPICDONE',
@@ -6016,7 +6016,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/learndash-achievements/actions/learndash-award-achievement.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LDACHIEVEMENTS',
@@ -6412,7 +6412,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/triggers/anon-mailchimp-contact-added.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_MAILCHIMP_CONTACT_ADDED',
@@ -6430,7 +6430,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/triggers/anon-mailchimp-contact-email-changed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_MAILCHIMP_CONTACT_EMAIL_CHANGED',
@@ -6448,7 +6448,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/triggers/anon-mailchimp-contact-unsubscribed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_MAILCHIMP_CONTACT_UNSUBSCRIBED',
@@ -6466,7 +6466,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/audience-addauser.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MCHIMPAUDIENCEADDAUSER',
@@ -6484,7 +6484,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/audience-addusernote.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MCHIMPAUDIENCEADDUSERNOTE',
@@ -6502,7 +6502,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/audience-addusertag.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MCHIMPAUDIENCEADDUSERTAG',
@@ -6520,7 +6520,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/audience-removeusertag.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MCHIMPAUDIENCEREMOVEUSERTAG',
@@ -6538,7 +6538,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/audience-unsubscribeauser.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MCHIMPAUDIENCEUNSUBSCRIBEAUSER',
@@ -6556,7 +6556,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/campaign-createandsend.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MCHIMPCAMPAIGNCREATEANDSEND',
@@ -6574,7 +6574,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/mc-everyone-add-contact.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MC_EVERYONE_ADD_CONTACT',
@@ -6592,7 +6592,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/mc-everyone-contact-remove.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MC_EVERYONE_CONTACT_REMOVE',
@@ -6610,7 +6610,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/mc-everyone-user-add-note.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MC_EVERYONE_USER_ADD_NOTE',
@@ -6628,7 +6628,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/mc-everyone-user-add-tag.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MC_EVERYONE_USER_ADD_TAG',
@@ -6646,7 +6646,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailchimp/actions/mc-everyone-user-remove-tag.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MC_EVERYONE_USER_REMOVE_TAG',
@@ -6772,7 +6772,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailster/triggers/mailster-subscriber-added-to-list.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'SUBSCRIBER_ADDED_TO_LIST',
@@ -6790,7 +6790,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mailster/actions/mailster-add-subscriber-to-list.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'SUBSCRIBER_ADDED_TO_LIST',
@@ -7258,7 +7258,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/memberpress/triggers/mp-purchaseproductrecurring.php' => 
   array (
-    'mtime' => 1777921378,
+    'mtime' => 1780715780,
     'extracted' => 
     array (
       'code' => 'MPPURCHASEPRODUCTRECURRING',
@@ -7294,7 +7294,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/memberpress/triggers/mp-user-added-to-membership.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USERADDEDTOMEMBERSHIP',
@@ -7672,7 +7672,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/mistral/actions/mistral.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MISTRAL_CHAT_GENERATE',
@@ -7816,7 +7816,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/notion/actions/add-row.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'NOTION_ADD_ROW',
@@ -7834,7 +7834,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/notion/actions/create-page.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'NOTION_CREATE_PAGE',
@@ -7852,7 +7852,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/notion/actions/update-row.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'NOTION_UPDATE_ROW',
@@ -8374,7 +8374,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/popup-maker/triggers/anon-pm-form-submitted.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_PM_FORM_SUBMITTED',
@@ -8392,7 +8392,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/popup-maker/triggers/anon-pm-popup-conversion.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_PM_POPUP_CONVERSION',
@@ -8410,7 +8410,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/popup-maker/triggers/anon-pm-popup-opened.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_PM_POPUP_OPENED',
@@ -8428,7 +8428,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/popup-maker/triggers/anon-pm-sub-form-submitted.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_PM_SUB_FORM_SUBMITTED',
@@ -8446,7 +8446,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/popup-maker/triggers/user-pm-form-submitted.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USER_PM_FORM_SUBMITTED',
@@ -8464,7 +8464,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/popup-maker/triggers/user-pm-sub-form-submitted.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USER_PM_SUB_FORM_SUBMITTED',
@@ -8482,7 +8482,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/popup-maker/actions/pm-popupshow.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'POPUPSHOW',
@@ -8644,7 +8644,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/saveto-wishlist/triggers/saveto-wishlist-guest-synced.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GUEST_SYNCED',
@@ -8662,7 +8662,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-adds-product.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USER_ADDS_PRODUCT',
@@ -8680,7 +8680,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-creates-wishlist.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USER_CREATES_WISHLIST',
@@ -8698,7 +8698,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-moves-to-cart.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USER_MOVES_TO_CART',
@@ -8716,7 +8716,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/saveto-wishlist/triggers/saveto-wishlist-user-removes-product.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USER_REMOVES_PRODUCT',
@@ -8734,7 +8734,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/saveto-wishlist/actions/saveto-wishlist-add-product.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'SAVETO_WISHLIST_ADD_PRODUCT',
@@ -8752,7 +8752,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/saveto-wishlist/actions/saveto-wishlist-create-wishlist.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'SAVETO_WISHLIST_CREATE_WISHLIST',
@@ -8770,7 +8770,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/saveto-wishlist/actions/saveto-wishlist-remove-product.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'SAVETO_WISHLIST_REMOVE_PRODUCT',
@@ -8824,7 +8824,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/sendy/actions/sendy-add-update-list-contact.php' => 
   array (
-    'mtime' => 1780331512,
+    'mtime' => 1780621345,
     'extracted' => 
     array (
       'code' => 'SENDY_ADD_UPDATE_CONTACT',
@@ -8878,7 +8878,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/seo-by-rank-math/triggers/rank-math-seo-data-updated.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'RANK_MATH_SEO_DATA_UPDATED',
@@ -8896,7 +8896,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/seo-by-rank-math/triggers/rank-math-seo-score-reached.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'RANK_MATH_SEO_SCORE_REACHED',
@@ -9166,7 +9166,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/slack/actions/slack-addusertochannel.php' => 
   array (
-    'mtime' => 1780025808,
+    'mtime' => 1780692398,
     'extracted' => 
     array (
       'code' => 'SLACKADDUSERTOCHANNEL',
@@ -9184,7 +9184,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/slack/actions/slack-createchannel.php' => 
   array (
-    'mtime' => 1780025808,
+    'mtime' => 1780692398,
     'extracted' => 
     array (
       'code' => 'SLACKCREATECHANNEL',
@@ -9202,7 +9202,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/slack/actions/slack-senddirectmessage.php' => 
   array (
-    'mtime' => 1780025808,
+    'mtime' => 1780692398,
     'extracted' => 
     array (
       'code' => 'SLACKSENDDIRECTMESSAGE',
@@ -9220,7 +9220,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/slack/actions/slack-sendmessage.php' => 
   array (
-    'mtime' => 1780025808,
+    'mtime' => 1780692398,
     'extracted' => 
     array (
       'code' => 'SLACKSENDMESSAGE',
@@ -9238,7 +9238,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/slicewp/triggers/slicewp-affilaite-awaiting-approval.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'AFFILIATE_AWAITING_APPROVAL',
@@ -9256,7 +9256,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/slicewp/triggers/slicewp-affiliate-is-approved.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'AFFILIATE_IS_APPROVED',
@@ -9274,7 +9274,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/slicewp/triggers/slicewp-becomes-affiliate.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'USERS_BECOMES_AFFILIATE',
@@ -9832,7 +9832,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/telegram/triggers/telegram-message-received.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MESSAGE_RECEIVED',
@@ -9850,7 +9850,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/telegram/actions/telegram-send-message.php' => 
   array (
-    'mtime' => 1780331512,
+    'mtime' => 1780621345,
     'extracted' => 
     array (
       'code' => 'SEND_MESSAGE',
@@ -9868,7 +9868,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-attendee-checked-in.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ET_ATTENDEE_CHECKED_IN',
@@ -9886,7 +9886,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-attendee-unchecked-in.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ET_ATTENDEE_UNCHECKED_IN',
@@ -9904,7 +9904,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-event-created-or-updated.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_EVENT_CREATED_OR_UPDATED',
@@ -9922,7 +9922,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-event-linked.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_EVENT_LINKED',
@@ -9940,7 +9940,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-event-unlinked.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_EVENT_UNLINKED',
@@ -9958,7 +9958,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-event-updated.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_EVENT_UPDATED',
@@ -9976,7 +9976,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-organizer-created.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_ORGANIZER_CREATED',
@@ -9994,7 +9994,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-organizer-updated.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_ORGANIZER_UPDATED',
@@ -10012,7 +10012,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-rsvp-tickets-generated-product.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ET_RSVP_TICKETS_GENERATED_PRODUCT',
@@ -10030,7 +10030,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-ticket-added.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ET_TICKET_ADDED',
@@ -10048,7 +10048,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-ticket-deleted.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ET_TICKET_DELETED',
@@ -10066,7 +10066,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-user-registers-for-event.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USERREGISTERED',
@@ -10084,7 +10084,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-venue-created.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_VENUE_CREATED',
@@ -10102,7 +10102,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/triggers/tec-venue-updated.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_VENUE_UPDATED',
@@ -10120,7 +10120,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-assign-organizer.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_ASSIGN_ORGANIZER',
@@ -10138,7 +10138,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-assign-venue.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_ASSIGN_VENUE',
@@ -10156,7 +10156,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-check-in-attendee.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ET_CHECK_IN_ATTENDEE',
@@ -10174,7 +10174,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-create-event.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_CREATE_EVENT',
@@ -10192,7 +10192,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-create-organizer.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_CREATE_ORGANIZER',
@@ -10210,7 +10210,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-create-rsvp-attendee.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ET_CREATE_RSVP_ATTENDEE',
@@ -10228,7 +10228,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-create-venue.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_CREATE_VENUE',
@@ -10246,7 +10246,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-delete-event.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_DELETE_EVENT',
@@ -10264,7 +10264,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-uncheck-in-attendee.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ET_UNCHECK_IN_ATTENDEE',
@@ -10282,7 +10282,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/the-events-calendar/actions/tec-update-event.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EC_UPDATE_EVENT',
@@ -10390,7 +10390,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/thrive-apprentice/triggers/thrive-apprentice-user-course-completed.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780608383,
     'extracted' => 
     array (
       'code' => 'THRIVE_APPRENTICE_USER_COURSE_COMPLETED',
@@ -10678,7 +10678,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/thrive-ovation/triggers/thrive-ovation-testimonial-created.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'TVO_TESTIMONIAL_SUBMITTED',
@@ -11002,7 +11002,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/twilio/actions/twilio-send-sms.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'TWILIOSENDSMS',
@@ -11326,7 +11326,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-ceus/triggers/uncannyceus-earns-number-ceus.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EARNSCEUSNUMBER',
@@ -11344,7 +11344,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-ceus/triggers/uncannyceus-earns-numbers-more-than.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EARNS_NUMBERS_MORE_THAN',
@@ -11362,7 +11362,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-ceus/triggers/uncannyceus-earnsceus.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'EARNSCEUS',
@@ -11380,7 +11380,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-ceus/actions/uncannyceus-awardceus.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'AWARDCEUS',
@@ -11398,7 +11398,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/triggers/uc-anon-codebatchcreated.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANONCODEBATCHCREATED',
@@ -11416,7 +11416,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/triggers/uc-coderedeemed.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CODEREDEEMED',
@@ -11434,7 +11434,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/triggers/uc-codesbatch.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UCBATCH',
@@ -11452,7 +11452,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/triggers/uc-codesprefix.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UCPREFIX',
@@ -11470,7 +11470,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/triggers/uc-codessuffix.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UCSUFFIX',
@@ -11488,7 +11488,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/actions/uc-add-batch-codes.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UCADDBATCHCODES',
@@ -11506,7 +11506,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/actions/uc-cancel-code.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UCCANCELCODE',
@@ -11524,7 +11524,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/actions/uc-delete-batch-codes.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UCDELETEBATCHCODES',
@@ -11542,7 +11542,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-codes/actions/uc-generate-codes.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UCGENERATECODES',
@@ -11560,7 +11560,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-groups/triggers/uog-groupcreated.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'GROUPCREATED',
@@ -11578,7 +11578,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-groups/triggers/uog-registered-with-groupkey.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'REGISTEREDWITHGROUPKEY',
@@ -11596,7 +11596,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-groups/triggers/uog-seatsaddedtogroup.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UOG_SEATSADDEDTOGROUP',
@@ -11614,7 +11614,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-groups/triggers/uog-seatsremovedfromgroup.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UOG_SEATSREMOVEDFROMGROUP',
@@ -11632,7 +11632,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-groups/triggers/uog-userredeems-groupkey.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'REDEEMSGROUPKEY',
@@ -11650,7 +11650,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-groups/actions/uog-addseatstogroup.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ADDSEATSTOGROUP',
@@ -11668,7 +11668,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-groups/actions/uog-createuncannygroup.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CREATEUNCANNYGROUP',
@@ -11686,7 +11686,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-groups/actions/uog-removeseatsfromgroup.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'REMOVESEATSFROMGROUP',
@@ -11704,7 +11704,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-tincanny/triggers/uotc-moduleinteraction.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'MODULEINTERACTION',
@@ -11722,7 +11722,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-tincanny/triggers/uotc-userattainsscore.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USERATTAINSSCORE',
@@ -11740,7 +11740,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-toolkit/triggers/ut-group-leader-imported.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UTGROUPLEADERIMPORTED',
@@ -11758,7 +11758,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-toolkit/triggers/ut-user-imported-in-course.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UTUSERIMPORTEDCOURSE',
@@ -11776,7 +11776,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-toolkit/triggers/ut-user-imported-in-group.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UTUSERIMPORTEDGROUP',
@@ -11794,7 +11794,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-toolkit/triggers/ut-user-imported.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UTUSERIMPORTED',
@@ -11812,7 +11812,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-toolkit/triggers/ut-users-time-in-course-exceeds.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'UTUSERSTIMEINCOURSEEXCEEDS',
@@ -11830,7 +11830,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/uncanny-toolkit/actions/ut-resetuserstimeincourse.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'RESETUSERSTIMEINCOURSE',
@@ -11902,7 +11902,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/userfeedback/triggers/anon-userfeedback-survey-submitted.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_USERFEEDBACK_SURVEY_SUBMITTED',
@@ -11920,7 +11920,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/userfeedback/triggers/user-userfeedback-survey-submitted.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USER_USERFEEDBACK_SURVEY_SUBMITTED',
@@ -12046,7 +12046,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/whatsapp/triggers/wa-message-not-delivered-no-optin.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WA_MESSAGE_NOT_DELIVERED_NO_OPTIN',
@@ -12064,7 +12064,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/whatsapp/triggers/wa-message-not-delivered.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WA_MESSAGE_NOT_DELIVERED',
@@ -12082,7 +12082,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/whatsapp/triggers/wa-message-received.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WA_MESSAGE_RECEIVED',
@@ -12100,7 +12100,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/whatsapp/triggers/wa-message-status-updated.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WA_MESSAGE_STATUS_UPDATED',
@@ -12118,7 +12118,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/whatsapp/actions/whatsapp-send-message-template.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WHATSAPP_SEND_MESSAGE_TEMPLATE_CODE',
@@ -12136,7 +12136,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/whatsapp/actions/whatsapp-send-message.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WHATSAPP_SEND_MESSAGE_CODE',
@@ -12496,7 +12496,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_POST_PUBLISHED_IN_TAXONOMY',
@@ -12514,7 +12514,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-anon-post-type-viewed.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780715780,
     'extracted' => 
     array (
       'code' => 'WPVIEWPOSTTYPE',
@@ -12532,7 +12532,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_POST_UPDATED_IN_TAXONOMY',
@@ -12550,7 +12550,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-anon-post-updated.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_ANON_POST_UPDATED',
@@ -12568,7 +12568,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-anon-reset-password-link-sent.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANON_WP_RESET_PASSWORD_LINK_SENT',
@@ -12586,7 +12586,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-post-published.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_POST_PUBLISHED',
@@ -12604,7 +12604,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-post-receives-comment.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WPCOMMENTRECEIVED',
@@ -12622,7 +12622,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-creates-post.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USERSPOST',
@@ -12640,7 +12640,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-login.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'LOGIN',
@@ -12658,7 +12658,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-logout.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_LOGOUT_CODE',
@@ -12676,7 +12676,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-post-published.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_USER_POST_PUBLISHED',
@@ -12694,7 +12694,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-role-added.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USERROLEADDED',
@@ -12712,7 +12712,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-role-updated.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USERROLEUPDATED',
@@ -12730,7 +12730,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-submits-comment.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WPSUBMITCOMMENT',
@@ -12748,7 +12748,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-updates-post.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_USER_POST_UPDATED',
@@ -12766,7 +12766,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-views-custom-post.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780715780,
     'extracted' => 
     array (
       'code' => 'VIEWCUSTOMPOST',
@@ -12784,7 +12784,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-views-page.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'VIEWPAGE',
@@ -12802,7 +12802,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/triggers/wordpress-user-views-post.php' => 
   array (
-    'mtime' => 1780587113,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'VIEWPOST',
@@ -12820,7 +12820,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-add-file-to-media-library.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_ADD_FILE_TO_LIBRARY',
@@ -12838,7 +12838,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-add-menu-item.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_ADD_MENU_ITEM',
@@ -12856,7 +12856,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-add-menu.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_ADD_MENU',
@@ -12874,7 +12874,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-add-reply-to-comment.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_REPLY_TO_A_COMMENT',
@@ -12892,7 +12892,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-add-role.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ADDROLE',
@@ -12910,7 +12910,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-assign-menu-to-location.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_ASSIGN_MENU_LOCATION',
@@ -12928,7 +12928,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-change-post-type.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_CHANGE_POST_TYPE',
@@ -12946,7 +12946,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-create-post.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'CREATEPOST',
@@ -12964,7 +12964,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-create-role.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_CREATE_ROLE',
@@ -12982,7 +12982,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-create-taxonomy-term.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_CREATE_TAX_TERM',
@@ -13000,7 +13000,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-delete-comment.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_DELETE_COMMENT',
@@ -13018,7 +13018,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-delete-media-item.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_DELETE_MEDIA',
@@ -13036,7 +13036,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-delete-menu-item.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_DELETE_MENU_ITEM',
@@ -13054,7 +13054,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-delete-menu.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_DELETE_MENU',
@@ -13072,7 +13072,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-delete-post-meta.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_DELETE_POST_META',
@@ -13090,7 +13090,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-delete-taxonomy-term.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_DELETE_TAX_TERM',
@@ -13108,7 +13108,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-duplicate-page.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_DUPLICATE_PAGE',
@@ -13126,7 +13126,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-duplicate-post.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_DUPLICATE_POST',
@@ -13144,7 +13144,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-erase-personal-user-data.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WPERASEUSERDATA',
@@ -13162,7 +13162,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-generate-password-reset-link.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_GENERATE_RESET_LINK',
@@ -13180,7 +13180,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-get-media-item.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_GET_MEDIA',
@@ -13198,7 +13198,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-get-post-meta.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_GET_POST_META',
@@ -13216,7 +13216,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-get-user-meta.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_GET_USER_META',
@@ -13234,7 +13234,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-logout-user.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_LOGOUT_USER',
@@ -13252,7 +13252,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-rename-menu.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_RENAME_MENU',
@@ -13270,7 +13270,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-restore-post-from-trash.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_RESTORE_POST',
@@ -13288,7 +13288,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-set-comment-status.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_SET_COMMENT_STATUS',
@@ -13306,7 +13306,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-set-post-password.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_SET_POST_PASSWORD',
@@ -13324,7 +13324,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-set-user-role.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'USERROLE',
@@ -13342,7 +13342,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-update-media-item.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_UPDATE_MEDIA',
@@ -13360,7 +13360,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-update-menu-item.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_UPDATE_MENU_ITEM',
@@ -13378,7 +13378,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-update-post-excerpt.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_UPDATE_EXCERPT',
@@ -13396,7 +13396,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/actions/wordpress-update-taxonomy-term.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WP_UPDATE_TAX_TERM',
@@ -13414,7 +13414,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp/closures/closure-redirect.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780608633,
     'extracted' => 
     array (
       'code' => 'REDIRECT',
@@ -13648,7 +13648,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp-fluent-forms/triggers/anon-wpff-subform.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'ANONWPFFSUBFORM',
@@ -13666,7 +13666,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp-fluent-forms/triggers/wpff-subform.php' => 
   array (
-    'mtime' => 1780587448,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WPFFSUBFORM',
@@ -13702,7 +13702,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp-job-manager/triggers/wpjm-jobapplication.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WPJMSUBMITJOBAPPLICATION',
@@ -13720,7 +13720,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp-job-manager/triggers/wpjm-submitjob.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WPJMSUBMITJOB',
@@ -13738,7 +13738,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp-job-manager/triggers/wpjm-submitresume.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WPJMSUBMITRESUME',
@@ -14080,7 +14080,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php' => 
   array (
-    'mtime' => 1780495502,
+    'mtime' => 1780622631,
     'extracted' => 
     array (
       'code' => 'WPWHTRIGGERTRIGGERED',
@@ -14458,7 +14458,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/zoom/actions/zoom-registeruser.php' => 
   array (
-    'mtime' => 1777921378,
+    'mtime' => 1780721849,
     'extracted' => 
     array (
       'code' => 'ZOOMREGISTERUSER',
@@ -14476,7 +14476,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/zoom/actions/zoom-registeruserless.php' => 
   array (
-    'mtime' => 1777921378,
+    'mtime' => 1780721849,
     'extracted' => 
     array (
       'code' => 'ZOOMREGISTERUSERLESS',
@@ -14530,7 +14530,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/zoom-webinar/actions/zoom-webinar-createwebinar.php' => 
   array (
-    'mtime' => 1777921378,
+    'mtime' => 1780721849,
     'extracted' => 
     array (
       'code' => 'ZOOMWEBINARCREATEWEBINAR',
@@ -14548,7 +14548,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/zoom-webinar/actions/zoom-webinar-registeruser.php' => 
   array (
-    'mtime' => 1777921378,
+    'mtime' => 1780721849,
     'extracted' => 
     array (
       'code' => 'ZOOMWEBINARREGISTERUSER',
@@ -14566,7 +14566,7 @@ return array (
   ),
   '/Users/saadsiddique/Sites/uncanny-automator/wp-content/plugins/uncanny-automator/src/integrations/zoom-webinar/actions/zoom-webinar-registeruserless.php' => 
   array (
-    'mtime' => 1777921378,
+    'mtime' => 1780721849,
     'extracted' => 
     array (
       'code' => 'ZOOMWEBINARREGISTERUSERLESS',

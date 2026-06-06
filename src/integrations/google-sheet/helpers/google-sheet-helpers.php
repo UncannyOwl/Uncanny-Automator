@@ -22,6 +22,12 @@ class Google_Sheet_Helpers extends App_Helpers {
 	/**
 	 * "Account info" transient key.
 	 *
+	 * Single source of truth for the cached account info: get_account_info(),
+	 * store_account_info() and delete_account_info() must ALL use this constant.
+	 * Previously get_account_info() read/wrote a hardcoded literal instead, so
+	 * the key it cached under never matched the one disconnect deleted — the
+	 * prior account reappeared on reconnect until the 24h TTL expired.
+	 *
 	 * @var string RESOURCE_OWNER_KEY
 	 */
 	const RESOURCE_OWNER_KEY = 'automator_google_sheet_user_info';
@@ -52,11 +58,6 @@ class Google_Sheet_Helpers extends App_Helpers {
 	const SCOPE_USER_EMAIL = 'https://www.googleapis.com/auth/userinfo.email';
 
 	/**
-	 * The API endpoint.
-	 */
-	const API_ENDPOINT = 'v2/google';
-
-	/**
 	 * The spreadsheets option key.
 	 */
 	const SPREADSHEETS_OPTIONS_KEY = 'automator_google_sheets_spreadsheets';
@@ -67,7 +68,6 @@ class Google_Sheet_Helpers extends App_Helpers {
 	 * @var string
 	 */
 	const HASH_STRING = 'Uncanny Automator Pro Google Sheet Integration';
-
 
 	//
 	// Abstract overrides
@@ -95,8 +95,7 @@ class Google_Sheet_Helpers extends App_Helpers {
 			'email'      => '',
 		);
 
-		$transient_key   = '_uncannyowl_google_user_info';
-		$saved_user_info = get_transient( $transient_key );
+		$saved_user_info = get_transient( self::RESOURCE_OWNER_KEY );
 
 		if ( false !== $saved_user_info ) {
 			return $saved_user_info;
@@ -112,7 +111,7 @@ class Google_Sheet_Helpers extends App_Helpers {
 			$user_info['name']       = $user['data']['name'];
 			$user_info['avatar_uri'] = $user['data']['picture'];
 			$user_info['email']      = $user['data']['email'];
-			set_transient( $transient_key, $user_info, DAY_IN_SECONDS );
+			$this->store_account_info( $user_info );
 		} catch ( Exception $e ) {
 			return $user_info;
 		}

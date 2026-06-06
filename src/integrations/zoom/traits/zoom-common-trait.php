@@ -27,10 +27,7 @@ trait Zoom_Common_Trait {
 			'options'               => array(),
 			'relevant_tokens'       => array(),
 			'supports_custom_value' => false,
-			'ajax'                  => array(
-				'endpoint' => 'uap_zoom_meetings_api_get_account_users',
-				'event'    => 'on_load',
-			),
+			'remote_data'           => $this->helpers->remote_data_load_config( 'account_users' ),
 		);
 	}
 
@@ -47,42 +44,6 @@ trait Zoom_Common_Trait {
 			'placeholder' => '',
 			'description' => '',
 			'required'    => true,
-			'tokens'      => true,
-			'default'     => '',
-		);
-	}
-
-	/**
-	 * Get first name field.
-	 *
-	 * @return array
-	 */
-	protected function get_first_name_field() {
-		return array(
-			'option_code' => 'FIRSTNAME',
-			'input_type'  => 'text',
-			'label'       => esc_attr_x( 'First name', 'Zoom', 'uncanny-automator' ),
-			'placeholder' => '',
-			'description' => '',
-			'required'    => false,
-			'tokens'      => true,
-			'default'     => '',
-		);
-	}
-
-	/**
-	 * Get last name field.
-	 *
-	 * @return array
-	 */
-	protected function get_last_name_field() {
-		return array(
-			'option_code' => 'LASTNAME',
-			'input_type'  => 'text',
-			'label'       => esc_attr_x( 'Last name', 'Zoom', 'uncanny-automator' ),
-			'placeholder' => '',
-			'description' => '',
-			'required'    => false,
 			'tokens'      => true,
 			'default'     => '',
 		);

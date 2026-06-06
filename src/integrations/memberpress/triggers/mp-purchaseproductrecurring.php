@@ -95,16 +95,25 @@ class MP_PURCHASEPRODUCTRECURRING {
 			return;
 		}
 
-		// Flexibility to prevent running the trigger.
+		/**
+		 * Allow this trigger to run for edge cases such as $0 purchases after a coupon is applied.
+		 *
+		 * @param bool       $run_trigger Whether the trigger should run.
+		 * @param \MeprEvent $event       The MemberPress event.
+		 */
 		if ( ! apply_filters( 'automator_mepr_recurring_subscriptions_trigger_switch', true, $event ) ) {
 			return;
 		}
 
-		if ( apply_filters( 'automator_mepr_check_first_real_payment', false, $event ) ) {
-			$subscription          = $transaction->subscription();
-			$is_first_real_payment = Automator()->helpers->recipe->memberpress->check_if_is_renewal_or_first_payment( $subscription );
-			$pm = $transaction->payment_method();
-			if ( $is_first_real_payment === false && \MeprTransaction::$free_gateway_str !== $pm->id ) {
+		$subscription = $transaction->subscription();
+
+		// Only fire on initial purchase, not renewals. MemberPress treats txn_count > 1 as a renewal
+		// (see MeprUtils::send_transaction_receipt_notices and MeprTransactionsCtrl).
+		if ( $subscription && $subscription->txn_count > 1 ) {
+			$is_renewal = ! Automator()->helpers->recipe->memberpress->check_if_is_renewal_or_first_payment( $subscription );
+
+			// Paid trials: txn_count 2 is the first real payment, not a renewal.
+			if ( $is_renewal ) {
 				return;
 			}
 		}

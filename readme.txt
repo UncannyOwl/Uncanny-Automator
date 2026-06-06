@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 7.3.0
+Stable tag: 7.3.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -419,13 +419,35 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
+= 7.3.1 [2026-06-06] =
+
+**New Tokens:**
+
+* Zoom Meetings & Webinar - Registration actions - Registration join link, Registrant ID, Meeting topic / Webinar topic, Start time #7809
+
+**Fixed:**
+
+* Google Sheets - Fixed an issue where disconnecting an account did not fully clear the cached connection #7843
+* Gravity Forms - Fixed an issue where lazily fired triggers could fail and leave recipes stuck "In Progress" #7859
+* Integration Loader & The Events Calendar - Fixed a PHP error that could occur when Event Tickets was not installed #7848
+* LearnDash - Fixed an issue where some completion date tokens were not resolving correctly #7849
+* MemberPress - A user purchases a membership - Fixed an issue where the trigger could fire when a membership renewed automatically after purchase #7825
+* Recipe Logs - Action Tab - Fixed an issue where the Completion Date column displayed dates for actions that had not yet completed #7837
+* Trigger Engine - Fixed an issue where Gravity Forms non-AJAX submissions could fail to fire triggers in certain situations #7857
+* Uncanny Agent - Fixed an issue where the Agent could appear on the frontend when WPFrontendAdmin plugin was active #7852
+* WordPress - Fixed an issue where some post-view trigger token pills could become orphaned after migration #7850
+
+**Under the hood:**
+
+* Recipe UI - Advanced > Post Meta Universal Token - Resolved UI issues where Loop tokens could appear as invalid or be unavailable in nested token pickers within conditions #7398
+
 = 7.3.0 [2026-06-04] =
 
-**New Plugin Integration**
+**New Plugin Integration:**
 
 * [SaveTo Wishlist](https://automatorplugin.com/integration/saveto-wishlist/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7260
 
-**New Triggers**
+**New Triggers:**
 
 * Charitable - A campaign ends #7086
 * Charitable - A campaign reaches its goal #7087
@@ -460,7 +482,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * The Events Calendar - Event Tickets - An attendee is checked in to an event #7103
 * The Events Calendar - Event Tickets - RSVP tickets are generated for a ticket type on an event with a status #7105
 
-**New Actions**
+**New Actions:**
 
 * Charitable - Add a tag to a donor #7092
 * Charitable - Create a donor #7090
@@ -504,7 +526,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * WordPress Core - Update an item in a menu #6936
 * WordPress Core - Update a media item in the media library #6931
 
-**Updated**
+**Updated:**
 
 * AI Integrations - Refreshed model options for Claude, Cohere, Gemini and Mistral. Claude Opus 4.7 and 4.8 no longer error out, since Automator no longer sends the temperature parameter those models don't support. #7792
 * Asana and GitHub integrations moved from Automator Pro to Automator Lite. #7236
@@ -512,7 +534,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * RSS - Thumbnail URL token now resolves correctly when restoring media. #7244
 * Telegram - A text message is received from a chat/channel - New Text (HTML) token preserves message formatting. #7466
 
-**Fixed**
+**Fixed:**
 
 * Brevo - Create or update a contact - Now loads your account's actual contact attributes, so default attributes work on non-English accounts. #7408
 * Bricks Builder - Banished the deprecation warning ghost. #7126
@@ -526,7 +548,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 * Trigger Engine - Triggers queued late in the shutdown sequence (e.g. delayed triggers) are now processed instead of being dropped. #7407
 * WP Job Manager - A user applies for a job / A user submits a resume - Triggers fire again for user-owned submissions. #7378
 
-**Under the hood**
+**Under the hood:**
 
 * Core - Restored missing option dropdowns on legacy trigger and integration settings. #7315
 * Core - Improved recipe completion and reliability with the new execution Pipeline. #6889, #7047, #7048, #7049, #7050, #7051, #7052, #7053, #7054, #7055, #7056, #7198, #7208, #7209

@@ -20,7 +20,6 @@ trait Zoom_Webinar_Registration_Trait {
 	 *
 	 * @param string $option_code The option code for the field
 	 * @param bool $required Whether the field is required
-	 * @param array $ajax_config Additional AJAX configuration
 	 *
 	 * @return array
 	 */
@@ -33,10 +32,7 @@ trait Zoom_Webinar_Registration_Trait {
 			'options'               => array(),
 			'relevant_tokens'       => array(),
 			'supports_custom_value' => false,
-			'ajax'                  => array(
-				'endpoint' => 'uap_zoom_webinar_api_get_account_users',
-				'event'    => 'on_load',
-			),
+			'remote_data'           => $this->helpers->remote_data_load_config( 'account_users' ),
 		);
 	}
 
@@ -58,11 +54,7 @@ trait Zoom_Webinar_Registration_Trait {
 			'options'               => array(),
 			'supports_tokens'       => $supports_tokens,
 			'supports_custom_value' => $supports_tokens,
-			'ajax'                  => array(
-				'endpoint'      => 'uap_zoom_webinar_api_get_webinars',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $listen_field ),
-			),
+			'remote_data'           => $this->helpers->remote_data_parent_config( 'webinars', array( $listen_field ) ),
 		);
 	}
 
@@ -83,11 +75,7 @@ trait Zoom_Webinar_Registration_Trait {
 			'supports_tokens'          => true,
 			'supports_custom_value'    => true,
 			'supports_multiple_values' => true,
-			'ajax'                     => array(
-				'endpoint'      => 'uap_zoom_webinar_api_get_webinar_occurrences',
-				'event'         => 'parent_fields_change',
-				'listen_fields' => array( $listen_field ),
-			),
+			'remote_data'              => $this->helpers->remote_data_parent_config( 'webinar_occurrences', array( $listen_field ) ),
 		);
 	}
 
@@ -143,11 +131,9 @@ trait Zoom_Webinar_Registration_Trait {
 					'required'    => false,
 				),
 			),
-			'ajax'            => array(
-				'event'          => 'parent_fields_change',
-				'listen_fields'  => array( $listen_field ),
-				'endpoint'       => 'uap_zoom_webinar_api_get_webinar_questions',
-				'mapping_column' => 'QUESTION_NAME',
+			'remote_data'     => $this->helpers->remote_data_with_mapping_column(
+				$this->helpers->remote_data_parent_config( 'webinar_questions', array( $listen_field ) ),
+				'QUESTION_NAME'
 			),
 		);
 	}
@@ -198,12 +184,10 @@ trait Zoom_Webinar_Registration_Trait {
 	/**
 	 * Parse user data from form fields.
 	 *
-	 * @param array $action_data The action data containing form values
-	 *
 	 * @return array
 	 * @throws Exception
 	 */
-	protected function parse_user_data_from_fields( $action_data ) {
+	protected function parse_user_data_from_fields() {
 		$webinar_user = array();
 
 		$email = $this->get_parsed_meta_value( 'EMAIL' );
@@ -268,13 +252,13 @@ trait Zoom_Webinar_Registration_Trait {
 			$name  = $question['QUESTION_NAME'];
 			$value = Automator()->parse->text( $question['QUESTION_VALUE'], $recipe_id, $user_id, $args );
 
-			// If the question is a default question, add it to the custom questions array.
+			// If the question is a default question, add it to the user array.
 			if ( $this->is_default_question( $name ) ) {
 				$user[ $name ] = $value;
 				continue;
 			}
 
-			// If the question is not a default question, add it to the user array.
+			// If the question is not a default question, add it to the custom questions array.
 			$user['custom_questions'][] = array(
 				'title' => $name,
 				'value' => $value,
@@ -310,5 +294,57 @@ trait Zoom_Webinar_Registration_Trait {
 		);
 
 		return in_array( $question_name, $default_questions, true );
+	}
+
+	/**
+	 * Get the registration action tokens.
+	 *
+	 * Shared by the webinar register actions so the registrant's unique join link
+	 * and ID returned by Zoom are exposed to later actions in the recipe. The
+	 * unregister actions deliberately do not surface these.
+	 *
+	 * @return array
+	 */
+	protected function get_registration_action_tokens() {
+		return array(
+			'JOIN_URL'              => array(
+				'name' => esc_html_x( 'Registration join link', 'Zoom Webinar', 'uncanny-automator' ),
+				'type' => 'url',
+			),
+			'REGISTRANT_ID'         => array(
+				'name' => esc_html_x( 'Registrant ID', 'Zoom Webinar', 'uncanny-automator' ),
+				'type' => 'text',
+			),
+			'REGISTRANT_TOPIC'      => array(
+				'name' => esc_html_x( 'Webinar topic', 'Zoom Webinar', 'uncanny-automator' ),
+				'type' => 'text',
+			),
+			'REGISTRANT_START_TIME' => array(
+				'name' => esc_html_x( 'Start time', 'Zoom Webinar', 'uncanny-automator' ),
+				'type' => 'text',
+			),
+		);
+	}
+
+	/**
+	 * Hydrate the registration action tokens from the Zoom register response.
+	 *
+	 * Reads the documented registrant fields null-safely so an unexpected payload
+	 * never fatals the action. The per-registrant join_url Zoom returns carries the
+	 * passcode as its `tk` query param and is surfaced verbatim — never synthesized.
+	 *
+	 * @param array $data The decoded `data` payload from the register API response.
+	 *
+	 * @return void
+	 */
+	protected function hydrate_registration_tokens( $data ) {
+		$this->hydrate_tokens(
+			array(
+				'JOIN_URL'              => $data['join_url'] ?? '',
+				'REGISTRANT_ID'         => $data['registrant_id'] ?? '',
+				'REGISTRANT_TOPIC'      => $data['topic'] ?? '',
+				'REGISTRANT_START_TIME' => $data['start_time'] ?? '',
+			)
+		);
 	}
 }

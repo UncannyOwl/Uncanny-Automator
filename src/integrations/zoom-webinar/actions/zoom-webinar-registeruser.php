@@ -48,6 +48,15 @@ class ZOOM_WEBINAR_REGISTERUSER extends App_Action {
 	}
 
 	/**
+	 * Define the action tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens() {
+		return $this->get_registration_action_tokens();
+	}
+
+	/**
 	 * Process the action.
 	 *
 	 * @param int $user_id
@@ -77,7 +86,11 @@ class ZOOM_WEBINAR_REGISTERUSER extends App_Action {
 		$occurrences         = $this->get_parsed_meta_value( 'OCCURRENCES' );
 		$webinar_occurrences = $this->parse_webinar_occurrences( $occurrences );
 
-		$this->api->register_user_for_webinar( $webinar_user, $webinar_key, $webinar_occurrences, $action_data );
+		$response = $this->api->register_user_for_webinar( $webinar_user, $webinar_key, $webinar_occurrences, $action_data );
+
+		if ( ! empty( $response['data'] ) ) {
+			$this->hydrate_registration_tokens( $response['data'] );
+		}
 
 		return true;
 	}

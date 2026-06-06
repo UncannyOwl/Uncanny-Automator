@@ -93,7 +93,46 @@ class WP_VIEWCUSTOMPOST extends \Uncanny_Automator\Recipe\Trigger {
 			Wp_Shared_Tokens::post_featured_image_tokens(),
 			Wp_Shared_Tokens::post_date_tokens(),
 			Wp_Shared_Tokens::post_taxonomy_tokens(),
-			Wp_Shared_Tokens::numtimes_token()
+			Wp_Shared_Tokens::numtimes_token(),
+			$this->legacy_alias_tokens()
+		);
+	}
+
+	/**
+	 * Legacy token aliases (<= 7.2.5).
+	 *
+	 * The legacy framework auto-generated meta-named field tokens for the
+	 * post selector (WPCUSTOMPOST / _ID / _URL / _EXCERPT). The migration
+	 * replaced them with the generic Wp_Shared_Tokens set (POSTTITLE,
+	 * POSTID, ...), orphaning every saved {id}:VIEWCUSTOMPOST:WPCUSTOMPOST*
+	 * pill — red in the builder, unresolved at parse. Both sets are defined
+	 * and hydrated so pills from either era resolve. Names and types are
+	 * the legacy ones verbatim (tests/wpunit/migration snapshot contract).
+	 *
+	 * @return array[]
+	 */
+	private function legacy_alias_tokens() {
+		return array(
+			array(
+				'tokenId'   => 'WPCUSTOMPOST',
+				'tokenName' => esc_html_x( 'Post title (legacy)', 'WordPress', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WPCUSTOMPOST_ID',
+				'tokenName' => esc_html_x( 'Post ID (legacy)', 'WordPress', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'WPCUSTOMPOST_URL',
+				'tokenName' => esc_html_x( 'Post URL (legacy)', 'WordPress', 'uncanny-automator' ),
+				'tokenType' => 'url',
+			),
+			array(
+				'tokenId'   => 'WPCUSTOMPOST_EXCERPT',
+				'tokenName' => esc_html_x( 'Post excerpt (legacy)', 'WordPress', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
 		);
 	}
 
@@ -150,7 +189,7 @@ class WP_VIEWCUSTOMPOST extends \Uncanny_Automator\Recipe\Trigger {
 
 		$post_id = (int) $post->ID;
 
-		return array_merge(
+		$values = array_merge(
 			Wp_Shared_Tokens::hydrate_post_core_tokens( $post_id ),
 			Wp_Shared_Tokens::hydrate_post_author_tokens( $post_id ),
 			Wp_Shared_Tokens::hydrate_post_featured_image_tokens( $post_id ),
@@ -158,5 +197,13 @@ class WP_VIEWCUSTOMPOST extends \Uncanny_Automator\Recipe\Trigger {
 			Wp_Shared_Tokens::hydrate_post_taxonomy_tokens( $post_id ),
 			Wp_Shared_Tokens::hydrate_numtimes_token( $trigger )
 		);
+
+		// Legacy aliases mirror the generic values bit-for-bit — see legacy_alias_tokens().
+		$values['WPCUSTOMPOST']         = $values['POSTTITLE'] ?? '';
+		$values['WPCUSTOMPOST_ID']      = $values['POSTID'] ?? 0;
+		$values['WPCUSTOMPOST_URL']     = $values['POSTURL'] ?? '';
+		$values['WPCUSTOMPOST_EXCERPT'] = $values['POSTEXCERPT'] ?? '';
+
+		return $values;
 	}
 }

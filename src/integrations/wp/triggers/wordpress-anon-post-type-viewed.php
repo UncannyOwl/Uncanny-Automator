@@ -74,7 +74,41 @@ class ANON_WP_VIEWPOSTTYPE extends \Uncanny_Automator\Recipe\Trigger {
 			Wp_Shared_Tokens::post_author_tokens(),
 			Wp_Shared_Tokens::post_featured_image_tokens(),
 			Wp_Shared_Tokens::post_date_tokens(),
-			Wp_Shared_Tokens::post_taxonomy_tokens()
+			Wp_Shared_Tokens::post_taxonomy_tokens(),
+			$this->legacy_alias_tokens()
+		);
+	}
+
+	/**
+	 * Legacy token aliases (<= 7.2.5).
+	 *
+	 * The legacy framework auto-generated meta-named field tokens for the
+	 * post selector (WPPOST / _ID / _URL). The migration replaced them with
+	 * the generic Wp_Shared_Tokens set (POSTTITLE, POSTID, ...), orphaning
+	 * every saved {id}:WPVIEWPOSTTYPE:WPPOST* pill — red in the builder,
+	 * unresolved at parse. Both sets are defined and hydrated so pills from
+	 * either era resolve. Names and types are the legacy ones verbatim
+	 * (tests/wpunit/migration snapshot contract).
+	 *
+	 * @return array[]
+	 */
+	private function legacy_alias_tokens() {
+		return array(
+			array(
+				'tokenId'   => 'WPPOST',
+				'tokenName' => esc_html_x( 'Post title (legacy)', 'WordPress', 'uncanny-automator' ),
+				'tokenType' => 'text',
+			),
+			array(
+				'tokenId'   => 'WPPOST_ID',
+				'tokenName' => esc_html_x( 'Post ID (legacy)', 'WordPress', 'uncanny-automator' ),
+				'tokenType' => 'int',
+			),
+			array(
+				'tokenId'   => 'WPPOST_URL',
+				'tokenName' => esc_html_x( 'Post URL (legacy)', 'WordPress', 'uncanny-automator' ),
+				'tokenType' => 'url',
+			),
 		);
 	}
 
@@ -129,12 +163,19 @@ class ANON_WP_VIEWPOSTTYPE extends \Uncanny_Automator\Recipe\Trigger {
 
 		$post_id = (int) $post->ID;
 
-		return array_merge(
+		$values = array_merge(
 			Wp_Shared_Tokens::hydrate_post_core_tokens( $post_id ),
 			Wp_Shared_Tokens::hydrate_post_author_tokens( $post_id ),
 			Wp_Shared_Tokens::hydrate_post_featured_image_tokens( $post_id ),
 			Wp_Shared_Tokens::hydrate_post_date_tokens( $post_id ),
 			Wp_Shared_Tokens::hydrate_post_taxonomy_tokens( $post_id )
 		);
+
+		// Legacy aliases mirror the generic values bit-for-bit — see legacy_alias_tokens().
+		$values['WPPOST']     = $values['POSTTITLE'] ?? '';
+		$values['WPPOST_ID']  = $values['POSTID'] ?? 0;
+		$values['WPPOST_URL'] = $values['POSTURL'] ?? '';
+
+		return $values;
 	}
 }

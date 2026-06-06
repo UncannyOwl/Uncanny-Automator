@@ -43,13 +43,40 @@ class ZOOM_REGISTERUSERLESS extends App_Action {
 	public function options() {
 		return array(
 			$this->get_email_field(),
-			$this->get_first_name_field(),
-			$this->get_last_name_field(),
+			array(
+				'option_code' => 'FIRSTNAME',
+				'input_type'  => 'text',
+				'label'       => esc_attr_x( 'First name', 'Zoom', 'uncanny-automator' ),
+				'placeholder' => '',
+				'description' => '',
+				'required'    => false,
+				'tokens'      => true,
+				'default'     => '',
+			),
+			array(
+				'option_code' => 'LASTNAME',
+				'input_type'  => 'text',
+				'label'       => esc_attr_x( 'Last name', 'Zoom', 'uncanny-automator' ),
+				'placeholder' => '',
+				'description' => '',
+				'required'    => false,
+				'tokens'      => true,
+				'default'     => '',
+			),
 			$this->get_account_users_field(),
 			$this->get_user_meetings_field( $this->get_action_meta() ),
 			$this->get_meeting_occurrences_field( $this->get_action_meta() ),
 			$this->get_meeting_questions_repeater( $this->get_action_meta() ),
 		);
+	}
+
+	/**
+	 * Define the action tokens.
+	 *
+	 * @return array
+	 */
+	public function define_tokens() {
+		return $this->get_registration_action_tokens();
 	}
 
 	/**
@@ -82,7 +109,11 @@ class ZOOM_REGISTERUSERLESS extends App_Action {
 			$meeting_occurrences = json_decode( $action_data['meta']['OCCURRENCES'] );
 		}
 
-		$this->api->register_user_for_meeting( $meeting_user, $meeting_key, $meeting_occurrences, $action_data );
+		$response = $this->api->register_user_for_meeting( $meeting_user, $meeting_key, $meeting_occurrences, $action_data );
+
+		if ( ! empty( $response['data'] ) ) {
+			$this->hydrate_registration_tokens( $response['data'] );
+		}
 
 		return true;
 	}
