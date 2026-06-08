@@ -28,7 +28,13 @@ class WP_USERS_POST_PUBLISHED extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
-		$this->set_is_login_required( true );
+		// Login is enforced inside validate() instead of the engine gate:
+		// scheduled posts publish via wp-cron without a session and must
+		// still fire, attributed to the post author. The legacy trait
+		// engine honored the is_user_logged_in_required() override for
+		// this; the modern validate_hook() gate reads the raw property
+		// and never consults it, so the gate must stay open here.
+		$this->set_is_login_required( false );
 		// translators: %1$s is a post type.
 		$this->set_sentence(
 			sprintf(
@@ -79,41 +85,6 @@ class WP_USERS_POST_PUBLISHED extends \Uncanny_Automator\Recipe\Trigger {
 	}
 
 	/**
-	 * Override login requirement for scheduled posts.
-	 *
-	 * Scheduled posts transition from 'future' to 'publish' without a logged-in
-	 * user. Detect this and set the user_id from the post author.
-	 *
-	 * @param array $hook_args The hook arguments.
-	 *
-	 * @return bool Whether login is required.
-	 */
-	protected function is_user_logged_in_required( ...$args ) {
-
-		$hook_args = $args[0] ?? array();
-
-		// Already logged in -- proceed normally.
-		if ( is_user_logged_in() ) {
-			return true;
-		}
-
-		list( $post_id, $wp_post, $update, $wp_post_before ) = $hook_args;
-
-		// Ensure we have a post before object.
-		if ( ! is_object( $wp_post_before ) ) {
-			return true;
-		}
-
-		// This is a scheduled post transitioning future -> publish.
-		if ( 'future' === $wp_post_before->post_status && 'publish' === $wp_post->post_status ) {
-			$this->set_user_id( $wp_post->post_author );
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
 	 * Validate trigger against hook arguments.
 	 *
 	 * @param array $trigger   The trigger settings.
@@ -134,6 +105,19 @@ class WP_USERS_POST_PUBLISHED extends \Uncanny_Automator\Recipe\Trigger {
 		$selected_post_type = $trigger['meta'][ $this->get_trigger_meta() ] ?? '';
 		if ( intval( '-1' ) !== intval( $selected_post_type ) && $wp_post->post_type !== $selected_post_type ) {
 			return false;
+		}
+
+		// No session: only scheduled posts (future -> publish via wp-cron)
+		// may fire; attribute the run to the post author. This replaces the
+		// legacy is_user_logged_in_required() override — the modern engine
+		// gate never consults it, so the login rule lives here instead.
+		if ( ! is_user_logged_in() ) {
+
+			if ( ! is_object( $wp_post_before ) || 'future' !== $wp_post_before->post_status ) {
+				return false;
+			}
+
+			$this->set_user_id( (int) $wp_post->post_author );
 		}
 
 		return true;

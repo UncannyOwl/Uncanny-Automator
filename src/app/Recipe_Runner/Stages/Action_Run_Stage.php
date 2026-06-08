@@ -707,11 +707,23 @@ class Action_Run_Stage implements Stage {
 			if ( isset( $action_data['action_log_id'] ) ) {
 				$deferred_reasons    = array( 'background_dispatch', 'async_scheduled' );
 				$process_reason      = $action['process_further_reason'] ?? '';
-				$is_deferred_dispatch = in_array( $process_reason, $deferred_reasons, true );
-				$completed_status     = $is_deferred_dispatch
-					? Automator_Status::IN_PROGRESS
-					: Automator_Status::SKIPPED;
-				$this->log_store->mark_action_complete( (int) $action_data['ID'], $recipe_log_id, $completed_status );
+				$is_deferred_dispatch = in_array( $process_reason, $deferred_reasons, true )
+					// Pro <= 7.3.0.1 Async_Actions postpones delayed/scheduled
+					// actions without declaring a reason — recognize the deferral
+					// by the Action Scheduler job it just attached. A SKIPPED row
+					// here makes Pro's run_with_hash() resume guard refuse the
+					// execution ("already has completed status"), so the AS job
+					// completes while the action never runs.
+					|| ! empty( $action['action_data']['async']['job_id'] );
+				if ( $is_deferred_dispatch ) {
+					// Conditional NOT_COMPLETED → IN_PROGRESS: the worker fires
+					// inside the filter (non-blocking POST) and on fast servers
+					// completes the action before this finalize runs — never
+					// downgrade a finished row back to IN_PROGRESS.
+					$this->log_store->mark_action_scheduled( (int) $action_data['ID'], $recipe_log_id );
+				} else {
+					$this->log_store->mark_action_complete( (int) $action_data['ID'], $recipe_log_id, Automator_Status::SKIPPED );
+				}
 			}
 			return;
 		}

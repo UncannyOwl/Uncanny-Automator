@@ -32,7 +32,11 @@ class WP_USERCREATESPOST extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	protected function setup_trigger() {
 		// integration / code / trigger_meta / trigger_type are auto-applied from definition().
-		$this->set_is_login_required( true );
+		// The engine gate must stay open: the legacy (pre-7.3.0) trigger ran
+		// on the old engine, fired for EVERY first publish regardless of
+		// session (scheduled, cron, programmatic) and always attributed the
+		// post author explicitly. validate() owns attribution below.
+		$this->set_is_login_required( false );
 		// translators: %1$s is a post type, %2$s is a taxonomy term, %3$s is a taxonomy.
 		$this->set_sentence(
 			sprintf(
@@ -194,6 +198,12 @@ class WP_USERCREATESPOST extends \Uncanny_Automator\Recipe\Trigger {
 				}
 			}
 		}
+
+		// Attribute the run to the POST AUTHOR — legacy parity: the old
+		// engine passed `absint( $post->post_author )` explicitly, so the
+		// author was credited even for session-less publishes or when an
+		// editor published another author's draft.
+		$this->set_user_id( (int) $post->post_author );
 
 		return true;
 	}

@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 7.3.1
+Stable tag: 7.3.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -418,6 +418,18 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 7.3.1.1 [2026-06-07] =
+
+**Fixed:**
+
+* App Actions - Fixed an issue where some app actions could fail with "Non-JSON response from API" when the vendor responds with a 204 No Content status and an empty body #7872
+* Background Actions - Fixed an issue where a completed action could revert to "In progress" in rare situations #7871
+* Delayed/Scheduled Actions - Fixed an issue where actions were marked as "Skipped" and never ran after updating to 7.3.0 #7866
+* Mailchimp - Add a contact to an audience - Fixed an issue where the action could fail with "User already subscribed to the list" in recipes #7860
+* Recipe Logs - Fixed an issue where the log details could fail to load when a delayed action had a malformed date value #7868
+* Trigger Engine - Fixed a PHP error that could occur when a trigger returned malformed token data #7869
+* WordPress - A user publishes a post & A user publishes a post in a taxonomy - Fixed an issue where the trigger did not fire for scheduled posts #7862
 
 = 7.3.1 [2026-06-06] =
 
