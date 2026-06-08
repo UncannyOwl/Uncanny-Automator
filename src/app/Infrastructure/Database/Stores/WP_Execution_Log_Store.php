@@ -356,6 +356,35 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function mark_action_scheduled( int $action_id, int $recipe_log_id ): void {
+
+		// Atomic conditional transition NOT_COMPLETED → IN_PROGRESS. A row the
+		// worker already finished (any other status) is left untouched —
+		// see the interface docblock for the dispatch-vs-worker race.
+		$updated = $this->wpdb->query(
+			$this->wpdb->prepare(
+				"UPDATE {$this->wpdb->prefix}uap_action_log
+				SET completed = %d, date_time = %s
+				WHERE automator_action_id = %d
+				AND automator_recipe_log_id = %d
+				AND completed = %d",
+				Automator_Status::IN_PROGRESS,
+				current_time( 'mysql' ),
+				$action_id,
+				$recipe_log_id,
+				Automator_Status::NOT_COMPLETED
+			)
+		);
+
+		if ( $updated ) {
+			Dispatcher::action( 'automator_action_completion_status_changed', $action_id, $recipe_log_id, null, Automator_Status::IN_PROGRESS, '' );
+			Dispatcher::action( 'automator_action_marked_in_progress', $action_id, $recipe_log_id, null, Automator_Status::IN_PROGRESS, '' );
+		}
+	}
+
+	/**
 	 * Persist a legacy-style error string to uap_error_log.
 	 *
 	 * Resolves the action_log_id from (action_id, recipe_log_id) and writes

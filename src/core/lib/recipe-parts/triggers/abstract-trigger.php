@@ -822,6 +822,22 @@ abstract class Trigger {
 	 */
 	public function save_tokens( $code, $values ) {
 
+		// A trigger's hydrate_tokens() must return an array. Some legacy
+		// integrations return a scalar or null on edge paths — feeding that
+		// into the typed partitioner throws a TypeError that kills the whole
+		// trigger-queue fire. Skip and name the offender instead.
+		if ( ! is_array( $values ) ) {
+			automator_log(
+				sprintf(
+					'save_tokens(): trigger "%s" hydrate_tokens() returned %s instead of array — token save skipped for this fire.',
+					$code,
+					gettype( $values )
+				),
+				'save_tokens'
+			);
+			return;
+		}
+
 		// Defensive fallback: if token_definitions never got populated but we
 		// have values to persist, fall back to the pre-patch single-row save
 		// so data isn't silently dropped. This is a misuse path — a subclass

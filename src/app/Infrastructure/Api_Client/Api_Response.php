@@ -234,8 +234,30 @@ class Api_Response {
 		$body_raw    = wp_remote_retrieve_body( $wp_response );
 		$body        = json_decode( $body_raw, true );
 
-		// Non-JSON response — create an error response with a body snippet.
+		// Non-JSON response path.
 		if ( null === $body || ! is_array( $body ) ) {
+
+			// 2xx with an empty body is a legitimate no-content success
+			// (HTTP 204 from DELETE/unsubscribe/update endpoints). Mirrors
+			// the tolerance the legacy Api_Server::get_response_body() had,
+			// and sidesteps intermediaries (Railway, nginx) that strip the
+			// body from 204 responses per RFC 7230.
+			if ( '' === (string) $body_raw && $status_code >= 200 && $status_code < 300 ) {
+				$instance                  = new self(
+					$status_code,
+					array(),
+					null,
+					null,
+					false,
+					null,
+					$time_spent_ms
+				);
+				$instance->raw_wp_response = is_array( $wp_response ) ? $wp_response : null;
+				return $instance;
+			}
+
+			// Otherwise: unparseable body on a non-2xx status, or a non-empty
+			// body that isn't JSON (HTML error pages, CDN interstitials, etc.).
 			$snippet                   = substr( (string) $body_raw, 0, self::BODY_SNIPPET_LENGTH );
 			$error                     = array(
 				'type'        => 'non_json_response',

@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.3.1\n"
+"Project-Id-Version: Uncanny Automator 7.3.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-06T05:23:58+00:00\n"
+"POT-Creation-Date: 2026-06-08T01:12:38+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -4387,7 +4387,7 @@ msgstr ""
 msgid "Meta entry updated."
 msgstr ""
 
-#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:841
+#: src/app/Recipe_Runner/Stages/Action_Run_Stage.php:853
 #: src/core/lib/process/class-automator-recipe-process-complete.php:229
 msgctxt "Uncanny Automator"
 msgid "Stacktrace"
@@ -6580,7 +6580,7 @@ msgid "less or equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:782
-#: src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php:838
+#: src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php:847
 msgid "Redirect URL"
 msgstr ""
 
@@ -29314,7 +29314,7 @@ msgid "Remove pair"
 msgstr ""
 
 #. translators: 1: Address field name, 2: Missing subfield name
-#: src/integrations/mailchimp/helpers/trait-mailchimp-subscriber-fields.php:292
+#: src/integrations/mailchimp/helpers/trait-mailchimp-subscriber-fields.php:308
 #, php-format
 msgctxt "Mailchimp"
 msgid "Address field \"%1$s\" is partially filled. Missing or empty subfield \"%2$s\"."
@@ -46486,8 +46486,8 @@ msgstr ""
 #: src/integrations/wp/triggers/wordpress-anon-post-updated.php:53
 #: src/integrations/wp/triggers/wordpress-post-published.php:53
 #: src/integrations/wp/triggers/wordpress-post-receives-comment.php:57
-#: src/integrations/wp/triggers/wordpress-user-creates-post.php:57
-#: src/integrations/wp/triggers/wordpress-user-post-published.php:52
+#: src/integrations/wp/triggers/wordpress-user-creates-post.php:61
+#: src/integrations/wp/triggers/wordpress-user-post-published.php:58
 #: src/integrations/wp/triggers/wordpress-user-submits-comment.php:58
 #: src/integrations/wp/triggers/wordpress-user-updates-post.php:52
 #: src/integrations/wp/triggers/wordpress-user-views-custom-post.php:52
@@ -46500,7 +46500,7 @@ msgstr ""
 #: src/integrations/wp/actions/wordpress-update-taxonomy-term.php:73
 #: src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php:68
 #: src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php:68
-#: src/integrations/wp/triggers/wordpress-user-creates-post.php:66
+#: src/integrations/wp/triggers/wordpress-user-creates-post.php:70
 msgctxt "WordPress"
 msgid "Taxonomy"
 msgstr ""
@@ -46786,7 +46786,7 @@ msgstr ""
 #: src/integrations/wp/actions/wordpress-update-taxonomy-term.php:82
 #: src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php:77
 #: src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php:77
-#: src/integrations/wp/triggers/wordpress-user-creates-post.php:75
+#: src/integrations/wp/triggers/wordpress-user-creates-post.php:79
 msgctxt "WordPress"
 msgid "Term"
 msgstr ""
@@ -48141,7 +48141,7 @@ msgstr ""
 
 #: src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php:265
 #: src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php:316
-#: src/integrations/wp/triggers/wordpress-user-creates-post.php:187
+#: src/integrations/wp/triggers/wordpress-user-creates-post.php:191
 msgctxt "WordPress"
 msgid "Matched Child Term"
 msgstr ""
@@ -48231,13 +48231,13 @@ msgctxt "WordPress"
 msgid "Trigger only if the comment passes Akismet spam filtering"
 msgstr ""
 
-#: src/integrations/wp/triggers/wordpress-user-creates-post.php:39
+#: src/integrations/wp/triggers/wordpress-user-creates-post.php:43
 #, php-format
 msgctxt "WordPress"
 msgid "A user publishes a {{type of:%1$s}} post with {{a taxonomy term:%2$s}} in {{a taxonomy:%3$s}}"
 msgstr ""
 
-#: src/integrations/wp/triggers/wordpress-user-creates-post.php:45
+#: src/integrations/wp/triggers/wordpress-user-creates-post.php:49
 msgctxt "WordPress"
 msgid "A user publishes a post in a taxonomy"
 msgstr ""
@@ -48268,13 +48268,13 @@ msgctxt "WordPress"
 msgid "A user logs out of a site"
 msgstr ""
 
-#: src/integrations/wp/triggers/wordpress-user-post-published.php:35
+#: src/integrations/wp/triggers/wordpress-user-post-published.php:41
 #, php-format
 msgctxt "WordPress"
 msgid "A user publishes a {{type of post:%1$s}}"
 msgstr ""
 
-#: src/integrations/wp/triggers/wordpress-user-post-published.php:39
+#: src/integrations/wp/triggers/wordpress-user-post-published.php:45
 msgctxt "WordPress"
 msgid "A user publishes a post"
 msgstr ""

@@ -633,9 +633,18 @@ class Action_Logs_Resources {
 		if ( $item_has_delay && $item_is_in_progressed ) {
 
 			$delay_props = (array) json_decode( is_string( $delays[ $action_id ] ) ? $delays[ $action_id ] : '', true );
-			$status_id   = 'delayed';
 
-			if ( 'schedule' === $delay_props['type'] ) {
+			// Malformed or legacy delay meta (missing/garbage 'time') must not
+			// fatal the whole log endpoint — new \DateTime( '@' ) throws
+			// DateMalformedStringException on PHP 8.3+. Render the row without
+			// the fabricated delayed/scheduled status instead.
+			if ( ! isset( $delay_props['time'] ) || ! is_numeric( $delay_props['time'] ) ) {
+				return false;
+			}
+
+			$status_id = 'delayed';
+
+			if ( 'schedule' === ( $delay_props['type'] ?? '' ) ) {
 				$status_id = 'scheduled';
 			}
 

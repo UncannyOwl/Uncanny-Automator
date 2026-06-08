@@ -186,7 +186,7 @@ trait Mailchimp_Subscriber_Fields {
 	 * @return bool True if double opt-in is enabled.
 	 */
 	public function is_double_optin_enabled() {
-		return 'true' === $this->get_parsed_meta_value( 'MCDOUBLEOPTIN' );
+		return $this->is_affirmative_meta( 'MCDOUBLEOPTIN' );
 	}
 
 	/**
@@ -195,7 +195,7 @@ trait Mailchimp_Subscriber_Fields {
 	 * @return bool True if update existing is enabled.
 	 */
 	public function is_update_existing_enabled() {
-		return 'true' === $this->get_parsed_meta_value( 'MCUPDATEEXISTING' );
+		return $this->is_affirmative_meta( 'MCUPDATEEXISTING' );
 	}
 
 	/**
@@ -204,7 +204,23 @@ trait Mailchimp_Subscriber_Fields {
 	 * @return bool True if member should be deleted.
 	 */
 	public function should_delete_member() {
-		return 'true' === $this->get_parsed_meta_value( 'MCDELETEMEMBER' );
+		return $this->is_affirmative_meta( 'MCDELETEMEMBER' );
+	}
+
+	/**
+	 * Check whether a yes/no select meta parses as affirmative.
+	 *
+	 * Recipes built before the 7.3.0 migration stored these selects as
+	 * 'yes'/'no' (legacy Mailchimp_Helpers::get_double_opt_in); migrated
+	 * selects store 'true'/'false'. Both vocabularies must parse, or every
+	 * pre-7.3.0 recipe silently flips its setting to "No".
+	 *
+	 * @param string $meta_key The option code to check.
+	 *
+	 * @return bool True if the stored value is affirmative.
+	 */
+	private function is_affirmative_meta( $meta_key ) {
+		return in_array( $this->get_parsed_meta_value( $meta_key ), array( 'true', 'yes' ), true );
 	}
 
 	/**

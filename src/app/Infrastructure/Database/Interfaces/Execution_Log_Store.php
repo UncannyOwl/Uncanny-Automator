@@ -60,6 +60,24 @@ interface Execution_Log_Store {
 	 * @return void
 	 */
 	public function mark_action_complete_by_id( int $action_log_id, int $completed, string $error_message = '' ): void;
+
+	/**
+	 * Mark a deferred (background/async-dispatched) action's row IN_PROGRESS —
+	 * but ONLY when it is still pending (NOT_COMPLETED).
+	 *
+	 * The background/async worker request fires inside the before-action
+	 * filter (non-blocking POST); on fast servers the worker completes the
+	 * action — terminal status, recipe finalized — BEFORE the dispatching
+	 * request finalizes the deferral. An unconditional IN_PROGRESS write
+	 * would downgrade that finished row and strand the run "In progress"
+	 * forever. The WHERE guard makes the transition atomic.
+	 *
+	 * @param int $action_id     The action post ID.
+	 * @param int $recipe_log_id The recipe log ID.
+	 *
+	 * @return void
+	 */
+	public function mark_action_scheduled( int $action_id, int $recipe_log_id ): void;
 	public function get_action_error_messages( int $recipe_log_id ): array;
 	public function get_action_completion_status( int $action_log_id ): ?int;
 
