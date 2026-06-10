@@ -114,12 +114,10 @@ class Wpjm_Jobapplication extends \Uncanny_Automator\Recipe\Trigger {
 	public function hydrate_tokens( $trigger, $hook_args ) {
 		list( $application_id, $job_id ) = $hook_args;
 
-		// Handle resume ID if present
-		if ( automator_filter_has_var( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) && ! empty( automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) ) ) {
-			if ( automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) !== $application_id ) {
-				update_post_meta( $application_id, '_resume_id', automator_filter_input( 'wp_job_manager_resumes_apply_with_resume', INPUT_POST ) );
-			}
-		}
+		// The résumé chosen on the application form is persisted onto the application
+		// synchronously at submission time by Wpjm_Integration::persist_application_resume_id().
+		// It must NOT be read from $_POST here — this trigger is lazy-loaded and
+		// hydrate_tokens() runs when the Trigger_Queue drains, outside the request scope.
 
 		$tokens             = array();
 		$job_tokens         = Wpjm_Token_Manager::get_job_tokens( 'WPJMJOBAPPLICATION' );

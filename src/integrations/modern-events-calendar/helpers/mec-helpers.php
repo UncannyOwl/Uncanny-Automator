@@ -188,7 +188,7 @@ class MEC_HELPERS {
 			'is_ajax'                  => true,
 			'endpoint'                 => 'ua_mec_select_event_ticket',
 			'fill_values_in'           => 'MEC_SELECTED_TICKET_ID',
-			'supports_token'           => false,
+			'supports_tokens'           => false,
 			'supports_multiple_values' => false,
 			'supports_custom_value'    => false,
 		);
@@ -213,7 +213,7 @@ class MEC_HELPERS {
 			'required'                 => true,
 			'label'                    => esc_html__( 'Select a ticket', 'uncanny-automator' ),
 			'description'              => esc_html__( 'Use the dropdown to select a ticket associated from the previously selected event', 'uncanny-automator' ),
-			'supports_token'           => false,
+			'supports_tokens'           => false,
 			'supports_multiple_values' => false,
 			'supports_custom_value'    => false,
 		);

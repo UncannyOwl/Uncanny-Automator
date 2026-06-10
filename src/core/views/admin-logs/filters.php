@@ -156,7 +156,7 @@ $current_tab  = $this->tab;
 							<?php
 
 							/* translators: 1. Trademarked term */
-							printf( esc_attr__( 'Upgrade to %1$s for advanced log filters!', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=logs&utm_campaign=update_to_pro&utm_content=advanced-log-filters" target="_blank">Uncanny Automator Pro</a>' );
+							printf( esc_attr__( 'Upgrade to %1$s for advanced log filters!', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_campaign=upgrade-to-pro&utm_content=advanced-log-filters" target="_blank">Uncanny Automator Pro</a>' );
 
 							?>
 						</div>

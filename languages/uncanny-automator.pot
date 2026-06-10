@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.3.1.1\n"
+"Project-Id-Version: Uncanny Automator 7.3.1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-08T01:12:38+00:00\n"
+"POT-Creation-Date: 2026-06-10T17:05:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -651,7 +651,6 @@ msgstr ""
 #: src/core/views/admin-settings/tab/premium-integrations/not-connected.php:80
 #: src/core/views/credits-remaining-25.php:41
 #: src/core/views/credits-remaining-100.php:44
-#: src/integrations/advanced/tokens/calculation-token.php:92
 msgid "Learn more"
 msgstr ""
 
@@ -1987,7 +1986,7 @@ msgstr ""
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:186
 #: src/core/views/html-admin-status.php:1229
 #: src/integrations/rafflepress/helpers/rafflepress-helpers.php:46
-#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:62
+#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:58
 msgid "Name"
 msgstr ""
 
@@ -4494,7 +4493,7 @@ msgstr ""
 #: src/core/includes/recipe-logs-view.php:86
 #: src/core/includes/recipe-logs-view.php:139
 #: src/core/includes/recipe-logs-view.php:184
-#: src/core/views/admin-dashboard/usage-panel.php:279
+#: src/core/views/admin-dashboard/usage-panel.php:282
 #: src/core/views/admin-logs/component/logs.php:31
 #: src/core/views/admin-logs/component/logs.php:77
 #: src/core/views/admin-logs/component/logs.php:132
@@ -4663,52 +4662,52 @@ msgstr ""
 msgid "License"
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:193
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:195
 msgctxt "license activation error"
 msgid "The license key could not be activated. Please check that your license key is valid and try again."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:194
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:196
 msgctxt "download error"
 msgid "Unable to download the Pro plugin. Please try again or contact support if the issue persists."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:195
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:197
 msgctxt "installation error"
 msgid "The Pro plugin could not be installed. Please check your file permissions and try again."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:196
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:198
 msgctxt "activation error"
 msgid "The Pro plugin was installed but could not be activated. Please go to the Plugins page to activate it manually."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:197
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:199
 msgctxt "permissions error"
 msgid "You do not have permission to install plugins. Please contact your administrator."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:198
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:200
 msgctxt "invalid link error"
 msgid "The download link is invalid. Please try again or contact support."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:199
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:201
 msgctxt "license key required error"
 msgid "Please enter a valid license key."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:200
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:202
 msgctxt "invalid request error"
 msgid "Invalid request. Please refresh the page and try again."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:205
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:207
 msgctxt "generic error"
 msgid "An unexpected error occurred. Please try again or contact support."
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/general-tabs/license.php:221
+#: src/core/admin/admin-settings/tabs/general-tabs/license.php:223
 msgctxt "installation success"
 msgid "Automator Pro has been successfully installed and activated!"
 msgstr ""
@@ -4731,7 +4730,7 @@ msgid "App integrations"
 msgstr ""
 
 #: src/core/admin/admin-settings/tabs/uncanny-agent.php:60
-#: src/core/views/admin-dashboard/usage-panel.php:162
+#: src/core/views/admin-dashboard/usage-panel.php:165
 msgid "Uncanny Agent"
 msgstr ""
 
@@ -4752,7 +4751,7 @@ msgstr ""
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:89
 #: src/integrations/buddyboss/actions/bdb-setuserstatus.php:64
 #: src/integrations/duplicator/triggers/backup-completes-with-status.php:93
-#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:112
+#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:111
 #: src/integrations/fluent-booking/helpers/fluent-booking-helpers.php:73
 #: src/integrations/jet-crm/helpers/jet-crm-helpers.php:46
 #: src/integrations/rafflepress/helpers/rafflepress-helpers.php:71
@@ -4813,7 +4812,7 @@ msgid "Date"
 msgstr ""
 
 #: src/core/admin/api-log/class-api-log.php:69
-#: src/integrations/logging/actions/write-data-to-log.php:40
+#: src/integrations/logging/actions/write-data-to-log.php:39
 msgid "Title"
 msgstr ""
 
@@ -4875,7 +4874,7 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:292
 #: src/core/admin/class-admin-menu.php:293
-#: src/core/admin/class-admin-menu.php:1833
+#: src/core/admin/class-admin-menu.php:1834
 #: src/core/views/admin-integrations/archive/search.php:20
 msgid "All integrations"
 msgstr ""
@@ -5408,15 +5407,15 @@ msgstr ""
 msgid "Action log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1715
+#: src/core/admin/class-admin-menu.php:1716
 msgid "Installed integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1716
+#: src/core/admin/class-admin-menu.php:1717
 msgid "Ready-to-use integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1834
+#: src/core/admin/class-admin-menu.php:1835
 msgid "Put your WordPress site on autopilot"
 msgstr ""
 
@@ -5598,18 +5597,18 @@ msgstr ""
 msgid "%d GB"
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:379
+#: src/core/admin/class-prune-logs.php:380
 msgctxt "Prune logs"
 msgid "Invalid nonce."
 msgstr ""
 
-#: src/core/admin/class-prune-logs.php:548
+#: src/core/admin/class-prune-logs.php:549
 msgctxt "Prune logs"
 msgid "Invalid input. Please ensure that the \"Days\" field contains a valid numeric value, is not empty, and is not equal to zero."
 msgstr ""
 
 #. translators: %d: Minimum number of days
-#: src/core/admin/class-prune-logs.php:559
+#: src/core/admin/class-prune-logs.php:560
 #, php-format
 msgctxt "Prune logs"
 msgid "The field \"Days\" must be greater than or equals to %d"
@@ -6086,7 +6085,7 @@ msgstr ""
 
 #. translators: The number of times a recipe was completed
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1097
-#: src/core/views/admin-dashboard/usage-panel.php:281
+#: src/core/views/admin-dashboard/usage-panel.php:284
 msgid "Completed runs"
 msgstr ""
 
@@ -6205,7 +6204,6 @@ msgid "When enabled, actions that send data to an external site or service will 
 msgstr ""
 
 #: src/core/classes/class-calculation-token.php:155
-#: src/integrations/advanced/tokens/calculation-token.php:107
 msgid "Error: Missing formula."
 msgstr ""
 
@@ -8044,8 +8042,8 @@ msgstr ""
 
 #: src/core/views/admin-dashboard.php:111
 #: src/core/views/admin-dashboard.php:195
-#: src/core/views/admin-dashboard/usage-panel.php:146
-#: src/core/views/admin-dashboard/usage-panel.php:219
+#: src/core/views/admin-dashboard/usage-panel.php:149
+#: src/core/views/admin-dashboard/usage-panel.php:222
 #: src/core/views/admin-settings/tab/general/license/connect-site.php:60
 #: src/core/views/admin-settings/tab/premium-integrations/not-connected.php:72
 msgid "Connect your site"
@@ -8191,13 +8189,13 @@ msgstr ""
 #. translators: %s — formatted limit.
 #. translators: %s — allocation name.
 #: src/core/views/admin-dashboard/usage-panel.php:109
-#: src/core/views/admin-dashboard/usage-panel.php:179
+#: src/core/views/admin-dashboard/usage-panel.php:182
 #, php-format
 msgid "of %s used"
 msgstr ""
 
 #: src/core/views/admin-dashboard/usage-panel.php:136
-#: src/core/views/admin-dashboard/usage-panel.php:202
+#: src/core/views/admin-dashboard/usage-panel.php:205
 msgid "Site not connected"
 msgstr ""
 
@@ -8205,57 +8203,57 @@ msgstr ""
 msgid "Unlimited app credits with"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:150
+#: src/core/views/admin-dashboard/usage-panel.php:153
 msgid "Learn more about App Credits"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:152
-#: src/core/views/admin-dashboard/usage-panel.php:225
-#: src/core/views/admin-dashboard/usage-panel.php:230
+#: src/core/views/admin-dashboard/usage-panel.php:155
+#: src/core/views/admin-dashboard/usage-panel.php:228
+#: src/core/views/admin-dashboard/usage-panel.php:233
 msgid "(opens in new tab)"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:183
+#: src/core/views/admin-dashboard/usage-panel.php:186
 msgid "used"
 msgstr ""
 
 #. translators: %s — formatted expiry date.
-#: src/core/views/admin-dashboard/usage-panel.php:208
+#: src/core/views/admin-dashboard/usage-panel.php:211
 #, php-format
 msgid "Expires %s"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:223
+#: src/core/views/admin-dashboard/usage-panel.php:226
 msgid "View usage details"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:228
+#: src/core/views/admin-dashboard/usage-panel.php:231
 msgid "Get more Uncanny Agent usage"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:245
+#: src/core/views/admin-dashboard/usage-panel.php:248
 msgid "FAQ"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:263
+#: src/core/views/admin-dashboard/usage-panel.php:266
 #: src/core/views/html-admin-status.php:612
 msgid "Recipes using app credits"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:271
+#: src/core/views/admin-dashboard/usage-panel.php:274
 msgid "No recipes using app credits on this site"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:280
+#: src/core/views/admin-dashboard/usage-panel.php:283
 msgid "Completions allowed"
 msgstr ""
 
-#: src/core/views/admin-dashboard/usage-panel.php:293
+#: src/core/views/admin-dashboard/usage-panel.php:296
 msgid "Total: Unlimited"
 msgstr ""
 
 #. translators: %s — formatted total.
-#: src/core/views/admin-dashboard/usage-panel.php:295
+#: src/core/views/admin-dashboard/usage-panel.php:298
 #, php-format
 msgid "Total: %s"
 msgstr ""
@@ -10422,12 +10420,26 @@ msgctxt "Token"
 msgid "Calculation"
 msgstr ""
 
-#: src/integrations/advanced/tokens/calculation-token.php:91
+#: src/integrations/advanced/tokens/calculation-token.php:95
+msgctxt "Advanced"
 msgid "Formula"
 msgstr ""
 
-#: src/integrations/advanced/tokens/calculation-token.php:92
+#: src/integrations/advanced/tokens/calculation-token.php:96
+#: src/integrations/advanced/tokens/postmeta-token.php:37
+msgctxt "Advanced"
 msgid "The ID of the post that contains the meta data."
+msgstr ""
+
+#: src/integrations/advanced/tokens/calculation-token.php:96
+#: src/integrations/advanced/tokens/postmeta-token.php:37
+msgctxt "Advanced"
+msgid "Learn more"
+msgstr ""
+
+#: src/integrations/advanced/tokens/calculation-token.php:111
+msgctxt "Advanced"
+msgid "Error: Missing formula."
 msgstr ""
 
 #. translators: 1: Post ID, 2: Meta key
@@ -10445,16 +10457,6 @@ msgstr ""
 #: src/integrations/advanced/tokens/postmeta-token.php:36
 msgctxt "Advanced"
 msgid "Post ID"
-msgstr ""
-
-#: src/integrations/advanced/tokens/postmeta-token.php:37
-msgctxt "Advanced"
-msgid "The ID of the post that contains the meta data."
-msgstr ""
-
-#: src/integrations/advanced/tokens/postmeta-token.php:37
-msgctxt "Advanced"
-msgid "Learn more"
 msgstr ""
 
 #: src/integrations/advanced/tokens/postmeta-token.php:45
@@ -10965,10 +10967,12 @@ msgstr ""
 #. translators: Trigger sentence
 #: src/integrations/airtable/actions/airtable-sendwebhook.php:52
 #, php-format
+msgctxt "Airtable"
 msgid "Send data to Airtable {{webhook:%1$s}}"
 msgstr ""
 
 #: src/integrations/airtable/actions/airtable-sendwebhook.php:59
+msgctxt "Airtable"
 msgid "Send data to Airtable {{webhook}}"
 msgstr ""
 
@@ -20212,23 +20216,23 @@ msgstr ""
 msgid "Start time"
 msgstr ""
 
-#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:106
+#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:105
 msgid "Ignore availability"
 msgstr ""
 
-#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:120
+#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:118
 msgid "Attendee email"
 msgstr ""
 
-#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:126
+#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:123
 msgid "Attendee name"
 msgstr ""
 
-#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:133
+#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:129
 msgid "Agenda"
 msgstr ""
 
-#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:216
+#: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:212
 msgctxt "fluent-booking"
 msgid "This selected time slot is no longer available, as it may have already been booked by someone else."
 msgstr ""
@@ -21240,12 +21244,12 @@ msgstr ""
 msgid "Select from dropdown list of the options above."
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:126
+#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:125
 msgid "Contact ID"
 msgstr ""
 
-#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:130
-#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:139
+#: src/integrations/fluent-crm/triggers/anon-fcrm-contact-status-updated.php:129
+#: src/integrations/fluent-crm/triggers/fcrm-user-status-updated.php:138
 msgid "Subscription status"
 msgstr ""
 
@@ -23159,27 +23163,27 @@ msgctxt "Google Calendar"
 msgid "Calendar"
 msgstr ""
 
-#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:340
+#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:339
 msgctxt "Google Calendar"
 msgid "Event"
 msgstr ""
 
-#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:364
+#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:362
 msgctxt "Google Calendar"
 msgid "Attendee email"
 msgstr ""
 
-#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:388
+#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:385
 msgctxt "Google Calendar"
 msgid "Invalid calendar ID"
 msgstr ""
 
-#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:405
+#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:402
 msgctxt "Google Calendar"
 msgid "Invalid event ID"
 msgstr ""
 
-#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:422
+#: src/integrations/google-calendar/helpers/google-calendar-app-helpers.php:419
 msgctxt "Google Calendar"
 msgid "Invalid attendee email"
 msgstr ""
@@ -25662,11 +25666,13 @@ msgstr ""
 #. translators: Action - IFTTT
 #: src/integrations/ifttt/actions/ifttt-sendwebhook.php:35
 #, php-format
+msgctxt "Ifttt"
 msgid "Send data to IFTTT {{webhook:%1$s}}"
 msgstr ""
 
 #. translators: Action - IFTTT
 #: src/integrations/ifttt/actions/ifttt-sendwebhook.php:37
+msgctxt "Ifttt"
 msgid "Send data to IFTTT {{webhook}}"
 msgstr ""
 
@@ -25863,22 +25869,26 @@ msgstr ""
 #. translators: Action - Integrately
 #: src/integrations/integrately/actions/integrately-sendwebhook.php:35
 #, php-format
+msgctxt "Integrately"
 msgid "Send data to Integrately {{webhook:%1$s}}"
 msgstr ""
 
 #. translators: Action - Integrately
 #: src/integrations/integrately/actions/integrately-sendwebhook.php:37
+msgctxt "Integrately"
 msgid "Send data to Integrately {{webhook}}"
 msgstr ""
 
 #. translators: Action - Integromat
 #: src/integrations/integromat/actions/integromat-sendwebhook.php:36
 #, php-format
+msgctxt "Integromat"
 msgid "Send data to Integromat {{webhook:%1$s}}"
 msgstr ""
 
 #. translators: Action - Integromat
 #: src/integrations/integromat/actions/integromat-sendwebhook.php:38
+msgctxt "Integromat"
 msgid "Send data to Integromat {{webhook}}"
 msgstr ""
 
@@ -27069,10 +27079,12 @@ msgstr ""
 #. translators: Trigger sentence
 #: src/integrations/konnectz-it/actions/konnectz-it-sendwebhook.php:44
 #, php-format
+msgctxt "Konnectz It"
 msgid "Send data to KonnectzIT {{webhook:%1$s}}"
 msgstr ""
 
 #: src/integrations/konnectz-it/actions/konnectz-it-sendwebhook.php:51
+msgctxt "Konnectz It"
 msgid "Send data to KonnectzIT {{webhook}}"
 msgstr ""
 
@@ -28921,15 +28933,15 @@ msgctxt "Logging"
 msgid "Write {{data}} to the log"
 msgstr ""
 
-#: src/integrations/logging/actions/write-data-to-log.php:41
+#: src/integrations/logging/actions/write-data-to-log.php:40
 msgid "The title of the log entry."
 msgstr ""
 
-#: src/integrations/logging/actions/write-data-to-log.php:50
+#: src/integrations/logging/actions/write-data-to-log.php:48
 msgid "Data to log"
 msgstr ""
 
-#: src/integrations/logging/actions/write-data-to-log.php:51
+#: src/integrations/logging/actions/write-data-to-log.php:49
 msgid "Any data added above will be displayed in recipe logs."
 msgstr ""
 
@@ -29081,9 +29093,9 @@ msgctxt "Mailchimp"
 msgid "Email content"
 msgstr ""
 
-#: src/integrations/mailchimp/actions/campaign-createandsend.php:157
+#: src/integrations/mailchimp/actions/campaign-createandsend.php:161
 msgctxt "Mailchimp"
-msgid "Campaign title, email subject, from name, from email address, and to name are required."
+msgid "Campaign title, email subject, from name, and from email address are required."
 msgstr ""
 
 #: src/integrations/mailchimp/actions/mc-everyone-add-contact.php:30
@@ -29161,17 +29173,17 @@ msgctxt "Mailchimp"
 msgid "User already subscribed to the list."
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-app-helpers.php:85
+#: src/integrations/mailchimp/helpers/mailchimp-app-helpers.php:124
 msgctxt "Mailchimp"
 msgid "Any audience"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-app-helpers.php:266
+#: src/integrations/mailchimp/helpers/mailchimp-app-helpers.php:305
 msgctxt "Mailchimp"
 msgid "Select a segment or tag"
 msgstr ""
 
-#: src/integrations/mailchimp/helpers/mailchimp-app-helpers.php:332
+#: src/integrations/mailchimp/helpers/mailchimp-app-helpers.php:371
 msgctxt "Mailchimp"
 msgid "Select a template"
 msgstr ""
@@ -29565,32 +29577,32 @@ msgid "Add a subscriber to {{a Mailster list}}"
 msgstr ""
 
 #: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:33
-#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:54
+#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:53
 #: src/integrations/mailster/triggers/mailster-subscriber-added-to-list.php:33
 msgctxt "Mailster"
 msgid "List"
 msgstr ""
 
-#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:49
+#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:48
 #: src/integrations/mailster/triggers/mailster-subscriber-added-to-list.php:76
 msgctxt "Mailster"
 msgid "Subscriber email"
 msgstr ""
 
 #. translators: %s is a Mailster list ID
-#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:78
+#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:77
 #, php-format
 msgctxt "Mailster"
 msgid "The list(%s) does not exists."
 msgstr ""
 
-#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:84
+#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:83
 msgctxt "Mailster"
 msgid "The email is invalid"
 msgstr ""
 
 #. translators: %1s is a subscriber email & %2s is a Mailster list name
-#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:98
+#: src/integrations/mailster/actions/mailster-add-subscriber-to-list.php:97
 #, php-format
 msgctxt "Mailster"
 msgid "The subscriber (%1$s) is already subscribed to the list (%2$s)."
@@ -29646,10 +29658,12 @@ msgstr ""
 #. translators: Trigger sentence
 #: src/integrations/make/actions/make-sendwebhook.php:52
 #, php-format
+msgctxt "Make"
 msgid "Send data to Make {{webhook:%1$s}}"
 msgstr ""
 
 #: src/integrations/make/actions/make-sendwebhook.php:59
+msgctxt "Make"
 msgid "Send data to Make {{webhook}}"
 msgstr ""
 
@@ -32730,10 +32744,12 @@ msgstr ""
 #. translators: Trigger sentence
 #: src/integrations/pabbly-connect/actions/pabblyconnect-sendwebhook.php:52
 #, php-format
+msgctxt "Pabbly Connect"
 msgid "Send data to Pabbly Connect {{webhook:%1$s}}"
 msgstr ""
 
 #: src/integrations/pabbly-connect/actions/pabblyconnect-sendwebhook.php:59
+msgctxt "Pabbly Connect"
 msgid "Send data to Pabbly Connect {{webhook}}"
 msgstr ""
 
@@ -38693,64 +38709,64 @@ msgid "Event URL"
 msgstr ""
 
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:269
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:670
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:727
 msgctxt "The Events Calendar"
 msgid "Any event"
 msgstr ""
 
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:308
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:683
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:740
 msgctxt "The Events Calendar"
 msgid "Any organizer"
 msgstr ""
 
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:328
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:696
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:753
 msgctxt "The Events Calendar"
 msgid "Any venue"
 msgstr ""
 
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:349
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:711
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:768
 msgctxt "The Events Calendar"
 msgid "Any series"
 msgstr ""
 
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:403
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:770
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:827
 msgctxt "The Events Calendar"
 msgid "Any past event"
 msgstr ""
 
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:539
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:732
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:789
 msgctxt "The Events Calendar"
 msgid "Any ticket"
 msgstr ""
 
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:625
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:811
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:682
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:868
 msgctxt "The Events Calendar"
 msgid "Any category"
 msgstr ""
 
 #. translators: %d is a term ID
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:649
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:836
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:706
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:893
 #, php-format
 msgctxt "The Events Calendar"
 msgid "ID: %d (no name)"
 msgstr ""
 
 #. translators: %d is a post ID
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:983
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:1040
 #, php-format
 msgctxt "The Events Calendar"
 msgid "ID: %d (no title)"
 msgstr ""
 
 #. translators: %1$s is the post title, %2$s is the post-status label (e.g. Draft, Scheduled).
-#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:998
+#: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:1055
 #, php-format
 msgctxt "The Events Calendar"
 msgid "%1$s [%2$s]"
@@ -43143,10 +43159,12 @@ msgstr ""
 #. translators: Trigger sentence
 #: src/integrations/webhooks/actions/uoa-sendwebhook.php:51
 #, php-format
+msgctxt "Webhooks"
 msgid "Send data to {{a webhook:%1$s}}"
 msgstr ""
 
 #: src/integrations/webhooks/actions/uoa-sendwebhook.php:58
+msgctxt "Webhooks"
 msgid "Send data to {{a webhook}}"
 msgstr ""
 
@@ -43174,55 +43192,55 @@ msgctxt "WhatsApp"
 msgid "+1 123 345 6789"
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:62
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:61
 msgctxt "WhatsApp"
 msgid "Message template"
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:63
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:62
 msgctxt "WhatsApp"
 msgid "Select a message template to send."
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:76
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:75
 msgctxt "WhatsApp"
 msgid "Header"
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:77
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:76
 msgctxt "WhatsApp"
 msgid "Provide a value for each header variable in the order they appear in your template (e.g., {{1}}, {{2}}). For media headers, enter a public URL to the image, video, or document."
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:87
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:133
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:86
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:132
 msgctxt "WhatsApp"
 msgid "Type"
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:93
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:114
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:139
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:92
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:113
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:138
 msgctxt "WhatsApp"
 msgid "Value"
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:104
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:103
 msgctxt "WhatsApp"
 msgid "Body variables"
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:105
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:104
 msgctxt "WhatsApp"
 msgid "Provide a value for each body variable in the order they appear in your template (e.g., row 1 = {{1}}, row 2 = {{2}}, row 3 = {{3}})."
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:122
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:121
 msgctxt "WhatsApp"
 msgid "Buttons"
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:123
+#: src/integrations/whatsapp/actions/whatsapp-send-message-template.php:122
 msgctxt "WhatsApp"
 msgid "Provide a value for each dynamic URL parameter in your button links (e.g., {{1}} in https://example.com/?code={{1}})."
 msgstr ""
@@ -43244,7 +43262,7 @@ msgctxt "WhatsApp"
 msgid "The recipient must have opted-in to receive text messages from your number."
 msgstr ""
 
-#: src/integrations/whatsapp/actions/whatsapp-send-message.php:62
+#: src/integrations/whatsapp/actions/whatsapp-send-message.php:61
 msgctxt "WhatsApp"
 msgid "Body"
 msgstr ""
@@ -44483,7 +44501,7 @@ msgid "Post title"
 msgstr ""
 
 #: src/integrations/wp-all-import/tokens/wpai-tokens.php:90
-#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:38
+#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:37
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:96
 msgid "Post ID"
 msgstr ""
@@ -44649,23 +44667,23 @@ msgctxt "wpDiscuz"
 msgid "Add {{a reply}} to a comment"
 msgstr ""
 
-#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:45
+#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:43
 msgid "Parent comment ID"
 msgstr ""
 
-#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:53
+#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:50
 msgid "Commenter's email"
 msgstr ""
 
-#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:54
+#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:51
 msgid "If the email matches a WordPress user, the comment will be attributed to that user."
 msgstr ""
 
-#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:63
+#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:59
 msgid "If the email provided above matches a WordPress user, that user's name will be used."
 msgstr ""
 
-#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:70
+#: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:65
 msgid "Reply"
 msgstr ""
 
@@ -48139,9 +48157,9 @@ msgctxt "WordPress"
 msgid "If checked, children of the selected term will also trigger the recipe."
 msgstr ""
 
-#: src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php:265
+#: src/integrations/wp/triggers/wordpress-anon-post-published-in-taxonomy.php:268
 #: src/integrations/wp/triggers/wordpress-anon-post-updated-in-taxonomy.php:316
-#: src/integrations/wp/triggers/wordpress-user-creates-post.php:191
+#: src/integrations/wp/triggers/wordpress-user-creates-post.php:195
 msgctxt "WordPress"
 msgid "Matched Child Term"
 msgstr ""
@@ -48678,11 +48696,13 @@ msgstr ""
 #. translators: Action - Zapier
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:35
 #, php-format
+msgctxt "Zapier"
 msgid "Send data to Zapier {{webhook:%1$s}}"
 msgstr ""
 
 #. translators: Action - Zapier
 #: src/integrations/zapier/actions/zapier-sendwebhook.php:37
+msgctxt "Zapier"
 msgid "Send data to Zapier {{webhook}}"
 msgstr ""
 

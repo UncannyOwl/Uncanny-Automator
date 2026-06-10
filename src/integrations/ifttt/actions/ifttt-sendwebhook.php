@@ -29,12 +29,12 @@ class IFTTT_SENDWEBHOOK {
 		$this->set_action_code( 'IFTTTSENDWEBHOOK' );
 		$this->set_action_meta( 'WEBHOOK' );
 		$this->set_author( 'Uncanny Automator' );
-		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/send-data-to-a-ifttt-webhook?utm_source=uncanny_automator&utm_medium=ifttt-send_data_to_webhook&utm_content=help_button' ) );
+		$this->set_support_link( Automator()->get_author_support_link( $this->action_code, 'knowledge-base/send-data-to-a-webhook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=ifttt-send-data-to-webhook-help-button' ) );
 		$this->set_requires_user( false );
 		/* translators: Action - IFTTT */
-		$this->set_sentence( sprintf( esc_attr__( 'Send data to IFTTT {{webhook:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_attr_x( 'Send data to IFTTT {{webhook:%1$s}}', 'Ifttt', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - IFTTT */
-		$this->set_readable_sentence( esc_attr__( 'Send data to IFTTT {{webhook}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Send data to IFTTT {{webhook}}', 'Ifttt', 'uncanny-automator' ) );
 		$this->set_options_group(
 			Automator()->send_webhook->fields->options_group(
 				$this->get_action_meta(),

@@ -45,7 +45,6 @@ class MAILSTER_ADD_SUBSCRIBER_TO_LIST extends \Uncanny_Automator\Recipe\Action {
 				'input_type'     => 'email',
 				'option_code'    => 'MAILSTER_SUBSCRIBER_EMAIL',
 				'required'       => true,
-				'supports_token' => true,
 				'label'          => esc_html_x( 'Subscriber email', 'Mailster', 'uncanny-automator' ),
 			),
 			array(

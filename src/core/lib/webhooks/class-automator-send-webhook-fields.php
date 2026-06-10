@@ -252,7 +252,7 @@ class Automator_Send_Webhook_Fields {
 	 *
 	 * @return array
 	 */
-	public function buttons( $action_meta, $support_link = 'https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=uncanny_automator&utm_medium=automator-send_data_to_webhook&utm_content=help_button' ) {
+	public function buttons( $action_meta, $support_link = 'https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=automator-send-data-to-webhook-help-button' ) {
 		return array(
 			array(
 				'show_in'     => $action_meta,

@@ -136,9 +136,10 @@ class Admin_Settings_General_License {
 				// The link to upgrade to Pro. Usage in button.
 				$upgrade_to_pro_url_button = add_query_arg(
 					array(
-						'utm_source'  => 'uncanny_automator',
-						'utm_medium'  => 'license_tab',
-						'utm_content' => 'license_upgrade_button',
+						'utm_source'   => 'uncanny-automator',
+						'utm_medium'   => 'in-plugin',
+						'utm_content'  => 'license-tab-upgrade-button',
+						'utm_campaign' => 'upgrade-to-pro',
 					),
 					self::URL_UPGRADE_TO_PRO
 				);
@@ -146,9 +147,10 @@ class Admin_Settings_General_License {
 				// The link to upgrade to Pro. Usage in link.
 				$upgrade_to_pro_url_link = add_query_arg(
 					array(
-						'utm_source'  => 'uncanny_automator',
-						'utm_medium'  => 'license_tab',
-						'utm_content' => 'license_upgrade_link',
+						'utm_source'   => 'uncanny-automator',
+						'utm_medium'   => 'in-plugin',
+						'utm_content'  => 'license-tab-upgrade-link',
+						'utm_campaign' => 'upgrade-to-pro',
 					),
 					self::URL_UPGRADE_TO_PRO
 				);
@@ -156,9 +158,9 @@ class Admin_Settings_General_License {
 				// The URL to license key page.
 				$license_key_url = add_query_arg(
 					array(
-						'utm_source'  => 'uncanny_automator',
-						'utm_medium'  => 'settings',
-						'utm_content' => 'license_key_page',
+						'utm_source'   => 'uncanny-automator',
+						'utm_medium'   => 'in-plugin',
+						'utm_content'  => 'settings-license-key-page',
 					),
 					self::URL_LICENSE_KEY_PAGE
 				);

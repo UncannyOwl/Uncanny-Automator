@@ -81,15 +81,19 @@ class Calculation_Token extends Universal_Token {
 		$this->type          = 'text';
 		$this->cacheable     = true;
 	}
-
+	/**
+	 * Get fields.
+	 *
+	 * @return mixed
+	 */
 	public function get_fields() {
 		return array(
 			array(
 				'input_type'         => 'text',
 				'option_code'        => 'FORMULA',
 				'required'           => true,
-				'label'              => esc_attr__( 'Formula', 'uncanny-automator' ),
-				'description'        => esc_attr__( 'The ID of the post that contains the meta data.', 'uncanny-automator' ) . sprintf( ' <a href="%2$s">%1$s</a>', esc_attr__( 'Learn more', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon>', 'https://automatorplugin.com/knowledge-base/post-meta-tokens/?utm_source=uncanny_automator_pro&utm_medium=add_token&utm_content=post_meta_post_id_learn_more' ),
+				'label'              => esc_attr_x( 'Formula', 'Advanced', 'uncanny-automator' ),
+				'description'        => esc_attr_x( 'The ID of the post that contains the meta data.', 'Advanced', 'uncanny-automator' ) . sprintf( ' <a href="%2$s">%1$s</a>', esc_attr_x( 'Learn more', 'Advanced', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon>', 'https://automatorplugin.com/knowledge-base/post-meta-tokens/?utm_source=uncanny-automator-pro&utm_medium=in-plugin&utm_content=add-token-post-meta-post-id-learn-more' ),
 				'supports_tokens'    => true,
 				'unsupported_tokens' => array( 'CALCULATION:FORMULA' ),
 			),
@@ -104,7 +108,7 @@ class Calculation_Token extends Universal_Token {
 	public function get_formula( $replace_args ) {
 
 		if ( empty( $replace_args['pieces'][3] ) ) {
-			throw new \Exception( esc_html__( 'Error: Missing formula.', 'uncanny-automator' ) );
+			throw new \Exception( esc_html_x( 'Error: Missing formula.', 'Advanced', 'uncanny-automator' ) );
 		}
 
 		$formula = $replace_args['pieces'][3];

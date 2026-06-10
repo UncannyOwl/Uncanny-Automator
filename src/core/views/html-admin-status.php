@@ -458,7 +458,7 @@ $automator_stats    = $report['automator_stats'];
 			if ( version_compare( $environment['php_version'], '7.2', '>=' ) ) {
 				echo '<mark class="yes">' . esc_html( $environment['php_version'] ) . '</mark>';
 			} else {
-				$update_link = ' <a href="https://automatorplugin.com/knowledge-base/php-version/?utm_source=uncanny_automator&utm_medium=tools_status&utm_content=update_php_version" target="_blank">' . esc_html__( 'How to update your PHP version', 'uncanny-automator' ) . '</a>';
+				$update_link = ' <a href="https://automatorplugin.com/knowledge-base/php-version/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=tools-status-update-php-version" target="_blank">' . esc_html__( 'How to update your PHP version', 'uncanny-automator' ) . '</a>';
 				$class       = 'error';
 
 				if ( version_compare( $environment['php_version'], '5.6', '<' ) ) {

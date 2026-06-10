@@ -596,14 +596,14 @@ class Recipe_Post_Utilities {
 					// UncannyAutomator._site.automator.links
 					'links'                 => array(
 						// UncannyAutomator._site.automator.links.debugging_guide
-						'debugging_guide'         => 'https://automatorplugin.com/knowledge-base/troubleshooting-plugin-errors/?utm_source=uncanny_automator&utm_medium=recipe-wizard-error-modal&utm_content=learn-more-debugging',
+						'debugging_guide'         => 'https://automatorplugin.com/knowledge-base/troubleshooting-plugin-errors/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=recipe-wizard-error-modal-learn-more-debugging',
 
 						// UncannyAutomator._site.automator.links.contact_support
 						'contact_support'         => add_query_arg(
 							array(
-								'utm_source'  => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? 'uncanny_automator_pro' : 'uncanny_automator',
-								'utm_medium'  => 'error_handler',
-								'utm_content' => 'get_support_link',
+								'utm_source'  => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? 'uncanny-automator-pro' : 'uncanny-automator',
+								'utm_medium'  => 'in-plugin',
+								'utm_content' => 'error-handler-get-support-link',
 								'subject'     => 'technical-support',
 								'version'     => AUTOMATOR_PLUGIN_VERSION,
 								'site_url'    => get_site_url(),

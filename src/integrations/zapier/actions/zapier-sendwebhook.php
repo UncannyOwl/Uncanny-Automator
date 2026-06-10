@@ -29,12 +29,12 @@ class ZAPIER_SENDWEBHOOK {
 		$this->set_action_code( 'SENDWEBHOOK' );
 		$this->set_action_meta( 'WEBHOOK' );
 		$this->set_author( 'Uncanny Automator' );
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/send-data-to-a-zapier-webhook?utm_source=uncanny_automator&utm_medium=zapier-send_data_to_webhook&utm_content=help_button' ) );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/send-data-to-a-webhook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=zapier-send-data-to-webhook-help-button' ) );
 		$this->set_requires_user( false );
 		/* translators: Action - Zapier */
-		$this->set_sentence( sprintf( esc_attr__( 'Send data to Zapier {{webhook:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_attr_x( 'Send data to Zapier {{webhook:%1$s}}', 'Zapier', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - Zapier */
-		$this->set_readable_sentence( esc_attr__( 'Send data to Zapier {{webhook}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Send data to Zapier {{webhook}}', 'Zapier', 'uncanny-automator' ) );
 		$this->set_options_group(
 			Automator()->send_webhook->fields->options_group(
 				$this->get_action_meta(),

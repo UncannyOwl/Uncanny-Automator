@@ -31,7 +31,7 @@ class KONNECTZ_IT_SENDWEBHOOK {
 		$this->set_support_link(
 			Automator()->get_author_support_link(
 				$this->get_action_code(),
-				'knowledge-base/send-data-to-a-webhook/?utm_source=uncanny_automator&utm_medium=automator-send_data_to_webhook&utm_content=help_button'
+				'knowledge-base/send-data-to-a-webhook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=automator-send-data-to-webhook-help-button'
 			)
 		);
 
@@ -41,14 +41,14 @@ class KONNECTZ_IT_SENDWEBHOOK {
 		$this->set_sentence(
 			sprintf(
 			/* translators: Trigger sentence */
-				esc_attr__( 'Send data to KonnectzIT {{webhook:%1$s}}', 'uncanny-automator' ),
+				esc_attr_x( 'Send data to KonnectzIT {{webhook:%1$s}}', 'Konnectz It', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
 		);
 
 		/* translators: Action - Uncanny Automator */
 		$this->set_readable_sentence(
-			esc_attr__( 'Send data to KonnectzIT {{webhook}}', 'uncanny-automator' )
+			esc_attr_x( 'Send data to KonnectzIT {{webhook}}', 'Konnectz It', 'uncanny-automator' )
 		);
 
 		$this->set_options_group(

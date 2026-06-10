@@ -226,7 +226,7 @@ class Setup_Wizard {
 	 */
 	public function get_checkout_uri() {
 
-		return 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=setup_wizard&utm_content=upgrade_to_pro_btn';
+		return 'https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=setup-wizard&utm_campaign=upgrade-to-pro';
 	}
 
 	/**

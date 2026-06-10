@@ -46,7 +46,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 										<div class="uap-report-filters__pro-notice-text">
 											<?php
 											/* translators: 1. Trademarked term */
-											echo wp_kses_post( sprintf( esc_attr__( 'Upgrade to %1$s to access this feature.', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=settings&utm_content=' . $active . '" target="_blank">Uncanny Automator Pro</a>' ) );
+											echo wp_kses_post( sprintf( esc_attr__( 'Upgrade to %1$s to access this feature.', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=settings-' . $active . '&utm_campaign=upgrade-to-pro" target="_blank">Uncanny Automator Pro</a>' ) );
 											?>
 										</div>
 									</div>
@@ -228,7 +228,7 @@ if ( ! empty( $tab ) && 'settings' !== $active ) {
 										<div class="uap-report-filters__pro-notice-text">
 											<?php
 											/* translators: 1. Trademarked term */
-											echo wp_kses_post( sprintf( esc_attr__( 'Upgrade to %1$s to access this feature.', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=settings&utm_content=' . $active . '" target="_blank">Uncanny Automator Pro</a>' ) );
+											echo wp_kses_post( sprintf( esc_attr__( 'Upgrade to %1$s to access this feature.', 'uncanny-automator' ), '<a href="https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=settings-' . $active . '&utm_campaign=upgrade-to-pro" target="_blank">Uncanny Automator Pro</a>' ) );
 											?>
 										</div>
 									</div>

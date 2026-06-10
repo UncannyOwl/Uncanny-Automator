@@ -125,8 +125,12 @@ class WP_USERCREATESPOST extends \Uncanny_Automator\Recipe\Trigger {
 		// Deprecated since 7.0 - cron-based processing replaced by wp_after_insert_post.
 		apply_filters_deprecated( 'automator_wp_user_creates_post_cron_enabled', array( true, $post_id, $post, $update, $post_before, $this ), '7.1' );
 
-		// Deduplication -- prevent multiple firings from other plugins.
-		$transient_key = 'automator_trigger_' . $this->get_trigger_code() . '_' . $post_id;
+		// Deduplication -- prevent multiple firings from other plugins. Key by the
+		// trigger INSTANCE ($trigger['ID']), not just the code: multiple recipes share
+		// this trigger code, and the modern engine runs validate() once per recipe.
+		// A code-only key let the first recipe burn the transient and deduped the rest
+		// to false, so only one (or zero) recipes fired per publish.
+		$transient_key = 'automator_trigger_' . $this->get_trigger_code() . '_' . absint( $trigger['ID'] ?? 0 ) . '_' . $post_id;
 		if ( false !== get_transient( $transient_key ) ) {
 			return false;
 		}

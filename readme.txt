@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 7.3.1.1
+Stable tag: 7.3.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -418,6 +418,20 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 7.3.1.2 [2026-06-10] =
+
+**Fixed:**
+
+* Mailchimp - Credential mapping issue on some older sites now resolved #7885
+* Mailchimp - Create and send a campaign - Fails when 'To name' is empty #7881
+* WP Job Manager - A user applies for a job - Fixed an issue where some tokens may not parse #7875
+* WordPress - A post in a taxonomy is published & A user publishes a post in a taxonomy - Only one recipe fires per post due to dedup keyed by code #7883
+
+**Under the Hood:**
+
+* Multiple integrations - Correct invalid singular `supports_token` definitions to plural `supports_tokens` #7831
+* Normalize UTM tags on in-plugin links #7880
 
 = 7.3.1.1 [2026-06-07] =
 

@@ -67,9 +67,9 @@ $agent_allocation_name = $llm_ready ? (string) $llm->allocation_name : '';
 $agent_expires_on      = $llm_ready ? (string) $llm->expires_on : '';
 
 $account_url     = defined( 'AUTOMATOR_STORE_URL' ) ? AUTOMATOR_STORE_URL : 'https://automatorplugin.com/';
-$app_learn_url   = 'https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=learn_more_about_credits';
-$agent_usage_url = $account_url . 'my-account/usage/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=usage_agent';
-$agent_more_url  = 'https://automatorplugin.com/get-more-done-with-uncanny-agent/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=get_more_agent';
+$app_learn_url   = 'https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-learn-more-about-credits';
+$agent_usage_url = $account_url . 'my-account/usage/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-usage-agent';
+$agent_more_url  = 'https://automatorplugin.com/get-more-done-with-uncanny-agent/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard&utm_campaign=get-more-agent';
 
 $recipes = Automator()->get->fetch_recipe_with_apps();
 ?>
@@ -135,7 +135,10 @@ $recipes = Automator()->get->fetch_recipe_with_apps();
 						if ( ! $is_connected ) {
 							esc_html_e( 'Site not connected', 'uncanny-automator' );
 						} elseif ( $is_unlimited ) {
-							esc_html_e( 'Unlimited app credits with', 'uncanny-automator' ); ?> <uo-pro-tag></uo-pro-tag> <?php
+							esc_html_e( 'Unlimited app credits with', 'uncanny-automator' );
+							?>
+							<uo-pro-tag></uo-pro-tag> 
+							<?php
 						}
 						?>
 					</div>

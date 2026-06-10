@@ -633,10 +633,10 @@ class Automator_Notifications {
 
 		return add_query_arg(
 			array(
-				'utm_medium'   => 'notification',
-				'utm_campaign' => str_replace( ' ', '-', $campaign ),
-				'utm_content'  => str_replace( ' ', '-', $content ),
-				'utm_source'   => 'uncanny_automator',
+				'utm_medium'   => 'in-plugin',
+				'utm_campaign' => strtolower( str_replace( ' ', '-', $campaign ) ),
+				'utm_content'  => strtolower( str_replace( ' ', '-', $content ) ),
+				'utm_source'   => 'uncanny-automator',
 			),
 			$url
 		);

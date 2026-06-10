@@ -463,51 +463,51 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'What is Uncanny Automator?', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/what-is-uncanny-automator/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/what-is-uncanny-automator/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Installing Uncanny Automator', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/installing-uncanny-automator/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/installing-uncanny-automator/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Creating a Recipe', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Recipes for Everyone', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Managing Triggers', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/managing-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Managing Actions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/managing-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Managing Tokens', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-tokens/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/managing-tokens/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Scheduled Actions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/scheduled-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/scheduled-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Action filters / conditions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/action-filters-conditions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/action-filters-conditions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'What are App Credits?', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'License Keys', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 					array(
 						'title' => esc_html__( 'Working with Redirects', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/working-with-redirects/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_getting_started',
+						'url' => 'https://automatorplugin.com/knowledge-base/working-with-redirects/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-getting-started',
 					),
 				),
 			),
@@ -516,39 +516,39 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Uncanny Automator Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 					array(
 						'title' => esc_html__( 'Uncanny Automator Pro Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-pro-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-pro-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 					array(
 						'title' => esc_html__( 'Having trouble? Read this', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/important-notes-troubleshooting/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/important-notes-troubleshooting/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 					array(
 						'title' => esc_html__( 'Using Automator Logs', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/using-automator-logs/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/using-automator-logs/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 					array(
 						'title' => esc_html__( 'Developer Resources', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/developer-resources/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/developer-resources/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 					array(
 						'title' => esc_html__( 'Data Privacy and GDPR', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/data-privacy-and-gdpr/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/data-privacy-and-gdpr/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 					array(
 						'title' => esc_html__( 'Usage Tracking', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/usage-tracking/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/usage-tracking/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 					array(
 						'title' => esc_html__( 'Connecting your site', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/connecting-your-site-with-a-free-uncanny-automator-account/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/connecting-your-site-with-a-free-uncanny-automator-account/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 					array(
 						'title' => esc_html__( 'PHP version', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/php-version/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_key_resources',
+						'url' => 'https://automatorplugin.com/knowledge-base/php-version/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-key-resources',
 					),
 				),
 			),
@@ -557,19 +557,19 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Incoming Webhook Triggers', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Webhook Actions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/send-data-to-a-webhook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Sending a JSON Array', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/sending-a-json-array-with-automators-outgoing-webhook-action/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/sending-a-json-array-with-automators-outgoing-webhook-action/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Sending a JSON Object', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/sending-a-json-object-with-outgoing-webhooks/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/sending-a-json-object-with-outgoing-webhooks/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 				),
 			),
@@ -578,55 +578,55 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Magic Buttons & Magic Links', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/magic-button/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/magic-button/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'Schedule', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/schedule/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/schedule/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'Google Sheets™ Webhook Addon', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/google-sheets-webhook-addon/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/google-sheets-webhook-addon/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'Run Now', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/run-now/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/run-now/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'Advanced Custom Fields', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/advanced-custom-fields/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/advanced-custom-fields/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'ActiveCampaign', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/activecampaign-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/activecampaign-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'IFTTT', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/ifttt-to-wordpress/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/ifttt-to-wordpress/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'OptinMonster Triggers', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/optinmonster-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/optinmonster-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'Mailchimp', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/mailchimp-wordpress-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/mailchimp-wordpress-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'WhatsApp', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/whatsapp/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/whatsapp/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'Help Scout', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/helpscout-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/helpscout-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'Telegram', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/telegram/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/telegram/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 					array(
 						'title' => esc_html__( 'WooCommerce', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/woocommerce-triggers/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_triggers',
+						'url' => 'https://automatorplugin.com/knowledge-base/woocommerce-triggers/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-triggers',
 					),
 				),
 			),
@@ -635,147 +635,147 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Run a WordPress hook', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/run-a-wordpress-hook/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/run-a-wordpress-hook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Call a custom function/method', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/call-a-custom-function-method/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/call-a-custom-function-method/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'The Formatter Action', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/the-formatter-action/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/the-formatter-action/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Google Sheets', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/google-sheets/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/google-sheets/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Google Calendar', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/google-calendar/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/google-calendar/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'OpenAI', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/open-ai/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/open-ai/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'X / Twitter', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/twitter/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/twitter/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Mailchimp', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/mailchimp/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/mailchimp/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'ActiveCampaign', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/activecampaign/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/activecampaign/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Facebook Pages', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/facebook/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/facebook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'OptinMonster', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/optinmonster/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/optinmonster/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Zapier Actions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/working-with-zapier-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/working-with-zapier-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'WhatsApp', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/whatsapp/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/whatsapp/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Integrately', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/integrately/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/integrately/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Popup Maker', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/working-with-popup-maker-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/working-with-popup-maker-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Slack', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/slack/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/slack/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Zoom', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/zoom/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/zoom/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Integromat', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/working-with-integromat-actions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/working-with-integromat-actions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'HubSpot', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/hubspot/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/hubspot/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'GoToTraining', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/gototraining/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/gototraining/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'GoToWebinar', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/gotowebinar/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/gotowebinar/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Twilio', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/twilio/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/twilio/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Instagram Business', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/instagram/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/instagram/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Send a certificate', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/generate-an-email-a-certificate-to-the-user/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/generate-an-email-a-certificate-to-the-user/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Uncanny Continuing Education Credits', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-continuing-education-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-continuing-education-credits/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'IFTTT', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/ifttt/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/ifttt/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Create WooCommerce orders', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-woocommerce-orders/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/create-woocommerce-orders/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'LinkedIn Pages', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/linkedin-pages/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/linkedin-pages/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Airtable', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/airtable/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/airtable/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Make', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/make/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/make/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'MailerLite', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/mailerlite/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/mailerlite/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Drip', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/drip/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/drip/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Microsoft Teams (Beta)', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/microsoft-teams/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/microsoft-teams/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Telegram', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/telegram/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/telegram/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Zoho Campaigns', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/zoho-campaigns/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/zoho-campaigns/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 					array(
 						'title' => esc_html__( 'Facebook Groups (Deprecated)', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/facebook-groups/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_actions',
+						'url' => 'https://automatorplugin.com/knowledge-base/facebook-groups/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
 				),
 			),
@@ -784,15 +784,15 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'User meta tokens', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/user-meta-tokens/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_tokens',
+						'url' => 'https://automatorplugin.com/knowledge-base/user-meta-tokens/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-tokens',
 					),
 					array(
 						'title' => esc_html__( 'Post meta tokens', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/post-meta-tokens/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_tokens',
+						'url' => 'https://automatorplugin.com/knowledge-base/post-meta-tokens/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-tokens',
 					),
 					array(
 						'title' => esc_html__( 'Calculations (math equations)', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/calculations-math-equations/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_special_tokens',
+						'url' => 'https://automatorplugin.com/knowledge-base/calculations-math-equations/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-tokens',
 					),
 				),
 			),
@@ -801,23 +801,23 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Installing the Custom User Fields Addon', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-custom-user-fields-addon/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-custom-user-fields-addon/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Managing Custom User Fields', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-custom-user-fields/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/managing-custom-user-fields/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Updating Custom User Field Data', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/updating-custom-user-field-data/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/updating-custom-user-field-data/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Displaying Custom User Fields', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/displaying-custom-user-fields/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/displaying-custom-user-fields/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Uncanny Automator Custom User Fields Addon Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-custom-user-fields-addon-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-custom-user-fields-addon-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 				),
 			),
@@ -826,31 +826,31 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Installing the Restrict Content Addon', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-restrict-content-addon/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-restrict-content-addon/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Managing Access Levels', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-access-levels/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/managing-access-levels/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Restrict Content Shortcodes', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-shortcodes/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-shortcodes/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Restrict Content for Blocks', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-for-blocks/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-for-blocks/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Restrict WordPress Pages & Posts', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/restrict-wordpress-pages-posts/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/restrict-wordpress-pages-posts/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Restrict Content Integration with Automator', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-integration-with-automator/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/restrict-content-integration-with-automator/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Uncanny Automator Restrict Content Addon Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-restrict-content-addon-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-restrict-content-addon-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 				),
 			),
@@ -859,31 +859,31 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Installing the User Lists Addon', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-user-lists-addon/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/installing-the-user-lists-addon/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Managing user lists', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-user-lists/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/managing-user-lists/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Managing user list subscriptions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/managing-user-list-subscriptions/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/managing-user-list-subscriptions/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'User Lists Integration with Automator', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/user-lists-integration-with-automator/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/user-lists-integration-with-automator/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Sending bulk emails with user lists', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/sending-bulk-emails-with-user-lists/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/sending-bulk-emails-with-user-lists/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'The Unsubscribed list and managing subscriptions', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/the-unsubscribed-list-subscription-management/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/the-unsubscribed-list-subscription-management/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Uncanny Automator User Lists Addon Changelog', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-user-lists-addon-changelog/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/uncanny-automator-user-lists-addon-changelog/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 				),
 			),
@@ -892,15 +892,15 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'User Loops', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/user-loops/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/user-loops/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Post Loops', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/post-loops/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/post-loops/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Custom Scheduling', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/how-to-use-custom-scheduling-in-wordpress-automations/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/how-to-use-custom-scheduling-in-wordpress-automations/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 				),
 			),
@@ -909,27 +909,27 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Registration form with Contact Form 7', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-contact-form-7/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users',
+						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-contact-form-7/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
 					),
 					array(
 						'title' => esc_html__( 'Registration form with Caldera Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-caldera-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users',
+						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-caldera-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
 					),
 					array(
 						'title' => esc_html__( 'Registration form with Ninja Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-ninja-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users',
+						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-ninja-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
 					),
 					array(
 						'title' => esc_html__( 'Registration form with Gravity Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-gravity-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users',
+						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-gravity-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
 					),
 					array(
 						'title' => esc_html__( 'Registration form with Formidable Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-formidable-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users',
+						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-formidable-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
 					),
 					array(
 						'title' => esc_html__( 'Registration form with WPForms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-wpforms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_registering_users',
+						'url' => 'https://automatorplugin.com/knowledge-base/create-a-registration-form-with-wpforms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-registering-users',
 					),
 				),
 			),
@@ -938,15 +938,15 @@ class Admin_Menu {
 				'articles' => array(
 					array(
 						'title' => esc_html__( 'Contact Form 7', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/contact-form-7/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/contact-form-7/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'Gravity Forms', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/gravity-forms/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/gravity-forms/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 					array(
 						'title' => esc_html__( 'WooCommerce', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/woocommerce/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=kb_integration_faq',
+						'url' => 'https://automatorplugin.com/knowledge-base/woocommerce/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-integration-faq',
 					),
 				),
 			),
@@ -976,7 +976,7 @@ class Admin_Menu {
 			array(
 				'question' => esc_html_x( 'How can I get more Uncanny Agent usage?', 'Dashboard FAQ', 'uncanny-automator' ),
 				'answer'   => esc_html_x( 'The most cost-effective method of getting additional usage of Uncanny Agent is by upgrading your plan. Higher plan tiers offer discounts on Uncanny Agent additional usage packs. Visit the usage page in your dashboard for details.', 'Dashboard FAQ', 'uncanny-automator' ),
-			)
+			),
 		);
 
 		return (object) array(
@@ -1020,7 +1020,7 @@ class Admin_Menu {
 				'free_credits'              => $free_credits,
 				'site_url_without_protocol' => preg_replace( '(^https?://)', '', get_site_url() ),
 			),
-			'upgrade_url'        => 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=pricing',
+			'upgrade_url'        => 'https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard&utm_campaign=upgrade-to-pro',
 			'llm_credits'        => (object) array(
 				'has_data'        => $ledger_has_data,
 				'usage_percent'   => $llm_usage_percent,
@@ -1192,9 +1192,9 @@ class Admin_Menu {
 					}
 
 					// Set links. Add UTM parameters at the end of each URL
-					$where_to_get_my_license = 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=where_to_get_my_license';
-					$buy_new_license         = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=buy_new_license';
-					$knowledge_base          = 'https://automatorplugin.com/knowledge-base/?utm_source=uncanny_automator_pro&utm_medium=license_page&utm_content=knowledge_base';
+					$where_to_get_my_license = 'https://automatorplugin.com/knowledge-base/where-can-i-find-my-license-key/?utm_source=uncanny-automator-pro&utm_medium=in-plugin&utm_content=license-page-where-to-get-my-license';
+					$buy_new_license         = 'https://automatorplugin.com/pricing/?utm_source=uncanny-automator-pro&utm_medium=in-plugin&utm_content=license-page&utm_campaign=buy-new-license';
+					$knowledge_base          = 'https://automatorplugin.com/knowledge-base/?utm_source=uncanny-automator-pro&utm_medium=in-plugin&utm_content=license-page-knowledge-base';
 
 				}
 			}
@@ -1486,9 +1486,10 @@ class Admin_Menu {
 							'url_upgrade_to_pro' => add_query_arg(
 								// UTM
 								array(
-									'utm_source'  => 'uncanny_automator',
-									'utm_medium'  => 'upgrade_to_pro',
-									'utm_content' => 'upgrade_to_pro_button',
+									'utm_source'   => 'uncanny-automator',
+									'utm_medium'   => 'in-plugin',
+									'utm_content'  => 'upgrade-to-pro-button',
+									'utm_campaign' => 'upgrade-to-pro',
 								),
 								'https://automatorplugin.com/pricing/'
 							),

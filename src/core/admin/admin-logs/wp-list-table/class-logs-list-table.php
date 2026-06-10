@@ -1047,7 +1047,7 @@ class Logs_List_Table extends WP_List_Table {
 	 */
 	public static function format_all_upgrade_links( $message, $action ) {
 
-		$link = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=recipe_log&utm_content=upgrade_to_pro';
+		$link = 'https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=recipe-log&utm_campaign=upgrade-to-pro';
 
 		$upgrade_link = sprintf( '<a target="_blank" href="%1$s" title="%2$s">%2$s</a>', $link, esc_html__( 'Please upgrade for unlimited app credits', 'uncanny-automator' ) );
 

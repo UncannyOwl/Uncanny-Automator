@@ -539,22 +539,11 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 			$options[] = $this->any_option( esc_html_x( 'Any ticket', 'The Events Calendar', 'uncanny-automator' ) );
 		}
 
-		// Cascading lookup: $request->get_group_id() identifies which parent
-		// field triggered the change; $values[$group_id] is its current value.
-		// Unwrap automator_custom_value mode so token-driven parent fields
-		// (e.g. an event ID passed via {{token}} → stored in
-		// `<group_id>_custom`) still resolve.
-		$values   = $request->get_values();
-		$group_id = $request->get_group_id();
-		$raw      = $values[ $group_id ] ?? '';
-
-		if ( '-1' === (string) $raw ) {
-			return $options;
-		}
-
-		$event_id = ( 'automator_custom_value' === $raw )
-			? absint( $values[ $group_id . '_custom' ] ?? 0 )
-			: absint( $raw );
+		// Resolve the event whose tickets we list. The recipe builder only sends
+		// `group_id` (the parent field code) on a `parent_fields_change` event; on
+		// `refresh-button` and `on-load` it is absent, so resolve_parent_event_id()
+		// falls back to scanning the posted values for the event field.
+		$event_id = $this->resolve_parent_event_id( $request );
 
 		if ( 0 === $event_id ) {
 			return $options;
@@ -581,6 +570,74 @@ class The_Events_Calendar_Helpers extends Abstract_Helpers {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Resolve the parent event ID for the tickets dropdown.
+	 *
+	 * The recipe builder only sends `group_id` (the parent field code) on a
+	 * `parent_fields_change` event. On `refresh-button` and `on-load` it is
+	 * absent — which left the dropdown empty because $values[''] resolved to
+	 * nothing. When group_id is missing, fall back to scanning the posted
+	 * values for the one field whose value is an actual `tribe_events` post.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return int Event post ID, or 0 when none resolves.
+	 */
+	private function resolve_parent_event_id( $request ): int {
+
+		$values = $request->get_values();
+
+		// Preferred: the parent field the builder named (parent_fields_change).
+		$group_id = $request->get_group_id();
+		if ( '' !== $group_id ) {
+			$event_id = $this->event_value_from( $values, $group_id );
+			if ( $event_id > 0 ) {
+				return $event_id;
+			}
+		}
+
+		// Fallback (refresh-button / on-load): the event field is the only posted
+		// value that resolves to a `tribe_events` post. Ticket/operator fields
+		// never do, so there is no ambiguity.
+		foreach ( array_keys( $values ) as $key ) {
+
+			// Skip the readable/label/custom companion keys.
+			if ( '_custom' === substr( $key, -7 ) || false !== strpos( $key, '_readable' ) || false !== strpos( $key, '_label' ) ) {
+				continue;
+			}
+
+			$event_id = $this->event_value_from( $values, $key );
+			if ( $event_id > 0 && 'tribe_events' === get_post_type( $event_id ) ) {
+				return $event_id;
+			}
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Unwrap a single posted value into an event ID, honouring the
+	 * `automator_custom_value` token-driven mode (value stored in
+	 * `<key>_custom`) and the "-1" / "Any" sentinel.
+	 *
+	 * @param array  $values The posted values.
+	 * @param string $key    The field key to read.
+	 *
+	 * @return int
+	 */
+	private function event_value_from( array $values, string $key ): int {
+
+		$raw = $values[ $key ] ?? '';
+
+		if ( '-1' === (string) $raw ) {
+			return 0;
+		}
+
+		return ( 'automator_custom_value' === $raw )
+			? absint( $values[ $key . '_custom' ] ?? 0 )
+			: absint( $raw );
 	}
 
 	/**

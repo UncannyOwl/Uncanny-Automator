@@ -21,9 +21,9 @@ $has_description = ! empty( $integration->short_description );
 if ( isset( $integration->external_permalink ) && ! empty( $integration->external_permalink ) && isset( $integration->integration_id ) ) {
 	$integration->external_permalink = add_query_arg(
 		array(
-			'utm_source'  => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? 'uncanny_automator_pro' : 'uncanny_automator',
-			'utm_medium'  => 'integrations_page',
-			'utm_content' => 'integration_item-' . $integration->integration_id,
+			'utm_source'   => defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) ? 'uncanny-automator-pro' : 'uncanny-automator',
+			'utm_medium'   => 'in-plugin',
+			'utm_content'  => 'integrations-page-integration-item-' . $integration->integration_id,
 		),
 		$integration->external_permalink
 	);
