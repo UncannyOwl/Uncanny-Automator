@@ -582,12 +582,14 @@ function automator_purge_closure_logs( $recipe_id, $automator_recipe_log_id ) {
  * @return String           URL with the UTM parameters
  */
 function automator_utm_parameters( $url, $medium = '', $content = '' ) {
-	// utm_source=plugin-id
-	// utm_medium=section-id
-	// utm_content=element-id+unique-id
+	// UTM Convention (in-plugin links): all lowercase, hyphenated.
+	//   utm_source   = uncanny-automator (fixed below)
+	//   utm_medium   = in-plugin (fixed below)
+	//   utm_content  = $medium arg  — the UI location (e.g. settings, license-page)
+	//   utm_campaign = $content arg — the feature/element (e.g. upgrade-to-pro, help-button)
 
 	$default_utm_parameters = array(
-		'source' => 'uncanny_automator',
+		'source' => 'uncanny-automator',
 	);
 
 	try {
@@ -607,13 +609,15 @@ function automator_utm_parameters( $url, $medium = '', $content = '' ) {
 			$params[ 'utm_' . $default_utm_parameter_key ] = $default_utm_parameter_value;
 		}
 
-		// Add custom parameters
+		// In-plugin links use a fixed medium; location -> utm_content, feature -> utm_campaign.
+		$params['utm_medium'] = 'in-plugin';
+
 		if ( ! empty( $medium ) ) {
-			$params['utm_medium'] = $medium;
+			$params['utm_content'] = strtolower( str_replace( '_', '-', $medium ) );
 		}
 
 		if ( ! empty( $content ) ) {
-			$params['utm_content'] = $content;
+			$params['utm_campaign'] = strtolower( str_replace( '_', '-', $content ) );
 		}
 
 		// Encode parameters

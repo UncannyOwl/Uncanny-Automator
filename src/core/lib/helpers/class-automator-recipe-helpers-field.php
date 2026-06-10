@@ -561,14 +561,14 @@ class Automator_Helpers_Recipe_Field extends Automator_Helpers_Recipe {
 	 * @param array $options
 	 * @param $default
 	 * @param string $placeholder
-	 * @param bool $supports_token
+	 * @param bool $supports_tokens
 	 * @param bool $is_ajax
 	 * @param array $args
 	 * @param array $relevant_tokens
 	 *
 	 * @return mixed
 	 */
-	public function select_field_ajax( $option_code = 'SELECT', $label = null, $options = array(), $default = null, $placeholder = '', $supports_token = false, $is_ajax = false, $args = array(), $relevant_tokens = array() ) {
+	public function select_field_ajax( $option_code = 'SELECT', $label = null, $options = array(), $default = null, $placeholder = '', $supports_tokens = false, $is_ajax = false, $args = array(), $relevant_tokens = array() ) {
 
 		// TODO this function should be the main way to create select fields
 		// TODO chained values should be introduced using the format in function "list_gravity_forms"

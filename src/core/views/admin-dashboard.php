@@ -157,7 +157,7 @@ $setup_wizard_link = add_query_arg(
 										'<uo-icon integration="FACEBOOK"></uo-icon> <strong>Facebook</strong>',
 									)
 								),
-								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use app credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
+								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-integrations-that-uses-credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use app credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
 							)
 						);
 					}
@@ -180,7 +180,7 @@ $setup_wizard_link = add_query_arg(
 										'<uo-icon integration="FACEBOOK"></uo-icon> <strong>Facebook</strong>',
 									)
 								),
-								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=integrations_that_uses_credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use app credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
+								'<a href="https://automatorplugin.com/knowledge-base/what-are-credits/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-integrations-that-uses-credits#Integrations_that_use_credits" target="_blank">' . esc_attr__( 'integrations that use app credits', 'uncanny-automator' ) . ' <uo-icon id="external-link"></uo-icon></a>',
 							)
 						);
 					}
@@ -343,7 +343,7 @@ $setup_wizard_link = add_query_arg(
 				</div>
 
 				<div class="uap-dashboard-box-footer">
-					<a href="https://automatorplugin.com/knowledge-base/?utm_source=uncanny_automator&utm_medium=dashboard&utm_content=view_all_articles"
+					<a href="https://automatorplugin.com/knowledge-base/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-view-all-articles"
 					   target="_blank">
 						<?php esc_attr_e( 'View all articles', 'uncanny-automator' ); ?>
 

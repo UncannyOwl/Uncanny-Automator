@@ -54,7 +54,6 @@ class WHATSAPP_SEND_MESSAGE extends App_Action {
 				'input_type'            => 'text',
 				'placeholder'           => esc_attr_x( '+1 123 345 6789', 'WhatsApp', 'uncanny-automator' ),
 				'required'              => true,
-				'supports_token'        => true,
 				'supports_custom_value' => true,
 			),
 			array(
@@ -62,7 +61,6 @@ class WHATSAPP_SEND_MESSAGE extends App_Action {
 				'label'                 => esc_attr_x( 'Body', 'WhatsApp', 'uncanny-automator' ),
 				'input_type'            => 'textarea',
 				'required'              => true,
-				'supports_token'        => true,
 				'supports_custom_value' => true,
 			),
 		);

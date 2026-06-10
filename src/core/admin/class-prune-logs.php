@@ -345,9 +345,10 @@ class Prune_Logs {
 			$upgrade_to_pro_url = add_query_arg(
 			// UTM
 				array(
-					'utm_source'  => 'uncanny_automator',
-					'utm_medium'  => 'settings',
-					'utm_content' => 'auto_prune_tease',
+					'utm_source'   => 'uncanny-automator',
+					'utm_medium'   => 'in-plugin',
+					'utm_content'  => 'settings-auto-prune-tease',
+					'utm_campaign' => 'upgrade-to-pro',
 				),
 				'https://automatorplugin.com/pricing/'
 			);

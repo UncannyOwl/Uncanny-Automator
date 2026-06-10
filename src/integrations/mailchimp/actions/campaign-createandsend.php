@@ -104,7 +104,7 @@ class CAMPAIGN_CREATEANDSEND extends \Uncanny_Automator\Recipe\App_Action {
 				'option_code' => 'MCTONAME',
 				'label'       => esc_html_x( 'To name', 'Mailchimp', 'uncanny-automator' ),
 				'input_type'  => 'text',
-				'required'    => true,
+				'required'    => false,
 				'tokens'      => true,
 				'description' => esc_html_x( 'Supports Mailchimp merge tags such as *|FNAME|* and *|LNAME|*.', 'Mailchimp', 'uncanny-automator' ),
 			),
@@ -153,8 +153,12 @@ class CAMPAIGN_CREATEANDSEND extends \Uncanny_Automator\Recipe\App_Action {
 		$to_name            = sanitize_text_field( trim( $this->get_parsed_meta_value( 'MCTONAME' ) ) );
 		$email_content      = wp_kses_post( $this->get_parsed_meta_value( 'MCEMAILCONTENT' ) );
 
-		if ( empty( $campaign_title ) || empty( $email_subject ) || empty( $from_name ) || empty( $from_email_address ) || empty( $to_name ) ) {
-			throw new \Exception( esc_html_x( 'Campaign title, email subject, from name, from email address, and to name are required.', 'Mailchimp', 'uncanny-automator' ) );
+		// "To name" is intentionally NOT required. Mailchimp treats it as optional
+		// (it personalizes the recipient line, e.g. *|FNAME|*), and pre-7.3 sent it
+		// blank without issue. Requiring it was a migration regression that broke
+		// long-standing campaigns whose To-name was left empty.
+		if ( empty( $campaign_title ) || empty( $email_subject ) || empty( $from_name ) || empty( $from_email_address ) ) {
+			throw new \Exception( esc_html_x( 'Campaign title, email subject, from name, and from email address are required.', 'Mailchimp', 'uncanny-automator' ) );
 		}
 
 		$campaign_data = array(

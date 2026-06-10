@@ -29,6 +29,45 @@ class Mailchimp_App_Helpers extends App_Helpers {
 	}
 
 	/**
+	 * Normalize stored credentials into a consistent array shape.
+	 *
+	 * Legacy (pre-migration) connections stored the OAuth payload with the
+	 * 'login' element as a stdClass object — see the old validate_oauth_tokens()
+	 * which read $tokens['login']->email. New code dereferences 'login' as an
+	 * array ($credentials['login']['email']), and array access on a stdClass
+	 * throws a \Error ("Cannot use object of type stdClass as array") that
+	 * ?? does not suppress. Normalize here, at the single credentials read
+	 * boundary, so every consumer (get_account_info, the API caller, the
+	 * connection check) sees an array regardless of when the account connected.
+	 *
+	 * @param mixed $credentials The stored credentials.
+	 * @param array $args        Optional arguments.
+	 *
+	 * @return array Normalized credentials.
+	 */
+	public function validate_credentials( $credentials, $args = array() ) {
+		if ( empty( $credentials ) ) {
+			return array();
+		}
+
+		// Tolerate a top-level object blob from older storage.
+		if ( is_object( $credentials ) ) {
+			$credentials = (array) $credentials;
+		}
+
+		if ( ! is_array( $credentials ) ) {
+			return array();
+		}
+
+		// Cast the legacy stdClass 'login' element to an array.
+		if ( isset( $credentials['login'] ) && is_object( $credentials['login'] ) ) {
+			$credentials['login'] = (array) $credentials['login'];
+		}
+
+		return $credentials;
+	}
+
+	/**
 	 * Get account info extracted from credentials.
 	 *
 	 * Mailchimp stores account info (login->login_name, login->email) directly
@@ -497,5 +536,4 @@ class Mailchimp_App_Helpers extends App_Helpers {
 			'FIELD_VALUE' => '',
 		);
 	}
-
 }

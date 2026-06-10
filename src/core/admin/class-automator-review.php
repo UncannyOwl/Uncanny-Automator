@@ -437,7 +437,7 @@ class Automator_Review {
 
 				// Send feedback URL
 				$url_send_feedback_version = $is_pro ? 'Uncanny%20Automator%20Pro%20' . $version : 'Uncanny%20Automator%20' . $version;
-				$url_send_feedback_source  = $is_pro ? 'uncanny_automator_pro' : 'uncanny_automator';
+				$url_send_feedback_source  = $is_pro ? 'uncanny-automator-pro' : 'uncanny-automator';
 				$url_remind_later          = add_query_arg( array( 'action' => 'uo-hide-track' ) );
 				include Utilities::automator_get_view( 'tracking-banner.php' );
 			}
@@ -917,9 +917,9 @@ class Automator_Review {
 		// Send feedback URL
 		$url_send_feedback_version = $is_pro ? 'Uncanny%20Automator%20Pro%20' . $version : 'Uncanny%20Automator%20' . $version;
 
-		$url_send_feedback_source = $is_pro ? 'uncanny_automator_pro' : 'uncanny_automator';
+		$url_send_feedback_source = $is_pro ? 'uncanny-automator-pro' : 'uncanny-automator';
 
-		return esc_url( 'https://automatorplugin.com/feedback/?version=' . $url_send_feedback_version . '&utm_source=' . $url_send_feedback_source . '&utm_medium=review_banner' );
+		return esc_url( 'https://automatorplugin.com/feedback/?version=' . $url_send_feedback_version . '&utm_source=' . $url_send_feedback_source . '&utm_medium=in-plugin&utm_content=review-banner' );
 	}
 
 	/**

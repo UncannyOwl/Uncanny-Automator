@@ -49,7 +49,7 @@ namespace Uncanny_Automator;
 			<uo-button
 				target="_blank"
 				id="uap-review-banner-btn-positive"
-				href="https://automatorplugin.com/pricing/?utm_source=Uncanny_Automator&utm_medium=credit_notification&utm_campaign=Get_unlimited_credits"
+				href="https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=credit-notification&utm_campaign=get-unlimited-credits"
 				class="uap-spacing-right uap-spacing-right--xsmall"
 			>
 				<?php echo esc_html_x( 'Get unlimited credits', 'Reviews banner', 'uncanny-automator' ); ?>

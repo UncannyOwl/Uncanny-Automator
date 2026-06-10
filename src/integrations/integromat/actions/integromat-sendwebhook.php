@@ -30,12 +30,12 @@ class INTEGROMAT_SENDWEBHOOK {
 		$this->set_action_code( 'INTSENDWEBHOOK' );
 		$this->set_action_meta( 'WEBHOOK' );
 		$this->set_author( 'Uncanny Automator' );
-		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/send-data-to-a-integromat-webhook?utm_source=uncanny_automator&utm_medium=integromat-send_data_to_webhook&utm_content=help_button' ) );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_action_code(), 'knowledge-base/send-data-to-a-webhook/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=integromat-send-data-to-webhook-help-button' ) );
 		$this->set_requires_user( false );
 		/* translators: Action - Integromat */
-		$this->set_sentence( sprintf( esc_attr__( 'Send data to Integromat {{webhook:%1$s}}', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_sentence( sprintf( esc_attr_x( 'Send data to Integromat {{webhook:%1$s}}', 'Integromat', 'uncanny-automator' ), $this->get_action_meta() ) );
 		/* translators: Action - Integromat */
-		$this->set_readable_sentence( esc_attr__( 'Send data to Integromat {{webhook}}', 'uncanny-automator' ) );
+		$this->set_readable_sentence( esc_attr_x( 'Send data to Integromat {{webhook}}', 'Integromat', 'uncanny-automator' ) );
 		$this->set_options_group(
 			Automator()->send_webhook->fields->options_group(
 				$this->get_action_meta(),

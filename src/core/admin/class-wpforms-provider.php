@@ -313,7 +313,7 @@ GROUP BY p.post_parent",
 										<span class="uap-wpf-integration-recipe-trigger-pro">
 											<i class="fa fa-lock"></i>
 											<?php echo wp_kses_post( sprintf( '%1$s <strong>%2$s</strong>', esc_html__( 'Requires', 'uncanny-automator' ), 'Uncanny Automator Pro' ) ); ?>
-											<a href="https://automatorplugin.com/pricing/?utm_source=wpforms&utm_medium=form_marketing&utm_content=learn_more_pro_link&utm_r=wpforms"
+											<a href="https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=form-marketing-learn-more-pro-link&utm_campaign=upgrade-to-pro&utm_r=wpforms"
 											   target="_blank">
 												<?php esc_html_e( 'Get it now', 'uncanny-automator' ); ?>
 											</a>

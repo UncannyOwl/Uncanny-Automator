@@ -92,7 +92,6 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 						'required'                 => true,
 						'label'                    => esc_html__( 'List of all available status values for Fluent CRM contacts.', 'uncanny-automator' ),
 						'description'              => esc_html__( 'Select from dropdown list of the options above.', 'uncanny-automator' ),
-						'supports_token'           => true,
 						'supports_multiple_values' => false,
 						'supports_custom_value'    => false,
 						'relevant_tokens'          => $this->get_tokens(),

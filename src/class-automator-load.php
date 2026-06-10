@@ -368,7 +368,7 @@ class Automator_Load {
 		// Check if Automator Pro is not active.
 		if ( ! defined( 'AUTOMATOR_PRO_FILE' ) ) {
 
-			$link = 'https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=plugins_page&utm_content=update_to_pro';
+			$link = 'https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=plugins-page&utm_campaign=upgrade-to-pro';
 
 			$settings_link = sprintf( '<a href="%s" target="_blank" style="color: rgb(0, 163, 42); font-weight: 700;">%s</a>', $link, esc_html__( 'Upgrade to Pro', 'uncanny-automator' ) );
 

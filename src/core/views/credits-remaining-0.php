@@ -35,7 +35,7 @@ namespace Uncanny_Automator;
 			<uo-button
 				target="_blank"
 				id="uap-review-banner-btn-positive"
-				href="https://automatorplugin.com/pricing/?utm_source=uncanny_automator&utm_medium=upgrade&utm_campaign=0_credits_left&utm_term=Upgrade"
+				href="https://automatorplugin.com/pricing/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=credit-notification-0-credits-left&utm_campaign=get-unlimited-credits"
 				class="uap-spacing-right uap-spacing-right--xsmall"
 				>
 				<?php echo esc_html_x( 'Upgrade now', 'Reviews banner', 'uncanny-automator' ); ?>

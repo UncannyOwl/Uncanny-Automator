@@ -148,7 +148,7 @@ if ( ! defined( 'AUTOMATOR_LLM_CREDITS_URL' ) ) {
 	 *
 	 * @since 7.0.0
 	 */
-	define( 'AUTOMATOR_LLM_CREDITS_URL', 'https://automatorplugin.com/get-agent-credits/?utm_source=plugin&utm_medium=automator&utm_campaign=llm_credits' );
+	define( 'AUTOMATOR_LLM_CREDITS_URL', 'https://automatorplugin.com/get-agent-credits/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=automator&utm_campaign=llm-credits' );
 }
 
 // ──────────────────────────────────────────────

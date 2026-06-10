@@ -315,7 +315,6 @@ class Google_Calendar_Helpers extends App_Helpers {
 			'label'                 => esc_attr_x( 'Calendar', 'Google Calendar', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
-			'supports_token'        => true,
 			'supports_custom_value' => true,
 			'options'               => array(),
 			'options_show_id'       => false,
@@ -340,7 +339,6 @@ class Google_Calendar_Helpers extends App_Helpers {
 			'label'                 => esc_attr_x( 'Event', 'Google Calendar', 'uncanny-automator' ),
 			'input_type'            => 'select',
 			'required'              => true,
-			'supports_token'        => true,
 			'supports_custom_value' => true,
 			'options_show_id'       => false,
 			'ajax'                  => array(
@@ -364,7 +362,6 @@ class Google_Calendar_Helpers extends App_Helpers {
 			'label'                 => esc_attr_x( 'Attendee email', 'Google Calendar', 'uncanny-automator' ),
 			'input_type'            => 'email',
 			'required'              => true,
-			'supports_token'        => true,
 			'supports_custom_value' => true,
 		);
 	}

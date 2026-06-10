@@ -68,7 +68,7 @@ class LD_ACHIEVEMENTS_AWARD extends \Uncanny_Automator\Recipe\Action {
 				'required'              => true,
 				'label'                 => esc_html_x( 'Achievement', 'LearnDash', 'uncanny-automator' ),
 				'description'           => esc_html_x( 'Select from the list of available achievements.', 'LearnDash', 'uncanny-automator' ),
-				'supports_token'        => false,
+				'supports_tokens'        => false,
 				'supports_custom_value' => false,
 				'remote_data'           => $this->item_helpers->remote_data_load_config( 'achievements' ),
 			),

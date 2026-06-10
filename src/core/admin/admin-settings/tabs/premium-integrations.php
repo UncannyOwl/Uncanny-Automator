@@ -55,9 +55,10 @@ class Admin_Settings_Premium_Integrations {
 		$upgrade_to_pro_url = add_query_arg(
 			// UTM
 			array(
-				'utm_source'  => 'uncanny_automator',
-				'utm_medium'  => 'settings',
-				'utm_content' => 'premium_integrations_connect',
+				'utm_source'   => 'uncanny-automator',
+				'utm_medium'   => 'in-plugin',
+				'utm_content'  => 'settings-premium-integrations-connect',
+				'utm_campaign' => 'upgrade-to-pro',
 			),
 			'https://automatorplugin.com/pricing/'
 		);
@@ -66,9 +67,9 @@ class Admin_Settings_Premium_Integrations {
 		$credits_article_url = add_query_arg(
 			// UTM
 			array(
-				'utm_source'  => 'uncanny_automator',
-				'utm_medium'  => 'settings',
-				'utm_content' => 'premium_integrations_connect',
+				'utm_source'   => 'uncanny-automator',
+				'utm_medium'   => 'in-plugin',
+				'utm_content'  => 'settings-premium-integrations-connect',
 			),
 			'https://automatorplugin.com/knowledge-base/what-are-credits/'
 		);
