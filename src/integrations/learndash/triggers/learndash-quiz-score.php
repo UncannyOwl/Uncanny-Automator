@@ -151,10 +151,12 @@ class LD_QUIZSCORE extends \Uncanny_Automator\Recipe\Trigger {
 		$quiz_id = is_object( $quiz ) ? $quiz->ID : $quiz;
 		$score   = $data['score'] ?? 0;
 
+		$user = empty( $current_user ) ? wp_get_current_user() : $current_user;
+
 		$tokens_class = new Ld_Tokens_New_Framework();
 
 		return array_merge(
-			$tokens_class->hydrate_quiz_tokens( $quiz_id, $data ),
+			$tokens_class->hydrate_quiz_tokens( $quiz_id, $data, (int) $user->ID ),
 			$tokens_class->hydrate_quiz_score_tokens( $score ),
 			array( $this->get_trigger_meta() => get_the_title( $quiz_id ) )
 		);

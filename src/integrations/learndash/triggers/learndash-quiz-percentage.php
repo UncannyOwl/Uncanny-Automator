@@ -150,11 +150,13 @@ class LD_QUIZPERCENT extends \Uncanny_Automator\Recipe\Trigger {
 		$quiz_id    = is_object( $quiz ) ? $quiz->ID : $quiz;
 		$percentage = $data['percentage'] ?? 0;
 
+		$user = empty( $current_user ) ? wp_get_current_user() : $current_user;
+
 		$tokens_class       = new Ld_Tokens_New_Framework();
 		$passing_percentage = (int) learndash_get_setting( $quiz_id, 'passingpercentage' );
 
 		return array_merge(
-			$tokens_class->hydrate_quiz_tokens( $quiz_id, $data ),
+			$tokens_class->hydrate_quiz_tokens( $quiz_id, $data, (int) $user->ID ),
 			$tokens_class->hydrate_quiz_percent_tokens( $percentage, $passing_percentage ),
 			array( $this->get_trigger_meta() => get_the_title( $quiz_id ) )
 		);

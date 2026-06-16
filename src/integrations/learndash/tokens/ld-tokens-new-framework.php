@@ -350,12 +350,25 @@ class Ld_Tokens_New_Framework {
 	/**
 	 * Hydrate quiz tokens with actual values.
 	 *
+	 * Attempt-derived tokens (score %, correct count, time, category scores, Q&A)
+	 * are computed from the persisted `_sfwd-quizzes` activity via the legacy
+	 * token calculator — the same path the quiz ACTION hydrator uses
+	 * (`Ld_Helpers::hydrate_ld_quiz_action_tokens`). `Ld_Tokens( false )` skips the
+	 * filter registration (those filters self-disable once the modern integration
+	 * loads) and is used purely to compute values.
+	 *
+	 * This restores pre-7.3 behaviour: `LDQUIZ_SCORE` as a percentage (e.g. "75%")
+	 * and a populated Q&A. The hook payload (`$quiz_data`) carries the raw
+	 * `score`/`count` and is absent on the graded-essay path, so it cannot be the
+	 * source of truth — hence reading the persisted activity by user + quiz.
+	 *
 	 * @param int   $quiz_id   The quiz post ID.
-	 * @param array $quiz_data The quiz attempt data array (keys: timespent, score, count, etc.).
+	 * @param array $quiz_data The quiz attempt data array (retained for signature compatibility; no longer the source of truth).
+	 * @param int   $user_id   The user who took the quiz — required to read their attempt.
 	 *
 	 * @return array Key-value pairs of token ID => value.
 	 */
-	public function hydrate_quiz_tokens( $quiz_id, $quiz_data = array() ) {
+	public function hydrate_quiz_tokens( $quiz_id, $quiz_data = array(), $user_id = 0 ) {
 
 		$quiz = get_post( $quiz_id );
 
@@ -364,23 +377,21 @@ class Ld_Tokens_New_Framework {
 		$thumb_id   = null !== $quiz ? get_post_thumbnail_id( $quiz_id ) : '';
 		$thumb_url  = null !== $quiz ? get_the_post_thumbnail_url( $quiz_id, 'full' ) : '';
 
-		$time_spent = $quiz_data['timespent'] ?? '';
-		$score      = $quiz_data['score'] ?? '';
-		$correct    = $quiz_data['count'] ?? '';
+		$legacy  = new \Uncanny_Automator\Ld_Tokens( false );
+		$user_id = absint( $user_id );
 
 		return array(
-			'LDQUIZ'                => $quiz_title,
-			'LDQUIZ_ID'             => $quiz_id,
-			'LDQUIZ_URL'            => $quiz_url,
-			'LDQUIZ_THUMB_ID'       => $thumb_id,
-			'LDQUIZ_THUMB_URL'      => ! empty( $thumb_url ) ? $thumb_url : '',
-			'LDQUIZ_TIME'           => $time_spent,
-			'LDQUIZ_SCORE'          => $score,
-			'LDQUIZ_CORRECT'        => $correct,
-			// Category scores, Q&A, and Q&A CSV are handled by the legacy Ld_Tokens token parsing filter.
-			'LDQUIZ_CATEGORY_SCORES' => '',
-			'LDQUIZ_Q_AND_A'        => '',
-			'LDQUIZ_Q_AND_A_CSV'    => '',
+			'LDQUIZ'                 => $quiz_title,
+			'LDQUIZ_ID'              => $quiz_id,
+			'LDQUIZ_URL'             => $quiz_url,
+			'LDQUIZ_THUMB_ID'        => $thumb_id,
+			'LDQUIZ_THUMB_URL'       => ! empty( $thumb_url ) ? $thumb_url : '',
+			'LDQUIZ_TIME'            => $legacy->get_quiz_token_data( 'LDQUIZ_TIME', $user_id, $quiz_id ),
+			'LDQUIZ_SCORE'           => $legacy->get_quiz_token_data( 'LDQUIZ_SCORE', $user_id, $quiz_id ),
+			'LDQUIZ_CORRECT'         => $legacy->get_quiz_token_data( 'LDQUIZ_CORRECT', $user_id, $quiz_id ),
+			'LDQUIZ_CATEGORY_SCORES' => $legacy->get_quiz_token_data( 'LDQUIZ_CATEGORY_SCORES', $user_id, $quiz_id ),
+			'LDQUIZ_Q_AND_A'         => $legacy->get_quiz_token_data( 'LDQUIZ_Q_AND_A', $user_id, $quiz_id ),
+			'LDQUIZ_Q_AND_A_CSV'     => $legacy->get_quiz_token_data( 'LDQUIZ_Q_AND_A_CSV', $user_id, $quiz_id ),
 		);
 	}
 

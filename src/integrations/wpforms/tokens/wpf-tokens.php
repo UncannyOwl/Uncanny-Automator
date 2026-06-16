@@ -423,7 +423,10 @@ class Wpf_Tokens {
 									$run_number,
 									array(
 										'meta_key'   => $part_key,
-										'meta_value' => $part_value,
+										// Wrap in maybe_serialize() so an attacker-supplied serialized
+										// string is neutralised on read (maybe_unserialize) — prevents
+										// PHP Object Injection via Name/Address subfield tokens.
+										'meta_value' => maybe_serialize( $part_value ),
 									)
 								);
 							}
@@ -456,7 +459,10 @@ class Wpf_Tokens {
 									$run_number,
 									array(
 										'meta_key'   => $part_key,
-										'meta_value' => $part_value,
+										// Wrap in maybe_serialize() so an attacker-supplied serialized
+										// string is neutralised on read (maybe_unserialize) — prevents
+										// PHP Object Injection via Name/Address subfield tokens.
+										'meta_value' => maybe_serialize( $part_value ),
 									)
 								);
 							}

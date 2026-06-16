@@ -645,11 +645,11 @@ class Action_Run_Stage implements Stage {
 		$action_integration = $this->integrations->get_action_integration( $action_code );
 
 		if ( ! $this->integrations->is_plugin_active( $action_integration ) ) {
-			throw new Pipeline_Exception( $this->error_handler->get_error_message( 'action-not-active' ) );
+			throw new Pipeline_Exception( esc_html( $this->error_handler->get_error_message( 'action-not-active' ) ) );
 		}
 
 		if ( ! $this->integrations->is_app_connected( $action_integration ) ) {
-			throw new Pipeline_Exception( $this->error_handler->get_error_message( 'app-not-connected' ) );
+			throw new Pipeline_Exception( esc_html( $this->error_handler->get_error_message( 'app-not-connected' ) ) );
 		}
 	}
 
@@ -705,8 +705,8 @@ class Action_Run_Stage implements Stage {
 			// until the worker lands. True skips (condition filters, policy
 			// blocks) stay at SKIPPED — terminal, resolver treats as done.
 			if ( isset( $action_data['action_log_id'] ) ) {
-				$deferred_reasons    = array( 'background_dispatch', 'async_scheduled' );
-				$process_reason      = $action['process_further_reason'] ?? '';
+				$deferred_reasons     = array( 'background_dispatch', 'async_scheduled' );
+				$process_reason       = $action['process_further_reason'] ?? '';
 				$is_deferred_dispatch = in_array( $process_reason, $deferred_reasons, true )
 					// Pro <= 7.3.0.1 Async_Actions postpones delayed/scheduled
 					// actions without declaring a reason — recognize the deferral
@@ -720,7 +720,7 @@ class Action_Run_Stage implements Stage {
 					// inside the filter (non-blocking POST) and on fast servers
 					// completes the action before this finalize runs — never
 					// downgrade a finished row back to IN_PROGRESS.
-					$this->log_store->mark_action_scheduled( (int) $action_data['ID'], $recipe_log_id );
+					$this->log_store->mark_action_scheduled( (int) $action_data['ID'], $recipe_log_id, Dispatcher::filter( 'automator_action_log_date_time', null, $action['action_data'] ) );
 				} else {
 					$this->log_store->mark_action_complete( (int) $action_data['ID'], $recipe_log_id, Automator_Status::SKIPPED );
 				}

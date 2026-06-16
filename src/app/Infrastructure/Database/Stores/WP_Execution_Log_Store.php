@@ -358,12 +358,18 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function mark_action_scheduled( int $action_id, int $recipe_log_id ): void {
+	public function mark_action_scheduled( int $action_id, int $recipe_log_id, ?string $date_time = null ): void {
 
-		// Atomic conditional transition NOT_COMPLETED → IN_PROGRESS. A row the
-		// worker already finished (any other status) is left untouched —
-		// see the interface docblock for the dispatch-vs-worker race.
-		$updated = $this->wpdb->query(
+		// Record the supplied scheduled/delayed run time so the log reflects when
+		// the action is due rather than the trigger time; fall back to the current
+		// time for deferred dispatches with no schedule (e.g. background processing).
+		$date_time = ! empty( $date_time ) ? $date_time : current_time( 'mysql' );
+
+		// Genuine transition NOT_COMPLETED → IN_PROGRESS (also stamps the scheduled
+		// date). Guarded so a row the worker already finished (terminal status) is
+		// never downgraded — see the interface docblock for the dispatch-vs-worker
+		// race. Only this real status change dispatches the status events.
+		$promoted = $this->wpdb->query(
 			$this->wpdb->prepare(
 				"UPDATE {$this->wpdb->prefix}uap_action_log
 				SET completed = %d, date_time = %s
@@ -371,17 +377,37 @@ final class WP_Execution_Log_Store implements Execution_Log_Store {
 				AND automator_recipe_log_id = %d
 				AND completed = %d",
 				Automator_Status::IN_PROGRESS,
-				current_time( 'mysql' ),
+				$date_time,
 				$action_id,
 				$recipe_log_id,
 				Automator_Status::NOT_COMPLETED
 			)
 		);
 
-		if ( $updated ) {
+		if ( $promoted ) {
 			Dispatcher::action( 'automator_action_completion_status_changed', $action_id, $recipe_log_id, null, Automator_Status::IN_PROGRESS, '' );
 			Dispatcher::action( 'automator_action_marked_in_progress', $action_id, $recipe_log_id, null, Automator_Status::IN_PROGRESS, '' );
+			return;
 		}
+
+		// No transition: Pro's async postpone already moved the row to IN_PROGRESS
+		// before this finalize ran (logging the trigger time). Correct the
+		// scheduled date only — the status is unchanged, so the status-change
+		// events must NOT re-fire. A terminal row won't match the IN_PROGRESS
+		// guard, so it is still left untouched.
+		$this->wpdb->query(
+			$this->wpdb->prepare(
+				"UPDATE {$this->wpdb->prefix}uap_action_log
+				SET date_time = %s
+				WHERE automator_action_id = %d
+				AND automator_recipe_log_id = %d
+				AND completed = %d",
+				$date_time,
+				$action_id,
+				$recipe_log_id,
+				Automator_Status::IN_PROGRESS
+			)
+		);
 	}
 
 	/**
