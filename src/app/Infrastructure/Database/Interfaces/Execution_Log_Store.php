@@ -62,8 +62,12 @@ interface Execution_Log_Store {
 	public function mark_action_complete_by_id( int $action_log_id, int $completed, string $error_message = '' ): void;
 
 	/**
-	 * Mark a deferred (background/async-dispatched) action's row IN_PROGRESS —
-	 * but ONLY when it is still pending (NOT_COMPLETED).
+	 * Mark a deferred (background/async-dispatched) action's row IN_PROGRESS and
+	 * stamp its scheduled run time — but only while the row is non-terminal. A
+	 * pending (NOT_COMPLETED) row transitions to IN_PROGRESS and dispatches the
+	 * status-change events; a row already IN_PROGRESS (Pro's async postpone got
+	 * there first) has only its date corrected, with no status events; a terminal
+	 * row is left untouched.
 	 *
 	 * The background/async worker request fires inside the before-action
 	 * filter (non-blocking POST); on fast servers the worker completes the
@@ -72,12 +76,14 @@ interface Execution_Log_Store {
 	 * would downgrade that finished row and strand the run "In progress"
 	 * forever. The WHERE guard makes the transition atomic.
 	 *
-	 * @param int $action_id     The action post ID.
-	 * @param int $recipe_log_id The recipe log ID.
+	 * @param int         $action_id     The action post ID.
+	 * @param int         $recipe_log_id The recipe log ID.
+	 * @param string|null $date_time     Scheduled run time to record (Y-m-d H:i:s);
+	 *                                   falls back to the current time when null.
 	 *
 	 * @return void
 	 */
-	public function mark_action_scheduled( int $action_id, int $recipe_log_id ): void;
+	public function mark_action_scheduled( int $action_id, int $recipe_log_id, ?string $date_time = null ): void;
 	public function get_action_error_messages( int $recipe_log_id ): array;
 	public function get_action_completion_status( int $action_log_id ): ?int;
 

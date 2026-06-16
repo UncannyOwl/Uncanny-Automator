@@ -351,15 +351,17 @@ class AUTONAMI_TOKENS {
 		$contact = $bwfcrm_contact->contact;
 
 		Automator()->db->token->save( 'CONTACT_ID', $contact->get_id(), $entry );
-		Automator()->db->token->save( 'CONTACT_EMAIL', $contact->get_email(), $entry );
-		Automator()->db->token->save( 'CONTACT_FNAME', $contact->get_f_name(), $entry );
-		Automator()->db->token->save( 'CONTACT_LNAME', $contact->get_l_name(), $entry );
-		Automator()->db->token->save( 'CONTACT_PHONE', $contact->get_contact_no(), $entry );
-		Automator()->db->token->save( 'CONTACT_COUNTRY', $contact->get_country(), $entry );
-		Automator()->db->token->save( 'CONTACT_STATE', $contact->get_state(), $entry );
-		Automator()->db->token->save( 'CONTACT_TIMEZONE', $contact->get_timezone(), $entry );
-		Automator()->db->token->save( 'CONTACT_TYPE', $contact->get_type(), $entry );
-		Automator()->db->token->save( 'CONTACT_SOURCE', $contact->get_source(), $entry );
+		// Wrap contact-provided values in maybe_serialize() so an attacker-supplied serialized
+		// string (planted via a public opt-in) is neutralised on read — prevents PHP Object Injection.
+		Automator()->db->token->save( 'CONTACT_EMAIL', maybe_serialize( $contact->get_email() ), $entry );
+		Automator()->db->token->save( 'CONTACT_FNAME', maybe_serialize( $contact->get_f_name() ), $entry );
+		Automator()->db->token->save( 'CONTACT_LNAME', maybe_serialize( $contact->get_l_name() ), $entry );
+		Automator()->db->token->save( 'CONTACT_PHONE', maybe_serialize( $contact->get_contact_no() ), $entry );
+		Automator()->db->token->save( 'CONTACT_COUNTRY', maybe_serialize( $contact->get_country() ), $entry );
+		Automator()->db->token->save( 'CONTACT_STATE', maybe_serialize( $contact->get_state() ), $entry );
+		Automator()->db->token->save( 'CONTACT_TIMEZONE', maybe_serialize( $contact->get_timezone() ), $entry );
+		Automator()->db->token->save( 'CONTACT_TYPE', maybe_serialize( $contact->get_type() ), $entry );
+		Automator()->db->token->save( 'CONTACT_SOURCE', maybe_serialize( $contact->get_source() ), $entry );
 		Automator()->db->token->save( 'CONTACT_TAGS', $this->comma_separated_tags( $bwfcrm_contact ), $entry );
 		Automator()->db->token->save( 'CONTACT_LISTS', $this->comma_separated_lists( $bwfcrm_contact ), $entry );
 		Automator()->db->token->save( 'CONTACT_CREATION_DATE', $contact->get_creation_date(), $entry );

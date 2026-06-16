@@ -133,7 +133,7 @@ class LD_QUIZDONE extends \Uncanny_Automator\Recipe\Trigger {
 		$tokens_class = new Ld_Tokens_New_Framework();
 
 		return array_merge(
-			$tokens_class->hydrate_quiz_tokens( $quiz_id, $data ),
+			$tokens_class->hydrate_quiz_tokens( $quiz_id, $data, (int) $user->ID ),
 			array( $this->get_trigger_meta() => get_the_title( $quiz_id ) )
 		);
 	}

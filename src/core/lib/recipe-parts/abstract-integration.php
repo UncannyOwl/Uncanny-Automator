@@ -236,7 +236,13 @@ abstract class Integration {
 				// code-level signal that the stub will be registered later.
 				// Actions / closures / conditions / loop filters have no
 				// definition() method and so never take this branch.
-				if ( 'triggers' === $type && class_exists( $class ) && null !== $class::definition() ) {
+				//
+				// method_exists() guard: a legacy trigger (no definition()) can be
+				// listed in the manifest — e.g. a half-migrated integration, or a
+				// version-mismatched add-on. Calling definition() on it is a fatal
+				// "Call to undefined method". Guard so it falls through to normal
+				// (legacy) instantiation below instead of crashing the loader.
+				if ( 'triggers' === $type && class_exists( $class ) && method_exists( $class, 'definition' ) && null !== $class::definition() ) {
 					continue;
 				}
 

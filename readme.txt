@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 7.3.1.2
+Stable tag: 7.3.1.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -418,6 +418,15 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 7.3.1.3 [2026-06-16] =
+
+**Fixed:**
+
+* Events Manager – Resolved a PHP error that could occur when loading registration-related triggers in certain version-mismatched environments #7912
+* LearnDash - Quiz triggers now correctly resolve quiz score, question-and-answer, and related quiz result tokens #7908
+* Recipe logs – Delayed and scheduled actions now display the correct scheduled execution dates. #7895
+* WPForms, MailPoet, and FunnelKit (Autonami) – Improved protection against PHP Object Injection when storing user-submitted trigger token values #7921
 
 = 7.3.1.2 [2026-06-10] =
 

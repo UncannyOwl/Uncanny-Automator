@@ -1,6 +1,7 @@
 <?php
 
 namespace Uncanny_Automator\Integrations\Learndash;
+
 /**
  * Class LD_FAILQUIZ
  *
@@ -32,6 +33,7 @@ class LD_FAILQUIZ extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
+				// translators: %1$s: Quiz
 				esc_html_x( 'A user fails {{a quiz:%1$s}}', 'LearnDash', 'uncanny-automator' ),
 				$this->get_trigger_meta()
 			)
@@ -184,7 +186,7 @@ class LD_FAILQUIZ extends \Uncanny_Automator\Recipe\Trigger {
 		$tokens_class = new Ld_Tokens_New_Framework();
 
 		return array_merge(
-			$tokens_class->hydrate_quiz_tokens( $quiz_id, $data ),
+			$tokens_class->hydrate_quiz_tokens( $quiz_id, $data, (int) $user->ID ),
 			array( $this->get_trigger_meta() => get_the_title( $quiz_id ) )
 		);
 	}

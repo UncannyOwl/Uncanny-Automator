@@ -50,9 +50,11 @@ class Mailpoet_Tokens {
 			if ( ! empty( $data ) && ! empty( $form ) ) {
 				Automator()->db->token->save( 'MAILPOETFORMS', esc_html( $form->getName() ), $trigger_log_entry );
 				Automator()->db->token->save( 'MAILPOETFORMS_ID', esc_html( $form->getID() ), $trigger_log_entry );
-				Automator()->db->token->save( 'MAILPOETFORMS_EMAIL', $data['email'], $trigger_log_entry );
-				Automator()->db->token->save( 'MAILPOETFORMS_FIRSTNAME', $data['first_name'], $trigger_log_entry );
-				Automator()->db->token->save( 'MAILPOETFORMS_LASTNAME', $data['last_name'], $trigger_log_entry );
+				// Wrap submitted values in maybe_serialize() so an attacker-supplied serialized
+				// string is neutralised on read (maybe_unserialize) — prevents PHP Object Injection.
+				Automator()->db->token->save( 'MAILPOETFORMS_EMAIL', maybe_serialize( $data['email'] ), $trigger_log_entry );
+				Automator()->db->token->save( 'MAILPOETFORMS_FIRSTNAME', maybe_serialize( $data['first_name'] ), $trigger_log_entry );
+				Automator()->db->token->save( 'MAILPOETFORMS_LASTNAME', maybe_serialize( $data['last_name'] ), $trigger_log_entry );
 			}
 		}
 	}

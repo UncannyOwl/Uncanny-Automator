@@ -64,7 +64,10 @@ class EM_REGISTER {
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					Automator()->helpers->recipe->events_manager->options->all_em_events(
+					// Call the helper directly — the legacy
+					// Automator()->helpers->recipe->events_manager accessor is not
+					// wired on the migrated integration (null), so the chain warned.
+					( new \Uncanny_Automator\Events_Manager_Helpers() )->all_em_events(
 						null,
 						$this->trigger_meta,
 						array(
