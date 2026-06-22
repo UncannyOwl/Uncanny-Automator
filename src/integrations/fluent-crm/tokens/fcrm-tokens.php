@@ -410,7 +410,9 @@ class Fcrm_Tokens {
 		);
 
 		if ( is_serialized( $value ) ) {
-			$value = maybe_unserialize( $value );
+			// Subscriber custom-field value (settable via public opt-in forms): decode
+			// without instantiating objects to prevent PHP Object Injection.
+			$value = automator_safe_unserialize( $value );
 			if ( is_array( $value ) ) {
 				$value = implode( ', ', $value );
 			}

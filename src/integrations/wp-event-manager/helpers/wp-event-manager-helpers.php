@@ -337,8 +337,10 @@ class Wp_Event_Manager_Helpers {
 
 		foreach ( $fields as $field_key => $field_data ) {
 			$token_id            = 'EVENT_FORM_FIELD|' . str_replace( ' ', '_', $field_key );
-			$token_value         = isset( $registration_meta[ '_' . $field_key ][0] ) ? maybe_unserialize( $registration_meta[ '_' . $field_key ][0] ) : '';
-			$token_value         = is_serialized( $token_value ) ? maybe_unserialize( $token_value ) : $token_value;
+			// Attendee-submitted registration meta (raw via get_post_custom): decode without
+			// instantiating objects to prevent PHP Object Injection.
+			$token_value         = isset( $registration_meta[ '_' . $field_key ][0] ) ? automator_safe_unserialize( $registration_meta[ '_' . $field_key ][0] ) : '';
+			$token_value         = is_serialized( $token_value ) ? automator_safe_unserialize( $token_value ) : $token_value;
 			$tokens[ $token_id ] = is_bool( $token_value ) ? ( $token_value ? 'Yes' : 'No' ) : $token_value;
 		}
 

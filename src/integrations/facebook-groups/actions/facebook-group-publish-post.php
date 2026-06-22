@@ -132,8 +132,11 @@ class FACEBOOK_GROUP_PUBLISH_POST {
 
 			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
-		} catch ( \Exception $e ) {
+		} catch ( \Throwable $e ) {
 
+			// Catch \Throwable (not just Exception) so a PHP \Error in the API /
+			// bridge path completes the action with an error instead of escaping
+			// as an uncaught fatal that white-screens the site.
 			$action_data['complete_with_errors'] = true;
 
 			// Log error if there are any error messages.

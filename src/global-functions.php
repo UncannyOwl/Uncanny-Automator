@@ -357,6 +357,36 @@ function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = F
 	return sanitize_text_field( filter_input( $type, $variable, $flags ) );
 }
 
+if ( ! function_exists( 'automator_safe_unserialize' ) ) {
+	/**
+	 * Unserialize a value WITHOUT allowing object instantiation.
+	 *
+	 * Mirrors maybe_unserialize() semantics (non-serialized input is returned
+	 * as-is) but passes allowed_classes => false so an attacker-supplied
+	 * serialized object string can never instantiate a class -- closing the
+	 * PHP Object Injection vector on read/match paths that handle submitted
+	 * form values. Serialized arrays still decode to arrays.
+	 *
+	 * @param mixed $value Possibly-serialized value.
+	 *
+	 * @return mixed Decoded value with objects neutralised, or the original value.
+	 *
+	 * @since 7.3.1.4
+	 * @package Uncanny_Automator
+	 */
+	function automator_safe_unserialize( $value ) {
+		if ( ! is_string( $value ) ) {
+			return $value;
+		}
+		$trimmed = trim( $value );
+		if ( ! is_serialized( $trimmed ) ) {
+			return $value;
+		}
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- allowed_classes => false prevents object injection.
+		return unserialize( $trimmed, array( 'allowed_classes' => false ) );
+	}
+}
+
 
 /**
  * Automator filter has var - check if the $_POST/$_GET/$_REQUEST has the variable

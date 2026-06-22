@@ -172,7 +172,8 @@ class Ws_Form_Lite_Tokens {
 				if ( $entry_id ) {
 					global $wpdb;
 					$field_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}wsf_submit_meta WHERE parent_id=%d AND meta_key LIKE %s", $entry_id, $token[1] ) );
-					$value       = maybe_unserialize( $field_value );
+					// Submitted field value from WS Form's table: decode without instantiating objects (prevents PHP Object Injection).
+					$value       = automator_safe_unserialize( $field_value );
 					// Check for File Uploads.
 					if ( is_array( $value ) && ! empty( $value[0] ) && is_array( $value[0] ) && isset( $value[0]['size'] ) && isset( $value[0]['type'] ) ) {
 						$value = $this->get_file_upload_value( $value );

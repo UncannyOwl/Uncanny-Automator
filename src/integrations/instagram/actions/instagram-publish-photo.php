@@ -99,7 +99,10 @@ class INSTAGRAM_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 
 		try {
 			$this->api->publish_photo( $page_id, $image_uri, $caption, '', $action_data );
-		} catch ( Exception $e ) {
+		} catch ( \Throwable $e ) {
+			// Catch \Throwable (not just Exception) so a PHP \Error in the API /
+			// bridge path fails the action cleanly instead of escaping as an
+			// uncaught fatal that white-screens the site.
 			// Check for retryable error (Media ID not available - code 9007).
 			if ( $this->helpers->is_media_unavailable_error( $e->getMessage() ) ) {
 				// Build retry body with params needed by publish_photo().

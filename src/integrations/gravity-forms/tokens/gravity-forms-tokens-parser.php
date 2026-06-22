@@ -406,7 +406,8 @@ class Gravity_Forms_Tokens_Parser {
 	public function parse_list_tokens( $tokens, $field ) {
 
 		$raw_value = $this->entry[ $field['id'] ] ?? '';
-		$data      = maybe_unserialize( $raw_value );
+		// Submitted list-field value: decode without instantiating objects (prevents PHP Object Injection).
+		$data      = automator_safe_unserialize( $raw_value );
 
 		$parts = array();
 		array_walk_recursive(
