@@ -747,7 +747,12 @@ WHERE p.post_type LIKE %s
 				continue;
 			}
 
-			$meta           = $item['meta'];
+			$meta = $item['meta'];
+
+			if ( empty( $meta['integration_name'] ) || empty( $meta['code'] ) ) {
+				continue;
+			}
+
 			$recipe_items[] = $meta['integration_name'] . '/' . $meta['code'];
 
 			$this->count_async( $item );
@@ -780,7 +785,12 @@ WHERE p.post_type LIKE %s
 				if ( 'publish' !== $item['post_status'] ) {
 					continue;
 				}
-				$meta     = $item['meta'];
+				$meta = $item['meta'];
+
+				if ( empty( $meta['integration_name'] ) ) {
+					continue;
+				}
+
 				$output[] = $meta['integration_name'];
 			}
 		}
