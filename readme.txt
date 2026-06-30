@@ -429,7 +429,8 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * App Actions - Increased the default outgoing request timeout to better support longer-running app responses. #8009
 * Kit - Removed the unsupported OAuth connection flow and now support V4 connections by API key only. #8006
-* Stripe - Improved product and price dropdown performance in the recipe builder with cached remote loading and refresh support & Stripe - Product refunded trigger now correctly respects the selected price instead of firing for every refunded product. #7999
+* Stripe - Improved product and price dropdown performance in the recipe builder with cached remote loading and refresh support. #7999
+* Stripe - Product refunded trigger now correctly respects the selected price instead of firing for every refunded product. #7999
 
 **Fixed:**
 
