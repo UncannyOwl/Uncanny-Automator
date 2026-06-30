@@ -29,6 +29,7 @@ class Admin_Tools_Tab_Tools {
 
 		// Load the files.
 		$this->load_tab( 'tools' );
+		$this->load_tab( 'resend-failed-actions' );
 	}
 
 	/**

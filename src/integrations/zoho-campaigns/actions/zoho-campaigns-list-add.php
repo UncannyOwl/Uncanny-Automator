@@ -114,7 +114,7 @@ class ZOHO_CAMPAIGNS_LIST_ADD extends \Uncanny_Automator\Recipe\App_Action {
 		$this->hydrate_tokens(
 			array(
 				'LIST_NAME' => $list_name,
-				'LIST_KEY'  => $response['data']['list_key'] ?? '',
+				'LIST_KEY'  => $response['data']['listkey'] ?? '',
 			)
 		);
 

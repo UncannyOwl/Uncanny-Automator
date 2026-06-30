@@ -8,7 +8,6 @@ use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Collection;
 use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Collection_Manager;
 use Uncanny_Automator\Services\Recipe\Builder\Settings\Fields\Field_Manager;
 use Uncanny_Automator\Services\Recipe\Builder\Settings\Repository\Settings_Repository;
-use Uncanny_Automator\Webhooks\Response_Validator;
 use WP_Error;
 use WP_Post;
 use WP_REST_Request;
@@ -1714,174 +1713,14 @@ class Recipe_Post_Rest_Api {
 		}
 
 		$item_log_id = absint( $request->get_param( 'item_log_id' ) );
+		$result      = ( new Resend_Action_Service() )->resend_action( $item_log_id );
 
-		$api_request = Automator()->db->api->get_by_log_id( 'action', $item_log_id );
-
-		if ( empty( $api_request->params ) ) {
-			$return['success'] = false;
-			$return['message'] = esc_html__( 'Missing action params', 'uncanny-automator' );
-		}
-
-		$params = maybe_unserialize( $api_request->params );
-
-		$params['resend'] = true;
-
-		if ( 'internal:webhook' === $api_request->endpoint ) {
-			return $this->replay_as_webhook( $api_request );
-		}
-
-		try {
-			$response = Api_Server::api_call( $params );
-		} catch ( Exception $e ) {
-			$return['success'] = false;
-			$return['message'] = $e->getMessage();
-			automator_log( $e->getMessage() );
-
-			// Log the response for retries.
-			if ( true === $params['resend'] ) {
-				$this->log_api_retry_response(
-					$item_log_id,
-					Automator_Status::get_class_name( Automator_Status::COMPLETED_WITH_ERRORS ),
-					$return['message']
-				);
-			}
-
-			return new WP_REST_Response( $return, $e->getCode() );
-		}
-
-		$return['message'] = esc_html__( 'The request has been successfully resent', 'uncanny-automator' );
-		$return['success'] = true;
-
-		// Log the success response for retries.
-		if ( true === $params['resend'] ) {
-			$this->log_api_retry_response(
-				$item_log_id,
-				Automator_Status::get_class_name( Automator_Status::COMPLETED ),
-				$return['message']
-			);
-		}
-
-		/**
-		 * Fires after a successful API request.
-		 *
-		 * @since 5.7
-		 */
-		do_action( 'automator_recipe_app_request_resent', $item_log_id, $return );
-
-		return new WP_REST_Response( $return, 200 );
-	}
-
-	/**
-	 * Replay the action as webhook.
-	 *
-	 * @param mixed $api_request
-	 *
-	 * @return WP_REST_Response
-	 */
-	protected function replay_as_webhook( $api_request ) {
-
-		$success = true;
-		$message = esc_html_x( 'The request has been successfully resent', 'Webhooks', 'uncanny-automator' );
-
-		if ( ! isset( $api_request->request ) || ! isset( $api_request->params ) ) {
-			$success = false;
-			$message = esc_html_x( 'Invalid data. Property "request" or "params" is missing.', 'Webhooks', 'uncanny-automator' );
-		}
-
-		$params  = (array) maybe_unserialize( $api_request->params );
-		$request = (array) maybe_unserialize( $api_request->request );
-
-		try {
-
-			if ( ! isset( $request['http_url'] ) || ! isset( $params['method'] ) ) {
-				throw new Exception( 'Invalid data. Cannot find "http_url" or "method".', 400 );
-			}
-
-			Response_Validator::validate_webhook_response(
-				Automator_Send_Webhook::call_webhook( $request['http_url'], $params, $params['method'] )
-			);
-
-		} catch ( Exception $e ) {
-
-			$this->log_api_retry_response(
-				$api_request->item_log_id,
-				Automator_Status::get_class_name( Automator_Status::COMPLETED_WITH_ERRORS ),
-				$e->getMessage()
-			);
-
-			return new WP_REST_Response(
-				array(
-					'success' => false,
-					'message' => $e->getMessage(),
-				),
-				200
-			);
-
-		}
-
-		$response = array(
-			'success' => $success,
-			'message' => $message,
+		// Always HTTP 200; the body's `success` flag carries the outcome (matches the
+		// prior webhook branch, which returned 200 even on a failed retry).
+		return new WP_REST_Response(
+			array( 'success' => $result['ok'], 'message' => $result['message'] ),
+			200
 		);
-
-		$this->log_api_retry_response(
-			$api_request->item_log_id,
-			Automator_Status::get_class_name( Automator_Status::COMPLETED ),
-			$message
-		);
-
-		/**
-		 * Fires when a webhook request is replayed.
-		 *
-		 * @since 5.7
-		 */
-		do_action( 'automator_recipe_webhook_request_replayed', $api_request->item_log_id, $response );
-
-		return new WP_REST_Response( $response, 200 );
-	}
-
-	/**
-	 * Log API retry responses.
-	 *
-	 * @param int $item_log_id The item log id.
-	 * @param string $result The result.
-	 * @param string $message The message.
-	 *
-	 * @return int|false The ID of the last inserted log response. Returns false otherwise.
-	 */
-	protected function log_api_retry_response( $item_log_id = 0, $result = '', $message = '' ) {
-
-		global $wpdb;
-
-		// Figure out the last insert ID since we cannot directly access it.
-		$last_insert_id = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT MAX(id) as last_insert_id FROM {$wpdb->prefix}uap_api_log WHERE 1=%d",
-				1
-			)
-		);
-
-		$inserted = $wpdb->insert(
-			$wpdb->prefix . 'uap_api_log_response',
-			array(
-				'api_log_id'  => $last_insert_id,
-				'item_log_id' => $item_log_id,
-				'result'      => $result,
-				'message'     => $message,
-			),
-			array(
-				'%d',
-				'%d',
-				'%s',
-				'%s',
-			)
-		);
-
-		if ( false !== $inserted ) {
-			return $wpdb->insert_id;
-		}
-
-		return false;
 	}
 
 	/**

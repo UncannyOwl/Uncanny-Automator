@@ -101,6 +101,11 @@ class Integration_Registry {
 	 * @return bool
 	 */
 	public function is_plugin_active( ?string $integration ): bool {
+		// A null status (unknown / unresolved integration) is intentionally
+		// PASS-THROUGH here, mirroring the legacy `0 === get_plugin_status()`
+		// guard that blocked only an explicit 0. Trigger/Closure completion stages
+		// rely on this — an unresolved integration must not silently stop hooks.
+		// The 7.3.1.4 TypeError is guarded at is_app_connected(), not here.
 		return 0 !== $this->get_plugin_status( $integration );
 	}
 
@@ -109,11 +114,22 @@ class Integration_Registry {
 	 *
 	 * Non-app integrations (no 'connected' key) return true.
 	 *
-	 * @param string $integration The integration slug.
+	 * @param string|null $integration The integration slug.
 	 *
 	 * @return bool
 	 */
-	public function is_app_connected( string $integration ): bool {
+	public function is_app_connected( ?string $integration ): bool {
+
+		// Defense-in-depth: a null / empty integration is never "connected".
+		// The bridge contract is non-nullable; guarding here means an unresolved
+		// integration degrades gracefully instead of throwing a TypeError (the
+		// reported 7.3.1.4 fatal). The legacy core path tolerated null too — the
+		// untyped 7.2.x is_app_connected(), then the `(string)` cast in
+		// Automator_Functions::is_app_connected().
+		if ( null === $integration || '' === $integration ) {
+			return false;
+		}
+
 		return $this->integrations->is_app_connected( $integration );
 	}
 

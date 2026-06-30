@@ -12,58 +12,36 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Subscription_Cancelled extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
-	 * Trigger code.
+	 * Static trigger definition for lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	const TRIGGER_CODE = 'SUB_CANCELLED';
-
-	/**
-	 * Define and register the trigger by pushing it into the Automator object
-	 */
-
-	public function setup_trigger() {
-
-		$this->set_integration( 'STRIPE' );
-
-		$this->set_trigger_code( self::TRIGGER_CODE );
-
-		$this->set_trigger_meta( 'PRICE_ID' );
-
-		$this->set_is_login_required( false );
-
-		$this->set_trigger_type( 'anonymous' );
-
-		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
-
-		// translators: %1$s is the subscription product name
-		$this->set_sentence( sprintf( esc_html_x( '{{A subscription:%1$s}} is cancelled', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
-
-		// Non-active state sentence to show
-		$this->set_readable_sentence( esc_html_x( '{{A subscription}} is cancelled', 'Stripe', 'uncanny-automator' ) );
-
-		// Which do_action() fires this trigger.
-		$this->add_action( Stripe_Webhooks::INCOMING_WEBHOOK_ACTION );
-
-		$this->set_action_args_count( 1 );
+	public static function definition() {
+		return self::new_definition( 'SUB_CANCELLED', 'STRIPE' )
+			->trigger_meta( 'PRICE_ID' )
+			->trigger_type( 'anonymous' )
+			->hook( Stripe_Webhooks::INCOMING_WEBHOOK_ACTION );
 	}
 
 	/**
-	 * options
+	 * Register the trigger's integration, code, meta, type, sentences, and webhook action.
 	 *
-	 * @return array
+	 * @return void
+	 */
+	public function setup_trigger() {
+		$this->set_is_login_required( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
+		$this->set_readable_sentence( esc_html_x( '{{A subscription}} is cancelled', 'Stripe', 'uncanny-automator' ) );
+		// translators: %1$s is the subscription product name
+		$this->set_sentence( sprintf( esc_html_x( '{{A subscription:%1$s}} is cancelled', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+	}
+
+	/**
+	 * Build the price selector and the subscription metadata repeater fields.
+	 *
+	 * @return array The trigger's field definitions.
 	 */
 	public function options() {
-
-		$prices = $this->api->get_prices_options( 'recurring' );
-
-		array_unshift(
-			$prices,
-			array(
-				'text'  => esc_html_x( 'Any', 'Stripe', 'uncanny-automator' ),
-				'value' => '-1',
-			)
-		);
 
 		$products = array(
 			'option_code' => $this->get_trigger_meta(),
@@ -71,7 +49,8 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\App_Trigger {
 			'input_type'  => 'select',
 			'required'    => true,
 			'read_only'   => false,
-			'options'     => $prices,
+			'options'     => array(),
+			'remote_data' => $this->helpers->remote_data_load_config( 'recurring_prices' ),
 		);
 
 		$metadata = array(
@@ -91,9 +70,7 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\App_Trigger {
 					'description'     => sprintf( '<i>%s</i>', esc_html_x( 'Separate keys with / to build nested data.', 'Stripe', 'uncanny-automator' ) ),
 				),
 			),
-			/* translators: Non-personal infinitive verb */
 			'add_row_button'    => esc_html_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
-			/* translators: Non-personal infinitive verb */
 			'remove_row_button' => esc_html_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
 		);
 
@@ -105,11 +82,14 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\App_Trigger {
 
 
 	/**
-	 * Returns the trigger's tokens.
+	 * Assemble the price, product, customer, invoice and configured metadata token definitions
+	 * exposed by this trigger.
 	 *
-	 * @return array
+	 * @param array $trigger The trigger's configuration, including saved METADATA meta.
+	 * @param array $tokens  The tokens already registered for the trigger.
+	 *
+	 * @return array The merged token definitions.
 	 */
-
 	public function define_tokens( $trigger, $tokens ) {
 
 		$price_tokens = $this->helpers->tokens->price_tokens();
@@ -130,33 +110,25 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\App_Trigger {
 			$metadata_tokens = $this->helpers->tokens->custom_data_tokens( $metadata_keys, 'METADATA', esc_html_x( 'Metadata key: ', 'Stripe', 'uncanny-automator' ) );
 		}
 
-		$custom_fields_tokens = array();
-
-		if ( ! empty( $trigger['meta']['CUSTOM_FIELDS'] ) ) {
-			$custom_fields        = json_decode( $trigger['meta']['CUSTOM_FIELDS'], true );
-			$custom_fields_tokens = $this->helpers->tokens->custom_data_tokens( $custom_fields, 'CUSTOM_FIELD', esc_html_x( 'Custom field key: ', 'Stripe', 'uncanny-automator' ) );
-		}
-
 		$tokens = array_merge(
 			$price_tokens,
 			$product_tokens,
 			$customer_tokens,
 			$invoice_tokens,
-			$metadata_tokens,
-			$custom_fields_tokens
+			$metadata_tokens
 		);
 
 		return $tokens;
 	}
 
 	/**
-	 * Validate the trigger.
+	 * Confirm the event is a customer.subscription.deleted event for the selected price.
 	 *
-	 * @param $args
+	 * @param array $trigger   The trigger's configuration, including the selected PRICE_ID meta.
+	 * @param array $hook_args The hook arguments, where the first element is the Stripe event.
 	 *
-	 * @return bool
+	 * @return bool True when the deleted subscription contains the selected price, false otherwise.
 	 */
-
 	public function validate( $trigger, $hook_args ) {
 
 		list( $event ) = $hook_args;
@@ -176,14 +148,14 @@ class Subscription_Cancelled extends \Uncanny_Automator\Recipe\App_Trigger {
 	}
 
 	/**
-	 * hydrate_tokens
+	 * Fetch the full subscription from the API and populate the price, product, customer, invoice
+	 * and metadata tokens from it.
 	 *
-	 * @param array $trigger
-	 * @param array $hook_args
+	 * @param array $trigger   The trigger's configuration, including saved METADATA meta.
+	 * @param array $hook_args The hook arguments, where the first element is the Stripe event.
 	 *
-	 * @return array
+	 * @return array The hydrated token values keyed by token id.
 	 */
-
 	public function hydrate_tokens( $trigger, $hook_args ) {
 
 		list( $event ) = $hook_args;

@@ -69,7 +69,6 @@ class ConvertKit_Integration extends App_Integration {
 		new CONVERTKIT_TAG_CREATE( $this->dependencies );
 		new CONVERTKIT_CUSTOM_FIELD_CREATE( $this->dependencies );
 		new CONVERTKIT_BROADCAST_CREATE( $this->dependencies );
-		new CONVERTKIT_PURCHASE_CREATE( $this->dependencies );
 	}
 
 	/**

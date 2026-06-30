@@ -64,5 +64,7 @@ class CONTACT_DELETE extends \Uncanny_Automator\Recipe\App_Action {
 
 		// Delete the contact.
 		$this->api->contact_delete( $email, $action_data );
+
+		return true;
 	}
 }

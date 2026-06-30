@@ -356,6 +356,15 @@ class Active_Campaign_App_Helpers extends App_Helpers {
 
 		$custom_fields = get_transient( 'ua_ac_contact_fields_list' );
 
+		// Self-heal: the field definitions live in a 1-hour transient that is
+		// refreshed only by the settings-page sync. Re-sync when it has expired
+		// so the builder and logs keep rendering custom fields. Mirrors
+		// get_tags_data() / get_lists_data().
+		if ( false === $custom_fields ) {
+			$this->sync_contact_fields();
+			$custom_fields = get_transient( 'ua_ac_contact_fields_list' );
+		}
+
 		$fields = array();
 
 		// Transform AC fields into automator.
@@ -439,7 +448,18 @@ class Active_Campaign_App_Helpers extends App_Helpers {
 	 */
 	public function get_registered_fields( $parsed, $prefix = '' ) {
 
-		$registered_fields = (array) get_transient( 'ua_ac_contact_fields_list_action_fields' );
+		$registered_fields = get_transient( 'ua_ac_contact_fields_list_action_fields' );
+
+		// Self-heal: delayed / background "add contact" actions usually run after
+		// the 1-hour field-definitions transient has expired. Without this
+		// re-sync every custom field is silently dropped from the contact payload
+		// with no error surfaced. Mirrors get_tags_data() / get_lists_data().
+		if ( false === $registered_fields ) {
+			$this->sync_contact_fields();
+			$registered_fields = get_transient( 'ua_ac_contact_fields_list_action_fields' );
+		}
+
+		$registered_fields = (array) $registered_fields;
 
 		$custom_fields = array();
 

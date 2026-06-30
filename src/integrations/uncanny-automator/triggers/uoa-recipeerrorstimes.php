@@ -139,6 +139,10 @@ class UOA_RECIPEERRORSTIMES {
 			return;
 		}
 
+		// The errored recipe's run number — stored so tokens can link to the
+		// SPECIFIC failed run, not just a recipe-filtered log list.
+		$errored_run_number = absint( $wpdb->get_var( $wpdb->prepare( "SELECT run_number FROM {$wpdb->prefix}uap_recipe_log WHERE ID = %d", $recipe_log_id ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
 		foreach ( $matched_recipe_ids as $matched_recipe_id ) {
 			$pass_args = array(
 				'code'             => $this->trigger_code,
@@ -192,12 +196,15 @@ class UOA_RECIPEERRORSTIMES {
 						'run_number'     => $result['args']['run_number'],
 					)
 				);
+				// The errored recipe's run context — the parser builds the recipe /
+				// action / trigger log URLs (each on its own tab) from these, pointing
+				// at the exact failed run so the recipient can see its action issues.
 				Automator()->insert_trigger_meta(
 					array(
 						'user_id'        => $user_id,
 						'trigger_id'     => $result['args']['trigger_id'],
-						'meta_key'       => 'UOARECIPES_recipe_log_url',
-						'meta_value'     => "recipe_id=$recipe_id&user_id=$user_id",
+						'meta_key'       => 'UOARECIPES_recipe_log_id',
+						'meta_value'     => $recipe_log_id,
 						'trigger_log_id' => $result['args']['get_trigger_id'],
 						'run_number'     => $result['args']['run_number'],
 					)
@@ -206,8 +213,8 @@ class UOA_RECIPEERRORSTIMES {
 					array(
 						'user_id'        => $user_id,
 						'trigger_id'     => $result['args']['trigger_id'],
-						'meta_key'       => 'UOARECIPES_action_log_url',
-						'meta_value'     => "recipe_id=$recipe_id&user_id=$user_id",
+						'meta_key'       => 'UOARECIPES_run_number',
+						'meta_value'     => $errored_run_number,
 						'trigger_log_id' => $result['args']['get_trigger_id'],
 						'run_number'     => $result['args']['run_number'],
 					)

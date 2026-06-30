@@ -139,7 +139,8 @@ class ZOOM_CREATERECURRINGMEETING extends App_Action {
 		// Create meeting.
 		$response = $this->api->create_meeting( $meeting_data, $action_data );
 
-		if ( 201 !== $response['statusCode'] ) {
+		// Platform normalizes a successful vendor response to 200; accept it alongside Zoom's native 201 Created.
+		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] ) {
 			// Check if this is likely due to account limitations
 			$account_info = $this->helpers->get_account_info();
 			$account_type = $account_info['type'] ?? 0;

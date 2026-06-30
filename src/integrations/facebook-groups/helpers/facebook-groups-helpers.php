@@ -80,6 +80,15 @@ class Facebook_Groups_Helpers {
 		// Add an ajax endpoint for validating groups.
 		add_action( 'wp_ajax_automator_facebook_groups_verify_app_install', array( $this, 'verify_install' ) );
 
+		// Refresh the baked-in access token when a failed action is resent from the logs.
+		// This integration isn't on the Api_Caller framework, so it wires the seam itself:
+		// a resend replays the stored body (with the token that was live then) through
+		// Api_Server::api_call(), which fires automator_facebook-group_api_call.
+		$slug = explode( '/', self::API_ENDPOINT );
+		if ( 2 === count( $slug ) && '' !== $slug[1] ) {
+			add_filter( 'automator_' . $slug[1] . '_api_call', array( $this, 'refresh_access_token_on_resend' ) );
+		}
+
 		// Defer loading of settings page to current_screen so we can check if its recipe page.
 		add_action(
 			'current_screen',
@@ -743,6 +752,41 @@ class Facebook_Groups_Helpers {
 		$this->check_for_errors( $response );
 
 		return $response;
+	}
+
+	/**
+	 * Replace the stored (possibly stale) access token when a failed action is
+	 * resent from the logs.
+	 *
+	 * Each action bakes `access_token => get_user_access_token()` into the body
+	 * at original-run time, and the whole body is logged to uap_api_log. A resend
+	 * replays that body verbatim, so re-read the current token and overwrite it —
+	 * acting only on a resend replay of this integration's own endpoint, and only
+	 * when the original request carried the key.
+	 *
+	 * @param array $params The api_call params being replayed.
+	 *
+	 * @return array
+	 */
+	public function refresh_access_token_on_resend( $params ) {
+
+		if ( ! is_array( $params ) || empty( $params['resend'] ) ) {
+			return $params;
+		}
+
+		if ( ! isset( $params['endpoint'], $params['body'] ) || ! is_array( $params['body'] ) ) {
+			return $params;
+		}
+
+		if ( self::API_ENDPOINT !== $params['endpoint'] ) {
+			return $params;
+		}
+
+		if ( array_key_exists( 'access_token', $params['body'] ) ) {
+			$params['body']['access_token'] = $this->get_user_access_token();
+		}
+
+		return $params;
 	}
 
 	/**

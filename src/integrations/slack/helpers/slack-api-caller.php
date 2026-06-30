@@ -252,6 +252,33 @@ class Slack_Api_Caller extends Api_Caller {
 	}
 
 	/**
+	 * Refresh Slack's bespoke credential keys on a log resend.
+	 *
+	 * Slack bakes the bare token plus the whole credentials object straight into
+	 * the body (bypassing the base credential_request_key injection), so the
+	 * default refresh would miss them. Re-resolve the current credentials and
+	 * overwrite both keys so a resent request uses the connection that exists now.
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 */
+	protected function replace_resend_credentials( $body ) {
+
+		$credentials = $this->helpers->get_credentials();
+
+		if ( array_key_exists( 'token', $body ) && isset( $credentials->access_token ) ) {
+			$body['token'] = $credentials->access_token;
+		}
+
+		if ( array_key_exists( 'client', $body ) ) {
+			$body['client'] = $credentials;
+		}
+
+		return parent::replace_resend_credentials( $body );
+	}
+
+	/**
 	 * check_for_errors
 	 *
 	 * @param mixed $response
@@ -271,6 +298,11 @@ class Slack_Api_Caller extends Api_Caller {
 
 		if ( ! empty( $data['error'] ) ) {
 			$error = esc_html_x( 'Slack API returned an error:', 'Slack', 'uncanny-automator' ) . $data['error'];
+		} elseif ( ! empty( $response['error'] ) && is_string( $response['error'] ) ) {
+			// Platform exception path: Api_Server::maybe_throw_exception already
+			// threw error.description, re-passed here as a string. Surface it
+			// instead of the generic fallback.
+			$error = $response['error'];
 		}
 
 		throw new \Exception( esc_html( $error ), absint( $response['statusCode'] ) );

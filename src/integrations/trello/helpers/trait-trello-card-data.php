@@ -170,7 +170,7 @@ trait Trello_Card_Data {
 	 */
 	public function build_card_data( $action_data, $recipe_id, $user_id, $args, $parsed ) {
 
-		return array(
+		$card = array(
 			'idList'       => $action_data['meta']['LIST'],
 			'name'         => Automator()->parse->text( $action_data['meta'][ $this->get_action_meta() ], $recipe_id, $user_id, $args ),
 			'desc'         => Automator()->parse->text( $action_data['meta']['DESC'], $recipe_id, $user_id, $args ),
@@ -181,6 +181,20 @@ trait Trello_Card_Data {
 			'idLabels'     => $this->helpers->comma_separated( $action_data['meta']['LABELS'] ),
 			'customFields' => $this->parse_custom_fields_values( $action_data['meta']['CUSTOMFIELDS'], $recipe_id, $user_id, $args ),
 		);
+
+		// On update, Trello replaces only the fields sent. Drop empty values so a
+		// partial update doesn't clear existing card data, and so an empty
+		// customFields array isn't sent (the update endpoint chokes on it).
+		if ( $this->is_update_action ) {
+			$card = array_filter(
+				$card,
+				static function ( $value ) {
+					return '' !== $value && array() !== $value;
+				}
+			);
+		}
+
+		return $card;
 	}
 
 	/**

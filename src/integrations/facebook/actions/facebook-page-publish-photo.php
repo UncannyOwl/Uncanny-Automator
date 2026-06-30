@@ -54,12 +54,15 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 		return array(
 			// The facebook page dropdown.
 			$this->helpers->get_linked_pages_select_config( $this->get_action_meta() ),
-			// The photo url field.
+			// The photo url field. Uses 'text' (not 'url') because the field
+			// accepts either a URL or a numeric media library ID; a 'url' input
+			// makes the UI prepend "http://" to a bare ID (e.g. 5452 =>
+			// http://5452), which then fails the is_numeric() resolution.
 			array(
 				'option_code' => 'FACEBOOK_PAGE_PUBLISH_PHOTO_IMAGE_URL',
 				/* translators: Email field */
 				'label'       => esc_html_x( 'Image URL or Media library ID', 'Facebook', 'uncanny-automator' ),
-				'input_type'  => 'url',
+				'input_type'  => 'text',
 				'required'    => true,
 				'description' => esc_html_x( 'Enter the URL or the Media library ID of the image you wish to share. The image must be publicly accessible.', 'Facebook', 'uncanny-automator' ),
 			),
@@ -120,6 +123,12 @@ class FACEBOOK_PAGE_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 	 * @return string The URL of the image or false if its failing.
 	 */
 	private function resolve_image_url( $media = '' ) {
+		// Older recipes saved a bare media ID as "http://5452" (legacy 'url'
+		// input). Strip a protocol-only prefix so those values still resolve.
+		if ( preg_match( '#^https?://(\d+)$#', $media, $matches ) ) {
+			$media = $matches[1];
+		}
+
 		return is_numeric( $media ) ? wp_get_attachment_url( $media ) : $media;
 	}
 }

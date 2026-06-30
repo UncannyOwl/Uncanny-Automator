@@ -122,7 +122,8 @@ class ZOOM_CREATEMEETING extends App_Action {
 		// Create meeting.
 		$response = $this->api->create_meeting( $meeting_data, $action_data );
 
-		if ( 201 !== $response['statusCode'] ) {
+		// Platform normalizes a successful vendor response to 200; accept it alongside Zoom's native 201 Created.
+		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] ) {
 			throw new \Exception( esc_html_x( 'Failed to create meeting. Please check your Zoom account settings and try again.', 'Zoom', 'uncanny-automator' ) );
 		}
 

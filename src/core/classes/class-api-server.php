@@ -152,7 +152,7 @@ class Api_Server {
 			return $timeout;
 		}
 
-		return apply_filters( 'automator_api_timeout', 30, $request_url );
+		return apply_filters( 'automator_api_timeout', 60, $request_url );
 	}
 
 	/**

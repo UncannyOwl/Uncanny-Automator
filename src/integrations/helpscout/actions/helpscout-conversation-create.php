@@ -119,7 +119,11 @@ class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\App_Action
 				'supports_custom_value' => true,
 			),
 			array(
-				'option_code'     => 'STATUS',
+				// Note: option_code must NOT be 'STATUS' — it collides with the
+				// reserved action item-meta key 'status' (postmeta meta_key is
+				// case-insensitive in MySQL), so the value never persists and a
+				// required field would keep the action stuck in draft.
+				'option_code'     => 'CONVERSATION_STATUS',
 				'label'           => esc_html_x( 'Status', 'Help Scout', 'uncanny-automator' ),
 				'input_type'      => 'select',
 				'options'         => array(
@@ -178,7 +182,7 @@ class Helpscout_Conversation_Create extends \Uncanny_Automator\Recipe\App_Action
 		$first_name = isset( $parsed['FIRST_NAME'] ) ? sanitize_text_field( $parsed['FIRST_NAME'] ) : '';
 		$last_name  = isset( $parsed['LAST_NAME'] ) ? sanitize_text_field( $parsed['LAST_NAME'] ) : '';
 		$assignee   = isset( $parsed['ASSIGNEE'] ) ? sanitize_text_field( $parsed['ASSIGNEE'] ) : '';
-		$status     = isset( $parsed['STATUS'] ) ? sanitize_text_field( $parsed['STATUS'] ) : '';
+		$status     = isset( $parsed['CONVERSATION_STATUS'] ) ? sanitize_text_field( $parsed['CONVERSATION_STATUS'] ) : '';
 		$tags       = isset( $parsed['TAGS'] ) ? sanitize_text_field( $parsed['TAGS'] ) : '';
 
 		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {

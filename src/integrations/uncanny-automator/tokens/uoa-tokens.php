@@ -221,6 +221,21 @@ class Uoa_Tokens {
 		}
 
 		$get_recipe_id = Automator()->db->token->get( 'recipe_id', $replace_args );
+
+		// The "a recipe completes / completes with errors" triggers persist the
+		// recipe they reacted to (the recipe that completed/errored) as trigger-log
+		// meta. The anonymous variant never saves the recipe_id token, so resolve it
+		// from that stored meta — otherwise tokens describe the recipe running the
+		// action that contains the token (e.g. a failure-notification recipe) instead
+		// of the recipe that actually completed/errored.
+		$meta_prefix = in_array( 'UOAERRORS', $pieces, true ) ? 'UOAERRORS' : 'UOARECIPES';
+
+		if ( empty( $get_recipe_id ) ) {
+			$stored_recipe_id = $this->stored_trigger_log_value( $meta_prefix . '_recipe_id', $replace_args );
+			if ( '' !== (string) $stored_recipe_id ) {
+				$get_recipe_id = $stored_recipe_id;
+			}
+		}
 		if ( ! empty( $get_recipe_id ) ) {
 			$recipe_id = $get_recipe_id;
 		}
@@ -249,10 +264,30 @@ class Uoa_Tokens {
 			case 'UOARECIPES_recipe_log_url':
 			case 'UOARECIPES_action_log_url':
 			case 'UOARECIPES_trigger_log_url':
+				// Title / edit link describe the recipe that completed/errored: prefer
+				// the value the trigger stored, else derive from the resolved recipe id.
+				if ( 'UOAERRORS_recipe_title' === $pieces[1] || 'UOARECIPES_recipe_title' === $pieces[1] ) {
+					$stored = $this->stored_trigger_log_value( $meta_prefix . '_recipe_title', $replace_args );
+					$value  = '' !== (string) $stored ? $stored : get_the_title( $recipe_id );
+					break;
+				}
+				if ( 'UOAERRORS_recipe_edit_link' === $pieces[1] || 'UOARECIPES_recipe_edit_link' === $pieces[1] ) {
+					$stored = $this->stored_trigger_log_value( $meta_prefix . '_recipe_edit_link', $replace_args );
+					$value  = '' !== (string) $stored ? $stored : get_edit_post_link( $recipe_id );
+					break;
+				}
+
+				// Log URLs point at the SPECIFIC run that completed/errored. The trigger
+				// stores that run's recipe_log_id + run_number; build recipe/action/trigger
+				// tab URLs from those plus the resolved recipe id. Fall back to the current
+				// run's ids only for logs created before the run context was persisted.
+				$stored_log_id     = $this->stored_trigger_log_value( $meta_prefix . '_recipe_log_id', $replace_args );
+				$stored_run_number = $this->stored_trigger_log_value( $meta_prefix . '_run_number', $replace_args );
+
 				$args = array(
-					'log_dialog_id'  => $replace_args['recipe_log_id'],
+					'log_dialog_id'  => '' !== (string) $stored_log_id ? $stored_log_id : ( $replace_args['recipe_log_id'] ?? '' ),
 					'log_recipe_id'  => $recipe_id,
-					'log_run_number' => $replace_args['run_number'],
+					'log_run_number' => '' !== (string) $stored_run_number ? $stored_run_number : ( $replace_args['run_number'] ?? '' ),
 				);
 
 				if ( 'UOAERRORS_recipe_log_url' === $pieces[1] || 'UOARECIPES_recipe_log_url' === $pieces[1] ) {
@@ -263,12 +298,6 @@ class Uoa_Tokens {
 				}
 				if ( 'UOAERRORS_action_log_url' === $pieces[1] || 'UOARECIPES_action_log_url' === $pieces[1] ) {
 					$value = $this->generate_log_url( 'action', $args );
-				}
-				if ( 'UOAERRORS_recipe_edit_link' === $pieces[1] || 'UOARECIPES_recipe_edit_link' === $pieces[1] ) {
-					$value = get_edit_post_link( $recipe_id );
-				}
-				if ( 'UOAERRORS_recipe_title' === $pieces[1] || 'UOARECIPES_recipe_title' === $pieces[1] ) {
-					$value = get_the_title( $recipe_id );
 				}
 				break;
 		}
@@ -475,6 +504,40 @@ class Uoa_Tokens {
 		);
 
 		return array_merge( $tokens, $new_tokens );
+	}
+
+	/**
+	 * Read a value the trigger stored for the specific trigger log being parsed.
+	 *
+	 * The recipe-completion triggers persist the recipe they reacted to (title,
+	 * recipe id, log-url fragments) as trigger-log meta, keyed by trigger_log_id.
+	 * Reading by trigger_log_id (not by trigger post id) keeps concurrent runs of
+	 * the same trigger from leaking each other's values.
+	 *
+	 * @param string $meta_key     The trigger-log meta key.
+	 * @param array  $replace_args The token replacement args (provides trigger_log_id).
+	 *
+	 * @return string The stored value, or '' when absent.
+	 */
+	private function stored_trigger_log_value( $meta_key, $replace_args ) {
+
+		$trigger_log_id = absint( $replace_args['trigger_log_id'] ?? 0 );
+
+		if ( empty( $trigger_log_id ) ) {
+			return '';
+		}
+
+		global $wpdb;
+
+		$value = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE automator_trigger_log_id = %d AND meta_key = %s ORDER BY ID DESC LIMIT 1",
+				$trigger_log_id,
+				$meta_key
+			)
+		);
+
+		return ( null === $value ) ? '' : maybe_unserialize( $value );
 	}
 
 	/**

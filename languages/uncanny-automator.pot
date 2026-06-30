@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.3.1.4\n"
+"Project-Id-Version: Uncanny Automator 7.3.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-22T22:07:02+00:00\n"
+"POT-Creation-Date: 2026-06-30T20:27:07+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -2028,7 +2028,7 @@ msgstr ""
 #: src/integrations/ht-knowledge-base/helpers/ht-knowledge-base-helpers.php:97
 #: src/integrations/peepso/tokens/peepso-tokens.php:139
 #: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:65
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:435
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:464
 #: src/integrations/wholesale-suite/helpers/wholesale-suite-helpers.php:103
 #: src/integrations/wp-download-manager/tokens/wpdm-tokens.php:133
 msgid "Username"
@@ -2452,7 +2452,7 @@ msgstr ""
 #: src/core/views/admin-logs/component/logs.php:79
 #: src/core/views/admin-logs/component/logs.php:134
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:143
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:376
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:405
 #: src/integrations/uncanny-automator/triggers/uoa-recipecompleted-status.php:82
 msgid "Recipe status"
 msgstr ""
@@ -4766,8 +4766,12 @@ msgstr ""
 msgid "Debug"
 msgstr ""
 
-#: src/core/admin/admin-tools/tabs/tools.php:54
+#: src/core/admin/admin-tools/tabs/tools.php:55
 msgid "Tools"
+msgstr ""
+
+#: src/core/admin/admin-tools/tabs/tools/resend-failed-actions.php:28
+msgid "Resend App actions"
 msgstr ""
 
 #: src/core/admin/admin-tools/tabs/tools/tools.php:143
@@ -5943,51 +5947,33 @@ msgstr ""
 msgid "Recipe notes"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:359
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:485
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:358
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:484
 msgid "The action failed to create the post. The response was"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:389
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:388
 msgid "The data that was sent was malformed. Please reload the page and try again."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:396
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:395
 msgid "Recipe ID is missing."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:401
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:400
 msgid "Trigger code or Item code is missing."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:409
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:408
 msgid "Post ID sent is not a recipe post"
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:453
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:452
 msgid "Post type is not defined."
 msgstr ""
 
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1711
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1710
 msgid "Action Log ID is empty"
-msgstr ""
-
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1722
-msgid "Missing action params"
-msgstr ""
-
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1752
-msgid "The request has been successfully resent"
-msgstr ""
-
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1784
-msgctxt "Webhooks"
-msgid "The request has been successfully resent"
-msgstr ""
-
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-rest-api.php:1788
-msgctxt "Webhooks"
-msgid "Invalid data. Property \"request\" or \"params\" is missing."
 msgstr ""
 
 #. translators: %s: The link to the Permalinks settings page
@@ -6205,6 +6191,12 @@ msgstr ""
 
 #: src/core/classes/class-calculation-token.php:155
 msgid "Error: Missing formula."
+msgstr ""
+
+#. translators: %d: recipe id
+#: src/core/classes/class-failed-app-action-resend.php:154
+#, php-format
+msgid "Recipe #%d"
 msgstr ""
 
 #: src/core/classes/class-usage-reports.php:119
@@ -6466,7 +6458,7 @@ msgctxt "API error message"
 msgid "Your connection has expired or is invalid. [reconnect your account](%s)"
 msgstr ""
 
-#: src/core/lib/app-integrations/abstract-api-caller.php:462
+#: src/core/lib/app-integrations/abstract-api-caller.php:602
 msgctxt "API error message"
 msgid "This action may only be used in an Automator action context."
 msgstr ""
@@ -8001,6 +7993,11 @@ msgctxt "Trigger"
 msgid "Trigger completion date"
 msgstr ""
 
+#: src/core/services/resend/class-resend-action-service.php:107
+#: src/core/services/resend/class-resend-action-service.php:174
+msgid "The request has been successfully resent"
+msgstr ""
+
 #: src/core/services/resolver/fields-conditions-resolver.php:309
 msgctxt "Condition fallback sentence"
 msgid "Condition"
@@ -8764,6 +8761,18 @@ msgstr ""
 
 #: src/core/views/admin-tools/tab/debug/log-viewer.php:89
 msgid "Delete log"
+msgstr ""
+
+#: src/core/views/admin-tools/tab/tools/resend-failed-actions.php:29
+msgid "Find App actions that failed (timeout, rate-limit, 5xx, bad vendor response) and re-fire them. This replays the original API request, exactly like the per-action Resend button."
+msgstr ""
+
+#: src/core/views/admin-tools/tab/tools/resend-failed-actions.php:35
+msgid "Keep this tab open while finding or resending."
+msgstr ""
+
+#: src/core/views/admin-tools/tab/tools/resend-failed-actions.php:39
+msgid "This is a best-effort tool, not a guarantee. Resend replays the API request that was originally sent for a failed App action — it does not re-run the recipe or re-resolve tokens. Some actions can’t be resent: the original request may not have been logged, or the integration may have been disconnected or its credentials changed since the action ran. A resend fires now, against the current connection — later than the action originally ran — and re-firing can repeat the action’s effect on the connected app (for example, a second email or contact). Review the list and try a single resend before resending in bulk."
 msgstr ""
 
 #: src/core/views/credits-remaining-0.php:9
@@ -9940,68 +9949,68 @@ msgctxt "ActiveCampaign"
 msgid "ActiveCampaign has responded with status code: %1$d (%3$s) &mdash; %2$s"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:120
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:147
 msgctxt "ActiveCampaign"
 msgid "The contact has no tags."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:138
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:165
 msgctxt "ActiveCampaign"
 msgid "The contact doesn't have the given tag."
 msgstr ""
 
 #. translators: %s - Contact email
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:168
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:195
 #, php-format
 msgctxt "ActiveCampaign"
 msgid "The contact %s does not exist in ActiveCampaign"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:344
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:371
 msgctxt "Active Campaign"
 msgid "Error validating the credentials"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:350
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:377
 msgctxt "Active Campaign"
 msgid "User was not found"
 msgstr ""
 
 #. translators: %s - Operation description
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:545
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:572
 #, php-format
 msgctxt "ActiveCampaign"
 msgid "while %s"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:550
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:577
 msgctxt "ActiveCampaign"
 msgid "Try reconnecting your ActiveCampaign account and try again if the issue persists."
 msgstr ""
 
 #. translators: 1: Status code, 2: Status code text, 3: Custom error message
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:568
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:595
 #, php-format
 msgctxt "ActiveCampaign"
 msgid "ActiveCampaign has responded with status code: %1$d (%2$s) &mdash; %3$s"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:589
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:616
 msgctxt "ActiveCampaign"
 msgid "Email is required"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:593
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:620
 msgctxt "ActiveCampaign"
 msgid "Invalid email address"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:607
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:634
 msgctxt "ActiveCampaign"
 msgid "Tag ID is required"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:621
+#: src/integrations/active-campaign/helpers/active-campaign-api-caller.php:648
 msgctxt "ActiveCampaign"
 msgid "List ID is required"
 msgstr ""
@@ -10016,59 +10025,59 @@ msgctxt "Active Campaign"
 msgid "Any tag"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:376
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:385
 msgctxt "ActiveCampaign"
 msgid "mm/dd/yyyy hh:mm"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:390
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:526
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:399
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:546
 msgctxt "ActiveCampaign"
 msgid "Select an option"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:421
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:430
 msgctxt "ActiveCampaign"
 msgid "ActiveCampaign automatically adjusts your time based your timezone. The timezone in your ActiveCampaign account must match your WordPress site settings."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:548
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:568
 msgctxt "ActiveCampaign"
 msgid "Use a token/custom value"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:634
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:654
 #: src/integrations/active-campaign/tokens/ac-tokens.php:59
 msgctxt "ActiveCampaign"
 msgid "Tag"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:651
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:671
 msgctxt "ActiveCampaign"
 msgid "Tag ID or name. If you enter a name that doesn't already exist, the tag will be created automatically."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:656
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:676
 msgctxt "ActiveCampaign"
 msgid "Tag ID."
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:672
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:692
 msgctxt "ActiveCampaign"
 msgid "List"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:678
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:698
 msgctxt "ActiveCampaign"
 msgid "List ID"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:696
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:716
 msgctxt "ActiveCampaign"
 msgid "Email"
 msgstr ""
 
-#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:697
+#: src/integrations/active-campaign/helpers/active-campaign-app-helpers.php:717
 msgctxt "ActiveCampaign"
 msgid "me@domain.com"
 msgstr ""
@@ -11367,7 +11376,7 @@ msgctxt "Asana"
 msgid "Comment is required."
 msgstr ""
 
-#: src/integrations/asana/actions/asana-add-comment-task.php:123
+#: src/integrations/asana/actions/asana-add-comment-task.php:124
 msgctxt "Asana"
 msgid "Failed to add comment to task."
 msgstr ""
@@ -11412,7 +11421,7 @@ msgctxt "Asana"
 msgid "Project is required."
 msgstr ""
 
-#: src/integrations/asana/actions/asana-create-task.php:108
+#: src/integrations/asana/actions/asana-create-task.php:109
 msgctxt "Asana"
 msgid "Failed to create task."
 msgstr ""
@@ -11490,12 +11499,12 @@ msgid "Failed to update task."
 msgstr ""
 
 #: src/integrations/asana/helpers/asana-api-caller.php:252
-#: src/integrations/asana/helpers/asana-api-caller.php:289
+#: src/integrations/asana/helpers/asana-api-caller.php:290
 msgctxt "Asana"
 msgid "Please select at least one event to subscribe your webhook to."
 msgstr ""
 
-#: src/integrations/asana/helpers/asana-api-caller.php:325
+#: src/integrations/asana/helpers/asana-api-caller.php:326
 msgctxt "Asana"
 msgid "Unknown error :"
 msgstr ""
@@ -13752,7 +13761,7 @@ msgstr ""
 #: src/integrations/paid-memberships-pro/helpers/paid-memberships-pro-helpers.php:83
 #: src/integrations/slicewp/helpers/slicewp-helpers.php:38
 #: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:60
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:429
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:458
 #: src/integrations/wp-download-manager/tokens/wpdm-tokens.php:127
 msgid "User ID"
 msgstr ""
@@ -14215,12 +14224,12 @@ msgctxt "Campaign Monitor"
 msgid "Remove {{a subscriber}} from {{a list}}"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-api-caller.php:139
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-api-caller.php:145
 msgctxt "Campaign Monitor"
 msgid "An error occurred"
 msgstr ""
 
-#: src/integrations/campaign-monitor/helpers/campaign-monitor-api-caller.php:144
+#: src/integrations/campaign-monitor/helpers/campaign-monitor-api-caller.php:153
 msgctxt "Campaign Monitor"
 msgid "No data returned from Campaign Monitor"
 msgstr ""
@@ -16401,134 +16410,6 @@ msgctxt "ConvertKit"
 msgid "Please provide a valid form."
 msgstr ""
 
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:26
-msgctxt "ConvertKit"
-msgid "Create {{a purchase}}"
-msgstr ""
-
-#. translators: %1$s is the email address
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:30
-#, php-format
-msgctxt "ConvertKit"
-msgid "Create {{a purchase:%1$s}}"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:56
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:150
-msgctxt "ConvertKit"
-msgid "Transaction ID"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:63
-msgctxt "ConvertKit"
-msgid "Status"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:71
-msgctxt "ConvertKit"
-msgid "Paid"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:75
-msgctxt "ConvertKit"
-msgid "Refund"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:81
-msgctxt "ConvertKit"
-msgid "Currency"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:85
-msgctxt "ConvertKit"
-msgid "3-letter currency code (e.g. USD, EUR, GBP)"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:90
-msgctxt "ConvertKit"
-msgid "Subtotal"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:97
-msgctxt "ConvertKit"
-msgid "Tax"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:105
-msgctxt "ConvertKit"
-msgid "Shipping"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:113
-msgctxt "ConvertKit"
-msgid "Discount"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:121
-msgctxt "ConvertKit"
-msgid "Total"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:128
-msgctxt "ConvertKit"
-msgid "Transaction time"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:131
-msgctxt "ConvertKit"
-msgid "ISO 8601 datetime (e.g. 2025-06-01T09:00:00Z). Defaults to now if empty."
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:146
-msgctxt "ConvertKit"
-msgid "Purchase ID"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:165
-msgctxt "ConvertKit"
-msgid "Products"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:172
-msgctxt "ConvertKit"
-msgid "Name"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:178
-msgctxt "ConvertKit"
-msgid "Product ID"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:184
-msgctxt "ConvertKit"
-msgid "Line item ID"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:190
-msgctxt "ConvertKit"
-msgid "Quantity"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:197
-msgctxt "ConvertKit"
-msgid "Unit price"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:203
-msgctxt "ConvertKit"
-msgid "SKU"
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:230
-msgctxt "ConvertKit"
-msgid "Please provide a transaction ID."
-msgstr ""
-
-#: src/integrations/convertkit/actions/convertkit-purchase-create.php:238
-msgctxt "ConvertKit"
-msgid "Please add at least one product."
-msgstr ""
-
 #: src/integrations/convertkit/actions/convertkit-subscriber-create-update.php:28
 msgctxt "ConvertKit"
 msgid "Create or update {{a subscriber}}"
@@ -16676,15 +16557,15 @@ msgid "Please provide a tag name."
 msgstr ""
 
 #. translators: %s: ConvertKit API error message
-#: src/integrations/convertkit/helpers/convertkit-api-caller.php:132
-#: src/integrations/convertkit/helpers/convertkit-api-caller.php:144
+#: src/integrations/convertkit/helpers/convertkit-api-caller.php:115
+#: src/integrations/convertkit/helpers/convertkit-api-caller.php:127
 #, php-format
 msgctxt "ConvertKit"
 msgid "Kit API error: %s"
 msgstr ""
 
 #. translators: 1: HTTP status code, 2: response data
-#: src/integrations/convertkit/helpers/convertkit-api-caller.php:155
+#: src/integrations/convertkit/helpers/convertkit-api-caller.php:138
 #, php-format
 msgctxt "ConvertKit"
 msgid "Kit API returned status %1$d. Response: %2$s"
@@ -16751,134 +16632,124 @@ msgid "Subscription type"
 msgstr ""
 
 #. translators: %s: Account name
-#: src/integrations/convertkit/settings/convertkit-settings.php:84
+#: src/integrations/convertkit/settings/convertkit-settings.php:81
 #, php-format
 msgctxt "ConvertKit"
 msgid "Connected as: %s"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:87
+#: src/integrations/convertkit/settings/convertkit-settings.php:84
 msgctxt "ConvertKit"
 msgid "Connected"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:139
+#: src/integrations/convertkit/settings/convertkit-settings.php:136
 msgctxt "ConvertKit"
 msgid "Please enter a valid API key."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:146
+#: src/integrations/convertkit/settings/convertkit-settings.php:143
 msgctxt "ConvertKit"
 msgid "You have successfully connected your Kit account."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:160
+#: src/integrations/convertkit/settings/convertkit-settings.php:157
 msgctxt "ConvertKit"
 msgid "Connection error"
 msgstr ""
 
 #. translators: %s is the error message
-#: src/integrations/convertkit/settings/convertkit-settings.php:163
+#: src/integrations/convertkit/settings/convertkit-settings.php:160
 #, php-format
 msgctxt "ConvertKit"
 msgid "There was an error connecting your Kit account: %s"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:296
+#: src/integrations/convertkit/settings/convertkit-settings.php:287
 msgctxt "ConvertKit"
 msgid "You are connected using a legacy V3 API key."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:297
+#: src/integrations/convertkit/settings/convertkit-settings.php:288
 msgctxt "ConvertKit"
 msgid "Disconnect and reconnect to unlock additional actions and improved functionality."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:311
+#: src/integrations/convertkit/settings/convertkit-settings.php:302
 msgctxt "ConvertKit"
 msgid "Connect Uncanny Automator to Kit to better segment and engage with your audience. Once configured, Automator recipes can add or remove Kit tags for subscribers based on activity on your WordPress site, plus add subscribers to Kit forms and sequences."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:388
+#: src/integrations/convertkit/settings/convertkit-settings.php:368
 msgctxt "ConvertKit"
 msgid "Connection method"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:402
-msgctxt "ConvertKit"
-msgid "Quick connect"
-msgstr ""
-
-#: src/integrations/convertkit/settings/convertkit-settings.php:405
-msgctxt "ConvertKit"
-msgid "The recommended option: Sign in to your Kit account to connect."
-msgstr ""
-
-#: src/integrations/convertkit/settings/convertkit-settings.php:421
-#: src/integrations/convertkit/settings/convertkit-settings.php:480
+#: src/integrations/convertkit/settings/convertkit-settings.php:381
+#: src/integrations/convertkit/settings/convertkit-settings.php:440
 msgctxt "ConvertKit"
 msgid "V4 API key"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:424
+#: src/integrations/convertkit/settings/convertkit-settings.php:384
 msgctxt "ConvertKit"
 msgid "Connect using your Kit V4 API key for the latest functionality"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:438
+#: src/integrations/convertkit/settings/convertkit-settings.php:398
 msgctxt "ConvertKit"
 msgid "V3 API key (legacy)"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:441
+#: src/integrations/convertkit/settings/convertkit-settings.php:401
 msgctxt "ConvertKit"
 msgid "Legacy option with limited functionality. Connect using your Kit V3 API key and API secret."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:467
+#: src/integrations/convertkit/settings/convertkit-settings.php:427
 msgctxt "ConvertKit"
 msgid "To retrieve your Kit V4 API key, perform the following:"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:469
-#: src/integrations/convertkit/settings/convertkit-settings.php:508
+#: src/integrations/convertkit/settings/convertkit-settings.php:429
+#: src/integrations/convertkit/settings/convertkit-settings.php:468
 msgctxt "ConvertKit"
 msgid "Sign in to your Kit account."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:470
-#: src/integrations/convertkit/settings/convertkit-settings.php:509
+#: src/integrations/convertkit/settings/convertkit-settings.php:430
+#: src/integrations/convertkit/settings/convertkit-settings.php:469
 msgctxt "ConvertKit"
 msgid "Click on your avatar in the upper right corner and select \"Settings\"."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:471
-#: src/integrations/convertkit/settings/convertkit-settings.php:510
+#: src/integrations/convertkit/settings/convertkit-settings.php:431
+#: src/integrations/convertkit/settings/convertkit-settings.php:470
 msgctxt "ConvertKit"
 msgid "Click the \"Developer\" menu entry on the left side."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:472
+#: src/integrations/convertkit/settings/convertkit-settings.php:432
 msgctxt "ConvertKit"
 msgid "Under the API Keys section, locate the \"V4 Key\" area and copy the API key to connect Automator to Kit."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:506
+#: src/integrations/convertkit/settings/convertkit-settings.php:466
 msgctxt "ConvertKit"
 msgid "To retrieve your Kit V3 API keys, perform the following:"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:511
+#: src/integrations/convertkit/settings/convertkit-settings.php:471
 msgctxt "ConvertKit"
 msgid "In the API Keys section, locate the \"V3 Key\" area. Copy both the API Key and API Secret values to connect Automator to Kit."
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:519
+#: src/integrations/convertkit/settings/convertkit-settings.php:479
 msgctxt "ConvertKit"
 msgid "API key"
 msgstr ""
 
-#: src/integrations/convertkit/settings/convertkit-settings.php:529
+#: src/integrations/convertkit/settings/convertkit-settings.php:489
 msgctxt "ConvertKit"
 msgid "API secret"
 msgstr ""
@@ -19608,69 +19479,69 @@ msgid "Enter the message that you want to post on Facebook. Please take note tha
 msgstr ""
 
 #. Translators: Admin notice
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:153
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:162
 #, php-format
 msgid "Warning: Due to limitations in the Facebook Group API, your Facebook authorization will need to be refreshed within the next %s day or your Facebook Groups action will stop working.  To hide this message, set all Facebook Groups actions to draft or"
 msgid_plural "Warning: Due to limitations in the Facebook Group API, your Facebook authorization will need to be refreshed within the next %s days or your Facebook Groups action will stop working.  To hide this message, set all Facebook Groups actions to draft or"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:163
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:172
 msgctxt "Facebook Groups"
 msgid "refresh your authorization."
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:197
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:206
 msgctxt "Facebook Groups"
 msgid "Nonce authentication error"
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:254
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:263
 msgctxt "Facebook Groups"
 msgid "Groups has been successfully fetched."
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:377
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:386
 msgctxt "Facebook Groups"
 msgid "Nonce Verification Failed"
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:381
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:390
 msgctxt "Facebook Groups"
 msgid "Unauthorized"
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:624
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:633
 msgctxt "Facebook Groups"
 msgid "Help"
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:630
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:639
 msgctxt "Facebook Groups"
 msgid "Verify app installation"
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:647
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:656
 msgctxt "Facebook Groups"
 msgid "Facebook Group"
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:648
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:657
 msgctxt "Facebook Groups"
 msgid "The group you select must have the \"Uncanny Automator\" app installed. Click on the Verify app installation button below to confirm."
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:652
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:661
 msgctxt "Facebook Groups"
 msgid "Group ID"
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:700
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:709
 msgctxt "Facebook Groups"
 msgid "Successfully validated the group."
 msgstr ""
 
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:704
+#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:713
 msgctxt "Facebook Groups"
 msgid "The Uncanny Automator Facebook Group app is not installed on the selected group."
 msgstr ""
@@ -20003,7 +19874,7 @@ msgstr ""
 #. translators: Email field
 #: src/integrations/facebook/actions/facebook-page-create-draft.php:65
 #: src/integrations/facebook/actions/facebook-page-publish-link.php:68
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:70
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:73
 #: src/integrations/facebook/actions/facebook-page-publish-post.php:60
 msgctxt "Facebook"
 msgid "Message"
@@ -20057,17 +19928,17 @@ msgid "Publish a post with an image to {{a Facebook page}}"
 msgstr ""
 
 #. translators: Email field
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:61
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:64
 msgctxt "Facebook"
 msgid "Image URL or Media library ID"
 msgstr ""
 
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:64
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:67
 msgctxt "Facebook"
 msgid "Enter the URL or the Media library ID of the image you wish to share. The image must be publicly accessible."
 msgstr ""
 
-#: src/integrations/facebook/actions/facebook-page-publish-photo.php:71
+#: src/integrations/facebook/actions/facebook-page-publish-photo.php:74
 msgctxt "Facebook"
 msgid "The context of the image or description."
 msgstr ""
@@ -21830,26 +21701,26 @@ msgctxt "GetResponse"
 msgid "The throttling limit has been reached, please try again later."
 msgstr ""
 
-#: src/integrations/get-response/helpers/get-response-api-caller.php:79
-#: src/integrations/get-response/helpers/get-response-api-caller.php:139
-#: src/integrations/get-response/helpers/get-response-api-caller.php:152
+#: src/integrations/get-response/helpers/get-response-api-caller.php:103
+#: src/integrations/get-response/helpers/get-response-api-caller.php:163
+#: src/integrations/get-response/helpers/get-response-api-caller.php:176
 msgctxt "GetResponse"
 msgid "GetResponse API error"
 msgstr ""
 
-#: src/integrations/get-response/helpers/get-response-api-caller.php:97
+#: src/integrations/get-response/helpers/get-response-api-caller.php:121
 msgctxt "GetResponse"
 msgid "Your GetResponse API key is invalid. Please re-authorize your account."
 msgstr ""
 
 #. translators: %s: Settings page URL
-#: src/integrations/get-response/helpers/get-response-api-caller.php:103
+#: src/integrations/get-response/helpers/get-response-api-caller.php:127
 #, php-format
 msgctxt "GetResponse"
 msgid "Your GetResponse API key is invalid. [reconnect your account](%s)"
 msgstr ""
 
-#: src/integrations/get-response/helpers/get-response-api-caller.php:161
+#: src/integrations/get-response/helpers/get-response-api-caller.php:185
 msgctxt "GetResponse"
 msgid "Invalid API key"
 msgstr ""
@@ -22151,20 +22022,20 @@ msgid "Failed to remove label from issue or pull request."
 msgstr ""
 
 #: src/integrations/github/helpers/github-api-caller.php:197
-#: src/integrations/github/helpers/github-api-caller.php:237
+#: src/integrations/github/helpers/github-api-caller.php:238
 msgctxt "GitHub"
 msgid "Please select at least one event to subscribe your webhook to."
 msgstr ""
 
 #. translators: %s is the error message from GitHub.
-#: src/integrations/github/helpers/github-api-caller.php:368
+#: src/integrations/github/helpers/github-api-caller.php:446
 #, php-format
 msgctxt "GitHub"
 msgid "Error: %s"
 msgstr ""
 
 #. translators: %d is the status code.
-#: src/integrations/github/helpers/github-api-caller.php:374
+#: src/integrations/github/helpers/github-api-caller.php:452
 #, php-format
 msgctxt "GitHub"
 msgid "Failed with status code: %d"
@@ -23584,6 +23455,11 @@ msgctxt "Google Contacts"
 msgid "Custom field"
 msgstr ""
 
+#: src/integrations/google-contacts/helpers/google-contacts-api-caller.php:69
+msgctxt "Google Contacts"
+msgid "Google Contacts API error"
+msgstr ""
+
 #. translators: 1: error code, 2: error message
 #: src/integrations/google-contacts/settings/google-contacts-settings.php:56
 #, php-format
@@ -24840,17 +24716,17 @@ msgctxt "Help Scout"
 msgid "Comma separated list of tags."
 msgstr ""
 
-#: src/integrations/helpscout/actions/helpscout-conversation-create.php:123
+#: src/integrations/helpscout/actions/helpscout-conversation-create.php:127
 msgctxt "Help Scout"
 msgid "Status"
 msgstr ""
 
-#: src/integrations/helpscout/actions/helpscout-conversation-create.php:144
+#: src/integrations/helpscout/actions/helpscout-conversation-create.php:148
 msgctxt "Help Scout"
 msgid "Assign to"
 msgstr ""
 
-#: src/integrations/helpscout/actions/helpscout-conversation-create.php:185
+#: src/integrations/helpscout/actions/helpscout-conversation-create.php:189
 msgctxt "Help Scout"
 msgid "Email is empty or invalid"
 msgstr ""
@@ -25693,49 +25569,49 @@ msgctxt "Instagram"
 msgid "Instagram account"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:58
+#: src/integrations/instagram/actions/instagram-publish-photo.php:61
 msgctxt "Instagram"
 msgid "Image URL or Media library ID"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:61
+#: src/integrations/instagram/actions/instagram-publish-photo.php:64
 msgctxt "Instagram"
 msgid "https://pathtoimage/image.jpg"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:62
+#: src/integrations/instagram/actions/instagram-publish-photo.php:65
 msgctxt "Instagram"
 msgid "The image must be in a JPG, JPEG or PNG format. The file name must not contain spaces and extended JPEG formats (such as MPO and JPS) are not supported."
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:67
+#: src/integrations/instagram/actions/instagram-publish-photo.php:70
 msgctxt "Instagram"
 msgid "Caption"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:70
+#: src/integrations/instagram/actions/instagram-publish-photo.php:73
 msgctxt "Instagram"
 msgid "My image #description"
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:71
+#: src/integrations/instagram/actions/instagram-publish-photo.php:74
 msgctxt "Instagram"
 msgid "Enter the description and/or hashtags that should be posted with the image."
 msgstr ""
 
 #. translators: %s is the media library ID
-#: src/integrations/instagram/actions/instagram-publish-photo.php:160
+#: src/integrations/instagram/actions/instagram-publish-photo.php:163
 #, php-format
 msgctxt "Instagram"
 msgid "Media library image with ID %s not found."
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:166
+#: src/integrations/instagram/actions/instagram-publish-photo.php:169
 msgctxt "Instagram"
 msgid "Invalid image URL or media library ID provided."
 msgstr ""
 
-#: src/integrations/instagram/actions/instagram-publish-photo.php:179
+#: src/integrations/instagram/actions/instagram-publish-photo.php:182
 msgctxt "Instagram"
 msgid "Instagram account not found. Check that the requested account is connected to the associated Facebook page."
 msgstr ""
@@ -26809,16 +26685,11 @@ msgctxt "Keap"
 msgid "Invalid credentials"
 msgstr ""
 
-#: src/integrations/keap/helpers/keap-api-caller.php:61
-msgctxt "Keap"
-msgid "Keap API Error: "
-msgstr ""
-
 #. translators: %s Status code.
-#: src/integrations/keap/helpers/keap-api-caller.php:67
+#: src/integrations/keap/helpers/keap-api-caller.php:69
 #, php-format
 msgctxt "Keap"
-msgid "request failed with status code: %s"
+msgid "Keap API Error: request failed with status code: %s"
 msgstr ""
 
 #: src/integrations/keap/helpers/keap-app-helpers.php:198
@@ -31899,7 +31770,7 @@ msgid "Delete {{a contact:%1$s}}"
 msgstr ""
 
 #. translators: 1: Status code.
-#: src/integrations/ontraport/helpers/ontraport-api-caller.php:35
+#: src/integrations/ontraport/helpers/ontraport-api-caller.php:40
 #, php-format
 msgctxt "Ontraport"
 msgid "Ontraport API error: Received unexpected status code %1$s."
@@ -32949,7 +32820,7 @@ msgstr ""
 
 #: src/integrations/peepso/tokens/peepso-tokens.php:187
 #: src/integrations/thrive-ultimatum/helpers/thrive-ultimatum-helpers.php:75
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:441
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:470
 msgid "User email"
 msgstr ""
 
@@ -34407,12 +34278,12 @@ msgctxt "Sendy"
 msgid "Unsubscribe {{a contact}} from {{a list}}"
 msgstr ""
 
-#: src/integrations/sendy/helpers/sendy-api-caller.php:137
+#: src/integrations/sendy/helpers/sendy-api-caller.php:162
 msgctxt "Sendy"
 msgid "No lists were found"
 msgstr ""
 
-#: src/integrations/sendy/helpers/sendy-api-caller.php:181
+#: src/integrations/sendy/helpers/sendy-api-caller.php:224
 msgctxt "Sendy"
 msgid "Sendy API Error"
 msgstr ""
@@ -35125,12 +34996,12 @@ msgctxt "Slack"
 msgid "Something went wrong when fetching users. Please try again later."
 msgstr ""
 
-#: src/integrations/slack/helpers/slack-api-caller.php:270
+#: src/integrations/slack/helpers/slack-api-caller.php:297
 msgctxt "Slack"
 msgid "Unknown Slack API error occurred."
 msgstr ""
 
-#: src/integrations/slack/helpers/slack-api-caller.php:273
+#: src/integrations/slack/helpers/slack-api-caller.php:300
 msgctxt "Slack"
 msgid "Slack API returned an error:"
 msgstr ""
@@ -35345,7 +35216,7 @@ msgid "An arbitrary string that you can attach to a customer object. It is displ
 msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:74
-#: src/integrations/stripe/tokens/stripe-tokens.php:52
+#: src/integrations/stripe/tokens/stripe-tokens.php:56
 msgctxt "Stripe"
 msgid "Address line 1"
 msgstr ""
@@ -35357,7 +35228,7 @@ msgid "Address line 1 (e.g., street, PO Box, or company name)."
 msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:82
-#: src/integrations/stripe/tokens/stripe-tokens.php:58
+#: src/integrations/stripe/tokens/stripe-tokens.php:62
 msgctxt "Stripe"
 msgid "Address line 2"
 msgstr ""
@@ -35455,7 +35326,7 @@ msgid "Shipping postal code"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:188
-#: src/integrations/stripe/tokens/stripe-tokens.php:125
+#: src/integrations/stripe/tokens/stripe-tokens.php:129
 msgctxt "Stripe"
 msgid "Shipping name"
 msgstr ""
@@ -35466,7 +35337,7 @@ msgid "Customer name."
 msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:196
-#: src/integrations/stripe/tokens/stripe-tokens.php:161
+#: src/integrations/stripe/tokens/stripe-tokens.php:165
 msgctxt "Stripe"
 msgid "Shipping phone"
 msgstr ""
@@ -35488,7 +35359,7 @@ msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:212
 #: src/integrations/stripe/actions/create-customer.php:298
-#: src/integrations/stripe/actions/create-payment-link.php:165
+#: src/integrations/stripe/actions/create-payment-link.php:155
 msgctxt "Stripe"
 msgid "Parameter"
 msgstr ""
@@ -35502,9 +35373,9 @@ msgstr ""
 #: src/integrations/stripe/actions/create-customer.php:245
 #: src/integrations/stripe/actions/create-customer.php:275
 #: src/integrations/stripe/actions/create-customer.php:306
-#: src/integrations/stripe/actions/create-payment-link.php:95
-#: src/integrations/stripe/actions/create-payment-link.php:173
-#: src/integrations/stripe/actions/create-send-invoice.php:191
+#: src/integrations/stripe/actions/create-payment-link.php:85
+#: src/integrations/stripe/actions/create-payment-link.php:163
+#: src/integrations/stripe/actions/create-send-invoice.php:192
 msgctxt "Stripe"
 msgid "Value"
 msgstr ""
@@ -35526,8 +35397,8 @@ msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:238
 #: src/integrations/stripe/actions/create-customer.php:268
-#: src/integrations/stripe/actions/create-payment-link.php:88
-#: src/integrations/stripe/actions/create-send-invoice.php:185
+#: src/integrations/stripe/actions/create-payment-link.php:78
+#: src/integrations/stripe/actions/create-send-invoice.php:186
 msgctxt "Stripe"
 msgid "Key"
 msgstr ""
@@ -35538,35 +35409,35 @@ msgid "e.g. us_ein"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:256
-#: src/integrations/stripe/actions/create-payment-link.php:76
-#: src/integrations/stripe/actions/create-send-invoice.php:173
+#: src/integrations/stripe/actions/create-payment-link.php:66
+#: src/integrations/stripe/actions/create-send-invoice.php:174
 msgctxt "Stripe"
 msgid "Metadata"
 msgstr ""
 
 #. translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag
 #: src/integrations/stripe/actions/create-customer.php:260
-#: src/integrations/stripe/actions/create-payment-link.php:80
+#: src/integrations/stripe/actions/create-payment-link.php:70
 #, php-format
 msgctxt "Stripe"
 msgid "Set of %1$skey-value-pairs%2$s that you can attach to an object. This can be useful for storing additional information about the object in a structured format."
 msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:269
-#: src/integrations/stripe/actions/create-payment-link.php:89
+#: src/integrations/stripe/actions/create-payment-link.php:79
 msgctxt "Stripe"
 msgid "e.g. order_id"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:286
-#: src/integrations/stripe/actions/create-payment-link.php:153
+#: src/integrations/stripe/actions/create-payment-link.php:143
 msgctxt "Stripe"
 msgid "Additional parameters"
 msgstr ""
 
 #. translators: %1$s: [delete], %2$s opening anchor tag, %3$s: closing anchor tag
 #: src/integrations/stripe/actions/create-customer.php:290
-#: src/integrations/stripe/actions/create-payment-link.php:157
+#: src/integrations/stripe/actions/create-payment-link.php:147
 #, php-format
 msgctxt "Stripe"
 msgid "Please visit %1$sStripe documentation article%2$s for the full list of available parameters"
@@ -35578,9 +35449,9 @@ msgid "e.g. tax.ip_address"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-customer.php:349
-#: src/integrations/stripe/actions/create-send-invoice.php:293
+#: src/integrations/stripe/actions/create-send-invoice.php:294
 #: src/integrations/stripe/actions/delete-customer.php:61
-#: src/integrations/stripe/tokens/stripe-tokens.php:34
+#: src/integrations/stripe/tokens/stripe-tokens.php:38
 msgctxt "Stripe"
 msgid "Customer ID"
 msgstr ""
@@ -35590,100 +35461,105 @@ msgctxt "Stripe"
 msgid "Date and time created"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-customer.php:421
+#: src/integrations/stripe/actions/create-customer.php:424
 msgctxt "Stripe"
 msgid "Customer could not be created"
 msgstr ""
 
 #. translators: %1$s is the product name
-#: src/integrations/stripe/actions/create-payment-link.php:30
+#: src/integrations/stripe/actions/create-payment-link.php:29
 #, php-format
 msgctxt "Stripe"
 msgid "Create a payment link for {{a product:%1$s}}"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:31
+#: src/integrations/stripe/actions/create-payment-link.php:30
 msgctxt "Stripe"
 msgid "Create a payment link for {{a product}}"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:44
+#: src/integrations/stripe/actions/create-payment-link.php:43
 msgctxt "Stripe"
 msgid "Items"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:49
-msgctxt "Stripe"
-msgid "Product and price"
-msgstr ""
-
-#: src/integrations/stripe/actions/create-payment-link.php:54
-msgctxt "Stripe"
-msgid "Select a product and price or enter a Stripe Price ID (starts with price_ or plan_)"
-msgstr ""
-
-#: src/integrations/stripe/actions/create-payment-link.php:60
-#: src/integrations/stripe/actions/create-send-invoice.php:82
-msgctxt "Stripe"
-msgid "Quantity"
-msgstr ""
-
-#: src/integrations/stripe/actions/create-payment-link.php:67
+#: src/integrations/stripe/actions/create-payment-link.php:47
 msgctxt "Stripe"
 msgid "Add product"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:68
+#: src/integrations/stripe/actions/create-payment-link.php:48
 msgctxt "Stripe"
 msgid "Remove product"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:106
+#: src/integrations/stripe/actions/create-payment-link.php:55
+msgctxt "Stripe"
+msgid "Skip empty products"
+msgstr ""
+
+#: src/integrations/stripe/actions/create-payment-link.php:59
+msgctxt "Stripe"
+msgid "When enabled, products with a quantity less than 1, or with no price, are skipped instead of causing an error. Useful when product values are populated dynamically using tokens."
+msgstr ""
+
+#: src/integrations/stripe/actions/create-payment-link.php:96
 msgctxt "Stripe"
 msgid "Custom fields"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:108
+#: src/integrations/stripe/actions/create-payment-link.php:98
 msgctxt "Stripe"
 msgid "Collect additional information from your customer using custom fields. Up to 3 fields are supported."
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:113
+#: src/integrations/stripe/actions/create-payment-link.php:103
 msgctxt "Stripe"
 msgid "Field key"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:119
+#: src/integrations/stripe/actions/create-payment-link.php:109
 msgctxt "Stripe"
 msgid "Field label"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:125
+#: src/integrations/stripe/actions/create-payment-link.php:115
 msgctxt "Stripe"
 msgid "Field type"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:143
+#: src/integrations/stripe/actions/create-payment-link.php:133
 msgctxt "Stripe"
 msgid "Optional"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:166
+#: src/integrations/stripe/actions/create-payment-link.php:156
 msgctxt "Stripe"
 msgid "e.g. custom_text.after_submit.message"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:197
+#: src/integrations/stripe/actions/create-payment-link.php:188
 msgctxt "Stripe"
 msgid "Link"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:237
+#: src/integrations/stripe/actions/create-payment-link.php:213
+#: src/integrations/stripe/actions/create-payment-link.php:260
+msgctxt "Stripe"
+msgid "At least one product is required"
+msgstr ""
+
+#: src/integrations/stripe/actions/create-payment-link.php:247
 msgctxt "Stripe"
 msgid "Price ID cannot be empty"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-payment-link.php:295
+#: src/integrations/stripe/actions/create-payment-link.php:259
+msgctxt "Stripe"
+msgid "All products were empty and skipped. At least one valid product is required."
+msgstr ""
+
+#: src/integrations/stripe/actions/create-payment-link.php:315
 msgctxt "Stripe"
 msgid "Link could not be created"
 msgstr ""
@@ -35701,7 +35577,7 @@ msgid "Create and send an invoice to {{a customer}}"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-send-invoice.php:42
-#: src/integrations/stripe/tokens/stripe-tokens.php:40
+#: src/integrations/stripe/tokens/stripe-tokens.php:44
 msgctxt "Stripe"
 msgid "Customer email"
 msgstr ""
@@ -35712,7 +35588,7 @@ msgid "Email address of the customer. If the customer does not exist, a new cust
 msgstr ""
 
 #: src/integrations/stripe/actions/create-send-invoice.php:51
-#: src/integrations/stripe/tokens/stripe-tokens.php:94
+#: src/integrations/stripe/tokens/stripe-tokens.php:98
 msgctxt "Stripe"
 msgid "Customer name"
 msgstr ""
@@ -35740,6 +35616,12 @@ msgstr ""
 #: src/integrations/stripe/actions/create-send-invoice.php:78
 msgctxt "Stripe"
 msgid "Amount in currency units (e.g., 10.00 for $10.00)"
+msgstr ""
+
+#: src/integrations/stripe/actions/create-send-invoice.php:82
+#: src/integrations/stripe/helpers/stripe-app-helpers.php:246
+msgctxt "Stripe"
+msgid "Quantity"
 msgstr ""
 
 #: src/integrations/stripe/actions/create-send-invoice.php:89
@@ -35833,87 +35715,87 @@ msgid "When enabled, line items with a quantity less than 1, or where both the d
 msgstr ""
 
 #. translators: %1$s opening anchor tag, %2$s closing anchor tag
-#: src/integrations/stripe/actions/create-send-invoice.php:177
+#: src/integrations/stripe/actions/create-send-invoice.php:178
 #, php-format
 msgctxt "Stripe"
 msgid "Set of %1$skey-value pairs%2$s that you can attach to the invoice."
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:246
+#: src/integrations/stripe/actions/create-send-invoice.php:247
 msgctxt "Stripe"
 msgid "Account default"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:269
-#: src/integrations/stripe/tokens/stripe-tokens.php:479
+#: src/integrations/stripe/actions/create-send-invoice.php:270
+#: src/integrations/stripe/tokens/stripe-tokens.php:418
 msgctxt "Stripe"
 msgid "Invoice ID"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:273
+#: src/integrations/stripe/actions/create-send-invoice.php:274
 msgctxt "Stripe"
 msgid "Invoice number"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:277
+#: src/integrations/stripe/actions/create-send-invoice.php:278
 msgctxt "Stripe"
 msgid "Invoice URL"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:281
-#: src/integrations/stripe/tokens/stripe-tokens.php:491
+#: src/integrations/stripe/actions/create-send-invoice.php:282
+#: src/integrations/stripe/tokens/stripe-tokens.php:430
 msgctxt "Stripe"
 msgid "Invoice PDF URL"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:285
-#: src/integrations/stripe/tokens/stripe-tokens.php:497
+#: src/integrations/stripe/actions/create-send-invoice.php:286
+#: src/integrations/stripe/tokens/stripe-tokens.php:436
 msgctxt "Stripe"
 msgid "Invoice status"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:289
+#: src/integrations/stripe/actions/create-send-invoice.php:290
 msgctxt "Stripe"
 msgid "Invoice total (in currency units)"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:334
+#: src/integrations/stripe/actions/create-send-invoice.php:335
 msgctxt "Stripe"
 msgid "Customer email is required"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:342
+#: src/integrations/stripe/actions/create-send-invoice.php:343
 msgctxt "Stripe"
 msgid "Days until due must be a positive number"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:355
-#: src/integrations/stripe/actions/create-send-invoice.php:405
+#: src/integrations/stripe/actions/create-send-invoice.php:356
+#: src/integrations/stripe/actions/create-send-invoice.php:406
 msgctxt "Stripe"
 msgid "At least one line item is required"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:374
+#: src/integrations/stripe/actions/create-send-invoice.php:375
 msgctxt "Stripe"
 msgid "Line item description is required"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:380
+#: src/integrations/stripe/actions/create-send-invoice.php:381
 msgctxt "Stripe"
 msgid "Line item amount must be a valid number"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:391
+#: src/integrations/stripe/actions/create-send-invoice.php:392
 msgctxt "Stripe"
 msgid "Line item amount must be greater than zero"
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:404
+#: src/integrations/stripe/actions/create-send-invoice.php:405
 msgctxt "Stripe"
 msgid "All line items were empty and skipped. At least one valid line item is required."
 msgstr ""
 
-#: src/integrations/stripe/actions/create-send-invoice.php:430
+#: src/integrations/stripe/actions/create-send-invoice.php:431
 msgctxt "Stripe"
 msgid "Invoice could not be created"
 msgstr ""
@@ -35930,14 +35812,34 @@ msgctxt "Stripe"
 msgid "Delete {{a customer}}"
 msgstr ""
 
-#: src/integrations/stripe/actions/delete-customer.php:86
+#: src/integrations/stripe/actions/delete-customer.php:89
 msgctxt "Stripe"
 msgid "Customer could not be deleted"
 msgstr ""
 
-#: src/integrations/stripe/helpers/stripe-app-helpers.php:51
+#: src/integrations/stripe/helpers/stripe-app-helpers.php:61
 msgctxt "Stripe"
 msgid "Stripe is not connected"
+msgstr ""
+
+#: src/integrations/stripe/helpers/stripe-app-helpers.php:180
+msgctxt "Stripe"
+msgid "Any"
+msgstr ""
+
+#: src/integrations/stripe/helpers/stripe-app-helpers.php:234
+msgctxt "Stripe"
+msgid "Product and price"
+msgstr ""
+
+#: src/integrations/stripe/helpers/stripe-app-helpers.php:239
+msgctxt "Stripe"
+msgid "Select a product and price"
+msgstr ""
+
+#: src/integrations/stripe/helpers/stripe-app-helpers.php:240
+msgctxt "Stripe"
+msgid "Select a product and price or enter a Stripe Price ID (starts with price_ or plan_)"
 msgstr ""
 
 #: src/integrations/stripe/settings/stripe-settings.php:49
@@ -35952,128 +35854,128 @@ msgctxt "Stripe"
 msgid "Account ID: %s"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:89
+#: src/integrations/stripe/settings/stripe-settings.php:91
 msgctxt "Stripe"
 msgid "Connected in test mode"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:90
+#: src/integrations/stripe/settings/stripe-settings.php:92
 msgctxt "Stripe"
 msgid "The integration is connected in test mode. Recipes will not affect your live account."
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:146
+#: src/integrations/stripe/settings/stripe-settings.php:166
 msgctxt "Stripe"
 msgid "Missing credentials"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:172
+#: src/integrations/stripe/settings/stripe-settings.php:192
 msgctxt "Stripe"
 msgid "Webhook configured"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:173
+#: src/integrations/stripe/settings/stripe-settings.php:193
 msgctxt "Stripe"
 msgid "Webhook signing secret has been saved. Stripe triggers are now enabled."
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:181
+#: src/integrations/stripe/settings/stripe-settings.php:201
 msgctxt "Stripe"
 msgid "Missing webhook secret"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:182
+#: src/integrations/stripe/settings/stripe-settings.php:202
 msgctxt "Stripe"
 msgid "Webhook signing secret is required for Stripe triggers to work. Please enter a valid signing secret."
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:192
+#: src/integrations/stripe/settings/stripe-settings.php:212
 msgctxt "Stripe"
 msgid "Webhook updated"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:193
+#: src/integrations/stripe/settings/stripe-settings.php:213
 msgctxt "Stripe"
 msgid "Webhook signing secret has been updated. Stripe triggers will continue to work with the new secret."
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:200
+#: src/integrations/stripe/settings/stripe-settings.php:220
 msgctxt "Stripe"
 msgid "No changes were made to the webhook signing secret."
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:219
+#: src/integrations/stripe/settings/stripe-settings.php:239
 msgctxt "Stripe"
 msgid "Connect Uncanny Automator to Stripe to process and manage customer payments via WordPress."
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:243
+#: src/integrations/stripe/settings/stripe-settings.php:263
 msgctxt "Stripe"
 msgid "Connect Stripe"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:256
+#: src/integrations/stripe/settings/stripe-settings.php:276
 msgctxt "Stripe"
 msgid "Connect Stripe in test mode"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:268
+#: src/integrations/stripe/settings/stripe-settings.php:288
 msgctxt "Stripe"
 msgid "Disable test mode"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:269
+#: src/integrations/stripe/settings/stripe-settings.php:289
 msgctxt "Stripe"
 msgid "Enable test mode"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:285
+#: src/integrations/stripe/settings/stripe-settings.php:305
 msgctxt "Stripe"
 msgid "To enable Stripe triggers please configure webhooks in your Stripe account:"
 msgstr ""
 
 #. translators: 1. Link to Stripe Dashboard.
-#: src/integrations/stripe/settings/stripe-settings.php:290
+#: src/integrations/stripe/settings/stripe-settings.php:310
 #, php-format
 msgctxt "Stripe"
 msgid "Go to your %s"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:293
+#: src/integrations/stripe/settings/stripe-settings.php:313
 msgctxt "Stripe"
 msgid "Stripe Dashboard"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:295
+#: src/integrations/stripe/settings/stripe-settings.php:315
 msgctxt "Stripe"
 msgid "Visit Stripe Dashboard"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:299
+#: src/integrations/stripe/settings/stripe-settings.php:319
 msgctxt "Stripe"
 msgid "Click the \"Add endpoint\" button"
 msgstr ""
 
 #. translators: 1. Webhook URL input field.
-#: src/integrations/stripe/settings/stripe-settings.php:302
+#: src/integrations/stripe/settings/stripe-settings.php:322
 #, php-format
 msgctxt "Stripe"
 msgid "You'll be asked to enter a webhook URL. Please use this value: %s"
 msgstr ""
 
 #. translators: 1. Webhook secret input field.
-#: src/integrations/stripe/settings/stripe-settings.php:307
+#: src/integrations/stripe/settings/stripe-settings.php:327
 #, php-format
 msgctxt "Stripe"
 msgid "Once the webhook is created, copy its signing secret, and paste it here: %s"
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:310
+#: src/integrations/stripe/settings/stripe-settings.php:330
 msgctxt "Stripe"
 msgid "Click the \"Save settings\" below."
 msgstr ""
 
-#: src/integrations/stripe/settings/stripe-settings.php:313
+#: src/integrations/stripe/settings/stripe-settings.php:333
 msgctxt "Stripe"
 msgid "Continue the setup by enabling Stripe triggers"
 msgstr ""
@@ -36083,524 +35985,464 @@ msgctxt "Stripe"
 msgid "Test mode"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:46
+#: src/integrations/stripe/tokens/stripe-tokens.php:50
 msgctxt "Stripe"
 msgid "Address city"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:64
+#: src/integrations/stripe/tokens/stripe-tokens.php:68
 msgctxt "Stripe"
 msgid "Address postal code"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:70
+#: src/integrations/stripe/tokens/stripe-tokens.php:74
 msgctxt "Stripe"
 msgid "Address state"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:76
+#: src/integrations/stripe/tokens/stripe-tokens.php:80
 msgctxt "Stripe"
 msgid "Address country"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:82
+#: src/integrations/stripe/tokens/stripe-tokens.php:86
 msgctxt "Stripe"
 msgid "Customer balance"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:88
+#: src/integrations/stripe/tokens/stripe-tokens.php:92
 msgctxt "Stripe"
 msgid "Customer date and time created"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:100
+#: src/integrations/stripe/tokens/stripe-tokens.php:104
 msgctxt "Stripe"
 msgid "Customer phone"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:106
+#: src/integrations/stripe/tokens/stripe-tokens.php:110
 msgctxt "Stripe"
 msgid "Tax exempt"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:131
+#: src/integrations/stripe/tokens/stripe-tokens.php:135
 msgctxt "Stripe"
 msgid "Shipping address line 1"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:137
+#: src/integrations/stripe/tokens/stripe-tokens.php:141
 msgctxt "Stripe"
 msgid "Shipping address line 2"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:143
+#: src/integrations/stripe/tokens/stripe-tokens.php:147
 msgctxt "Stripe"
 msgid "Shipping address city"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:149
+#: src/integrations/stripe/tokens/stripe-tokens.php:153
 msgctxt "Stripe"
 msgid "Shipping address postal code"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:155
+#: src/integrations/stripe/tokens/stripe-tokens.php:159
 msgctxt "Stripe"
 msgid "Shipping address state"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:179
+#: src/integrations/stripe/tokens/stripe-tokens.php:183
 msgctxt "Stripe"
 msgid "Item quantity"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:185
+#: src/integrations/stripe/tokens/stripe-tokens.php:189
 msgctxt "Stripe"
 msgid "Item discount amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:191
+#: src/integrations/stripe/tokens/stripe-tokens.php:195
 msgctxt "Stripe"
 msgid "Item subtotal amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:197
+#: src/integrations/stripe/tokens/stripe-tokens.php:201
 msgctxt "Stripe"
 msgid "Item tax amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:203
+#: src/integrations/stripe/tokens/stripe-tokens.php:207
 msgctxt "Stripe"
 msgid "Item total amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:209
+#: src/integrations/stripe/tokens/stripe-tokens.php:213
 msgctxt "Stripe"
 msgid "Item currency"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:215
+#: src/integrations/stripe/tokens/stripe-tokens.php:219
 msgctxt "Stripe"
 msgid "Item description"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:233
+#: src/integrations/stripe/tokens/stripe-tokens.php:237
 msgctxt "Stripe"
 msgid "Price ID"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:239
+#: src/integrations/stripe/tokens/stripe-tokens.php:243
 msgctxt "Stripe"
 msgid "Price type"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:245
+#: src/integrations/stripe/tokens/stripe-tokens.php:249
 msgctxt "Stripe"
 msgid "Price billing scheme"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:251
+#: src/integrations/stripe/tokens/stripe-tokens.php:255
 msgctxt "Stripe"
 msgid "Price created"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:257
+#: src/integrations/stripe/tokens/stripe-tokens.php:261
 msgctxt "Stripe"
 msgid "Price currency"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:263
+#: src/integrations/stripe/tokens/stripe-tokens.php:267
 msgctxt "Stripe"
 msgid "Price unit amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:269
+#: src/integrations/stripe/tokens/stripe-tokens.php:273
 msgctxt "Stripe"
 msgid "Price metadata"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:275
+#: src/integrations/stripe/tokens/stripe-tokens.php:279
 msgctxt "Stripe"
 msgid "Price recurring interval"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:281
+#: src/integrations/stripe/tokens/stripe-tokens.php:285
 msgctxt "Stripe"
 msgid "Price recurring interval count"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:287
+#: src/integrations/stripe/tokens/stripe-tokens.php:291
 msgctxt "Stripe"
 msgid "Price recurring trial period days"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:305
-#: src/integrations/stripe/triggers/product-refunded.php:147
+#: src/integrations/stripe/tokens/stripe-tokens.php:309
+#: src/integrations/stripe/triggers/product-refunded.php:124
 msgctxt "Stripe"
 msgid "Product ID"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:311
+#: src/integrations/stripe/tokens/stripe-tokens.php:315
 msgctxt "Stripe"
 msgid "Product name"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:317
+#: src/integrations/stripe/tokens/stripe-tokens.php:321
 msgctxt "Stripe"
 msgid "Product description"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:323
+#: src/integrations/stripe/tokens/stripe-tokens.php:327
 msgctxt "Stripe"
 msgid "Product created"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:329
+#: src/integrations/stripe/tokens/stripe-tokens.php:333
 msgctxt "Stripe"
 msgid "Product images"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:335
+#: src/integrations/stripe/tokens/stripe-tokens.php:339
 msgctxt "Stripe"
 msgid "Product metadata"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:341
+#: src/integrations/stripe/tokens/stripe-tokens.php:345
 msgctxt "Stripe"
 msgid "Product URL"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:347
+#: src/integrations/stripe/tokens/stripe-tokens.php:351
 msgctxt "Stripe"
 msgid "Product type"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:353
+#: src/integrations/stripe/tokens/stripe-tokens.php:357
 msgctxt "Stripe"
 msgid "Product tax code"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:359
+#: src/integrations/stripe/tokens/stripe-tokens.php:363
 msgctxt "Stripe"
 msgid "Product unit label"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:365
+#: src/integrations/stripe/tokens/stripe-tokens.php:369
 msgctxt "Stripe"
 msgid "Product shippable"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:371
+#: src/integrations/stripe/tokens/stripe-tokens.php:375
 msgctxt "Stripe"
 msgid "Product statement descriptor"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:413
-msgctxt "Stripe"
-msgid "Billing email"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:419
-msgctxt "Stripe"
-msgid "Billing name"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:425
-msgctxt "Stripe"
-msgid "Billing phone"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:431
-msgctxt "Stripe"
-msgid "Billing address line 1"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:437
-msgctxt "Stripe"
-msgid "Billing address line 2"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:443
-msgctxt "Stripe"
-msgid "Billing address city"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:449
-msgctxt "Stripe"
-msgid "Billing address state"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:455
-msgctxt "Stripe"
-msgid "Billing address country"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:461
-msgctxt "Stripe"
-msgid "Billing address postal code"
-msgstr ""
-
-#: src/integrations/stripe/tokens/stripe-tokens.php:485
+#: src/integrations/stripe/tokens/stripe-tokens.php:424
 msgctxt "Stripe"
 msgid "Hosted invoice URL"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:515
+#: src/integrations/stripe/tokens/stripe-tokens.php:454
 msgctxt "Stripe"
 msgid "Charge ID"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:521
+#: src/integrations/stripe/tokens/stripe-tokens.php:460
 msgctxt "Stripe"
 msgid "Charge currency"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:527
+#: src/integrations/stripe/tokens/stripe-tokens.php:466
 msgctxt "Stripe"
 msgid "Charge description"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:533
+#: src/integrations/stripe/tokens/stripe-tokens.php:472
 msgctxt "Stripe"
 msgid "Charge payment method ID"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:539
+#: src/integrations/stripe/tokens/stripe-tokens.php:478
 msgctxt "Stripe"
 msgid "Charge balance transaction"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:545
+#: src/integrations/stripe/tokens/stripe-tokens.php:484
 msgctxt "Stripe"
 msgid "Charge amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:551
+#: src/integrations/stripe/tokens/stripe-tokens.php:490
 msgctxt "Stripe"
 msgid "Captured amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:557
+#: src/integrations/stripe/tokens/stripe-tokens.php:496
 msgctxt "Stripe"
 msgid "Refunded amount"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:563
+#: src/integrations/stripe/tokens/stripe-tokens.php:502
 msgctxt "Stripe"
 msgid "Charge status"
 msgstr ""
 
-#: src/integrations/stripe/tokens/stripe-tokens.php:569
+#: src/integrations/stripe/tokens/stripe-tokens.php:508
 msgctxt "Stripe"
 msgid "Charge receipt URL"
 msgstr ""
 
-#: src/integrations/stripe/triggers/customer-created.php:29
 #: src/integrations/stripe/triggers/customer-created.php:32
+#: src/integrations/stripe/triggers/customer-created.php:33
 msgctxt "Stripe"
 msgid "A customer is created"
 msgstr ""
 
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:34
+msgctxt "Stripe"
+msgid "One-time payment for {{a product}} is completed"
+msgstr ""
+
 #. translators: %1$s is the Stripe product name
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:39
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:36
 #, php-format
 msgctxt "Stripe"
 msgid "One-time payment for {{a product:%1$s}} is completed"
 msgstr ""
 
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:43
-msgctxt "Stripe"
-msgid "One-time payment for {{a product}} is completed"
-msgstr ""
-
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:63
-#: src/integrations/stripe/triggers/product-refunded.php:63
-#: src/integrations/stripe/triggers/subscription-cancelled.php:63
-#: src/integrations/stripe/triggers/subscription-created.php:64
-#: src/integrations/stripe/triggers/subscription-paid.php:64
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:64
-msgctxt "Stripe"
-msgid "Any"
-msgstr ""
-
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:70
-#: src/integrations/stripe/triggers/product-refunded.php:70
-#: src/integrations/stripe/triggers/subscription-cancelled.php:70
-#: src/integrations/stripe/triggers/subscription-created.php:71
-#: src/integrations/stripe/triggers/subscription-paid.php:71
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:71
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:48
+#: src/integrations/stripe/triggers/product-refunded.php:47
+#: src/integrations/stripe/triggers/subscription-cancelled.php:48
+#: src/integrations/stripe/triggers/subscription-created.php:48
+#: src/integrations/stripe/triggers/subscription-paid.php:48
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:48
 msgctxt "Stripe"
 msgid "Price"
 msgstr ""
 
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:80
-#: src/integrations/stripe/triggers/product-refunded.php:80
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:59
+#: src/integrations/stripe/triggers/product-refunded.php:58
 msgctxt "Stripe"
 msgid "Extract checkout metadata"
 msgstr ""
 
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:87
-#: src/integrations/stripe/triggers/product-refunded.php:87
-#: src/integrations/stripe/triggers/subscription-cancelled.php:87
-#: src/integrations/stripe/triggers/subscription-created.php:88
-#: src/integrations/stripe/triggers/subscription-paid.php:88
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:88
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:66
+#: src/integrations/stripe/triggers/product-refunded.php:65
+#: src/integrations/stripe/triggers/subscription-cancelled.php:66
+#: src/integrations/stripe/triggers/subscription-created.php:66
+#: src/integrations/stripe/triggers/subscription-paid.php:66
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:66
 msgctxt "Stripe"
 msgid "Metadata key"
 msgstr ""
 
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:69
 #: src/integrations/stripe/triggers/onetime-payment-completed.php:90
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:113
-#: src/integrations/stripe/triggers/product-refunded.php:90
-#: src/integrations/stripe/triggers/product-refunded.php:113
-#: src/integrations/stripe/triggers/subscription-cancelled.php:90
-#: src/integrations/stripe/triggers/subscription-created.php:91
-#: src/integrations/stripe/triggers/subscription-paid.php:91
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:91
+#: src/integrations/stripe/triggers/product-refunded.php:68
+#: src/integrations/stripe/triggers/product-refunded.php:89
+#: src/integrations/stripe/triggers/subscription-cancelled.php:69
+#: src/integrations/stripe/triggers/subscription-created.php:69
+#: src/integrations/stripe/triggers/subscription-paid.php:69
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:69
 msgctxt "Stripe"
 msgid "product"
 msgstr ""
 
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:91
-#: src/integrations/stripe/triggers/product-refunded.php:91
-#: src/integrations/stripe/triggers/subscription-cancelled.php:91
-#: src/integrations/stripe/triggers/subscription-created.php:92
-#: src/integrations/stripe/triggers/subscription-paid.php:92
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:92
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:70
+#: src/integrations/stripe/triggers/product-refunded.php:69
+#: src/integrations/stripe/triggers/subscription-cancelled.php:70
+#: src/integrations/stripe/triggers/subscription-created.php:70
+#: src/integrations/stripe/triggers/subscription-paid.php:70
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:70
 msgctxt "Stripe"
 msgid "Separate keys with / to build nested data."
 msgstr ""
 
-#. translators: Non-personal infinitive verb
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:95
-#: src/integrations/stripe/triggers/product-refunded.php:95
-#: src/integrations/stripe/triggers/subscription-cancelled.php:95
-#: src/integrations/stripe/triggers/subscription-created.php:96
-#: src/integrations/stripe/triggers/subscription-paid.php:96
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:96
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:73
+#: src/integrations/stripe/triggers/product-refunded.php:72
+#: src/integrations/stripe/triggers/subscription-cancelled.php:73
+#: src/integrations/stripe/triggers/subscription-created.php:73
+#: src/integrations/stripe/triggers/subscription-paid.php:73
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:73
 msgctxt "Stripe"
 msgid "Add a key"
 msgstr ""
 
-#. translators: Non-personal infinitive verb
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:97
-#: src/integrations/stripe/triggers/product-refunded.php:97
-#: src/integrations/stripe/triggers/subscription-cancelled.php:97
-#: src/integrations/stripe/triggers/subscription-created.php:98
-#: src/integrations/stripe/triggers/subscription-paid.php:98
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:98
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:74
+#: src/integrations/stripe/triggers/product-refunded.php:73
+#: src/integrations/stripe/triggers/subscription-cancelled.php:74
+#: src/integrations/stripe/triggers/subscription-created.php:74
+#: src/integrations/stripe/triggers/subscription-paid.php:74
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:74
 msgctxt "Stripe"
 msgid "Remove key"
 msgstr ""
 
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:103
-#: src/integrations/stripe/triggers/product-refunded.php:103
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:80
+#: src/integrations/stripe/triggers/product-refunded.php:79
 msgctxt "Stripe"
 msgid "Extract checkout custom fields"
 msgstr ""
 
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:110
-#: src/integrations/stripe/triggers/product-refunded.php:110
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:87
+#: src/integrations/stripe/triggers/product-refunded.php:86
 msgctxt "Stripe"
 msgid "Custom field key"
 msgstr ""
 
-#. translators: Non-personal infinitive verb
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:117
-#: src/integrations/stripe/triggers/product-refunded.php:117
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:93
+#: src/integrations/stripe/triggers/product-refunded.php:92
 msgctxt "Stripe"
 msgid "Add a field"
 msgstr ""
 
-#. translators: Non-personal infinitive verb
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:119
-#: src/integrations/stripe/triggers/product-refunded.php:119
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:94
+#: src/integrations/stripe/triggers/product-refunded.php:93
 msgctxt "Stripe"
 msgid "Remove field"
 msgstr ""
 
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:154
-#: src/integrations/stripe/triggers/product-refunded.php:161
-#: src/integrations/stripe/triggers/subscription-cancelled.php:130
-#: src/integrations/stripe/triggers/subscription-created.php:132
-#: src/integrations/stripe/triggers/subscription-paid.php:132
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:132
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:132
+#: src/integrations/stripe/triggers/product-refunded.php:138
+#: src/integrations/stripe/triggers/subscription-cancelled.php:110
+#: src/integrations/stripe/triggers/subscription-created.php:111
+#: src/integrations/stripe/triggers/subscription-paid.php:111
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:111
 msgctxt "Stripe"
 msgid "Metadata key: "
 msgstr ""
 
-#: src/integrations/stripe/triggers/onetime-payment-completed.php:161
-#: src/integrations/stripe/triggers/product-refunded.php:168
-#: src/integrations/stripe/triggers/subscription-cancelled.php:137
+#: src/integrations/stripe/triggers/onetime-payment-completed.php:139
+#: src/integrations/stripe/triggers/product-refunded.php:145
 msgctxt "Stripe"
 msgid "Custom field key: "
 msgstr ""
 
+#: src/integrations/stripe/triggers/product-refunded.php:34
+msgctxt "Stripe"
+msgid "A payment for {{a product}} is refunded"
+msgstr ""
+
 #. translators: %1$s is the Stripe product name
-#: src/integrations/stripe/triggers/product-refunded.php:40
+#: src/integrations/stripe/triggers/product-refunded.php:36
 #, php-format
 msgctxt "Stripe"
 msgid "A payment for {{a product:%1$s}} is refunded"
 msgstr ""
 
-#: src/integrations/stripe/triggers/product-refunded.php:44
+#: src/integrations/stripe/triggers/subscription-cancelled.php:34
 msgctxt "Stripe"
-msgid "A payment for {{a product}} is refunded"
+msgid "{{A subscription}} is cancelled"
 msgstr ""
 
 #. translators: %1$s is the subscription product name
-#: src/integrations/stripe/triggers/subscription-cancelled.php:40
+#: src/integrations/stripe/triggers/subscription-cancelled.php:36
 #, php-format
 msgctxt "Stripe"
 msgid "{{A subscription:%1$s}} is cancelled"
 msgstr ""
 
-#: src/integrations/stripe/triggers/subscription-cancelled.php:43
-msgctxt "Stripe"
-msgid "{{A subscription}} is cancelled"
-msgstr ""
-
-#: src/integrations/stripe/triggers/subscription-cancelled.php:80
-#: src/integrations/stripe/triggers/subscription-created.php:81
-#: src/integrations/stripe/triggers/subscription-paid.php:81
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:81
+#: src/integrations/stripe/triggers/subscription-cancelled.php:59
+#: src/integrations/stripe/triggers/subscription-created.php:59
+#: src/integrations/stripe/triggers/subscription-paid.php:59
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:59
 msgctxt "Stripe"
 msgid "Extract subscription metadata"
 msgstr ""
 
-#. translators: %1$s is the subscription product name
-#: src/integrations/stripe/triggers/subscription-created.php:40
-#, php-format
-msgctxt "Stripe"
-msgid "{{A subscription:%1$s}} is created"
-msgstr ""
-
-#: src/integrations/stripe/triggers/subscription-created.php:44
+#: src/integrations/stripe/triggers/subscription-created.php:34
 msgctxt "Stripe"
 msgid "{{A subscription}} is created"
 msgstr ""
 
 #. translators: %1$s is the subscription product name
-#: src/integrations/stripe/triggers/subscription-paid.php:40
+#: src/integrations/stripe/triggers/subscription-created.php:36
 #, php-format
 msgctxt "Stripe"
-msgid "{{A subscription:%1$s}} is paid"
+msgid "{{A subscription:%1$s}} is created"
 msgstr ""
 
-#: src/integrations/stripe/triggers/subscription-paid.php:44
+#: src/integrations/stripe/triggers/subscription-paid.php:34
 msgctxt "Stripe"
 msgid "{{A subscription}} is paid"
 msgstr ""
 
 #. translators: %1$s is the subscription product name
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:40
+#: src/integrations/stripe/triggers/subscription-paid.php:36
+#, php-format
+msgctxt "Stripe"
+msgid "{{A subscription:%1$s}} is paid"
+msgstr ""
+
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:34
+msgctxt "Stripe"
+msgid "{{A subscription}} payment fails"
+msgstr ""
+
+#. translators: %1$s is the subscription product name
+#: src/integrations/stripe/triggers/subscription-payment-failed.php:36
 #, php-format
 msgctxt "Stripe"
 msgid "{{A subscription:%1$s}} payment fails"
-msgstr ""
-
-#: src/integrations/stripe/triggers/subscription-payment-failed.php:44
-msgctxt "Stripe"
-msgid "{{A subscription}} payment fails"
 msgstr ""
 
 #: src/integrations/studiocart/tokens/studiocart-tokens.php:84
@@ -40520,13 +40362,13 @@ msgctxt "Trello"
 msgid "Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets."
 msgstr ""
 
-#: src/integrations/trello/helpers/trait-trello-card-data.php:224
+#: src/integrations/trello/helpers/trait-trello-card-data.php:238
 #: src/integrations/trello/helpers/trello-app-helpers.php:136
 msgctxt "Trello"
 msgid "Card ID"
 msgstr ""
 
-#: src/integrations/trello/helpers/trait-trello-card-data.php:228
+#: src/integrations/trello/helpers/trait-trello-card-data.php:242
 msgctxt "Trello"
 msgid "Card URL"
 msgstr ""
@@ -40846,18 +40688,18 @@ msgctxt "Twilio"
 msgid "Twilio is not connected"
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-api-caller.php:73
+#: src/integrations/twilio/helpers/twilio-api-caller.php:99
 #, php-format
 msgctxt "Twilio"
 msgid "API request failed with status %d"
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-api-caller.php:125
+#: src/integrations/twilio/helpers/twilio-api-caller.php:151
 msgctxt "Twilio"
 msgid "Twilio phone number is missing."
 msgstr ""
 
-#: src/integrations/twilio/helpers/twilio-api-caller.php:131
+#: src/integrations/twilio/helpers/twilio-api-caller.php:157
 msgctxt "Twilio"
 msgid "To number is not valid."
 msgstr ""
@@ -41301,37 +41143,37 @@ msgid "Any recipe"
 msgstr ""
 
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:129
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:362
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:447
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:391
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:476
 msgid "Recipe ID"
 msgstr ""
 
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:136
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:369
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:453
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:398
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:482
 msgid "Recipe title"
 msgstr ""
 
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:150
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:383
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:459
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:412
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:488
 msgid "Recipe edit link"
 msgstr ""
 
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:157
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:390
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:465
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:419
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:494
 msgid "Recipe log URL"
 msgstr ""
 
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:164
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:397
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:471
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:426
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:500
 msgid "Action log URL"
 msgstr ""
 
 #: src/integrations/uncanny-automator/tokens/uoa-tokens.php:171
-#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:404
+#: src/integrations/uncanny-automator/tokens/uoa-tokens.php:433
 msgid "Trigger log URL"
 msgstr ""
 
@@ -49489,8 +49331,8 @@ msgctxt "Zoom"
 msgid "Meeting password"
 msgstr ""
 
-#: src/integrations/zoom/actions/zoom-createmeeting.php:126
-#: src/integrations/zoom/actions/zoom-createrecurringmeeting.php:153
+#: src/integrations/zoom/actions/zoom-createmeeting.php:127
+#: src/integrations/zoom/actions/zoom-createrecurringmeeting.php:154
 msgctxt "Zoom"
 msgid "Failed to create meeting. Please check your Zoom account settings and try again."
 msgstr ""
@@ -49507,7 +49349,7 @@ msgctxt "Zoom"
 msgid "Create {{a recurring meeting}}"
 msgstr ""
 
-#: src/integrations/zoom/actions/zoom-createrecurringmeeting.php:149
+#: src/integrations/zoom/actions/zoom-createrecurringmeeting.php:150
 msgctxt "Zoom"
 msgid "Recurring meetings require a Pro or higher Zoom account."
 msgstr ""

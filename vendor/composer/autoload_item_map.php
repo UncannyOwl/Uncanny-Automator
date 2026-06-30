@@ -810,11 +810,6 @@ return array(
 				'class' => 'Uncanny_Automator\\Integrations\\ConvertKit\\CONVERTKIT_FORM_SUBSCRIBER_ADD',
 				'file'  => $baseDir . '/src/integrations/convertkit/actions/convertkit-form-subscriber-add.php',
 			),
-			'CONVERTKIT_CONVERTKIT_PURCHASE_CREATE' => array(
-				'code'  => 'CONVERTKIT_PURCHASE_CREATE',
-				'class' => 'Uncanny_Automator\\Integrations\\ConvertKit\\CONVERTKIT_PURCHASE_CREATE',
-				'file'  => $baseDir . '/src/integrations/convertkit/actions/convertkit-purchase-create.php',
-			),
 			'CONVERTKIT_CONVERTKIT_SUBSCRIBER_CREATE_UPDATE' => array(
 				'code'  => 'CONVERTKIT_SUBSCRIBER_CREATE_UPDATE',
 				'class' => 'Uncanny_Automator\\Integrations\\ConvertKit\\CONVERTKIT_SUBSCRIBER_CREATE_UPDATE',

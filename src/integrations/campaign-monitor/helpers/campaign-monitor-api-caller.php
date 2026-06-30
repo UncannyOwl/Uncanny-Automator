@@ -136,11 +136,20 @@ class Campaign_Monitor_Api_Caller extends Api_Caller {
 		}
 
 		if ( isset( $response['statusCode'] ) && $response['statusCode'] >= 400 ) {
-			$message = $response['data']['error_description'] ?? $response['data']['Message'] ?? esc_html_x( 'An error occurred', 'Campaign Monitor', 'uncanny-automator' );
+			// Platform exception path: surface error.description (re-passed as a
+			// string in $response['error']) before the generic fallback.
+			$platform_error = ( ! empty( $response['error'] ) && is_string( $response['error'] ) ) ? $response['error'] : null;
+			$message        = $response['data']['error_description']
+				?? $response['data']['Message']
+				?? $platform_error
+				?? esc_html_x( 'An error occurred', 'Campaign Monitor', 'uncanny-automator' );
 			throw new Exception( esc_html( $message ), absint( $response['statusCode'] ) );
 		}
 
-		if ( empty( $response['data'] ) && 200 !== $response['statusCode'] ) {
+		// Accept the platform's normalized 200 alongside Campaign Monitor's native 201 Created.
+		// The new Api_Client coerces a scalar `data` (this endpoint returns the subscriber email as
+		// a string) to an empty array, so status is the only reliable success signal here.
+		if ( empty( $response['data'] ) && ! in_array( absint( $response['statusCode'] ?? 0 ), array( 200, 201 ), true ) ) {
 			throw new Exception( esc_html_x( 'No data returned from Campaign Monitor', 'Campaign Monitor', 'uncanny-automator' ), 400 );
 		}
 	}

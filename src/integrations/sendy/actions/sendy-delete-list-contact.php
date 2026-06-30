@@ -63,7 +63,20 @@ class SENDY_DELETE_LIST_CONTACT extends \Uncanny_Automator\Recipe\App_Action {
 		$email = $this->helpers->get_email_from_parsed( $parsed, $this->get_action_meta() );
 		$list  = $this->helpers->get_list_from_parsed( $parsed, 'LIST' );
 
-		$this->api->delete_contact_from_list( $email, $list, $action_data );
+		try {
+			$this->api->delete_contact_from_list( $email, $list, $action_data );
+		} catch ( \Exception $e ) {
+			// A contact that isn't on the list is already gone — complete with a
+			// notice instead of failing the run.
+			if ( ! $this->helpers->is_contact_not_in_list_error( $e->getMessage() ) ) {
+				throw $e;
+			}
+
+			$this->set_complete_with_notice( true );
+			$this->add_log_error( $e->getMessage() );
+
+			return null;
+		}
 
 		return true;
 	}

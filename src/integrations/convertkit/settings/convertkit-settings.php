@@ -8,7 +8,6 @@
 namespace Uncanny_Automator\Integrations\ConvertKit;
 
 use Uncanny_Automator\Settings\App_Integration_Settings;
-use Uncanny_Automator\Settings\OAuth_App_Integration;
 
 use Exception;
 
@@ -19,8 +18,6 @@ use Exception;
  * @property ConvertKit_Api_Caller $api
  */
 class ConvertKit_Settings extends App_Integration_Settings {
-
-	use OAuth_App_Integration;
 
 	/**
 	 * Temporary option key for the V3 API key field (used only during connect flow).
@@ -229,21 +226,20 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	 * Sets the default connection type.
 	 *
 	 * Priority when not connected and no in-flight credentials are stored:
-	 *   1. OAuth (if currently enabled on the proxy)
-	 *   2. V4 API key
-	 *   3. V3 API key
+	 *   1. V4 API key
+	 *   2. V3 API key
 	 *
 	 * In-flight credentials (left over from a prior failed attempt)
 	 * always take precedence so the user lands back on the tab they
 	 * were using.
 	 *
-	 * @param string $type "oauth"|"api-key"|"v4-api-key".
+	 * @param string $type "api-key"|"v4-api-key".
 	 *
 	 * @return void
 	 */
 	private function set_default_connection_type( $type ) {
 
-		$type = ! in_array( (string) $type, array( 'oauth', 'api-key', 'v4-api-key' ), true )
+		$type = ! in_array( (string) $type, array( 'api-key', 'v4-api-key' ), true )
 			? 'v4-api-key'
 			: $type;
 
@@ -265,12 +261,7 @@ class ConvertKit_Settings extends App_Integration_Settings {
 			return;
 		}
 
-		// No in-flight credentials — follow the OAuth > V4 > V3 priority.
-		if ( $this->helpers->is_oauth_enabled() ) {
-			$this->default_connection_type = 'oauth';
-			return;
-		}
-
+		// No in-flight credentials — default to the V4 API key tab.
 		$this->default_connection_type = 'v4-api-key';
 	}
 
@@ -331,17 +322,6 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	 */
 	public function output_bottom_left_disconnected_content() {
 		?>
-		<?php if ( $this->helpers->is_oauth_enabled() ) : ?>
-			<uap-app-integration-settings-section
-				id="quick-connect-section"
-				section-type="quick-connect"
-				state="connection-method"
-				show-when="quick-connect"
-			>
-				<?php $this->output_oauth_connect_button(); ?>
-			</uap-app-integration-settings-section>
-		<?php endif; ?>
-
 		<uap-app-integration-settings-section
 			id="v4-api-key-section"
 			section-type="v4-api-key"
@@ -372,8 +352,8 @@ class ConvertKit_Settings extends App_Integration_Settings {
 	 * Note on naming: the radio `value` is the web-component state ID
 	 * used by `data-state-control="connection-method"` to show/hide the
 	 * matching `<uap-app-integration-settings-section show-when="...">`
-	 * block. The PHP-side connection type (`oauth` / `api-key` /
-	 * `v4-api-key`) is a separate concept used by
+	 * block. The PHP-side connection type (`api-key` / `v4-api-key`)
+	 * is a separate concept used by
 	 * `get_default_connection_type()` / `set_default_connection_type()`.
 	 * The two systems happen to share the string `'v4-api-key'` but the
 	 * V3 flow deliberately keeps them distinct (`'custom-app'` vs
@@ -389,26 +369,6 @@ class ConvertKit_Settings extends App_Integration_Settings {
 			</div>
 
 			<div class="uap-settings-panel-content-connection-method__options">
-				<?php if ( $this->helpers->is_oauth_enabled() ) : ?>
-					<div class="uap-settings-panel-content-connection-method__option uap-settings-panel-content-connection-method--quick-connect">
-						<uo-field-input-radio
-							name="uap-convertkit-connect-method"
-							value="quick-connect"
-							data-state-control="connection-method"
-							<?php echo checked( $this->get_default_connection_type(), 'oauth', false ) ? 'checked' : ''; ?>
-						>
-							<div slot="label" class="uap-custom-app-label">
-								<span class="uap-settings-panel-content-connection-method__option-title">
-									<?php echo esc_html_x( 'Quick connect', 'ConvertKit', 'uncanny-automator' ); ?>
-								</span>
-								<p class="uap-settings-panel-content-paragraph">
-									<?php echo esc_html_x( 'The recommended option: Sign in to your Kit account to connect.', 'ConvertKit', 'uncanny-automator' ); ?>
-								</p>
-							</div>
-						</uo-field-input-radio>
-					</div>
-				<?php endif; ?>
-
 				<div class="uap-settings-panel-content-connection-method__option uap-settings-panel-content-connection-method--v4-api-key">
 					<uo-field-input-radio
 						name="uap-convertkit-connect-method"

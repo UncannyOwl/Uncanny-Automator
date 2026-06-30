@@ -12,58 +12,36 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
-	 * Trigger code.
+	 * Static trigger definition for lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	const TRIGGER_CODE = 'ONETIME_PAYMENT_COMPLETED';
-
-	/**
-	 * Define and register the trigger by pushing it into the Automator object
-	 */
-
-	public function setup_trigger() {
-		$this->set_integration( 'STRIPE' );
-
-		$this->set_trigger_code( self::TRIGGER_CODE );
-
-		$this->set_trigger_meta( 'PRICE_ID' );
-
-		$this->set_is_login_required( false );
-
-		$this->set_trigger_type( 'anonymous' );
-
-		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
-
-		// translators: %1$s is the Stripe product name
-		$this->set_sentence( sprintf( esc_html_x( 'One-time payment for {{a product:%1$s}} is completed', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
-
-		// Non-active state sentence to show
-
-		$this->set_readable_sentence( esc_html_x( 'One-time payment for {{a product}} is completed', 'Stripe', 'uncanny-automator' ) );
-
-		// Which do_action() fires this trigger.
-		$this->add_action( Stripe_Webhooks::LINE_ITEM_PAID_ACTION );
-
-		$this->set_action_args_count( 2 );
+	public static function definition() {
+		return self::new_definition( 'ONETIME_PAYMENT_COMPLETED', 'STRIPE' )
+			->trigger_meta( 'PRICE_ID' )
+			->trigger_type( 'anonymous' )
+			->hook( Stripe_Webhooks::LINE_ITEM_PAID_ACTION, 10, 2 );
 	}
 
 	/**
-	 * options
+	 * Register the trigger's integration, code, meta, type, sentences, and webhook action.
 	 *
-	 * @return array
+	 * @return void
+	 */
+	public function setup_trigger() {
+		$this->set_is_login_required( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
+		$this->set_readable_sentence( esc_html_x( 'One-time payment for {{a product}} is completed', 'Stripe', 'uncanny-automator' ) );
+		// translators: %1$s is the Stripe product name
+		$this->set_sentence( sprintf( esc_html_x( 'One-time payment for {{a product:%1$s}} is completed', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+	}
+
+	/**
+	 * Build the price selector and the checkout metadata and custom-field repeater fields.
+	 *
+	 * @return array The trigger's field definitions.
 	 */
 	public function options() {
-
-		$prices = $this->api->get_prices_options( 'one_time' );
-
-		array_unshift(
-			$prices,
-			array(
-				'text'  => esc_html_x( 'Any', 'Stripe', 'uncanny-automator' ),
-				'value' => '-1',
-			)
-		);
 
 		$products = array(
 			'option_code' => $this->get_trigger_meta(),
@@ -71,7 +49,8 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\App_Trigger {
 			'input_type'  => 'select',
 			'required'    => true,
 			'read_only'   => false,
-			'options'     => $prices,
+			'options'     => array(),
+			'remote_data' => $this->helpers->remote_data_load_config( 'onetime_prices' ),
 		);
 
 		$metadata = array(
@@ -91,9 +70,7 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\App_Trigger {
 					'description'     => sprintf( '<i>%s</i>', esc_html_x( 'Separate keys with / to build nested data.', 'Stripe', 'uncanny-automator' ) ),
 				),
 			),
-			/* translators: Non-personal infinitive verb */
 			'add_row_button'    => esc_html_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
-			/* translators: Non-personal infinitive verb */
 			'remove_row_button' => esc_html_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
 		);
 
@@ -113,9 +90,7 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\App_Trigger {
 					'placeholder'     => esc_html_x( 'product', 'Stripe', 'uncanny-automator' ),
 				),
 			),
-			/* translators: Non-personal infinitive verb */
 			'add_row_button'    => esc_html_x( 'Add a field', 'Stripe', 'uncanny-automator' ),
-			/* translators: Non-personal infinitive verb */
 			'remove_row_button' => esc_html_x( 'Remove field', 'Stripe', 'uncanny-automator' ),
 		);
 
@@ -128,11 +103,14 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\App_Trigger {
 
 
 	/**
-	 * Returns the trigger's tokens.
+	 * Assemble the line item, price, product, customer, shipping, invoice and configured
+	 * metadata/custom-field token definitions exposed by this trigger.
 	 *
-	 * @return array
+	 * @param array $trigger The trigger's configuration, including saved METADATA and CUSTOM_FIELDS meta.
+	 * @param array $tokens  The tokens already registered for the trigger.
+	 *
+	 * @return array The merged token definitions.
 	 */
-
 	public function define_tokens( $trigger, $tokens ) {
 
 		$list_item_tokens = $this->helpers->tokens->line_item_tokens();
@@ -176,13 +154,13 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\App_Trigger {
 	}
 
 	/**
-	 * Validate the trigger.
+	 * Confirm the paid line item is a one-time price matching the selected price (or any one-time price).
 	 *
-	 * @param $args
+	 * @param array $trigger   The trigger's configuration, including the selected PRICE_ID meta.
+	 * @param array $hook_args The hook arguments, where the first element is the Stripe line item.
 	 *
-	 * @return bool
+	 * @return bool True when the line item's price matches the trigger's selection, false otherwise.
 	 */
-
 	public function validate( $trigger, $hook_args ) {
 
 		$selected_price = $trigger['meta'][ $this->get_trigger_meta() ];
@@ -212,14 +190,14 @@ class Onetime_Payment_Completed extends \Uncanny_Automator\Recipe\App_Trigger {
 	}
 
 	/**
-	 * hydrate_tokens
+	 * Populate the line item, price, product, customer, shipping, invoice and metadata/custom-field
+	 * tokens from the paid line item and checkout session.
 	 *
-	 * @param array $trigger
-	 * @param array $hook_args
+	 * @param array $trigger   The trigger's configuration, including saved METADATA and CUSTOM_FIELDS meta.
+	 * @param array $hook_args The hook arguments: the Stripe line item and the checkout session.
 	 *
-	 * @return array
+	 * @return array The hydrated token values keyed by token id.
 	 */
-
 	public function hydrate_tokens( $trigger, $hook_args ) {
 
 		list( $list_item, $session ) = $hook_args;

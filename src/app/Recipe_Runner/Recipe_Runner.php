@@ -423,15 +423,17 @@ class Recipe_Runner {
 	 * Uses the resolver for one-pass status computation + severity guard.
 	 * Called by Pro's loop completion, background actions, and async handlers.
 	 *
-	 * @param int   $recipe_id     The recipe ID.
-	 * @param int   $user_id       The user ID.
-	 * @param int   $recipe_log_id The recipe log ID.
-	 * @param array $args          Recipe args.
+	 * @param int   $recipe_id                 The recipe ID.
+	 * @param int   $user_id                   The user ID.
+	 * @param int   $recipe_log_id             The recipe log ID.
+	 * @param array $args                      Recipe args.
+	 * @param bool  $treat_incomplete_as_error Recovery-only: treat NOT_COMPLETED action rows as
+	 *                                         stuck errors. Defaults false for the live path.
 	 *
 	 * @return bool|null
 	 */
-	public function finalize_recipe( int $recipe_id, int $user_id, int $recipe_log_id, array $args = array() ) {
-		return $this->recipe_complete->finalize_recipe( $recipe_id, $user_id, $recipe_log_id, $args );
+	public function finalize_recipe( int $recipe_id, int $user_id, int $recipe_log_id, array $args = array(), bool $treat_incomplete_as_error = false ) {
+		return $this->recipe_complete->finalize_recipe( $recipe_id, $user_id, $recipe_log_id, $args, $treat_incomplete_as_error );
 	}
 
 	/**

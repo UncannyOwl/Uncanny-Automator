@@ -52,23 +52,25 @@ class Keap_Api_Caller extends Api_Caller {
 	 */
 	public function check_for_errors( $response, $args = array() ) {
 
-		// First let the parent handle common errors like "invalid credentials".
+		// Parent handles credentials and 4xx (with the shared message extraction).
 		parent::check_for_errors( $response, $args );
 
-		// Handle Keap-specific error formats.
+		// Catch any remaining non-success status (e.g. 5xx) the parent skips.
 		$valid_codes = array( 200, 201, 204 );
-		if ( ! in_array( $response['statusCode'], $valid_codes, true ) ) {
-			$message = esc_html_x( 'Keap API Error: ', 'Keap', 'uncanny-automator' );
-			if ( isset( $response['data']['message'] ) ) {
-				$message = $response['data']['message'];
-			} else {
-				$message .= sprintf(
-					// translators: %s Status code.
-					esc_html_x( 'request failed with status code: %s', 'Keap', 'uncanny-automator' ),
-					$response['statusCode']
-				);
-			}
-			throw new Exception( esc_html( $message ), absint( $response['statusCode'] ) );
+		if ( in_array( $response['statusCode'] ?? 0, $valid_codes, true ) ) {
+			return;
 		}
+
+		$message = $this->extract_error_message( $response );
+
+		if ( '' === $message ) {
+			$message = sprintf(
+				// translators: %s Status code.
+				esc_html_x( 'Keap API Error: request failed with status code: %s', 'Keap', 'uncanny-automator' ),
+				absint( $response['statusCode'] ?? 0 )
+			);
+		}
+
+		throw new Exception( esc_html( $message ), absint( $response['statusCode'] ?? 0 ) );
 	}
 }

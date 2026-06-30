@@ -162,4 +162,20 @@ class Sendy_App_Helpers extends App_Helpers {
 
 		return $email;
 	}
+
+	/**
+	 * Whether an API error means the contact is not on the list.
+	 *
+	 * Sendy returns "Email does not exist in list" when unsubscribing or deleting
+	 * a contact that was never on the list. For those actions the desired end
+	 * state (contact not subscribed / removed) is already met, so it should be a
+	 * notice rather than a hard failure.
+	 *
+	 * @param string $message The API error message.
+	 *
+	 * @return bool
+	 */
+	public function is_contact_not_in_list_error( $message ) {
+		return false !== stripos( (string) $message, 'does not exist' );
+	}
 }
