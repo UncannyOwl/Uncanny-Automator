@@ -411,35 +411,35 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 ### 1. Set up your first recipe in 5 minutes
 
-[missing image]
+![Set up your first recipe in 5 minutes](https://ps.w.org/uncanny-automator/assets/screenshot-1.gif)
 
 ### 2. Add one or more triggers from dozens of plugins and thousands of apps
 
-[missing image]
+![Add one or more triggers from dozens of plugins and thousands of apps](https://ps.w.org/uncanny-automator/assets/screenshot-2.png)
 
 ### 3. Identify what starts the recipe, like a purchase or form submission
 
-[missing image]
+![Identify what starts the recipe, like a purchase or form submission](https://ps.w.org/uncanny-automator/assets/screenshot-3.png)
 
 ### 4. Set conditions and options for the trigger(s)
 
-[missing image]
+![Set conditions and options for the trigger(s)](https://ps.w.org/uncanny-automator/assets/screenshot-4.png)
 
 ### 5. Add one or more actions from any of the available integrations
 
-[missing image]
+![Add one or more actions from any of the available integrations](https://ps.w.org/uncanny-automator/assets/screenshot-5.png)
 
 ### 6. When the triggers are completed, actions run automatically
 
-[missing image]
+![When the triggers are completed, actions run automatically](https://ps.w.org/uncanny-automator/assets/screenshot-6.png)
 
 ### 7. Customize your actions to do exactly what you need
 
-[missing image]
+![Customize your actions to do exactly what you need](https://ps.w.org/uncanny-automator/assets/screenshot-7.png)
 
 ### 8. Create powerful recipes that just work, all with one plugin
 
-[missing image]
+![Create powerful recipes that just work, all with one plugin](https://ps.w.org/uncanny-automator/assets/screenshot-8.png)
 
 
 ## Changelog
@@ -454,7 +454,8 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 * App Actions - Increased the default outgoing request timeout to better support longer-running app responses. #8009
 * Kit - Removed the unsupported OAuth connection flow and now support V4 connections by API key only. #8006
-* Stripe - Improved product and price dropdown performance in the recipe builder with cached remote loading and refresh support & Stripe - Product refunded trigger now correctly respects the selected price instead of firing for every refunded product. #7999
+* Stripe - Improved product and price dropdown performance in the recipe builder with cached remote loading and refresh support. #7999
+* Stripe - Product refunded trigger now correctly respects the selected price instead of firing for every refunded product. #7999
 
 **Fixed:**
 
