@@ -52,11 +52,14 @@ class INSTAGRAM_PUBLISH_PHOTO extends \Uncanny_Automator\Recipe\App_Action {
 				'required'              => true,
 				'options'               => $this->helpers->get_instagram_accounts_options(),
 			),
-			// The image url.
+			// The image url. Uses 'text' (not 'url') because the field accepts
+			// either a URL or a numeric media library ID; a 'url' input makes the
+			// UI prepend "http://" to a bare ID (e.g. 5452 => http://5452).
+			// The value is resolved/sanitized on the backend in resolve_image_url().
 			array(
 				'option_code' => 'INSTAGRAM_IMAGE_URL',
 				'label'       => esc_html_x( 'Image URL or Media library ID', 'Instagram', 'uncanny-automator' ),
-				'input_type'  => 'url',
+				'input_type'  => 'text',
 				'required'    => true,
 				'placeholder' => esc_html_x( 'https://pathtoimage/image.jpg', 'Instagram', 'uncanny-automator' ),
 				'description' => esc_html_x( 'The image must be in a JPG, JPEG or PNG format. The file name must not contain spaces and extended JPEG formats (such as MPO and JPS) are not supported.', 'Instagram', 'uncanny-automator' ),

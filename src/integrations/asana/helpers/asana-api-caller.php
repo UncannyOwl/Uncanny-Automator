@@ -261,8 +261,9 @@ class Asana_Api_Caller extends \Uncanny_Automator\App_Integrations\Api_Caller {
 
 		$response = $this->api_request( $args );
 
-		if ( 201 !== $response['statusCode'] ) {
-			throw new Exception( esc_html( $response['data']['message'] ) );
+		// Platform normalizes a successful vendor response to 200; accept it alongside Asana's native 201 Created.
+		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] ) {
+			throw new Exception( esc_html( $response['data']['message'] ?? '' ) );
 		}
 
 		return array(

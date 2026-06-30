@@ -171,7 +171,12 @@ class Stuck_Recipe_Recovery {
 				// of 50 leaves #4-50 stuck until the next tick (and the
 				// same row will likely throw again, starving the rest).
 				try {
-					$this->runner->finalize_recipe( $recipe_id, $user_id, $recipe_log_id );
+					// Recovery context: this recipe has been stuck at NOT_COMPLETED for
+					// 1h+, so a NOT_COMPLETED action row is a genuinely stuck/partial run
+					// (PHP fatal / OOM mid-Stage 3), not a transient mid-completion state.
+					// Pass true so the resolver surfaces it as COMPLETED_WITH_ERRORS rather
+					// than silently upgrading the partial run to COMPLETED.
+					$this->runner->finalize_recipe( $recipe_id, $user_id, $recipe_log_id, true );
 					$this->log_recovery( $recipe_log_id, $threshold, (string) $row->date_time );
 					++$recovered;
 				} catch ( \Throwable $e ) {

@@ -29,10 +29,16 @@ class Ontraport_Api_Caller extends Api_Caller {
 
 		if ( ! in_array( $status, array( 200, 201 ), true ) ) {
 
-			$message = isset( $response['data']['message'] )
-				? $response['data']['message']
+			if ( isset( $response['data']['message'] ) ) {
+				$message = $response['data']['message'];
+			} elseif ( ! empty( $response['error'] ) && is_string( $response['error'] ) ) {
+				// Platform exception path: surface the real error.description string
+				// instead of the generic status-code fallback.
+				$message = $response['error'];
+			} else {
 				// translators: 1: Status code.
-				: sprintf( esc_html_x( 'Ontraport API error: Received unexpected status code %1$s.', 'Ontraport', 'uncanny-automator' ), $status );
+				$message = sprintf( esc_html_x( 'Ontraport API error: Received unexpected status code %1$s.', 'Ontraport', 'uncanny-automator' ), $status );
+			}
 
 			throw new Exception( esc_html( $message ), absint( $status ) );
 		}
@@ -103,5 +109,31 @@ class Ontraport_Api_Caller extends Api_Caller {
 			$action_data,
 			array( 'exclude_credentials' => true )
 		);
+	}
+
+	/**
+	 * Refresh Ontraport's bespoke credential keys on a log resend.
+	 *
+	 * The action path bakes the app key + account id straight into the body, so
+	 * re-resolve the current credentials and overwrite those keys before a resend
+	 * replays the stale ones. Mirrors send_request() (including its `?? ''`).
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 */
+	protected function replace_resend_credentials( $body ) {
+
+		$credentials = $this->helpers->get_credentials();
+
+		if ( array_key_exists( 'key', $body ) ) {
+			$body['key'] = $credentials['key'] ?? '';
+		}
+
+		if ( array_key_exists( 'id', $body ) ) {
+			$body['id'] = $credentials['id'] ?? '';
+		}
+
+		return parent::replace_resend_credentials( $body );
 	}
 }

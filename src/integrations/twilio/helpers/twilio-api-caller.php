@@ -49,6 +49,32 @@ class Twilio_Api_Caller extends Api_Caller {
 	}
 
 	/**
+	 * Refresh Twilio's bespoke credential keys on a log resend.
+	 *
+	 * The action path bakes the account SID + auth token straight into the body,
+	 * so re-resolve the current credentials and overwrite those keys before a
+	 * resend replays the stale ones. Mirrors twilio_api_request().
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 */
+	protected function replace_resend_credentials( $body ) {
+
+		$credentials = $this->helpers->get_credentials();
+
+		if ( array_key_exists( 'account_sid', $body ) && isset( $credentials['account_sid'] ) ) {
+			$body['account_sid'] = $credentials['account_sid'];
+		}
+
+		if ( array_key_exists( 'auth_token', $body ) && isset( $credentials['auth_token'] ) ) {
+			$body['auth_token'] = $credentials['auth_token'];
+		}
+
+		return parent::replace_resend_credentials( $body );
+	}
+
+	/**
 	 * Check for errors in response
 	 *
 	 * @param array $response

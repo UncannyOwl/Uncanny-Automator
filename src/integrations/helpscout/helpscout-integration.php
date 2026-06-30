@@ -51,6 +51,11 @@ class Helpscout_Integration extends App_Integration {
 		// Initialize settings.
 		new Helpscout_Settings( $this->dependencies, $this->get_settings_config() );
 
+		// One-time fix for the legacy STATUS option_code colliding with the
+		// reserved 'status' item-meta key. Recovers CONVERSATION_STATUS for
+		// existing conversation-create actions.
+		new Helpscout_Status_Meta_Migration( 'helpscout_conversation_status_meta' );
+
 		// Actions.
 		new Helpscout_Conversation_Create( $this->dependencies );
 		new Helpscout_Customer_Properties_Update( $this->dependencies );

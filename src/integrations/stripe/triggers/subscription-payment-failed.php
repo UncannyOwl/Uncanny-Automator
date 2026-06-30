@@ -12,59 +12,36 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Subscription_Payment_Failed extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
-	 * Trigger code.
+	 * Static trigger definition for lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	const TRIGGER_CODE = 'SUB_PAYMENT_FAILED';
-
-	/**
-	 * Define and register the trigger by pushing it into the Automator object
-	 */
-
-	public function setup_trigger() {
-
-		$this->set_integration( 'STRIPE' );
-
-		$this->set_trigger_code( self::TRIGGER_CODE );
-
-		$this->set_trigger_meta( 'PRICE_ID' );
-
-		$this->set_is_login_required( false );
-
-		$this->set_trigger_type( 'anonymous' );
-
-		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
-
-		// translators: %1$s is the subscription product name
-		$this->set_sentence( sprintf( esc_html_x( '{{A subscription:%1$s}} payment fails', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
-
-		// Non-active state sentence to show
-
-		$this->set_readable_sentence( esc_html_x( '{{A subscription}} payment fails', 'Stripe', 'uncanny-automator' ) );
-
-		// Which do_action() fires this trigger.
-		$this->add_action( Stripe_Webhooks::INVOICE_ITEM_PAYMENT_FAILED_ACTION );
-
-		$this->set_action_args_count( 3 );
+	public static function definition() {
+		return self::new_definition( 'SUB_PAYMENT_FAILED', 'STRIPE' )
+			->trigger_meta( 'PRICE_ID' )
+			->trigger_type( 'anonymous' )
+			->hook( Stripe_Webhooks::INVOICE_ITEM_PAYMENT_FAILED_ACTION, 10, 3 );
 	}
 
 	/**
-	 * options
+	 * Register the trigger's integration, code, meta, type, sentences, and webhook action.
 	 *
-	 * @return array
+	 * @return void
+	 */
+	public function setup_trigger() {
+		$this->set_is_login_required( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
+		$this->set_readable_sentence( esc_html_x( '{{A subscription}} payment fails', 'Stripe', 'uncanny-automator' ) );
+		// translators: %1$s is the subscription product name
+		$this->set_sentence( sprintf( esc_html_x( '{{A subscription:%1$s}} payment fails', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+	}
+
+	/**
+	 * Build the price selector and the subscription metadata repeater fields.
+	 *
+	 * @return array The trigger's field definitions.
 	 */
 	public function options() {
-
-		$prices = $this->api->get_prices_options( 'recurring' );
-
-		array_unshift(
-			$prices,
-			array(
-				'text'  => esc_html_x( 'Any', 'Stripe', 'uncanny-automator' ),
-				'value' => '-1',
-			)
-		);
 
 		$products = array(
 			'option_code' => $this->get_trigger_meta(),
@@ -72,7 +49,8 @@ class Subscription_Payment_Failed extends \Uncanny_Automator\Recipe\App_Trigger 
 			'input_type'  => 'select',
 			'required'    => true,
 			'read_only'   => false,
-			'options'     => $prices,
+			'options'     => array(),
+			'remote_data' => $this->helpers->remote_data_load_config( 'recurring_prices' ),
 		);
 
 		$metadata = array(
@@ -92,9 +70,7 @@ class Subscription_Payment_Failed extends \Uncanny_Automator\Recipe\App_Trigger 
 					'description'     => sprintf( '<i>%s</i>', esc_html_x( 'Separate keys with / to build nested data.', 'Stripe', 'uncanny-automator' ) ),
 				),
 			),
-			/* translators: Non-personal infinitive verb */
 			'add_row_button'    => esc_html_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
-			/* translators: Non-personal infinitive verb */
 			'remove_row_button' => esc_html_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
 		);
 
@@ -106,11 +82,14 @@ class Subscription_Payment_Failed extends \Uncanny_Automator\Recipe\App_Trigger 
 
 
 	/**
-	 * Returns the trigger's tokens.
+	 * Assemble the price, product, customer, invoice and configured metadata token definitions
+	 * exposed by this trigger.
 	 *
-	 * @return array
+	 * @param array $trigger The trigger's configuration, including saved METADATA meta.
+	 * @param array $tokens  The tokens already registered for the trigger.
+	 *
+	 * @return array The merged token definitions.
 	 */
-
 	public function define_tokens( $trigger, $tokens ) {
 
 		$price_tokens = $this->helpers->tokens->price_tokens();
@@ -144,13 +123,13 @@ class Subscription_Payment_Failed extends \Uncanny_Automator\Recipe\App_Trigger 
 	}
 
 	/**
-	 * Validate the trigger.
+	 * Confirm the failed invoice line item matches the selected price (or any price).
 	 *
-	 * @param $args
+	 * @param array $trigger   The trigger's configuration, including the selected PRICE_ID meta.
+	 * @param array $hook_args The hook arguments: the line item, invoice, and webhook request.
 	 *
-	 * @return bool
+	 * @return bool True when the line item's price matches the trigger's selection, false otherwise.
 	 */
-
 	public function validate( $trigger, $hook_args ) {
 
 		list( $line_item, $invoice, $request ) = $hook_args;
@@ -174,14 +153,14 @@ class Subscription_Payment_Failed extends \Uncanny_Automator\Recipe\App_Trigger 
 	}
 
 	/**
-	 * hydrate_tokens
+	 * Resolve the subscription from the invoice or line item, fetch it from the API, and populate
+	 * the price, product, customer, invoice and metadata tokens from it.
 	 *
-	 * @param array $trigger
-	 * @param array $hook_args
+	 * @param array $trigger   The trigger's configuration, including saved METADATA meta.
+	 * @param array $hook_args The hook arguments: the line item, invoice, and webhook request.
 	 *
-	 * @return array
+	 * @return array The hydrated token values keyed by token id.
 	 */
-
 	public function hydrate_tokens( $trigger, $hook_args ) {
 
 		list( $line_item, $invoice, $request ) = $hook_args;
@@ -204,7 +183,7 @@ class Subscription_Payment_Failed extends \Uncanny_Automator\Recipe\App_Trigger 
 		$subscription = $response['data']['subscription'];
 
 		// Get price and product from subscription items (expanded objects)
-		$price   = $subscription['items']['data'][0]['price'] ?? array( 'id' => $price_id );
+		$price = $subscription['items']['data'][0]['price'] ?? array( 'id' => $price_id );
 
 		// Get product - API expands both plan.product (legacy) and items.data.price.product (modern)
 		$product = $price['product'] ?? $subscription['plan']['product'] ?? $product_id;

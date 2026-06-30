@@ -5,7 +5,7 @@ namespace Uncanny_Automator\Integrations\Stripe;
 use Uncanny_Automator\App_Integrations\Api_Caller;
 
 /**
- * Class Stripe_Api
+ * Class Stripe_Api_Caller
  *
  * @package Uncanny_Automator
  *
@@ -31,11 +31,13 @@ class Stripe_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * check_for_errors
+	 * Inspect an API response for errors. No-op for Stripe (errors handled upstream).
 	 *
-	 * @param  array $response
+	 * @param array $response The decoded API response.
+	 * @param array $args     Optional contextual arguments.
+	 *
 	 * @return void
-	 * */
+	 */
 	public function check_for_errors( $response, $args = array() ) {}
 
 	////////////////////////////////////////////////////////////
@@ -43,9 +45,9 @@ class Stripe_Api_Caller extends Api_Caller {
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * get_user_details
+	 * Get the connected Stripe account details, from cache or the API.
 	 *
-	 * @return array
+	 * @return array The account details, or an empty array on failure.
 	 */
 	public function get_user_details() {
 
@@ -64,56 +66,26 @@ class Stripe_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * get_prices_options
+	 * Fetch formatted price options for one price type from the proxy.
 	 *
-	 * @param string $type Optional. Filter by price type: 'one_time' or 'recurring'. Default null (no filter).
-	 *
-	 * @return array
+	 * @param string $type 'recurring' or 'one_time'.
+	 * @return array Decoded proxy response: { data: { options: [{text,value}] } }.
 	 */
-	public function get_prices_options( $type = null ) {
-
-		$options = array();
-
-		try {
-
-			$response = $this->api_request( 'get_prices' );
-
-			if ( empty( $response['data']['prices'] ) ) {
-				throw new \Exception( 'Prices could not be fetched' );
-			}
-
-			foreach ( $response['data']['prices'] as $price ) {
-
-				// Skip if filtering by type and price doesn't match
-				if ( null !== $type && isset( $price['type'] ) && $price['type'] !== $type ) {
-					continue;
-				}
-
-				$name = $price['product']['name'] . ' - ' . $this->helpers->generate_price_name( $price );
-
-				$options[] = array(
-					'text'  => $name,
-					'value' => $price['id'],
-				);
-			}
-		} catch ( \Exception $e ) {
-			return array(
-				array(
-					'text'  => $e->getMessage(),
-					'value' => '',
-				),
-			);
-		}
-
-		return $options;
+	public function get_price_options( $type ) {
+		$body = array(
+			'action' => 'get_price_options',
+			'type'   => $type,
+		);
+		return $this->api_request( $body );
 	}
 
 	/**
-	 * create_payment_link
+	 * Create a Stripe payment link via the API.
 	 *
-	 * @param  array $payment_link
-	 * @param  array $action_data
-	 * @return array
+	 * @param array $payment_link The payment link payload.
+	 * @param array $action_data  The action data for the request.
+	 *
+	 * @return array The API response.
 	 */
 	public function create_payment_link( $payment_link, $action_data ) {
 
@@ -126,11 +98,12 @@ class Stripe_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * create_customer
+	 * Create a Stripe customer via the API.
 	 *
-	 * @param  array $customer
-	 * @param  array $action_data
-	 * @return array
+	 * @param array $customer    The customer payload.
+	 * @param array $action_data The action data for the request.
+	 *
+	 * @return array The API response.
 	 */
 	public function create_customer( $customer, $action_data ) {
 
@@ -143,58 +116,12 @@ class Stripe_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * get_subscriptions_options
+	 * Delete a Stripe customer via the API.
 	 *
-	 * @return array
-	 * */
-	public function get_subscriptions_options() {
-
-		$options = array();
-
-		try {
-
-			$response = $this->api_request( 'get_subscriptions' );
-
-			if ( empty( $response['data']['subscriptions'] ) ) {
-				throw new \Exception( 'Subscriptions could not be fetched' );
-			}
-
-			foreach ( $response['data']['subscriptions'] as $subscription ) {
-
-				$name = $subscription['customer']['name'] . ' - ' . $subscription['plan']['nickname'];
-
-				$options[] = array(
-					'text'  => $name,
-					'value' => $subscription['id'],
-				);
-			}
-		} catch ( \Exception $e ) {
-			return array(
-				array(
-					'text'  => $e->getMessage(),
-					'value' => '',
-				),
-			);
-		}
-
-		return $options;
-	}
-
-	/**
-	 * Retrieve all Stripe webhooks.
+	 * @param array $customer    The customer payload identifying who to delete.
+	 * @param array $action_data The action data for the request.
 	 *
-	 * @return array The response from the API request.
-	 */
-	public function get_webhooks() {
-		return $this->api_request( 'get_webhooks' );
-	}
-
-	/**
-	 * delete_customer
-	 *
-	 * @param  array $customer
-	 * @param  array $action_data
-	 * @return array
+	 * @return array The API response.
 	 */
 	public function delete_customer( $customer, $action_data ) {
 
@@ -207,10 +134,11 @@ class Stripe_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Get session details.
+	 * Get a Stripe checkout session with expanded data.
 	 *
-	 * @param array $session Stripe checkout session.
-	 * @return array Stripe checkout session with expanded data.
+	 * @param string $session_id The checkout session ID.
+	 *
+	 * @return array The session with expanded data.
 	 */
 	public function get_session( $session_id ) {
 
@@ -221,11 +149,13 @@ class Stripe_Api_Caller extends Api_Caller {
 
 		return $this->api_request( $body );
 	}
+
 	/**
-	 * Get subscription.
+	 * Get a Stripe subscription by ID.
 	 *
-	 * @param mixed $subscription_id The ID.
-	 * @return mixed
+	 * @param string $subscription_id The subscription ID.
+	 *
+	 * @return array The API response.
 	 */
 	public function get_subscription( $subscription_id ) {
 
@@ -236,11 +166,13 @@ class Stripe_Api_Caller extends Api_Caller {
 
 		return $this->api_request( $body );
 	}
+
 	/**
-	 * Get all sessions.
+	 * Get all checkout sessions for a payment intent.
 	 *
-	 * @param mixed $payment_intent_id The ID.
-	 * @return mixed
+	 * @param string $payment_intent_id The payment intent ID.
+	 *
+	 * @return array The API response.
 	 */
 	public function get_all_sessions( $payment_intent_id ) {
 

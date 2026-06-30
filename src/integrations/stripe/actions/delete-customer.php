@@ -13,7 +13,7 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Delete_Customer extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * setup_action
+	 * Register the action's integration, code, meta, and sentences.
 	 *
 	 * @return void
 	 */
@@ -31,9 +31,9 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\App_Action {
 	}
 
 	/**
-	 * options
+	 * Build the action's option fields for the recipe builder.
 	 *
-	 * @return array
+	 * @return array The action's field definitions.
 	 */
 	public function options() {
 
@@ -51,9 +51,9 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\App_Action {
 	}
 
 	/**
-	 * define_tokens
+	 * Declare the tokens this action exposes to later recipe items.
 	 *
-	 * @return array
+	 * @return array Token definitions keyed by token id.
 	 */
 	public function define_tokens() {
 		return array(
@@ -65,13 +65,16 @@ class Delete_Customer extends \Uncanny_Automator\Recipe\App_Action {
 	}
 
 	/**
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
+	 * Delete the Stripe customer matching the configured email address.
 	 *
-	 * @return null
+	 * @param int   $user_id     The user the recipe is running for.
+	 * @param array $action_data The action's stored configuration.
+	 * @param int   $recipe_id   The recipe id.
+	 * @param array $args        Runtime args for the current recipe run.
+	 * @param array $parsed      Token-parsed values for the action.
+	 *
+	 * @return bool True on success.
+	 * @throws \Exception If the Stripe API response contains no customer id.
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 

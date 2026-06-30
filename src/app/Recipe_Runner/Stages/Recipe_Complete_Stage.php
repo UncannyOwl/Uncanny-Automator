@@ -331,17 +331,21 @@ class Recipe_Complete_Stage implements Stage {
 	 * Replaces the scattered recipe() + maybe_escalate_action_errors() pattern.
 	 * Used by Stage 4 execute(), background action handlers, and loop completion.
 	 *
-	 * @param int   $recipe_id     The recipe ID.
-	 * @param int   $user_id       The user ID.
-	 * @param int   $recipe_log_id The recipe log ID.
-	 * @param array $args          Recipe args.
+	 * @param int   $recipe_id                 The recipe ID.
+	 * @param int   $user_id                   The user ID.
+	 * @param int   $recipe_log_id             The recipe log ID.
+	 * @param array $args                      Recipe args.
+	 * @param bool  $treat_incomplete_as_error When true, a NOT_COMPLETED action row is treated as
+	 *                                         a stuck error. Set only by Stuck_Recipe_Recovery;
+	 *                                         the live finalize path leaves it false so a transient
+	 *                                         NOT_COMPLETED (action mid-completion) is not escalated.
 	 *
 	 * @return int|null Resolved Automator_Status constant, or null on persist failure.
 	 */
-	public function finalize_recipe( int $recipe_id, int $user_id, int $recipe_log_id, array $args = array() ) {
+	public function finalize_recipe( int $recipe_id, int $user_id, int $recipe_log_id, array $args = array(), bool $treat_incomplete_as_error = false ) {
 
 		$run_number     = $this->run_number()->get_current( $recipe_id, $user_id );
-		$completed      = $this->resolver()->resolve( $recipe_log_id, $args );
+		$completed      = $this->resolver()->resolve( $recipe_log_id, $args, $treat_incomplete_as_error );
 		$current_status = $this->get_current_recipe_status( $recipe_log_id );
 
 		// Severity guard — never downgrade terminal statuses.

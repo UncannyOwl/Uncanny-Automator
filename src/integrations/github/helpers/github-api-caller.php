@@ -207,8 +207,9 @@ class Github_Api_Caller extends Api_Caller {
 		);
 
 		$response = $this->api_request( $args );
-		if ( 201 !== $response['statusCode'] ) {
-			throw new Exception( esc_html( $response['data']['message'] ) );
+		// Accept the platform's normalized 200 alongside GitHub's native 201 Created.
+		if ( ! in_array( absint( $response['statusCode'] ?? 0 ), array( 200, 201 ), true ) ) {
+			throw new Exception( esc_html( $response['data']['message'] ?? '' ) );
 		}
 
 		return array(
@@ -344,6 +345,66 @@ class Github_Api_Caller extends Api_Caller {
 	}
 
 	/**
+	 * Surface GitHub's structured validation detail on 4xx errors.
+	 *
+	 * GitHub puts the actionable reason in data.errors[] (e.g. tag_name
+	 * already_exists), while data.message is only the generic "Validation
+	 * Failed". The parent throws on 4xx with that generic message; catch it and
+	 * append every value from the errors[] array so the log explains the failure.
+	 *
+	 * @param array $response The API response.
+	 * @param array $args     The arguments.
+	 *
+	 * @return void
+	 * @throws Exception If the parent flags an error.
+	 */
+	public function check_for_errors( $response, $args = array() ) {
+		try {
+			parent::check_for_errors( $response, $args );
+		} catch ( Exception $e ) {
+			$details = $this->format_response_errors( $response );
+			if ( '' === $details ) {
+				throw $e;
+			}
+			// $e->getMessage() is already escaped by the parent; escape only the detail.
+			throw new Exception( $e->getMessage() . ': ' . esc_html( $details ) );
+		}
+	}
+
+	/**
+	 * Flatten GitHub's data.errors[] into a readable string.
+	 *
+	 * Each entry is typically an object like { resource, code, field } or
+	 * { resource, code, message }, and some are plain strings. Read every scalar
+	 * value so nothing is dropped.
+	 *
+	 * @param array $response The API response.
+	 *
+	 * @return string Empty string when there are no structured errors.
+	 */
+	private function format_response_errors( $response ) {
+
+		$errors = $response['data']['errors'] ?? array();
+
+		if ( ! is_array( $errors ) || empty( $errors ) ) {
+			return '';
+		}
+
+		$parts = array();
+
+		foreach ( $errors as $error ) {
+			$values = is_array( $error ) ? array_filter( $error, 'is_scalar' ) : array( $error );
+			$values = array_filter( array_map( 'strval', $values ), 'strlen' );
+
+			if ( ! empty( $values ) ) {
+				$parts[] = implode( ', ', $values );
+			}
+		}
+
+		return implode( '; ', $parts );
+	}
+
+	/**
 	 * Validate if response has expected status code and throw exception with GitHub error message if not.
 	 *
 	 * @param array $response The API response.
@@ -355,12 +416,29 @@ class Github_Api_Caller extends Api_Caller {
 	 */
 	public function validate_action_response_status( $response, $expected_status, $action_message = '' ) {
 		$status = $response['statusCode'] ?? 0;
-		if ( absint( $status ) === absint( $expected_status ) ) {
+
+		// The platform re-envelopes every successful vendor response to a
+		// normalized 200, regardless of GitHub's native code (201 Created /
+		// 204 No Content). The plugin trusts the PLATFORM contract, not the
+		// vendor's — so 200 is success. We also keep accepting the legacy
+		// upstream-forwarded $expected_status (201/204) for backward-compat
+		// with the pre-cutover passthrough. This matters more once async
+		// retries land and the platform absorbs vendor errors transparently.
+		if ( 200 === absint( $status ) || absint( $status ) === absint( $expected_status ) ) {
 			return;
 		}
 
 		$github_message = $response['data']['message'] ?? '';
+		$error_details  = $this->format_response_errors( $response );
 		$message        = $action_message . ' ';
+
+		// Append GitHub's structured errors[] detail (e.g. tag_name already_exists)
+		// to the generic message so the failure reason is visible.
+		if ( '' !== $error_details ) {
+			$github_message = '' !== $github_message
+				? $github_message . ': ' . $error_details
+				: $error_details;
+		}
 
 		if ( ! empty( $github_message ) ) {
 			$message .= sprintf(

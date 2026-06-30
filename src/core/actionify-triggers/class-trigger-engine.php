@@ -37,13 +37,24 @@ class Trigger_Engine {
 	private $queue;
 
 	/**
+	 * Generic enqueue gate. Registers the `automator_should_enqueue_trigger`
+	 * veto so triggers that declared `enqueue_gate()` in their definition can
+	 * skip the enqueue (and its loopback fan-out) on high-frequency hooks when
+	 * no live recipe watches the fired value.
+	 *
+	 * @var Enqueue_Gate
+	 */
+	private $enqueue_gate;
+
+	/**
 	 * Constructor.
 	 *
 	 * @return void
 	 */
 	public function __construct() {
-		$this->query = new Trigger_Query();
-		$this->queue = new Trigger_Queue();
+		$this->query        = new Trigger_Query();
+		$this->queue        = new Trigger_Queue();
+		$this->enqueue_gate = new Enqueue_Gate();
 	}
 
 	/**
@@ -275,6 +286,35 @@ class Trigger_Engine {
 		}
 
 		foreach ( $matching_triggers as $trigger_code ) {
+
+			/**
+			 * Filter: automator_should_enqueue_trigger
+			 *
+			 * Vetoes a trigger enqueue at the earliest possible point — the
+			 * instant a monitored WP hook fires, before any queue item, recipe
+			 * load, or redundancy loopback is created.
+			 *
+			 * High-frequency hooks fire many times per request (e.g.
+			 * added_user_meta / updated_user_meta during a MemberPress signup
+			 * writes dozens of meta rows). When recipe parts aren't loaded yet
+			 * the queue falls back to one loopback HTTP self-request per item;
+			 * on hosts with slow loopbacks (proxied/CDN platforms) that adds up
+			 * to many seconds. A trigger that can cheaply prove "no active
+			 * recipe watches this event" returns false here to skip the enqueue
+			 * (and therefore the loopback) entirely. Returning false NEVER
+			 * misses a real trigger — gates must only veto when certain.
+			 *
+			 * @since 7.4
+			 *
+			 * @param bool   $should_enqueue Whether to enqueue (default true).
+			 * @param string $trigger_code   The trigger code about to be enqueued.
+			 * @param string $hook_name      The WordPress hook that fired.
+			 * @param array  $args           The hook arguments.
+			 */
+			if ( ! apply_filters( 'automator_should_enqueue_trigger', true, $trigger_code, $hook_name, $args ) ) {
+				continue;
+			}
+
 			$this->queue->enqueue( $trigger_code, $hook_name, $args );
 		}
 	}

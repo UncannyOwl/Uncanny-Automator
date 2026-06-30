@@ -138,6 +138,14 @@ trait Action_Parser {
 
 		foreach ( $metas as $meta_key => $meta_value ) {
 
+			// A select set to "Use a custom value" stores the automator_custom_value
+			// sentinel; the real value lives in the sibling {meta_key}_custom key and
+			// may itself carry tokens, so swap it in before parsing. Without this the
+			// sentinel string passes through verbatim (no {{token}} braces to expand).
+			if ( 'automator_custom_value' === $meta_value && isset( $metas[ $meta_key . '_custom' ] ) ) {
+				$meta_value = $metas[ $meta_key . '_custom' ];
+			}
+
 			$is_json_string = Automator()->utilities->is_json_string( $meta_value );
 
 			// Parse the json string.

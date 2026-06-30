@@ -17,9 +17,9 @@ class Stripe_Settings extends App_Integration_Settings {
 	use OAuth_App_Integration;
 
 	/**
-	 * Live or test mode
+	 * Live or test mode.
 	 *
-	 * @var array
+	 * @var string
 	 */
 	private $mode;
 
@@ -66,7 +66,9 @@ class Stripe_Settings extends App_Integration_Settings {
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * Set the properties of the class and the integration
+	 * Set the settings page name and resolve the live/test connection mode.
+	 *
+	 * @return void
 	 */
 	public function set_properties() {
 		// Always set the name w/o Test mode for settings page.
@@ -76,7 +78,7 @@ class Stripe_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Set connected properties.
+	 * Register settings shown while connected, including the test-mode warning alert.
 	 *
 	 * @return void
 	 */
@@ -94,7 +96,7 @@ class Stripe_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Register disconnected options.
+	 * Register the options persisted while the integration is disconnected.
 	 *
 	 * @return void
 	 */
@@ -103,7 +105,7 @@ class Stripe_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Register connected options.
+	 * Register the options persisted once the integration is connected.
 	 *
 	 * @return void
 	 */
@@ -112,11 +114,28 @@ class Stripe_Settings extends App_Integration_Settings {
 	}
 
 	/**
+	 * Clean up the dynamically-keyed cached price options before disconnecting.
+	 *
+	 * The price-option caches are keyed per account + mode, so the framework's
+	 * registered-option cleanup does not cover them; clear them here.
+	 *
+	 * @param array $response The current response array.
+	 * @param array $data     The data posted to the settings page.
+	 *
+	 * @return array The response array.
+	 */
+	protected function before_disconnect( $response = array(), $data = array() ) {
+		$this->helpers->delete_cached_price_options();
+		return $response;
+	}
+
+	/**
 	 * Maybe filter the OAuth args to add the mode ( live or test ).
 	 *
-	 * @param array $args
+	 * @param array $args The OAuth request args.
+	 * @param array $data The data posted to the settings page.
 	 *
-	 * @return array
+	 * @return array The filtered OAuth args.
 	 */
 	protected function maybe_filter_oauth_args( $args, $data = array() ) {
 		// Check if the mode has been posted and add it to the args.
@@ -130,11 +149,12 @@ class Stripe_Settings extends App_Integration_Settings {
 	}
 
 	/**
-	 * Validate integration credentials after OAuth flow.
+	 * Validate integration credentials after the OAuth flow.
 	 *
-	 * @param array $credentials
+	 * @param array $credentials The credentials returned from the OAuth flow.
 	 *
-	 * @return array
+	 * @return array The validated credentials.
+	 * @throws \Exception If the credentials are missing required fields.
 	 */
 	public function validate_integration_credentials( $credentials ) {
 

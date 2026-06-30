@@ -81,7 +81,7 @@ class Api_Client implements Api_Client_Interface {
 		 * @param int    $timeout     The timeout in seconds.
 		 * @param string $request_url The full request URL.
 		 */
-		$timeout = (int) Dispatcher::filter( 'automator_api_timeout', $request->timeout() ?? 30, $url );
+		$timeout = (int) Dispatcher::filter( 'automator_api_timeout', $request->timeout() ?? 60, $url );
 
 		$wp_args = $this->signer->inject(
 			array(

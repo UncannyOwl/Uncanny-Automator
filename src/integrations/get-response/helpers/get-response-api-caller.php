@@ -51,6 +51,30 @@ class Get_Response_Api_Caller extends Api_Caller {
 					);
 			}
 
+			// Surface the platform's real error before the generic fallback.
+			// Two shapes reach here:
+			//   - STRING: the exception path. Api_Server::maybe_throw_exception
+			//     throws with error.description as the message, and api_request
+			//     re-passes it as $response['error'] = '<message string>'. This
+			//     is the common path (e.g. "API is available in paid plans only").
+			//   - ARRAY: the direct path. The §9 envelope error object
+			//     {type, description, message, upstream_detail}.
+			if ( ! empty( $response['error'] ) ) {
+				if ( is_array( $response['error'] ) ) {
+					$platform_message = $response['error']['message'] ?? '';
+					$detail           = $response['error']['upstream_detail'] ?? ( $response['error']['description'] ?? '' );
+					if ( ! empty( $detail ) && $detail !== $platform_message ) {
+						$platform_message = trim( $platform_message . ' ' . $detail );
+					}
+				} else {
+					$platform_message = (string) $response['error'];
+				}
+
+				if ( ! empty( $platform_message ) ) {
+					throw new Exception( esc_html( $platform_message ), 400 );
+				}
+			}
+
 			// For all other errors, use the original context-based formatting.
 			$message = isset( $response['data']['message'] ) ? $response['data']['message'] : false;
 			if ( ! empty( $message ) ) {

@@ -96,6 +96,33 @@ class Active_Campaign_Api_Caller extends Api_Caller {
 	}
 
 	/**
+	 * Refresh ActiveCampaign's bespoke credential keys on a log resend.
+	 *
+	 * The action path bakes the account URL + token straight into the body
+	 * (bypassing the base credential_request_key injection), so re-resolve the
+	 * current credentials and overwrite those keys before a resend replays the
+	 * stale ones. Mirrors active_campaign_request().
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 */
+	protected function replace_resend_credentials( $body ) {
+
+		$credentials = $this->helpers->get_credentials();
+
+		if ( array_key_exists( 'url', $body ) && isset( $credentials['url'] ) ) {
+			$body['url'] = $credentials['url'];
+		}
+
+		if ( array_key_exists( 'token', $body ) && isset( $credentials['token'] ) ) {
+			$body['token'] = $credentials['token'];
+		}
+
+		return parent::replace_resend_credentials( $body );
+	}
+
+	/**
 	 * Get tag id.
 	 *
 	 * @param mixed $contact_id The ID.

@@ -91,5 +91,7 @@ class CONTACT_TAG_ADD_TO extends \Uncanny_Automator\Recipe\App_Action {
 
 		// Add tag to contact.
 		$this->api->contact_tag_add_to( $email, $tag, $action_data );
+
+		return true;
 	}
 }

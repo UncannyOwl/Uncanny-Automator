@@ -464,7 +464,6 @@ return array(
 			$baseDir . '/src/integrations/convertkit/actions/convertkit-broadcast-create.php',
 			$baseDir . '/src/integrations/convertkit/actions/convertkit-custom-field-create.php',
 			$baseDir . '/src/integrations/convertkit/actions/convertkit-form-subscriber-add.php',
-			$baseDir . '/src/integrations/convertkit/actions/convertkit-purchase-create.php',
 			$baseDir . '/src/integrations/convertkit/actions/convertkit-subscriber-create-update.php',
 			$baseDir . '/src/integrations/convertkit/actions/convertkit-subscriber-sequence-add.php',
 			$baseDir . '/src/integrations/convertkit/actions/convertkit-subscriber-tag-add.php',

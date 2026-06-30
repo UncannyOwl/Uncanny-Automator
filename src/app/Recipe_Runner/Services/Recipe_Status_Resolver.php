@@ -56,7 +56,20 @@ class Recipe_Status_Resolver {
 	);
 
 	/**
-	 * Action statuses that count as "actionable errors" for recipe escalation.
+	 * Action statuses that always count as "actionable errors" for recipe escalation.
+	 *
+	 * NOT_COMPLETED is intentionally NOT here. A NOT_COMPLETED(0) row is the
+	 * transient initial state every action passes through: create_action() writes
+	 * the row at 0 *before* the action runs, and mark_action_complete() flips it
+	 * to a terminal status afterwards. In the live finalize path a 0 therefore
+	 * means "this action is mid-flight," NOT "this action errored" — treating it
+	 * as an error produced false COMPLETED_WITH_ERRORS runs (locked permanently by
+	 * the no-downgrade guard) whenever finalize observed an action mid-completion.
+	 * This restores the pre-7.3 (7.2.x) contract, which escalated on real errors.
+	 *
+	 * A genuinely stuck 0 (PHP fatal / OOM mid-Stage 3) is surfaced by passing
+	 * $treat_incomplete_as_error = true — used exclusively by Stuck_Recipe_Recovery,
+	 * which only runs against recipes stuck at NOT_COMPLETED for 1h+. See resolve().
 	 *
 	 * @var array<int,bool>
 	 */
@@ -64,25 +77,30 @@ class Recipe_Status_Resolver {
 		Automator_Status::COMPLETED_WITH_ERRORS  => true,
 		Automator_Status::FAILED                 => true,
 		Automator_Status::IN_PROGRESS_WITH_ERROR => true,
-		// A NOT_COMPLETED row at resolve time means create_action() wrote the
-		// row but complete_action() never ran — PHP fatal / OOM mid-Stage 3,
-		// or an action threw between create + complete. Once async / in-flight
-		// statuses are filtered (has_scheduled above), NOT_COMPLETED can only
-		// indicate an action that was started and never finished. Treating it
-		// as an error makes Stuck_Recipe_Recovery surface the partial run as
-		// COMPLETED_WITH_ERRORS instead of silently upgrading to COMPLETED.
-		Automator_Status::NOT_COMPLETED          => true,
 	);
 
 	/**
 	 * Compute final recipe status from all action results in one pass.
 	 *
-	 * @param int   $recipe_log_id The recipe log ID.
-	 * @param array $args          Recipe args (may contain do-nothing, complete_with_notice flags).
+	 * Live path note: with $treat_incomplete_as_error = false, a run whose action
+	 * rows are all still NOT_COMPLETED(0) (Stage 4 observed Stage 3 mid-flight)
+	 * resolves to COMPLETED, not an error — see the ACTIONABLE_ERROR_STATUSES
+	 * docblock for why a transient 0 is not a failure. The status converges once
+	 * the rows flip to their terminal values; a genuinely stuck run is escalated
+	 * later by Stuck_Recipe_Recovery (which passes $treat_incomplete_as_error = true).
+	 *
+	 * @param int   $recipe_log_id             The recipe log ID.
+	 * @param array $args                      Recipe args (may contain do-nothing, complete_with_notice flags).
+	 * @param bool  $treat_incomplete_as_error When true, a NOT_COMPLETED(0) action row is
+	 *                                         treated as an actionable error. ONLY the recovery
+	 *                                         cron (Stuck_Recipe_Recovery, 1h+ stuck) sets this —
+	 *                                         a 0 there is a genuinely stuck/partial run. The live
+	 *                                         finalize path leaves it false so a transient 0 (an
+	 *                                         action mid-completion) does not falsely escalate.
 	 *
 	 * @return int Automator_Status constant.
 	 */
-	public function resolve( int $recipe_log_id, array $args = array() ): int {
+	public function resolve( int $recipe_log_id, array $args = array(), bool $treat_incomplete_as_error = false ): int {
 
 		$action_statuses = $this->log_store->get_all_action_statuses( $recipe_log_id );
 
@@ -96,7 +114,7 @@ class Recipe_Status_Resolver {
 			$has_scheduled = $this->has_status( $action_statuses, Automator_Status::IN_PROGRESS )
 				|| $this->has_status( $action_statuses, Automator_Status::COMPLETED_AWAITING )
 				|| $this->has_status( $action_statuses, Automator_Status::QUEUED );
-			$has_errors    = $this->has_actionable_error_status( $action_statuses );
+			$has_errors    = $this->has_actionable_error_status( $action_statuses, $treat_incomplete_as_error );
 
 			if ( $has_scheduled && $has_errors ) {
 				return Automator_Status::IN_PROGRESS_WITH_ERROR;
@@ -113,6 +131,16 @@ class Recipe_Status_Resolver {
 			if ( $this->all_match( $action_statuses, Automator_Status::DID_NOTHING ) ) {
 				return Automator_Status::DID_NOTHING;
 			}
+		}
+
+		// Recovery context only: a run with NO action rows that was stuck at
+		// NOT_COMPLETED long enough for Stuck_Recipe_Recovery to claim it is a
+		// partial/failed run — it never produced a single completed action — so
+		// surface it as COMPLETED_WITH_ERRORS to match the RECIPE_STUCK entry
+		// recovery writes. The live path (flag false) leaves an action-less run
+		// as COMPLETED via the fallbacks below.
+		if ( $treat_incomplete_as_error && empty( $action_statuses ) ) {
+			return Automator_Status::COMPLETED_WITH_ERRORS;
 		}
 
 		// Flag-based fallbacks — used when action statuses alone aren't conclusive.
@@ -179,14 +207,20 @@ class Recipe_Status_Resolver {
 	/**
 	 * Check if any action has an actionable error status.
 	 *
-	 * @param int[] $statuses Action status integers.
+	 * @param int[] $statuses                  Action status integers.
+	 * @param bool  $treat_incomplete_as_error When true, NOT_COMPLETED(0) also counts
+	 *                                         as an error (recovery context only).
 	 *
 	 * @return bool
 	 */
-	private function has_actionable_error_status( array $statuses ): bool {
+	private function has_actionable_error_status( array $statuses, bool $treat_incomplete_as_error = false ): bool {
 
 		foreach ( $statuses as $status ) {
 			if ( isset( self::ACTIONABLE_ERROR_STATUSES[ $status ] ) ) {
+				return true;
+			}
+
+			if ( $treat_incomplete_as_error && Automator_Status::NOT_COMPLETED === $status ) {
 				return true;
 			}
 		}

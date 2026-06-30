@@ -12,58 +12,35 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Product_Refunded extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
-	 * Trigger code.
+	 * Static trigger definition for lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	const TRIGGER_CODE = 'PRODUCT_REFUNDED';
+	public static function definition() {
+		return self::new_definition( 'PRODUCT_REFUNDED', 'STRIPE' )
+			->trigger_meta( 'PRICE_ID' )
+			->trigger_type( 'anonymous' )
+			->hook( Stripe_Webhooks::LINE_ITEM_REFUNDED_ACTION, 10, 3 );
+	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Register the trigger's integration, code, meta, type, sentences, and webhook action.
+	 *
+	 * @return void
 	 */
-
 	public function setup_trigger() {
-
-		$this->set_integration( 'STRIPE' );
-
-		$this->set_trigger_code( self::TRIGGER_CODE );
-
-		$this->set_trigger_meta( 'PRICE_ID' );
-
 		$this->set_is_login_required( false );
-
-		$this->set_trigger_type( 'anonymous' );
-
 		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
-
+		$this->set_readable_sentence( esc_html_x( 'A payment for {{a product}} is refunded', 'Stripe', 'uncanny-automator' ) );
 		// translators: %1$s is the Stripe product name
 		$this->set_sentence( sprintf( esc_html_x( 'A payment for {{a product:%1$s}} is refunded', 'Stripe', 'uncanny-automator' ), $this->get_trigger_meta() ) );
-
-		// Non-active state sentence to show
-
-		$this->set_readable_sentence( esc_html_x( 'A payment for {{a product}} is refunded', 'Stripe', 'uncanny-automator' ) );
-
-		// Which do_action() fires this trigger.
-		$this->add_action( Stripe_Webhooks::LINE_ITEM_REFUNDED_ACTION );
-
-		$this->set_action_args_count( 3 );
 	}
 	/**
-	 * Options.
+	 * Build the price selector and the checkout metadata and custom-field repeater fields.
 	 *
-	 * @return mixed
+	 * @return array The trigger's field definitions.
 	 */
 	public function options() {
-
-		$prices = $this->api->get_prices_options( 'one_time' );
-
-		array_unshift(
-			$prices,
-			array(
-				'text'  => esc_html_x( 'Any', 'Stripe', 'uncanny-automator' ),
-				'value' => '-1',
-			)
-		);
 
 		$products = array(
 			'option_code' => $this->get_trigger_meta(),
@@ -71,7 +48,8 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\App_Trigger {
 			'input_type'  => 'select',
 			'required'    => true,
 			'read_only'   => false,
-			'options'     => $prices,
+			'options'     => array(),
+			'remote_data' => $this->helpers->remote_data_load_config( 'onetime_prices' ),
 		);
 
 		$metadata = array(
@@ -91,9 +69,7 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\App_Trigger {
 					'description'     => sprintf( '<i>%s</i>', esc_html_x( 'Separate keys with / to build nested data.', 'Stripe', 'uncanny-automator' ) ),
 				),
 			),
-			/* translators: Non-personal infinitive verb */
 			'add_row_button'    => esc_html_x( 'Add a key', 'Stripe', 'uncanny-automator' ),
-			/* translators: Non-personal infinitive verb */
 			'remove_row_button' => esc_html_x( 'Remove key', 'Stripe', 'uncanny-automator' ),
 		);
 
@@ -113,9 +89,7 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\App_Trigger {
 					'placeholder'     => esc_html_x( 'product', 'Stripe', 'uncanny-automator' ),
 				),
 			),
-			/* translators: Non-personal infinitive verb */
 			'add_row_button'    => esc_html_x( 'Add a field', 'Stripe', 'uncanny-automator' ),
-			/* translators: Non-personal infinitive verb */
 			'remove_row_button' => esc_html_x( 'Remove field', 'Stripe', 'uncanny-automator' ),
 		);
 
@@ -127,11 +101,14 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\App_Trigger {
 	}
 
 	/**
-	 * Returns the trigger's tokens.
+	 * Assemble the charge, line item, price, product, customer, shipping, invoice and configured
+	 * metadata/custom-field token definitions exposed by this trigger.
 	 *
-	 * @return array
+	 * @param array $trigger The trigger's configuration, including saved METADATA and CUSTOM_FIELDS meta.
+	 * @param array $tokens  The tokens already registered for the trigger.
+	 *
+	 * @return array The merged token definitions.
 	 */
-
 	public function define_tokens( $trigger, $tokens ) {
 
 		$charge_tokens    = $this->helpers->tokens->charge_tokens();
@@ -184,26 +161,50 @@ class Product_Refunded extends \Uncanny_Automator\Recipe\App_Trigger {
 	}
 
 	/**
-	 * Validate the trigger.
+	 * Confirm the refunded line item is a one-time price matching the selected price (or any one-time price).
 	 *
-	 * @param $args
+	 * @param array $trigger   The trigger's configuration, including the selected PRICE_ID meta.
+	 * @param array $hook_args The hook arguments, where the first element is the Stripe line item.
 	 *
-	 * @return bool
+	 * @return bool True when the line item's price matches the trigger's selection, false otherwise.
 	 */
-
 	public function validate( $trigger, $hook_args ) {
+
+		$selected_price = $trigger['meta'][ $this->get_trigger_meta() ];
+
+		$line_item = array_shift( $hook_args );
+
+		if ( 'item' !== $line_item['object'] ) {
+			return false;
+		}
+
+		if ( empty( $line_item['price']['id'] ) ) {
+			return false;
+		}
+
+		$price = $line_item['price'];
+
+		// If any product is selected
+		if ( '-1' === $selected_price && 'one_time' === $price['type'] ) {
+			return true;
+		}
+
+		if ( $selected_price !== $price['id'] ) {
+			return false;
+		}
+
 		return true;
 	}
 
 	/**
-	 * hydrate_tokens
+	 * Populate the charge, line item, price, product, customer, shipping, invoice and
+	 * metadata/custom-field tokens from the refunded line item, session, and webhook request.
 	 *
-	 * @param array $trigger
-	 * @param array $hook_args
+	 * @param array $trigger   The trigger's configuration, including saved METADATA and CUSTOM_FIELDS meta.
+	 * @param array $hook_args The hook arguments: the line item, checkout session, and webhook request.
 	 *
-	 * @return array
+	 * @return array The hydrated token values keyed by token id.
 	 */
-
 	public function hydrate_tokens( $trigger, $hook_args ) {
 
 		list( $line_item, $session, $request ) = $hook_args;

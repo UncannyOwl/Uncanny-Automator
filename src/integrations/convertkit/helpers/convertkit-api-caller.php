@@ -15,7 +15,11 @@ use Exception;
 class ConvertKit_Api_Caller extends Api_Caller {
 
 	/**
-	 * Prepare credentials for use in API requests (OAuth flow).
+	 * Prepare credentials sent to the proxy on every authenticated request.
+	 *
+	 * Sends the vault signature + Kit account ID for all connection types
+	 * (V3 and V4 API key); the proxy resolves the actual API credentials
+	 * from the vault.
 	 *
 	 * @param array $credentials The raw credentials from options.
 	 * @param array $args        Additional arguments.
@@ -80,27 +84,6 @@ class ConvertKit_Api_Caller extends Api_Caller {
 		);
 
 		$this->helpers->store_credentials( $result['data'] ?? array() );
-	}
-
-	/**
-	 * Fetch the current OAuth enablement status from the proxy.
-	 *
-	 * Used by the settings page to decide whether to surface the Quick
-	 * connect radio. Result is cached by the caller via transient.
-	 *
-	 * @return bool True if OAuth is currently enabled on the proxy.
-	 *
-	 * @throws Exception If the request fails.
-	 */
-	public function fetch_oauth_status() {
-
-		$result = $this->api_request(
-			array( 'action' => 'oauth_status' ),
-			null,
-			array( 'exclude_credentials' => true )
-		);
-
-		return ! empty( $result['data']['oauth_enabled'] );
 	}
 
 	/**

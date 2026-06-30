@@ -13,7 +13,7 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 
 	/**
-	 * setup_action
+	 * Register the action's integration, code, meta, and sentences.
 	 *
 	 * @return void
 	 */
@@ -31,9 +31,9 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 	}
 
 	/**
-	 * options
+	 * Build the action's option fields for the recipe builder.
 	 *
-	 * @return array
+	 * @return array The action's field definitions.
 	 */
 	public function options() {
 
@@ -159,12 +159,13 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 		);
 
 		$skip_empty_items = array(
-			'option_code'   => 'SKIP_EMPTY_ITEMS',
-			'label'         => esc_html_x( 'Skip empty line items', 'Stripe', 'uncanny-automator' ),
-			'input_type'    => 'checkbox',
-			'required'      => false,
-			'default_value' => false,
-			'description'   => esc_html_x( 'When enabled, line items with a quantity less than 1, or where both the description and amount are empty, will be automatically skipped instead of causing an error. Useful when line item values are dynamically populated using tokens.', 'Stripe', 'uncanny-automator' ),
+			'option_code'     => 'SKIP_EMPTY_ITEMS',
+			'label'           => esc_html_x( 'Skip empty line items', 'Stripe', 'uncanny-automator' ),
+			'input_type'      => 'checkbox',
+			'required'        => false,
+			'default_value'   => false,
+			'description'     => esc_html_x( 'When enabled, line items with a quantity less than 1, or where both the description and amount are empty, will be automatically skipped instead of causing an error. Useful when line item values are dynamically populated using tokens.', 'Stripe', 'uncanny-automator' ),
+			'relevant_tokens' => array(),
 		);
 
 		$metadata = array(
@@ -212,9 +213,9 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 	}
 
 	/**
-	 * Get currency options
+	 * Build the currency select options, prefixed with an account-default choice.
 	 *
-	 * @return array
+	 * @return array Option definitions, each with a text and value key.
 	 */
 	private function get_currency_options() {
 
@@ -259,9 +260,9 @@ class Create_Send_Invoice extends \Uncanny_Automator\Recipe\App_Action {
 	}
 
 	/**
-	 * define_tokens
+	 * Declare the tokens this action exposes to later recipe items.
 	 *
-	 * @return array
+	 * @return array Token definitions keyed by token id.
 	 */
 	public function define_tokens() {
 		return array(

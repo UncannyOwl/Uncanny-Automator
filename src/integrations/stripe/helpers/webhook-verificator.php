@@ -2,11 +2,29 @@
 
 namespace Uncanny_Automator\Integrations\Stripe;
 
-abstract class WebhookVerificator {
+/**
+ * Verifies the signature header Stripe sends with each webhook.
+ *
+ * A stateless, static-only utility ported from Stripe's WebhookSignature. It is
+ * never instantiated or extended, so it is declared final with a private
+ * constructor rather than abstract.
+ */
+final class WebhookVerificator {
 
 	const EXPECTED_SCHEME = 'v1';
 
+	/**
+	 * Memoizes whether hash_equals() is available so the check runs only once.
+	 *
+	 * @var bool|null
+	 */
 	private static $is_hash_equals_available = null;
+
+	/**
+	 * Prevent instantiation: every member of this class is static.
+	 */
+	private function __construct() {
+	}
 
 	/**
 	 * Verifies the signature header sent by Stripe. Throws an

@@ -411,11 +411,7 @@ class CREATE extends \Uncanny_Automator\Recipe\App_Action {
 				'action' => 'create',
 			);
 
-			$fields = array();
-
-			foreach ( $parsed as $key => $field ) {
-				$fields[ strtolower( $key ) ] = $field;
-			}
+			$fields = $this->extract_field_payload( $parsed );
 
 			$fields = $this->validate_fields( $fields );
 
@@ -433,6 +429,34 @@ class CREATE extends \Uncanny_Automator\Recipe\App_Action {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Build the API field payload from only this action's own option values,
+	 * keyed by their lowercased option code.
+	 *
+	 * `$parsed` carries the action's full parsed meta, which also includes
+	 * Automator framework metadata (code, integration, sentence,
+	 * sentence_human_readable_html, uap_action_version, user_type, type, ...).
+	 * Forwarding the whole array leaked all of that to the API, so restrict the
+	 * payload to the option codes this action actually defines. array_key_exists
+	 * (not isset) preserves explicit null values for unset optional fields.
+	 *
+	 * @param mixed[] $parsed
+	 *
+	 * @return mixed[] Field values keyed by lowercased option code.
+	 */
+	private function extract_field_payload( $parsed ) {
+
+		$fields = array();
+
+		foreach ( wp_list_pluck( $this->options(), 'option_code' ) as $code ) {
+			if ( ! empty( $code ) && array_key_exists( $code, $parsed ) ) {
+				$fields[ strtolower( $code ) ] = $parsed[ $code ];
+			}
+		}
+
+		return $fields;
 	}
 
 	/**

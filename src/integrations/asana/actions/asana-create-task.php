@@ -104,7 +104,8 @@ class ASANA_CREATE_TASK extends \Uncanny_Automator\Recipe\App_Action {
 			'task'   => wp_json_encode( $task_data ),
 		);
 		$response = $this->api->api_request( $body, $action_data );
-		if ( 201 !== $response['statusCode'] ) {
+		// Platform normalizes a successful vendor response to 200; accept it alongside Asana's native 201 Created.
+		if ( 201 !== $response['statusCode'] && 200 !== $response['statusCode'] ) {
 			throw new Exception( esc_html_x( 'Failed to create task.', 'Asana', 'uncanny-automator' ) );
 		}
 

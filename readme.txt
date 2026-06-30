@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 7.3.1.4
+Stable tag: 7.3.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -419,195 +419,32 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 7.3.1.3 [2026-06-16] =
+= 7.3.2 [2026-06-30] =
 
-**Fixed:**
+**New Feature:**
 
-* Events Manager – Resolved a PHP error that could occur when loading registration-related triggers in certain version-mismatched environments #7912
-* LearnDash - Quiz triggers now correctly resolve quiz score, question-and-answer, and related quiz result tokens #7908
-* Recipe logs – Delayed and scheduled actions now display the correct scheduled execution dates. #7895
-* WPForms, MailPoet, and FunnelKit (Autonami) – Improved protection against PHP Object Injection when storing user-submitted trigger token values #7921
-
-= 7.3.1.2 [2026-06-10] =
-
-**Fixed:**
-
-* Mailchimp - Credential mapping issue on some older sites now resolved #7885
-* Mailchimp - Create and send a campaign - Fails when 'To name' is empty #7881
-* WP Job Manager - A user applies for a job - Fixed an issue where some tokens may not parse #7875
-* WordPress - A post in a taxonomy is published & A user publishes a post in a taxonomy - Only one recipe fires per post due to dedup keyed by code #7883
-
-**Under the Hood:**
-
-* Multiple integrations - Correct invalid singular `supports_token` definitions to plural `supports_tokens` #7831
-* Normalize UTM tags on in-plugin links #7880
-
-= 7.3.1.1 [2026-06-07] =
-
-**Fixed:**
-
-* App Actions - Fixed an issue where some app actions could fail with "Non-JSON response from API" when the vendor responds with a 204 No Content status and an empty body #7872
-* Background Actions - Fixed an issue where a completed action could revert to "In progress" in rare situations #7871
-* Delayed/Scheduled Actions - Fixed an issue where actions were marked as "Skipped" and never ran after updating to 7.3.0 #7866
-* Mailchimp - Add a contact to an audience - Fixed an issue where the action could fail with "User already subscribed to the list" in recipes #7860
-* Recipe Logs - Fixed an issue where the log details could fail to load when a delayed action had a malformed date value #7868
-* Trigger Engine - Fixed a PHP error that could occur when a trigger returned malformed token data #7869
-* WordPress - A user publishes a post & A user publishes a post in a taxonomy - Fixed an issue where the trigger did not fire for scheduled posts #7862
-
-= 7.3.1 [2026-06-06] =
-
-**New Tokens:**
-
-* Zoom Meetings & Webinar - Registration actions - Registration join link, Registrant ID, Meeting topic / Webinar topic, Start time #7809
-
-**Fixed:**
-
-* Google Sheets - Fixed an issue where disconnecting an account did not fully clear the cached connection #7843
-* Gravity Forms - Fixed an issue where lazily fired triggers could fail and leave recipes stuck "In Progress" #7859
-* Integration Loader & The Events Calendar - Fixed a PHP error that could occur when Event Tickets was not installed #7848
-* LearnDash - Fixed an issue where some completion date tokens were not resolving correctly #7849
-* MemberPress - A user purchases a membership - Fixed an issue where the trigger could fire when a membership renewed automatically after purchase #7825
-* Recipe Logs - Action Tab - Fixed an issue where the Completion Date column displayed dates for actions that had not yet completed #7837
-* Trigger Engine - Fixed an issue where Gravity Forms non-AJAX submissions could fail to fire triggers in certain situations #7857
-* Uncanny Agent - Fixed an issue where the Agent could appear on the frontend when WPFrontendAdmin plugin was active #7852
-* WordPress - Fixed an issue where some post-view trigger token pills could become orphaned after migration #7850
-
-**Under the hood:**
-
-* Recipe UI - Advanced > Post Meta Universal Token - Resolved UI issues where Loop tokens could appear as invalid or be unavailable in nested token pickers within conditions #7398
-
-= 7.3.0 [2026-06-04] =
-
-**New Plugin Integration:**
-
-* [SaveTo Wishlist](https://automatorplugin.com/integration/saveto-wishlist/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7260
-
-**New Triggers:**
-
-* Charitable - A campaign ends #7086
-* Charitable - A campaign reaches its goal #7087
-* Charitable - A donation to a campaign is completed #7082
-* Charitable - A donation to a campaign is refunded #7083
-* Charitable - A donation's status is changed to a status #7081
-* Charitable - A donor is created #7084
-* Charitable - A user registers as a donor #7085
-* FluentCommunity - A user achieves a percentage greater than, less than or equal to a value on a quiz #6859
-* FluentCommunity - A user completes a quiz in a course #6860
-* FluentCommunity - A user passes or fails a quiz in a course #6860
-* Popup Maker - A conversion is recorded on a popup #7353
-* Popup Maker - A form provider is submitted in a popup #7355
-* Popup Maker - A newsletter form is submitted in a popup #7357
-* Popup Maker - A popup is opened #7352
-* Popup Maker - A user submits a form provider in a popup #7354
-* Popup Maker - A user submits a newsletter form in a popup #7356
-* SaveTo Wishlist - A guest wishlist is synced to a user account on login #7424
-* SaveTo Wishlist - A user adds a product from their wishlist to their cart #7423
-* SaveTo Wishlist - A user adds a product to a wishlist #7420
-* SaveTo Wishlist - A user creates a wishlist #7421
-* SaveTo Wishlist - A user removes a product from a wishlist #7422
-* The Events Calendar - A venue is created #7099
-* The Events Calendar - A venue is updated #7100
-* The Events Calendar - An event is linked to a related post #7101
-* The Events Calendar - An event is unlinked from a related post #7102
-* The Events Calendar - An organizer is created #7097
-* The Events Calendar - An organizer is updated #7098
-* The Events Calendar - Event Tickets - A check-in for an event is reversed #7104
-* The Events Calendar - Event Tickets - A ticket is added to an event #7106
-* The Events Calendar - Event Tickets - A ticket is removed from an event #7107
-* The Events Calendar - Event Tickets - An attendee is checked in to an event #7103
-* The Events Calendar - Event Tickets - RSVP tickets are generated for a ticket type on an event with a status #7105
-
-**New Actions:**
-
-* Charitable - Add a tag to a donor #7092
-* Charitable - Create a donor #7090
-* Charitable - Create an offline donation to a campaign #7088
-* Charitable - Update a donation's status to a status #7089
-* Charitable - Update a donor's profile #7091
-* Groundhogg - Add a note to a contact #6986
-* SaveTo Wishlist - Add a product to a wishlist #7425
-* SaveTo Wishlist - Create a wishlist #7427
-* SaveTo Wishlist - Remove a product from a wishlist #7426
-* The Events Calendar - Add a venue to an event #7114
-* The Events Calendar - Add an organizer to an event #7113
-* The Events Calendar - Create a venue #7112
-* The Events Calendar - Create an event #7108
-* The Events Calendar - Create an organizer #7111
-* The Events Calendar - Delete an event #7110
-* The Events Calendar - Event Tickets - Check in an attendee #7115
-* The Events Calendar - Event Tickets - Create an RSVP attendee for an event #7117
-* The Events Calendar - Event Tickets - Reset the check-in for an attendee #7116
-* The Events Calendar - Update an event #7109
-* WordPress Core - Add a file to the media library #6951
-* WordPress Core - Add a menu #6932
-* WordPress Core - Add an item to a menu #6935
-* WordPress Core - Assign a menu to a location #6938
-* WordPress Core - Create a term in a taxonomy #6945
-* WordPress Core - Delete a comment #6960
-* WordPress Core - Delete a media item from the media library #6953
-* WordPress Core - Delete a menu #6934
-* WordPress Core - Delete a term from a taxonomy #6956
-* WordPress Core - Delete an item from a menu #6937
-* WordPress Core - Delete a meta key from a post #6955
-* WordPress Core - Generate a password reset link for a user #6964
-* WordPress Core - Get a media item from the media library #6952
-* WordPress Core - Get the value of a meta key from a post #6971
-* WordPress Core - Get the value of a meta key from a user #6972
-* WordPress Core - Rename a menu to a new name #6933
-* WordPress Core - Restore a post from trash #6958
-* WordPress Core - Set the password of a post to a password #6959
-* WordPress Core - Set the status of a comment to a status #6961
-* WordPress Core - Update a term in a taxonomy #6957
-* WordPress Core - Update an item in a menu #6936
-* WordPress Core - Update a media item in the media library #6931
+* Status -> Tools - "Resend App Actions" tool to find and bulk resend failed app actions from one place. #8012
 
 **Updated:**
 
-* AI Integrations - Refreshed model options for Claude, Cohere, Gemini and Mistral. Claude Opus 4.7 and 4.8 no longer error out, since Automator no longer sends the temperature parameter those models don't support. #7792
-* Asana and GitHub integrations moved from Automator Pro to Automator Lite. #7236
-* Groundhogg - Create or update a contact - Now supports address fields and custom contact properties. #6985
-* RSS - Thumbnail URL token now resolves correctly when restoring media. #7244
-* Telegram - A text message is received from a chat/channel - New Text (HTML) token preserves message formatting. #7466
+* App Actions - Increased the default outgoing request timeout to better support longer-running app responses. #8009
+* Kit - Removed the unsupported OAuth connection flow and now support V4 connections by API key only. #8006
+* Stripe - Improved product and price dropdown performance in the recipe builder with cached remote loading and refresh support & Stripe - Product refunded trigger now correctly respects the selected price instead of firing for every refunded product. #7999
 
 **Fixed:**
 
-* Brevo - Create or update a contact - Now loads your account's actual contact attributes, so default attributes work on non-English accounts. #7408
-* Bricks Builder - Banished the deprecation warning ghost. #7126
-* Divi - Forms created in Divi 5 and later now appear in the form selection dropdown. #7454
-* Licensing - Plan names on the Addons page no longer living in an alternate reality. #7794
-* MemberPress - A user is added to a membership - Trigger stopped firing after a hook change, so users weren't added. #7793
-* Recipe Import - Tokens that reference another action's output now remap to the new action IDs, so they no longer appear broken. #7410
-* Recipe Import - Common tokens now resolve correctly in imported recipes. #7384
-* Recipe status toggle - Live/Draft checkbox value now serializes and saves correctly. #7469
-* Run JavaScript code & Trigger Engine - Action firing after wp_loaded run too late #7797
-* Trigger Engine - Triggers queued late in the shutdown sequence (e.g. delayed triggers) are now processed instead of being dropped. #7407
-* WP Job Manager - A user applies for a job / A user submits a resume - Triggers fire again for user-owned submissions. #7378
+* ActiveCampaign - Fixed an issue where custom fields could be omitted from the Add a contact action when field definitions needed to be refreshed. #7949
+* App Actions - Fixed an issue where resending a logged app action could trigger a PHP error on some sites. #8011
+* App Actions - Fixed an issue where successful app action responses could be incorrectly reported as "Failed with status code - 200". #8010
+* Google Contacts - Fixed an issue where the Create a contact action could include internal Automator action metadata in outgoing API requests. #8004
+* Recipe UI - Fixed an issue where select fields in the recipe builder could stop rendering when another plugin loaded a conflicting Select2 library. #8001
 
 **Under the hood:**
 
-* Core - Restored missing option dropdowns on legacy trigger and integration settings. #7315
-* Core - Improved recipe completion and reliability with the new execution Pipeline. #6889, #7047, #7048, #7049, #7050, #7051, #7052, #7053, #7054, #7055, #7056, #7198, #7208, #7209
-* Uncanny Automator Lite users no longer seeing Uncanny Agent launcher tab. #7308
-* Recipe UI - A loop token group now nests where it belongs. #7394
-* Recipe UI - Divi Supreme Pro no longer clashes with Select2. #7404
-* Recipe import now feels the love from automator_migrate_recipe_part_meta hook. #7385
-* Uncanny Agent link added to WP Admin Bar. #7306
-* Framework migrations - Integrations modernized to the new framework:
-    * Fluent Forms #7072
-    * GoTo Training #6294
-    * Groundhogg #6928
-    * LearnDash #7377
-    * Mailchimp #6299
-    * Popup Maker #7339
-    * Thrive Ovation #7340
-    * Uncanny CEUs #7343
-    * UserFeedback #7341
-    * WhatsApp #6285
-    * WordPress #5920
-    * WP Webhooks #7342
+* Recipe Templates - Fixed an issue where the requirements sidebar could stretch past the window edge and cut off text. #7941
+* Trigger Engine - Improved handling of high-frequency WordPress meta hooks to reduce unnecessary trigger checks and loopback requests. #7929
 
-
-[View the full changelog.](https://automatorplugin.com/knowledge-base/uncanny-automator-changelog/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
+[View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 
 == Upgrade Notice ==
 

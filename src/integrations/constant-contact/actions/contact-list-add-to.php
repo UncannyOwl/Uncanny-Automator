@@ -89,5 +89,7 @@ class CONTACT_LIST_ADD_TO extends \Uncanny_Automator\Recipe\App_Action {
 
 		// Add contact to list.
 		$this->api->contact_list_add_to( $email, $list, $action_data );
+
+		return true;
 	}
 }

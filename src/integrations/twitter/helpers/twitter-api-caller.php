@@ -84,6 +84,42 @@ class Twitter_Api_Caller extends Api_Caller {
 	}
 
 	/**
+	 * Refresh X/Twitter's bespoke OAuth credential keys on a log resend.
+	 *
+	 * The action path bakes the OAuth token/secret (and, when present, the app
+	 * key/secret) straight into the body, so re-resolve the current credentials
+	 * and overwrite those keys before a resend replays the stale ones. The app
+	 * key/secret are only re-applied when currently set, mirroring
+	 * twitter_request(); the default credentials key is refreshed via parent.
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 */
+	protected function replace_resend_credentials( $body ) {
+
+		$credentials = $this->helpers->get_credentials();
+
+		if ( array_key_exists( 'oauth_token', $body ) && isset( $credentials['oauth_token'] ) ) {
+			$body['oauth_token'] = $credentials['oauth_token'];
+		}
+
+		if ( array_key_exists( 'oauth_token_secret', $body ) && isset( $credentials['oauth_token_secret'] ) ) {
+			$body['oauth_token_secret'] = $credentials['oauth_token_secret'];
+		}
+
+		if ( array_key_exists( 'api_key', $body ) && ! empty( $credentials['api_key'] ) ) {
+			$body['api_key'] = $credentials['api_key'];
+		}
+
+		if ( array_key_exists( 'api_secret', $body ) && ! empty( $credentials['api_secret'] ) ) {
+			$body['api_secret'] = $credentials['api_secret'];
+		}
+
+		return parent::replace_resend_credentials( $body );
+	}
+
+	/**
 	 * Send a status update to API proxy.
 	 *
 	 * @param string $status

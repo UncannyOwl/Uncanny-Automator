@@ -9,21 +9,25 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Stripe_Tokens {
 
 	/**
+	 * Helper instance used to format token values.
+	 *
 	 * @var Stripe_App_Helpers
 	 */
 	private $helpers;
 
 	/**
-	 * @param Stripe_App_Helpers $helpers
+	 * Store the Stripe helpers instance for use when hydrating tokens.
+	 *
+	 * @param Stripe_App_Helpers $helpers The Stripe helpers instance.
 	 */
 	public function __construct( $helpers ) {
 		$this->helpers = $helpers;
 	}
 
 	/**
-	 * Customer tokens
+	 * Build the list of available Stripe customer token definitions.
 	 *
-	 * @return array
+	 * @return array Token definitions keyed by tokenId, tokenName and tokenType.
 	 */
 	public function customer_tokens() {
 
@@ -112,9 +116,9 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Shipping tokens
+	 * Build the list of available Stripe shipping token definitions.
 	 *
-	 * @return array
+	 * @return array Token definitions keyed by tokenId, tokenName and tokenType.
 	 */
 	public function shipping_tokens() {
 
@@ -166,9 +170,9 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Line item tokens
+	 * Build the list of available Stripe line item token definitions.
 	 *
-	 * @return array
+	 * @return array Token definitions keyed by tokenId, tokenName and tokenType.
 	 */
 	public function line_item_tokens() {
 
@@ -220,9 +224,9 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Price tokens
+	 * Build the list of available Stripe price token definitions.
 	 *
-	 * @return array
+	 * @return array Token definitions keyed by tokenId, tokenName and tokenType.
 	 */
 	public function price_tokens() {
 
@@ -292,9 +296,9 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Product tokens
+	 * Build the list of available Stripe product token definitions.
 	 *
-	 * @return array
+	 * @return array Token definitions keyed by tokenId, tokenName and tokenType.
 	 */
 	public function product_tokens() {
 
@@ -376,12 +380,13 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Custom data tokens
+	 * Build token definitions for a set of custom data keys.
 	 *
-	 * @param array $data_keys
-	 * @param string $token_prefix
-	 * @param string $token_name
-	 * @return array
+	 * @param array  $data_keys    List of key definitions, each containing a 'KEY' entry.
+	 * @param string $token_prefix Prefix prepended to each generated tokenId.
+	 * @param string $token_name   Label prepended to each generated tokenName.
+	 *
+	 * @return array Token definitions keyed by tokenId, tokenName and tokenType.
 	 */
 	public function custom_data_tokens( $data_keys, $token_prefix, $token_name ) {
 
@@ -400,75 +405,9 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Billing tokens
+	 * Build the list of available Stripe invoice token definitions.
 	 *
-	 * @return array
-	 */
-	public function billing_tokens() {
-
-		$tokens = array();
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_EMAIL',
-			'tokenName' => esc_html_x( 'Billing email', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'email',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_NAME',
-			'tokenName' => esc_html_x( 'Billing name', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_PHONE',
-			'tokenName' => esc_html_x( 'Billing phone', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_LINE1',
-			'tokenName' => esc_html_x( 'Billing address line 1', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_LINE2',
-			'tokenName' => esc_html_x( 'Billing address line 2', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_CITY',
-			'tokenName' => esc_html_x( 'Billing address city', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_STATE',
-			'tokenName' => esc_html_x( 'Billing address state', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_COUNTRY',
-			'tokenName' => esc_html_x( 'Billing address country', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		$tokens[] = array(
-			'tokenId'   => 'BILLING_ADDRESS_POSTAL_CODE',
-			'tokenName' => esc_html_x( 'Billing address postal code', 'Stripe', 'uncanny-automator' ),
-			'tokenType' => 'string',
-		);
-
-		return $tokens;
-	}
-
-	/**
-	 * Invoice tokens
-	 *
-	 * @return array
+	 * @return array Token definitions keyed by tokenId, tokenName and tokenType.
 	 */
 	public function invoice_tokens() {
 
@@ -502,9 +441,9 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Charge tokens
+	 * Build the list of available Stripe charge token definitions.
 	 *
-	 * @return array
+	 * @return array Token definitions keyed by tokenId, tokenName and tokenType.
 	 */
 	public function charge_tokens() {
 
@@ -574,10 +513,11 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Hydrate invoice tokens
+	 * Map a Stripe invoice into its INVOICE_* token values.
 	 *
-	 * @param array $invoice
-	 * @return array
+	 * @param array $invoice The Stripe invoice object.
+	 *
+	 * @return array Token values keyed by token id.
 	 */
 	public function hydrate_invoice_tokens( $invoice ) {
 
@@ -592,14 +532,16 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Hydrate customer tokens
+	 * Map a Stripe customer (and its address) into its CUSTOMER_* token values.
 	 *
-	 * @param array $customer
-	 * @return array
+	 * @param array $customer The Stripe customer object.
+	 *
+	 * @return array Token values keyed by token id.
 	 */
 	public function hydrate_customer_tokens( $customer ) {
 
-		$address = empty( $customer['address'] ) ? array() : $customer['address'];
+		$address  = empty( $customer['address'] ) ? array() : $customer['address'];
+		$shipping = empty( $customer['shipping'] ) ? array() : $customer['shipping'];
 
 		$customer_tokens = array(
 			'CUSTOMER_ID'                  => $this->maybe_add( $customer, 'id' ),
@@ -615,23 +557,20 @@ class Stripe_Tokens {
 			'CUSTOMER_DISCOUNT'            => $this->maybe_add( $customer, 'discount' ),
 			'CUSTOMER_NAME'                => $this->maybe_add( $customer, 'name' ),
 			'CUSTOMER_PHONE'               => $this->maybe_add( $customer, 'phone' ),
-			'CUSTOMER_SHIPPING_NAME'       => $this->maybe_add( $customer['shipping'], 'name' ),
-			'CUSTOMER_SHIPPING_PHONE'      => $this->maybe_add( $customer['shipping'], 'phone' ),
+			'CUSTOMER_SHIPPING_NAME'       => $this->maybe_add( $shipping, 'name' ),
+			'CUSTOMER_SHIPPING_PHONE'      => $this->maybe_add( $shipping, 'phone' ),
 			'CUSTOMER_TAX_EXEMPT'          => $this->maybe_add( $customer, 'tax_exempt' ),
 		);
-
-		if ( ! empty( $tokens['CUSTOMER_CREATED'] ) ) {
-			$customer_tokens['created'] = date_i18n( get_option( 'date_format' ), $customer_tokens['CUSTOMER_CREATED'] );
-		}
 
 		return $customer_tokens;
 	}
 
 	/**
-	 * Hydrate shipping tokens
+	 * Map a customer's shipping address into its SHIPPING_* token values.
 	 *
-	 * @param array $customer
-	 * @return array
+	 * @param array $customer The customer data containing a 'shipping_address' entry.
+	 *
+	 * @return array Token values keyed by token id, or empty when no shipping address is present.
 	 */
 	public function hydrate_shipping_tokens( $customer ) {
 
@@ -658,10 +597,11 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Hydrate line item tokens
+	 * Map a Stripe line item into its LINE_ITEM_* token values.
 	 *
-	 * @param array $line_item
-	 * @return array
+	 * @param array $line_item The Stripe line item object.
+	 *
+	 * @return array Token values keyed by token id.
 	 */
 	public function hydrate_line_item_tokens( $line_item ) {
 
@@ -679,10 +619,11 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Hydrate price tokens
+	 * Map a Stripe price (including any recurring data) into its PRICE_* token values.
 	 *
-	 * @param array $price
-	 * @return array
+	 * @param array $price The Stripe price object.
+	 *
+	 * @return array Token values keyed by token id.
 	 */
 	public function hydrate_price_tokens( $price ) {
 
@@ -717,10 +658,11 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Hydrate product tokens
+	 * Map a Stripe product into its PRODUCT_* token values.
 	 *
-	 * @param array $product
-	 * @return array
+	 * @param array $product The Stripe product object.
+	 *
+	 * @return array Token values keyed by token id.
 	 */
 	public function hydrate_product_tokens( $product ) {
 
@@ -744,35 +686,13 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * hydrate_billing_tokens
+	 * Map selected session metadata entries into prefixed token values.
 	 *
-	 * @param  array $charge
-	 * @return array
-	 */
-	public function hydrate_billing_tokens( $charge ) {
-
-		$tokens = array(
-			'BILLING_EMAIL'               => empty( $charge['billing_details']['email'] ) ? '' : $charge['billing_details']['email'],
-			'BILLING_NAME'                => empty( $charge['billing_details']['name'] ) ? '' : $charge['billing_details']['name'],
-			'BILLING_PHONE'               => empty( $charge['billing_details']['phone'] ) ? '' : $charge['billing_details']['phone'],
-			'BILLING_ADDRESS_LINE1'       => empty( $charge['billing_details']['address']['line1'] ) ? '' : $charge['billing_details']['address']['line1'],
-			'BILLING_ADDRESS_LINE2'       => empty( $charge['billing_details']['address']['line2'] ) ? '' : $charge['billing_details']['address']['line2'],
-			'BILLING_ADDRESS_CITY'        => empty( $charge['billing_details']['address']['city'] ) ? '' : $charge['billing_details']['address']['city'],
-			'BILLING_ADDRESS_STATE'       => empty( $charge['billing_details']['address']['state'] ) ? '' : $charge['billing_details']['address']['state'],
-			'BILLING_ADDRESS_COUNTRY'     => empty( $charge['billing_details']['address']['country'] ) ? '' : $charge['billing_details']['address']['country'],
-			'BILLING_ADDRESS_POSTAL_CODE' => empty( $charge['billing_details']['address']['postal_code'] ) ? '' : $charge['billing_details']['address']['postal_code'],
-		);
-
-		return $tokens;
-	}
-
-	/**
-	 * Hydrate metadata tokens
+	 * @param array  $keys         List of key definitions, each containing a 'KEY' entry.
+	 * @param array  $session      The Stripe session object containing a 'metadata' entry.
+	 * @param string $token_prefix Prefix prepended to each generated token id.
 	 *
-	 * @param array $keys
-	 * @param array $session
-	 * @param string $token_prefix
-	 * @return array
+	 * @return array Token values keyed by the prefixed metadata key.
 	 */
 	public function hydrate_metadata_tokens( $keys, $session, $token_prefix ) {
 		$tokens = array();
@@ -792,12 +712,13 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Hydrate custom fields tokens
+	 * Map matching custom field values into prefixed token values.
 	 *
-	 * @param array $keys
-	 * @param array $data
-	 * @param string $token_prefix
-	 * @return array
+	 * @param array  $keys         List of key definitions, each containing a 'KEY' entry.
+	 * @param array  $data         The Stripe data object containing a 'custom_fields' entry.
+	 * @param string $token_prefix Prefix prepended to each generated token id.
+	 *
+	 * @return array Token values keyed by the prefixed custom field key.
 	 */
 	public function hydrate_custom_fields_tokens( $keys, $data, $token_prefix ) {
 
@@ -821,10 +742,11 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Hydrate charge tokens
+	 * Map a Stripe charge into its CHARGE_* token values, formatting monetary amounts.
 	 *
-	 * @param array $charge
-	 * @return array
+	 * @param array $charge The Stripe charge object.
+	 *
+	 * @return array Token values keyed by token id.
 	 */
 	public function hydrate_charge_tokens( $charge ) {
 
@@ -845,12 +767,17 @@ class Stripe_Tokens {
 	}
 
 	/**
-	 * Maybe add token value
+	 * Resolve and format a single token value from a data array.
 	 *
-	 * @param array $data
-	 * @param string $key
-	 * @param string $format
-	 * @return string
+	 * Returns an empty string when the key is missing or empty; otherwise formats
+	 * the value according to $format (amount/date) or flattens arrays into a
+	 * comma-separated string or JSON.
+	 *
+	 * @param array  $data   The source data array.
+	 * @param string $key    The key to read from the source data.
+	 * @param string $format How to format the value: 'text', 'amount' or 'date'.
+	 *
+	 * @return mixed The formatted token value, or an empty string when not present.
 	 */
 	public function maybe_add( $data, $key, $format = 'text' ) {
 
@@ -893,10 +820,11 @@ class Stripe_Tokens {
 
 
 	/**
-	 * Format date
+	 * Format a Unix timestamp using the site's configured date and time formats.
 	 *
-	 * @param int $timestamp
-	 * @return string
+	 * @param int $timestamp The Unix timestamp to format.
+	 *
+	 * @return string The localized date and time string.
 	 */
 	public function format_date( $timestamp ) {
 

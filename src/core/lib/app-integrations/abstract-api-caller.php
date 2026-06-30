@@ -98,6 +98,100 @@ abstract class Api_Caller {
 
 		// Give calling class a method to set properties.
 		$this->set_properties();
+
+		// Wire the credential-refresh seam used when an action is resent from the logs.
+		$this->register_resend_credential_refresh();
+	}
+
+	/**
+	 * Register the credential-refresh filter for log resends.
+	 *
+	 * A resend replays the request body that was stored in uap_api_log at
+	 * original-run time — including the credential that was live back then. On
+	 * replay, Api_Server::api_call() runs filter_params(), which fires
+	 * automator_{integration}_api_call for any endpoint of the form
+	 * "{version}/{integration}". We hook that filter so the stale credential is
+	 * swapped for the current one before the request is re-fired.
+	 *
+	 * No-op unless the endpoint resolves to a 2-segment "{version}/{slug}" pair
+	 * (the exact shape Api_Server::add_endpoint_parts() derives the integration
+	 * slug from); otherwise the filter would never fire and registering it is
+	 * pointless.
+	 *
+	 * @return void
+	 */
+	protected function register_resend_credential_refresh() {
+
+		$parts = explode( '/', (string) $this->api_endpoint );
+
+		if ( 2 !== count( $parts ) || '' === $parts[1] ) {
+			return;
+		}
+
+		add_filter( 'automator_' . $parts[1] . '_api_call', array( $this, 'refresh_credentials_on_resend' ) );
+	}
+
+	/**
+	 * Filter callback: replace the stored (possibly stale) credential in a
+	 * resent request body with a freshly-resolved current one.
+	 *
+	 * Acts only on a resend replay ($params['resend']), only on this caller's
+	 * own endpoint, and only when the original request actually carried a
+	 * credential under our key — so a normal live call (credentials already
+	 * injected upstream) and an intentional credential-less request are both
+	 * left untouched. A resolution failure leaves the stored value in place so
+	 * the replay surfaces the auth error rather than silently dropping it.
+	 *
+	 * @param array $params The api_call params being replayed.
+	 *
+	 * @return array
+	 */
+	public function refresh_credentials_on_resend( $params ) {
+
+		if ( ! is_array( $params ) || empty( $params['resend'] ) ) {
+			return $params;
+		}
+
+		if ( ! isset( $params['endpoint'], $params['body'] ) || ! is_array( $params['body'] ) ) {
+			return $params;
+		}
+
+		if ( $params['endpoint'] !== $this->api_endpoint ) {
+			return $params;
+		}
+
+		try {
+			$params['body'] = $this->replace_resend_credentials( $params['body'] );
+		} catch ( Exception $e ) {
+			automator_log( $e->getMessage(), 'Api_Caller resend credential refresh failed', false );
+		}
+
+		return $params;
+	}
+
+	/**
+	 * Overwrite the stored credentials in a resent request body with
+	 * freshly-resolved current ones, and return the body.
+	 *
+	 * Default behaviour refreshes the value under credential_request_key when the
+	 * original request carried it (so a credential-less request is left alone).
+	 * Integrations that bake credentials under custom keys — e.g. a bare token
+	 * plus a whole credentials object — override this to refresh those keys.
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 * @throws Exception If the current credentials cannot be resolved.
+	 */
+	protected function replace_resend_credentials( $body ) {
+
+		$key = $this->get_credential_request_key();
+
+		if ( array_key_exists( $key, $body ) ) {
+			$body[ $key ] = $this->get_api_request_credentials( array() );
+		}
+
+		return $body;
 	}
 
 	/**
@@ -370,21 +464,67 @@ abstract class Api_Caller {
 	protected function handle_400_error( $response, $args ) {
 
 		$error_text = $this->get_error_text( $response );
-		if ( ! $error_text ) {
-			return;
-		}
 
-		// Try to match against our common error messages
-		foreach ( $this->error_messages as $pattern => $error ) {
-			if ( false !== strpos( $error_text, $pattern ) ) {
-				throw new Exception( esc_html( $this->format_error_message( $error ) ) );
+		// Match against registered patterns first (e.g. credential errors).
+		if ( $error_text ) {
+			foreach ( $this->error_messages as $pattern => $error ) {
+				if ( false !== strpos( $error_text, $pattern ) ) {
+					throw new Exception( esc_html( $this->format_error_message( $error ) ) );
+				}
 			}
 		}
 
-		// Fall back to original message if no match found
-		if ( isset( $response['data']['message'] ) ) {
-			throw new Exception( esc_html( $response['data']['message'] ) );
+		// Surface the real platform/vendor message. When nothing usable is
+		// present we leave it to the original re-thrown exception in api_request.
+		$message = $this->extract_error_message( $response );
+		if ( '' !== $message ) {
+			throw new Exception( esc_html( $message ), absint( $response['statusCode'] ?? 0 ) );
 		}
+	}
+
+	/**
+	 * Extract a human-readable message from an error response.
+	 *
+	 * The platform wraps every upstream failure in a consistent envelope: the
+	 * actionable reason lives in error.description (with error.message as a
+	 * generic summary). On api_request's exception path that message is re-passed
+	 * as a plain $response['error'] string. Integrations should rely on this
+	 * shared extraction rather than reinventing it (or dumping the whole
+	 * response / falling back to a generic status-code string).
+	 *
+	 * @param array $response The response.
+	 *
+	 * @return string The message, or '' when nothing usable is present.
+	 */
+	protected function extract_error_message( $response ) {
+
+		$message = '';
+
+		// Vendor-native message, if the platform forwarded the upstream body.
+		if ( ! empty( $response['data']['message'] ) && is_string( $response['data']['message'] ) ) {
+			$message = $response['data']['message'];
+		} else {
+			// Platform error envelope: array { description, message } on the
+			// normal path, or a plain string on api_request's exception path.
+			$error = $response['error'] ?? '';
+
+			if ( is_array( $error ) ) {
+				$message = $error['description'] ?? $error['message'] ?? '';
+			} elseif ( is_string( $error ) ) {
+				$message = $error;
+			}
+
+			// Vendor error nested in data.
+			if ( '' === $message && ! empty( $response['data']['error'] ) && is_string( $response['data']['error'] ) ) {
+				$message = $response['data']['error'];
+			}
+		}
+
+		// Strip the legacy Api_Server prefix so callers (and post-processors like
+		// the WhatsApp caller) get the clean upstream text either way.
+		$message = preg_replace( '/^API has responded with an error message:\s*/i', '', (string) $message );
+
+		return trim( $message );
 	}
 
 	/**

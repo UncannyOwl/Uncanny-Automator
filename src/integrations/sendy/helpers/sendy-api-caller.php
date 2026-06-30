@@ -40,6 +40,31 @@ class Sendy_Api_Caller extends Api_Caller {
 	}
 
 	/**
+	 * Refresh Sendy's bespoke credential keys on a log resend.
+	 *
+	 * The action path bakes the API key + Sendy URL (read from settings, not
+	 * get_credentials()) straight into the body, so re-read the current settings
+	 * and overwrite those keys before a resend replays the stale ones. Mirrors
+	 * sendy_api_request().
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 */
+	protected function replace_resend_credentials( $body ) {
+
+		if ( array_key_exists( 'api_key', $body ) ) {
+			$body['api_key'] = $this->helpers->get_sendy_setting( 'api_key' );
+		}
+
+		if ( array_key_exists( 'sendy_url', $body ) ) {
+			$body['sendy_url'] = $this->helpers->get_sendy_setting( 'url' );
+		}
+
+		return parent::replace_resend_credentials( $body );
+	}
+
+	/**
 	 * Add contact to list.
 	 *
 	 * @param string $email
@@ -171,15 +196,34 @@ class Sendy_Api_Caller extends Api_Caller {
 	 */
 	public function check_for_errors( $response, $args = array() ) {
 
+		// Vendor error nested in data.
 		if ( ! empty( $response['data']['error'] ) ) {
 			throw new Exception( esc_html( $response['data']['error'] ), 400 );
 		}
 
-		if ( $response['statusCode'] >= 400 ) {
-			$message = isset( $response['data']['message'] )
-				? $response['data']['message']
-				: esc_html_x( 'Sendy API Error', 'Sendy', 'uncanny-automator' );
-			throw new Exception( esc_html( $message ), 400 );
+		if ( ! isset( $response['statusCode'] ) || $response['statusCode'] < 400 ) {
+			return;
 		}
+
+		// Prefer the real platform/vendor message (e.g. "Email does not exist in
+		// list") over the generic fallback so the action layer can react to it.
+		// On the exception path api_request passes the message as $response['error']
+		// (string); the normal path nests it under error.description. Mirrors the
+		// slack/ontraport/campaign-monitor fix.
+		$message = '';
+
+		if ( ! empty( $response['data']['message'] ) ) {
+			$message = $response['data']['message'];
+		} elseif ( ! empty( $response['error'] ) ) {
+			$message = is_array( $response['error'] )
+				? ( $response['error']['description'] ?? $response['error']['message'] ?? '' )
+				: (string) $response['error'];
+		}
+
+		if ( '' === $message ) {
+			$message = esc_html_x( 'Sendy API Error', 'Sendy', 'uncanny-automator' );
+		}
+
+		throw new Exception( esc_html( $message ), 400 );
 	}
 }

@@ -4,7 +4,13 @@ namespace Uncanny_Automator\Integrations\Stripe;
 
 use Uncanny_Automator\App_Integrations\App_Helpers;
 
-
+/**
+ * Class Stripe_App_Helpers
+ *
+ * @package Uncanny_Automator
+ *
+ * @property Stripe_Api_Caller $api
+ */
 class Stripe_App_Helpers extends App_Helpers {
 
 	/**
@@ -41,9 +47,13 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * validate_credentials
+	 * Validate that stored Stripe credentials contain the required fields.
 	 *
-	 * @return array
+	 * @param array $credentials The credentials to validate.
+	 * @param array $args        Optional contextual arguments.
+	 *
+	 * @return array The validated credentials.
+	 * @throws \Exception If the Stripe account is not connected (missing user id or signature).
 	 */
 	public function validate_credentials( $credentials, $args = array() ) {
 
@@ -55,10 +65,11 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * prepare_credentials_for_storage
+	 * Merge new credentials over any existing stored credentials before saving.
 	 *
-	 * @param  array $credentials
-	 * @return array
+	 * @param array $credentials The new credentials to store.
+	 *
+	 * @return array The merged credentials.
 	 */
 	public function prepare_credentials_for_storage( $credentials ) {
 
@@ -79,9 +90,9 @@ class Stripe_App_Helpers extends App_Helpers {
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * get_mode
+	 * Get the connected account's mode.
 	 *
-	 * @return string
+	 * @return string 'live' or 'test' (defaults to 'live' when credentials are unavailable).
 	 */
 	public function get_mode() {
 		try {
@@ -93,39 +104,177 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * generate_price_name
+	 * Build the cache-key account scope: "{stripe_user_id}_{mode}".
 	 *
-	 * @param  array $price
+	 * Ensures cached option lists never bleed across accounts or test/live mode.
+	 *
 	 * @return string
 	 */
-	public function generate_price_name( $price ) {
-
-		$price_name = '';
-
-		if ( ! empty( $price['nickname'] ) ) {
-			$price_name .= $price['nickname'] . ' (';
+	protected function get_account_cache_suffix() {
+		$account_id = '';
+		$mode       = 'live';
+		try {
+			$credentials = $this->get_credentials();
+			$account_id  = $credentials['stripe_user_id'] ?? '';
+			$mode        = ! empty( $credentials['livemode'] ) ? 'live' : 'test';
+		} catch ( \Exception $e ) {
+			$account_id = '';
+			$mode       = 'live';
 		}
-
-		if ( ! empty( $price['unit_amount'] ) ) {
-			$price_name .= $price['unit_amount'] / 100 . ' ' . $price['currency'];
-		}
-
-		if ( ! empty( $price['recurring'] ) ) {
-			$price_name .= ' per ' . $price['recurring']['interval'];
-		}
-
-		if ( ! empty( $price['nickname'] ) ) {
-			$price_name .= ')';
-		}
-
-		return apply_filters( 'automator_stripe_price_name', $price_name, $price );
+		return $account_id . '_' . $mode;
 	}
 
 	/**
-	 * unset_empty_recursively
+	 * Fetch + cache formatted price options for one Stripe price type.
 	 *
-	 * @param  array $array_to_process
+	 * @param string $type    'recurring' or 'one_time'.
+	 * @param bool   $refresh When true, bypass the cache and re-fetch.
+	 * @return array          List of { text, value } option arrays (no 'Any').
+	 */
+	private function get_price_options_cached( $type, $refresh ) {
+
+		$prefix = ( 'recurring' === $type ) ? 'recurring_prices_' : 'onetime_prices_';
+		$key    = $this->get_option_key( $prefix . $this->get_account_cache_suffix() );
+
+		if ( ! $refresh ) {
+			$cached = $this->get_app_option( $key );
+			if ( ! $cached['refresh'] && ! empty( $cached['data'] ) ) {
+				return $cached['data'];
+			}
+		}
+
+		$response = $this->api->get_price_options( $type );
+		$options  = $response['data']['options'] ?? array();
+
+		if ( ! empty( $options ) ) {
+			$this->save_app_option( $key, $options );
+		}
+
+		return $options;
+	}
+
+	/**
+	 * Delete the cached price options for the connected account/mode.
+	 *
+	 * Called on disconnect so stale price lists never persist into a re-connect.
+	 * Uses the same key suffix as the cache writer so the keys match exactly.
+	 *
+	 * @return void
+	 */
+	public function delete_cached_price_options() {
+		$suffix = $this->get_account_cache_suffix();
+		$this->delete_prefixed_app_option( 'recurring_prices_' . $suffix );
+		$this->delete_prefixed_app_option( 'onetime_prices_' . $suffix );
+	}
+
+	/**
+	 * Prepend the "Any" (-1) sentinel used by the price triggers.
+	 *
+	 * @param array $options List of { text, value } options.
 	 * @return array
+	 */
+	private function prepend_any( $options ) {
+		array_unshift(
+			$options,
+			array(
+				'text'  => esc_html_x( 'Any', 'Stripe', 'uncanny-automator' ),
+				'value' => '-1',
+			)
+		);
+		return $options;
+	}
+
+	/**
+	 * Remote_Data: recurring price options (subscription triggers).
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 * @return array
+	 */
+	protected function remote_data_get_recurring_prices( $request ): array {
+		try {
+			$options = $this->get_price_options_cached( 'recurring', $request->is_refresh() );
+			return $this->remote_data_success( $this->prepend_any( $options ) );
+		} catch ( \Exception $e ) {
+			return $this->remote_data_error( $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Remote_Data: one-time price options (product triggers).
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 * @return array
+	 */
+	protected function remote_data_get_onetime_prices( $request ): array {
+		try {
+			$options = $this->get_price_options_cached( 'one_time', $request->is_refresh() );
+			return $this->remote_data_success( $this->prepend_any( $options ) );
+		} catch ( \Exception $e ) {
+			return $this->remote_data_error( $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Build the create-payment-link repeater row fields: a PRICE select (combined
+	 * recurring + one-time cached options) and a QUANTITY input.
+	 *
+	 * @param bool $refresh When true, bypass the price cache and re-fetch.
+	 * @return array Row field definitions (PRICE, QUANTITY).
+	 */
+	public function get_payment_link_row_fields( $refresh = false ) {
+
+		$price_options = array_merge(
+			$this->get_price_options_cached( 'recurring', $refresh ),
+			$this->get_price_options_cached( 'one_time', $refresh )
+		);
+
+		return array(
+			array(
+				'option_code'           => 'PRICE',
+				'label'                 => esc_html_x( 'Product and price', 'Stripe', 'uncanny-automator' ),
+				'input_type'            => 'select',
+				'required'              => true,
+				'read_only'             => false,
+				'supports_custom_value' => true,
+				'placeholder'           => esc_html_x( 'Select a product and price', 'Stripe', 'uncanny-automator' ),
+				'description'           => esc_html_x( 'Select a product and price or enter a Stripe Price ID (starts with price_ or plan_)', 'Stripe', 'uncanny-automator' ),
+				'options'               => $price_options,
+			),
+			Automator()->helpers->recipe->field->text(
+				array(
+					'option_code' => 'QUANTITY',
+					'label'       => esc_html_x( 'Quantity', 'Stripe', 'uncanny-automator' ),
+					'input_type'  => 'text',
+					'tokens'      => true,
+					'default'     => 1,
+				)
+			),
+		);
+	}
+
+	/**
+	 * Remote_Data: field configuration for create-payment-link's items repeater.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 * @return array
+	 */
+	protected function remote_data_get_payment_link_fields( $request ): array {
+		try {
+			return $this->remote_data_success(
+				array( 'fields' => $this->get_payment_link_row_fields( $request->is_refresh() ) ),
+				'field_properties'
+			);
+		} catch ( \Exception $e ) {
+			return $this->remote_data_error( $e->getMessage() );
+		}
+	}
+
+	/**
+	 * Recursively remove empty-string values and emptied sub-arrays from an array.
+	 *
+	 * @param array $array_to_process The array to clean.
+	 *
+	 * @return array The array with empty values removed.
 	 */
 	public function unset_empty_recursively( $array_to_process ) {
 
@@ -187,9 +336,10 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * is_zero_decimal_currency
+	 * Whether a currency is zero-decimal (charged in its base unit, not divided by 100).
 	 *
-	 * @param  string $currency ISO 4217 currency code.
+	 * @param string $currency ISO 4217 currency code.
+	 *
 	 * @return bool
 	 */
 	public function is_zero_decimal_currency( $currency ) {
@@ -200,11 +350,12 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * format_amount
+	 * Format a Stripe integer amount into a human-readable string for its currency.
 	 *
-	 * @param  int    $cents
-	 * @param  string $currency ISO 4217 currency code (e.g. 'usd', 'jpy').
-	 * @return string
+	 * @param int    $cents    Amount in the smallest currency unit.
+	 * @param string $currency ISO 4217 currency code (e.g. 'usd', 'jpy').
+	 *
+	 * @return string The formatted amount (zero-decimal currencies are not divided by 100).
 	 */
 	public function format_amount( $cents, $currency = '' ) {
 
@@ -216,10 +367,11 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * format_date
+	 * Format a Unix timestamp using the site's configured date and time formats.
 	 *
-	 * @param  int $timestamp
-	 * @return string
+	 * @param int $timestamp Unix timestamp.
+	 *
+	 * @return string The formatted date-time string.
 	 */
 	public function format_date( $timestamp ) {
 
@@ -233,13 +385,12 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * explode_fields
+	 * Explode comma-separated string values into arrays for the given field keys.
 	 *
-	 * Explode comma separated values strings into arrays in specific fields
+	 * @param array $array_to_process  The fields to process.
+	 * @param array $fields_to_explode Field keys whose values should be exploded.
 	 *
-	 * @param  array $array_to_process_to_process
-	 * @param  array $fields_to_explode
-	 * @return array
+	 * @return array The processed fields.
 	 */
 	public function explode_fields( $array_to_process, $fields_to_explode ) {
 
@@ -258,13 +409,13 @@ class Stripe_App_Helpers extends App_Helpers {
 	}
 
 	/**
-	 * parse_metadata_fields
+	 * Parse "key:value" metadata strings into associative arrays.
 	 *
-	 * Parse metadata fields from key:value format to associative arrays
-	 * Handles fields ending with .metadata in dot notation
+	 * Handles fields whose keys end in '.metadata' (dot notation).
 	 *
-	 * @param  array $array_to_process
-	 * @return array
+	 * @param array $array_to_process The fields to process.
+	 *
+	 * @return array The processed fields with metadata values expanded.
 	 */
 	public function parse_metadata_fields( $array_to_process ) {
 

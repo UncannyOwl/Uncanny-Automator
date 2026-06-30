@@ -11,35 +11,35 @@ namespace Uncanny_Automator\Integrations\Stripe;
 class Customer_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 
 	/**
-	 * Trigger code.
+	 * Static trigger definition for lazy loading.
 	 *
-	 * @var string
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
 	 */
-	const TRIGGER_CODE = 'CUST_CREATED';
-
-	/**
-	 * Define and register the trigger by pushing it into the Automator object
-	 */
-	public function setup_trigger() {
-		$this->set_integration( 'STRIPE' );
-		$this->set_trigger_code( self::TRIGGER_CODE );
-		$this->set_is_login_required( false );
-		$this->set_trigger_type( 'anonymous' );
-		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
-		$this->set_sentence( esc_html_x( 'A customer is created', 'Stripe', 'uncanny-automator' ) );
-
-		// Non-active state sentence to show
-		$this->set_readable_sentence( esc_html_x( 'A customer is created', 'Stripe', 'uncanny-automator' ) );
-
-		// Which do_action() fires this trigger.
-		$this->add_action( Stripe_Webhooks::INCOMING_WEBHOOK_ACTION );
-		$this->set_action_args_count( 1 );
+	public static function definition() {
+		return self::new_definition( 'CUST_CREATED', 'STRIPE' )
+			->trigger_type( 'anonymous' )
+			->hook( Stripe_Webhooks::INCOMING_WEBHOOK_ACTION );
 	}
 
 	/**
-	 * Returns the trigger's tokens.
+	 * Register the trigger's integration, code, type, sentences, and webhook action.
 	 *
-	 * @return array
+	 * @return void
+	 */
+	public function setup_trigger() {
+		$this->set_is_login_required( false );
+		$this->set_support_link( Automator()->get_author_support_link( $this->trigger_code, 'integration/stripe/' ) );
+		$this->set_readable_sentence( esc_html_x( 'A customer is created', 'Stripe', 'uncanny-automator' ) );
+		$this->set_sentence( esc_html_x( 'A customer is created', 'Stripe', 'uncanny-automator' ) );
+	}
+
+	/**
+	 * Append the customer token definitions to the trigger's token list.
+	 *
+	 * @param array $trigger The trigger's configuration.
+	 * @param array $tokens  The tokens already registered for the trigger.
+	 *
+	 * @return array The merged token definitions.
 	 */
 	public function define_tokens( $trigger, $tokens ) {
 
@@ -52,11 +52,12 @@ class Customer_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 	}
 
 	/**
-	 * Validate the trigger.
+	 * Confirm the incoming webhook event is a Stripe customer.created event.
 	 *
-	 * @param $args
+	 * @param array $trigger   The trigger's configuration.
+	 * @param array $hook_args The hook arguments, where the first element is the Stripe event.
 	 *
-	 * @return bool
+	 * @return bool True when the event type is customer.created, false otherwise.
 	 */
 	public function validate( $trigger, $hook_args ) {
 
@@ -71,12 +72,12 @@ class Customer_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 	}
 
 	/**
-	 * hydrate_tokens
+	 * Populate the customer tokens with values from the webhook event's customer object.
 	 *
-	 * @param array $trigger
-	 * @param array $hook_args
+	 * @param array $trigger   The trigger's configuration.
+	 * @param array $hook_args The hook arguments, where the first element is the Stripe event.
 	 *
-	 * @return array
+	 * @return array The hydrated token values keyed by token id.
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
 

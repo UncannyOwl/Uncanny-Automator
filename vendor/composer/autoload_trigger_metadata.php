@@ -723,6 +723,125 @@ return array (
       ),
     ),
   ),
+  'CUST_CREATED' => 
+  array (
+    'code' => 'CUST_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Stripe\\Customer_Created',
+    'integration' => 'STRIPE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'CUST_CREATED',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_stripe_incoming_webhook',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'ONETIME_PAYMENT_COMPLETED' => 
+  array (
+    'code' => 'ONETIME_PAYMENT_COMPLETED',
+    'class' => 'Uncanny_Automator\\Integrations\\Stripe\\Onetime_Payment_Completed',
+    'integration' => 'STRIPE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'PRICE_ID',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_stripe_line_item_paid',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'PRODUCT_REFUNDED' => 
+  array (
+    'code' => 'PRODUCT_REFUNDED',
+    'class' => 'Uncanny_Automator\\Integrations\\Stripe\\Product_Refunded',
+    'integration' => 'STRIPE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'PRICE_ID',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_stripe_line_item_refuded',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'SUB_CANCELLED' => 
+  array (
+    'code' => 'SUB_CANCELLED',
+    'class' => 'Uncanny_Automator\\Integrations\\Stripe\\Subscription_Cancelled',
+    'integration' => 'STRIPE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'PRICE_ID',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_stripe_incoming_webhook',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'SUB_CREATED' => 
+  array (
+    'code' => 'SUB_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Stripe\\Subscription_Created',
+    'integration' => 'STRIPE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'PRICE_ID',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_stripe_incoming_webhook',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'SUB_PAID' => 
+  array (
+    'code' => 'SUB_PAID',
+    'class' => 'Uncanny_Automator\\Integrations\\Stripe\\Subscription_Paid',
+    'integration' => 'STRIPE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'PRICE_ID',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_stripe_invoice_item_paid',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'SUB_PAYMENT_FAILED' => 
+  array (
+    'code' => 'SUB_PAYMENT_FAILED',
+    'class' => 'Uncanny_Automator\\Integrations\\Stripe\\Subscription_Payment_Failed',
+    'integration' => 'STRIPE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'PRICE_ID',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_stripe_invoice_item_payment_failed',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
   'ET_ATTENDEE_CHECKED_IN' => 
   array (
     'code' => 'ET_ATTENDEE_CHECKED_IN',

@@ -94,6 +94,20 @@ final class Trigger_Definition {
 	public $hooks = array();
 
 	/**
+	 * Declarative enqueue-gate spec, or null when the trigger opts out.
+	 *
+	 * When set, `Enqueue_Gate` vetoes this trigger's enqueue the instant a
+	 * monitored hook fires if the value at hook-arg `arg_index` is not the key
+	 * any live recipe watches (read from trigger-meta `option`) — unless that
+	 * configured value is an `any` sentinel or a `{{token}}`. Compiled into the
+	 * metadata cache via to_array() and consumed before `init` without ever
+	 * instantiating the trigger.
+	 *
+	 * @var array{option: string, any: string[], arg_index: int}|null
+	 */
+	public $enqueue_gate = null;
+
+	/**
 	 * Private constructor — use create() as the entry point.
 	 *
 	 * @param string $code        Unique trigger code.
@@ -169,6 +183,36 @@ final class Trigger_Definition {
 	}
 
 	/**
+	 * Declare a declarative enqueue gate for this trigger.
+	 *
+	 * High-frequency hooks (e.g. added_user_meta / updated_user_meta) fire once
+	 * per write. Without a gate the engine enqueues on every fire, and when
+	 * recipe parts aren't loaded yet each queued item costs a loopback HTTP
+	 * self-request — dozens per request on a meta-heavy signup. The gate lets
+	 * the engine skip the enqueue when no live recipe watches the fired value;
+	 * it only ever vetoes when certain (sentinels and tokens fail open).
+	 *
+	 * @param string   $option    Trigger-meta key holding the watched value
+	 *                            (e.g. 'UMETAKEY'). This is the key-to-match
+	 *                            option, which may differ from trigger_meta().
+	 * @param string[] $any       Configured values meaning "any" — cannot be
+	 *                            pre-filtered, so the gate always allows them
+	 *                            (e.g. array( '-1' ) or array( '-1', '' )).
+	 * @param int      $arg_index Hook-arg index carrying the value to compare.
+	 *                            Default 2 — the meta_key in *_user_meta hooks.
+	 *
+	 * @return $this
+	 */
+	public function enqueue_gate( $option, $any = array(), $arg_index = 2 ) {
+		$this->enqueue_gate = array(
+			'option'    => (string) $option,
+			'any'       => (array) $any,
+			'arg_index' => (int) $arg_index,
+		);
+		return $this;
+	}
+
+	/**
 	 * Set the concrete trigger class FQCN. Normally populated automatically
 	 * by `Abstract_Trigger::new_definition()` or Pro's equivalent helper;
 	 * exposed here so callers can override or supply it explicitly.
@@ -205,7 +249,7 @@ final class Trigger_Definition {
 	 * @return array
 	 */
 	public function to_array() {
-		return array(
+		$entry = array(
 			'code'         => $this->code,
 			'class'        => $this->class,
 			'integration'  => $this->integration,
@@ -213,5 +257,12 @@ final class Trigger_Definition {
 			'trigger_meta' => $this->get_trigger_meta(),
 			'hooks'        => $this->hooks,
 		);
+
+		// Emit only when declared so non-gated entries stay byte-identical.
+		if ( null !== $this->enqueue_gate ) {
+			$entry['enqueue_gate'] = $this->enqueue_gate;
+		}
+
+		return $entry;
 	}
 }

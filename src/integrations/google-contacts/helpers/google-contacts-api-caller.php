@@ -29,9 +29,44 @@ class Google_Contacts_Api_Caller extends Api_Caller {
 	 * @throws Exception If an error occurs
 	 */
 	public function check_for_errors( $response, $args = array() ) {
-		if ( ! in_array( $response['statusCode'], array( 200, 201 ), true ) ) {
-			throw new Exception( esc_html( wp_json_encode( $response ) ), absint( $response['statusCode'] ) );
+
+		if ( in_array( $response['statusCode'] ?? 0, array( 200, 201 ), true ) ) {
+			return;
 		}
+
+		throw new Exception( esc_html( $this->get_error_message( $response ) ), absint( $response['statusCode'] ?? 0 ) );
+	}
+
+	/**
+	 * Extract a human-readable message from an error response.
+	 *
+	 * The platform exposes the real reason in error.description (with error.message
+	 * as a generic summary); on the exception path api_request passes it as a plain
+	 * $response['error'] string. Surface that rather than json-encoding the whole
+	 * response payload (which logged {"error":"...","statusCode":404}).
+	 *
+	 * @param array $response The response.
+	 *
+	 * @return string
+	 */
+	private function get_error_message( $response ) {
+
+		$error = $response['error'] ?? '';
+
+		if ( is_array( $error ) ) {
+			$message = $error['description'] ?? $error['message'] ?? '';
+			if ( '' !== $message ) {
+				return $message;
+			}
+		} elseif ( is_string( $error ) && '' !== $error ) {
+			return $error;
+		}
+
+		if ( ! empty( $response['data']['error'] ) && is_string( $response['data']['error'] ) ) {
+			return $response['data']['error'];
+		}
+
+		return esc_html_x( 'Google Contacts API error', 'Google Contacts', 'uncanny-automator' );
 	}
 
 	/**
