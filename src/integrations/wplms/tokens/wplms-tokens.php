@@ -103,7 +103,7 @@ class Wplms_Tokens {
 			if ( empty( $entry ) ) {
 				continue;
 			}
-			$entry     = maybe_unserialize( $entry );
+			$entry     = automator_safe_unserialize( $entry );
 			$course_id = isset( $entry['course_id'] ) ? absint( $entry['course_id'] ) : 0;
 			$unit_id   = isset( $entry['unit_id'] ) ? absint( $entry['unit_id'] ) : 0;
 			$quiz_id   = isset( $entry['quiz_id'] ) ? absint( $entry['quiz_id'] ) : 0;

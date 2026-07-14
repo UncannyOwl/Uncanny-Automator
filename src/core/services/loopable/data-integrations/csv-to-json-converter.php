@@ -69,10 +69,12 @@ class Csv_To_Json_Converter {
 	 * @throws RuntimeException If the CSV data cannot be fetched.
 	 */
 	public function load_from_url( $url ) {
-		$response = wp_remote_get( $url );
+
+		// SSRF-safe fetch: refuses private/reserved IPs; redirects are followed hop-by-hop, each re-validated.
+		$response = automator_remote_get_ssrf_safe( $url );
 
 		if ( is_wp_error( $response ) ) {
-			throw new RuntimeException( 'Failed to fetch the CSV from the provided URL.' );
+			throw new RuntimeException( 'Failed to fetch the CSV from the provided URL: ' . esc_html( $response->get_error_message() ) );
 		}
 
 		$csv_data = wp_remote_retrieve_body( $response );

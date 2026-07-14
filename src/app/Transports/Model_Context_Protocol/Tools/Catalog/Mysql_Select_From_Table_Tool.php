@@ -65,7 +65,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	 * @return string
 	 */
 	public function get_description() {
-		return 'Query data from database tables with optional JOINs. Read-only SELECT with WHERE filtering and multi-table joins. Use mysql_get_table_columns first to understand table schemas. Max 100 rows. Useful for finding option values, user data, custom plugin data, or correlating data across related tables.';
+		return 'Query data from database tables with optional JOINs. Read-only SELECT with WHERE filtering and multi-table joins. Use mysql_get_table_columns first to understand table schemas. Max 100 rows. Use structured WHERE/JOIN predicate objects for OR groups, IN lists, NULL checks, and join filters; do not send structured predicates as JSON strings. Legacy SQL strings are accepted only for simple AND-joined predicates and IN lists. Raw OR, BETWEEN, subqueries, comments, function calls, and arbitrary SQL expressions fail closed. Useful for finding option values, user data, custom plugin data, or correlating data across related tables.';
 	}
 
 	/**
@@ -103,16 +103,16 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 								'description' => 'Table to join (e.g., "wp_postmeta" or "wp_postmeta pm" for alias).',
 							),
 							'on'    => array(
-								'type'        => 'string',
-								'description' => 'ON condition (e.g., "p.ID = pm.post_id").',
+								'type'        => array( 'string', 'object', 'array' ),
+								'description' => 'JOIN predicates. Prefer structured objects: {"left":"p.ID","operator":"=","right":"pm.post_id"} or {"column":"pm.meta_key","operator":"=","value":"_price"}. Legacy strings are accepted only for simple comparisons joined by AND.',
 							),
 						),
 						'required'   => array( 'table', 'on' ),
 					),
 				),
 				'where'   => array(
-					'type'        => 'string',
-					'description' => 'WHERE clause conditions WITHOUT the "WHERE" keyword. For JOINs, use table.column or alias.column syntax. Example: "pm.meta_key = \'_price\' AND pm.meta_value > 100"',
+					'type'        => array( 'string', 'object', 'array' ),
+					'description' => 'WHERE predicates. Prefer structured objects: {"column":"pm.meta_key","operator":"=","value":"_price"}, {"column":"post_type","operator":"IN","value":["post","page"]}, or {"relation":"OR","conditions":[...]}. Legacy strings are accepted only for simple prepared predicates joined by AND.',
 				),
 				'groupby' => array(
 					'type'        => 'string',
@@ -238,8 +238,11 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			);
 		}
 
-		// Build SELECT columns - sanitize while allowing SQL functions and table.column syntax.
+		// Build SELECT columns - sanitize while allowing explicit aggregate functions and table.column syntax.
 		$select_cols = $this->sanitize_columns( $columns );
+		if ( is_wp_error( $select_cols ) ) {
+			return Json_Rpc_Response::create_error_response( $select_cols->get_error_message() );
+		}
 
 		// Build query — table_ref includes backticked name + optional alias.
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -258,14 +261,16 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 
 		// Add WHERE clause if provided.
 		if ( ! empty( $where ) ) {
-			$validation = $this->validate_clause( $where, 'WHERE' );
+			$where_sql = $this->build_where_clause( $where );
 
-			if ( is_wp_error( $validation ) ) {
-				return Json_Rpc_Response::create_error_response( $validation->get_error_message() );
+			if ( is_wp_error( $where_sql ) ) {
+				return Json_Rpc_Response::create_error_response( $where_sql->get_error_message() );
 			}
 
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$query .= ' WHERE ' . $where;
+			if ( '' !== $where_sql ) {
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$query .= ' WHERE ' . $where_sql;
+			}
 		}
 
 		// Add GROUP BY if provided.
@@ -345,18 +350,557 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 				return new \WP_Error( 'invalid_join', sprintf( 'Join #%d has invalid table name.', $index + 1 ) );
 			}
 
-			// Validate ON clause (same security as WHERE).
-			$validation = $this->validate_clause( $join['on'], 'ON' );
+			// Build ON predicates from identifiers only; never interpolate raw SQL.
+			$on_sql = $this->build_join_on_clause( $join['on'], $index );
 
-			if ( is_wp_error( $validation ) ) {
-				return $validation;
+			if ( is_wp_error( $on_sql ) ) {
+				return $on_sql;
 			}
 
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$sql .= " {$type} JOIN {$table_ref} ON {$join['on']}";
+			$sql .= " {$type} JOIN {$table_ref} ON {$on_sql}";
 		}
 
 		return $sql;
+	}
+
+	// ---------------------------------------------------------------------
+	// Predicate builders.
+	// ---------------------------------------------------------------------
+
+	/**
+	 * Build a prepared WHERE clause from structured or legacy-simple predicates.
+	 *
+	 * @param mixed $where WHERE predicate input.
+	 * @return string|\WP_Error SQL predicate or error.
+	 */
+	private function build_where_clause( $where ) {
+		if ( is_string( $where ) ) {
+			if ( '' === trim( $where ) ) {
+				return '';
+			}
+
+			$where = $this->parse_legacy_where_string( $where );
+			if ( is_wp_error( $where ) ) {
+				return $where;
+			}
+		}
+
+		return $this->build_where_predicate_group( $where );
+	}
+
+	/**
+	 * Build a JOIN ON clause from structured or legacy-simple predicates.
+	 *
+	 * @param mixed $on         JOIN predicate input.
+	 * @param int   $join_index Zero-based join index.
+	 * @return string|\WP_Error SQL predicate or error.
+	 */
+	private function build_join_on_clause( $on, int $join_index ) {
+		if ( is_string( $on ) ) {
+			$on = $this->parse_legacy_join_on_string( $on, $join_index );
+			if ( is_wp_error( $on ) ) {
+				return $on;
+			}
+		}
+
+		if ( $this->is_condition_list( $on ) ) {
+			$parts = array();
+
+			foreach ( $on as $condition ) {
+				$predicate = $this->build_join_predicate( $condition, $join_index );
+				if ( is_wp_error( $predicate ) ) {
+					return $predicate;
+				}
+				$parts[] = $predicate;
+			}
+
+			return implode( ' AND ', $parts );
+		}
+
+		return $this->build_join_predicate( $on, $join_index );
+	}
+
+	/**
+	 * Build a grouped WHERE predicate.
+	 *
+	 * @param mixed $where WHERE predicate input.
+	 * @return string|\WP_Error SQL predicate or error.
+	 */
+	private function build_where_predicate_group( $where ) {
+		return $this->build_where_predicate_group_at_depth( $where, 0 );
+	}
+
+	/**
+	 * Build a grouped WHERE predicate with bounded recursion.
+	 *
+	 * @param mixed $where WHERE predicate input.
+	 * @param int   $depth Current group depth.
+	 * @return string|\WP_Error SQL predicate or error.
+	 */
+	private function build_where_predicate_group_at_depth( $where, int $depth ) {
+		if ( $depth > 10 ) {
+			return new \WP_Error( 'invalid_where', 'WHERE predicate groups are nested too deeply.' );
+		}
+
+		if ( ! is_array( $where ) || empty( $where ) ) {
+			return new \WP_Error( 'invalid_where', 'WHERE must be a non-empty predicate object or list.' );
+		}
+
+		if ( isset( $where['conditions'] ) ) {
+			if ( ! is_array( $where['conditions'] ) || empty( $where['conditions'] ) ) {
+				return new \WP_Error( 'invalid_where', 'WHERE conditions must be a non-empty array.' );
+			}
+
+			$relation = strtoupper( (string) ( $where['relation'] ?? 'AND' ) );
+			if ( ! in_array( $relation, array( 'AND', 'OR' ), true ) ) {
+				return new \WP_Error( 'invalid_where', 'WHERE relation must be AND or OR.' );
+			}
+
+			$parts = array();
+			foreach ( $where['conditions'] as $condition ) {
+				$predicate = $this->build_where_predicate_group_at_depth( $condition, $depth + 1 );
+				if ( is_wp_error( $predicate ) ) {
+					return $predicate;
+				}
+				$parts[] = '(' . $predicate . ')';
+			}
+
+			return implode( ' ' . $relation . ' ', $parts );
+		}
+
+		if ( $this->is_condition_list( $where ) ) {
+			$parts = array();
+			foreach ( $where as $condition ) {
+				$predicate = $this->build_where_value_predicate( $condition );
+				if ( is_wp_error( $predicate ) ) {
+					return $predicate;
+				}
+				$parts[] = $predicate;
+			}
+
+			return implode( ' AND ', $parts );
+		}
+
+		return $this->build_where_value_predicate( $where );
+	}
+
+	/**
+	 * Build one prepared column-to-value WHERE predicate.
+	 *
+	 * @param mixed $condition Predicate object.
+	 * @return string|\WP_Error SQL predicate or error.
+	 */
+	private function build_where_value_predicate( $condition ) {
+		global $wpdb;
+
+		if ( ! is_array( $condition ) ) {
+			return new \WP_Error( 'invalid_where', 'WHERE predicate must be an object.' );
+		}
+
+		$column = $this->sanitize_column_ref( (string) ( $condition['column'] ?? '' ) );
+		if ( '' === $column ) {
+			return new \WP_Error( 'invalid_where', 'WHERE predicate column must be a valid identifier.' );
+		}
+
+		$operator = $this->normalize_where_operator( (string) ( $condition['operator'] ?? '=' ) );
+		if ( '' === $operator ) {
+			return new \WP_Error( 'invalid_where', 'WHERE predicate operator is not supported.' );
+		}
+
+		$value = $condition['value'] ?? null;
+
+		if ( in_array( $operator, array( 'IS', 'IS NOT' ), true ) ) {
+			if ( null === $value || 'NULL' === strtoupper( (string) $value ) ) {
+				return "{$column} {$operator} NULL";
+			}
+
+			return new \WP_Error( 'invalid_where', 'WHERE IS predicates only support NULL values.' );
+		}
+
+		if ( in_array( $operator, array( 'IN', 'NOT IN' ), true ) ) {
+			if ( ! is_array( $value ) || empty( $value ) || ! $this->is_condition_list( $value ) ) {
+				return new \WP_Error( 'invalid_where', 'WHERE IN predicates require a non-empty value array.' );
+			}
+
+			$placeholders = array();
+			$values       = array();
+			foreach ( $value as $item ) {
+				if ( null === $item || ! is_scalar( $item ) ) {
+					return new \WP_Error( 'invalid_where', 'WHERE IN predicate values must be non-null scalar values.' );
+				}
+				$placeholders[] = $this->placeholder_for_value( $item );
+				$values[]       = $item;
+			}
+
+			$sql = "{$column} {$operator} (" . implode( ', ', $placeholders ) . ')';
+
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Placeholders are generated from scalar value types only.
+			return $wpdb->prepare( $sql, $values );
+		}
+
+		if ( ! $this->is_bindable_value( $value ) ) {
+			return new \WP_Error( 'invalid_where', 'WHERE predicate value must be scalar or null.' );
+		}
+
+		if ( null === $value ) {
+			if ( '=' === $operator ) {
+				return $column . ' IS NULL';
+			}
+
+			if ( in_array( $operator, array( '!=', '<>' ), true ) ) {
+				return $column . ' IS NOT NULL';
+			}
+
+			return new \WP_Error( 'invalid_where', 'NULL values only support =, !=, <>, IS, or IS NOT.' );
+		}
+
+		$sql = "{$column} {$operator} " . $this->placeholder_for_value( $value );
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Column/operator are allowlisted and the value is bound here.
+		return $wpdb->prepare( $sql, $value );
+	}
+
+	/**
+	 * Build one JOIN predicate.
+	 *
+	 * @param mixed $condition  Predicate object.
+	 * @param int   $join_index Zero-based join index.
+	 * @return string|\WP_Error SQL predicate or error.
+	 */
+	private function build_join_predicate( $condition, int $join_index ) {
+		if ( ! is_array( $condition ) ) {
+			return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON predicate must be an object.', $join_index + 1 ) );
+		}
+
+		if ( isset( $condition['column'] ) ) {
+			return $this->build_where_value_predicate( $condition );
+		}
+
+		$left  = $this->sanitize_column_ref( (string) ( $condition['left'] ?? '' ) );
+		$right = $this->sanitize_column_ref( (string) ( $condition['right'] ?? '' ) );
+
+		if ( '' === $left || '' === $right ) {
+			return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON predicate must use valid identifiers.', $join_index + 1 ) );
+		}
+
+		$operator = $this->normalize_join_operator( (string) ( $condition['operator'] ?? '=' ) );
+		if ( '' === $operator ) {
+			return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON operator is not supported.', $join_index + 1 ) );
+		}
+
+		return "{$left} {$operator} {$right}";
+	}
+
+	/**
+	 * Parse legacy WHERE strings into prepared predicate objects.
+	 *
+	 * @param string $where Raw legacy WHERE string.
+	 * @return array|\WP_Error
+	 */
+	private function parse_legacy_where_string( string $where ) {
+		$where = trim( $where );
+		if ( '' === $where ) {
+			return array();
+		}
+
+		$recovery_error = $this->get_legacy_where_recovery_error( $where );
+		if ( is_wp_error( $recovery_error ) ) {
+			return $recovery_error;
+		}
+
+		if ( $this->contains_unsafe_legacy_clause_syntax( $where ) ) {
+			return new \WP_Error( 'invalid_where', 'WHERE only supports simple predicates joined by AND. Use structured predicate objects for complex filters, for example {"relation":"OR","conditions":[{"column":"post_status","operator":"=","value":"publish"},{"column":"post_status","operator":"=","value":"private"}]}.' );
+		}
+
+		$parts      = preg_split( '/\s+AND\s+/i', $where );
+		$conditions = array();
+
+		foreach ( $parts as $part ) {
+			$part = trim( (string) $part );
+			if ( preg_match( '/^([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)\s+(NOT\s+IN|IN)\s*\((.*)\)$/i', $part, $matches ) ) {
+				$value = $this->parse_legacy_literal_list( trim( $matches[3] ) );
+				if ( is_wp_error( $value ) ) {
+					return $value;
+				}
+
+				$conditions[] = array(
+					'column'   => $matches[1],
+					'operator' => $matches[2],
+					'value'    => $value,
+				);
+				continue;
+			}
+
+			if ( ! preg_match( '/^([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)\s*(NOT\s+LIKE|LIKE|IS\s+NOT|IS|!=|<>|>=|<=|=|>|<)\s*(.+)$/i', $part, $matches ) ) {
+				return new \WP_Error( 'invalid_where', 'WHERE contains an unsupported predicate shape. Use {"column":"column_name","operator":"=","value":"value"} or an array of those objects for AND conditions.' );
+			}
+
+			$value = $this->parse_legacy_literal( trim( $matches[3] ) );
+			if ( is_wp_error( $value ) ) {
+				return $value;
+			}
+
+			$conditions[] = array(
+				'column'   => $matches[1],
+				'operator' => $matches[2],
+				'value'    => $value,
+			);
+		}
+
+		return $conditions;
+	}
+
+	/**
+	 * Parse legacy JOIN strings into identifier predicates.
+	 *
+	 * @param string $on         Raw legacy ON string.
+	 * @param int    $join_index Zero-based join index.
+	 * @return array|\WP_Error
+	 */
+	private function parse_legacy_join_on_string( string $on, int $join_index ) {
+		$on             = trim( $on );
+		$recovery_error = $this->get_legacy_join_recovery_error( $on, $join_index );
+		if ( is_wp_error( $recovery_error ) ) {
+			return $recovery_error;
+		}
+
+		if ( '' === $on || $this->contains_unsafe_legacy_clause_syntax( $on ) ) {
+			return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON only supports identifier comparisons or value predicates joined by AND. Use {"left":"p.ID","operator":"=","right":"pm.post_id"} for column joins and {"column":"pm.meta_key","operator":"=","value":"_price"} for join filters.', $join_index + 1 ) );
+		}
+
+		$parts      = preg_split( '/\s+AND\s+/i', $on );
+		$conditions = array();
+
+		foreach ( $parts as $part ) {
+			$part = trim( (string) $part );
+			if ( preg_match( '/^([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)\s*(<=>|!=|<>|>=|<=|=|>|<)\s*([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)$/', $part, $matches ) ) {
+				$conditions[] = array(
+					'left'     => $matches[1],
+					'operator' => $matches[2],
+					'right'    => $matches[3],
+				);
+				continue;
+			}
+
+			if ( ! preg_match( '/^([a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)\s*(NOT\s+LIKE|LIKE|IS\s+NOT|IS|!=|<>|>=|<=|=|>|<)\s*(.+)$/i', $part, $matches ) ) {
+				return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON contains an unsupported predicate shape.', $join_index + 1 ) );
+			}
+
+			$value = $this->parse_legacy_literal( trim( $matches[3] ) );
+			if ( is_wp_error( $value ) ) {
+				return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON contains an unsupported predicate value.', $join_index + 1 ) );
+			}
+
+			$conditions[] = array(
+				'column'   => $matches[1],
+				'operator' => $matches[2],
+				'value'    => $value,
+			);
+		}
+
+		return $conditions;
+	}
+
+	/**
+	 * Return an actionable error for legacy WHERE strings that need structured predicates.
+	 *
+	 * @param string $where Legacy WHERE string.
+	 * @return false|\WP_Error
+	 */
+	private function get_legacy_where_recovery_error( string $where ) {
+		if ( $this->looks_like_json_structure( $where ) ) {
+			return new \WP_Error( 'invalid_where', 'WHERE structured predicates must be sent as JSON objects or arrays, not encoded strings. Retry with {"where":{"column":"post_status","operator":"=","value":"publish"}} instead of {"where":"{\"column\":\"post_status\",\"value\":\"publish\"}"}.' );
+		}
+
+		if ( preg_match( '/\bOR\b/i', $where ) ) {
+			return new \WP_Error( 'invalid_where', 'WHERE only supports simple predicates joined by AND. To use OR, retry with a structured group such as {"relation":"OR","conditions":[{"column":"post_status","operator":"=","value":"publish"},{"column":"post_status","operator":"=","value":"private"}]}.' );
+		}
+
+		if ( preg_match( '/\bBETWEEN\b/i', $where ) ) {
+			return new \WP_Error( 'invalid_where', 'WHERE legacy strings do not support BETWEEN. Retry with two structured predicates: [{"column":"post_date","operator":">=","value":"2026-01-01"},{"column":"post_date","operator":"<=","value":"2026-07-01"}].' );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Return an actionable error for legacy JOIN ON strings that need structured predicates.
+	 *
+	 * @param string $on         Legacy JOIN ON string.
+	 * @param int    $join_index Zero-based join index.
+	 * @return false|\WP_Error
+	 */
+	private function get_legacy_join_recovery_error( string $on, int $join_index ) {
+		if ( $this->looks_like_json_structure( $on ) ) {
+			return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON structured predicates must be sent as JSON objects or arrays, not encoded strings. Retry with {"on":{"left":"p.ID","operator":"=","right":"pm.post_id"}}.', $join_index + 1 ) );
+		}
+
+		if ( preg_match( '/\bOR\b/i', $on ) ) {
+			return new \WP_Error( 'invalid_join', sprintf( 'Join #%d ON only supports identifier comparisons or value predicates joined by AND. To use alternate join logic, send structured predicates and move row alternatives into WHERE {"relation":"OR","conditions":[...]}.', $join_index + 1 ) );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Detect encoded structured predicate input.
+	 *
+	 * @param string $value Raw value.
+	 * @return bool
+	 */
+	private function looks_like_json_structure( string $value ): bool {
+		$value = trim( $value );
+		if ( '' === $value || ! in_array( $value[0], array( '{', '[' ), true ) ) {
+			return false;
+		}
+
+		$decoded = json_decode( $value, true );
+		return JSON_ERROR_NONE === json_last_error() && is_array( $decoded );
+	}
+
+	/**
+	 * Parse a legacy scalar literal without evaluating it as SQL.
+	 *
+	 * @param string $literal Raw literal.
+	 * @return int|float|string|null|\WP_Error
+	 */
+	private function parse_legacy_literal( string $literal ) {
+		if ( 'NULL' === strtoupper( $literal ) ) {
+			return null;
+		}
+
+		if ( preg_match( '/^-?\d+$/', $literal ) ) {
+			return (int) $literal;
+		}
+
+		if ( preg_match( '/^-?\d+\.\d+$/', $literal ) ) {
+			return (float) $literal;
+		}
+
+		if ( preg_match( '/^\'([^\']*)\'$/', $literal, $matches ) || preg_match( '/^"([^"]*)"$/', $literal, $matches ) ) {
+			return $matches[1];
+		}
+
+		return new \WP_Error( 'invalid_where', 'WHERE literals must be quoted strings, numbers, or NULL.' );
+	}
+
+	/**
+	 * Parse a comma-delimited legacy literal list.
+	 *
+	 * @param string $literal_list Raw list without surrounding parentheses.
+	 * @return array|\WP_Error
+	 */
+	private function parse_legacy_literal_list( string $literal_list ) {
+		if ( '' === trim( $literal_list ) ) {
+			return new \WP_Error( 'invalid_where', 'WHERE IN lists must not be empty.' );
+		}
+
+		$values = array();
+		foreach ( explode( ',', $literal_list ) as $literal ) {
+			$value = $this->parse_legacy_literal( trim( $literal ) );
+			if ( is_wp_error( $value ) || null === $value ) {
+				return new \WP_Error( 'invalid_where', 'WHERE IN lists must contain only quoted strings or numbers.' );
+			}
+			$values[] = $value;
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Detect SQL expression syntax outside the legacy predicate mini-language.
+	 *
+	 * @param string $clause Raw clause.
+	 * @return bool
+	 */
+	private function contains_unsafe_legacy_clause_syntax( string $clause ): bool {
+		return (bool) preg_match( '/(--|\/\*|\*\/|;|\bOR\b|\bSELECT\b|\bUNION\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bSLEEP\b|\bBENCHMARK\b)/i', $clause );
+	}
+
+	/**
+	 * Normalize supported WHERE operators.
+	 *
+	 * @param string $operator Raw operator.
+	 * @return string Allowlisted operator or empty string.
+	 */
+	private function normalize_where_operator( string $operator ): string {
+		$operator = strtoupper( preg_replace( '/\s+/', ' ', trim( $operator ) ) );
+		$allowed  = array( '=', '!=', '<>', '>', '>=', '<', '<=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN', 'IS', 'IS NOT' );
+
+		return in_array( $operator, $allowed, true ) ? $operator : '';
+	}
+
+	/**
+	 * Normalize supported JOIN operators.
+	 *
+	 * @param string $operator Raw operator.
+	 * @return string Allowlisted operator or empty string.
+	 */
+	private function normalize_join_operator( string $operator ): string {
+		$operator = strtoupper( preg_replace( '/\s+/', ' ', trim( $operator ) ) );
+		$allowed  = array( '=', '!=', '<>', '<=>', '>', '>=', '<', '<=' );
+
+		return in_array( $operator, $allowed, true ) ? $operator : '';
+	}
+
+	/**
+	 * Check whether a value may be passed to wpdb::prepare.
+	 *
+	 * @param mixed $value Value to inspect.
+	 * @return bool
+	 */
+	private function is_bindable_value( $value ): bool {
+		return null === $value || is_scalar( $value );
+	}
+
+	/**
+	 * Resolve the wpdb placeholder for a scalar value.
+	 *
+	 * @param mixed $value Value to bind.
+	 * @return string Placeholder.
+	 */
+	private function placeholder_for_value( $value ): string {
+		if ( is_int( $value ) ) {
+			return '%d';
+		}
+
+		if ( is_float( $value ) ) {
+			return '%f';
+		}
+
+		return '%s';
+	}
+
+	/**
+	 * Identify JSON-style lists.
+	 *
+	 * @param mixed $value Value to inspect.
+	 * @return bool
+	 */
+	private function is_condition_list( $value ): bool {
+		return is_array( $value ) && ( array() === $value || array_keys( $value ) === range( 0, count( $value ) - 1 ) );
+	}
+
+	/**
+	 * Sanitize a one- or two-part column reference.
+	 *
+	 * @param string $column_ref Raw column reference.
+	 * @return string Backticked column reference or empty string.
+	 */
+	private function sanitize_column_ref( string $column_ref ): string {
+		$column_ref = trim( $column_ref );
+		if ( ! preg_match( '/^[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?$/', $column_ref ) ) {
+			return '';
+		}
+
+		$parts       = explode( '.', $column_ref );
+		$column_name = end( $parts );
+		if ( in_array( strtolower( (string) $column_name ), self::REDACTED_COLUMNS, true ) ) {
+			return '';
+		}
+
+		return '`' . implode( '`.`', $parts ) . '`';
 	}
 
 	/**
@@ -438,55 +982,6 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	}
 
 	/**
-	 * Validate a SQL clause (WHERE or ON) for dangerous patterns.
-	 *
-	 * @param string $clause The clause to validate.
-	 * @param string $label  Label for error messages (WHERE or ON).
-	 * @return true|\WP_Error True if valid, WP_Error otherwise.
-	 */
-	private function validate_clause( string $clause, string $label ) {
-		$blocked_words   = array(
-			// DML operations.
-			'drop',
-			'delete',
-			'truncate',
-			'update',
-			'insert',
-			'alter',
-			'create',
-			'grant',
-			'revoke',
-			'union',
-			'into',
-			// DoS vectors.
-			'sleep',
-			'benchmark',
-			'wait_for_delay',
-		);
-		$blocked_symbols = array( '--', '/*', '*/', ';' );
-
-		foreach ( $blocked_words as $keyword ) {
-			if ( preg_match( '/\b' . $keyword . '\b/i', $clause ) ) {
-				return new \WP_Error(
-					'blocked_keyword',
-					sprintf( '%s clause contains blocked keyword: %s', $label, $keyword )
-				);
-			}
-		}
-
-		foreach ( $blocked_symbols as $symbol ) {
-			if ( false !== strpos( $clause, $symbol ) ) {
-				return new \WP_Error(
-					'blocked_pattern',
-					sprintf( '%s clause contains blocked pattern: %s', $label, $symbol )
-				);
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 * Sanitize GROUP BY identifiers.
 	 *
 	 * Supports comma-separated list of table-qualified or plain identifiers.
@@ -501,8 +996,9 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		$sanitized = array();
 
 		foreach ( $parts as $part ) {
-			if ( preg_match( '/^[a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)?$/', $part ) ) {
-				$sanitized[] = $part;
+			$column = $this->sanitize_column_ref( $part );
+			if ( '' !== $column ) {
+				$sanitized[] = $column;
 			}
 		}
 
@@ -521,7 +1017,7 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	 */
 	private function sanitize_orderby( string $orderby ): string {
 		$orderby = trim( $orderby );
-		return preg_match( '/^[a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)?$/', $orderby ) ? $orderby : '';
+		return $this->sanitize_column_ref( $orderby );
 	}
 
 	/**
@@ -532,9 +1028,9 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 	 * @since 7.2.4
 	 *
 	 * @param string $columns Raw columns string.
-	 * @return string Sanitized SQL column list.
+	 * @return string|\WP_Error Sanitized SQL column list or error.
 	 */
-	private function sanitize_columns( string $columns ): string {
+	private function sanitize_columns( string $columns ) {
 		if ( '*' === $columns ) {
 			return '*';
 		}
@@ -543,47 +1039,18 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 			function ( $col ) {
 				$raw = trim( $col );
 
-				// Block SQL injection patterns.
-				if ( preg_match( '/[\'";]|--|\/\*|\*\//', $raw ) ) {
-					return '';
-				}
-
 				$alias = '';
 				$expr  = $raw;
 
 				// Explicit alias form: "expression AS alias".
-				if ( preg_match( '/^(.+?)\s+AS\s+([a-zA-Z0-9_]+)$/i', $raw, $matches ) ) {
+				if ( preg_match( '/^(.+?)\s+AS\s+([a-zA-Z_][a-zA-Z0-9_]*)$/i', $raw, $matches ) ) {
 					$expr  = trim( $matches[1] );
 					$alias = $matches[2];
 				}
 
-				// Allow: letters, numbers, underscore, parentheses, asterisk, dot, space.
-				$expr = preg_replace( '/[^a-zA-Z0-9_(),*.\s]/', '', $expr );
-
-				// Block subqueries and DML keywords in column expressions.
-				if ( preg_match( '/\b(select|insert|update|delete|drop|union|into)\b/i', $expr ) ) {
-					return '';
-				}
-
-				// Block redacted column names (sensitive auth data).
-				foreach ( self::REDACTED_COLUMNS as $blocked ) {
-					if ( preg_match( '/\b' . preg_quote( $blocked, '/' ) . '\b/i', $expr ) ) {
-						return '';
-					}
-				}
-
-				$expr = trim( $expr );
+				$expr = $this->sanitize_select_expression( $expr );
 				if ( '' === $expr ) {
 					return '';
-				}
-
-				// Functions or qualified columns remain as expressions.
-				if ( ! preg_match( '/^[a-zA-Z0-9_]+$/', $expr ) && false === strpos( $expr, '.' ) && false === strpos( $expr, '(' ) ) {
-					return '';
-				}
-
-				if ( preg_match( '/^[a-zA-Z0-9_]+$/', $expr ) ) {
-					$expr = '`' . $expr . '`';
 				}
 
 				if ( '' !== $alias ) {
@@ -598,10 +1065,45 @@ class Mysql_Select_From_Table_Tool extends Abstract_MCP_Tool {
 		$column_list = array_filter( $column_list );
 
 		if ( empty( $column_list ) ) {
-			return '*';
+			return new \WP_Error( 'invalid_columns', 'No valid SELECT columns were provided.' );
 		}
 
 		return implode( ', ', $column_list );
+	}
+
+	/**
+	 * Sanitize one SELECT expression.
+	 *
+	 * @param string $expr Raw expression.
+	 * @return string Sanitized expression or empty string.
+	 */
+	private function sanitize_select_expression( string $expr ): string {
+		$expr = trim( $expr );
+		if ( '' === $expr ) {
+			return '';
+		}
+
+		if ( '*' === $expr ) {
+			return '*';
+		}
+
+		$column = $this->sanitize_column_ref( $expr );
+		if ( '' !== $column ) {
+			return $column;
+		}
+
+		if ( preg_match( '/^(COUNT|SUM|AVG|MIN|MAX)\(\s*(\*|[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)?)\s*\)$/i', $expr, $matches ) ) {
+			$function = strtoupper( $matches[1] );
+			$argument = '*' === $matches[2] ? '*' : $this->sanitize_column_ref( $matches[2] );
+
+			if ( '' === $argument ) {
+				return '';
+			}
+
+			return "{$function}({$argument})";
+		}
+
+		return '';
 	}
 
 	/**

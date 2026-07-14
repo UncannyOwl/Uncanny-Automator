@@ -33,8 +33,10 @@ class LD_LESSONDONE extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-				esc_html_x( 'A user completes {{a lesson:%1$s}}', 'LearnDash', 'uncanny-automator' ),
-				$this->get_trigger_meta()
+				// translators: %1$s: Lesson. %2$s: Number of times.
+				esc_html_x( 'A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)', 'LearnDash', 'uncanny-automator' ),
+				$this->get_trigger_meta(),
+				'NUMTIMES:' . $this->get_trigger_meta()
 			)
 		);
 
@@ -52,35 +54,36 @@ class LD_LESSONDONE extends \Uncanny_Automator\Recipe\Trigger {
 
 		return array(
 			array(
-				'option_code'           => 'LDCOURSE',
-				'label'                 => esc_html_x( 'Course', 'LearnDash', 'uncanny-automator' ),
-				'input_type'            => 'select',
-				'required'              => true,
-				'options'               => array(),
-				'relevant_tokens'       => array(
+				'option_code'     => 'LDCOURSE',
+				'label'           => esc_html_x( 'Course', 'LearnDash', 'uncanny-automator' ),
+				'input_type'      => 'select',
+				'required'        => true,
+				'options'         => array(),
+				'relevant_tokens' => array(
 					'LDCOURSE'           => esc_html_x( 'Course title', 'LearnDash', 'uncanny-automator' ),
 					'LDCOURSE_ID'        => esc_html_x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
 					'LDCOURSE_URL'       => esc_html_x( 'Course URL', 'LearnDash', 'uncanny-automator' ),
 					'LDCOURSE_THUMB_ID'  => esc_html_x( 'Course featured image ID', 'LearnDash', 'uncanny-automator' ),
 					'LDCOURSE_THUMB_URL' => esc_html_x( 'Course featured image URL', 'LearnDash', 'uncanny-automator' ),
 				),
-				'remote_data'           => $this->item_helpers->remote_data_load_config( 'courses' ),
+				'remote_data'     => $this->item_helpers->remote_data_load_config( 'courses' ),
 			),
 			array(
-				'option_code'           => $this->get_trigger_meta(),
-				'label'                 => esc_html_x( 'Lesson', 'LearnDash', 'uncanny-automator' ),
-				'input_type'            => 'select',
-				'required'              => true,
-				'options'               => array(),
-				'remote_data'           => $this->item_helpers->remote_data_parent_config( 'lessons_from_course', array( 'LDCOURSE' ) ),
-				'relevant_tokens'       => array(
-					$this->get_trigger_meta()                => esc_html_x( 'Lesson title', 'LearnDash', 'uncanny-automator' ),
-					$this->get_trigger_meta() . '_ID'        => esc_html_x( 'Lesson ID', 'LearnDash', 'uncanny-automator' ),
-					$this->get_trigger_meta() . '_URL'       => esc_html_x( 'Lesson URL', 'LearnDash', 'uncanny-automator' ),
-					$this->get_trigger_meta() . '_THUMB_ID'  => esc_html_x( 'Lesson featured image ID', 'LearnDash', 'uncanny-automator' ),
+				'option_code'     => $this->get_trigger_meta(),
+				'label'           => esc_html_x( 'Lesson', 'LearnDash', 'uncanny-automator' ),
+				'input_type'      => 'select',
+				'required'        => true,
+				'options'         => array(),
+				'remote_data'     => $this->item_helpers->remote_data_parent_config( 'lessons_from_course', array( 'LDCOURSE' ) ),
+				'relevant_tokens' => array(
+					$this->get_trigger_meta()          => esc_html_x( 'Lesson title', 'LearnDash', 'uncanny-automator' ),
+					$this->get_trigger_meta() . '_ID'  => esc_html_x( 'Lesson ID', 'LearnDash', 'uncanny-automator' ),
+					$this->get_trigger_meta() . '_URL' => esc_html_x( 'Lesson URL', 'LearnDash', 'uncanny-automator' ),
+					$this->get_trigger_meta() . '_THUMB_ID' => esc_html_x( 'Lesson featured image ID', 'LearnDash', 'uncanny-automator' ),
 					$this->get_trigger_meta() . '_THUMB_URL' => esc_html_x( 'Lesson featured image URL', 'LearnDash', 'uncanny-automator' ),
 				),
 			),
+			Ld_Tokens_New_Framework::numtimes_field(),
 		);
 	}
 

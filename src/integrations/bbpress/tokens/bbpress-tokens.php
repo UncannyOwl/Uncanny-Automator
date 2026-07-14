@@ -56,7 +56,7 @@ class Bbpress_Tokens {
 						}
 
 						if ( ! empty( $value ) ) {
-							$value = maybe_unserialize( $value );
+							$value = automator_safe_unserialize( $value );
 						}
 					}
 				}

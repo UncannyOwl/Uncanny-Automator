@@ -196,7 +196,7 @@ class Wpdm_Tokens {
 
 		$to_replace   = $pieces[2];
 		$package_data = Automator()->db->token->get( 'package_data', $replace_args );
-		$package      = maybe_unserialize( $package_data );
+		$package      = automator_safe_unserialize( $package_data );
 
 		switch ( $to_replace ) {
 			case 'FILE_TITLE';

@@ -445,6 +445,20 @@ return array(
 			),
 		),
 	),
+	'BEAVER_BUILDER' => array(
+		'triggers' => array(
+			'BEAVER_BUILDER_BB_CONTACT_FORM_SUBMITTED' => array(
+				'code'  => 'BB_CONTACT_FORM_SUBMITTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Beaver_Builder\\Bb_Contact_Form_Submitted',
+				'file'  => $baseDir . '/src/integrations/beaver-builder/triggers/bb-contact-form-submitted.php',
+			),
+			'BEAVER_BUILDER_BB_SUBSCRIBE_FORM_SUBMITTED' => array(
+				'code'  => 'BB_SUBSCRIBE_FORM_SUBMITTED',
+				'class' => 'Uncanny_Automator\\Integrations\\Beaver_Builder\\Bb_Subscribe_Form_Submitted',
+				'file'  => $baseDir . '/src/integrations/beaver-builder/triggers/bb-subscribe-form-submitted.php',
+			),
+		),
+	),
 	'BITLY' => array(
 		'actions' => array(
 			'BITLY_BITLY_SHORTEN_URL_CODE' => array(
@@ -529,6 +543,11 @@ return array(
 				'code'  => 'BREVO_ADD_CONTACT_TO_LIST_CODE',
 				'class' => 'Uncanny_Automator\\Integrations\\Brevo\\BREVO_ADD_CONTACT_TO_LIST',
 				'file'  => $baseDir . '/src/integrations/brevo/actions/brevo-add-contact-to-list.php',
+			),
+			'BREVO_BREVO_ADD_UPDATE_CONTACT_CODE' => array(
+				'code'  => 'BREVO_ADD_UPDATE_CONTACT_CODE',
+				'class' => 'Uncanny_Automator\\Integrations\\Brevo\\BREVO_ADD_UPDATE_CONTACT',
+				'file'  => $baseDir . '/src/integrations/brevo/actions/brevo-add-update-contact.php',
 			),
 			'BREVO_BREVO_CREATE_OR_UPDATE_CONTACT_CODE' => array(
 				'code'  => 'BREVO_CREATE_OR_UPDATE_CONTACT_CODE',
@@ -771,6 +790,11 @@ return array(
 	),
 	'CONSTANT_CONTACT' => array(
 		'actions' => array(
+			'CONSTANT_CONTACT_ADD_UPDATE_CONTACT' => array(
+				'code'  => 'ADD_UPDATE_CONTACT',
+				'class' => 'Uncanny_Automator\\Integrations\\Constant_Contact\\CREATE',
+				'file'  => $baseDir . '/src/integrations/constant-contact/actions/create.php',
+			),
 			'CONSTANT_CONTACT_CONTACT_DELETE' => array(
 				'code'  => 'CONTACT_DELETE',
 				'class' => 'Uncanny_Automator\\Integrations\\Constant_Contact\\CONTACT_DELETE',
@@ -893,24 +917,14 @@ return array(
 	),
 	'DIVI' => array(
 		'triggers' => array(
-			'DIVI_ANONDIVISUBMITFORM' => array(
-				'code'  => 'ANONDIVISUBMITFORM',
-				'class' => 'Uncanny_Automator\\ANON_DIVI_SUBMITFORM_DEP',
-				'file'  => $baseDir . '/src/integrations/divi/triggers/anon-divi-submitform-dep.php',
-			),
 			'DIVI_ANON_DIVI_SUBMIT_FORM' => array(
 				'code'  => 'ANON_DIVI_SUBMIT_FORM',
-				'class' => 'Uncanny_Automator\\ANON_DIVI_SUBMITFORM',
+				'class' => 'Uncanny_Automator\\Integrations\\Divi\\ANON_DIVI_SUBMIT_FORM',
 				'file'  => $baseDir . '/src/integrations/divi/triggers/anon-divi-submitform.php',
-			),
-			'DIVI_DIVISUBMITFORM' => array(
-				'code'  => 'DIVISUBMITFORM',
-				'class' => 'Uncanny_Automator\\DIVI_SUBMITFORM_DEP',
-				'file'  => $baseDir . '/src/integrations/divi/triggers/divi-submitform-dep.php',
 			),
 			'DIVI_DIVI_SUBMIT_FORM' => array(
 				'code'  => 'DIVI_SUBMIT_FORM',
-				'class' => 'Uncanny_Automator\\DIVI_SUBMITFORM',
+				'class' => 'Uncanny_Automator\\Integrations\\Divi\\DIVI_SUBMIT_FORM',
 				'file'  => $baseDir . '/src/integrations/divi/triggers/divi-submitform.php',
 			),
 		),
@@ -1769,12 +1783,36 @@ return array(
 			),
 		),
 	),
+	'GTM' => array(
+		'actions' => array(
+			'GTM_GTMCREATEMEETING' => array(
+				'code'  => 'GTMCREATEMEETING',
+				'class' => 'Uncanny_Automator\\Integrations\\Gotomeeting\\GTM_CREATEMEETING',
+				'file'  => $baseDir . '/src/integrations/gotomeeting/actions/gtm-createmeeting.php',
+			),
+			'GTM_GTMDELETEMEETING' => array(
+				'code'  => 'GTMDELETEMEETING',
+				'class' => 'Uncanny_Automator\\Integrations\\Gotomeeting\\GTM_DELETEMEETING',
+				'file'  => $baseDir . '/src/integrations/gotomeeting/actions/gtm-deletemeeting.php',
+			),
+		),
+	),
 	'GTT' => array(
 		'actions' => array(
+			'GTT_GTTREGISTERATTENDEE' => array(
+				'code'  => 'GTTREGISTERATTENDEE',
+				'class' => 'Uncanny_Automator\\Integrations\\Gototraining\\GTT_REGISTERATTENDEE',
+				'file'  => $baseDir . '/src/integrations/gototraining/actions/gtt-registerattendee.php',
+			),
 			'GTT_GTTREGISTERUSER' => array(
 				'code'  => 'GTTREGISTERUSER',
 				'class' => 'Uncanny_Automator\\Integrations\\Gototraining\\GTT_REGISTERUSER',
 				'file'  => $baseDir . '/src/integrations/gototraining/actions/gtt-registeruser.php',
+			),
+			'GTT_GTTUNREGISTERATTENDEE' => array(
+				'code'  => 'GTTUNREGISTERATTENDEE',
+				'class' => 'Uncanny_Automator\\Integrations\\Gototraining\\GTT_UNREGISTERATTENDEE',
+				'file'  => $baseDir . '/src/integrations/gototraining/actions/gtt-unregisterattendee.php',
 			),
 			'GTT_GTTUNREGISTERUSER' => array(
 				'code'  => 'GTTUNREGISTERUSER',
@@ -1893,10 +1931,20 @@ return array(
 				'class' => 'Uncanny_Automator\\Integrations\\HubSpot\\HUBSPOT_ADDCONTACTTOLIST',
 				'file'  => $baseDir . '/src/integrations/hubspot/actions/hubspot-addcontacttolist.php',
 			),
+			'HUBSPOT_HUBSPOTADDUSER' => array(
+				'code'  => 'HUBSPOTADDUSER',
+				'class' => 'Uncanny_Automator\\Integrations\\HubSpot\\HUBSPOT_ADDUSER',
+				'file'  => $baseDir . '/src/integrations/hubspot/actions/hubspot-adduser.php',
+			),
 			'HUBSPOT_HUBSPOTADDUSERTOLIST' => array(
 				'code'  => 'HUBSPOTADDUSERTOLIST',
 				'class' => 'Uncanny_Automator\\Integrations\\HubSpot\\HUBSPOT_ADDUSERTOLIST',
 				'file'  => $baseDir . '/src/integrations/hubspot/actions/hubspot-addusertolist.php',
+			),
+			'HUBSPOT_HUBSPOTCREATECONTACT' => array(
+				'code'  => 'HUBSPOTCREATECONTACT',
+				'class' => 'Uncanny_Automator\\Integrations\\HubSpot\\HUBSPOT_CREATECONTACT',
+				'file'  => $baseDir . '/src/integrations/hubspot/actions/hubspot-createcontact.php',
 			),
 			'HUBSPOT_HUBSPOTREMOVECONTACTFROMLIST' => array(
 				'code'  => 'HUBSPOTREMOVECONTACTFROMLIST',
@@ -3043,6 +3091,30 @@ return array(
 			),
 		),
 	),
+	'REDIRECTION' => array(
+		'triggers' => array(
+			'REDIRECTION_REDIRECTION_404_LOGGED' => array(
+				'code'  => 'REDIRECTION_404_LOGGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Redirection\\Redirection_404_Logged',
+				'file'  => $baseDir . '/src/integrations/redirection/triggers/redirection-404-logged.php',
+			),
+			'REDIRECTION_REDIRECTION_MONITOR_CREATED' => array(
+				'code'  => 'REDIRECTION_MONITOR_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Redirection\\Redirection_Monitor_Created',
+				'file'  => $baseDir . '/src/integrations/redirection/triggers/redirection-monitor-created.php',
+			),
+			'REDIRECTION_REDIRECTION_REDIRECT_DELETED' => array(
+				'code'  => 'REDIRECTION_REDIRECT_DELETED',
+				'class' => 'Uncanny_Automator\\Integrations\\Redirection\\Redirection_Redirect_Deleted',
+				'file'  => $baseDir . '/src/integrations/redirection/triggers/redirection-redirect-deleted.php',
+			),
+			'REDIRECTION_REDIRECTION_REDIRECT_MATCHED' => array(
+				'code'  => 'REDIRECTION_REDIRECT_MATCHED',
+				'class' => 'Uncanny_Automator\\Integrations\\Redirection\\Redirection_Redirect_Matched',
+				'file'  => $baseDir . '/src/integrations/redirection/triggers/redirection-redirect-matched.php',
+			),
+		),
+	),
 	'SAVETO_WISHLIST' => array(
 		'triggers' => array(
 			'SAVETO_WISHLIST_GUEST_SYNCED' => array(
@@ -4178,6 +4250,62 @@ return array(
 			),
 		),
 	),
+	'WORDFENCE' => array(
+		'triggers' => array(
+			'WORDFENCE_WORDFENCE_2FA_ACTIVATED' => array(
+				'code'  => 'WORDFENCE_2FA_ACTIVATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_2fa_Activated',
+				'file'  => $baseDir . '/src/integrations/wordfence/triggers/wordfence-2fa-activated.php',
+			),
+			'WORDFENCE_WORDFENCE_2FA_DEACTIVATED' => array(
+				'code'  => 'WORDFENCE_2FA_DEACTIVATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_2fa_Deactivated',
+				'file'  => $baseDir . '/src/integrations/wordfence/triggers/wordfence-2fa-deactivated.php',
+			),
+			'WORDFENCE_WORDFENCE_BLOCK_DELETED' => array(
+				'code'  => 'WORDFENCE_BLOCK_DELETED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Block_Deleted',
+				'file'  => $baseDir . '/src/integrations/wordfence/triggers/wordfence-block-deleted.php',
+			),
+			'WORDFENCE_WORDFENCE_BREACHED_PASSWORD_LOGIN' => array(
+				'code'  => 'WORDFENCE_BREACHED_PASSWORD_LOGIN',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Breached_Password_Login',
+				'file'  => $baseDir . '/src/integrations/wordfence/triggers/wordfence-breached-password-login.php',
+			),
+			'WORDFENCE_WORDFENCE_IP_BLOCKED_THROTTLED' => array(
+				'code'  => 'WORDFENCE_IP_BLOCKED_THROTTLED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Ip_Blocked_Throttled',
+				'file'  => $baseDir . '/src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php',
+			),
+			'WORDFENCE_WORDFENCE_IP_LOCKED_OUT' => array(
+				'code'  => 'WORDFENCE_IP_LOCKED_OUT',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Ip_Locked_Out',
+				'file'  => $baseDir . '/src/integrations/wordfence/triggers/wordfence-ip-locked-out.php',
+			),
+			'WORDFENCE_WORDFENCE_USER_LOGS_IN' => array(
+				'code'  => 'WORDFENCE_USER_LOGS_IN',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_User_Logs_In',
+				'file'  => $baseDir . '/src/integrations/wordfence/triggers/wordfence-user-logs-in.php',
+			),
+		),
+		'actions' => array(
+			'WORDFENCE_WORDFENCE_BLOCK_IP' => array(
+				'code'  => 'WORDFENCE_BLOCK_IP',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Block_Ip',
+				'file'  => $baseDir . '/src/integrations/wordfence/actions/wordfence-block-ip.php',
+			),
+			'WORDFENCE_WORDFENCE_UNBLOCK_IP' => array(
+				'code'  => 'WORDFENCE_UNBLOCK_IP',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Unblock_Ip',
+				'file'  => $baseDir . '/src/integrations/wordfence/actions/wordfence-unblock-ip.php',
+			),
+			'WORDFENCE_WORDFENCE_UNLOCK_IP' => array(
+				'code'  => 'WORDFENCE_UNLOCK_IP',
+				'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Unlock_Ip',
+				'file'  => $baseDir . '/src/integrations/wordfence/actions/wordfence-unlock-ip.php',
+			),
+		),
+	),
 	'WORDPRESS_SEO' => array(
 		'triggers' => array(
 			'WORDPRESS_SEO_YOAST_SEO_DATA_UPDATED' => array(
@@ -4751,6 +4879,35 @@ return array(
 			),
 		),
 	),
+	'WP_ACTIVITY_LOG' => array(
+		'triggers' => array(
+			'WP_ACTIVITY_LOG_WP_ACTIVITY_LOG_EVENT_LOGGED' => array(
+				'code'  => 'WP_ACTIVITY_LOG_EVENT_LOGGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Event_Logged',
+				'file'  => $baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-event-logged.php',
+			),
+			'WP_ACTIVITY_LOG_WP_ACTIVITY_LOG_EVENT_OBJECT' => array(
+				'code'  => 'WP_ACTIVITY_LOG_EVENT_OBJECT',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Event_Object',
+				'file'  => $baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-event-object.php',
+			),
+			'WP_ACTIVITY_LOG_WP_ACTIVITY_LOG_EVENT_SEVERITY' => array(
+				'code'  => 'WP_ACTIVITY_LOG_EVENT_SEVERITY',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Event_Severity',
+				'file'  => $baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-event-severity.php',
+			),
+			'WP_ACTIVITY_LOG_WP_ACTIVITY_LOG_EVENT_TYPE' => array(
+				'code'  => 'WP_ACTIVITY_LOG_EVENT_TYPE',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Event_Type',
+				'file'  => $baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-event-type.php',
+			),
+			'WP_ACTIVITY_LOG_WP_ACTIVITY_LOG_FAILED_LOGIN' => array(
+				'code'  => 'WP_ACTIVITY_LOG_FAILED_LOGIN',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Failed_Login',
+				'file'  => $baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-failed-login.php',
+			),
+		),
+	),
 	'WP_EVENT_MANAGER' => array(
 		'triggers' => array(
 			'WP_EVENT_MANAGER_WP_EVENT_MANAGER_ATTENDEE_REGISTERED' => array(
@@ -4764,6 +4921,27 @@ return array(
 				'code'  => 'WP_EVENT_MANAGER_REGISTER_ATTENDEE',
 				'class' => 'Uncanny_Automator\\Integrations\\Wp_Event_Manager\\Wp_Event_Manager_Register_Attendee',
 				'file'  => $baseDir . '/src/integrations/wp-event-manager/actions/wp-event-manager-register-attendee.php',
+			),
+		),
+	),
+	'WP_FASTEST_CACHE' => array(
+		'triggers' => array(
+			'WP_FASTEST_CACHE_WPFC_ALL_CACHE_CLEARED' => array(
+				'code'  => 'WPFC_ALL_CACHE_CLEARED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Fastest_Cache\\Wpfc_All_Cache_Cleared',
+				'file'  => $baseDir . '/src/integrations/wp-fastest-cache/triggers/wp-fastest-cache-all-cache-cleared.php',
+			),
+		),
+		'actions' => array(
+			'WP_FASTEST_CACHE_WPFC_PURGE_ALL_CACHE' => array(
+				'code'  => 'WPFC_PURGE_ALL_CACHE',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Fastest_Cache\\Wpfc_Purge_All_Cache',
+				'file'  => $baseDir . '/src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-all-cache.php',
+			),
+			'WP_FASTEST_CACHE_WPFC_PURGE_POST_CACHE' => array(
+				'code'  => 'WPFC_PURGE_POST_CACHE',
+				'class' => 'Uncanny_Automator\\Integrations\\Wp_Fastest_Cache\\Wpfc_Purge_Post_Cache',
+				'file'  => $baseDir . '/src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php',
 			),
 		),
 	),

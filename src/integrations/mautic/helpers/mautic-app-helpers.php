@@ -198,6 +198,11 @@ class Mautic_App_Helpers extends App_Helpers {
 	 */
 	public function tags_fetch() {
 
+		// Capability + nonce guard: admin recipe-builder fetch using
+		// admin-configured credentials. Bails on missing nonce or
+		// insufficient capability (manage_options).
+		Automator()->utilities->verify_nonce();
+
 		$option_key = $this->get_option_key( 'tags' );
 		$cached     = $this->get_app_option( $option_key );
 
@@ -248,6 +253,11 @@ class Mautic_App_Helpers extends App_Helpers {
 	 * @return void Outputs JSON and dies.
 	 */
 	public function segments_fetch() {
+
+		// Capability + nonce guard: admin recipe-builder fetch using
+		// admin-configured credentials. Bails on missing nonce or
+		// insufficient capability (manage_options).
+		Automator()->utilities->verify_nonce();
 
 		$option_key = $this->get_option_key( 'segments' );
 		$cached     = $this->get_app_option( $option_key );
@@ -300,6 +310,11 @@ class Mautic_App_Helpers extends App_Helpers {
 	 * @return void Outputs JSON and dies.
 	 */
 	public function render_contact_fields() {
+
+		// Capability + nonce guard: admin recipe-builder fetch using
+		// admin-configured credentials. Bails on missing nonce or
+		// insufficient capability (manage_options).
+		Automator()->utilities->verify_nonce();
 
 		$option_key = $this->get_option_key( 'contact_fields' );
 		$cached     = $this->get_app_option( $option_key );

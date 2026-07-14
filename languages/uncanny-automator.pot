@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.3.2\n"
+"Project-Id-Version: Uncanny Automator 7.4.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-06-30T21:16:55+00:00\n"
+"POT-Creation-Date: 2026-07-14T15:33:27+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -421,7 +421,7 @@ msgid "Get credits for apps like:"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:673
+#: src/core/admin/class-admin-menu.php:670
 msgid "Facebook Pages"
 msgstr ""
 
@@ -434,22 +434,22 @@ msgid "X/Twitter"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:701
+#: src/core/admin/class-admin-menu.php:698
 msgid "Zoom"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:653
+#: src/core/admin/class-admin-menu.php:650
 msgid "Google Calendar"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:649
+#: src/core/admin/class-admin-menu.php:646
 msgid "Google Sheets"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:697
+#: src/core/admin/class-admin-menu.php:694
 msgid "Slack"
 msgstr ""
 
@@ -1345,7 +1345,7 @@ msgid "Delay"
 msgstr ""
 
 #: src/assets/build/main.js:1
-#: src/core/admin/class-admin-menu.php:584
+#: src/core/admin/class-admin-menu.php:581
 msgid "Schedule"
 msgstr ""
 
@@ -2685,19 +2685,19 @@ msgctxt "Condition group error"
 msgid "Condition group not found in recipe"
 msgstr ""
 
-#: src/app/functions/plan.php:274
+#: src/app/functions/plan.php:289
 msgctxt "Plan helper error"
 msgid "Plan ID is required."
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/functions/plan.php:285
+#: src/app/functions/plan.php:300
 #, php-format
 msgctxt "Plan helper error"
 msgid "Invalid plan ID: %s"
 msgstr ""
 
-#: src/app/functions/plan.php:325
+#: src/app/functions/plan.php:340
 msgctxt "Plan helper label"
 msgid "Unknown Plan"
 msgstr ""
@@ -3107,8 +3107,8 @@ msgctxt "Trigger store save error with message"
 msgid "Unexpected error saving trigger: %s"
 msgstr ""
 
-#: src/app/Infrastructure/License/Credit_Manager.php:68
-#: src/core/classes/class-api-server.php:621
+#: src/app/Infrastructure/License/Credit_Manager.php:81
+#: src/core/classes/class-api-server.php:624
 msgid "Not enough credits"
 msgstr ""
 
@@ -3122,30 +3122,40 @@ msgid "License is not valid"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:122
-#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:272
+#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:182
+#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:332
 #, php-format
 msgctxt "RAG service error"
 msgid "Failed to connect to the RAG service: %s"
 msgstr ""
 
-#. translators: 1: HTTP status code, 2: Response body (trimmed).
-#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:147
+#. translators: %d HTTP status code.
+#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:208
 #, php-format
 msgctxt "RAG service error"
-msgid "RAG service returned status %1$d: %2$s"
+msgid "RAG service returned status %d."
 msgstr ""
 
 #. translators: %s JSON error message.
-#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:162
+#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:224
 #, php-format
 msgctxt "RAG service error"
 msgid "Invalid JSON response from the RAG service: %s"
 msgstr ""
 
-#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:241
+#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:303
 msgctxt "RAG service error"
 msgid "Integration ID is required."
+msgstr ""
+
+#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:399
+msgctxt "RAG service error"
+msgid "Unable to encode the RAG request."
+msgstr ""
+
+#: src/app/Infrastructure/Search/Services/Rag/Rag_Search_Service.php:508
+msgctxt "RAG service error"
+msgid "Unable to authenticate the RAG request."
 msgstr ""
 
 #. translators: %s: Integration or service name.
@@ -4878,7 +4888,7 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:292
 #: src/core/admin/class-admin-menu.php:293
-#: src/core/admin/class-admin-menu.php:1834
+#: src/core/admin/class-admin-menu.php:1828
 #: src/core/views/admin-integrations/archive/search.php:20
 msgid "All integrations"
 msgstr ""
@@ -4892,534 +4902,534 @@ msgstr ""
 msgid "Legacy settings"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:420
+#: src/core/admin/class-admin-menu.php:417
 #: src/core/views/admin-dashboard.php:103
 msgid "Guest"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:462
+#: src/core/admin/class-admin-menu.php:459
 msgid "Getting started"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:465
+#: src/core/admin/class-admin-menu.php:462
 msgid "What is Uncanny Automator?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:469
+#: src/core/admin/class-admin-menu.php:466
 msgid "Installing Uncanny Automator"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:473
+#: src/core/admin/class-admin-menu.php:470
 msgid "Creating a Recipe"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:477
+#: src/core/admin/class-admin-menu.php:474
 msgid "Recipes for Everyone"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:481
+#: src/core/admin/class-admin-menu.php:478
 msgid "Managing Triggers"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:485
+#: src/core/admin/class-admin-menu.php:482
 msgid "Managing Actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:489
+#: src/core/admin/class-admin-menu.php:486
 msgid "Managing Tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:493
+#: src/core/admin/class-admin-menu.php:490
 msgid "Scheduled Actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:497
+#: src/core/admin/class-admin-menu.php:494
 msgid "Action filters / conditions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:501
+#: src/core/admin/class-admin-menu.php:498
 msgid "What are App Credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:505
+#: src/core/admin/class-admin-menu.php:502
 msgid "License Keys"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:509
+#: src/core/admin/class-admin-menu.php:506
 msgid "Working with Redirects"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:515
+#: src/core/admin/class-admin-menu.php:512
 msgid "Key resources"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:518
+#: src/core/admin/class-admin-menu.php:515
 msgid "Uncanny Automator Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:522
+#: src/core/admin/class-admin-menu.php:519
 msgid "Uncanny Automator Pro Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:526
+#: src/core/admin/class-admin-menu.php:523
 msgid "Having trouble? Read this"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:530
+#: src/core/admin/class-admin-menu.php:527
 msgid "Using Automator Logs"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:534
+#: src/core/admin/class-admin-menu.php:531
 msgid "Developer Resources"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:538
+#: src/core/admin/class-admin-menu.php:535
 msgid "Data Privacy and GDPR"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:542
+#: src/core/admin/class-admin-menu.php:539
 msgid "Usage Tracking"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:546
+#: src/core/admin/class-admin-menu.php:543
 msgid "Connecting your site"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:550
+#: src/core/admin/class-admin-menu.php:547
 #: src/core/views/html-admin-status.php:454
 msgid "PHP version"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:556
+#: src/core/admin/class-admin-menu.php:553
 msgid "Webhooks"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:559
+#: src/core/admin/class-admin-menu.php:556
 msgid "Incoming Webhook Triggers"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:563
+#: src/core/admin/class-admin-menu.php:560
 msgid "Webhook Actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:567
+#: src/core/admin/class-admin-menu.php:564
 msgid "Sending a JSON Array"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:571
+#: src/core/admin/class-admin-menu.php:568
 msgid "Sending a JSON Object"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:577
+#: src/core/admin/class-admin-menu.php:574
 msgid "Special triggers"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:580
+#: src/core/admin/class-admin-menu.php:577
 msgid "Magic Buttons & Magic Links"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:588
+#: src/core/admin/class-admin-menu.php:585
 msgid "Google Sheets™ Webhook Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:592
+#: src/core/admin/class-admin-menu.php:589
 msgid "Run Now"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:596
+#: src/core/admin/class-admin-menu.php:593
 msgid "Advanced Custom Fields"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:600
-#: src/core/admin/class-admin-menu.php:669
+#: src/core/admin/class-admin-menu.php:597
+#: src/core/admin/class-admin-menu.php:666
 msgid "ActiveCampaign"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:604
-#: src/core/admin/class-admin-menu.php:737
+#: src/core/admin/class-admin-menu.php:601
+#: src/core/admin/class-admin-menu.php:734
 msgid "IFTTT"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:608
+#: src/core/admin/class-admin-menu.php:605
 msgid "OptinMonster Triggers"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:612
-#: src/core/admin/class-admin-menu.php:665
+#: src/core/admin/class-admin-menu.php:609
+#: src/core/admin/class-admin-menu.php:662
 msgid "Mailchimp"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:616
-#: src/core/admin/class-admin-menu.php:685
+#: src/core/admin/class-admin-menu.php:613
+#: src/core/admin/class-admin-menu.php:682
 msgid "WhatsApp"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:620
+#: src/core/admin/class-admin-menu.php:617
 msgid "Help Scout"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:624
-#: src/core/admin/class-admin-menu.php:769
+#: src/core/admin/class-admin-menu.php:621
+#: src/core/admin/class-admin-menu.php:766
 msgid "Telegram"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:628
-#: src/core/admin/class-admin-menu.php:948
+#: src/core/admin/class-admin-menu.php:625
+#: src/core/admin/class-admin-menu.php:945
 msgid "WooCommerce"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:634
+#: src/core/admin/class-admin-menu.php:631
 msgid "Special actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:637
+#: src/core/admin/class-admin-menu.php:634
 msgid "Run a WordPress hook"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:641
+#: src/core/admin/class-admin-menu.php:638
 msgid "Call a custom function/method"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:645
+#: src/core/admin/class-admin-menu.php:642
 msgid "The Formatter Action"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:657
+#: src/core/admin/class-admin-menu.php:654
 msgid "OpenAI"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:661
+#: src/core/admin/class-admin-menu.php:658
 msgid "X / Twitter"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:677
+#: src/core/admin/class-admin-menu.php:674
 msgid "OptinMonster"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:681
+#: src/core/admin/class-admin-menu.php:678
 msgid "Zapier Actions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:689
+#: src/core/admin/class-admin-menu.php:686
 msgid "Integrately"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:693
+#: src/core/admin/class-admin-menu.php:690
 msgid "Popup Maker"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:705
+#: src/core/admin/class-admin-menu.php:702
 msgid "Integromat"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:709
+#: src/core/admin/class-admin-menu.php:706
 msgid "HubSpot"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:713
+#: src/core/admin/class-admin-menu.php:710
 msgid "GoToTraining"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:717
+#: src/core/admin/class-admin-menu.php:714
 msgid "GoToWebinar"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:721
+#: src/core/admin/class-admin-menu.php:718
 msgid "Twilio"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:725
+#: src/core/admin/class-admin-menu.php:722
 msgid "Instagram Business"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:729
+#: src/core/admin/class-admin-menu.php:726
 msgid "Send a certificate"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:733
+#: src/core/admin/class-admin-menu.php:730
 msgid "Uncanny Continuing Education Credits"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:741
+#: src/core/admin/class-admin-menu.php:738
 msgid "Create WooCommerce orders"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:745
+#: src/core/admin/class-admin-menu.php:742
 msgid "LinkedIn Pages"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:749
+#: src/core/admin/class-admin-menu.php:746
 msgid "Airtable"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:753
+#: src/core/admin/class-admin-menu.php:750
 msgid "Make"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:757
+#: src/core/admin/class-admin-menu.php:754
 msgid "MailerLite"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:761
+#: src/core/admin/class-admin-menu.php:758
 msgid "Drip"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:765
+#: src/core/admin/class-admin-menu.php:762
 msgid "Microsoft Teams (Beta)"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:773
+#: src/core/admin/class-admin-menu.php:770
 msgid "Zoho Campaigns"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:777
+#: src/core/admin/class-admin-menu.php:774
 msgid "Facebook Groups (Deprecated)"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:783
+#: src/core/admin/class-admin-menu.php:780
 msgid "Special tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:786
+#: src/core/admin/class-admin-menu.php:783
 msgid "User meta tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:790
+#: src/core/admin/class-admin-menu.php:787
 msgid "Post meta tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:794
+#: src/core/admin/class-admin-menu.php:791
 msgid "Calculations (math equations)"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:800
+#: src/core/admin/class-admin-menu.php:797
 msgid "Custom User Fields Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:803
+#: src/core/admin/class-admin-menu.php:800
 msgid "Installing the Custom User Fields Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:807
+#: src/core/admin/class-admin-menu.php:804
 msgid "Managing Custom User Fields"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:811
+#: src/core/admin/class-admin-menu.php:808
 msgid "Updating Custom User Field Data"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:815
+#: src/core/admin/class-admin-menu.php:812
 msgid "Displaying Custom User Fields"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:819
+#: src/core/admin/class-admin-menu.php:816
 msgid "Uncanny Automator Custom User Fields Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:825
+#: src/core/admin/class-admin-menu.php:822
 msgid "Restrict Content Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:828
+#: src/core/admin/class-admin-menu.php:825
 msgid "Installing the Restrict Content Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:832
+#: src/core/admin/class-admin-menu.php:829
 msgid "Managing Access Levels"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:836
+#: src/core/admin/class-admin-menu.php:833
 msgid "Restrict Content Shortcodes"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:840
+#: src/core/admin/class-admin-menu.php:837
 msgid "Restrict Content for Blocks"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:844
+#: src/core/admin/class-admin-menu.php:841
 msgid "Restrict WordPress Pages & Posts"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:848
+#: src/core/admin/class-admin-menu.php:845
 msgid "Restrict Content Integration with Automator"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:852
+#: src/core/admin/class-admin-menu.php:849
 msgid "Uncanny Automator Restrict Content Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:858
+#: src/core/admin/class-admin-menu.php:855
 msgid "User Lists Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:861
+#: src/core/admin/class-admin-menu.php:858
 msgid "Installing the User Lists Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:865
+#: src/core/admin/class-admin-menu.php:862
 msgid "Managing user lists"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:869
+#: src/core/admin/class-admin-menu.php:866
 msgid "Managing user list subscriptions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:873
+#: src/core/admin/class-admin-menu.php:870
 msgid "User Lists Integration with Automator"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:877
+#: src/core/admin/class-admin-menu.php:874
 msgid "Sending bulk emails with user lists"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:881
+#: src/core/admin/class-admin-menu.php:878
 msgid "The Unsubscribed list and managing subscriptions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:885
+#: src/core/admin/class-admin-menu.php:882
 msgid "Uncanny Automator User Lists Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:891
+#: src/core/admin/class-admin-menu.php:888
 msgid "Advanced Topics"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:894
+#: src/core/admin/class-admin-menu.php:891
 msgid "User Loops"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:898
+#: src/core/admin/class-admin-menu.php:895
 msgid "Post Loops"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:902
+#: src/core/admin/class-admin-menu.php:899
 msgid "Custom Scheduling"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:908
+#: src/core/admin/class-admin-menu.php:905
 msgid "Registering users"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:911
+#: src/core/admin/class-admin-menu.php:908
 msgid "Registration form with Contact Form 7"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:915
+#: src/core/admin/class-admin-menu.php:912
 msgid "Registration form with Caldera Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:919
+#: src/core/admin/class-admin-menu.php:916
 msgid "Registration form with Ninja Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:923
+#: src/core/admin/class-admin-menu.php:920
 msgid "Registration form with Gravity Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:927
+#: src/core/admin/class-admin-menu.php:924
 msgid "Registration form with Formidable Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:931
+#: src/core/admin/class-admin-menu.php:928
 msgid "Registration form with WPForms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:937
+#: src/core/admin/class-admin-menu.php:934
 msgid "Integrations FAQ"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:940
+#: src/core/admin/class-admin-menu.php:937
 msgid "Contact Form 7"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:944
+#: src/core/admin/class-admin-menu.php:941
 msgid "Gravity Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:957
+#: src/core/admin/class-admin-menu.php:954
 msgctxt "Dashboard FAQ"
 msgid "What are app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:958
+#: src/core/admin/class-admin-menu.php:955
 msgctxt "Dashboard FAQ"
 msgid "Some app integrations connect to other services using an API. Automator's app credit system allows free plugin users to try this out. Passing a record to one of these integrations uses one app credit."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:961
+#: src/core/admin/class-admin-menu.php:958
 msgctxt "Dashboard FAQ"
 msgid "Do I need app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:962
+#: src/core/admin/class-admin-menu.php:959
 msgctxt "Dashboard FAQ"
 msgid "App credits are only needed for app integrations that pass through an API. Everything else is unrestricted (and Pro users get unlimited app credits)."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:965
+#: src/core/admin/class-admin-menu.php:962
 msgctxt "Dashboard FAQ"
 msgid "Can I get more app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:966
+#: src/core/admin/class-admin-menu.php:963
 msgctxt "Dashboard FAQ"
 msgid "If you use more than 250 app credits, you must either purchase the Pro version or disable your actions that use credits."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:969
+#: src/core/admin/class-admin-menu.php:966
 msgctxt "Dashboard FAQ"
 msgid "What is Uncanny Agent?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:970
+#: src/core/admin/class-admin-menu.php:967
 msgctxt "Dashboard FAQ"
 msgid "Uncanny Agent is a highly capable AI agent for your WordPress site. It can build, update and troubleshoot recipes, provide business insights, and complete tasks for you."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:973
+#: src/core/admin/class-admin-menu.php:970
 msgctxt "Dashboard FAQ"
 msgid "What is Uncanny Agent usage?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:974
+#: src/core/admin/class-admin-menu.php:971
 msgctxt "Dashboard FAQ"
 msgid "Capable AI tools like Uncanny Agent require significant resources to operate. (Resources are consumed in a datacenter; Uncanny Agent does not use your server resources.) Uncanny Agent usage is a measurement of how much you can use Uncanny Agent on your AI + Automation plan and via other purchases or allocations of Uncanny Agent usage."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:977
+#: src/core/admin/class-admin-menu.php:974
 msgctxt "Dashboard FAQ"
 msgid "How can I get more Uncanny Agent usage?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:978
+#: src/core/admin/class-admin-menu.php:975
 msgctxt "Dashboard FAQ"
 msgid "The most cost-effective method of getting additional usage of Uncanny Agent is by upgrading your plan. Higher plan tiers offer discounts on Uncanny Agent additional usage packs. Visit the usage page in your dashboard for details."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1063
+#: src/core/admin/class-admin-menu.php:1060
 #: src/core/includes/recipe-logs-view.php:13
 msgid "Recipe log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1066
+#: src/core/admin/class-admin-menu.php:1063
 #: src/core/includes/recipe-logs-view.php:14
 msgid "Trigger log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1069
+#: src/core/admin/class-admin-menu.php:1066
 #: src/core/includes/recipe-logs-view.php:15
 msgid "Action log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1716
+#: src/core/admin/class-admin-menu.php:1710
 msgid "Installed integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1717
+#: src/core/admin/class-admin-menu.php:1711
 msgid "Ready-to-use integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1835
+#: src/core/admin/class-admin-menu.php:1829
 msgid "Put your WordPress site on autopilot"
 msgstr ""
 
@@ -5428,7 +5438,7 @@ msgstr ""
 msgid "Recipe templates"
 msgstr ""
 
-#: src/core/admin/class-automator-review.php:317
+#: src/core/admin/class-automator-review.php:341
 msgid "Information is missing."
 msgstr ""
 
@@ -7826,35 +7836,35 @@ msgid "Application Exception: %s"
 msgstr ""
 
 #. translators: %s: Error message
-#: src/core/services/loopable/data-integrations/json-to-array.php:60
+#: src/core/services/loopable/data-integrations/json-to-array.php:61
 #, php-format
 msgid "Error fetching the JSON from the URL: %s"
 msgstr ""
 
 #. translators: %d: HTTP status code
-#: src/core/services/loopable/data-integrations/json-to-array.php:73
+#: src/core/services/loopable/data-integrations/json-to-array.php:74
 #, php-format
 msgid "HTTP error: Received status code %d while fetching the JSON from the URL."
 msgstr ""
 
-#: src/core/services/loopable/data-integrations/json-to-array.php:95
+#: src/core/services/loopable/data-integrations/json-to-array.php:96
 msgid "Input must be a valid URL, file path, or JSON string."
 msgstr ""
 
 #. translators: %s: Error exception message
-#: src/core/services/loopable/data-integrations/json-to-array.php:119
+#: src/core/services/loopable/data-integrations/json-to-array.php:120
 #, php-format
 msgid "Invalid JSON data: %s"
 msgstr ""
 
 #. translators: %s: Error message
-#: src/core/services/loopable/data-integrations/xml-to-json-converter.php:68
+#: src/core/services/loopable/data-integrations/xml-to-json-converter.php:69
 #, php-format
 msgid "Failed to fetch the XML from the provided URL. %s"
 msgstr ""
 
 #. translators: %s: URL
-#: src/core/services/loopable/data-integrations/xml-to-json-converter.php:79
+#: src/core/services/loopable/data-integrations/xml-to-json-converter.php:80
 #, php-format
 msgid "No content found in the provided URL: %s"
 msgstr ""
@@ -9761,6 +9771,14 @@ msgstr ""
 #: src/core/views/tracking-banner.php:47
 msgctxt "Reviews banner"
 msgid "No thanks"
+msgstr ""
+
+#: src/global-functions.php:1341
+msgid "The URL resolves to a private or reserved IP address and cannot be used."
+msgstr ""
+
+#: src/global-functions.php:1370
+msgid "The URL exceeded the maximum number of redirects allowed."
 msgstr ""
 
 #. translators: %1$s is an email address token.
@@ -12834,6 +12852,181 @@ msgstr ""
 msgid "A user creates a topic in {{a forum}}"
 msgstr ""
 
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:63
+msgctxt "Beaver Builder"
+msgid "Any contact form"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:81
+msgctxt "Beaver Builder"
+msgid "Any subscribe form"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:113
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:230
+#: src/integrations/beaver-builder/triggers/bb-subscribe-form-submitted.php:59
+msgctxt "Beaver Builder"
+msgid "Subscribe form"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:114
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:291
+#: src/integrations/beaver-builder/triggers/bb-contact-form-submitted.php:60
+msgctxt "Beaver Builder"
+msgid "Contact form"
+msgstr ""
+
+#. translators: 1: Form label 2: Page title
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:147
+#, php-format
+msgctxt "Beaver Builder"
+msgid "%1$s (%2$s)"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:194
+msgctxt "Beaver Builder"
+msgid "Subscribe form name"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:195
+msgctxt "Beaver Builder"
+msgid "Subscribe form ID"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:196
+msgctxt "Beaver Builder"
+msgid "Subscriber email"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:197
+msgctxt "Beaver Builder"
+msgid "Subscriber name"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:198
+msgctxt "Beaver Builder"
+msgid "Template ID"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:199
+msgctxt "Beaver Builder"
+msgid "Terms accepted"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:200
+msgctxt "Beaver Builder"
+msgid "Email service response"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:235
+msgctxt "Beaver Builder"
+msgid "Yes"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:235
+msgctxt "Beaver Builder"
+msgid "No"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:250
+msgctxt "Beaver Builder"
+msgid "Contact form name"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:251
+msgctxt "Beaver Builder"
+msgid "Contact form ID"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:252
+msgctxt "Beaver Builder"
+msgid "Sender name"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:253
+msgctxt "Beaver Builder"
+msgid "Sender email"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:254
+msgctxt "Beaver Builder"
+msgid "Sender phone"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:255
+msgctxt "Beaver Builder"
+msgid "Subject"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:256
+msgctxt "Beaver Builder"
+msgid "Message"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:257
+msgctxt "Beaver Builder"
+msgid "Email body"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:258
+msgctxt "Beaver Builder"
+msgid "Recipient email"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:259
+msgctxt "Beaver Builder"
+msgid "Send result"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:300
+msgctxt "Beaver Builder"
+msgid "Sent"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:300
+msgctxt "Beaver Builder"
+msgid "Failed"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:313
+msgctxt "Beaver Builder"
+msgid "Page ID"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:314
+msgctxt "Beaver Builder"
+msgid "Page title"
+msgstr ""
+
+#: src/integrations/beaver-builder/helpers/beaver-builder-helpers.php:315
+msgctxt "Beaver Builder"
+msgid "Page URL"
+msgstr ""
+
+#. translators: 1: Contact form
+#: src/integrations/beaver-builder/triggers/bb-contact-form-submitted.php:46
+#, php-format
+msgctxt "Beaver Builder"
+msgid "A user submits {{a contact form:%1$s}}"
+msgstr ""
+
+#: src/integrations/beaver-builder/triggers/bb-contact-form-submitted.php:50
+msgctxt "Beaver Builder"
+msgid "A user submits {{a contact form}}"
+msgstr ""
+
+#. translators: 1: Subscribe form
+#: src/integrations/beaver-builder/triggers/bb-subscribe-form-submitted.php:45
+#, php-format
+msgctxt "Beaver Builder"
+msgid "A user submits {{a subscribe form:%1$s}}"
+msgstr ""
+
+#: src/integrations/beaver-builder/triggers/bb-subscribe-form-submitted.php:49
+msgctxt "Beaver Builder"
+msgid "A user submits {{a subscribe form}}"
+msgstr ""
+
 #. translators: 1: Long URL
 #: src/integrations/bitly/actions/bitly-shorten-url.php:31
 #, php-format
@@ -13074,17 +13267,17 @@ msgctxt "Bluesky"
 msgid "Website embed: Invalid URL provided."
 msgstr ""
 
-#: src/integrations/bluesky/helpers/bluesky-media.php:346
+#: src/integrations/bluesky/helpers/bluesky-media.php:350
 msgctxt "Bluesky"
 msgid "Website embed: Unable to fetch the URL. Please verify the URL is accessible."
 msgstr ""
 
-#: src/integrations/bluesky/helpers/bluesky-media.php:351
+#: src/integrations/bluesky/helpers/bluesky-media.php:355
 msgctxt "Bluesky"
 msgid "Website embed: The URL returned an empty response."
 msgstr ""
 
-#: src/integrations/bluesky/helpers/bluesky-media.php:425
+#: src/integrations/bluesky/helpers/bluesky-media.php:438
 msgctxt "Bluesky"
 msgid "Website embed: No page title or og:title meta tag found on the URL."
 msgstr ""
@@ -13190,113 +13383,177 @@ msgid "Add {{a contact}} to {{a list}}"
 msgstr ""
 
 #: src/integrations/brevo/actions/brevo-add-contact-to-list.php:56
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:65
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:68
 #: src/integrations/brevo/actions/brevo-delete-contact.php:49
 #: src/integrations/brevo/actions/brevo-remove-contact-from-list.php:55
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:65
 msgctxt "Brevo"
 msgid "Email"
 msgstr ""
 
 #: src/integrations/brevo/actions/brevo-add-contact-to-list.php:62
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:272
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:169
 #: src/integrations/brevo/actions/brevo-remove-contact-from-list.php:61
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:272
 msgctxt "Brevo"
 msgid "List"
 msgstr ""
 
 #. translators: Contact Email
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:46
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:52
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:46
 #, php-format
 msgctxt "Brevo"
 msgid "Create or update {{a contact:%1$s}}"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:47
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:53
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:47
 msgctxt "Brevo"
 msgid "Create or update {{a contact}}"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:72
+msgctxt "Brevo"
+msgid "First name"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:79
+msgctxt "Brevo"
+msgid "Last name"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:86
+msgctxt "Brevo"
+msgid "SMS"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:87
+msgctxt "Brevo"
+msgid "00 987 123 4567"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:90
+msgctxt "Brevo"
+msgid "* SMS numbers must include country code."
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:97
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:79
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:97
 msgctxt "Brevo"
 msgid "Contact attributes"
 msgstr ""
 
-#: src/integrations/brevo/actions/brevo-create-or-update-contact.php:84
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:98
 msgctxt "Brevo"
-msgid "Use [DELETE] to clear an attribute on an existing contact, or leave blank to keep its current value."
+msgid "* Date fields must follow year-month-day format yyyy-mm-dd, boolean fields must use yes, no, true, false, 1 or 0."
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:103
+msgctxt "Brevo"
+msgid "Attribute name"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:113
+msgctxt "Brevo"
+msgid "Attribute value"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:118
+msgctxt "Brevo"
+msgid "Add attribute"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:119
+msgctxt "Brevo"
+msgid "Remove attribute"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:125
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:89
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:125
 msgctxt "Brevo"
 msgid "Update existing contact"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:132
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:96
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:132
 msgctxt "Brevo"
 msgid "Double-opt-in"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:139
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:103
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:139
 msgctxt "Brevo"
 msgid "Double-opt-in template"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:144
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:108
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:144
 msgctxt "Brevo"
 msgid "Template is required when using double-opt-in"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:149
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:113
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:149
 msgctxt "Brevo"
 msgid "Double-opt-in list"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:154
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:118
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:154
 msgctxt "Brevo"
 msgid "Double-opt-in list is required when using double-opt-in"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:159
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:123
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:159
 msgctxt "Brevo"
 msgid "Double-opt-in redirect URL"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:162
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:126
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:162
 msgctxt "Brevo"
 msgid "Redirect URL is required when using double-opt-in"
 msgstr ""
 
+#. translators: %s: attribute name
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:234
+#, php-format
+msgctxt "Brevo"
+msgid "Invalid value for attribute %s"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:266
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:163
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:266
 msgctxt "Brevo"
 msgid "Template"
 msgstr ""
 
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:269
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:166
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:269
 msgctxt "Brevo"
 msgid "Redirect URL"
 msgstr ""
 
 #. translators: %s: list of missing required fields
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:277
 #: src/integrations/brevo/actions/brevo-create-or-update-contact.php:175
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:277
 #, php-format
 msgctxt "Brevo"
 msgid "%s are required fields for double-opt-in"
+msgstr ""
+
+#. translators: %s: list of invalid values
+#: src/integrations/brevo/actions/brevo-add-update-contact.php:394
+#, php-format
+msgctxt "Brevo"
+msgid "Invalid value(s) for attribute %1$s : %2$s"
+msgstr ""
+
+#: src/integrations/brevo/actions/brevo-create-or-update-contact.php:84
+msgctxt "Brevo"
+msgid "Use [DELETE] to clear an attribute on an existing contact, or leave blank to keep its current value."
 msgstr ""
 
 #. translators: Contact Email
@@ -13321,70 +13578,6 @@ msgstr ""
 #: src/integrations/brevo/actions/brevo-remove-contact-from-list.php:42
 msgctxt "Brevo"
 msgid "Remove {{a contact}} from {{a list}}"
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:72
-msgctxt "Brevo"
-msgid "First name"
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:79
-msgctxt "Brevo"
-msgid "Last name"
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:86
-msgctxt "Brevo"
-msgid "SMS"
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:87
-msgctxt "Brevo"
-msgid "00 987 123 4567"
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:90
-msgctxt "Brevo"
-msgid "* SMS numbers must include country code."
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:98
-msgctxt "Brevo"
-msgid "* Date fields must follow year-month-day format yyyy-mm-dd, boolean fields must use yes, no, true, false, 1 or 0."
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:103
-msgctxt "Brevo"
-msgid "Attribute name"
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:113
-msgctxt "Brevo"
-msgid "Attribute value"
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:118
-msgctxt "Brevo"
-msgid "Add attribute"
-msgstr ""
-
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:119
-msgctxt "Brevo"
-msgid "Remove attribute"
-msgstr ""
-
-#. translators: %s: attribute name
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:234
-#, php-format
-msgctxt "Brevo"
-msgid "Invalid value for attribute %s"
-msgstr ""
-
-#. translators: %s: list of invalid values
-#: src/integrations/brevo/deprecated/brevo-add-update-contact.php:394
-#, php-format
-msgctxt "Brevo"
-msgid "Invalid value(s) for attribute %1$s : %2$s"
 msgstr ""
 
 #: src/integrations/brevo/helpers/brevo-api-caller.php:47
@@ -13953,7 +14146,6 @@ msgstr ""
 #. translators: HTTP request method
 #: src/integrations/caldera-forms/helpers/caldera-helpers.php:60
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:59
-#: src/integrations/divi/helpers/divi-helpers.php:70
 #: src/integrations/elementor/helpers/elementor-helpers.php:56
 #: src/integrations/formidable/helpers/formidable-helpers.php:67
 #: src/integrations/forminator/helpers/forminator-helpers.php:61
@@ -13983,15 +14175,12 @@ msgstr ""
 
 #. translators: Anonymous trigger - Caldera Forms
 #. translators: Anonymous trigger - Contact Form 7
-#. translators: Logged-in trigger - Divi
 #. translators: Anonymous trigger - Formidable
 #. translators: Logged-in trigger - Forminator
 #. Translators: Trigger sentence
 #. translators: Anonymous triggers - Ninja Forms
 #: src/integrations/caldera-forms/triggers/anon-cf-subform.php:52
 #: src/integrations/contact-form7/triggers/anon-cf7-subform.php:50
-#: src/integrations/divi/triggers/anon-divi-submitform-dep.php:51
-#: src/integrations/divi/triggers/anon-divi-submitform.php:50
 #: src/integrations/formidable/triggers/anon-fi-submitform.php:48
 #: src/integrations/forminator/triggers/anon-fr-submitform.php:48
 #: src/integrations/happyforms/triggers/anon-hf-submitform.php:48
@@ -14005,14 +14194,11 @@ msgstr ""
 
 #. translators: Anonymous trigger - Caldera Forms
 #. translators: Anonymous trigger - Contact Form 7
-#. translators: Logged-in trigger - Divi
 #. translators: Anonymous trigger - Formidable
 #. translators: Logged-in trigger - Forminator
 #. translators: Anonymous triggers - Ninja Forms
 #: src/integrations/caldera-forms/triggers/anon-cf-subform.php:54
 #: src/integrations/contact-form7/triggers/anon-cf7-subform.php:52
-#: src/integrations/divi/triggers/anon-divi-submitform-dep.php:53
-#: src/integrations/divi/triggers/anon-divi-submitform.php:52
 #: src/integrations/formidable/triggers/anon-fi-submitform.php:50
 #: src/integrations/forminator/triggers/anon-fr-submitform.php:50
 #: src/integrations/happyforms/triggers/anon-hf-submitform.php:50
@@ -14037,7 +14223,6 @@ msgstr ""
 
 #. translators: Logged-in trigger - Caldera Forms
 #. translators: Logged-in trigger - Contact Form 7
-#. translators: Logged-in trigger - Divi
 #. translators: Logged-in trigger - Formidable
 #. translators: Logged-in trigger - Forminator
 #. translators: Anonymous trigger - HappyForms
@@ -14045,8 +14230,6 @@ msgstr ""
 #. translators: Logged-in trigger - Ninja Forms
 #: src/integrations/caldera-forms/triggers/cf-subform.php:49
 #: src/integrations/contact-form7/triggers/cf7-subform.php:53
-#: src/integrations/divi/triggers/divi-submitform-dep.php:54
-#: src/integrations/divi/triggers/divi-submitform.php:53
 #: src/integrations/formidable/triggers/fi-submitform.php:43
 #: src/integrations/forminator/triggers/fr-submitform.php:44
 #: src/integrations/happyforms/triggers/hf-formsubmit.php:50
@@ -15990,7 +16173,7 @@ msgstr ""
 
 #: src/integrations/constant-contact/actions/contact-list-add-to.php:56
 #: src/integrations/constant-contact/actions/create-update-contact.php:52
-#: src/integrations/constant-contact/deprecated/create.php:54
+#: src/integrations/constant-contact/actions/create.php:54
 msgctxt "Constant Contact"
 msgid "List"
 msgstr ""
@@ -16024,14 +16207,14 @@ msgstr ""
 
 #. translators: %1$s: Contact Email
 #: src/integrations/constant-contact/actions/create-update-contact.php:32
-#: src/integrations/constant-contact/deprecated/create.php:36
+#: src/integrations/constant-contact/actions/create.php:36
 #, php-format
 msgctxt "Constant Contact"
 msgid "Create or update {{a contact:%1$s}}"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:36
-#: src/integrations/constant-contact/deprecated/create.php:40
+#: src/integrations/constant-contact/actions/create.php:40
 msgctxt "Constant Contact"
 msgid "Create or update {{a contact}}"
 msgstr ""
@@ -16042,43 +16225,43 @@ msgid "Leave empty to ignore or use [DELETE] to remove from existing contact"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:63
-#: src/integrations/constant-contact/deprecated/create.php:65
+#: src/integrations/constant-contact/actions/create.php:65
 msgctxt "Constant Contact"
 msgid "First name"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:69
-#: src/integrations/constant-contact/deprecated/create.php:70
+#: src/integrations/constant-contact/actions/create.php:70
 msgctxt "Constant Contact"
 msgid "Last name"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:75
-#: src/integrations/constant-contact/deprecated/create.php:75
+#: src/integrations/constant-contact/actions/create.php:75
 msgctxt "Constant Contact"
 msgid "Job title"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:81
-#: src/integrations/constant-contact/deprecated/create.php:80
+#: src/integrations/constant-contact/actions/create.php:80
 msgctxt "Constant Contact"
 msgid "Company name"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:87
-#: src/integrations/constant-contact/deprecated/create.php:85
+#: src/integrations/constant-contact/actions/create.php:85
 msgctxt "Constant Contact"
 msgid "Phone number"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:93
-#: src/integrations/constant-contact/deprecated/create.php:90
+#: src/integrations/constant-contact/actions/create.php:90
 msgctxt "Constant Contact"
 msgid "Anniversary"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:100
-#: src/integrations/constant-contact/deprecated/create.php:96
+#: src/integrations/constant-contact/actions/create.php:96
 msgctxt "Constant Contact"
 msgid "Address"
 msgstr ""
@@ -16104,58 +16287,58 @@ msgid "Other"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:134
-#: src/integrations/constant-contact/deprecated/create.php:106
+#: src/integrations/constant-contact/actions/create.php:106
 msgctxt "Constant Contact"
 msgid "Street"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:141
-#: src/integrations/constant-contact/deprecated/create.php:110
+#: src/integrations/constant-contact/actions/create.php:110
 msgctxt "Constant Contact"
 msgid "City"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:148
-#: src/integrations/constant-contact/deprecated/create.php:114
+#: src/integrations/constant-contact/actions/create.php:114
 msgctxt "Constant Contact"
 msgid "State"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:155
-#: src/integrations/constant-contact/deprecated/create.php:118
+#: src/integrations/constant-contact/actions/create.php:118
 msgctxt "Constant Contact"
 msgid "Postal code"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:162
-#: src/integrations/constant-contact/deprecated/create.php:122
+#: src/integrations/constant-contact/actions/create.php:122
 msgctxt "Constant Contact"
 msgid "Country"
 msgstr ""
 
 #: src/integrations/constant-contact/actions/create-update-contact.php:172
-#: src/integrations/constant-contact/deprecated/create.php:140
+#: src/integrations/constant-contact/actions/create.php:140
 msgctxt "Constant Contact"
 msgid "Custom fields"
 msgstr ""
 
-#: src/integrations/constant-contact/deprecated/create.php:102
+#: src/integrations/constant-contact/actions/create.php:102
 msgctxt "Constant Contact"
 msgid "Type"
 msgstr ""
 
-#: src/integrations/constant-contact/deprecated/create.php:131
-#: src/integrations/constant-contact/deprecated/create.php:163
+#: src/integrations/constant-contact/actions/create.php:131
+#: src/integrations/constant-contact/actions/create.php:163
 msgctxt "Constant Contact"
 msgid "Value"
 msgstr ""
 
-#: src/integrations/constant-contact/deprecated/create.php:151
+#: src/integrations/constant-contact/actions/create.php:151
 msgctxt "Constant Contact"
 msgid "ID"
 msgstr ""
 
-#: src/integrations/constant-contact/deprecated/create.php:157
+#: src/integrations/constant-contact/actions/create.php:157
 msgctxt "Constant Contact"
 msgid "Field"
 msgstr ""
@@ -17557,59 +17740,72 @@ msgctxt "Discord"
 msgid "Discord ID (Snowflake)"
 msgstr ""
 
-#: src/integrations/divi/helpers/divi-helpers.php:76
-#: src/integrations/elementor/helpers/elementor-helpers.php:63
-#: src/integrations/forminator/helpers/forminator-helpers.php:68
-#: src/integrations/happyforms/helpers/happyforms-helpers.php:68
-#: src/integrations/happyforms/triggers/hf-formsubmit.php:73
-#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:70
-#: src/integrations/ultimate-member/triggers/um-userlogsin.php:67
-#: src/integrations/ultimate-member/triggers/um-userregister.php:70
-#: src/integrations/wp-user-manager/helpers/wp-user-manager-helpers.php:71
-#: src/integrations/ws-form-lite/helpers/ws-form-lite-helpers.php:39
+#: src/integrations/divi/helpers/divi-helpers-new.php:59
+#: src/integrations/divi/helpers/divi-helpers.php:73
+msgctxt "Divi"
+msgid "Form"
+msgstr ""
+
+#: src/integrations/divi/helpers/divi-helpers-new.php:157
+#: src/integrations/divi/helpers/divi-helpers.php:79
+msgctxt "Divi"
 msgid "Any form"
 msgstr ""
 
-#: src/integrations/divi/helpers/divi-helpers.php:260
-#: src/integrations/divi/helpers/divi-helpers.php:460
+#: src/integrations/divi/helpers/divi-helpers-new.php:303
+#: src/integrations/divi/helpers/divi-helpers-new.php:504
+msgctxt "Divi"
 msgid "No form title"
 msgstr ""
 
-#: src/integrations/divi/helpers/divi-helpers.php:426
-#: src/integrations/divi/helpers/divi-helpers.php:551
+#: src/integrations/divi/helpers/divi-helpers-new.php:469
+#: src/integrations/divi/helpers/divi-helpers-new.php:594
+msgctxt "Divi"
 msgid "No title"
 msgstr ""
 
-#: src/integrations/divi/tokens/divi-tokens.php:37
-msgid "Name (if available)"
-msgstr ""
-
-#: src/integrations/divi/tokens/divi-tokens.php:42
-msgid "Email address (if available)"
-msgstr ""
-
-#: src/integrations/divi/tokens/divi-tokens.php:47
-msgid "Message (if available)"
-msgstr ""
-
-#: src/integrations/divi/tokens/divi-tokens.php:116
+#: src/integrations/divi/tokens/divi-tokens-legacy.php:111
+msgctxt "Divi"
 msgid "Divi form"
 msgstr ""
 
-#. translators: Logged-in trigger - Divi
-#. translators: Logged-in trigger - Formidable
-#. translators: Logged-in trigger - Forminator
-#. translators: Anonymous trigger - HappyForms
-#. Translators: Trigger sentence
-#: src/integrations/divi/triggers/divi-submitform-dep.php:52
-#: src/integrations/divi/triggers/divi-submitform.php:51
-#: src/integrations/formidable/triggers/fi-submitform.php:41
-#: src/integrations/forminator/triggers/fr-submitform.php:42
-#: src/integrations/happyforms/triggers/hf-formsubmit.php:48
-#: src/integrations/jetformbuilder/triggers/jetfb-user-form-submit.php:61
-#: src/integrations/ws-form-lite/triggers/wsf-form-submitted.php:33
+#: src/integrations/divi/tokens/divi-tokens.php:44
+msgctxt "Divi"
+msgid "Name (if available)"
+msgstr ""
+
+#: src/integrations/divi/tokens/divi-tokens.php:49
+msgctxt "Divi"
+msgid "Email address (if available)"
+msgstr ""
+
+#: src/integrations/divi/tokens/divi-tokens.php:54
+msgctxt "Divi"
+msgid "Message (if available)"
+msgstr ""
+
+#. translators: %1$s is the form picker token name
+#: src/integrations/divi/triggers/anon-divi-submitform.php:40
 #, php-format
+msgctxt "Divi"
+msgid "{{A form:%1$s}} is submitted"
+msgstr ""
+
+#: src/integrations/divi/triggers/anon-divi-submitform.php:41
+msgctxt "Divi"
+msgid "{{A form}} is submitted"
+msgstr ""
+
+#. translators: %1$s is the form picker token name
+#: src/integrations/divi/triggers/divi-submitform.php:39
+#, php-format
+msgctxt "Divi"
 msgid "A user submits {{a form:%1$s}}"
+msgstr ""
+
+#: src/integrations/divi/triggers/divi-submitform.php:40
+msgctxt "Divi"
+msgid "A user submits {{a form}}"
 msgstr ""
 
 #: src/integrations/drip/actions/drip-add-tag.php:30
@@ -18913,6 +19109,18 @@ msgctxt "Easy Digital Downloads"
 msgid "Order URL (User)"
 msgstr ""
 
+#: src/integrations/elementor/helpers/elementor-helpers.php:63
+#: src/integrations/forminator/helpers/forminator-helpers.php:68
+#: src/integrations/happyforms/helpers/happyforms-helpers.php:68
+#: src/integrations/happyforms/triggers/hf-formsubmit.php:73
+#: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:70
+#: src/integrations/ultimate-member/triggers/um-userlogsin.php:67
+#: src/integrations/ultimate-member/triggers/um-userregister.php:70
+#: src/integrations/wp-user-manager/helpers/wp-user-manager-helpers.php:71
+#: src/integrations/ws-form-lite/helpers/ws-form-lite-helpers.php:39
+msgid "Any form"
+msgstr ""
+
 #. translators: Logged-in trigger - Forminator
 #: src/integrations/elementor/triggers/anon-elem-submitform.php:51
 #, php-format
@@ -19700,7 +19908,12 @@ msgctxt "Facebook Lead Ads"
 msgid "Webhook received but not processed. No data provided."
 msgstr ""
 
-#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-webhooks.php:197
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-webhooks.php:147
+msgctxt "Facebook Lead Ads"
+msgid "Webhook received but not processed. Malformed lead payload."
+msgstr ""
+
+#: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-webhooks.php:241
 msgctxt "Facebook Lead Ads"
 msgid "Data processed successfully."
 msgstr ""
@@ -20055,7 +20268,7 @@ msgid "Add a meeting"
 msgstr ""
 
 #: src/integrations/fluent-booking/actions/fluent-booking-new-booking.php:47
-#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:186
+#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:190
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:141
 #: src/integrations/the-events-calendar/helpers/the-events-calendar-helpers.php:194
 msgid "Event"
@@ -21309,6 +21522,19 @@ msgstr ""
 #: src/integrations/formidable/tokens/fi-tokens.php:296
 msgctxt "Formidable"
 msgid "Entry source URL"
+msgstr ""
+
+#. translators: Logged-in trigger - Formidable
+#. translators: Logged-in trigger - Forminator
+#. translators: Anonymous trigger - HappyForms
+#. Translators: Trigger sentence
+#: src/integrations/formidable/triggers/fi-submitform.php:41
+#: src/integrations/forminator/triggers/fr-submitform.php:42
+#: src/integrations/happyforms/triggers/hf-formsubmit.php:48
+#: src/integrations/jetformbuilder/triggers/jetfb-user-form-submit.php:61
+#: src/integrations/ws-form-lite/triggers/wsf-form-submitted.php:33
+#, php-format
+msgid "A user submits {{a form:%1$s}}"
 msgstr ""
 
 #. translators: Noun
@@ -23731,6 +23957,311 @@ msgctxt "Google Sheet"
 msgid "Confirm"
 msgstr ""
 
+#. translators: %s: Meeting subject
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:32
+#, php-format
+msgctxt "GoToMeeting"
+msgid "Create a meeting {{titled:%s}}"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:37
+msgctxt "GoToMeeting"
+msgid "Create a meeting {{titled}}"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:56
+msgctxt "GoToMeeting"
+msgid "Subject"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:62
+msgctxt "GoToMeeting"
+msgid "Start date"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:65
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:78
+msgctxt "GoToMeeting"
+msgid "Interpreted in the site timezone."
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:69
+msgctxt "GoToMeeting"
+msgid "Start time"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:75
+msgctxt "GoToMeeting"
+msgid "End date"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:82
+msgctxt "GoToMeeting"
+msgid "End time"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:88
+msgctxt "GoToMeeting"
+msgid "Conference call"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:94
+msgctxt "GoToMeeting"
+msgid "Built-in VoIP and conference call numbers"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:98
+msgctxt "GoToMeeting"
+msgid "VoIP only"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:102
+msgctxt "GoToMeeting"
+msgid "Conference call numbers only"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:109
+msgctxt "GoToMeeting"
+msgid "Meeting type"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:116
+msgctxt "GoToMeeting"
+msgid "Scheduled (fixed start and end time)"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:120
+msgctxt "GoToMeeting"
+msgid "Recurring"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:124
+msgctxt "GoToMeeting"
+msgid "Immediate (starts now)"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:131
+msgctxt "GoToMeeting"
+msgid "Require password"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:147
+msgctxt "GoToMeeting"
+msgid "Meeting ID"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:151
+msgctxt "GoToMeeting"
+msgid "Join URL"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:155
+msgctxt "GoToMeeting"
+msgid "Max participants"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:159
+msgctxt "GoToMeeting"
+msgid "Unique meeting ID"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:163
+msgctxt "GoToMeeting"
+msgid "Conference call info"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:197
+msgctxt "GoToMeeting"
+msgid "The start time must be in the future."
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:201
+msgctxt "GoToMeeting"
+msgid "The end time must be after the start time."
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-createmeeting.php:250
+msgctxt "GoToMeeting"
+msgid "Invalid date or time provided."
+msgstr ""
+
+#. translators: %s: Meeting name
+#: src/integrations/gotomeeting/actions/gtm-deletemeeting.php:32
+#, php-format
+msgctxt "GoToMeeting"
+msgid "Delete {{a meeting:%s}}"
+msgstr ""
+
+#: src/integrations/gotomeeting/actions/gtm-deletemeeting.php:37
+msgctxt "GoToMeeting"
+msgid "Delete {{a meeting}}"
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:66
+msgctxt "GoToMeeting"
+msgid "GoTo Meeting credentials are missing or invalid. Please reconnect your account."
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:97
+msgctxt "GoToMeeting"
+msgid "Invalid OAuth state. Please try again."
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:118
+msgctxt "GoToMeeting"
+msgid "Error validating OAuth tokens"
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:124
+msgctxt "GoToMeeting"
+msgid "Invalid token response from GoTo"
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:143
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:184
+msgctxt "GoToMeeting"
+msgid "GoTo Meeting credentials have expired. Please reconnect your account."
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:190
+msgctxt "GoToMeeting"
+msgid "Failed to refresh GoTo Meeting token. Please reconnect your account."
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:226
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:234
+msgctxt "GoToMeeting"
+msgid "Error creating GoTo meeting"
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php:262
+msgctxt "GoToMeeting"
+msgid "Error deleting GoTo meeting"
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-app-helpers.php:99
+msgctxt "GoToMeeting"
+msgid "Meeting"
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-app-helpers.php:124
+msgctxt "GoToMeeting"
+msgid "Unable to fetch meetings from this account"
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-app-helpers.php:130
+msgctxt "GoToMeeting"
+msgid "No upcoming meetings were found in this account"
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-app-helpers.php:168
+msgctxt "GoToMeeting"
+msgid "Meeting is required."
+msgstr ""
+
+#: src/integrations/gotomeeting/helpers/gotomeeting-app-helpers.php:175
+msgctxt "GoToMeeting"
+msgid "Invalid meeting id."
+msgstr ""
+
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:69
+msgctxt "GoToMeeting"
+msgid "Connection failed"
+msgstr ""
+
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:144
+msgctxt "GoToMeeting"
+msgid "GoTo Meeting account"
+msgstr ""
+
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:196
+msgctxt "GoToMeeting"
+msgid "Automatically create and delete GoTo Meeting sessions when your users complete actions on your site, such as completing a course, filling out a form, or even simply clicking a button!"
+msgstr ""
+
+#. translators: %s: Knowledge Base article link
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:209
+#, php-format
+msgctxt "GoToMeeting"
+msgid "Connecting to GoTo Meeting requires setting up an application and getting 2 values from inside your account. It's really easy, we promise! Visit our %s for simple instructions."
+msgstr ""
+
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:212
+msgctxt "GoToMeeting"
+msgid "Knowledge Base article"
+msgstr ""
+
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:222
+msgctxt "GoToMeeting"
+msgid "Client ID"
+msgstr ""
+
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:233
+msgctxt "GoToMeeting"
+msgid "Client secret"
+msgstr ""
+
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:253
+msgctxt "GoToMeeting"
+msgid "Redirect URL"
+msgstr ""
+
+#: src/integrations/gotomeeting/settings/gotomeeting-settings.php:258
+msgctxt "GoToMeeting"
+msgid "You'll be asked to enter a redirect URL."
+msgstr ""
+
+#. translators: %1$s: Email address, %2$s: Training session name
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:38
+#, php-format
+msgctxt "GoToTraining"
+msgid "Add {{an attendee:%1$s}} to {{a training session:%2$s}}"
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:44
+msgctxt "GoToTraining"
+msgid "Add {{an attendee}} to {{a training session}}"
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:59
+msgctxt "GoToTraining"
+msgid "Email"
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:65
+msgctxt "GoToTraining"
+msgid "First name"
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:71
+msgctxt "GoToTraining"
+msgid "Last name"
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:86
+#: src/integrations/gototraining/actions/gtt-registeruser.php:75
+msgctxt "GoToTraining"
+msgid "Join URL"
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:90
+#: src/integrations/gototraining/actions/gtt-registeruser.php:79
+msgctxt "GoToTraining"
+msgid "Confirmation URL"
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:94
+#: src/integrations/gototraining/actions/gtt-registeruser.php:83
+#: src/integrations/gototraining/actions/gtt-unregisterattendee.php:59
+msgctxt "GoToTraining"
+msgid "Registrant key"
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-registerattendee.php:118
+msgctxt "GoToTraining"
+msgid "A valid email address is required."
+msgstr ""
+
 #. translators: %s: Training session name
 #: src/integrations/gototraining/actions/gtt-registeruser.php:46
 #, php-format
@@ -23743,19 +24274,26 @@ msgctxt "GoToTraining"
 msgid "Add the user to {{a training session}}"
 msgstr ""
 
-#: src/integrations/gototraining/actions/gtt-registeruser.php:75
+#. translators: %1$s: Registrant key, %2$s: Training session name
+#: src/integrations/gototraining/actions/gtt-unregisterattendee.php:38
+#, php-format
 msgctxt "GoToTraining"
-msgid "Join URL"
+msgid "Remove {{an attendee:%1$s}} from {{a training session:%2$s}}"
 msgstr ""
 
-#: src/integrations/gototraining/actions/gtt-registeruser.php:79
+#: src/integrations/gototraining/actions/gtt-unregisterattendee.php:44
 msgctxt "GoToTraining"
-msgid "Confirmation URL"
+msgid "Remove {{an attendee}} from {{a training session}}"
 msgstr ""
 
-#: src/integrations/gototraining/actions/gtt-registeruser.php:83
+#: src/integrations/gototraining/actions/gtt-unregisterattendee.php:62
 msgctxt "GoToTraining"
-msgid "Registrant key"
+msgid "The registrant key returned by the \"Add an attendee to a training session\" action."
+msgstr ""
+
+#: src/integrations/gototraining/actions/gtt-unregisterattendee.php:85
+msgctxt "GoToTraining"
+msgid "Registrant key is required."
 msgstr ""
 
 #. translators: %s: Training session name
@@ -23801,17 +24339,17 @@ msgctxt "GoToTraining"
 msgid "Failed to refresh GoTo Training token. Please reconnect your account."
 msgstr ""
 
-#: src/integrations/gototraining/helpers/gototraining-api-caller.php:214
+#: src/integrations/gototraining/helpers/gototraining-api-caller.php:246
+msgctxt "GoToTraining"
+msgid "Error adding attendee to GoTo Training"
+msgstr ""
+
+#: src/integrations/gototraining/helpers/gototraining-api-caller.php:267
 msgctxt "GoToTraining"
 msgid "GoTo Training user not found."
 msgstr ""
 
-#: src/integrations/gototraining/helpers/gototraining-api-caller.php:249
-msgctxt "GoToTraining"
-msgid "Error adding user to GoTo Training"
-msgstr ""
-
-#: src/integrations/gototraining/helpers/gototraining-api-caller.php:274
+#: src/integrations/gototraining/helpers/gototraining-api-caller.php:326
 msgctxt "GoToTraining"
 msgid "User was not registered for training session."
 msgstr ""
@@ -25269,22 +25807,22 @@ msgstr ""
 #. translators: %s: Action meta key for the user field.
 #. translators: %s: Action meta key for the user field
 #: src/integrations/hubspot/actions/hubspot-add-user.php:35
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:36
+#: src/integrations/hubspot/actions/hubspot-adduser.php:36
 #, php-format
 msgctxt "HubSpot"
 msgid "Add/Update {{the user:%s}} in HubSpot"
 msgstr ""
 
 #: src/integrations/hubspot/actions/hubspot-add-user.php:39
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:40
+#: src/integrations/hubspot/actions/hubspot-adduser.php:40
 msgctxt "HubSpot"
 msgid "Add/Update {{the user}} in HubSpot"
 msgstr ""
 
 #: src/integrations/hubspot/actions/hubspot-add-user.php:73
+#: src/integrations/hubspot/actions/hubspot-adduser.php:72
 #: src/integrations/hubspot/actions/hubspot-addusertolist.php:67
 #: src/integrations/hubspot/actions/hubspot-removeuserfromlist.php:67
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:72
 msgctxt "HubSpot"
 msgid "User not found."
 msgstr ""
@@ -25307,6 +25845,52 @@ msgctxt "HubSpot"
 msgid "Contact email address"
 msgstr ""
 
+#: src/integrations/hubspot/actions/hubspot-adduser.php:129
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:119
+#: src/integrations/hubspot/helpers/trait-hubspot-contact-fields.php:73
+msgctxt "HubSpot"
+msgid "Custom fields"
+msgstr ""
+
+#: src/integrations/hubspot/actions/hubspot-adduser.php:130
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:120
+msgctxt "HubSpot"
+msgid "Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets."
+msgstr ""
+
+#: src/integrations/hubspot/actions/hubspot-adduser.php:135
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:125
+#: src/integrations/hubspot/helpers/trait-hubspot-contact-fields.php:103
+msgctxt "HubSpot"
+msgid "Field"
+msgstr ""
+
+#: src/integrations/hubspot/actions/hubspot-adduser.php:144
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:134
+#: src/integrations/hubspot/helpers/trait-hubspot-contact-fields.php:112
+msgctxt "HubSpot"
+msgid "Value"
+msgstr ""
+
+#: src/integrations/hubspot/actions/hubspot-adduser.php:150
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:140
+msgctxt "HubSpot"
+msgid "Add field"
+msgstr ""
+
+#: src/integrations/hubspot/actions/hubspot-adduser.php:151
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:141
+msgctxt "HubSpot"
+msgid "Remove field"
+msgstr ""
+
+#: src/integrations/hubspot/actions/hubspot-adduser.php:166
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:156
+#: src/integrations/hubspot/helpers/hubspot-field-utils.php:246
+msgctxt "HubSpot"
+msgid "Select a field"
+msgstr ""
+
 #. translators: %s: segment field
 #: src/integrations/hubspot/actions/hubspot-addusertolist.php:31
 #, php-format
@@ -25322,14 +25906,14 @@ msgstr ""
 #. translators: %s: Contact field.
 #. translators: %s: Contact field
 #: src/integrations/hubspot/actions/hubspot-create-contact.php:35
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:36
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:36
 #, php-format
 msgctxt "HubSpot"
 msgid "Create/Update {{a contact:%s}} in HubSpot"
 msgstr ""
 
 #: src/integrations/hubspot/actions/hubspot-create-contact.php:39
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:40
+#: src/integrations/hubspot/actions/hubspot-createcontact.php:40
 msgctxt "HubSpot"
 msgid "Create/Update {{a contact}} in HubSpot"
 msgstr ""
@@ -25361,52 +25945,6 @@ msgstr ""
 #: src/integrations/hubspot/actions/hubspot-removeuserfromlist.php:35
 msgctxt "HubSpot"
 msgid "Remove the user's HubSpot contact from {{a static segment}}"
-msgstr ""
-
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:129
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:119
-#: src/integrations/hubspot/helpers/trait-hubspot-contact-fields.php:73
-msgctxt "HubSpot"
-msgid "Custom fields"
-msgstr ""
-
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:130
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:120
-msgctxt "HubSpot"
-msgid "Leaving a field value empty will not update the field. To delete a value from a field, set its value to [delete], including the square brackets."
-msgstr ""
-
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:135
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:125
-#: src/integrations/hubspot/helpers/trait-hubspot-contact-fields.php:103
-msgctxt "HubSpot"
-msgid "Field"
-msgstr ""
-
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:144
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:134
-#: src/integrations/hubspot/helpers/trait-hubspot-contact-fields.php:112
-msgctxt "HubSpot"
-msgid "Value"
-msgstr ""
-
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:150
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:140
-msgctxt "HubSpot"
-msgid "Add field"
-msgstr ""
-
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:151
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:141
-msgctxt "HubSpot"
-msgid "Remove field"
-msgstr ""
-
-#: src/integrations/hubspot/deprecated/hubspot-adduser.php:166
-#: src/integrations/hubspot/deprecated/hubspot-createcontact.php:156
-#: src/integrations/hubspot/helpers/hubspot-field-utils.php:246
-msgctxt "HubSpot"
-msgid "Select a field"
 msgstr ""
 
 #: src/integrations/hubspot/helpers/hubspot-api-caller.php:32
@@ -27016,13 +27554,14 @@ msgctxt "LearnDash"
 msgid "ID: %d (no title)"
 msgstr ""
 
-#: src/integrations/learndash/actions/learndash-create-group.php:29
+#. translators: %1$s: action meta for group name
+#: src/integrations/learndash/actions/learndash-create-group.php:30
 #, php-format
 msgctxt "LearnDash"
 msgid "Create {{a group:%1$s}}"
 msgstr ""
 
-#: src/integrations/learndash/actions/learndash-create-group.php:35
+#: src/integrations/learndash/actions/learndash-create-group.php:36
 msgctxt "LearnDash"
 msgid "Create {{a group}}"
 msgstr ""
@@ -27060,24 +27599,24 @@ msgctxt "LearnDash"
 msgid "Only users with the Group Leader role can be made the leader of a group."
 msgstr ""
 
-#: src/integrations/learndash/actions/learndash-create-group.php:113
+#: src/integrations/learndash/actions/learndash-create-group.php:114
 msgctxt "LearnDash"
 msgid "Do not add the Group Leader role"
-msgstr ""
-
-#: src/integrations/learndash/actions/learndash-create-group.php:114
-#: src/integrations/learndash/actions/learndash-make-group-leader.php:86
-msgctxt "LearnDash"
-msgid "Add the role to their existing role(s)"
 msgstr ""
 
 #: src/integrations/learndash/actions/learndash-create-group.php:115
 #: src/integrations/learndash/actions/learndash-make-group-leader.php:87
 msgctxt "LearnDash"
+msgid "Add the role to their existing role(s)"
+msgstr ""
+
+#: src/integrations/learndash/actions/learndash-create-group.php:116
+#: src/integrations/learndash/actions/learndash-make-group-leader.php:88
+msgctxt "LearnDash"
 msgid "Replace their existing role(s) with the Group Leader role"
 msgstr ""
 
-#: src/integrations/learndash/actions/learndash-create-group.php:143
+#: src/integrations/learndash/actions/learndash-create-group.php:145
 msgctxt "LearnDash"
 msgid "User not found."
 msgstr ""
@@ -27097,10 +27636,10 @@ msgstr ""
 #: src/integrations/learndash/actions/learndash-mark-course-complete.php:64
 #: src/integrations/learndash/actions/learndash-mark-lesson-complete.php:67
 #: src/integrations/learndash/actions/learndash-mark-topic-complete.php:68
-#: src/integrations/learndash/triggers/learndash-course-completed.php:53
+#: src/integrations/learndash/triggers/learndash-course-completed.php:55
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:58
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:56
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:53
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:58
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:55
 msgctxt "LearnDash"
 msgid "Course"
 msgstr ""
@@ -27113,21 +27652,22 @@ msgstr ""
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:29
 #: src/integrations/learndash/tokens/loopable/universal/user-completed-courses.php:23
 #: src/integrations/learndash/tokens/loopable/universal/user-enrolled-courses-tokens.php:23
-#: src/integrations/learndash/triggers/learndash-course-completed.php:57
+#: src/integrations/learndash/triggers/learndash-course-completed.php:59
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:151
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:62
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:59
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:64
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:61
 msgctxt "LearnDash"
 msgid "Course ID"
 msgstr ""
 
-#: src/integrations/learndash/actions/learndash-make-group-leader.php:27
+#. translators: %1$s: action meta for group name
+#: src/integrations/learndash/actions/learndash-make-group-leader.php:28
 #, php-format
 msgctxt "LearnDash"
 msgid "Make the user the leader of {{a group:%1$s}}"
 msgstr ""
 
-#: src/integrations/learndash/actions/learndash-make-group-leader.php:33
+#: src/integrations/learndash/actions/learndash-make-group-leader.php:34
 msgctxt "LearnDash"
 msgid "Make the user the leader of {{a group}}"
 msgstr ""
@@ -27143,7 +27683,7 @@ msgctxt "LearnDash"
 msgid "Group"
 msgstr ""
 
-#: src/integrations/learndash/actions/learndash-make-group-leader.php:85
+#: src/integrations/learndash/actions/learndash-make-group-leader.php:86
 msgctxt "LearnDash"
 msgid "Do nothing"
 msgstr ""
@@ -27172,8 +27712,8 @@ msgstr ""
 
 #: src/integrations/learndash/actions/learndash-mark-lesson-complete.php:77
 #: src/integrations/learndash/actions/learndash-mark-topic-complete.php:78
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:71
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:68
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:73
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:70
 msgctxt "LearnDash"
 msgid "Lesson"
 msgstr ""
@@ -27182,8 +27722,8 @@ msgstr ""
 #: src/integrations/learndash/actions/learndash-mark-topic-complete.php:81
 #: src/integrations/learndash/helpers/learndash-helpers.php:279
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:177
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:78
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:75
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:80
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:77
 msgctxt "LearnDash"
 msgid "Lesson ID"
 msgstr ""
@@ -27200,7 +27740,7 @@ msgid "Mark {{a topic}} complete for the user"
 msgstr ""
 
 #: src/integrations/learndash/actions/learndash-mark-topic-complete.php:88
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:83
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:85
 msgctxt "LearnDash"
 msgid "Topic"
 msgstr ""
@@ -27208,91 +27748,91 @@ msgstr ""
 #: src/integrations/learndash/actions/learndash-mark-topic-complete.php:91
 #: src/integrations/learndash/helpers/learndash-helpers.php:389
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:238
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:90
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:92
 msgctxt "LearnDash"
 msgid "Topic ID"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:320
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:322
 msgctxt "LearnDash"
 msgid "less than"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:321
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:326
 msgctxt "LearnDash"
 msgid "greater than"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:322
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:330
 msgctxt "LearnDash"
 msgid "equal to"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:323
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:334
 msgctxt "LearnDash"
 msgid "not equal to"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:324
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:338
 msgctxt "LearnDash"
 msgid "greater or equal to"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:325
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:342
 msgctxt "LearnDash"
 msgid "less or equal to"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:339
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:357
 msgctxt "LearnDash"
 msgid "Condition"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:359
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:377
 msgctxt "LearnDash"
 msgid "Any course"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:385
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1158
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:403
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1198
 msgctxt "LearnDash"
 msgid "Any quiz"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:437
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:786
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:455
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:804
 msgctxt "LearnDash"
 msgid "Any group"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:549
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:567
 msgctxt "LearnDash"
 msgid "Any lesson"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:590
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:601
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:608
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:619
 msgctxt "LearnDash"
 msgid "Any topic"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:928
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:946
 msgctxt "LearnDash"
 msgid "Any lesson or topic"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:999
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1039
 msgctxt "LearnDash"
 msgid "Any assignment"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1059
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1099
 msgctxt "LearnDash"
 msgid "Any essay"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1105
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1221
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1145
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1261
 msgctxt "LearnDash"
 msgid "Any question"
 msgstr ""
@@ -27467,12 +28007,12 @@ msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers.php:623
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:299
-#: src/integrations/learndash/triggers/learndash-quiz-completed.php:57
-#: src/integrations/learndash/triggers/learndash-quiz-failed.php:59
-#: src/integrations/learndash/triggers/learndash-quiz-passed.php:57
-#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:68
-#: src/integrations/learndash/triggers/learndash-quiz-points.php:68
-#: src/integrations/learndash/triggers/learndash-quiz-score.php:69
+#: src/integrations/learndash/triggers/learndash-quiz-completed.php:59
+#: src/integrations/learndash/triggers/learndash-quiz-failed.php:60
+#: src/integrations/learndash/triggers/learndash-quiz-passed.php:60
+#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:70
+#: src/integrations/learndash/triggers/learndash-quiz-points.php:70
+#: src/integrations/learndash/triggers/learndash-quiz-score.php:71
 msgctxt "LearnDash"
 msgid "Quiz ID"
 msgstr ""
@@ -27565,8 +28105,8 @@ msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:24
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:156
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:61
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:58
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:63
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:60
 msgctxt "LearnDash"
 msgid "Course title"
 msgstr ""
@@ -27585,22 +28125,22 @@ msgstr ""
 #: src/integrations/learndash/tokens/loopable/universal/user-completed-courses.php:33
 #: src/integrations/learndash/tokens/loopable/universal/user-enrolled-courses-tokens.php:33
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:161
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:63
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:60
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:65
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:62
 msgctxt "LearnDash"
 msgid "Course URL"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:49
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:64
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:61
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:66
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:63
 msgctxt "LearnDash"
 msgid "Course featured image ID"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:54
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:65
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:62
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:67
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:64
 msgctxt "LearnDash"
 msgid "Course featured image URL"
 msgstr ""
@@ -27616,53 +28156,53 @@ msgid "Course points"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:172
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:77
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:74
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:79
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:76
 msgctxt "LearnDash"
 msgid "Lesson title"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:182
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:79
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:76
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:81
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:78
 msgctxt "LearnDash"
 msgid "Lesson URL"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:187
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:80
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:77
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:82
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:79
 msgctxt "LearnDash"
 msgid "Lesson featured image ID"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:192
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:81
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:78
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:83
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:80
 msgctxt "LearnDash"
 msgid "Lesson featured image URL"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:233
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:89
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:91
 msgctxt "LearnDash"
 msgid "Topic title"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:243
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:91
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:93
 msgctxt "LearnDash"
 msgid "Topic URL"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:248
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:92
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:94
 msgctxt "LearnDash"
 msgid "Topic featured image ID"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:253
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:93
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:95
 msgctxt "LearnDash"
 msgid "Topic featured image URL"
 msgstr ""
@@ -27760,8 +28300,8 @@ msgid "Number of times"
 msgstr ""
 
 #: src/integrations/learndash/tokens/ld-tokens-new-framework.php:618
-#: src/integrations/learndash/triggers/learndash-quiz-points.php:59
-#: src/integrations/learndash/triggers/learndash-quiz-score.php:60
+#: src/integrations/learndash/triggers/learndash-quiz-points.php:61
+#: src/integrations/learndash/triggers/learndash-quiz-score.php:62
 msgctxt "LearnDash"
 msgid "Example: 1"
 msgstr ""
@@ -27907,13 +28447,14 @@ msgctxt "LearnDash"
 msgid "Group description"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-course-completed.php:35
+#. translators: %1$s: Course. %2$s: Number of times.
+#: src/integrations/learndash/triggers/learndash-course-completed.php:36
 #, php-format
 msgctxt "LearnDash"
-msgid "A user completes {{a course:%1$s}}"
+msgid "A user completes {{a course:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-course-completed.php:40
+#: src/integrations/learndash/triggers/learndash-course-completed.php:42
 msgctxt "LearnDash"
 msgid "A user completes {{a course}}"
 msgstr ""
@@ -27939,126 +28480,133 @@ msgctxt "LearnDash"
 msgid "Current percentage"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:36
+#. translators: %1$s: Lesson. %2$s: Number of times.
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:37
 #, php-format
 msgctxt "LearnDash"
-msgid "A user completes {{a lesson:%1$s}}"
+msgid "A user completes {{a lesson:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-lesson-completed.php:41
+#: src/integrations/learndash/triggers/learndash-lesson-completed.php:43
 msgctxt "LearnDash"
 msgid "A user completes {{a lesson}}"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-completed.php:35
+#. translators: %1$s: Quiz. %2$s: Number of times.
+#: src/integrations/learndash/triggers/learndash-quiz-completed.php:36
 #, php-format
 msgctxt "LearnDash"
-msgid "A user attempts (passes or fails) {{a quiz:%1$s}}"
+msgid "A user attempts (passes or fails) {{a quiz:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-completed.php:40
+#: src/integrations/learndash/triggers/learndash-quiz-completed.php:42
 msgctxt "LearnDash"
 msgid "A user attempts (passes or fails) {{a quiz}}"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-completed.php:53
-#: src/integrations/learndash/triggers/learndash-quiz-failed.php:55
-#: src/integrations/learndash/triggers/learndash-quiz-passed.php:53
-#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:64
-#: src/integrations/learndash/triggers/learndash-quiz-points.php:64
-#: src/integrations/learndash/triggers/learndash-quiz-score.php:65
+#: src/integrations/learndash/triggers/learndash-quiz-completed.php:55
+#: src/integrations/learndash/triggers/learndash-quiz-failed.php:56
+#: src/integrations/learndash/triggers/learndash-quiz-passed.php:56
+#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:66
+#: src/integrations/learndash/triggers/learndash-quiz-points.php:66
+#: src/integrations/learndash/triggers/learndash-quiz-score.php:67
 msgctxt "LearnDash"
 msgid "Quiz"
 msgstr ""
 
-#. translators: %1$s: Quiz
+#. translators: %1$s: Quiz. %2$s: Number of times.
 #: src/integrations/learndash/triggers/learndash-quiz-failed.php:37
 #, php-format
 msgctxt "LearnDash"
-msgid "A user fails {{a quiz:%1$s}}"
+msgid "A user fails {{a quiz:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-failed.php:42
+#: src/integrations/learndash/triggers/learndash-quiz-failed.php:43
 msgctxt "LearnDash"
 msgid "A user fails {{a quiz}}"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-passed.php:35
+#. translators: %1$s: Quiz. %2$s: Number of times.
+#: src/integrations/learndash/triggers/learndash-quiz-passed.php:37
 #, php-format
 msgctxt "LearnDash"
-msgid "A user passes {{a quiz:%1$s}}"
+msgid "A user passes {{a quiz:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-passed.php:40
+#: src/integrations/learndash/triggers/learndash-quiz-passed.php:43
 msgctxt "LearnDash"
 msgid "A user passes {{a quiz}}"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:35
+#. translators: %1$s: Condition. %2$s: Percentage. %3$s: Quiz. %4$s: Number of times.
+#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:36
 #, php-format
 msgctxt "LearnDash"
-msgid "A user achieves a percentage {{greater than, less than or equal to:%1$s}} {{a value:%2$s}} on {{a quiz:%3$s}}"
+msgid "A user achieves a percentage {{greater than, less than or equal to:%1$s}} {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:42
+#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:44
 msgctxt "LearnDash"
 msgid "A user achieves a percentage {{greater than, less than or equal to}} {{a value}} on {{a quiz}}"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:56
+#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:58
 msgctxt "LearnDash"
 msgid "Required percentage"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:59
+#: src/integrations/learndash/triggers/learndash-quiz-percentage.php:61
 msgctxt "LearnDash"
 msgid "Example: 80"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-points.php:35
+#. translators: %1$s: Condition. %2$s: Points. %3$s: Quiz. %4$s: Number of times.
+#: src/integrations/learndash/triggers/learndash-quiz-points.php:36
 #, php-format
 msgctxt "LearnDash"
-msgid "A user achieves {{greater than, less than or equal to:%1$s}} {{a number of:%2$s}} points on {{a quiz:%3$s}}"
+msgid "A user achieves {{greater than, less than or equal to:%1$s}} {{a number of:%2$s}} points on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-points.php:42
+#: src/integrations/learndash/triggers/learndash-quiz-points.php:44
 msgctxt "LearnDash"
 msgid "A user achieves {{greater than, less than or equal to}} {{a number of}} points on {{a quiz}}"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-points.php:56
+#: src/integrations/learndash/triggers/learndash-quiz-points.php:58
 msgctxt "LearnDash"
 msgid "Required points"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-score.php:35
+#. translators: %1$s: Condition. %2$s: Score. %3$s: Quiz. %4$s: Number of times.
+#: src/integrations/learndash/triggers/learndash-quiz-score.php:36
 #, php-format
 msgctxt "LearnDash"
-msgid "A user achieves a score {{greater than, less than or equal to:%1$s}} {{a value:%2$s}} on {{a quiz:%3$s}}"
+msgid "A user achieves a score {{greater than, less than or equal to:%1$s}} {{a value:%2$s}} on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-score.php:42
+#: src/integrations/learndash/triggers/learndash-quiz-score.php:44
 msgctxt "LearnDash"
 msgid "A user achieves a score {{greater than, less than or equal to}} {{a value}} on {{a quiz}}"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-score.php:56
+#: src/integrations/learndash/triggers/learndash-quiz-score.php:58
 msgctxt "LearnDash"
 msgid "Required correct answer count"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-quiz-score.php:57
+#: src/integrations/learndash/triggers/learndash-quiz-score.php:59
 msgctxt "LearnDash"
 msgid "Number of correctly answered questions (e.g. 16 of 20). Use the percentage trigger if you need a percentage threshold."
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:35
+#. translators: %1$s: Topic. %2$s: Number of times.
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:36
 #, php-format
 msgctxt "LearnDash"
-msgid "A user completes {{a topic:%1$s}}"
+msgid "A user completes {{a topic:%1$s}} {{a number of:%2$s}} time(s)"
 msgstr ""
 
-#: src/integrations/learndash/triggers/learndash-topic-completed.php:40
+#: src/integrations/learndash/triggers/learndash-topic-completed.php:42
 msgctxt "LearnDash"
 msgid "A user completes {{a topic}}"
 msgstr ""
@@ -31311,15 +31859,15 @@ msgstr ""
 msgid "A newer version Uncanny Automator Pro is required to use Uncanny Automator with Modern Events Calendar. Please update Uncanny Automator Pro to the latest version."
 msgstr ""
 
-#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:187
+#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:191
 msgid "Select from the list of available events. The selected event must have a ticket."
 msgstr ""
 
-#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:214
+#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:218
 msgid "Select a ticket"
 msgstr ""
 
-#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:215
+#: src/integrations/modern-events-calendar/helpers/mec-helpers.php:219
 msgid "Use the dropdown to select a ticket associated from the previously selected event"
 msgstr ""
 
@@ -33742,6 +34290,137 @@ msgstr ""
 #: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:45
 msgctxt "RafflePress"
 msgid "Giveaway"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:28
+msgctxt "Redirection"
+msgid "Any group"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:92
+msgctxt "Redirection"
+msgid "Redirect ID"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:97
+msgctxt "Redirection"
+msgid "Source URL"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:105
+msgctxt "Redirection"
+msgid "Target URL / action data"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:110
+msgctxt "Redirection"
+msgid "Group name"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:115
+msgctxt "Redirection"
+msgid "Group ID"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:120
+msgctxt "Redirection"
+msgid "Match type"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:125
+msgctxt "Redirection"
+msgid "Action type"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:130
+msgctxt "Redirection"
+msgid "HTTP code"
+msgstr ""
+
+#: src/integrations/redirection/helpers/redirection-helpers.php:135
+msgctxt "Redirection"
+msgid "Hit count"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-404-logged.php:30
+#: src/integrations/redirection/triggers/redirection-404-logged.php:31
+msgctxt "Redirection"
+msgid "A 404 error is logged"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-404-logged.php:70
+#: src/integrations/redirection/triggers/redirection-redirect-matched.php:99
+msgctxt "Redirection"
+msgid "Requested URL"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-404-logged.php:75
+msgctxt "Redirection"
+msgid "Referrer"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-404-logged.php:80
+msgctxt "Redirection"
+msgid "User agent"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-404-logged.php:85
+msgctxt "Redirection"
+msgid "IP address"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-404-logged.php:90
+msgctxt "Redirection"
+msgid "Date logged"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-monitor-created.php:42
+#: src/integrations/redirection/triggers/redirection-monitor-created.php:43
+msgctxt "Redirection"
+msgid "A redirect is created by the URL monitor"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-monitor-created.php:88
+msgctxt "Redirection"
+msgid "Post ID"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-monitor-created.php:93
+msgctxt "Redirection"
+msgid "Post title"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-monitor-created.php:98
+msgctxt "Redirection"
+msgid "Old URL"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-redirect-deleted.php:43
+#: src/integrations/redirection/triggers/redirection-redirect-deleted.php:44
+msgctxt "Redirection"
+msgid "A redirect is deleted"
+msgstr ""
+
+#. translators: 1: Group placeholder
+#: src/integrations/redirection/triggers/redirection-redirect-matched.php:33
+#, php-format
+msgctxt "Redirection"
+msgid "A redirect in {{a group:%1$s}} is matched"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-redirect-matched.php:37
+msgctxt "Redirection"
+msgid "A redirect in {{a group}} is matched"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-redirect-matched.php:49
+msgctxt "Redirection"
+msgid "Group"
+msgstr ""
+
+#: src/integrations/redirection/triggers/redirection-redirect-matched.php:104
+msgctxt "Redirection"
+msgid "Resolved target URL"
 msgstr ""
 
 #. translators: Logged-in trigger - Popup Maker
@@ -44119,6 +44798,256 @@ msgstr ""
 msgid "A user views {{a product}}"
 msgstr ""
 
+#. translators: %1$s: IP address.
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:33
+#, php-format
+msgctxt "Wordfence Security"
+msgid "Block {{an IP address:%1$s}}"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:37
+msgctxt "Wordfence Security"
+msgid "Block {{an IP address}}"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:49
+#: src/integrations/wordfence/actions/wordfence-unblock-ip.php:48
+#: src/integrations/wordfence/actions/wordfence-unlock-ip.php:49
+#: src/integrations/wordfence/triggers/wordfence-breached-password-login.php:80
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:112
+#: src/integrations/wordfence/triggers/wordfence-ip-locked-out.php:77
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:166
+msgctxt "Wordfence Security"
+msgid "IP address"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:56
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:85
+#: src/integrations/wordfence/triggers/wordfence-block-deleted.php:82
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:122
+#: src/integrations/wordfence/triggers/wordfence-ip-locked-out.php:82
+msgctxt "Wordfence Security"
+msgid "Reason"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:63
+msgctxt "Wordfence Security"
+msgid "Block duration in seconds"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:68
+msgctxt "Wordfence Security"
+msgid "Enter 0 to block forever."
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:81
+msgctxt "Wordfence Security"
+msgid "Blocked IP address"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-block-ip.php:89
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:127
+#: src/integrations/wordfence/triggers/wordfence-ip-locked-out.php:87
+msgctxt "Wordfence Security"
+msgid "Duration (seconds)"
+msgstr ""
+
+#. translators: %1$s: IP address.
+#: src/integrations/wordfence/actions/wordfence-unblock-ip.php:32
+#, php-format
+msgctxt "Wordfence Security"
+msgid "Remove {{an IP block:%1$s}}"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-unblock-ip.php:36
+msgctxt "Wordfence Security"
+msgid "Remove {{an IP block}}"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-unblock-ip.php:64
+msgctxt "Wordfence Security"
+msgid "Unblocked IP address"
+msgstr ""
+
+#. translators: %1$s: IP address.
+#: src/integrations/wordfence/actions/wordfence-unlock-ip.php:33
+#, php-format
+msgctxt "Wordfence Security"
+msgid "Remove {{an IP lockout:%1$s}}"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-unlock-ip.php:37
+msgctxt "Wordfence Security"
+msgid "Remove {{an IP lockout}}"
+msgstr ""
+
+#: src/integrations/wordfence/actions/wordfence-unlock-ip.php:65
+msgctxt "Wordfence Security"
+msgid "Unlocked IP address"
+msgstr ""
+
+#: src/integrations/wordfence/helpers/wordfence-helpers.php:36
+msgctxt "Wordfence Security"
+msgid "User ID"
+msgstr ""
+
+#: src/integrations/wordfence/helpers/wordfence-helpers.php:41
+msgctxt "Wordfence Security"
+msgid "User email"
+msgstr ""
+
+#: src/integrations/wordfence/helpers/wordfence-helpers.php:46
+#: src/integrations/wordfence/triggers/wordfence-breached-password-login.php:75
+msgctxt "Wordfence Security"
+msgid "Username"
+msgstr ""
+
+#: src/integrations/wordfence/helpers/wordfence-helpers.php:51
+msgctxt "Wordfence Security"
+msgid "User display name"
+msgstr ""
+
+#: src/integrations/wordfence/helpers/wordfence-helpers.php:56
+msgctxt "Wordfence Security"
+msgid "User roles"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-2fa-activated.php:35
+#: src/integrations/wordfence/triggers/wordfence-2fa-activated.php:36
+msgctxt "Wordfence Security"
+msgid "A user activates two-factor authentication"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-2fa-deactivated.php:35
+#: src/integrations/wordfence/triggers/wordfence-2fa-deactivated.php:36
+msgctxt "Wordfence Security"
+msgid "A user deactivates two-factor authentication"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-block-deleted.php:36
+#: src/integrations/wordfence/triggers/wordfence-block-deleted.php:37
+msgctxt "Wordfence Security"
+msgid "A blocking rule is deleted"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-block-deleted.php:77
+msgctxt "Wordfence Security"
+msgid "Block type"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-block-deleted.php:87
+msgctxt "Wordfence Security"
+msgid "IP address or parameters"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-breached-password-login.php:35
+#: src/integrations/wordfence/triggers/wordfence-breached-password-login.php:36
+msgctxt "Wordfence Security"
+msgid "A login with a breached password is blocked"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-breached-password-login.php:85
+msgctxt "Wordfence Security"
+msgid "Reset password URL"
+msgstr ""
+
+#. translators: %1$s: Action taken (blocked or throttled).
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:39
+#, php-format
+msgctxt "Wordfence Security"
+msgid "An IP is {{blocked or throttled:%1$s}}"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:43
+msgctxt "Wordfence Security"
+msgid "An IP is {{blocked or throttled}}"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:55
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:117
+msgctxt "Wordfence Security"
+msgid "Action taken"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:62
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:70
+msgctxt "Wordfence Security"
+msgid "any"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:66
+msgctxt "Wordfence Security"
+msgid "blocked"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php:70
+msgctxt "Wordfence Security"
+msgid "throttled"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-ip-locked-out.php:37
+#: src/integrations/wordfence/triggers/wordfence-ip-locked-out.php:38
+msgctxt "Wordfence Security"
+msgid "An IP is locked out"
+msgstr ""
+
+#. translators: %1$s: User type (admin/non-admin).
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:47
+#, php-format
+msgctxt "Wordfence Security"
+msgid "An {{admin/non-admin:%1$s}} user logs in"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:51
+msgctxt "Wordfence Security"
+msgid "An {{admin/non-admin}} user logs in"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:63
+msgctxt "Wordfence Security"
+msgid "User"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:74
+msgctxt "Wordfence Security"
+msgid "admin"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:78
+msgctxt "Wordfence Security"
+msgid "non-admin"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:84
+msgctxt "Wordfence Security"
+msgid "New device only"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:91
+msgctxt "Wordfence Security"
+msgid "Any"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:95
+msgctxt "Wordfence Security"
+msgid "Yes"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:99
+msgctxt "Wordfence Security"
+msgid "No"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:171
+msgctxt "Wordfence Security"
+msgid "Is admin"
+msgstr ""
+
+#: src/integrations/wordfence/triggers/wordfence-user-logs-in.php:176
+msgctxt "Wordfence Security"
+msgid "New device"
+msgstr ""
+
 #. translators: %1$s is the post.
 #: src/integrations/wordpress-seo/actions/yoast-delete-focus-keyword.php:26
 #, php-format
@@ -44326,6 +45255,187 @@ msgstr ""
 #: src/integrations/wordpress-seo/triggers/yoast-seo-score-reached.php:71
 msgctxt "Yoast SEO"
 msgid "Yoast scores range from 0 to 100."
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:134
+msgctxt "WP Activity Log"
+msgid "Any severity"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:166
+msgctxt "WP Activity Log"
+msgid "Any object type"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:198
+msgctxt "WP Activity Log"
+msgid "Any event type"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:271
+msgctxt "WP Activity Log"
+msgid "Any event"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:319
+msgctxt "WP Activity Log"
+msgid "Event code"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:324
+msgctxt "WP Activity Log"
+msgid "Event description"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:329
+msgctxt "WP Activity Log"
+msgid "Event message"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:334
+msgctxt "WP Activity Log"
+msgid "Event severity"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:339
+msgctxt "WP Activity Log"
+msgid "Event severity code"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:344
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-object.php:57
+msgctxt "WP Activity Log"
+msgid "Object type"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:349
+msgctxt "WP Activity Log"
+msgid "Object type key"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:354
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-type.php:57
+msgctxt "WP Activity Log"
+msgid "Event type"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:359
+msgctxt "WP Activity Log"
+msgid "Event type key"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:364
+msgctxt "WP Activity Log"
+msgid "Username"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:369
+msgctxt "WP Activity Log"
+msgid "User ID"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:374
+msgctxt "WP Activity Log"
+msgid "User roles"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:379
+msgctxt "WP Activity Log"
+msgid "Client IP address"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:384
+msgctxt "WP Activity Log"
+msgid "User agent"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:389
+msgctxt "WP Activity Log"
+msgid "Post ID"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:394
+msgctxt "WP Activity Log"
+msgid "Post type"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:399
+msgctxt "WP Activity Log"
+msgid "Post status"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:404
+msgctxt "WP Activity Log"
+msgid "Event date"
+msgstr ""
+
+#: src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php:409
+msgctxt "WP Activity Log"
+msgid "Site ID"
+msgstr ""
+
+#. translators: %1$s: Event.
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-logged.php:42
+#, php-format
+msgctxt "WP Activity Log"
+msgid "{{An event:%1$s}} is logged"
+msgstr ""
+
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-logged.php:46
+msgctxt "WP Activity Log"
+msgid "{{An event}} is logged"
+msgstr ""
+
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-logged.php:58
+msgctxt "WP Activity Log"
+msgid "Event"
+msgstr ""
+
+#. translators: %1$s: Object type.
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-object.php:41
+#, php-format
+msgctxt "WP Activity Log"
+msgid "An event for {{an object type:%1$s}} is logged"
+msgstr ""
+
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-object.php:45
+msgctxt "WP Activity Log"
+msgid "An event for {{an object type}} is logged"
+msgstr ""
+
+#. translators: %1$s: Severity.
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-severity.php:40
+#, php-format
+msgctxt "WP Activity Log"
+msgid "An event with {{a severity:%1$s}} is logged"
+msgstr ""
+
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-severity.php:44
+msgctxt "WP Activity Log"
+msgid "An event with {{a severity}} is logged"
+msgstr ""
+
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-severity.php:56
+msgctxt "WP Activity Log"
+msgid "Severity"
+msgstr ""
+
+#. translators: %1$s: Event type.
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-type.php:41
+#, php-format
+msgctxt "WP Activity Log"
+msgid "An event of {{a type:%1$s}} is logged"
+msgstr ""
+
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-event-type.php:45
+msgctxt "WP Activity Log"
+msgid "An event of {{a type}} is logged"
+msgstr ""
+
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-failed-login.php:38
+#: src/integrations/wp-activity-log/triggers/wp-activity-log-failed-login.php:39
+msgctxt "WP Activity Log"
+msgid "A failed login is logged"
 msgstr ""
 
 #: src/integrations/wp-all-import/helpers/wp-all-import-helpers.php:44
@@ -44839,6 +45949,77 @@ msgstr ""
 #: src/integrations/wp-event-manager/triggers/wp-event-manager-attendee-registered.php:51
 msgctxt "WP Event Manager"
 msgid "Selected event"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-all-cache.php:31
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-all-cache.php:32
+msgctxt "WP Fastest Cache"
+msgid "Purge all caches"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-all-cache.php:42
+msgctxt "WP Fastest Cache"
+msgid "Also clear minified CSS/JS"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-all-cache.php:64
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:106
+msgctxt "WP Fastest Cache"
+msgid "WP Fastest Cache is not available."
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-all-cache.php:84
+msgctxt "WP Fastest Cache"
+msgid "Cache clearing is disabled on this site."
+msgstr ""
+
+#. translators: %1$s: Post selector token placeholder
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:37
+#, php-format
+msgctxt "WP Fastest Cache"
+msgid "Purge the cache for {{a post:%1$s}}"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:41
+msgctxt "WP Fastest Cache"
+msgid "Purge the cache for {{a post}}"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:51
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:88
+msgctxt "WP Fastest Cache"
+msgid "Post type"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:60
+msgctxt "WP Fastest Cache"
+msgid "Post"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:76
+msgctxt "WP Fastest Cache"
+msgid "Post ID"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:80
+msgctxt "WP Fastest Cache"
+msgid "Post title"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:84
+msgctxt "WP Fastest Cache"
+msgid "Post URL"
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php:114
+msgctxt "WP Fastest Cache"
+msgid "The selected post could not be found."
+msgstr ""
+
+#: src/integrations/wp-fastest-cache/triggers/wp-fastest-cache-all-cache-cleared.php:40
+#: src/integrations/wp-fastest-cache/triggers/wp-fastest-cache-all-cache-cleared.php:41
+msgctxt "WP Fastest Cache"
+msgid "All cache is cleared"
 msgstr ""
 
 #: src/integrations/wp-fluent-forms/helpers/wp-fluent-forms-helpers.php:44

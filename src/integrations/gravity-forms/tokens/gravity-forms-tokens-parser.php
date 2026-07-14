@@ -410,14 +410,19 @@ class Gravity_Forms_Tokens_Parser {
 		$data      = automator_safe_unserialize( $raw_value );
 
 		$parts = array();
-		array_walk_recursive(
-			$data,
-			function ( $value, $key ) use ( &$parts ) {
-				if ( ! empty( $value ) ) {
-					$parts[] = $key . ': ' . $value;
+
+		// A blank/unsubmitted List field isn't serialized, so automator_safe_unserialize()
+		// (maybe_unserialize() semantics) hands it back as the original string.
+		if ( is_array( $data ) ) {
+			array_walk_recursive(
+				$data,
+				function ( $value, $key ) use ( &$parts ) {
+					if ( ! empty( $value ) ) {
+						$parts[] = $key . ': ' . $value;
+					}
 				}
-			}
-		);
+			);
+		}
 
 		$field_value = implode( ', ', $parts );
 

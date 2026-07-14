@@ -36,7 +36,7 @@ class Gototraining_Integration extends App_Integration {
 		$this->helpers = new Gototraining_App_Helpers( self::get_config() );
 
 		// Set the icon URL
-		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/gototraining-icon.svg' );
+		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/goto-icon.svg' );
 
 		// Finalize setup via the parent class with the common config
 		$this->setup_app_integration( self::get_config() );
@@ -55,6 +55,8 @@ class Gototraining_Integration extends App_Integration {
 		// Actions.
 		new GTT_REGISTERUSER( $this->dependencies );
 		new GTT_UNREGISTERUSER( $this->dependencies );
+		new GTT_REGISTERATTENDEE( $this->dependencies );
+		new GTT_UNREGISTERATTENDEE( $this->dependencies );
 	}
 
 	/**

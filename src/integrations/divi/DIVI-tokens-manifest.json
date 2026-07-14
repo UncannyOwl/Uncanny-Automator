@@ -1,0 +1,479 @@
+{
+    "integration_id": "DIVI",
+    "updated_at": "2026-03-09T20:02:50Z",
+    "triggers": [
+        {
+            "code": "ANONDIVISUBMITFORM",
+            "meta": "DIVIFORM",
+            "tokens": [
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONDIVISUBMITFORM:DIVIFORM"
+                },
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONDIVISUBMITFORM:DIVIFORM"
+                },
+                {
+                    "id": "-1|name",
+                    "name": "Name (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|name"
+                },
+                {
+                    "id": "-1|email",
+                    "name": "Email address (if available)",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|email"
+                },
+                {
+                    "id": "-1|message",
+                    "name": "Message (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|message"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "ANON_DIVI_SUBMIT_FORM",
+            "meta": "DIVIFORM",
+            "tokens": [
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_DIVI_SUBMIT_FORM:DIVIFORM"
+                },
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_DIVI_SUBMIT_FORM:DIVIFORM"
+                },
+                {
+                    "id": "-1|name",
+                    "name": "Name (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|name"
+                },
+                {
+                    "id": "-1|email",
+                    "name": "Email address (if available)",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|email"
+                },
+                {
+                    "id": "-1|message",
+                    "name": "Message (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|message"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "DIVI_SUBMIT_FORM",
+            "meta": "DIVIFORM",
+            "tokens": [
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVI_SUBMIT_FORM:DIVIFORM"
+                },
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVI_SUBMIT_FORM:DIVIFORM"
+                },
+                {
+                    "id": "-1|name",
+                    "name": "Name (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|name"
+                },
+                {
+                    "id": "-1|email",
+                    "name": "Email address (if available)",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|email"
+                },
+                {
+                    "id": "-1|message",
+                    "name": "Message (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|message"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "DIVISUBMITFORM",
+            "meta": "DIVIFORM",
+            "tokens": [
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVISUBMITFORM:DIVIFORM"
+                },
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVISUBMITFORM:DIVIFORM"
+                },
+                {
+                    "id": "-1|name",
+                    "name": "Name (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|name"
+                },
+                {
+                    "id": "-1|email",
+                    "name": "Email address (if available)",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|email"
+                },
+                {
+                    "id": "-1|message",
+                    "name": "Message (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|message"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "ANONDIVISUBMITFORMFIELD",
+            "meta": "DIVIFORM",
+            "tokens": [
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONDIVISUBMITFORMFIELD:DIVIFORM"
+                },
+                {
+                    "id": "ANONDIVISUBMITFORMFIELD",
+                    "name": "Field",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANONDIVISUBMITFORMFIELD:ANONDIVISUBMITFORMFIELD"
+                },
+                {
+                    "id": "-1|name",
+                    "name": "Name (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|name"
+                },
+                {
+                    "id": "-1|email",
+                    "name": "Email address (if available)",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|email"
+                },
+                {
+                    "id": "-1|message",
+                    "name": "Message (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|message"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "ANON_DIVI_SUBMIT_FORM_FIELD",
+            "meta": "DIVIFORM",
+            "tokens": [
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_DIVI_SUBMIT_FORM_FIELD:DIVIFORM"
+                },
+                {
+                    "id": "ANON_DIVI_SUBMIT_FORM_FIELD",
+                    "name": "Field",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:ANON_DIVI_SUBMIT_FORM_FIELD:ANON_DIVI_SUBMIT_FORM_FIELD"
+                },
+                {
+                    "id": "-1|name",
+                    "name": "Name (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|name"
+                },
+                {
+                    "id": "-1|email",
+                    "name": "Email address (if available)",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|email"
+                },
+                {
+                    "id": "-1|message",
+                    "name": "Message (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|message"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "DIVI_SUBMIT_FORM_FIELD",
+            "meta": "DIVIFORM",
+            "tokens": [
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVI_SUBMIT_FORM_FIELD:DIVIFORM"
+                },
+                {
+                    "id": "DIVI_SUBMIT_FORM_FIELD",
+                    "name": "Field",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVI_SUBMIT_FORM_FIELD:DIVI_SUBMIT_FORM_FIELD"
+                },
+                {
+                    "id": "-1|name",
+                    "name": "Name (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|name"
+                },
+                {
+                    "id": "-1|email",
+                    "name": "Email address (if available)",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|email"
+                },
+                {
+                    "id": "-1|message",
+                    "name": "Message (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|message"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        },
+        {
+            "code": "DIVISUBMITFORMFIELD",
+            "meta": "DIVIFORM",
+            "tokens": [
+                {
+                    "id": "DIVIFORM",
+                    "name": "Form",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVISUBMITFORMFIELD:DIVIFORM"
+                },
+                {
+                    "id": "DIVISUBMITFORMFIELD",
+                    "name": "Field",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVISUBMITFORMFIELD:DIVISUBMITFORMFIELD"
+                },
+                {
+                    "id": "-1|name",
+                    "name": "Name (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|name"
+                },
+                {
+                    "id": "-1|email",
+                    "name": "Email address (if available)",
+                    "type": "email",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|email"
+                },
+                {
+                    "id": "-1|message",
+                    "name": "Message (if available)",
+                    "type": "text",
+                    "full_id": "TRIGGER_ID:DIVIFORM:-TRIGGER_ID|message"
+                },
+                {
+                    "id": "ID",
+                    "name": "Trigger ID",
+                    "type": "int",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:ID"
+                },
+                {
+                    "id": "TITLE",
+                    "name": "Trigger title",
+                    "type": "text",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:TITLE"
+                },
+                {
+                    "id": "COMPLETION_DATE",
+                    "name": "Trigger completion date",
+                    "type": "date",
+                    "full_id": "TRIGGER_COMMON:TRIGGER_ID:COMPLETION_DATE"
+                },
+                {
+                    "id": "ALL_FIELD_TOKENS",
+                    "name": "All field tokens",
+                    "type": "array"
+                }
+            ]
+        }
+    ],
+    "actions": []
+}

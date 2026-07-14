@@ -3,10 +3,8 @@
 namespace Uncanny_Automator\Integrations\Wp;
 
 use Uncanny_Automator\Integrations\Wp\Migrations\WP_Token_Aliases_Migration;
-use Uncanny_Automator\Integrations\Wp\Tokens\Trigger\Loopable\Post_Categories;
-use Uncanny_Automator\Integrations\Wp\Tokens\Trigger\Loopable\Post_Tags;
-use Uncanny_Automator\Integrations\Wp\Tokens\Universal\Loopable\Post_Categories as Universal_Post_Categories;
-use Uncanny_Automator\Integrations\Wp\Tokens\Universal\Loopable\Post_Tags as Universal_Post_Tags;
+use Uncanny_Automator\Integrations\Wp\Tokens\Loopable\Universal\Post_Categories;
+use Uncanny_Automator\Integrations\Wp\Tokens\Loopable\Universal\Post_Tags;
 
 /**
  * Class Wp_Integration
@@ -61,11 +59,33 @@ class Wp_Integration extends \Uncanny_Automator\Integration {
 	}
 
 	/**
+	 * Shared hooks required for WordPress execution.
+	 *
+	 * Loopable tokens must run even in targeted mode (@see Recipe_Manifest)
+	 * so the Token Loop can find them regardless of which triggers/actions
+	 * a given recipe actually uses.
+	 *
+	 * @return void
+	 */
+	protected function load_shared_hooks() {
+
+		// Universal loopable tokens — must use the Universal\Loopable classes here,
+		// not Trigger\Loopable (those are per-trigger; see
+		// Wp_Helpers::common_trigger_loopable_tokens()). \Uncanny_Automator\Integration
+		// has no set_loopable_tokens(), unlike the old Recipe\Integrations trait, so
+		// register directly (matches EDD_Integration).
+		( new Post_Tags( 'WP' ) )->register_hooks();
+		( new Post_Categories( 'WP' ) )->register_hooks();
+	}
+
+	/**
 	 * Load all triggers, actions, tokens, and closures.
 	 *
 	 * @return void
 	 */
 	public function load() {
+
+		$this->load_shared_hooks();
 
 		// Old token classes — must load before triggers for old Pro compat.
 		// Pro token classes extend these (WP_Pro_Tokens extends Wp_Tokens).
@@ -74,16 +94,6 @@ class Wp_Integration extends \Uncanny_Automator\Integration {
 
 		// Closure — framework-agnostic, no overlap with migrated validate() logic.
 		require_once __DIR__ . '/closures/closure-redirect.php';
-
-		// Loopable tokens.
-		if ( method_exists( $this, 'set_loopable_tokens' ) ) {
-			$this->set_loopable_tokens(
-				array(
-					'WP_POST_TAGS'       => Post_Tags::class,
-					'WP_POST_CATEGORIES' => Post_Categories::class,
-				)
-			);
-		}
 
 		// === Free Triggers ===
 

@@ -302,9 +302,9 @@ class Esaf_Tokens {
 		$to_replace = $pieces[2];
 		$event_data = Automator()->db->token->get( 'event_data', $replace_args );
 		if ( 'AFFILIATE_ADDED_CODE' === $pieces[1] ) {
-			$affiliate_data = maybe_unserialize( $event_data );
+			$affiliate_data = automator_safe_unserialize( $event_data );
 		} else {
-			$data           = maybe_unserialize( $event_data );
+			$data           = automator_safe_unserialize( $event_data );
 			$affiliate_data = new User( $data->affiliate_id );
 		}
 

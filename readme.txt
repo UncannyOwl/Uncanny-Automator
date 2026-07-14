@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 7.3.2
+Stable tag: 7.4.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -84,6 +84,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Google Gemini](https://automatorplugin.com/integration/gemini/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Sheets](https://automatorplugin.com/integration/google-sheets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Google Sheets Web App](https://automatorplugin.com/integration/sheets-web-app/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
+- [GoTo Meeting](https://automatorplugin.com/integration/gotomeeting/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [GoTo Webinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Help Scout](https://automatorplugin.com/integration/help-scout/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -130,6 +131,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [FunnelKit Automations](https://automatorplugin.com/integration/autonami/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Beaver Builder](https://automatorplugin.com/integration/beaver-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [bbPress](https://automatorplugin.com/integration/bbpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Bricks Builder](https://automatorplugin.com/integration/bricks-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [BuddyBoss](https://automatorplugin.com/integration/buddyboss/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -214,6 +216,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [QR Code](https://automatorplugin.com/integration/qr-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Rank Math SEO](https://automatorplugin.com/integration/rank-math-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Redirection](https://automatorplugin.com/integration/redirection/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [RSS feed](https://automatorplugin.com/integration/rss-feed/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [Restrict Content](https://automatorplugin.com/integration/restrict-content-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
@@ -263,11 +266,14 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WordPress](https://automatorplugin.com/integration/wordpress-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WordPress Multisite](https://automatorplugin.com/integration/wordpress-multisite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Wordfence Security](https://automatorplugin.com/integration/wordfence/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WP Activity Log](https://automatorplugin.com/integration/wp-activity-log/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Admin](https://automatorplugin.com/integration/wp-admin/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
 - [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Bitly](https://automatorplugin.com/integration/wp-bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro) (Deprecated)
 - [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [WP Fastest Cache](https://automatorplugin.com/integration/wp-fastest-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion](https://automatorplugin.com/integration/wp-fusion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
 - [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
@@ -419,31 +425,81 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 7.3.2 [2026-06-30] =
+= 7.4.0 [2026-07-14] =
 
-**New Feature:**
+**New App Integration:**
 
-* Status -> Tools - "Resend App Actions" tool to find and bulk resend failed app actions from one place. #8012
+* [GoTo Meeting](https://automatorplugin.com/integration/gotomeeting/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7993
 
-**Updated:**
+**New Plugin Integrations:**
 
-* App Actions - Increased the default outgoing request timeout to better support longer-running app responses. #8009
-* Kit - Removed the unsupported OAuth connection flow and now support V4 connections by API key only. #8006
-* Stripe - Improved product and price dropdown performance in the recipe builder with cached remote loading and refresh support. #7999
-* Stripe - Product refunded trigger now correctly respects the selected price instead of firing for every refunded product. #7999
+* [Beaver Builder](https://automatorplugin.com/integration/beaver-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7476
+* [Redirection](https://automatorplugin.com/integration/redirection/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7533
+* [WP Activity Log](https://automatorplugin.com/integration/wp-activity-log/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7522
+* [WP Fastest Cache](https://automatorplugin.com/integration/wp-fastest-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7534
+* [Wordfence Security](https://automatorplugin.com/integration/wordfence/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7506
+
+**New Triggers:**
+
+* Beaver Builder - A user submits a contact form #7477
+* Beaver Builder - A user submits a subscribe form #7478
+* Redirection - A 404 error is logged #7532
+* Redirection - A redirect in a group is matched #7529
+* Redirection - A redirect is created by the URL monitor #7530
+* Redirection - A redirect is deleted #7531
+* WP Activity Log - A failed login is logged #7520
+* WP Activity Log - An event for an object type is logged #7518
+* WP Activity Log - An event is logged #7521
+* WP Activity Log - An event of a type is logged #7517
+* WP Activity Log - An event with a severity is logged #7519
+* WP Fastest Cache - All cache is cleared #7535
+* Wordfence Security - A blocking rule is deleted #7513
+* Wordfence Security - A login with a breached password is blocked #7509
+* Wordfence Security - A user activates two-factor authentication #7510
+* Wordfence Security - A user deactivates two-factor authentication #7511
+* Wordfence Security - An IP is blocked/throttled #7508
+* Wordfence Security - An IP is locked out #7507
+* Wordfence Security - An admin/non-admin user logs in #7512
+
+**New Actions:**
+
+* GoTo Meeting - Create a meeting #7994
+* GoTo Meeting - Delete a meeting #7995
+* GoTo Training - Add an attendee #7996
+* GoTo Training - Remove an attendee #7997
+* WP Fastest Cache - Purge all caches #7537
+* WP Fastest Cache - Purge the cache for a post #7538
+* Wordfence Security - Block an IP address #7514
+* Wordfence Security - Remove an IP block #7515
+* Wordfence Security - Remove an IP lockout #7516
 
 **Fixed:**
 
-* ActiveCampaign - Fixed an issue where custom fields could be omitted from the Add a contact action when field definitions needed to be refreshed. #7949
-* App Actions - Fixed an issue where resending a logged app action could trigger a PHP error on some sites. #8011
-* App Actions - Fixed an issue where successful app action responses could be incorrectly reported as "Failed with status code - 200". #8010
-* Google Contacts - Fixed an issue where the Create a contact action could include internal Automator action metadata in outgoing API requests. #8004
-* Recipe UI - Fixed an issue where select fields in the recipe builder could stop rendering when another plugin loaded a conflicting Select2 library. #8001
+* Automator review - Added capability and nonce checks to the review settings handler, keeping unauthorized option changes firmly off the guest list. #8159
+* Bluesky - Protected post embed URL requests against SSRF, including redirects that tried to take the scenic route somewhere unsafe. #8157
+* Credits notifications - Added a capability check so lower-privileged users can no longer dismiss site-wide credit notices. #8161
+* Facebook Lead Ads - Added payload validation and optional authorization controls to webhooks, giving unexpected requests a proper ID check. #8155
+* Gravity Forms - Blank List fields no longer stop recipes during form submission. Empty lists can now pass quietly without causing a scene. #8019
+* HubSpot, Brevo, Constant Contact - Deprecated actions - Prevented deprecated actions from loading when demand-driven loading is enabled. Retired means retired. #8035
+* LearnDash - Create a group / Make the user the leader of a group - Fixed legacy option data that prevented the action configuration from opening. #8170
+* LearnDash - Restored the missing loopable tokens to the Token Loop, where they belong. #8021
+* LearnDash - Triggers - Restored the "Number of times" option for affected triggers. The counter is back on duty. #8168
+* Modern Events Calendar - Added authorization and nonce checks to event and ticket AJAX handlers for safer request handling. #8163
+* Recipe log - Secured the "View preview" popup against stored XSS by rendering its HTML inside a sandboxed iframe. The preview now stays in its lane. #8165
+* WordPress - Restored the missing loopable tokens to the Token Loop. #8028
+
+**Security Fixes:**
+
+* Google Contacts & Mautic - Added capability and nonce checks to option fetchers, ensuring only authorized requests get through. CVE-2026-15025 #8152
+* Forminator and related token reads - Hardened token handling against PHP Object Injection. CVE-2026-15008 #8150
+* Loopable integrations (CSV/XML/JSON) - Blocked private-network requests in loopable URL fetchers and hardened token-alias migrations against object injection. #8151
 
 **Under the hood:**
 
-* Recipe Templates - Fixed an issue where the requirements sidebar could stretch past the window edge and cut off text. #7941
-* Trigger Engine - Improved handling of high-frequency WordPress meta hooks to reduce unnecessary trigger checks and loopback requests. #7929
+* Core - Corrected app-credit limits for legacy Pro and Lifetime licenses. The numbers now behave as their licenses intended. #8138
+* Divi - Modernized the integrations using the new framework, giving the foundations a well-earned refresh. #7458
+* Uncanny Agent - Database select tool - Secured WHERE and JOIN handling with validated predicates and prepared values. Database queries now follow a stricter dress code. #8014
+* Uncanny Agent - Secured component requests with encrypted license credentials, request binding, and fail-closed handling. When verification fails, the door stays closed. #8174
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
 

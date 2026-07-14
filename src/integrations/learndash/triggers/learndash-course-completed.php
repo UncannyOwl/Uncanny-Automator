@@ -32,8 +32,10 @@ class LD_COURSEDONE extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-				esc_html_x( 'A user completes {{a course:%1$s}}', 'LearnDash', 'uncanny-automator' ),
-				$this->get_trigger_meta()
+				// translators: %1$s: Course. %2$s: Number of times.
+				esc_html_x( 'A user completes {{a course:%1$s}} {{a number of:%2$s}} time(s)', 'LearnDash', 'uncanny-automator' ),
+				$this->get_trigger_meta(),
+				'NUMTIMES:' . $this->get_trigger_meta()
 			)
 		);
 
@@ -57,6 +59,7 @@ class LD_COURSEDONE extends \Uncanny_Automator\Recipe\Trigger {
 				'custom_value_description' => esc_html_x( 'Course ID', 'LearnDash', 'uncanny-automator' ),
 				'remote_data'              => $this->item_helpers->remote_data_load_config( 'courses' ),
 			),
+			Ld_Tokens_New_Framework::numtimes_field(),
 		);
 	}
 

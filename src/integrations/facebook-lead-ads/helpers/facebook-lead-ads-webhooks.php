@@ -133,7 +133,42 @@ class Facebook_Lead_Ads_Webhooks extends App_Webhooks {
 			);
 		}
 
+		// Basic (non-cryptographic) sanity check on the payload shape. Origin
+		// authenticity is handled upstream (Facebook signs the event, the
+		// Automator API server relays it), so this only rejects malformed or
+		// probe requests by requiring the well-formed leadgen fields the
+		// trigger consumes. It intentionally does not block relayed calls.
+		$lead = isset( $params['data'] ) && is_array( $params['data'] ) ? $params['data'] : array();
+
+		if ( ! $this->is_valid_leadgen_payload( $lead ) ) {
+			return new WP_REST_Response(
+				array(
+					'code'    => 'rest_invalid_leadgen',
+					'message' => esc_html_x( 'Webhook received but not processed. Malformed lead payload.', 'Facebook Lead Ads', 'uncanny-automator' ),
+				),
+				200
+			);
+		}
+
 		return true;
+	}
+
+	/**
+	 * Basic sanity check that the payload looks like a genuine Facebook
+	 * leadgen event. Defense-in-depth against malformed / probe requests,
+	 * NOT authentication -- Facebook and the Automator API server
+	 * authenticate the origin upstream and the site holds no shared secret.
+	 *
+	 * @param array $lead The lead data ( params['data'] ).
+	 *
+	 * @return bool
+	 */
+	private function is_valid_leadgen_payload( $lead ) {
+		$page_id    = absint( $lead['page_id'] ?? 0 );
+		$form_id    = absint( $lead['form_id'] ?? 0 );
+		$leadgen_id = $lead['leadgen_id'] ?? '';
+
+		return $page_id > 0 && $form_id > 0 && '' !== trim( (string) $leadgen_id );
 	}
 
 	/**
@@ -145,7 +180,16 @@ class Facebook_Lead_Ads_Webhooks extends App_Webhooks {
 	 * @return bool
 	 */
 	protected function validate_webhook_authorization( $request ) {
-		return true;
+		// Facebook signs each webhook and the Automator API server relays it,
+		// so origin authenticity is established upstream; the site holds no
+		// shared secret to verify here. Kept open by default so relayed calls
+		// are not blocked. Site owners can enforce their own verification
+		// (e.g. an X-Hub-Signature check) via this filter.
+		return (bool) apply_filters(
+			'automator_facebook_lead_ads_validate_webhook_authorization',
+			true,
+			$request
+		);
 	}
 
 	/**

@@ -136,6 +136,17 @@ class Automator_Review {
 	 */
 	public function handle_feedback_credits() {
 
+		// This dismisses a site-wide credits notification, so require the
+		// admin capability. The nonce alone is not an authorization control:
+		// the credits banner (and its dismiss nonce) is rendered on the WP
+		// dashboard, which is reachable by lower-privileged users, so without
+		// this check a subscriber could dismiss the notice site-wide.
+		if ( ! current_user_can( automator_get_capability() ) ) {
+
+			wp_die( 'Unauthorized.' );
+
+		}
+
 		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_handle_credits_notification_feedback' ) ) {
 
 			wp_die( 'Unauthorized. Error invalid nonce.' );
@@ -276,6 +287,19 @@ class Automator_Review {
 		$is_admin = function_exists( 'is_admin' ) && is_admin();
 
 		if ( ! $_action || ! $is_admin ) {
+			return;
+		}
+
+		// These cases write site-wide options, so require the same capability
+		// as the rest of the class plus a valid nonce. is_admin() alone is a
+		// request-context check (true for any wp-admin / admin-ajax request,
+		// including unauthenticated ones) and is neither an authorization nor a
+		// CSRF control.
+		if ( ! current_user_can( automator_get_capability() ) ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce' ), 'automator_review_settings' ) ) {
 			return;
 		}
 
@@ -432,13 +456,27 @@ class Automator_Review {
 					return;
 				}
 
+				// Nonce shared by both tracking-banner links; verified in
+				// save_review_settings_action().
+				$review_nonce = wp_create_nonce( 'automator_review_settings' );
+
 				// Send review URL
-				$url_send_review = add_query_arg( array( 'action' => 'uo-allow-tracking' ) );
+				$url_send_review = add_query_arg(
+					array(
+						'action' => 'uo-allow-tracking',
+						'nonce'  => $review_nonce,
+					)
+				);
 
 				// Send feedback URL
 				$url_send_feedback_version = $is_pro ? 'Uncanny%20Automator%20Pro%20' . $version : 'Uncanny%20Automator%20' . $version;
 				$url_send_feedback_source  = $is_pro ? 'uncanny-automator-pro' : 'uncanny-automator';
-				$url_remind_later          = add_query_arg( array( 'action' => 'uo-hide-track' ) );
+				$url_remind_later          = add_query_arg(
+					array(
+						'action' => 'uo-hide-track',
+						'nonce'  => $review_nonce,
+					)
+				);
 				include Utilities::automator_get_view( 'tracking-banner.php' );
 			}
 		);

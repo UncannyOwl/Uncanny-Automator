@@ -36,6 +36,40 @@ return array (
       ),
     ),
   ),
+  'BB_CONTACT_FORM_SUBMITTED' => 
+  array (
+    'code' => 'BB_CONTACT_FORM_SUBMITTED',
+    'class' => 'Uncanny_Automator\\Integrations\\Beaver_Builder\\Bb_Contact_Form_Submitted',
+    'integration' => 'BEAVER_BUILDER',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'BB_CONTACT_FORM',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fl_module_contact_form_after_send',
+        1 => 10,
+        2 => 6,
+      ),
+    ),
+  ),
+  'BB_SUBSCRIBE_FORM_SUBMITTED' => 
+  array (
+    'code' => 'BB_SUBSCRIBE_FORM_SUBMITTED',
+    'class' => 'Uncanny_Automator\\Integrations\\Beaver_Builder\\Bb_Subscribe_Form_Submitted',
+    'integration' => 'BEAVER_BUILDER',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'BB_SUBSCRIBE_FORM',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fl_builder_subscribe_form_submission_complete',
+        1 => 10,
+        2 => 6,
+      ),
+    ),
+  ),
   'ANON_MADE_DONATION' => 
   array (
     'code' => 'ANON_MADE_DONATION',
@@ -186,6 +220,40 @@ return array (
         0 => 'charitable_after_insert_donor',
         1 => 20,
         2 => 2,
+      ),
+    ),
+  ),
+  'ANON_DIVI_SUBMIT_FORM' => 
+  array (
+    'code' => 'ANON_DIVI_SUBMIT_FORM',
+    'class' => 'Uncanny_Automator\\Integrations\\Divi\\ANON_DIVI_SUBMIT_FORM',
+    'integration' => 'DIVI',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'DIVIFORM',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'et_pb_contact_form_submit',
+        1 => 100,
+        2 => 3,
+      ),
+    ),
+  ),
+  'DIVI_SUBMIT_FORM' => 
+  array (
+    'code' => 'DIVI_SUBMIT_FORM',
+    'class' => 'Uncanny_Automator\\Integrations\\Divi\\DIVI_SUBMIT_FORM',
+    'integration' => 'DIVI',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'DIVIFORM',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'et_pb_contact_form_submit',
+        1 => 100,
+        2 => 3,
       ),
     ),
   ),
@@ -601,6 +669,74 @@ return array (
         0 => 'pum_sub_form_success',
         1 => 10,
         2 => 1,
+      ),
+    ),
+  ),
+  'REDIRECTION_404_LOGGED' => 
+  array (
+    'code' => 'REDIRECTION_404_LOGGED',
+    'class' => 'Uncanny_Automator\\Integrations\\Redirection\\Redirection_404_Logged',
+    'integration' => 'REDIRECTION',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'REDIRECTION_404',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'redirection_404',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'REDIRECTION_MONITOR_CREATED' => 
+  array (
+    'code' => 'REDIRECTION_MONITOR_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Redirection\\Redirection_Monitor_Created',
+    'integration' => 'REDIRECTION',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'REDIRECTION_MONITOR',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'redirection_monitor_created',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'REDIRECTION_REDIRECT_DELETED' => 
+  array (
+    'code' => 'REDIRECTION_REDIRECT_DELETED',
+    'class' => 'Uncanny_Automator\\Integrations\\Redirection\\Redirection_Redirect_Deleted',
+    'integration' => 'REDIRECTION',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'REDIRECTION_REDIRECT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'redirection_redirect_deleted',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'REDIRECTION_REDIRECT_MATCHED' => 
+  array (
+    'code' => 'REDIRECTION_REDIRECT_MATCHED',
+    'class' => 'Uncanny_Automator\\Integrations\\Redirection\\Redirection_Redirect_Matched',
+    'integration' => 'REDIRECTION',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'REDIRECTION_GROUP',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'redirection_visit',
+        1 => 10,
+        2 => 3,
       ),
     ),
   ),
@@ -1545,6 +1681,125 @@ return array (
       ),
     ),
   ),
+  'WORDFENCE_2FA_ACTIVATED' => 
+  array (
+    'code' => 'WORDFENCE_2FA_ACTIVATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_2fa_Activated',
+    'integration' => 'WORDFENCE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WORDFENCE_2FA_ACTIVATED_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wordfence_ls_2fa_activated',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'WORDFENCE_2FA_DEACTIVATED' => 
+  array (
+    'code' => 'WORDFENCE_2FA_DEACTIVATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_2fa_Deactivated',
+    'integration' => 'WORDFENCE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WORDFENCE_2FA_DEACTIVATED_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wordfence_ls_2fa_deactivated',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'WORDFENCE_BLOCK_DELETED' => 
+  array (
+    'code' => 'WORDFENCE_BLOCK_DELETED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Block_Deleted',
+    'integration' => 'WORDFENCE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WORDFENCE_BLOCK_DELETED_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wordfence_deleted_block',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'WORDFENCE_BREACHED_PASSWORD_LOGIN' => 
+  array (
+    'code' => 'WORDFENCE_BREACHED_PASSWORD_LOGIN',
+    'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Breached_Password_Login',
+    'integration' => 'WORDFENCE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WORDFENCE_BREACHED_PASSWORD_LOGIN_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wordfence_security_event',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'WORDFENCE_IP_BLOCKED_THROTTLED' => 
+  array (
+    'code' => 'WORDFENCE_IP_BLOCKED_THROTTLED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Ip_Blocked_Throttled',
+    'integration' => 'WORDFENCE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WORDFENCE_IP_ACTION',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wordfence_security_event',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'WORDFENCE_IP_LOCKED_OUT' => 
+  array (
+    'code' => 'WORDFENCE_IP_LOCKED_OUT',
+    'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_Ip_Locked_Out',
+    'integration' => 'WORDFENCE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WORDFENCE_IP_LOCKED_OUT_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wordfence_security_event',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'WORDFENCE_USER_LOGS_IN' => 
+  array (
+    'code' => 'WORDFENCE_USER_LOGS_IN',
+    'class' => 'Uncanny_Automator\\Integrations\\Wordfence\\Wordfence_User_Logs_In',
+    'integration' => 'WORDFENCE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WORDFENCE_LOGIN_TYPE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wordfence_security_event',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
   'WP_POST_PUBLISHED_IN_TAXONOMY' => 
   array (
     'code' => 'WP_POST_PUBLISHED_IN_TAXONOMY',
@@ -1848,6 +2103,108 @@ return array (
         0 => 'template_redirect',
         1 => 90,
         2 => 1,
+      ),
+    ),
+  ),
+  'WP_ACTIVITY_LOG_EVENT_LOGGED' => 
+  array (
+    'code' => 'WP_ACTIVITY_LOG_EVENT_LOGGED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Event_Logged',
+    'integration' => 'WP_ACTIVITY_LOG',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPAL_EVENT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wsal_logged_alert',
+        1 => 10,
+        2 => 5,
+      ),
+    ),
+  ),
+  'WP_ACTIVITY_LOG_EVENT_OBJECT' => 
+  array (
+    'code' => 'WP_ACTIVITY_LOG_EVENT_OBJECT',
+    'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Event_Object',
+    'integration' => 'WP_ACTIVITY_LOG',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPAL_OBJECT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wsal_logged_alert',
+        1 => 10,
+        2 => 5,
+      ),
+    ),
+  ),
+  'WP_ACTIVITY_LOG_EVENT_SEVERITY' => 
+  array (
+    'code' => 'WP_ACTIVITY_LOG_EVENT_SEVERITY',
+    'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Event_Severity',
+    'integration' => 'WP_ACTIVITY_LOG',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPAL_SEVERITY',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wsal_logged_alert',
+        1 => 10,
+        2 => 5,
+      ),
+    ),
+  ),
+  'WP_ACTIVITY_LOG_EVENT_TYPE' => 
+  array (
+    'code' => 'WP_ACTIVITY_LOG_EVENT_TYPE',
+    'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Event_Type',
+    'integration' => 'WP_ACTIVITY_LOG',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPAL_TYPE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wsal_logged_alert',
+        1 => 10,
+        2 => 5,
+      ),
+    ),
+  ),
+  'WP_ACTIVITY_LOG_FAILED_LOGIN' => 
+  array (
+    'code' => 'WP_ACTIVITY_LOG_FAILED_LOGIN',
+    'class' => 'Uncanny_Automator\\Integrations\\Wp_Activity_Log\\Wp_Activity_Log_Failed_Login',
+    'integration' => 'WP_ACTIVITY_LOG',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPAL_FAILED_LOGIN',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wsal_logged_alert',
+        1 => 10,
+        2 => 5,
+      ),
+    ),
+  ),
+  'WPFC_ALL_CACHE_CLEARED' => 
+  array (
+    'code' => 'WPFC_ALL_CACHE_CLEARED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wp_Fastest_Cache\\Wpfc_All_Cache_Cleared',
+    'integration' => 'WP_FASTEST_CACHE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPFC_ALL_CACHE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wpfc_delete_cache',
+        1 => 10,
+        2 => 0,
       ),
     ),
   ),

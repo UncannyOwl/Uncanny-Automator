@@ -35,23 +35,32 @@ class Ld_Integration extends \Uncanny_Automator\Integration {
 	}
 
 	/**
+	 * Shared hooks required for LearnDash execution.
+	 *
+	 * Loopable tokens must run even in targeted mode (@see Recipe_Manifest)
+	 * so the Token Loop can find them regardless of which triggers/actions
+	 * a given recipe actually uses.
+	 *
+	 * @return void
+	 */
+	protected function load_shared_hooks() {
+
+		// Loopable tokens — migrated from old add-ld-integration.php.
+		// \Uncanny_Automator\Integration has no set_loopable_tokens(), unlike the
+		// old Recipe\Integrations trait, so register directly (matches EDD_Integration).
+		( new User_Enrolled_Courses( 'LD' ) )->register_hooks();
+		( new User_Enrolled_Groups( 'LD' ) )->register_hooks();
+		( new User_Completed_Courses( 'LD' ) )->register_hooks();
+	}
+
+	/**
 	 * Load triggers, actions, and legacy token classes.
 	 *
 	 * @return void
 	 */
 	public function load() {
 
-		// Loopable tokens — migrated from old add-ld-integration.php.
-		// Must be in load() not setup() — setup() runs before plugin_active() check.
-		if ( method_exists( $this, 'set_loopable_tokens' ) ) {
-			$this->set_loopable_tokens(
-				array(
-					'ENROLLED_COURSES' => User_Enrolled_Courses::class,
-					'ENROLLED_GROUPS'  => User_Enrolled_Groups::class,
-					'COMPLETED_COURSE' => User_Completed_Courses::class,
-				)
-			);
-		}
+		$this->load_shared_hooks();
 
 		// Old token class — self-guards in __construct() when modern integration exists.
 		new \Uncanny_Automator\Ld_Tokens();

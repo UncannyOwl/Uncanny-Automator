@@ -233,9 +233,9 @@ class Ut_Tokens {
 			'trigger_log_id' => $replace_args['trigger_log_id'],
 			'user_id'        => $user_id,
 		);
-		$token_meta = maybe_unserialize( Automator()->db->trigger->get_token_meta( 'imported_row', $token_args ) );
+		$token_meta = automator_safe_unserialize( Automator()->db->trigger->get_token_meta( 'imported_row', $token_args ) );
 		if ( isset( $token_meta[ $token ] ) ) {
-			$val = maybe_unserialize( $token_meta[ $token ] );
+			$val = automator_safe_unserialize( $token_meta[ $token ] );
 			if ( is_array( $val ) ) {
 				return join( ' | ', $val );
 			}
@@ -251,22 +251,22 @@ class Ut_Tokens {
 		}
 
 		if ( 'UOUSERSTIMEINCOURSEEXCEEDS' === $token ) {
-			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS', $token_args ) );
+			return automator_safe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS', $token_args ) );
 		}
 		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_ID' === $token ) {
-			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_ID', $token_args ) );
+			return automator_safe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_ID', $token_args ) );
 		}
 		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_COURSEMINUTES' === $token ) {
-			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_COURSEMINUTES', $token_args ) );
+			return automator_safe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_COURSEMINUTES', $token_args ) );
 		}
 		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_URL' === $token ) {
-			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_URL', $token_args ) );
+			return automator_safe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_URL', $token_args ) );
 		}
 		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_ID' === $token ) {
-			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_ID', $token_args ) );
+			return automator_safe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_ID', $token_args ) );
 		}
 		if ( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_URL' === $token ) {
-			return maybe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_URL', $token_args ) );
+			return automator_safe_unserialize( Automator()->db->trigger->get_token_meta( 'UOUSERSTIMEINCOURSEEXCEEDS_THUMB_URL', $token_args ) );
 		}
 
 		return $value;

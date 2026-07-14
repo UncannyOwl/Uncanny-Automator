@@ -237,7 +237,7 @@ class Bp_Tokens {
 						$meta_key       = $pieces[2];
 						$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 						if ( ! empty( $meta_value ) ) {
-							$value = maybe_unserialize( $meta_value );
+							$value = automator_safe_unserialize( $meta_value );
 						}
 					}
 				}
@@ -269,7 +269,7 @@ class Bp_Tokens {
 		$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT value FROM {$wpdb->prefix}bp_xprofile_data WHERE user_id = %d AND field_id = %s LIMIT 0,1", $user_id, $field_id ) );
 		if ( ! empty( $meta_value ) ) {
 
-			$meta_data = maybe_unserialize( $meta_value );
+			$meta_data = automator_safe_unserialize( $meta_value );
 			if ( empty( $meta_data ) ) {
 				return '';
 			}

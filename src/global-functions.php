@@ -1258,7 +1258,9 @@ function automator_get_allowed_attachment_ext() {
  * record could change between check and request (DNS rebinding). This is a
  * fundamental limitation of PHP-level SSRF protection without a custom DNS
  * resolver. Mitigations already in place that reduce the practical window:
- *  - 'redirection' => 0 on every outbound request prevents redirect-chain bypass.
+ *  - Every request paired with this check must set 'redirection' => 0 so a
+ *    public host cannot redirect to a private address after passing the check.
+ *    Use automator_remote_get_ssrf_safe() for GET requests — it enforces both.
  *  - The REST endpoint requires manage_options (Administrator), narrowing who
  *    can trigger the race.
  * Full protection would require resolving the IP once and connecting by IP,
@@ -1292,6 +1294,81 @@ function automator_resolves_to_private_ip( $url ) {
 
 	// Block private (RFC1918) and reserved ranges (loopback, link-local, etc.).
 	return false === filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+}
+
+/**
+ * SSRF-safe wrapper around wp_remote_get() for user-configurable URLs.
+ *
+ * Use this instead of a bare wp_remote_get() wherever the URL originates from
+ * recipe configuration or other user input. It refuses any URL that resolves
+ * to a private or reserved IP address (see automator_resolves_to_private_ip()).
+ *
+ * Redirects ARE followed — feeds commonly sit behind a CDN/http->https/shortlink
+ * rewrite — but every hop is re-validated with the same private-IP guard before
+ * it is fetched. Redirects are followed manually (with 'redirection' => 0 on each
+ * request) rather than delegated to the HTTP transport because WordPress's own
+ * reject_unsafe_urls / wp_http_validate_url() does NOT block link-local
+ * (169.254.169.254 cloud metadata) or other reserved ranges, so a redirect chain
+ * would otherwise bypass the guard on hops after the first.
+ *
+ * @param string $url  The URL to fetch.
+ * @param array  $args Optional wp_remote_get() arguments. Any 'redirection' value
+ *                     is treated as the maximum number of redirect hops to follow;
+ *                     the underlying requests always use 0 so each hop can be
+ *                     validated individually. Defaults to 1 — enough for the common
+ *                     http->https upgrade or a shortlink, while keeping the redirect
+ *                     attack surface minimal. Pass a higher value for a feed that
+ *                     genuinely chains redirects.
+ *
+ * @return array|WP_Error The response array, or WP_Error if a hop is blocked, the
+ *                        redirect limit is exceeded, or the request fails.
+ *
+ * @since 7.3.2
+ */
+function automator_remote_get_ssrf_safe( $url, $args = array() ) {
+
+	$max_redirects = isset( $args['redirection'] ) ? absint( $args['redirection'] ) : 1;
+	// Validate every hop ourselves — never let the transport follow redirects.
+	$args['redirection'] = 0;
+
+	$current_url = $url;
+
+	for ( $hop = 0; $hop <= $max_redirects; $hop++ ) {
+
+		if ( automator_resolves_to_private_ip( $current_url ) ) {
+			return new WP_Error(
+				'automator_ssrf_blocked',
+				esc_html__( 'The URL resolves to a private or reserved IP address and cannot be used.', 'uncanny-automator' )
+			);
+		}
+
+		$response = wp_remote_get( $current_url, $args );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+
+		// Not a redirect (or a 3xx with no Location) — this is the final response.
+		if ( $status_code < 300 || $status_code >= 400 ) {
+			return $response;
+		}
+
+		$location = wp_remote_retrieve_header( $response, 'location' );
+		if ( empty( $location ) ) {
+			return $response;
+		}
+
+		// Resolve relative Location headers against the URL that issued them,
+		// then loop to re-validate the next hop before fetching it.
+		$current_url = WP_Http::make_absolute_url( $location, $current_url );
+	}
+
+	return new WP_Error(
+		'automator_too_many_redirects',
+		esc_html__( 'The URL exceeded the maximum number of redirects allowed.', 'uncanny-automator' )
+	);
 }
 
 /**

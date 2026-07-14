@@ -1,6 +1,7 @@
 <?php
 
 namespace Uncanny_Automator\Integrations\Learndash;
+
 /**
  * Class LD_PASSQUIZ
  *
@@ -32,8 +33,10 @@ class LD_PASSQUIZ extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-				esc_html_x( 'A user passes {{a quiz:%1$s}}', 'LearnDash', 'uncanny-automator' ),
-				$this->get_trigger_meta()
+				// translators: %1$s: Quiz. %2$s: Number of times.
+				esc_html_x( 'A user passes {{a quiz:%1$s}} {{a number of:%2$s}} time(s)', 'LearnDash', 'uncanny-automator' ),
+				$this->get_trigger_meta(),
+				'NUMTIMES:' . $this->get_trigger_meta()
 			)
 		);
 
@@ -57,6 +60,7 @@ class LD_PASSQUIZ extends \Uncanny_Automator\Recipe\Trigger {
 				'custom_value_description' => esc_html_x( 'Quiz ID', 'LearnDash', 'uncanny-automator' ),
 				'remote_data'              => $this->item_helpers->remote_data_load_config( 'quizzes' ),
 			),
+			Ld_Tokens_New_Framework::numtimes_field(),
 		);
 	}
 
@@ -157,9 +161,9 @@ class LD_PASSQUIZ extends \Uncanny_Automator\Recipe\Trigger {
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
 
-		$quiz    = false;
-		$user    = false;
-		$data    = array();
+		$quiz = false;
+		$user = false;
+		$data = array();
 
 		if ( did_action( 'learndash_quiz_submitted' ) ) {
 			$data = $hook_args[0] ?? array();

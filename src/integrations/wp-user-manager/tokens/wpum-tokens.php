@@ -279,7 +279,7 @@ LIMIT 0,1",
 					$field = $pieces[2];
 
 					$entry = $this->get_field_value( $user, $field );
-					$value = maybe_unserialize( $entry );
+					$value = automator_safe_unserialize( $entry );
 				}
 			}
 		}

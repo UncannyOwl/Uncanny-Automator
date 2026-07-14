@@ -340,8 +340,12 @@ class Bluesky_Media {
 			throw new Exception( esc_attr_x( 'Website embed: Invalid URL provided.', 'Bluesky', 'uncanny-automator' ) );
 		}
 
-		// Get HTML content
-		$response = wp_remote_get( $url );
+		// Get HTML content. Use the SSRF-safe fetch so each redirect hop is
+		// re-validated against the private-IP guard (a public host could
+		// otherwise redirect into an internal address after get_valid_url()).
+		// Allow up to 3 validated hops so common shortened / http->https /
+		// canonical link redirects still resolve to a card.
+		$response = automator_remote_get_ssrf_safe( $url, array( 'redirection' => 3 ) );
 		if ( is_wp_error( $response ) ) {
 			throw new Exception( esc_attr_x( 'Website embed: Unable to fetch the URL. Please verify the URL is accessible.', 'Bluesky', 'uncanny-automator' ) );
 		}
@@ -408,10 +412,19 @@ class Bluesky_Media {
 	 * @return string|false
 	 */
 	private function get_valid_url( $url ) {
-		if ( filter_var( $url, FILTER_VALIDATE_URL ) ) {
-			return $url;
+		if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
+			return false;
 		}
-		return false;
+
+		// SSRF guard. The embed URL can originate from a recipe token fed by
+		// untrusted trigger data, and this method is the single validation
+		// choke-point for the website, oEmbed and direct-media fetches, so
+		// block anything resolving to a private / reserved IP here.
+		if ( automator_resolves_to_private_ip( $url ) ) {
+			return false;
+		}
+
+		return $url;
 	}
 
 	/**

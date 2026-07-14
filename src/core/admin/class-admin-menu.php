@@ -405,13 +405,10 @@ class Admin_Menu {
 		$connect_url  = self::$automator_connect_url . self::$automator_connect_page . '?redirect_url=' . rawurlencode( $redirect_url );
 
 		$is_elite_active = defined( 'UAEI_PLUGIN_VERSION' );
-		$is_pro_active   = false;
 
-		if ( isset( $is_connected['item_name'] ) ) {
-			if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) && AUTOMATOR_PRO_ITEM_NAME === $is_connected['item_name'] ) {
-				$is_pro_active = true;
-			}
-		}
+		// Unlimited app credits = any paid plan tier. Resolved via the single
+		// src/app seam, not an item_name match (which capped legacy licenses).
+		$has_unlimited_credits = automator_has_unlimited_credits();
 
 		$user = wp_get_current_user();
 
@@ -984,7 +981,7 @@ class Admin_Menu {
 			'paid_usage_count'   => absint( $paid_usage_count ),
 			'usage_limit'        => absint( $usage_limit ),
 			// Check if the user is using Automator Pro
-			'is_pro'             => $is_pro_active,
+			'is_pro'             => $has_unlimited_credits,
 			'is_elite'           => $is_elite_active,
 			// Is Pro connected
 			'is_pro_installed'   => defined( 'AUTOMATOR_PRO_FILE' ) ? true : false,
@@ -1530,16 +1527,13 @@ class Admin_Menu {
 					// Get data about the connected site
 					$this->automator_connect = Api_Server::is_automator_connected();
 
-					// Check if the user has Automator Pro
-					$is_pro_active = false;
-					if ( isset( $this->automator_connect['item_name'] ) ) {
-						if ( defined( 'AUTOMATOR_PRO_ITEM_NAME' ) && AUTOMATOR_PRO_ITEM_NAME === $this->automator_connect['item_name'] ) {
-							$is_pro_active = true;
-						}
-					}
+					// Check if the user has Automator Pro (unlimited credits = any
+					// paid tier). Resolved via the single src/app seam, not an
+					// item_name match (which capped legacy licenses).
+					$has_unlimited_credits = automator_has_unlimited_credits();
 
 					// Add it to the main JS variable
-					$data['isPro'] = $is_pro_active;
+					$data['isPro'] = $has_unlimited_credits;
 
 					// Check if the site is connected
 					$data['hasSiteConnected'] = $this->automator_connect ? true : false;
