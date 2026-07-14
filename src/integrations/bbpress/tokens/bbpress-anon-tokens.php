@@ -76,7 +76,7 @@ LIMIT 0,1",
 					$meta_key       = $pieces[2];
 					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 					if ( ! empty( $meta_value ) ) {
-						$value = maybe_unserialize( $meta_value );
+						$value = automator_safe_unserialize( $meta_value );
 					}
 				}
 			}
@@ -90,7 +90,7 @@ LIMIT 0,1",
 					$meta_key       = $pieces[2];
 					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 					if ( ! empty( $meta_value ) ) {
-						$value = maybe_unserialize( $meta_value );
+						$value = automator_safe_unserialize( $meta_value );
 					}
 				}
 			}
@@ -104,7 +104,7 @@ LIMIT 0,1",
 					$meta_key       = $pieces[2];
 					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 					if ( ! empty( $meta_value ) ) {
-						$value = maybe_unserialize( $meta_value );
+						$value = automator_safe_unserialize( $meta_value );
 					}
 				}
 			}
@@ -118,7 +118,7 @@ LIMIT 0,1",
 					$meta_key       = $pieces[2];
 					$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 					if ( ! empty( $meta_value ) ) {
-						$value = maybe_unserialize( $meta_value );
+						$value = automator_safe_unserialize( $meta_value );
 					}
 				}
 			}

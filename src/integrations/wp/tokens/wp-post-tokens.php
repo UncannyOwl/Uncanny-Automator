@@ -814,19 +814,19 @@ class Wp_Post_Tokens {
 				break;
 			case 'POSTCATEGORIES':
 				$value = Automator()->db->token->get( 'POSTCATEGORIES', $replace_args );
-				$value = maybe_unserialize( $value );
+				$value = automator_safe_unserialize( $value );
 				break;
 			case 'POSTTAGS':
 				$value = Automator()->db->token->get( 'POSTTAGS', $replace_args );
-				$value = maybe_unserialize( $value );
+				$value = automator_safe_unserialize( $value );
 				break;
 			case 'WPTAXONOMYTERM':
 				$value = Automator()->db->token->get( 'WPTAXONOMYTERM', $replace_args );
-				$value = maybe_unserialize( $value );
+				$value = automator_safe_unserialize( $value );
 				break;
 			case 'WPTAXONOMIES':
 				$value = Automator()->db->token->get( 'WPTAXONOMIES', $replace_args );
-				$value = maybe_unserialize( $value );
+				$value = automator_safe_unserialize( $value );
 				break;
 			default:
 				global $wpdb;

@@ -26,6 +26,7 @@ class LD_CREATEGROUP extends \Uncanny_Automator\Recipe\Action {
 
 		$this->set_sentence(
 			sprintf(
+				// translators: %1$s: action meta for group name
 				esc_html_x( 'Create {{a group:%1$s}}', 'LearnDash', 'uncanny-automator' ),
 				$this->get_action_meta()
 			)
@@ -34,7 +35,6 @@ class LD_CREATEGROUP extends \Uncanny_Automator\Recipe\Action {
 		$this->set_readable_sentence(
 			esc_html_x( 'Create {{a group}}', 'LearnDash', 'uncanny-automator' )
 		);
-
 	}
 
 	/**
@@ -84,7 +84,7 @@ class LD_CREATEGROUP extends \Uncanny_Automator\Recipe\Action {
 			'post_status'    => 'publish',
 		);
 
-		$options = automator_wp_query( $args, 'legacy' );
+		$options = automator_wp_query( $args );
 
 		return array(
 			array(
@@ -109,10 +109,12 @@ class LD_CREATEGROUP extends \Uncanny_Automator\Recipe\Action {
 				'description'           => '<div class="user-selector__warning">' . esc_html_x( 'Only users with the Group Leader role can be made the leader of a group.', 'LearnDash', 'uncanny-automator' ) . '</div>',
 				'required'              => true,
 				'default_value'         => 'do_nothing',
-				'options'               => array(
-					'do_nothing' => esc_html_x( 'Do not add the Group Leader role', 'LearnDash', 'uncanny-automator' ),
-					'add'        => esc_html_x( 'Add the role to their existing role(s)', 'LearnDash', 'uncanny-automator' ),
-					'replace'    => esc_html_x( 'Replace their existing role(s) with the Group Leader role', 'LearnDash', 'uncanny-automator' ),
+				'options'               => automator_array_as_options(
+					array(
+						'do_nothing' => esc_html_x( 'Do not add the Group Leader role', 'LearnDash', 'uncanny-automator' ),
+						'add'        => esc_html_x( 'Add the role to their existing role(s)', 'LearnDash', 'uncanny-automator' ),
+						'replace'    => esc_html_x( 'Replace their existing role(s) with the Group Leader role', 'LearnDash', 'uncanny-automator' ),
+					)
 				),
 				'supports_custom_value' => false,
 				'supports_tokens'       => false,

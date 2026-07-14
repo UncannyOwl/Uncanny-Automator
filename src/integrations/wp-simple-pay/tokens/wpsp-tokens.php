@@ -245,13 +245,13 @@ class Wpsp_Tokens {
 		}
 		// Form meta
 		if ( 'WPSPFORMFIELDS_META' === $pieces[1] ) {
-			$meta_data = maybe_unserialize( Automator()->db->token->get( 'meta_data', $replace_args ) );
+			$meta_data = automator_safe_unserialize( Automator()->db->token->get( 'meta_data', $replace_args ) );
 
 			return is_array( $meta_data ) && array_key_exists( $meta_key, $meta_data ) ? $meta_data[ $meta_key ] : '';
 		}
 		// Billing fields
 		if ( 'WPSPFORMFIELDS_BILLING_FIELDS' === $pieces[1] ) {
-			$customer_data = maybe_unserialize( Automator()->db->token->get( 'customer_data', $replace_args ) );
+			$customer_data = automator_safe_unserialize( Automator()->db->token->get( 'customer_data', $replace_args ) );
 			$customer_data = json_decode( wp_json_encode( $customer_data ), false );
 			switch ( $meta_key ) {
 				case 'BILLING_NAME':
@@ -305,7 +305,7 @@ class Wpsp_Tokens {
 	 * @return mixed|void
 	 */
 	private function get_price_option_values( $replace_args, $type = 'price' ) {
-		$meta_data = maybe_unserialize( Automator()->db->token->get( 'meta_data', $replace_args ) );
+		$meta_data = automator_safe_unserialize( Automator()->db->token->get( 'meta_data', $replace_args ) );
 		if ( 'qty' === $type ) {
 			return $meta_data['simpay_quantity'];
 

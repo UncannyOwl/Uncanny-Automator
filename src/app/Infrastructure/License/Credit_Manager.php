@@ -6,6 +6,7 @@ namespace Uncanny_Automator\App\Infrastructure\License;
 use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Request;
 use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client_Interface;
 use Uncanny_Automator\App\Infrastructure\Exceptions\Api_Exception;
+use Uncanny_Automator\App\Plan\Services\Plan_Service;
 
 /**
  * Class Credit_Manager
@@ -34,14 +35,26 @@ class Credit_Manager {
 	private $api_client;
 
 	/**
+	 * Plan service — the single authority for credit entitlement.
+	 *
+	 * All paid tiers include unlimited credits; only the free (lite) tier is
+	 * metered. Resolved from the plan tier, never from the license item_name.
+	 *
+	 * @var Plan_Service
+	 */
+	private $plan_service;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param License_Manager      $license_manager The license manager instance.
 	 * @param Api_Client_Interface $api_client      The API client instance.
+	 * @param Plan_Service|null    $plan_service    The plan service instance.
 	 */
-	public function __construct( License_Manager $license_manager, Api_Client_Interface $api_client ) {
+	public function __construct( License_Manager $license_manager, Api_Client_Interface $api_client, ?Plan_Service $plan_service = null ) {
 		$this->license_manager = $license_manager;
 		$this->api_client      = $api_client;
+		$this->plan_service    = $plan_service ?? new Plan_Service();
 	}
 
 	/**
@@ -57,7 +70,7 @@ class Credit_Manager {
 	public function has_credits(): bool {
 		$license = $this->license_manager->validate();
 
-		if ( $this->is_pro_license( $license['item_name'] ?? '' ) ) {
+		if ( $this->plan_service->is_pro() ) {
 			return true;
 		}
 
@@ -83,7 +96,7 @@ class Credit_Manager {
 			return 0;
 		}
 
-		if ( $this->is_pro_license( $license['item_name'] ?? '' ) ) {
+		if ( $this->plan_service->is_pro() ) {
 			return -1;
 		}
 
@@ -122,22 +135,5 @@ class Credit_Manager {
 		set_transient( License_Manager::TRANSIENT_LICENSE, $data, License_Manager::CACHE_DURATION );
 
 		return $response->to_legacy_array();
-	}
-
-	/**
-	 * Check if the license item name matches the Pro product.
-	 *
-	 * Uses the AUTOMATOR_PRO_ITEM_NAME constant when Pro is active.
-	 * Falls back to false if Pro is not loaded (constant undefined).
-	 *
-	 * @param string $item_name The item name from the license response.
-	 *
-	 * @return bool
-	 */
-	private function is_pro_license( string $item_name ): bool {
-		if ( ! defined( 'AUTOMATOR_PRO_ITEM_NAME' ) ) {
-			return false;
-		}
-		return AUTOMATOR_PRO_ITEM_NAME === $item_name;
 	}
 }

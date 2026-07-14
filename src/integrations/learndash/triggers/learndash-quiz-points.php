@@ -32,10 +32,12 @@ class LD_QUIZPOINT extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_sentence(
 			sprintf(
-				esc_html_x( 'A user achieves {{greater than, less than or equal to:%1$s}} {{a number of:%2$s}} points on {{a quiz:%3$s}}', 'LearnDash', 'uncanny-automator' ),
+				// translators: %1$s: Condition. %2$s: Points. %3$s: Quiz. %4$s: Number of times.
+				esc_html_x( 'A user achieves {{greater than, less than or equal to:%1$s}} {{a number of:%2$s}} points on {{a quiz:%3$s}} {{a number of:%4$s}} time(s)', 'LearnDash', 'uncanny-automator' ),
 				'NUMBERCOND:' . $this->get_trigger_meta(),
 				'QUIZPOINT:' . $this->get_trigger_meta(),
-				$this->get_trigger_meta()
+				$this->get_trigger_meta(),
+				'NUMTIMES:' . $this->get_trigger_meta()
 			)
 		);
 
@@ -68,6 +70,7 @@ class LD_QUIZPOINT extends \Uncanny_Automator\Recipe\Trigger {
 				'custom_value_description' => esc_html_x( 'Quiz ID', 'LearnDash', 'uncanny-automator' ),
 				'remote_data'              => $this->item_helpers->remote_data_load_config( 'quizzes' ),
 			),
+			Ld_Tokens_New_Framework::numtimes_field(),
 		);
 	}
 

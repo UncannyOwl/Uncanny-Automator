@@ -112,6 +112,11 @@ class Google_Contacts_Helpers extends App_Helpers {
 	 */
 	public function ajax_fetch_labels() {
 
+		// Capability + nonce guard: this is an admin recipe-builder fetch that
+		// uses admin-configured credentials to hit the vendor API. Bails on
+		// missing nonce or insufficient capability (manage_options).
+		Automator()->utilities->verify_nonce();
+
 		try {
 			// Use injected API instance
 			$options = $this->api->fetch_contact_groups();

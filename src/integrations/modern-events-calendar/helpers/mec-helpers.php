@@ -102,6 +102,8 @@ class MEC_HELPERS {
 	 */
 	public function select_event_tickets() {
 
+		Automator()->utilities->ajax_auth_check();
+
 		$tickets = array();
 
 		$event_id = filter_input( INPUT_POST, 'value', FILTER_SANITIZE_NUMBER_INT );
@@ -129,6 +131,8 @@ class MEC_HELPERS {
 	 * @return void.
 	 */
 	public function select_events_endpoint() {
+
+		Automator()->utilities->ajax_auth_check();
 
 		$events = new MEC_HELPERS();
 

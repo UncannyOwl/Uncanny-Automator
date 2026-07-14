@@ -175,7 +175,7 @@ class Wpmsmtp_Tokens {
 
 		$to_replace       = $pieces[2];
 		$tracking_details = Automator()->db->token->get( 'tracking_data', $replace_args );
-		$tracking_details = maybe_unserialize( $tracking_details );
+		$tracking_details = automator_safe_unserialize( $tracking_details );
 		$email_log_id     = $tracking_details['email_log_id'];
 		$email_log        = new \WPMailSMTP\Pro\Emails\Logs\Email( $email_log_id );
 

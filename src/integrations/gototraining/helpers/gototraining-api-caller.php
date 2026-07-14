@@ -197,7 +197,60 @@ class Gototraining_Api_Caller extends Api_Caller {
 	////////////////////////////////////////////////////////////
 
 	/**
-	 * Register user to a training session.
+	 * Register a specific attendee to a training session.
+	 *
+	 * Shared by the user action (GTT_REGISTERUSER, resolves the WP user)
+	 * and the non-user action (GTT_REGISTERATTENDEE, fields supplied
+	 * directly). GoTo requires givenName + surname, so fall back to the
+	 * email local-part when either is empty.
+	 *
+	 * @param string $training_key Training key.
+	 * @param string $given_name   Attendee first name.
+	 * @param string $surname      Attendee last name.
+	 * @param string $email        Attendee email.
+	 * @param mixed  $action_data  Action data for logging.
+	 *
+	 * @return array The registration data (joinUrl, confirmationUrl, registrantKey).
+	 * @throws Exception On API errors.
+	 */
+	public function register_attendee( $training_key, $given_name, $surname, $email, $action_data = null ) {
+
+		if ( ! empty( $email ) ) {
+			$email_parts = explode( '@', $email );
+			$given_name  = empty( $given_name ) ? $email_parts[0] : $given_name;
+			$surname     = empty( $surname ) ? $email_parts[0] : $surname;
+		}
+
+		$body = array(
+			'action'       => 'gtt_register_user',
+			'training_key' => $training_key,
+			'user'         => wp_json_encode(
+				array(
+					'givenName' => $given_name,
+					'surname'   => $surname,
+					'email'     => $email,
+				)
+			),
+		);
+
+		$response = $this->api_request( $body, $action_data );
+
+		$jsondata = $response['data'];
+		$code     = $response['statusCode'];
+
+		if ( 200 !== $code && 201 !== $code ) {
+			throw new Exception( esc_html( $jsondata['description'] ), absint( $code ) );
+		}
+
+		if ( ! isset( $jsondata['joinUrl'] ) ) {
+			throw new Exception( esc_html_x( 'Error adding attendee to GoTo Training', 'GoToTraining', 'uncanny-automator' ) );
+		}
+
+		return $jsondata;
+	}
+
+	/**
+	 * Register the recipe's WP user to a training session.
 	 *
 	 * @param int    $user_id     User ID.
 	 * @param string $training_key Training key.
@@ -214,40 +267,7 @@ class Gototraining_Api_Caller extends Api_Caller {
 			throw new Exception( esc_html_x( 'GoTo Training user not found.', 'GoToTraining', 'uncanny-automator' ) );
 		}
 
-		$customer_first_name = $user->first_name;
-		$customer_last_name  = $user->last_name;
-		$customer_email      = $user->user_email;
-
-		if ( ! empty( $customer_email ) ) {
-			$customer_email_parts = explode( '@', $customer_email );
-			$customer_first_name  = empty( $customer_first_name ) ? $customer_email_parts[0] : $customer_first_name;
-			$customer_last_name   = empty( $customer_last_name ) ? $customer_email_parts[0] : $customer_last_name;
-		}
-
-		$body = array(
-			'action'       => 'gtt_register_user',
-			'training_key' => $training_key,
-			'user'         => wp_json_encode(
-				array(
-					'givenName' => $customer_first_name,
-					'surname'   => $customer_last_name,
-					'email'     => $customer_email,
-				)
-			),
-		);
-
-		$response = $this->api_request( $body, $action_data );
-
-		$jsondata = $response['data'];
-		$code     = $response['statusCode'];
-
-		if ( 200 !== $code && 201 !== $code ) {
-			throw new Exception( esc_html( $jsondata['description'] ), absint( $code ) );
-		}
-
-		if ( ! isset( $jsondata['joinUrl'] ) ) {
-			throw new Exception( esc_html_x( 'Error adding user to GoTo Training', 'GoToTraining', 'uncanny-automator' ) );
-		}
+		$jsondata = $this->register_attendee( $training_key, $user->first_name, $user->last_name, $user->user_email, $action_data );
 
 		update_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey', $jsondata['registrantKey'] );
 		update_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_joinUrl', $jsondata['joinUrl'] );
@@ -257,7 +277,39 @@ class Gototraining_Api_Caller extends Api_Caller {
 	}
 
 	/**
-	 * Unregister user from a training session.
+	 * Unregister a registrant from a training session by registrant key.
+	 *
+	 * Shared by the user action (GTT_UNREGISTERUSER, key from user meta)
+	 * and the non-user action (GTT_UNREGISTERATTENDEE, key supplied
+	 * directly).
+	 *
+	 * @param string $training_key   Training key.
+	 * @param string $registrant_key Registrant key.
+	 * @param mixed  $action_data    Action data for logging.
+	 *
+	 * @return void
+	 * @throws Exception On API errors.
+	 */
+	public function unregister_registrant( $training_key, $registrant_key, $action_data = null ) {
+
+		$body = array(
+			'action'              => 'gtt_unregister_user',
+			'training_key'        => $training_key,
+			'user_registrant_key' => $registrant_key,
+		);
+
+		$response = $this->api_request( $body, $action_data );
+
+		$jsondata = $response['data'];
+		$code     = $response['statusCode'];
+
+		if ( 200 !== $code && 201 !== $code && 204 !== $code ) {
+			throw new Exception( esc_html( $jsondata['description'] ) );
+		}
+	}
+
+	/**
+	 * Unregister the recipe's WP user from a training session.
 	 *
 	 * @param int    $user_id     User ID.
 	 * @param string $training_key Training key.
@@ -274,20 +326,7 @@ class Gototraining_Api_Caller extends Api_Caller {
 			throw new Exception( esc_html_x( 'User was not registered for training session.', 'GoToTraining', 'uncanny-automator' ) );
 		}
 
-		$body = array(
-			'action'              => 'gtt_unregister_user',
-			'training_key'        => $training_key,
-			'user_registrant_key' => $user_registrant_key,
-		);
-
-		$response = $this->api_request( $body, $action_data );
-
-		$jsondata = $response['data'];
-		$code     = $response['statusCode'];
-
-		if ( 200 !== $code && 201 !== $code && 204 !== $code ) {
-			throw new Exception( esc_html( $jsondata['description'] ) );
-		}
+		$this->unregister_registrant( $training_key, $user_registrant_key, $action_data );
 
 		delete_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_registrantKey' );
 		delete_user_meta( $user_id, '_uncannyowl_gtt_training_' . $training_key . '_joinUrl' );

@@ -50,7 +50,8 @@ class Json_To_Array_Converter {
 		// Check if the input is a valid URL and fetch the JSON data via HTTP.
 		if ( $this->is_url( $input ) ) {
 
-			$response = wp_remote_get( $input );
+			// SSRF-safe fetch: refuses private/reserved IPs; redirects are followed hop-by-hop, each re-validated.
+			$response = automator_remote_get_ssrf_safe( $input );
 
 			// Handle HTTP request errors.
 			if ( is_wp_error( $response ) ) {

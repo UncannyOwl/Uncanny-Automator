@@ -157,7 +157,7 @@ class Advanced_Ads_Tokens {
 
 		$to_replace = $pieces[2];
 		$ad_data    = Automator()->db->token->get( 'save_ad', $replace_args );
-		$ad         = maybe_unserialize( $ad_data );
+		$ad         = automator_safe_unserialize( $ad_data );
 		$post       = get_post( $ad->id );
 
 		switch ( $to_replace ) {

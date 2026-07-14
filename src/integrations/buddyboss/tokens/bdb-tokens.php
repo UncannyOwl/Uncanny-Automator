@@ -329,7 +329,7 @@ class Bdb_Tokens {
 						$meta_key       = $pieces[2];
 						$meta_value     = Automator()->helpers->recipe->get_form_data_from_trigger_meta( $meta_key, $trigger_id, $trigger_log_id, $user_id );
 						if ( ! empty( $meta_value ) ) {
-							$value = maybe_unserialize( $meta_value );
+							$value = automator_safe_unserialize( $meta_value );
 						}
 					}
 				}
@@ -481,7 +481,7 @@ class Bdb_Tokens {
 		);
 
 		// The value is stored as a serialized array in the DB.
-		$field_val = maybe_unserialize( $social_media_value_serialized );
+		$field_val = automator_safe_unserialize( $social_media_value_serialized );
 
 		if ( is_array( $field_val ) && isset( $field_val[ $field_key ] ) ) {
 			return $field_val[ $field_key ];

@@ -122,7 +122,7 @@ class Pmp_Tokens {
 		if ( ( isset( $pieces[2] ) && preg_match( '/PMPMEMBERSHIP(\_)?/', $pieces[2] ) ) ) {
 
 			$field = $pieces[2];
-			$entry = maybe_unserialize( Automator()->db->token->get( 'membership_details', $replace_args ) );
+			$entry = automator_safe_unserialize( Automator()->db->token->get( 'membership_details', $replace_args ) );
 			if ( $entry && isset( $entry[ $field ] ) ) {
 				$value = $entry[ $field ];
 			}

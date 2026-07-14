@@ -60,7 +60,8 @@ class Xml_To_Json_Converter {
 			'user-agent' => $this->http_request_user_agent,
 		);
 
-		$response = wp_remote_get( $url, $args );
+		// SSRF-safe fetch: refuses private/reserved IPs; redirects are followed hop-by-hop, each re-validated.
+		$response = automator_remote_get_ssrf_safe( $url, $args );
 		if ( is_wp_error( $response ) ) {
 			throw new RuntimeException(
 				sprintf(

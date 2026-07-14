@@ -133,7 +133,7 @@ class Fr_Tokens {
 				'user_id'        => $user_id,
 			);
 			$value          = Automator()->db->trigger->get_token_meta( $match, $parse_tokens );
-			$value          = maybe_unserialize( $value );
+			$value          = automator_safe_unserialize( $value );
 
 			if ( is_array( $value ) ) {
 				// Check for file uploads

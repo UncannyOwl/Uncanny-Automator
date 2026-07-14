@@ -274,15 +274,31 @@ class WP_Token_Aliases_Migration {
 	 */
 	public function rewrite_serialized( string $serialized, array $aliases ): string {
 
+		// Recipe-structure postmeta only ever holds arrays/scalars, so disallow
+		// object instantiation -- closes PHP Object Injection without changing
+		// output for legitimate data (re-serialized identically below).
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
-		$data = @unserialize( $serialized );
+		$data = @unserialize( $serialized, array( 'allowed_classes' => false ) );
 
 		if ( false === $data && 'b:0;' !== $serialized ) {
 			// Malformed serialized data — leave untouched.
 			return $serialized;
 		}
 
-		$rewritten = $this->walk_and_rewrite( $data, $aliases );
+		try {
+			$rewritten = $this->walk_and_rewrite( $data, $aliases );
+		} catch ( \Throwable $e ) {
+			// A value we can't safely walk (e.g. a neutralised object, whose
+			// __PHP_Incomplete_Class properties throw on write) — leave the
+			// row untouched rather than aborting the whole migration run.
+			if ( function_exists( 'automator_log' ) ) {
+				automator_log(
+					sprintf( 'Token aliases migration: skipped un-walkable serialized value (%s)', $e->getMessage() ),
+					'WP_Token_Aliases_Migration'
+				);
+			}
+			return $serialized;
+		}
 
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		return serialize( $rewritten );

@@ -561,7 +561,7 @@ class Wpf_Tokens {
 						$meta_value = esc_html_x( 'This token requires WPForms Pro', 'WPForms', 'uncanny-automator' );
 					}
 					if ( ! empty( $meta_value ) ) {
-						$value = maybe_unserialize( $meta_value );
+						$value = automator_safe_unserialize( $meta_value );
 					}
 				}
 			}

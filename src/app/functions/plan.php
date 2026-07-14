@@ -129,6 +129,21 @@ function automator_has_pro_elite_plan() {
 	return $plan_service->is_elite();
 }
 
+/**
+ * Check whether the current license includes unlimited app credits.
+ *
+ * All paid plans (Pro Basic/Plus/Elite) include unlimited app credits; only the
+ * free (Lite) plan is metered at the 250 cap. Resolved from the plan tier via
+ * Plan_Service — never from the license item_name, which breaks legacy licenses
+ * whose item name predates the current Pro product name. This is the single seam
+ * src/core uses for the credit-cap decision.
+ *
+ * @return bool True when the plan is any paid tier.
+ */
+function automator_has_unlimited_credits() {
+	return automator_get_plan_service()->is_pro();
+}
+
 // =============================================================================
 // PLAN COMPARISON
 // =============================================================================

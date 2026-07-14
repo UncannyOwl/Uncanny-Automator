@@ -317,12 +317,30 @@ class Ld_Helpers extends Abstract_Helpers {
 	 */
 	public static function comparison_operators() {
 		return array(
-			array( 'value' => '<', 'text' => esc_html_x( 'less than', 'LearnDash', 'uncanny-automator' ) ),
-			array( 'value' => '>', 'text' => esc_html_x( 'greater than', 'LearnDash', 'uncanny-automator' ) ),
-			array( 'value' => '=', 'text' => esc_html_x( 'equal to', 'LearnDash', 'uncanny-automator' ) ),
-			array( 'value' => '!=', 'text' => esc_html_x( 'not equal to', 'LearnDash', 'uncanny-automator' ) ),
-			array( 'value' => '>=', 'text' => esc_html_x( 'greater or equal to', 'LearnDash', 'uncanny-automator' ) ),
-			array( 'value' => '<=', 'text' => esc_html_x( 'less or equal to', 'LearnDash', 'uncanny-automator' ) ),
+			array(
+				'value' => '<',
+				'text'  => esc_html_x( 'less than', 'LearnDash', 'uncanny-automator' ),
+			),
+			array(
+				'value' => '>',
+				'text'  => esc_html_x( 'greater than', 'LearnDash', 'uncanny-automator' ),
+			),
+			array(
+				'value' => '=',
+				'text'  => esc_html_x( 'equal to', 'LearnDash', 'uncanny-automator' ),
+			),
+			array(
+				'value' => '!=',
+				'text'  => esc_html_x( 'not equal to', 'LearnDash', 'uncanny-automator' ),
+			),
+			array(
+				'value' => '>=',
+				'text'  => esc_html_x( 'greater or equal to', 'LearnDash', 'uncanny-automator' ),
+			),
+			array(
+				'value' => '<=',
+				'text'  => esc_html_x( 'less or equal to', 'LearnDash', 'uncanny-automator' ),
+			),
 		);
 	}
 
@@ -535,9 +553,9 @@ class Ld_Helpers extends Abstract_Helpers {
 	 */
 	private function build_lessons_from_course( $request, $include_any ) {
 
-		$values        = $request->get_values();
-		$selected      = $request->get_field_value( 'LDCOURSE' );
-		$ld_course_id  = ( 'automator_custom_value' === $selected )
+		$values       = $request->get_values();
+		$selected     = $request->get_field_value( 'LDCOURSE' );
+		$ld_course_id = ( 'automator_custom_value' === $selected )
 			? absint( $values['LDCOURSE_custom'] ?? 0 )
 			: absint( $selected );
 
@@ -798,7 +816,7 @@ class Ld_Helpers extends Abstract_Helpers {
 		$top_level = get_posts(
 			array(
 				'post_type'      => 'groups',
-				'posts_per_page' => 9999,
+				'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'post_status'    => 'publish',
@@ -831,7 +849,7 @@ class Ld_Helpers extends Abstract_Helpers {
 		$children = get_posts(
 			array(
 				'post_type'      => 'groups',
-				'posts_per_page' => 9999,
+				'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'post_status'    => 'publish',
@@ -873,7 +891,7 @@ class Ld_Helpers extends Abstract_Helpers {
 		$certificates = get_posts(
 			array(
 				'post_type'      => 'sfwd-certificates',
-				'posts_per_page' => 9999,
+				'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'post_status'    => 'publish',
@@ -931,11 +949,33 @@ class Ld_Helpers extends Abstract_Helpers {
 
 		// "Any course" picked — return all lessons + topics across the site.
 		if ( -1 === $course_id ) {
-			foreach ( get_posts( array( 'post_type' => 'sfwd-lessons', 'posts_per_page' => 9999, 'orderby' => 'title', 'order' => 'ASC', 'post_status' => 'publish' ) ) as $lesson ) {
-				$options[] = array( 'value' => (string) $lesson->ID, 'text' => $lesson->post_title );
+			foreach ( get_posts(
+				array(
+					'post_type'      => 'sfwd-lessons',
+					'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+					'orderby'        => 'title',
+					'order'          => 'ASC',
+					'post_status'    => 'publish',
+				)
+			) as $lesson ) {
+				$options[] = array(
+					'value' => (string) $lesson->ID,
+					'text'  => $lesson->post_title,
+				);
 			}
-			foreach ( get_posts( array( 'post_type' => 'sfwd-topic', 'posts_per_page' => 9999, 'orderby' => 'title', 'order' => 'ASC', 'post_status' => 'publish' ) ) as $topic ) {
-				$options[] = array( 'value' => (string) $topic->ID, 'text' => $topic->post_title );
+			foreach ( get_posts(
+				array(
+					'post_type'      => 'sfwd-topic',
+					'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+					'orderby'        => 'title',
+					'order'          => 'ASC',
+					'post_status'    => 'publish',
+				)
+			) as $topic ) {
+				$options[] = array(
+					'value' => (string) $topic->ID,
+					'text'  => $topic->post_title,
+				);
 			}
 			return $options;
 		}
@@ -1288,7 +1328,7 @@ class Ld_Helpers extends Abstract_Helpers {
 		$questions = get_posts(
 			array(
 				'post_type'      => 'sfwd-question',
-				'posts_per_page' => 9999,
+				'posts_per_page' => 9999, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'orderby'        => 'title',
 				'order'          => 'ASC',
 				'post_status'    => 'publish',

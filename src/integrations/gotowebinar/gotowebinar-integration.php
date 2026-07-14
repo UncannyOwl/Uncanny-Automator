@@ -36,7 +36,7 @@ class Gotowebinar_Integration extends App_Integration {
 		$this->helpers = new Gotowebinar_App_Helpers( self::get_config() );
 
 		// Set the icon URL.
-		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/gotowebinar-icon.svg' );
+		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/goto-icon.svg' );
 
 		// Finalize setup via the parent class with the common config.
 		$this->setup_app_integration( self::get_config() );

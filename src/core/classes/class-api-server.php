@@ -613,7 +613,10 @@ class Api_Server {
 
 		$license = self::has_valid_license();
 
-		if ( 'Uncanny Automator Pro' === $license['item_name'] ) {
+		// Entitlement is the plan tier (all paid tiers = unlimited credits), not
+		// the license item_name. Routed through the single src/app seam so this
+		// deprecated gate can never drift from Credit_Manager / the dashboard.
+		if ( automator_has_unlimited_credits() ) {
 			return true;
 		}
 

@@ -374,7 +374,7 @@ class Affwp_Tokens {
 				if ( 'SPECIFICETYPEREF' === $pieces[1] || 'AFFWPREFERRAL' === $pieces[1] ) {
 					$to_replace = $pieces[2];
 					/** @var \AffWP\Referral $referral */
-					$referral    = maybe_unserialize( Automator()->db->token->get( 'referral', $replace_args ) );
+					$referral    = automator_safe_unserialize( Automator()->db->token->get( 'referral', $replace_args ) );
 					$referral_id = $referral->referral_id;
 					// Refresh Referral object
 					$referral = affwp_get_referral( $referral_id );

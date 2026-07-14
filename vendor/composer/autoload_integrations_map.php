@@ -226,6 +226,15 @@ return array(
 			$baseDir . '/src/integrations/bbpress/triggers/bb-newtopic.php',
 		),
 	),
+	'beaver-builder' => array(
+		'helpers' => array(
+			$baseDir . '/src/integrations/beaver-builder/helpers/beaver-builder-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/beaver-builder/triggers/bb-contact-form-submitted.php',
+			$baseDir . '/src/integrations/beaver-builder/triggers/bb-subscribe-form-submitted.php',
+		),
+	),
 	'bitly' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/bitly/actions/bitly-shorten-url.php',
@@ -249,6 +258,7 @@ return array(
 	'brevo' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/brevo/actions/brevo-add-contact-to-list.php',
+			$baseDir . '/src/integrations/brevo/actions/brevo-add-update-contact.php',
 			$baseDir . '/src/integrations/brevo/actions/brevo-create-or-update-contact.php',
 			$baseDir . '/src/integrations/brevo/actions/brevo-delete-contact.php',
 			$baseDir . '/src/integrations/brevo/actions/brevo-remove-contact-from-list.php',
@@ -439,6 +449,7 @@ return array(
 			$baseDir . '/src/integrations/constant-contact/actions/contact-list-add-to.php',
 			$baseDir . '/src/integrations/constant-contact/actions/contact-tag-add-to.php',
 			$baseDir . '/src/integrations/constant-contact/actions/create-update-contact.php',
+			$baseDir . '/src/integrations/constant-contact/actions/create.php',
 		),
 		'helpers' => array(
 			$baseDir . '/src/integrations/constant-contact/helpers/constant-contact-api-caller.php',
@@ -512,17 +523,16 @@ return array(
 		),
 	),
 	'divi' => array(
-		'main' => $baseDir . '/src/integrations/divi/add-divi-integration.php',
 		'helpers' => array(
+			$baseDir . '/src/integrations/divi/helpers/divi-helpers-new.php',
 			$baseDir . '/src/integrations/divi/helpers/divi-helpers.php',
 		),
 		'tokens' => array(
+			$baseDir . '/src/integrations/divi/tokens/divi-tokens-legacy.php',
 			$baseDir . '/src/integrations/divi/tokens/divi-tokens.php',
 		),
 		'triggers' => array(
-			$baseDir . '/src/integrations/divi/triggers/anon-divi-submitform-dep.php',
 			$baseDir . '/src/integrations/divi/triggers/anon-divi-submitform.php',
-			$baseDir . '/src/integrations/divi/triggers/divi-submitform-dep.php',
 			$baseDir . '/src/integrations/divi/triggers/divi-submitform.php',
 		),
 	),
@@ -893,9 +903,21 @@ return array(
 			$baseDir . '/src/integrations/google-sheet/helpers/google-sheet-helpers.php',
 		),
 	),
+	'gotomeeting' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/gotomeeting/actions/gtm-createmeeting.php',
+			$baseDir . '/src/integrations/gotomeeting/actions/gtm-deletemeeting.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/gotomeeting/helpers/gotomeeting-api-caller.php',
+			$baseDir . '/src/integrations/gotomeeting/helpers/gotomeeting-app-helpers.php',
+		),
+	),
 	'gototraining' => array(
 		'actions' => array(
+			$baseDir . '/src/integrations/gototraining/actions/gtt-registerattendee.php',
 			$baseDir . '/src/integrations/gototraining/actions/gtt-registeruser.php',
+			$baseDir . '/src/integrations/gototraining/actions/gtt-unregisterattendee.php',
 			$baseDir . '/src/integrations/gototraining/actions/gtt-unregisteruser.php',
 		),
 		'helpers' => array(
@@ -1002,8 +1024,10 @@ return array(
 		'actions' => array(
 			$baseDir . '/src/integrations/hubspot/actions/hubspot-add-user.php',
 			$baseDir . '/src/integrations/hubspot/actions/hubspot-addcontacttolist.php',
+			$baseDir . '/src/integrations/hubspot/actions/hubspot-adduser.php',
 			$baseDir . '/src/integrations/hubspot/actions/hubspot-addusertolist.php',
 			$baseDir . '/src/integrations/hubspot/actions/hubspot-create-contact.php',
+			$baseDir . '/src/integrations/hubspot/actions/hubspot-createcontact.php',
 			$baseDir . '/src/integrations/hubspot/actions/hubspot-removecontactfromlist.php',
 			$baseDir . '/src/integrations/hubspot/actions/hubspot-removeuserfromlist.php',
 		),
@@ -1587,6 +1611,17 @@ return array(
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php',
+		),
+	),
+	'redirection' => array(
+		'helpers' => array(
+			$baseDir . '/src/integrations/redirection/helpers/redirection-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/redirection/triggers/redirection-404-logged.php',
+			$baseDir . '/src/integrations/redirection/triggers/redirection-monitor-created.php',
+			$baseDir . '/src/integrations/redirection/triggers/redirection-redirect-deleted.php',
+			$baseDir . '/src/integrations/redirection/triggers/redirection-redirect-matched.php',
 		),
 	),
 	'restrict-content' => array(
@@ -2249,6 +2284,25 @@ return array(
 			$baseDir . '/src/integrations/woocommerce-bookings/triggers/wc-bookings-anon-booking-created.php',
 		),
 	),
+	'wordfence' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/wordfence/actions/wordfence-block-ip.php',
+			$baseDir . '/src/integrations/wordfence/actions/wordfence-unblock-ip.php',
+			$baseDir . '/src/integrations/wordfence/actions/wordfence-unlock-ip.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/wordfence/helpers/wordfence-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/wordfence/triggers/wordfence-2fa-activated.php',
+			$baseDir . '/src/integrations/wordfence/triggers/wordfence-2fa-deactivated.php',
+			$baseDir . '/src/integrations/wordfence/triggers/wordfence-block-deleted.php',
+			$baseDir . '/src/integrations/wordfence/triggers/wordfence-breached-password-login.php',
+			$baseDir . '/src/integrations/wordfence/triggers/wordfence-ip-blocked-throttled.php',
+			$baseDir . '/src/integrations/wordfence/triggers/wordfence-ip-locked-out.php',
+			$baseDir . '/src/integrations/wordfence/triggers/wordfence-user-logs-in.php',
+		),
+	),
 	'wordpress-seo' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/wordpress-seo/actions/yoast-delete-focus-keyword.php',
@@ -2336,6 +2390,18 @@ return array(
 			$baseDir . '/src/integrations/wp/closures/closure-redirect.php',
 		),
 	),
+	'wp-activity-log' => array(
+		'helpers' => array(
+			$baseDir . '/src/integrations/wp-activity-log/helpers/wp-activity-log-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-event-logged.php',
+			$baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-event-object.php',
+			$baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-event-severity.php',
+			$baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-event-type.php',
+			$baseDir . '/src/integrations/wp-activity-log/triggers/wp-activity-log-failed-login.php',
+		),
+	),
 	'wp-all-import' => array(
 		'main' => $baseDir . '/src/integrations/wp-all-import/add-wp-all-import-integration.php',
 		'helpers' => array(
@@ -2397,6 +2463,18 @@ return array(
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/wp-event-manager/triggers/wp-event-manager-attendee-registered.php',
+		),
+	),
+	'wp-fastest-cache' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-all-cache.php',
+			$baseDir . '/src/integrations/wp-fastest-cache/actions/wp-fastest-cache-purge-post-cache.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/wp-fastest-cache/helpers/wp-fastest-cache-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/wp-fastest-cache/triggers/wp-fastest-cache-all-cache-cleared.php',
 		),
 	),
 	'wp-fluent-forms' => array(

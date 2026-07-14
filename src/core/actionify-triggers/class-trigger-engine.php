@@ -81,6 +81,18 @@ class Trigger_Engine {
 	 */
 	public function init() {
 
+		// Eager pass: attach code-defined listeners at `plugins_loaded` (priority 0)
+		// so a monitored hook that an upstream plugin fires-and-exit()s during
+		// `plugins_loaded` — before Automator's normal `init`-time registration —
+		// is still captured. Canonical case: Wordfence's firewall block fires
+		// `wordfence_security_event` then exit()s from `plugins_loaded@10`. Once the
+		// event is enqueued the queue's shutdown → admin-ajax loopback processes it
+		// in a full-lifecycle request. Free's monitored hooks come from the static
+		// build-time metadata cache (readable this early); Pro/postmeta hooks stay
+		// with the full pass below. register_single_trigger() dedups per hook, so
+		// the two passes never double-attach a listener.
+		add_action( 'plugins_loaded', array( $this, 'register_code_defined_hooks' ), 0 );
+
 		if ( did_action( 'automator_after_add_integrations' ) ) {
 			$this->register_automation_hooks();
 			return;
@@ -91,6 +103,24 @@ class Trigger_Engine {
 			array( $this, 'register_automation_hooks' ),
 			99
 		);
+	}
+
+	/**
+	 * Register WP listeners for code-defined triggers only (eager pass).
+	 *
+	 * Runs on `plugins_loaded` (priority 0) so a monitored hook an upstream plugin
+	 * fires-and-exit()s before `init` is still captured. Reads the same build-time
+	 * metadata cache as the full `init` pass; Pro's filter-contributed metadata may
+	 * not be present this early, so Pro/postmeta hooks are left to
+	 * register_automation_hooks(). Idempotent — register_single_trigger() attaches
+	 * each hook's shared listener at most once.
+	 *
+	 * @return void
+	 */
+	public function register_code_defined_hooks() {
+		foreach ( $this->collect_code_defined_hooks() as $row ) {
+			$this->register_single_trigger( $row );
+		}
 	}
 
 	/**
@@ -340,9 +370,13 @@ class Trigger_Engine {
 			return;
 		}
 
-		// Only register each hook once.
+		// Only attach each hook's shared listener once; track the codes it covers.
+		// The code guard stops the two registration passes (eager `plugins_loaded`
+		// + full `init`) from accumulating duplicate codes for the same hook.
 		if ( isset( $this->registered_hooks[ $hook_name ] ) ) {
-			$this->registered_hooks[ $hook_name ][] = $trigger_code;
+			if ( ! in_array( $trigger_code, $this->registered_hooks[ $hook_name ], true ) ) {
+				$this->registered_hooks[ $hook_name ][] = $trigger_code;
+			}
 			return;
 		}
 

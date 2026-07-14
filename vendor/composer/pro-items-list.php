@@ -1294,7 +1294,7 @@ function automator_pro_items_list() {
 			'triggers'   => array(
 				array(
 					'name'     => esc_html_x( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'anonymous',
+					'type'     => 'logged-in',
 					'is_pro'   => true,
 					'is_elite' => false,
 				),
