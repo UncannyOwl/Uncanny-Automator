@@ -3,9 +3,9 @@
 **Contributors:** uncannyautomator, uncannyowl, smub \
 **Tags:** automation, google sheets, openai, learndash, webhooks \
 **Requires at least:** 5.8 \
-**Tested up to:** 7.0 \
+**Tested up to:** 7.0.2 \
 **Requires PHP:** 7.4 \
-**Stable tag:** 7.4.0 \
+**Stable tag:** 7.4.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -61,241 +61,241 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 
 ### Supported apps
 
-- [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Anthropic](https://automatorplugin.com/integration/anthropic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Asana](https://automatorplugin.com/integration/asana/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Bluesky](https://automatorplugin.com/integration/bluesky/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Campaign Monitor](https://automatorplugin.com/integration/campaign-monitor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Cohere](https://automatorplugin.com/integration/cohere/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Deprecated)
-- [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Facebook Lead Ads](https://automatorplugin.com/integration/facebook-lead-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Facebook Pages](https://automatorplugin.com/integration/facebook/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [GetResponse](https://automatorplugin.com/integration/getresponse/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [GitHub](https://automatorplugin.com/integration/github/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Google Calendar](https://automatorplugin.com/integration/google-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Google Contacts](https://automatorplugin.com/integration/google-contacts/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Google Gemini](https://automatorplugin.com/integration/gemini/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Google Sheets](https://automatorplugin.com/integration/google-sheets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Google Sheets Web App](https://automatorplugin.com/integration/sheets-web-app/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [GoTo Meeting](https://automatorplugin.com/integration/gotomeeting/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [GoTo Webinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Help Scout](https://automatorplugin.com/integration/help-scout/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [HubSpot](https://automatorplugin.com/integration/hubspot/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Instagram](https://automatorplugin.com/integration/instagram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Keap](https://automatorplugin.com/integration/keap/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Kit](https://automatorplugin.com/integration/convertkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Mautic](https://automatorplugin.com/integration/mautic/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Mistral AI](https://automatorplugin.com/integration/mistral/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Notion](https://automatorplugin.com/integration/notion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Ontraport](https://automatorplugin.com/integration/ontraport/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [OpenAI and GPT](https://automatorplugin.com/integration/openai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Perplexity](https://automatorplugin.com/integration/perplexity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [QuickBooks Online](https://automatorplugin.com/integration/quickbooks-online/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Elite)
-- [Salesforce](https://automatorplugin.com/integration/salesforce/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Elite)
-- [Sendy](https://automatorplugin.com/integration/sendy/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Stripe](https://automatorplugin.com/integration/stripe/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Telegram](https://automatorplugin.com/integration/telegram/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Threads](https://automatorplugin.com/integration/threads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Trello](https://automatorplugin.com/integration/trello/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [X/Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [xAI](https://automatorplugin.com/integration/xai/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Zoho Campaigns](https://automatorplugin.com/integration/zoho-campaigns/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Anthropic](https://automatorplugin.com/integration/anthropic/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Asana](https://automatorplugin.com/integration/asana/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [AWeber](https://automatorplugin.com/integration/aweber/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Bitly](https://automatorplugin.com/integration/bitly/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Bluesky](https://automatorplugin.com/integration/bluesky/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Brevo](https://automatorplugin.com/integration/brevo/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Campaign Monitor](https://automatorplugin.com/integration/campaign-monitor/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [ClickUp](https://automatorplugin.com/integration/clickup/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Cohere](https://automatorplugin.com/integration/cohere/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Constant Contact](https://automatorplugin.com/integration/constant-contact/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Deprecated)
+- [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Facebook Lead Ads](https://automatorplugin.com/integration/facebook-lead-ads/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Facebook Pages](https://automatorplugin.com/integration/facebook/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [GetResponse](https://automatorplugin.com/integration/getresponse/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [GitHub](https://automatorplugin.com/integration/github/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Google Calendar](https://automatorplugin.com/integration/google-calendar/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Google Contacts](https://automatorplugin.com/integration/google-contacts/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Google Gemini](https://automatorplugin.com/integration/gemini/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Google Sheets](https://automatorplugin.com/integration/google-sheets/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Google Sheets Web App](https://automatorplugin.com/integration/sheets-web-app/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [GoTo Meeting](https://automatorplugin.com/integration/gotomeeting/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [GoTo Training](https://automatorplugin.com/integration/gototraining/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [GoTo Webinar](https://automatorplugin.com/integration/gotowebinar/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Help Scout](https://automatorplugin.com/integration/help-scout/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [HubSpot](https://automatorplugin.com/integration/hubspot/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Instagram](https://automatorplugin.com/integration/instagram/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Keap](https://automatorplugin.com/integration/keap/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Kit](https://automatorplugin.com/integration/convertkit/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [LinkedIn Pages](https://automatorplugin.com/integration/linkedin-pages/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Mailchimp](https://automatorplugin.com/integration/mailchimp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [MailerLite](https://automatorplugin.com/integration/mailerlite/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Mautic](https://automatorplugin.com/integration/mautic/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Mistral AI](https://automatorplugin.com/integration/mistral/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Microsoft Teams](https://automatorplugin.com/integration/microsoft-teams/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Notion](https://automatorplugin.com/integration/notion/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Ontraport](https://automatorplugin.com/integration/ontraport/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [OpenAI and GPT](https://automatorplugin.com/integration/openai/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Perplexity](https://automatorplugin.com/integration/perplexity/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [QuickBooks Online](https://automatorplugin.com/integration/quickbooks-online/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Elite)
+- [Salesforce](https://automatorplugin.com/integration/salesforce/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Elite)
+- [Sendy](https://automatorplugin.com/integration/sendy/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Slack](https://automatorplugin.com/integration/slack/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Stripe](https://automatorplugin.com/integration/stripe/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Telegram](https://automatorplugin.com/integration/telegram/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Threads](https://automatorplugin.com/integration/threads/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Trello](https://automatorplugin.com/integration/trello/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Twilio](https://automatorplugin.com/integration/twilio/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [X/Twitter](https://automatorplugin.com/integration/twitter/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WhatsApp](https://automatorplugin.com/integration/whatsapp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [xAI](https://automatorplugin.com/integration/xai/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Zoho Campaigns](https://automatorplugin.com/integration/zoho-campaigns/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 
 ### WordPress Plugins Integrations
 
-- [Advanced Ads](https://automatorplugin.com/integration/advanced-ads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Advanced Coupons](https://automatorplugin.com/integration/advanced-coupons/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Advanced Custom Fields](https://automatorplugin.com/integration/advanced-custom-fields/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [AffiliateWP](https://automatorplugin.com/integration/affiliatewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Airtable](https://automatorplugin.com/integration/airtable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [All in One SEO](https://automatorplugin.com/integration/all-in-one-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Amelia](https://automatorplugin.com/integration/amelia/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [FunnelKit Automations](https://automatorplugin.com/integration/autonami/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Beaver Builder](https://automatorplugin.com/integration/beaver-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [bbPress](https://automatorplugin.com/integration/bbpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Bricks Builder](https://automatorplugin.com/integration/bricks-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [BuddyBoss](https://automatorplugin.com/integration/buddyboss/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [BuddyPress](https://automatorplugin.com/integration/buddypress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [CSV](https://automatorplugin.com/integration/csv/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Custom User Fields](https://automatorplugin.com/integration/custom-user-fields-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
-- [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Cloudflare](https://automatorplugin.com/integration/cloudflare/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Code Snippets](https://automatorplugin.com/integration/code-snippets/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Custom Action](https://automatorplugin.com/integration/custom-action/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Date and Time](https://automatorplugin.com/integration/date-and-time/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Database Query](https://automatorplugin.com/integration/database-query/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Divi](https://automatorplugin.com/integration/divi/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Dynamic Content](https://automatorplugin.com/integration/dynamic-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Elite Addon)
-- [Duplicator](https://automatorplugin.com/integration/duplicator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Easy Affiliate](https://automatorplugin.com/integration/easy-affiliate/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Easy Digital Downloads-Recurring Payments](https://automatorplugin.com/integration/easy-digital-downloads-recurring-payments/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Easy Digital Downloads-Software Licensing](https://automatorplugin.com/integration/easy-digital-downloads-software-licensing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Easy WP SMTP](https://automatorplugin.com/integration/easy-wp-smtp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Elementor Pro](https://automatorplugin.com/integration/elementor/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Everest Forms](https://automatorplugin.com/integration/everest-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Fluent Support](https://automatorplugin.com/integration/fluent-support/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [FluentBooking](https://automatorplugin.com/integration/fluentbooking/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [FluentCommunity](https://automatorplugin.com/integration/fluentcommunity/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [FluentCRM](https://automatorplugin.com/integration/fluentcrm/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Formatter](https://automatorplugin.com/integration/formatter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Forminator](https://automatorplugin.com/integration/forminator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [GamiPress](https://automatorplugin.com/integration/gamipress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Generator](https://automatorplugin.com/integration/generator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [GiveWP](https://automatorplugin.com/integration/givewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [GravityKit](https://automatorplugin.com/integration/gravitykit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Groundhogg](https://automatorplugin.com/integration/groundhogg/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [H5P](https://automatorplugin.com/integration/h5p/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [HappyForms](https://automatorplugin.com/integration/happyforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Heroic Knowledge Base](https://automatorplugin.com/integration/heroic-knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [IFTTT](https://automatorplugin.com/integration/ifttt/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Integrately](https://automatorplugin.com/integration/integrately/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Integromat](https://automatorplugin.com/integration/integromat/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [JetEngine](https://automatorplugin.com/integration/jetengine/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [JetFormBuilder](https://automatorplugin.com/integration/jetformbuilder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Jetpack CRM](https://automatorplugin.com/integration/jetpack-crm/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [JSON](https://automatorplugin.com/integration/json/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Kadence](https://automatorplugin.com/integration/kadence/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [KonnectzIT](https://automatorplugin.com/integration/konnectzit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [LearnDash](https://automatorplugin.com/integration/learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [LearnDash Achievements](https://automatorplugin.com/integration/learndash-achievements/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [LearnPress](https://automatorplugin.com/integration/learnpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [LifterLMS](https://automatorplugin.com/integration/lifterlms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [LiteSpeed Cache](https://automatorplugin.com/integration/litespeed-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Loop](https://automatorplugin.com/integration/loop/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Logging](https://automatorplugin.com/integration/logging/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Magic Button](https://automatorplugin.com/integration/magic-button/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [MailPoet](https://automatorplugin.com/integration/mailpoet/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Mailster](https://automatorplugin.com/integration/mailster/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Make](https://automatorplugin.com/integration/make/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Memberium For Keap](https://automatorplugin.com/integration/memberium-for-keap/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [MemberMouse](https://automatorplugin.com/integration/membermouse/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [MemberPress](https://automatorplugin.com/integration/memberpress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [MemberPress Courses](https://automatorplugin.com/integration/memberpress-courses/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Meta Box](https://automatorplugin.com/integration/meta-box/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Modern Events Calendar](https://automatorplugin.com/integration/modern-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [myCred](https://automatorplugin.com/integration/mycred/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Newsletter](https://automatorplugin.com/integration/newsletter/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [OptinMonster](https://automatorplugin.com/integration/optinmonster/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Pabbly Connect](https://automatorplugin.com/integration/pabbly-connect/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Plugin Actions](https://automatorplugin.com/integration/plugin-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Popup Maker](https://automatorplugin.com/integration/popup-maker/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Pretty Links](https://automatorplugin.com/integration/pretty-links/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [QR Code](https://automatorplugin.com/integration/qr-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Rank Math SEO](https://automatorplugin.com/integration/rank-math-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Redirection](https://automatorplugin.com/integration/redirection/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [RSS feed](https://automatorplugin.com/integration/rss-feed/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Restrict Content](https://automatorplugin.com/integration/restrict-content-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
-- [Run Code](https://automatorplugin.com/integration/run-code/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Run Now](https://automatorplugin.com/integration/run-now/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [SaveTo Wishlist](https://automatorplugin.com/integration/saveto-wishlist/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Speed Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Security Optimizer](https://automatorplugin.com/integration/sg-security/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Sugar Calendar](https://automatorplugin.com/integration/sugar-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [SureForms](https://automatorplugin.com/integration/sureforms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [SureMembers](https://automatorplugin.com/integration/suremembers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Thrive Apprentice](https://automatorplugin.com/integration/thrive-apprentice/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Thrive Architect](https://automatorplugin.com/integration/thrive-architect/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Thrive Leads](https://automatorplugin.com/integration/thrive-leads/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Thrive Ovation](https://automatorplugin.com/integration/thrive-ovation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Thrive Quiz Builder](https://automatorplugin.com/integration/thrive-quiz-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Thrive Theme Builder](https://automatorplugin.com/integration/thrive-theme-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Thrive Ultimatum](https://automatorplugin.com/integration/thrive-ultimatum/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [ThriveCart](https://automatorplugin.com/integration/thrivecart/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Tin Canny Reporting](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Typeform](https://automatorplugin.com/integration/typeform/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [User Lists](https://automatorplugin.com/integration/user-lists-addon/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Plus Addon)
-- [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Uncanny Continuing Education Credits](https://automatorplugin.com/integration/uncanny-ceus/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Uncanny Toolkit](https://automatorplugin.com/integration/uncanny-toolkit/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [URL](https://automatorplugin.com/integration/url/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [UserFeedback](https://automatorplugin.com/integration/userfeedback/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [W3 Total Cache](https://automatorplugin.com/integration/w3-total-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Webhooks](https://automatorplugin.com/integration/webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Wholesale Suite](https://automatorplugin.com/integration/wholesale-suite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Wishlist Member](https://automatorplugin.com/integration/wishlist-member/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WooCommerce](https://automatorplugin.com/integration/woocommerce/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WooCommerce Bookings](https://automatorplugin.com/integration/woocommerce-bookings/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WooCommerce Memberships](https://automatorplugin.com/integration/woocommerce-memberships/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WooCommerce ShipStation](https://automatorplugin.com/integration/woocommerce-shipstation/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WooCommerce Subscriptions](https://automatorplugin.com/integration/woocommerce-subscriptions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WordPress](https://automatorplugin.com/integration/wordpress-core/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WordPress Multisite](https://automatorplugin.com/integration/wordpress-multisite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Wordfence Security](https://automatorplugin.com/integration/wordfence/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Activity Log](https://automatorplugin.com/integration/wp-activity-log/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Admin](https://automatorplugin.com/integration/wp-admin/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Bitly](https://automatorplugin.com/integration/wp-bitly/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro) (Deprecated)
-- [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Fastest Cache](https://automatorplugin.com/integration/wp-fastest-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Fusion](https://automatorplugin.com/integration/wp-fusion/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP LMS](https://automatorplugin.com/integration/wp-lms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Mail SMTP Pro](https://automatorplugin.com/integration/wp-mail-smtp-pro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Rocket](https://automatorplugin.com/integration/wp-rocket/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Simple Pay](https://automatorplugin.com/integration/wp-simple-pay/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Super Cache](https://automatorplugin.com/integration/wp-super-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP User Manager](https://automatorplugin.com/integration/wp-user-manager/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WP-Polls](https://automatorplugin.com/integration/wp-polls/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WPCode](https://automatorplugin.com/integration/wpcode/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WPForms](https://automatorplugin.com/integration/wp-forms/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [WS Form LITE](https://automatorplugin.com/integration/ws-form-lite/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [wpDiscuz](https://automatorplugin.com/integration/wpdiscuz/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [XML](https://automatorplugin.com/integration/xml/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list) (Pro)
-- [Yoast SEO](https://automatorplugin.com/integration/yoast-seo/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
-- [Zapier](https://automatorplugin.com/integration/zapier/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list)
+- [Advanced Ads](https://automatorplugin.com/integration/advanced-ads/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Advanced Coupons](https://automatorplugin.com/integration/advanced-coupons/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Advanced Custom Fields](https://automatorplugin.com/integration/advanced-custom-fields/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [AffiliateWP](https://automatorplugin.com/integration/affiliatewp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Airtable](https://automatorplugin.com/integration/airtable/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [All in One SEO](https://automatorplugin.com/integration/all-in-one-seo/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Amelia](https://automatorplugin.com/integration/amelia/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [FunnelKit Automations](https://automatorplugin.com/integration/autonami/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Beaver Builder](https://automatorplugin.com/integration/beaver-builder/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [bbPress](https://automatorplugin.com/integration/bbpress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Bricks Builder](https://automatorplugin.com/integration/bricks-builder/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [BuddyBoss](https://automatorplugin.com/integration/buddyboss/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [BuddyPress](https://automatorplugin.com/integration/buddypress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [CSV](https://automatorplugin.com/integration/csv/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Custom User Fields](https://automatorplugin.com/integration/custom-user-fields-addon/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Plus Addon)
+- [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Cloudflare](https://automatorplugin.com/integration/cloudflare/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Code Snippets](https://automatorplugin.com/integration/code-snippets/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Contact Form 7](https://automatorplugin.com/integration/contact-form-7/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Custom Action](https://automatorplugin.com/integration/custom-action/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Date and Time](https://automatorplugin.com/integration/date-and-time/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Database Query](https://automatorplugin.com/integration/database-query/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Divi](https://automatorplugin.com/integration/divi/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Dynamic Content](https://automatorplugin.com/integration/dynamic-content/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Elite Addon)
+- [Duplicator](https://automatorplugin.com/integration/duplicator/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Easy Affiliate](https://automatorplugin.com/integration/easy-affiliate/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Easy Digital Downloads](https://automatorplugin.com/integration/easy-digital-downloads/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Easy Digital Downloads-Recurring Payments](https://automatorplugin.com/integration/easy-digital-downloads-recurring-payments/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Easy Digital Downloads-Software Licensing](https://automatorplugin.com/integration/easy-digital-downloads-software-licensing/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Easy WP SMTP](https://automatorplugin.com/integration/easy-wp-smtp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Elementor Pro](https://automatorplugin.com/integration/elementor/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Everest Forms](https://automatorplugin.com/integration/everest-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Fluent Support](https://automatorplugin.com/integration/fluent-support/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [FluentBooking](https://automatorplugin.com/integration/fluentbooking/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [FluentCommunity](https://automatorplugin.com/integration/fluentcommunity/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [FluentCRM](https://automatorplugin.com/integration/fluentcrm/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Formidable Forms](https://automatorplugin.com/integration/formidable-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Formatter](https://automatorplugin.com/integration/formatter/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Forminator](https://automatorplugin.com/integration/forminator/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [GamiPress](https://automatorplugin.com/integration/gamipress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Generator](https://automatorplugin.com/integration/generator/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [GiveWP](https://automatorplugin.com/integration/givewp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Gravity Forms](https://automatorplugin.com/integration/gravity-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [GravityKit](https://automatorplugin.com/integration/gravitykit/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Groundhogg](https://automatorplugin.com/integration/groundhogg/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [H5P](https://automatorplugin.com/integration/h5p/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [HappyForms](https://automatorplugin.com/integration/happyforms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Heroic Knowledge Base](https://automatorplugin.com/integration/heroic-knowledge-base/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [IFTTT](https://automatorplugin.com/integration/ifttt/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Integrately](https://automatorplugin.com/integration/integrately/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Integromat](https://automatorplugin.com/integration/integromat/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [JetEngine](https://automatorplugin.com/integration/jetengine/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [JetFormBuilder](https://automatorplugin.com/integration/jetformbuilder/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Jetpack CRM](https://automatorplugin.com/integration/jetpack-crm/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [JSON](https://automatorplugin.com/integration/json/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Kadence](https://automatorplugin.com/integration/kadence/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [KonnectzIT](https://automatorplugin.com/integration/konnectzit/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [LearnDash](https://automatorplugin.com/integration/learndash/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [LearnDash Achievements](https://automatorplugin.com/integration/learndash-achievements/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [LearnPress](https://automatorplugin.com/integration/learnpress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [LifterLMS](https://automatorplugin.com/integration/lifterlms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [LiteSpeed Cache](https://automatorplugin.com/integration/litespeed-cache/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Loop](https://automatorplugin.com/integration/loop/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Logging](https://automatorplugin.com/integration/logging/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Magic Button](https://automatorplugin.com/integration/magic-button/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [MailPoet](https://automatorplugin.com/integration/mailpoet/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Mailster](https://automatorplugin.com/integration/mailster/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Make](https://automatorplugin.com/integration/make/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Memberium For Keap](https://automatorplugin.com/integration/memberium-for-keap/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [MemberMouse](https://automatorplugin.com/integration/membermouse/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [MemberPress](https://automatorplugin.com/integration/memberpress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [MemberPress Courses](https://automatorplugin.com/integration/memberpress-courses/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Meta Box](https://automatorplugin.com/integration/meta-box/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Modern Events Calendar](https://automatorplugin.com/integration/modern-events-calendar/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [myCred](https://automatorplugin.com/integration/mycred/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Newsletter](https://automatorplugin.com/integration/newsletter/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [OptinMonster](https://automatorplugin.com/integration/optinmonster/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Pabbly Connect](https://automatorplugin.com/integration/pabbly-connect/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Paid Memberships Pro](https://automatorplugin.com/integration/paid-memberships-pro/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Plugin Actions](https://automatorplugin.com/integration/plugin-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Popup Maker](https://automatorplugin.com/integration/popup-maker/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [PrettyLinks](https://automatorplugin.com/integration/pretty-links/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [QR Code](https://automatorplugin.com/integration/qr-code/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Rank Math SEO](https://automatorplugin.com/integration/rank-math-seo/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Redirection](https://automatorplugin.com/integration/redirection/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [RSS feed](https://automatorplugin.com/integration/rss-feed/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Restrict Content](https://automatorplugin.com/integration/restrict-content-addon/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Plus Addon)
+- [Run Code](https://automatorplugin.com/integration/run-code/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Run Now](https://automatorplugin.com/integration/run-now/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [SaveTo Wishlist](https://automatorplugin.com/integration/saveto-wishlist/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Speed Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Security Optimizer](https://automatorplugin.com/integration/sg-security/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Sugar Calendar](https://automatorplugin.com/integration/sugar-calendar/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [SureForms](https://automatorplugin.com/integration/sureforms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [SureMembers](https://automatorplugin.com/integration/suremembers/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [The Events Calendar](https://automatorplugin.com/integration/the-events-calendar/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Thrive Apprentice](https://automatorplugin.com/integration/thrive-apprentice/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Thrive Architect](https://automatorplugin.com/integration/thrive-architect/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Thrive Leads](https://automatorplugin.com/integration/thrive-leads/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Thrive Ovation](https://automatorplugin.com/integration/thrive-ovation/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Thrive Quiz Builder](https://automatorplugin.com/integration/thrive-quiz-builder/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Thrive Theme Builder](https://automatorplugin.com/integration/thrive-theme-builder/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Thrive Ultimatum](https://automatorplugin.com/integration/thrive-ultimatum/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [ThriveCart](https://automatorplugin.com/integration/thrivecart/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Tin Canny Reporting](https://automatorplugin.com/integration/tin-canny-reporting-for-learndash/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Typeform](https://automatorplugin.com/integration/typeform/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Tutor LMS](https://automatorplugin.com/integration/tutor-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [User Lists](https://automatorplugin.com/integration/user-lists-addon/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Plus Addon)
+- [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Uncanny Continuing Education Credits](https://automatorplugin.com/integration/uncanny-ceus/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Uncanny Toolkit](https://automatorplugin.com/integration/uncanny-toolkit/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [URL](https://automatorplugin.com/integration/url/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [UserFeedback](https://automatorplugin.com/integration/userfeedback/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [W3 Total Cache](https://automatorplugin.com/integration/w3-total-cache/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Webhooks](https://automatorplugin.com/integration/webhooks/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Wholesale Suite](https://automatorplugin.com/integration/wholesale-suite/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Wishlist Member](https://automatorplugin.com/integration/wishlist-member/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WooCommerce](https://automatorplugin.com/integration/woocommerce/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WooCommerce Bookings](https://automatorplugin.com/integration/woocommerce-bookings/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WooCommerce Memberships](https://automatorplugin.com/integration/woocommerce-memberships/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WooCommerce ShipStation](https://automatorplugin.com/integration/woocommerce-shipstation/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WooCommerce Subscriptions](https://automatorplugin.com/integration/woocommerce-subscriptions/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WordPress](https://automatorplugin.com/integration/wordpress-core/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WordPress Multisite](https://automatorplugin.com/integration/wordpress-multisite/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Wordfence Security](https://automatorplugin.com/integration/wordfence/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Activity Log](https://automatorplugin.com/integration/wp-activity-log/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Admin](https://automatorplugin.com/integration/wp-admin/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Bitly](https://automatorplugin.com/integration/wp-bitly/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro) (Deprecated)
+- [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Fastest Cache](https://automatorplugin.com/integration/wp-fastest-cache/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Fusion](https://automatorplugin.com/integration/wp-fusion/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Fusion Lite](https://automatorplugin.com/integration/wp-fusion-lite/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Job Manager](https://automatorplugin.com/integration/wp-job-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP LMS](https://automatorplugin.com/integration/wp-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Mail SMTP Pro](https://automatorplugin.com/integration/wp-mail-smtp-pro/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Rocket](https://automatorplugin.com/integration/wp-rocket/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Simple Pay](https://automatorplugin.com/integration/wp-simple-pay/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Super Cache](https://automatorplugin.com/integration/wp-super-cache/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP User Manager](https://automatorplugin.com/integration/wp-user-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WP-Polls](https://automatorplugin.com/integration/wp-polls/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WPCode](https://automatorplugin.com/integration/wpcode/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WPForms](https://automatorplugin.com/integration/wp-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WS Form LITE](https://automatorplugin.com/integration/ws-form-lite/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [wpDiscuz](https://automatorplugin.com/integration/wpdiscuz/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [XML](https://automatorplugin.com/integration/xml/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Yoast SEO](https://automatorplugin.com/integration/yoast-seo/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Zapier](https://automatorplugin.com/integration/zapier/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 
-Over 350 automation triggers and actions are available for the plugins and apps listed above in the free version. There's straightforward documentation in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=free_integrations_list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
+Over 350 automation triggers and actions are available for the plugins and apps listed above in the free version. There's straightforward documentation in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
 
 Beyond the plugin and app integrations, this free version of Uncanny Automator also supports common WP triggers and actions in automations:
 
@@ -319,11 +319,11 @@ All WP plugin triggers and actions included in Uncanny Automator come with a for
 
 ### Take automation to the next level
 
-[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=take_automation_next_level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of app integrations like Google Sheets and X/Twitter. It also triples the number of available triggers and actions.
+[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp-repo&utm_medium=readme&utm_content=take-automation-next-level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of app integrations like Google Sheets and X/Twitter. It also triples the number of available triggers and actions.
 
-Pro also adds features like [Run Now](https://automatorplugin.com/knowledge-base/run-now/?utm_source=wp_repo_automator&utm_medium=readme) and [Loops](https://automatorplugin.com/knowledge-base/user-loops/?utm_source=wp_repo_automator&utm_medium=readme), which allow you to do things like send emails to all users matching certain criteria, tagging users based on site activity, or even generating instant reports in Google Sheets of all users that completed a specific course, purchased a certain product, or anything else you can imagine. 
+Pro also adds features like [Run Now](https://automatorplugin.com/knowledge-base/run-now/?utm_source=wp-repo&utm_medium=readme) and [Loops](https://automatorplugin.com/knowledge-base/user-loops/?utm_source=wp-repo&utm_medium=readme), which allow you to do things like send emails to all users matching certain criteria, tagging users based on site activity, or even generating instant reports in Google Sheets of all users that completed a specific course, purchased a certain product, or anything else you can imagine. 
 
-Here are some of the other really cool automations you can create with [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=create_really_cool_automations):
+Here are some of the other really cool automations you can create with [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp-repo&utm_medium=readme&utm_content=create-really-cool-automations):
 
 - When a user makes a purchase using WooCommerce on one site, create a user on another WP site, send the user a link to set a new password, enroll the user in a course and add a membership level.
 - When a user submits a form, add the user to a mailing list if their email address matches a certain domain, add them to a social group and schedule their trial access to expire in 7 days if they don't make a purchase.
@@ -332,20 +332,20 @@ Here are some of the other really cool automations you can create with [Automato
 
 And here are some of the key features in the Pro version that allow incredibly flexible and powerful automations for WP:
 
-- Run recipes for logged out users with [Everyone recipes](https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example); you can even create and update existing users.
-- Have external apps [trigger recipes](https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example) and vice versa.
-- Set up [buttons and links](https://automatorplugin.com/knowledge-base/magic-button/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example) that can trigger any recipe on click.
+- Run recipes for logged out users with [Everyone recipes](https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-recipe-example); you can even create and update existing users.
+- Have external apps [trigger recipes](https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-recipe-example) and vice versa.
+- Set up [buttons and links](https://automatorplugin.com/knowledge-base/magic-button/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-recipe-example) that can trigger any recipe on click.
 - Set custom user and post meta, both individually and in bulk via loops.
-- [Delay or Schedule an action](https://automatorplugin.com/knowledge-base/scheduled-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_recipe_example)
+- [Delay or Schedule an action](https://automatorplugin.com/knowledge-base/scheduled-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-recipe-example)
 - [Filter actions](https://automatorplugin.com/knowledge-base/action-filters-conditions/) so they only run when conditions are met, like a matching user email domain or WordPress role.
 - [Run any WordPress hook](https://automatorplugin.com/knowledge-base/run-a-wordpress-hook/) or [call custom functions](https://automatorplugin.com/knowledge-base/call-a-custom-function-method/) in your recipes.
 - Automatic [log pruning](https://automatorplugin.com/knowledge-base/using-automator-logs/#cleaning-up-the-logs) to keep log size down.
 
-Plus licenses and higher get access to our [Custom User Fields](https://automatorplugin.com/custom-user-fields-addon/?utm_source=wp_repo_automator&utm_medium=readme), [Restrict Content](https://automatorplugin.com/restrict-content-addon/?utm_source=wp_repo_automator&utm_medium=readme), and [User Lists](https://automatorplugin.com/user-lists-addon/?utm_source=wp_repo_automator&utm_medium=readme) addons which makes it really easy to create and manage user profile fields in WordPress. Automatically add new fields to user edit pages and connect fields to your recipes and plugins like Advanced Custom Fields.
+Plus licenses and higher get access to our [Custom User Fields](https://automatorplugin.com/custom-user-fields-addon/?utm_source=wp-repo&utm_medium=readme), [Restrict Content](https://automatorplugin.com/restrict-content-addon/?utm_source=wp-repo&utm_medium=readme), and [User Lists](https://automatorplugin.com/user-lists-addon/?utm_source=wp-repo&utm_medium=readme) addons which makes it really easy to create and manage user profile fields in WordPress. Automatically add new fields to user edit pages and connect fields to your recipes and plugins like Advanced Custom Fields.
 
-An [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=pro_support) license also includes access to our world-class premium support. 
+An [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-support) license also includes access to our world-class premium support. 
 
-For the full list of triggers and actions, make sure to check out [this list](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=full_list_below_recipe_examples).
+For the full list of triggers and actions, make sure to check out [this list](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=full-list-below-recipe-examples).
 
 Here's what other people are saying about Uncanny Automator:
 
@@ -359,11 +359,11 @@ Here's what other people are saying about Uncanny Automator:
 
 ### Where can I find Automator documentation and more info?
 
-You can learn more about Uncanny Automator on our website at [https://automatorplugin.com/](https://automatorplugin.com/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=more_documentation) and our Knowledge Base is here: [https://automatorplugin.com/knowledge-base/](https://automatorplugin.com/knowledge-base/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=more_documentation)
+You can learn more about Uncanny Automator on our website at [https://automatorplugin.com/](https://automatorplugin.com/?utm_source=wp-repo&utm_medium=readme&utm_content=more-documentation) and our Knowledge Base is here: [https://automatorplugin.com/knowledge-base/](https://automatorplugin.com/knowledge-base/?utm_source=wp-repo&utm_medium=readme&utm_content=more-documentation)
 
 ### How do I get started with my first automation?
 
-Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=how_to_create_first_automation). There's also an onboarding wizard inside the plugin to help you build your first recipe. Hopefully it will be the first of many!
+Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=wp-repo&utm_medium=readme&utm_content=how-to-create-first-automation). There's also an onboarding wizard inside the plugin to help you build your first recipe. Hopefully it will be the first of many!
 
 ### Will Uncanny Automator slow down my website?
 
@@ -371,7 +371,7 @@ Uncanny Automator is built from the ground up for efficiency and performance. Au
 
 ### What are the limits of your free version?
 
-All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=what_are_the_limits_of_your_free_version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include apps, like X/Twitter and Facebook, you can create a free account to unlock 250 credits to try out these integrations.
+All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=what-are-the-limits-of-your-free-version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include apps, like X/Twitter and Facebook, you can create a free account to unlock 250 credits to try out these integrations.
 
 ### Is Automator translation friendly?
 
@@ -379,11 +379,11 @@ Absolutely! The plugin was created with translation in mind and tested with a va
 
 ### How can I request an integration for a plugin?
 
-The best thing you can do is reach out to the creator of the plugin that you want an integration for. Let them know you're using Uncanny Automator and that they could greatly extend the capabilities of their plugin by helping us develop an integration for it. As more plugin authors become aware of Uncanny Automator and realize its potential for their users, we'll be able to continue to invest in expanding Uncanny Automator's capabilities! Also, fill out [this form](https://automatorplugin.com/feedback/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=request_integration) on our site to let us know what you're looking for.
+The best thing you can do is reach out to the creator of the plugin that you want an integration for. Let them know you're using Uncanny Automator and that they could greatly extend the capabilities of their plugin by helping us develop an integration for it. As more plugin authors become aware of Uncanny Automator and realize its potential for their users, we'll be able to continue to invest in expanding Uncanny Automator's capabilities! Also, fill out [this form](https://automatorplugin.com/feedback/?utm_source=wp-repo&utm_medium=readme&utm_content=request-integration) on our site to let us know what you're looking for.
 
 ### How can I add an integration for my plugin?
 
-Check out our developer documentation over at [https://developer.automatorplugin.com/](https://developer.automatorplugin.com/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=code_integration). Also consider reaching out to our team, maybe we can help or even turn it into an official integration!
+Check out our developer documentation over at [https://developer.automatorplugin.com/](https://developer.automatorplugin.com/?utm_source=wp-repo&utm_medium=readme&utm_content=code-integration). Also consider reaching out to our team, maybe we can help or even turn it into an official integration!
 
 ### Can I automatically share posts & updates on social media?
 
@@ -407,91 +407,38 @@ Yes, with WordPress's "Send Email" action, send rich text, plain text and raw HT
 
 ### Why should I consider upgrading to Uncanny Automator Pro?
 
-You can use the free version forever without purchasing the Uncanny Automator Pro version. However, with Uncanny Automator Pro, you'll get access to more automation triggers and actions, additional features, and unlimited credits for app integrations. Visit [our plans page](https://automatorplugin.com/pricing/?utm_source=wp_repo_automator&utm_medium=readme&utm_campaign=faq) to learn more.
+You can use the free version forever without purchasing the Uncanny Automator Pro version. However, with Uncanny Automator Pro, you'll get access to more automation triggers and actions, additional features, and unlimited credits for app integrations. Visit [our plans page](https://automatorplugin.com/pricing/?utm_source=wp-repo&utm_medium=readme&utm_campaign=faq) to learn more.
 
 ### Who is Uncanny Owl?
 
-We're a Toronto-based WordPress company specializing in elearning and automation solutions for WordPress. We're behind the popular [Uncanny LearnDash Toolkit plugin](https://wordpress.org/plugins/uncanny-learndash-toolkit/) and we also have a suite of highly-acclaimed [commercial LearnDash add-ons](https://www.uncannyowl.com/plugins/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=who_is_uncannyowl).
+We're a Toronto-based WordPress company specializing in elearning and automation solutions for WordPress. We're behind the popular [Uncanny LearnDash Toolkit plugin](https://wordpress.org/plugins/uncanny-learndash-toolkit/) and we also have a suite of highly-acclaimed [commercial LearnDash add-ons](https://www.uncannyowl.com/plugins/?utm_source=wp-repo&utm_medium=readme&utm_content=who-is-uncannyowl).
 
 ## Changelog
 
-### 7.4.0 [2026-07-14]
+### 7.4.1 [2026-07-29]
 
-**New App Integration:**
+**Updated:**
 
-* [GoTo Meeting](https://automatorplugin.com/integration/gotomeeting/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7993
-
-**New Plugin Integrations:**
-
-* [Beaver Builder](https://automatorplugin.com/integration/beaver-builder/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7476
-* [Redirection](https://automatorplugin.com/integration/redirection/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7533
-* [WP Activity Log](https://automatorplugin.com/integration/wp-activity-log/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7522
-* [WP Fastest Cache](https://automatorplugin.com/integration/wp-fastest-cache/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7534
-* [Wordfence Security](https://automatorplugin.com/integration/wordfence/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=changelog) #7506
-
-**New Triggers:**
-
-* Beaver Builder - A user submits a contact form #7477
-* Beaver Builder - A user submits a subscribe form #7478
-* Redirection - A 404 error is logged #7532
-* Redirection - A redirect in a group is matched #7529
-* Redirection - A redirect is created by the URL monitor #7530
-* Redirection - A redirect is deleted #7531
-* WP Activity Log - A failed login is logged #7520
-* WP Activity Log - An event for an object type is logged #7518
-* WP Activity Log - An event is logged #7521
-* WP Activity Log - An event of a type is logged #7517
-* WP Activity Log - An event with a severity is logged #7519
-* WP Fastest Cache - All cache is cleared #7535
-* Wordfence Security - A blocking rule is deleted #7513
-* Wordfence Security - A login with a breached password is blocked #7509
-* Wordfence Security - A user activates two-factor authentication #7510
-* Wordfence Security - A user deactivates two-factor authentication #7511
-* Wordfence Security - An IP is blocked/throttled #7508
-* Wordfence Security - An IP is locked out #7507
-* Wordfence Security - An admin/non-admin user logs in #7512
-
-**New Actions:**
-
-* GoTo Meeting - Create a meeting #7994
-* GoTo Meeting - Delete a meeting #7995
-* GoTo Training - Add an attendee #7996
-* GoTo Training - Remove an attendee #7997
-* WP Fastest Cache - Purge all caches #7537
-* WP Fastest Cache - Purge the cache for a post #7538
-* Wordfence Security - Block an IP address #7514
-* Wordfence Security - Remove an IP block #7515
-* Wordfence Security - Remove an IP lockout #7516
+* Kadence - Modernized the integration to use the latest framework. #8228
+* PrettyLinks - Modernized the integration with unified support for Pretty Links v3 and v4. #8219
 
 **Fixed:**
 
-* Automator review - Added capability and nonce checks to the review settings handler, keeping unauthorized option changes firmly off the guest list. #8159
-* Bluesky - Protected post embed URL requests against SSRF, including redirects that tried to take the scenic route somewhere unsafe. #8157
-* Credits notifications - Added a capability check so lower-privileged users can no longer dismiss site-wide credit notices. #8161
-* Facebook Lead Ads - Added payload validation and optional authorization controls to webhooks, giving unexpected requests a proper ID check. #8155
-* Gravity Forms - Blank List fields no longer stop recipes during form submission. Empty lists can now pass quietly without causing a scene. #8019
-* HubSpot, Brevo, Constant Contact - Deprecated actions - Prevented deprecated actions from loading when demand-driven loading is enabled. Retired means retired. #8035
-* LearnDash - Create a group / Make the user the leader of a group - Fixed legacy option data that prevented the action configuration from opening. #8170
-* LearnDash - Restored the missing loopable tokens to the Token Loop, where they belong. #8021
-* LearnDash - Triggers - Restored the "Number of times" option for affected triggers. The counter is back on duty. #8168
-* Modern Events Calendar - Added authorization and nonce checks to event and ticket AJAX handlers for safer request handling. #8163
-* Recipe log - Secured the "View preview" popup against stored XSS by rendering its HTML inside a sandboxed iframe. The preview now stays in its lane. #8165
-* WordPress - Restored the missing loopable tokens to the Token Loop. #8028
-
-**Security Fixes:**
-
-* Google Contacts & Mautic - Added capability and nonce checks to option fetchers, ensuring only authorized requests get through. CVE-2026-15025 #8152
-* Forminator and related token reads - Hardened token handling against PHP Object Injection. CVE-2026-15008 #8150
-* Loopable integrations (CSV/XML/JSON) - Blocked private-network requests in loopable URL fetchers and hardened token-alias migrations against object injection. #8151
+* AI settings - Closed an arbitrary code execution path by ensuring the provider settings save handler no longer executes request-supplied callbacks. #8273
+* Discord and Asana credentials - Replaced XOR encryption with authenticated AES-256-GCM to provide stronger protection for stored credentials. #8274
+* Facebook Groups - Repaired the nonce check on the app install verification handler to help prevent cross-site request forgery. #8272
+* Kadence - All triggers - Fixed an issue where forms would not fire recipes when gated loading was enabled. #8228
+* Recipe logs - Long-running multi-trigger recipes that became stuck are now correctly terminated by the recovery process. #8227
+* Setup wizard - Added a capability check to prevent lower-privileged users from changing the wizard's connection status. #8271
+* Translations - Fixed an issue where Recipe Builder strings were not loading correctly in Spanish. #7392
 
 **Under the hood:**
 
-* Core - Corrected app-credit limits for legacy Pro and Lifetime licenses. The numbers now behave as their licenses intended. #8138
-* Divi - Modernized the integrations using the new framework, giving the foundations a well-earned refresh. #7458
-* Uncanny Agent - Database select tool - Secured WHERE and JOIN handling with validated predicates and prepared values. Database queries now follow a stricter dress code. #8014
-* Uncanny Agent - Secured component requests with encrypted license credentials, request binding, and fail-closed handling. When verification fails, the door stays closed. #8174
+* Core - Missing classmap files no longer result in PHP errors when the fallback autoloader is used. #8175
+* Core - Internal OAuth tokens are now encrypted for improved security. #8230
+* Core - Trigger hooks fired during raw shutdown callbacks are now properly captured and delivered. #8221
 
-[View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp_repo_automator&utm_medium=readme&utm_content=view_full_changelog)
+[View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)
 
 ## Upgrade Notice
 
