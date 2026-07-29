@@ -444,6 +444,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 **Under the hood:**
 
+* Core - Added automatic retries for app actions that fail before reaching the server, improving reliability without risking duplicate actions. #8225
 * Core - Missing classmap files no longer result in PHP errors when the fallback autoloader is used. #8175
 * Core - Internal OAuth tokens are now encrypted for improved security. #8230
 * Core - Trigger hooks fired during raw shutdown callbacks are now properly captured and delivered. #8221
