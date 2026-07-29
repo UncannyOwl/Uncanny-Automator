@@ -50,6 +50,13 @@ class Setup_Wizard {
 	 * @return void
 	 */
 	public static function set_tried_connecting() {
+
+		// Authorization gate: this AJAX handler writes a site option, so it must
+		// not be reachable by low-privileged or unauthenticated-via-CSRF callers.
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
+			wp_die( 'Unauthorized', 403 );
+		}
+
 		self::set_has_tried_connecting( true );
 		die;
 	}

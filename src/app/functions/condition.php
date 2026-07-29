@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) && ! defined( 'PHPUNIT_COMPOSER_INSTALL' ) && ! defi
 }
 
 // Import classes
+use Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Popularity\Filter_Condition_Popularity_Tracker;
 use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Registry_Service;
 use Uncanny_Automator\App\Recipe_Builder\Condition\Services\Condition_Query_Service;
 use Uncanny_Automator\App\Recipe_Builder\Recipe\Services\Recipe_Condition_Service;
@@ -579,4 +580,29 @@ function automator_replace_condition_group( int $recipe_id, string $group_id, ar
  */
 function automator_remove_condition_group_by_id( int $recipe_id, string $group_id ) {
 	return automator_remove_condition_group( $recipe_id, $group_id, true );
+}
+
+// =============================================================================
+// CONDITION POPULARITY
+// =============================================================================
+
+/**
+ * Get the filter/condition popularity tracker.
+ *
+ * Seam for callers outside src/app — they must reach src/app through
+ * automator_* functions, never class references, so src/app can reshape
+ * without stranding hardcoded class paths elsewhere in the plugin.
+ *
+ * Returns null when the class is unavailable — e.g. a partially updated
+ * install whose classmap lists a file that is no longer on disk. Popularity
+ * tracking is cache bookkeeping, so callers should treat null as "skip".
+ *
+ * @return Filter_Condition_Popularity_Tracker|null Tracker instance, or null when unavailable.
+ */
+function automator_get_condition_popularity_tracker(): ?Filter_Condition_Popularity_Tracker {
+	if ( ! class_exists( Filter_Condition_Popularity_Tracker::class ) ) {
+		return null;
+	}
+
+	return Filter_Condition_Popularity_Tracker::get_instance();
 }

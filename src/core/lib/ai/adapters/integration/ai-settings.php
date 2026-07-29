@@ -195,29 +195,22 @@ final class AI_Settings implements Settings_Interface {
 				exit;
 			}
 
-			// Validate the option value using the validate_callback if it exists.
-			if ( isset( $option['validate_callback'] ) && is_callable( $option['validate_callback'] ) ) {
-				$validate_callback = $option['validate_callback'];
-				$result            = call_user_func( $validate_callback, $option['value'] );
-				if ( is_wp_error( $result ) ) {
-					automator_flash_message(
-						$provider,
-						$result->get_error_message(),
-						'error'
-					);
-					wp_safe_redirect( wp_get_referer() );
-					exit;
-				}
-			}
-
 			// Get the value from the POST data.
 			$value = automator_filter_input( $option['id'], INPUT_POST );
 
-			// Sanitize the value using the sanitize_callback if it exists.
-			if ( isset( $option['sanitize_callback'] ) && is_callable( $option['sanitize_callback'] ) ) {
-				$sanitize_callback = $option['sanitize_callback'];
-				$value             = call_user_func( $sanitize_callback, $value );
-			}
+			// Sanitize the value with a fixed sanitizer.
+			//
+			// Validation / sanitization callbacks are intentionally NOT read from
+			// the request payload. Both the callable name AND its argument came
+			// straight from the client-supplied `stringified_options` JSON, so a
+			// caller could pass e.g. validate_callback=system + value=<command>
+			// and reach call_user_func() with an attacker-controlled callable —
+			// arbitrary code execution gated only by manage_options (an escalation
+			// on multisite, where subsite admins hold manage_options but not PHP
+			// execution). The AI provider options define no server-side callbacks;
+			// every option value here is an API key, so sanitize_text_field() is
+			// the correct fixed treatment.
+			$value = sanitize_text_field( $value );
 
 			// Update the option in the database.
 			automator_update_option( 'automator_' . $provider . '_api_key', $value );

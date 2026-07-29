@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Standalone;
 
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Authenticated_Token_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
 use Uncanny_Automator\App\Transports\Restful\Remote_Data\Remote_Data_Handler_Resolver;
 use Uncanny_Automator\App\Transports\Restful\Remote_Data\Remote_Data_Request;
@@ -1220,14 +1221,33 @@ class Dropdown_Controller extends WP_REST_Controller {
 		}
 
 		if ( $auth_header && preg_match( '/^Bearer\s+(.+)$/i', $auth_header, $matches ) ) {
-			$token = $matches[1];
-			$user  = $this->token_manager->get_user_from_token( $token );
+			$token   = $matches[1];
+			$context = $this->token_manager->get_context_from_token( $token );
 
-			if ( $user && user_can( $user, 'manage_options' ) ) {
+			if (
+				$context instanceof Authenticated_Token_Context
+				&& $context->has_scope( Authenticated_Token_Context::SCOPE_TOOLS )
+				&& user_can( $context->get_user(), 'manage_options' )
+			) {
+				$user = $context->get_user();
 				// Set current user for the request.
 				wp_set_current_user( $user->ID );
 				$this->authenticated_user_id = (int) $user->ID;
 				return true;
+			}
+
+			if (
+				$context instanceof Authenticated_Token_Context
+				&& ! $context->has_scope( Authenticated_Token_Context::SCOPE_TOOLS )
+			) {
+				return new WP_Error(
+					'rest_forbidden',
+					'Bearer token does not grant MCP tool access.',
+					array(
+						'status'         => 403,
+						'required_scope' => Authenticated_Token_Context::SCOPE_TOOLS,
+					)
+				);
 			}
 
 			return new WP_Error(

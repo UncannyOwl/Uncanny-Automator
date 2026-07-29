@@ -6,7 +6,6 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Mcp_Rest_Controller;
 use WP_Error;
 use WP_REST_Request;
-use WP_User;
 
 /**
  * Restrict MCP bearer-authenticated requests to Writer-required REST routes.
@@ -90,46 +89,75 @@ class Rest_Bearer_Route_Authorizer {
 		}
 
 		// Only enforce this allowlist when auth source is MCP bearer.
-		$user = $this->resolve_bearer_user( $request );
-		if ( ! $user instanceof WP_User ) {
+		$context = $this->resolve_bearer_context( $request );
+		if ( ! $context instanceof Authenticated_Token_Context ) {
 			return $response;
 		}
 
 		$method = strtoupper( (string) $request->get_method() );
 		$route  = $this->normalize_route( (string) $request->get_route() );
 
-		if ( $this->is_allowed_writer_route( $route, $method ) ) {
+		if ( ! $this->is_allowed_writer_route( $route, $method ) ) {
+			return new WP_Error(
+				'rest_forbidden',
+				'MCP bearer token is not allowed to access this REST route.',
+				array( 'status' => 403 )
+			);
+		}
+
+		$required_scope = $this->get_required_writer_scope( $method );
+		if ( $context->has_scope( $required_scope ) ) {
 			return $response;
 		}
 
 		return new WP_Error(
-			'rest_forbidden',
-			'MCP bearer token is not allowed to access this REST route.',
-			array( 'status' => 403 )
+			'rest_insufficient_scope',
+			'Bearer token does not grant the required Writer scope.',
+			array(
+				'status'         => 403,
+				'required_scope' => $required_scope,
+			)
 		);
 	}
 
 	/**
-	 * Resolve bearer-authenticated user for this request.
+	 * Resolve bearer-authenticated identity and scopes for this request.
 	 *
 	 * @since 7.2.3
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return WP_User|false
+	 * @return Authenticated_Token_Context|false
 	 */
-	private function resolve_bearer_user( WP_REST_Request $request ) {
+	private function resolve_bearer_context( WP_REST_Request $request ) {
 		$token = $this->extract_bearer_token( $request );
 		if ( empty( $token ) ) {
 			return false;
 		}
 
-		$user = $this->token_manager->get_user_from_token( $token );
-		if ( $user instanceof WP_User && user_can( $user, 'manage_options' ) ) {
-			return $user;
+		$context = $this->token_manager->get_context_from_token( $token );
+		if (
+			$context instanceof Authenticated_Token_Context
+			&& user_can( $context->get_user(), 'manage_options' )
+		) {
+			return $context;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Resolve the granular scope required by a Writer REST method.
+	 *
+	 * @param string $method HTTP method.
+	 * @return string Required scope.
+	 */
+	private function get_required_writer_scope( string $method ): string {
+		if ( 'GET' === $method ) {
+			return Authenticated_Token_Context::SCOPE_READ;
+		}
+
+		return Authenticated_Token_Context::SCOPE_WRITE;
 	}
 
 	/**

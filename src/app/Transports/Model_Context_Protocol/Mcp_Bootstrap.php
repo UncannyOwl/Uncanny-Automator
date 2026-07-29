@@ -5,6 +5,7 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol;
 use Uncanny_Automator\App\Application\Mcp\Mcp_Client;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Rest_Bearer_Authenticator;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Rest_Bearer_Route_Authorizer;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Internal_Token_Configuration_Monitor;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Standalone\Dropdown_Controller;
 
 // Include tool framework classes
@@ -63,6 +64,13 @@ class Mcp_Bootstrap {
 	private $rest_bearer_route_authorizer;
 
 	/**
+	 * Internal token configuration diagnostics.
+	 *
+	 * @var Internal_Token_Configuration_Monitor
+	 */
+	private $internal_token_configuration_monitor;
+
+	/**
 	 * Initialize MCP transport layer.
 	 *
 	 * @since 7.0.0
@@ -74,9 +82,10 @@ class Mcp_Bootstrap {
 		// Initialize REST controller.
 		$this->rest_controller = new Mcp_Rest_Controller();
 		// Initialize dropdown controller.
-		$this->dropdown_controller          = new Dropdown_Controller();
-		$this->rest_bearer_authenticator    = new Rest_Bearer_Authenticator();
-		$this->rest_bearer_route_authorizer = new Rest_Bearer_Route_Authorizer();
+		$this->dropdown_controller                  = new Dropdown_Controller();
+		$this->rest_bearer_authenticator            = new Rest_Bearer_Authenticator();
+		$this->rest_bearer_route_authorizer         = new Rest_Bearer_Route_Authorizer();
+		$this->internal_token_configuration_monitor = new Internal_Token_Configuration_Monitor();
 
 		// Initialize the chat client.
 		$this->client = Mcp_Client::get_instance();
@@ -85,6 +94,8 @@ class Mcp_Bootstrap {
 		$this->rest_bearer_authenticator->init();
 		// Restrict MCP bearer access to writer-required REST routes.
 		$this->rest_bearer_route_authorizer->init();
+		// Surface missing strong key material before Agent payload generation.
+		$this->internal_token_configuration_monitor->init();
 
 		// Register REST routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );

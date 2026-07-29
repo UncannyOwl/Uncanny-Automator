@@ -289,7 +289,7 @@ class Facebook_Groups_Helpers {
 			wp_die( 'Unauthorized', 401 );
 		}
 
-		if ( wp_verify_nonce( filter_input( INPUT_POST, 'nonce' ), 'verify_install' ) ) {
+		if ( ! wp_verify_nonce( automator_filter_input( 'nonce', INPUT_POST ), 'verify_install' ) ) {
 			wp_die( 'Unauthenticated', 403 );
 		}
 
@@ -692,7 +692,7 @@ class Facebook_Groups_Helpers {
 					data: {
 						action: 'automator_facebook_groups_verify_app_install',
 						group_id: selected_group_id,
-						nonce: '<?php esc_js( wp_create_nonce( 'verify_install' ) ); ?>'
+						nonce: '<?php echo esc_js( wp_create_nonce( 'verify_install' ) ); ?>'
 					},
 					success: function (response) {
 

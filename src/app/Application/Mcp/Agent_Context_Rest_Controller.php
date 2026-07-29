@@ -17,6 +17,7 @@ namespace Uncanny_Automator\App\Application\Mcp;
 
 use Uncanny_Automator\App\Application\Mcp\Agent\Agent_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Client\Client_Context_Service;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Authenticated_Token_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
 use WP_Error;
 use WP_REST_Request;
@@ -78,12 +79,31 @@ class Agent_Context_Rest_Controller {
 
 		if ( $auth_header && preg_match( '/^Bearer\s+(.+)$/i', $auth_header, $matches ) ) {
 			$token      = $matches[1];
-			$user       = $this->token_manager->get_user_from_token( $token );
+			$context    = $this->token_manager->get_context_from_token( $token );
 			$capability = $this->context_service->get_client_access_capability();
 
-			if ( $user && user_can( $user, $capability ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
+			if (
+				$context instanceof Authenticated_Token_Context
+				&& $context->has_scope( Authenticated_Token_Context::SCOPE_READ )
+				&& user_can( $context->get_user(), $capability ) // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
+			) {
+				$user = $context->get_user();
 				wp_set_current_user( $user->ID );
 				return true;
+			}
+
+			if (
+				$context instanceof Authenticated_Token_Context
+				&& ! $context->has_scope( Authenticated_Token_Context::SCOPE_READ )
+			) {
+				return new WP_Error(
+					'agent_context_insufficient_scope',
+					'Bearer token does not grant read access.',
+					array(
+						'status'         => 403,
+						'required_scope' => Authenticated_Token_Context::SCOPE_READ,
+					)
+				);
 			}
 
 			return new WP_Error(
