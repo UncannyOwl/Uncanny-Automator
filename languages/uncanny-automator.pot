@@ -2,37 +2,79 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.4.0\n"
+"Project-Id-Version: Uncanny Automator 7.4.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-14T15:33:27+00:00\n"
+"POT-Creation-Date: 2026-07-29T07:15:02+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
 
-#. Plugin Name of the plugin
-#: uncanny-automator.php
-msgid "Uncanny Automator"
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Installing addon"
 msgstr ""
 
-#. Plugin URI of the plugin
-#. Author URI of the plugin
-#: uncanny-automator.php
-msgid "https://automatorplugin.com/"
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Activating addon"
 msgstr ""
 
-#. Description of the plugin
-#: uncanny-automator.php
-msgid "Connect your WordPress plugins, sites and apps together with powerful automations. Save time and money with the #1 automation plugin for WordPress!"
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Updating addon"
 msgstr ""
 
-#. Author of the plugin
-#: uncanny-automator.php
-msgid "Uncanny Automator, Uncanny Owl"
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Downloading addon"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Addon installed"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Addon activated"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Addon updated"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Addon downloaded"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgctxt "Addons"
+msgid "Unable to process request"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgctxt "Verb"
+msgid "Cancel"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Are you sure?"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgctxt "Verb"
+msgid "Confirm"
 msgstr ""
 
 #: src/assets/build/main.js:1
@@ -61,6 +103,7 @@ msgstr ""
 msgid "Run on %1$s @ %2$s"
 msgstr ""
 
+#. translators: 1. A number
 #. translators: Units of time (seconds)
 #: src/assets/build/main.js:1
 #: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:223
@@ -70,6 +113,7 @@ msgid_plural "%1$s seconds"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: 1. A number
 #. translators: Units of time (minutes)
 #: src/assets/build/main.js:1
 #: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:225
@@ -79,6 +123,7 @@ msgid_plural "%1$s minutes"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: 1. A number
 #. translators: Units of time (hours)
 #: src/assets/build/main.js:1
 #: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:227
@@ -88,6 +133,7 @@ msgid_plural "%1$s hours"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: 1. A number
 #. translators: Units of time (days)
 #: src/assets/build/main.js:1
 #: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:229
@@ -97,6 +143,7 @@ msgid_plural "%1$s days"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: 1. A number
 #: src/assets/build/main.js:1
 #, js-format
 msgid "%1$s week"
@@ -104,6 +151,7 @@ msgid_plural "%1$s weeks"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: 1. A number
 #: src/assets/build/main.js:1
 #, js-format
 msgid "%1$s month"
@@ -111,6 +159,7 @@ msgid_plural "%1$s months"
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: 1. A number
 #. translators: Units of time (years)
 #: src/assets/build/main.js:1
 #: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:231
@@ -580,11 +629,6 @@ msgstr ""
 
 #: src/assets/build/main.js:1
 msgctxt "Upgrade"
-msgid "Coming soon"
-msgstr ""
-
-#: src/assets/build/main.js:1
-msgctxt "Upgrade"
 msgid "Generate dynamic blocks and shortcodes controlled by recipes. Show a progress bar that updates with purchases or display AI responses after form submissions."
 msgstr ""
 
@@ -631,6 +675,52 @@ msgstr ""
 #: src/assets/build/main.js:1
 msgctxt "Upgrade"
 msgid "Elite Addons"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Run now"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "The recipe run has been initiated"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Actions are now running in the background and results will be available in the logs."
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Changes cannot be made to the recipe while it's running. Progress can be monitored from the logs and actions that haven't run yet can be cancelled."
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "View log entry"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "You can also return to the list of recipes or create a copy of this recipe."
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Return to recipe list"
+msgstr ""
+
+#: src/assets/build/main.js:1
+#: src/core/admin/class-copy-recipe-parts.php:81
+msgid "Duplicate this recipe"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Recipe run complete"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "The recipe has already finished running. You can view the log entry to see the results. Once you close this dialog, you can continue editing the recipe."
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgctxt "Verb"
+msgid "Close"
 msgstr ""
 
 #: src/assets/build/main.js:1
@@ -952,11 +1042,6 @@ msgstr ""
 
 #: src/assets/build/main.js:1
 msgid "Click Learn More for steps you can take to resolve this issue."
-msgstr ""
-
-#: src/assets/build/main.js:1
-msgctxt "Verb"
-msgid "Cancel"
 msgstr ""
 
 #: src/assets/build/main.js:1
@@ -1324,16 +1409,7 @@ msgid "Duplicate"
 msgstr ""
 
 #: src/assets/build/main.js:1
-msgid "Are you sure?"
-msgstr ""
-
-#: src/assets/build/main.js:1
 msgid "Deleting items in a {{live}} recipe can lead to unexpected behaviors."
-msgstr ""
-
-#: src/assets/build/main.js:1
-msgctxt "Verb"
-msgid "Confirm"
 msgstr ""
 
 #: src/assets/build/main.js:1
@@ -1830,11 +1906,6 @@ msgstr ""
 
 #: src/assets/build/main.js:1
 msgid "Automator support"
-msgstr ""
-
-#: src/assets/build/main.js:1
-msgctxt "Verb"
-msgid "Close"
 msgstr ""
 
 #: src/assets/build/main.js:1
@@ -2486,7 +2557,317 @@ msgid "Are you sure you want to close the walkthrough?"
 msgstr ""
 
 #: src/assets/build/main.js:1
+msgid "An unexpected error occurred."
+msgstr ""
+
+#. translators: 1: resent count, 2: failed count, 3: skipped count.
+#: src/assets/build/main.js:1
+#, js-format
+msgid "Resent %1$d, failed %2$d, skipped %3$d."
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Look back (days)"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Find failed actions"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Resend selected"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Stop"
+msgstr ""
+
+#: src/assets/build/main.js:1
+#: src/core/admin/api-log/class-api-log.php:70
+msgid "Endpoint"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "All endpoints"
+msgstr ""
+
+#. translators: %s: number of failed actions found.
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%s found"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "No failed App actions were found in this window."
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Select all"
+msgstr ""
+
+#. translators: Log column.
+#: src/assets/build/main.js:1
+#: src/core/admin/admin-logs/tabs/recipe.php:49
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:164
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:86
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:122
+#: src/core/includes/recipe-logs-view.php:41
+#: src/core/includes/recipe-logs-view.php:86
+#: src/core/includes/recipe-logs-view.php:139
+#: src/core/includes/recipe-logs-view.php:184
+#: src/core/views/admin-dashboard/usage-panel.php:282
+#: src/core/views/admin-logs/component/logs.php:31
+#: src/core/views/admin-logs/component/logs.php:77
+#: src/core/views/admin-logs/component/logs.php:132
+#: src/core/views/admin-logs/component/logs.php:179
+#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:58
+msgid "Recipe"
+msgstr ""
+
+#. translators: Log column.
+#: src/assets/build/main.js:1
+#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1025
+#: src/core/includes/recipe-logs-view.php:49
+#: src/core/includes/recipe-logs-view.php:96
+#: src/core/includes/recipe-logs-view.php:147
+#: src/core/includes/recipe-logs-view.php:192
+#: src/core/views/admin-logs/component/logs.php:39
+#: src/core/views/admin-logs/component/logs.php:87
+#: src/core/views/admin-logs/component/logs.php:140
+#: src/core/views/admin-logs/component/logs.php:187
+#: src/integrations/autonami/tokens/autonami-tokens.php:152
+#: src/integrations/buddyboss/helpers/buddyboss-helpers.php:121
+#: src/integrations/buddypress/helpers/buddypress-helpers.php:121
+#: src/integrations/wholesale-suite/actions/wss-lead-approved.php:53
+msgid "User"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Fail date"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Fail reason"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Resent"
+msgstr ""
+
+#: src/assets/build/main.js:1
+#: src/core/admin/admin-logs/admin-logs.php:51
+#: src/core/admin/admin-logs/admin-logs.php:52
+#: src/core/admin/class-automator-wp-admin-bar.php:127
+#: src/core/views/admin-tools-header.php:6
+#: src/core/views/admin-tools/tab/debug/debug.php:44
+msgid "Logs"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Select action"
+msgstr ""
+
+#: src/assets/build/main.js:1
+#: src/core/admin/class-admin-menu.php:417
+#: src/core/views/admin-dashboard.php:103
+msgid "Guest"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Resending…"
+msgstr ""
+
+#. translators: %d: number of prior resend attempts.
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%d prior attempts"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Details"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Failed"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Skipped"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Load more"
+msgstr ""
+
+#: src/assets/build/main.js:1
+#, js-format
+msgid "Copy %s to clipboard"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Click to copy"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Copy failed: No content available"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Copy failed: Clipboard not available"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Copy failed: Unable to copy to clipboard"
+msgstr ""
+
+#: src/assets/build/main.js:1
+#, js-format
+msgid "\"%s\" copied to clipboard"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "Copied to clipboard"
+msgstr ""
+
+#: src/assets/build/main.js:1
 msgid "Changes you made may not be saved."
+msgstr ""
+
+#. translators: 1. A number
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%1$s sec"
+msgstr ""
+
+#. translators: 1. A number
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%1$s min"
+msgstr ""
+
+#. translators: 1. A number
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%1$s h"
+msgstr ""
+
+#. translators: 1. A number
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%1$s d"
+msgstr ""
+
+#. translators: 1. A number
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%1$s wk"
+msgstr ""
+
+#. translators: 1. A number
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%1$s mo"
+msgstr ""
+
+#. translators: 1. A number
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%1$s yr"
+msgstr ""
+
+#. translators: %s: A relative time in the future, like "in 5 seconds" or "in 1 year"
+#: src/assets/build/main.js:1
+#, js-format
+msgid "in %s"
+msgstr ""
+
+#. translators: %s: A relative time in the past, like "5 seconds ago" or "1 year ago"
+#. translators: %s is a human-readable time difference, e.g. "17 minutes"
+#: src/assets/build/main.js:1
+#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:145
+#, js-format,php-format
+msgid "%s ago"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "a minute"
+msgstr ""
+
+#. translators: %d: Number of minutes
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%d minutes"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "an hour"
+msgstr ""
+
+#. translators: %d: Number of hours
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%d hours"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "a day"
+msgstr ""
+
+#. translators: %d: Number of days
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%d days"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "a month"
+msgstr ""
+
+#. translators: %d: Number of months
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%d months"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "a year"
+msgstr ""
+
+#. translators: %d: Number of years
+#: src/assets/build/main.js:1
+#, js-format
+msgid "%d years"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "a few seconds"
+msgstr ""
+
+#: src/assets/build/main.js:1
+msgid "a second"
+msgid_plural "%d seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Plugin Name of the plugin
+#: uncanny-automator.php
+msgid "Uncanny Automator"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: uncanny-automator.php
+msgid "https://automatorplugin.com/"
+msgstr ""
+
+#. Description of the plugin
+#: uncanny-automator.php
+msgid "Connect your WordPress plugins, sites and apps together with powerful automations. Save time and money with the #1 automation plugin for WordPress!"
+msgstr ""
+
+#. Author of the plugin
+#: uncanny-automator.php
+msgid "Uncanny Automator, Uncanny Owl"
 msgstr ""
 
 #: src/app/Application/Mcp/Mcp_Client.php:685
@@ -2509,7 +2890,7 @@ msgctxt "MCP client validation error"
 msgid "Unable to load the required encryption key."
 msgstr ""
 
-#: src/app/Application/Mcp/Mcp_Client.php:727
+#: src/app/Application/Mcp/Mcp_Client.php:732
 msgctxt "MCP client validation error"
 msgid "Could not generate the encrypted payload."
 msgstr ""
@@ -2611,76 +2992,76 @@ msgctxt "Action creation error"
 msgid "Failed to create action: %s"
 msgstr ""
 
-#: src/app/functions/condition.php:52
+#: src/app/functions/condition.php:53
 msgctxt "Condition search error"
 msgid "Search query is required"
 msgstr ""
 
-#: src/app/functions/condition.php:68
+#: src/app/functions/condition.php:69
 msgctxt "Condition definition error"
 msgid "Integration code is required"
 msgstr ""
 
-#: src/app/functions/condition.php:72
+#: src/app/functions/condition.php:73
 msgctxt "Condition definition error"
 msgid "Condition code is required"
 msgstr ""
 
-#: src/app/functions/condition.php:121
-#: src/app/functions/condition.php:138
-#: src/app/functions/condition.php:156
-#: src/app/functions/condition.php:177
-#: src/app/functions/condition.php:208
-#: src/app/functions/condition.php:246
-#: src/app/functions/condition.php:271
-#: src/app/functions/condition.php:290
-#: src/app/functions/condition.php:310
-#: src/app/functions/condition.php:500
-#: src/app/functions/condition.php:552
+#: src/app/functions/condition.php:122
+#: src/app/functions/condition.php:139
+#: src/app/functions/condition.php:157
+#: src/app/functions/condition.php:178
+#: src/app/functions/condition.php:209
+#: src/app/functions/condition.php:247
+#: src/app/functions/condition.php:272
+#: src/app/functions/condition.php:291
+#: src/app/functions/condition.php:311
+#: src/app/functions/condition.php:501
+#: src/app/functions/condition.php:553
 msgctxt "Recipe validation error"
 msgid "Valid recipe ID is required"
 msgstr ""
 
-#: src/app/functions/condition.php:160
-#: src/app/functions/condition.php:181
-#: src/app/functions/condition.php:212
-#: src/app/functions/condition.php:242
-#: src/app/functions/condition.php:267
-#: src/app/functions/condition.php:306
-#: src/app/functions/condition.php:556
+#: src/app/functions/condition.php:161
+#: src/app/functions/condition.php:182
+#: src/app/functions/condition.php:213
+#: src/app/functions/condition.php:243
+#: src/app/functions/condition.php:268
+#: src/app/functions/condition.php:307
+#: src/app/functions/condition.php:557
 msgctxt "Condition group error"
 msgid "Group ID is required"
 msgstr ""
 
-#: src/app/functions/condition.php:185
+#: src/app/functions/condition.php:186
 msgctxt "Condition group error"
 msgid "Group removal must be confirmed with $confirmed = true"
 msgstr ""
 
-#: src/app/functions/condition.php:216
-#: src/app/functions/condition.php:371
-#: src/app/functions/condition.php:403
-#: src/app/functions/condition.php:464
+#: src/app/functions/condition.php:217
+#: src/app/functions/condition.php:372
+#: src/app/functions/condition.php:404
+#: src/app/functions/condition.php:465
 msgctxt "Condition validation error"
 msgid "Integration code is required"
 msgstr ""
 
-#: src/app/functions/condition.php:220
-#: src/app/functions/condition.php:375
-#: src/app/functions/condition.php:399
-#: src/app/functions/condition.php:468
+#: src/app/functions/condition.php:221
+#: src/app/functions/condition.php:376
+#: src/app/functions/condition.php:400
+#: src/app/functions/condition.php:469
 msgctxt "Condition validation error"
 msgid "Condition code is required"
 msgstr ""
 
-#: src/app/functions/condition.php:238
-#: src/app/functions/condition.php:263
-#: src/app/functions/condition.php:440
+#: src/app/functions/condition.php:239
+#: src/app/functions/condition.php:264
+#: src/app/functions/condition.php:441
 msgctxt "Condition validation error"
 msgid "Condition ID is required"
 msgstr ""
 
-#: src/app/functions/condition.php:333
+#: src/app/functions/condition.php:334
 msgctxt "Condition group error"
 msgid "Condition group not found in recipe"
 msgstr ""
@@ -3108,7 +3489,7 @@ msgid "Unexpected error saving trigger: %s"
 msgstr ""
 
 #: src/app/Infrastructure/License/Credit_Manager.php:81
-#: src/core/classes/class-api-server.php:624
+#: src/core/classes/class-api-server.php:626
 msgid "Not enough credits"
 msgstr ""
 
@@ -3117,7 +3498,7 @@ msgid "Unable to fetch the license."
 msgstr ""
 
 #: src/app/Infrastructure/License/License_Manager.php:421
-#: src/core/classes/class-api-server.php:600
+#: src/core/classes/class-api-server.php:602
 msgid "License is not valid"
 msgstr ""
 
@@ -4402,6 +4783,61 @@ msgctxt "Uncanny Automator"
 msgid "Stacktrace"
 msgstr ""
 
+#: src/app/Transports/Model_Context_Protocol/Client/Client_Token_Service.php:109
+msgctxt "MCP internal token error"
+msgid "Uncanny Agent could not create its internal access token."
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Cache_Cipher.php:142
+msgctxt "MCP internal token configuration error"
+msgid "Uncanny Agent cannot encrypt its internal token because the OpenSSL AES-256-GCM cipher is unavailable."
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration.php:98
+msgctxt "MCP internal token configuration error"
+msgid "Uncanny Agent cannot create a secure internal token. Configure a strong AUTOMATOR_MCP_INTERNAL_TOKEN_KEY or replace the placeholder WordPress security keys in wp-config.php."
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:71
+msgctxt "Site Health test label"
+msgid "Uncanny Agent internal token encryption"
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:87
+msgctxt "Site Health result"
+msgid "Uncanny Agent internal token encryption is not currently required"
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:88
+msgctxt "Site Health result"
+msgid "Uncanny Agent is disabled. Strong external key material will be required before it can create an internal bearer token."
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:95
+msgctxt "Site Health result"
+msgid "Uncanny Agent internal token encryption is configured"
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:96
+msgctxt "Site Health result"
+msgid "A strong external secret is available for the recoverable internal bearer token."
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:102
+msgctxt "Site Health result"
+msgid "Uncanny Agent internal token encryption is not configured"
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:123
+msgctxt "MCP internal token admin notice"
+msgid "Uncanny Agent configuration required."
+msgstr ""
+
+#: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:141
+msgctxt "Site Health badge"
+msgid "Uncanny Automator"
+msgstr ""
+
 #. translators: %s is a list of allowed scopes.
 #: src/app/Transports/Restful/Integrations/Integrations_Rest_Controller.php:128
 #, php-format
@@ -4465,22 +4901,9 @@ msgid "Heads up!"
 msgstr ""
 
 #: src/core/admin/addons/class-addons.php:36
-#: src/core/admin/addons/class-addons.php:41
+#: src/core/admin/addons/class-addons.php:37
 #: src/core/admin/admin-settings/tabs/addons.php:37
 msgid "Addons"
-msgstr ""
-
-#: src/core/admin/addons/class-addons.php:48
-msgctxt "Label for new menu items"
-msgid "New"
-msgstr ""
-
-#: src/core/admin/admin-logs/admin-logs.php:51
-#: src/core/admin/admin-logs/admin-logs.php:52
-#: src/core/admin/class-automator-wp-admin-bar.php:127
-#: src/core/views/admin-tools-header.php:6
-#: src/core/views/admin-tools/tab/debug/debug.php:44
-msgid "Logs"
 msgstr ""
 
 #. translators: Log column.
@@ -4492,24 +4915,6 @@ msgstr ""
 
 #: src/core/admin/admin-logs/tabs/api.php:27
 msgid "API"
-msgstr ""
-
-#. translators: Log column.
-#: src/core/admin/admin-logs/tabs/recipe.php:49
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-metabox.php:164
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:86
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:122
-#: src/core/includes/recipe-logs-view.php:41
-#: src/core/includes/recipe-logs-view.php:86
-#: src/core/includes/recipe-logs-view.php:139
-#: src/core/includes/recipe-logs-view.php:184
-#: src/core/views/admin-dashboard/usage-panel.php:282
-#: src/core/views/admin-logs/component/logs.php:31
-#: src/core/views/admin-logs/component/logs.php:77
-#: src/core/views/admin-logs/component/logs.php:132
-#: src/core/views/admin-logs/component/logs.php:179
-#: src/integrations/uncanny-automator/helpers/uoa-helpers.php:58
-msgid "Recipe"
 msgstr ""
 
 #. translators: Log column.
@@ -4830,10 +5235,6 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: src/core/admin/api-log/class-api-log.php:70
-msgid "Endpoint"
-msgstr ""
-
 #: src/core/admin/api-log/class-api-log.php:71
 msgid "Response code"
 msgstr ""
@@ -4900,11 +5301,6 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:337
 msgid "Legacy settings"
-msgstr ""
-
-#: src/core/admin/class-admin-menu.php:417
-#: src/core/views/admin-dashboard.php:103
-msgid "Guest"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:459
@@ -5464,10 +5860,6 @@ msgstr ""
 msgid "Add new recipe"
 msgstr ""
 
-#: src/core/admin/class-copy-recipe-parts.php:81
-msgid "Duplicate this recipe"
-msgstr ""
-
 #: src/core/admin/class-copy-recipe-parts.php:117
 msgid "Copy creation failed, could not find original recipe:"
 msgstr ""
@@ -5819,11 +6211,11 @@ msgstr ""
 msgid "Upgrade to Automator Pro"
 msgstr ""
 
-#: src/core/admin/setup-wizard/setup-wizard.php:98
+#: src/core/admin/setup-wizard/setup-wizard.php:105
 msgid "Uncanny Automator Setup Wizard"
 msgstr ""
 
-#: src/core/admin/setup-wizard/setup-wizard.php:99
+#: src/core/admin/setup-wizard/setup-wizard.php:106
 msgid "Setup wizard"
 msgstr ""
 
@@ -6051,23 +6443,6 @@ msgstr ""
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-type.php:110
 msgctxt "Recipe"
 msgid "Not found in trash"
-msgstr ""
-
-#. translators: Log column.
-#: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1025
-#: src/core/includes/recipe-logs-view.php:49
-#: src/core/includes/recipe-logs-view.php:96
-#: src/core/includes/recipe-logs-view.php:147
-#: src/core/includes/recipe-logs-view.php:192
-#: src/core/views/admin-logs/component/logs.php:39
-#: src/core/views/admin-logs/component/logs.php:87
-#: src/core/views/admin-logs/component/logs.php:140
-#: src/core/views/admin-logs/component/logs.php:187
-#: src/integrations/autonami/tokens/autonami-tokens.php:152
-#: src/integrations/buddyboss/helpers/buddyboss-helpers.php:121
-#: src/integrations/buddypress/helpers/buddypress-helpers.php:121
-#: src/integrations/wholesale-suite/actions/wss-lead-approved.php:53
-msgid "User"
 msgstr ""
 
 #: src/core/automator-post-types/uo-recipe/class-recipe-post-utilities.php:1029
@@ -6342,22 +6717,22 @@ msgctxt "AI"
 msgid "%s is required."
 msgstr ""
 
-#: src/core/lib/ai/adapters/integration/ai-settings.php:230
+#: src/core/lib/ai/adapters/integration/ai-settings.php:223
 msgctxt "AI"
 msgid "Settings saved successfully."
 msgstr ""
 
-#: src/core/lib/ai/adapters/integration/ai-settings.php:255
+#: src/core/lib/ai/adapters/integration/ai-settings.php:248
 msgctxt "AI"
 msgid "You do not have permission to disconnect the AI provider."
 msgstr ""
 
-#: src/core/lib/ai/adapters/integration/ai-settings.php:261
+#: src/core/lib/ai/adapters/integration/ai-settings.php:254
 msgctxt "AI"
 msgid "Invalid provider."
 msgstr ""
 
-#: src/core/lib/ai/adapters/integration/ai-settings.php:273
+#: src/core/lib/ai/adapters/integration/ai-settings.php:266
 msgctxt "AI"
 msgid "Disconnected successfully."
 msgstr ""
@@ -6580,7 +6955,7 @@ msgid "less or equal to"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:782
-#: src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php:847
+#: src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php:852
 msgid "Redirect URL"
 msgstr ""
 
@@ -8023,12 +8398,6 @@ msgstr ""
 
 #: src/core/services/rest/endpoint/log-endpoint.php:112
 msgid "The recipe log you are looking for was not found"
-msgstr ""
-
-#. translators: %s is a human-readable time difference, e.g. "17 minutes"
-#: src/core/services/rest/endpoint/log-endpoint/utils/formatters-utils.php:145
-#, php-format
-msgid "%s ago"
 msgstr ""
 
 #: src/core/views/admin-dashboard.php:70
@@ -16406,8 +16775,6 @@ msgstr ""
 #: src/integrations/forminator/helpers/forminator-helpers.php:100
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:103
 #: src/integrations/jetformbuilder/tokens/jetfb-tokens.php:97
-#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:84
-#: src/integrations/kadence/triggers/kadence-form-submitted.php:83
 #: src/integrations/ninja-forms/helpers/ninja-forms-helpers.php:93
 #: src/integrations/thrive-theme/helpers/thrive-theme-helpers.php:99
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:114
@@ -16423,8 +16790,6 @@ msgstr ""
 #: src/integrations/forminator/helpers/forminator-helpers.php:101
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:104
 #: src/integrations/jetformbuilder/tokens/jetfb-tokens.php:94
-#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:79
-#: src/integrations/kadence/triggers/kadence-form-submitted.php:78
 #: src/integrations/ninja-forms/helpers/ninja-forms-helpers.php:94
 #: src/integrations/thrive-theme/helpers/thrive-theme-helpers.php:94
 #: src/integrations/ultimate-member/helpers/ultimate-member-helpers.php:115
@@ -26630,42 +26995,54 @@ msgstr ""
 msgid "Referer URL"
 msgstr ""
 
-#: src/integrations/kadence/helpers/kadence-helpers.php:49
+#: src/integrations/kadence/helpers/kadence-helpers.php:64
 msgctxt "Kadence"
 msgid "All forms"
 msgstr ""
 
-#: src/integrations/kadence/helpers/kadence-helpers.php:56
+#: src/integrations/kadence/helpers/kadence-helpers.php:71
 msgctxt "Kadence"
 msgid "Any form"
 msgstr ""
 
 #. translators: 1: Form name
-#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:26
+#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:47
 #, php-format
 msgctxt "Kadence"
 msgid "{{A form:%1$s}} is submitted"
 msgstr ""
 
-#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:27
+#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:48
 msgctxt "Kadence"
 msgid "{{A form}} is submitted"
 msgstr ""
 
-#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:39
-#: src/integrations/kadence/triggers/kadence-form-submitted.php:38
+#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:61
+#: src/integrations/kadence/triggers/kadence-form-submitted.php:59
 msgctxt "Kadence"
 msgid "Form"
 msgstr ""
 
+#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:107
+#: src/integrations/kadence/triggers/kadence-form-submitted.php:105
+msgctxt "Kadence"
+msgid "Form ID"
+msgstr ""
+
+#: src/integrations/kadence/triggers/kadence-anon-form-submitted.php:112
+#: src/integrations/kadence/triggers/kadence-form-submitted.php:110
+msgctxt "Kadence"
+msgid "Form title"
+msgstr ""
+
 #. translators: 1: Form name
-#: src/integrations/kadence/triggers/kadence-form-submitted.php:25
+#: src/integrations/kadence/triggers/kadence-form-submitted.php:45
 #, php-format
 msgctxt "Kadence"
 msgid "A user submits {{a form:%1$s}}"
 msgstr ""
 
-#: src/integrations/kadence/triggers/kadence-form-submitted.php:26
+#: src/integrations/kadence/triggers/kadence-form-submitted.php:46
 msgctxt "Kadence"
 msgid "A user submits {{a form}}"
 msgstr ""
@@ -34082,30 +34459,33 @@ msgid "A user completes {{a video}}"
 msgstr ""
 
 #. translators: Action sentence - Pretty Links
-#: src/integrations/pretty-links/actions/prli-create-link.php:27
+#: src/integrations/pretty-links/actions/prli-create-link.php:26
 #, php-format
 msgctxt "Pretty Links"
 msgid "Create a pretty link for {{a specific target URL:%1$s}}"
 msgstr ""
 
-#: src/integrations/pretty-links/actions/prli-create-link.php:29
+#: src/integrations/pretty-links/actions/prli-create-link.php:28
 msgctxt "Pretty Links"
 msgid "Create a pretty link for {{a specific target URL}}"
 msgstr ""
 
-#: src/integrations/pretty-links/actions/prli-create-link.php:42
+#: src/integrations/pretty-links/actions/prli-create-link.php:41
 msgctxt "Pretty Links"
 msgid "Title"
 msgstr ""
 
-#: src/integrations/pretty-links/actions/prli-create-link.php:49
+#: src/integrations/pretty-links/actions/prli-create-link.php:48
 #: src/integrations/pretty-links/actions/prli-create-link.php:53
-#: src/integrations/pretty-links/triggers/prli-anon-create-a-link.php:39
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:149
+#: src/integrations/pretty-links/triggers/prli-anon-create-a-link.php:49
 msgctxt "Pretty Links"
 msgid "Redirection type"
 msgstr ""
 
 #: src/integrations/pretty-links/actions/prli-create-link.php:60
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:159
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:185
 msgctxt "Pretty Links"
 msgid "Target URL"
 msgstr ""
@@ -34125,123 +34505,125 @@ msgctxt "Pretty Links"
 msgid "Enable Pretty Link built-in hit (click) tracking."
 msgstr ""
 
-#: src/integrations/pretty-links/actions/prli-create-link.php:82
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:105
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:137
+#: src/integrations/pretty-links/actions/prli-create-link.php:83
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:144
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:175
+msgctxt "Pretty Links"
 msgid "Link ID"
 msgstr ""
 
-#: src/integrations/pretty-links/actions/prli-create-link.php:86
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:100
+#: src/integrations/pretty-links/actions/prli-create-link.php:87
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:139
+msgctxt "Pretty Links"
 msgid "Link title"
 msgstr ""
 
-#: src/integrations/pretty-links/actions/prli-create-link.php:90
+#: src/integrations/pretty-links/actions/prli-create-link.php:91
+#: src/integrations/pretty-links/triggers/prli-anon-link-clicked.php:53
+#: src/integrations/pretty-links/triggers/prli-link-clicked.php:52
+msgctxt "Pretty Links"
 msgid "Pretty link"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:24
+#: src/integrations/pretty-links/actions/prli-create-link.php:173
+msgctxt "Pretty Links"
+msgid "No supported Pretty Links API was found. Make sure the Pretty Links plugin is installed and activated."
+msgstr ""
+
+#. translators: %s: Pretty Links error code (e.g. url_invalid, insert_failed)
+#: src/integrations/pretty-links/actions/prli-create-link.php:206
+#, php-format
+msgctxt "Pretty Links"
+msgid "Pretty Links could not create the link (%s)."
+msgstr ""
+
+#: src/integrations/pretty-links/actions/prli-create-link.php:250
+msgctxt "Pretty Links"
+msgid "Pretty Link was not able to create a URL. Please check PHP error log for possible reason."
+msgstr ""
+
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:27
 msgctxt "Pretty Links"
 msgid "Any redirection type"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:31
-msgctxt "Pretty Links"
-msgid "All redirection types"
-msgstr ""
-
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:37
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:33
 msgctxt "Pretty Links"
 msgid "301 (Permanent)"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:41
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:37
 msgctxt "Pretty Links"
 msgid "302 (Temporary)"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:45
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:41
 msgctxt "Pretty Links"
 msgid "307 (Temporary)"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:68
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:60
 msgctxt "Pretty Links"
 msgid "Any pretty link"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:75
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:154
 msgctxt "Pretty Links"
-msgid "All pretty links"
-msgstr ""
-
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:110
-msgid "Redirection type"
-msgstr ""
-
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:115
 msgid "Pretty Link"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:120
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:147
-msgid "Target URL"
-msgstr ""
-
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:142
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:180
+msgctxt "Pretty Links"
 msgid "Click ID"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:152
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:190
+msgctxt "Pretty Links"
 msgid "Referer"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:157
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:195
+msgctxt "Pretty Links"
 msgid "Host"
 msgstr ""
 
-#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:162
+#: src/integrations/pretty-links/helpers/pretty-links-helpers.php:200
+msgctxt "Pretty Links"
 msgid "Browser"
 msgstr ""
 
 #. translators: 1: Redirection type
-#: src/integrations/pretty-links/triggers/prli-anon-create-a-link.php:25
+#: src/integrations/pretty-links/triggers/prli-anon-create-a-link.php:34
 #, php-format
 msgctxt "Pretty Links"
 msgid "A pretty link of {{a specific redirect type:%1$s}} is created"
 msgstr ""
 
-#: src/integrations/pretty-links/triggers/prli-anon-create-a-link.php:26
+#: src/integrations/pretty-links/triggers/prli-anon-create-a-link.php:35
 msgctxt "Pretty Links"
 msgid "A pretty link of {{a specific redirect type}} is created"
 msgstr ""
 
 #. translators: 1: Pretty link
-#: src/integrations/pretty-links/triggers/prli-anon-link-clicked.php:25
+#: src/integrations/pretty-links/triggers/prli-anon-link-clicked.php:38
 #, php-format
 msgctxt "Pretty Links"
 msgid "{{A pretty link:%1$s}} is clicked"
 msgstr ""
 
-#: src/integrations/pretty-links/triggers/prli-anon-link-clicked.php:26
+#: src/integrations/pretty-links/triggers/prli-anon-link-clicked.php:39
 msgctxt "Pretty Links"
 msgid "{{A pretty link}} is clicked"
 msgstr ""
 
-#: src/integrations/pretty-links/triggers/prli-anon-link-clicked.php:39
-#: src/integrations/pretty-links/triggers/prli-link-clicked.php:38
-msgctxt "Pretty Links"
-msgid "Pretty link"
-msgstr ""
-
 #. translators: 1: Pretty link
-#: src/integrations/pretty-links/triggers/prli-link-clicked.php:24
+#: src/integrations/pretty-links/triggers/prli-link-clicked.php:37
 #, php-format
 msgctxt "Pretty Links"
 msgid "A user clicks {{a pretty link:%1$s}}"
 msgstr ""
 
-#: src/integrations/pretty-links/triggers/prli-link-clicked.php:25
+#: src/integrations/pretty-links/triggers/prli-link-clicked.php:38
 msgctxt "Pretty Links"
 msgid "A user clicks {{a pretty link}}"
 msgstr ""

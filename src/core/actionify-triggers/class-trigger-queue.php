@@ -185,7 +185,30 @@ class Trigger_Queue {
 
 		$this->ensure_shutdown_hooks();
 
+		// The shutdown passes registered above can never run again in this
+		// request, so drain immediately.
+		if ( $this->is_post_shutdown_dead_zone() ) {
+			$this->process_queue();
+		}
+
 		return true;
+	}
+
+	/**
+	 * Whether WP's `shutdown` action has fully completed while PHP is still running.
+	 *
+	 * A plugin can fire a monitored hook from its own raw
+	 * register_shutdown_function() callback, after WP's `shutdown` action has
+	 * already completed (e.g. Pretty Links 4.0 defers its click write until
+	 * after fastcgi_finish_request()). did_action() reports the action as fired
+	 * while doing_action() confirms it is no longer on the filter stack — the
+	 * combination distinguishes this dead zone from the mid-shutdown window,
+	 * where the registered drain passes at not-yet-reached priorities still run.
+	 *
+	 * @return bool
+	 */
+	private function is_post_shutdown_dead_zone() {
+		return did_action( 'shutdown' ) && ! doing_action( 'shutdown' );
 	}
 
 	/**
@@ -349,7 +372,16 @@ class Trigger_Queue {
 			'cookies'  => $_COOKIE, // Preserve session context for anonymous/user triggers in loopback requests.
 		);
 
-		// Non blocking request.
+		// Post-shutdown last gasp: the process ends the moment this callback
+		// returns, which kills a non-blocking socket before the request is ever
+		// transmitted. Block briefly instead — invisible to the visitor, whose
+		// response was already flushed before the emitting plugin fired the hook.
+		if ( $this->is_post_shutdown_dead_zone() ) {
+			$args['timeout']  = 2;
+			$args['blocking'] = true;
+		}
+
+		// Non blocking request (except in the post-shutdown last gasp above).
 		wp_remote_post( $url, $args );
 	}
 

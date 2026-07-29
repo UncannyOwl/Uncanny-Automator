@@ -6,28 +6,42 @@ namespace Uncanny_Automator\Integrations\Pretty_Links;
  * Class PRLI_ANON_LINK_CLICKED
  *
  * @package Uncanny_Automator
+ *
+ * @method \Uncanny_Automator\Integrations\Pretty_Links\Pretty_Links_Helpers get_item_helpers()
  */
 class PRLI_ANON_LINK_CLICKED extends \Uncanny_Automator\Recipe\Trigger {
 
-	protected $helpers;
+	/**
+	 * Declare the trigger's identity and monitored hook for the code-defined loading path.
+	 *
+	 * Pretty Links 4.0 records the click and redirects during init (priority 1),
+	 * before Automator's normal listener registration — the code-defined metadata
+	 * cache gets this hook attached at plugins_loaded so the event is still captured.
+	 *
+	 * @return \Uncanny_Automator\Recipe\Trigger_Definition
+	 */
+	public static function definition() {
+		return self::new_definition( 'PRLI_ANON_LINK_CLICKED', 'PRETTY_LINKS' )
+			->trigger_type( 'anonymous' )
+			->trigger_meta( 'PRLI_LINKS' )
+			->hook( 'prli_record_click' );
+	}
 
 	/**
-	 * @return mixed|void
+	 * Set up the trigger's sentences.
+	 *
+	 * @return void
 	 */
 	protected function setup_trigger() {
-		$this->helpers = array_shift( $this->dependencies );
-		$this->set_integration( 'PRETTY_LINKS' );
-		$this->set_trigger_code( 'PRLI_ANON_LINK_CLICKED' );
-		$this->set_trigger_meta( 'PRLI_LINKS' );
-		$this->set_trigger_type( 'anonymous' );
 		// Trigger sentence - Pretty Links
 		// translators: 1: Pretty link
 		$this->set_sentence( sprintf( esc_attr_x( '{{A pretty link:%1$s}} is clicked', 'Pretty Links', 'uncanny-automator' ), $this->get_trigger_meta() ) );
 		$this->set_readable_sentence( esc_attr_x( '{{A pretty link}} is clicked', 'Pretty Links', 'uncanny-automator' ) );
-		$this->add_action( 'prli_record_click' );
 	}
 
 	/**
+	 * Define the trigger's option fields.
+	 *
 	 * @return array[]
 	 */
 	public function options() {
@@ -36,9 +50,10 @@ class PRLI_ANON_LINK_CLICKED extends \Uncanny_Automator\Recipe\Trigger {
 				array(
 					'input_type'      => 'select',
 					'option_code'     => $this->get_trigger_meta(),
-					'label'           => _x( 'Pretty link', 'Pretty Links', 'uncanny-automator' ),
+					'label'           => esc_html_x( 'Pretty link', 'Pretty Links', 'uncanny-automator' ),
 					'required'        => true,
-					'options'         => $this->helpers->get_all_pretty_links( true ),
+					'options'         => array(),
+					'remote_data'     => $this->get_item_helpers()->remote_data_load_config( 'links' ),
 					'options_show_id' => false,
 					'relevant_tokens' => array(),
 				)
@@ -47,12 +62,15 @@ class PRLI_ANON_LINK_CLICKED extends \Uncanny_Automator\Recipe\Trigger {
 	}
 
 	/**
-	 * @param $trigger
-	 * @param $hook_args
+	 * Validate the trigger against the incoming hook arguments.
 	 *
-	 * @return bool
+	 * @param array $trigger   The trigger definition and selected options.
+	 * @param array $hook_args The prli_record_click hook arguments.
+	 *
+	 * @return bool True when the clicked link matches the trigger's selection.
 	 */
 	public function validate( $trigger, $hook_args ) {
+
 		if ( ! isset( $trigger['meta'][ $this->get_trigger_meta() ] ) ) {
 			return false;
 		}
@@ -76,36 +94,35 @@ class PRLI_ANON_LINK_CLICKED extends \Uncanny_Automator\Recipe\Trigger {
 	}
 
 	/**
-	 * Define Tokens.
+	 * Define the tokens exposed by the trigger.
 	 *
-	 * @param array $tokens
-	 * @param array $trigger - options selected in the current recipe/trigger
+	 * @param array $trigger The trigger definition and selected options.
+	 * @param array $tokens  The existing tokens.
 	 *
-	 * @return array
+	 * @return array The tokens merged with the common clicked-link tokens.
 	 */
 	public function define_tokens( $trigger, $tokens ) {
-		$prli_tokens = $this->helpers->prli_common_tokens_for_link_clicked();
+		$prli_tokens = $this->get_item_helpers()->prli_common_tokens_for_link_clicked();
 
 		return array_merge( $tokens, $prli_tokens );
 	}
 
 	/**
-	 * Populate the tokens with actual values when a trigger runs.
+	 * Populate the tokens with actual values when the trigger runs.
 	 *
-	 * @param array $trigger
-	 * @param array $hook_args
+	 * @param array $trigger   The trigger definition and selected options.
+	 * @param array $hook_args The prli_record_click hook arguments.
 	 *
-	 * @return array
+	 * @return array The hydrated token values keyed by token ID.
 	 */
 	public function hydrate_tokens( $trigger, $hook_args ) {
 		$parse_token_values = array();
 
 		if ( ! empty( $hook_args ) ) {
-			// Hydrate giveaways tokens.
-			$parse_token_values = $this->helpers->hydrate_prli_link_clicked_tokens( $hook_args );
+			// Hydrate Pretty Links tokens.
+			$parse_token_values = $this->get_item_helpers()->hydrate_prli_link_clicked_tokens( $hook_args );
 		}
 
 		return $parse_token_values;
 	}
-
 }

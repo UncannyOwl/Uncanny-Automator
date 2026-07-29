@@ -12,15 +12,44 @@
 namespace Uncanny_Automator\App\Application\Mcp\Handshake;
 
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Client\Client_Context_Service;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Authenticated_Token_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
 
 class Handshake_Handler {
+
+	/**
+	 * Bearer-token issuance boundary.
+	 *
+	 * @var Token_Manager
+	 */
+	private Token_Manager $token_manager;
 
 	/** Production base URL. */
 	const PRODUCTION_URL = 'https://app.uncannyagent.com';
 
 	/** AJAX action name. */
 	const AJAX_ACTION = 'uoa_handshake_approve';
+
+	/**
+	 * Explicit permissions granted to the standalone Uncanny Agent.
+	 *
+	 * New credentials must never use the legacy "mcp" umbrella scope because
+	 * it intentionally bypasses granular authorization for old integrations.
+	 */
+	const STANDALONE_AGENT_SCOPES = array(
+		Authenticated_Token_Context::SCOPE_READ,
+		Authenticated_Token_Context::SCOPE_WRITE,
+		Authenticated_Token_Context::SCOPE_TOOLS,
+	);
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Token_Manager|null $token_manager Bearer-token issuance boundary.
+	 */
+	public function __construct( ?Token_Manager $token_manager = null ) {
+		$this->token_manager = $token_manager ?? new Token_Manager();
+	}
 
 	/**
 	 * Get the handshake base URL.
@@ -108,6 +137,26 @@ class Handshake_Handler {
 	}
 
 	/**
+	 * Issue a full-access bearer credential for the standalone Uncanny Agent.
+	 *
+	 * The standalone Agent requires the same read, write, and tools access as
+	 * the internal Agent, but new credentials must use granular scopes so every
+	 * authorization decision remains explicit.
+	 *
+	 * @param int $user_id    WordPress user identifier.
+	 * @param int $bearer_ttl Bearer credential lifetime in seconds.
+	 * @return array|false Token data on success, false on failure.
+	 */
+	public function generate_standalone_token( int $user_id, int $bearer_ttl ) {
+		return $this->token_manager->generate_token(
+			$user_id,
+			self::STANDALONE_AGENT_SCOPES,
+			$bearer_ttl,
+			'Uncanny Agent Standalone (' . gmdate( 'Y-m-d H:i' ) . ')'
+		);
+	}
+
+	/**
 	 * Handle the AJAX approval request.
 	 *
 	 * Generates a WP application password and sends it server-to-server.
@@ -147,14 +196,8 @@ class Handshake_Handler {
 			$bearer_ttl = min( (int) $validation['session_ttl'], self::MAX_BEARER_TTL );
 		}
 
-		// Generate a Bearer token via Automator's Token_Manager.
-		$token_manager = new Token_Manager();
-		$token_result  = $token_manager->generate_token(
-			get_current_user_id(),
-			array( 'mcp' ),
-			$bearer_ttl,
-			'Uncanny Agent Standalone (' . gmdate( 'Y-m-d H:i' ) . ')'
-		);
+		// Generate a Bearer token through the standalone issuance boundary.
+		$token_result = $this->generate_standalone_token( get_current_user_id(), $bearer_ttl );
 
 		if ( false === $token_result || empty( $token_result['token'] ) ) {
 			wp_send_json_error( array( 'message' => 'Failed to generate bearer token.' ), 500 );

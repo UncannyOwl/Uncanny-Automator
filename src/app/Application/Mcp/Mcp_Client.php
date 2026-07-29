@@ -722,6 +722,11 @@ class Mcp_Client {
 		);
 
 		if ( '' === $payload ) {
+			$payload_error = $this->payload_service->get_last_error();
+			if ( $payload_error instanceof WP_Error ) {
+				return $payload_error;
+			}
+
 			return new WP_Error(
 				'encryption_failed',
 				esc_html_x( 'Could not generate the encrypted payload.', 'MCP client validation error', 'uncanny-automator' ),

@@ -471,10 +471,15 @@ class Action_Logs_Resources {
 		}
 
 		// Append structured errors from uap_error_log when available.
-		$errors = array();
-		if ( isset( Automator()->recipe_runner ) ) {
-			$action_log_id_int = absint( $action_log['action_log_id'] );
-			$error_rows        = Automator()->recipe_runner->error_store()->get_by_action_log( $action_log_id_int );
+		$errors            = array();
+		$action_log_id_int = absint( $action_log['action_log_id'] );
+
+		// An action that never ran has action_log_id 0, and store_system_error()
+		// writes run-level errors with that same 0. Querying by it therefore
+		// matched every system error on the site and rendered all of them onto
+		// every never-run action. Only look up errors for a real action row.
+		if ( isset( Automator()->recipe_runner ) && 0 < $action_log_id_int ) {
+			$error_rows = Automator()->recipe_runner->error_store()->get_by_action_log( $action_log_id_int );
 			foreach ( $error_rows as $row ) {
 				$errors[] = array(
 					'code'          => $row->error_code,

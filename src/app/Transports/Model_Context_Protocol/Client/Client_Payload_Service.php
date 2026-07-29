@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Client;
 
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
+use WP_Error;
 
 /**
  * Class Client_Payload_Service
@@ -72,9 +73,23 @@ class Client_Payload_Service {
 	 * @return string Empty string on failure.
 	 */
 	public function generate_encrypted_payload( array $overrides = array() ): string {
-		$payload_data = $this->build_payload_data( $overrides );
+		$bearer_token = $this->token_service->get_bearer_token();
+		if ( '' === $bearer_token ) {
+			return '';
+		}
+
+		$payload_data = $this->build_payload_data( $overrides, $bearer_token );
 
 		return $this->generate_encrypted_package( $payload_data );
+	}
+
+	/**
+	 * Return the last token error when payload generation stopped early.
+	 *
+	 * @return WP_Error|null Token error or null.
+	 */
+	public function get_last_error(): ?WP_Error {
+		return $this->token_service->get_last_error();
 	}
 
 	/**
@@ -101,11 +116,13 @@ class Client_Payload_Service {
 	/**
 	 * Build the data payload array.
 	 *
-	 * @param array<string,mixed> $overrides Optional overrides.
+	 * @param array<string,mixed> $overrides   Optional overrides.
+	 * @param string|null         $bearer_token Pre-resolved bearer token.
 	 * @return array<string,mixed>
 	 */
-	public function build_payload_data( array $overrides = array() ): array {
-		$user = $this->get_current_user();
+	public function build_payload_data( array $overrides = array(), ?string $bearer_token = null ): array {
+		$user         = $this->get_current_user();
+		$bearer_token = null === $bearer_token ? $this->token_service->get_bearer_token() : $bearer_token;
 
 		$payload = array(
 			'email'                  => isset( $user->user_email ) ? sanitize_email( (string) $user->user_email ) : '',
@@ -113,7 +130,7 @@ class Client_Payload_Service {
 			'site_domain'            => sanitize_text_field( (string) wp_parse_url( get_site_url(), PHP_URL_HOST ) ),
 			'page_url'               => $this->resolve_page_url( $overrides ),
 			'mcp_url'                => esc_url_raw( $this->context->get_mcp_rest_url() ),
-			'bearer_token'           => $this->token_service->get_bearer_token(),
+			'bearer_token'           => $bearer_token,
 			'license_key'            => sanitize_text_field( (string) $this->context->get_license_key() ),
 			'license_id'             => absint( $this->context->get_license_id() ),
 			'site_name'              => sanitize_text_field( (string) $this->context->get_site_name() ),

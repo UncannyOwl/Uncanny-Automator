@@ -123,6 +123,11 @@ function automator_pro_items_list() {
 					'is_pro'   => true,
 					'is_elite' => false,
 				),
+				array(
+					'name'     => esc_html_x( "Reset a user's store credit to zero", 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
 			),
 		),
 		'ADD_ACTION' => array(
@@ -813,6 +818,26 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'BEAVER_BUILDER' => array(
+			'name'       => 'Beaver Builder',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( '{{A contact form}} is submitted', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( '{{A subscribe form}} is submitted', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(),
+		),
 		'BO' => array(
 			'name'       => 'BadgeOS',
 			'pro_only'   => 'no',
@@ -1294,7 +1319,7 @@ function automator_pro_items_list() {
 			'triggers'   => array(
 				array(
 					'name'     => esc_html_x( '{{A form}} is submitted with {{a specific value}} in {{a specific field}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'anonymous',
+					'type'     => 'logged-in',
 					'is_pro'   => true,
 					'is_elite' => false,
 				),
@@ -3758,6 +3783,34 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'REDIRECTION' => array(
+			'name'       => 'Redirection',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( 'Create {{a redirect}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Delete {{a redirect}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Disable {{a redirect}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Enable {{a redirect}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+		),
 		'RUN_CODE' => array(
 			'name'       => 'Run Code',
 			'pro_only'   => 'yes',
@@ -5003,6 +5056,26 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'WORDFENCE' => array(
+			'name'       => 'Wordfence Security',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'An attack rate increase is detected', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A password reset is requested', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(),
+		),
 		'WP' => array(
 			'name'       => 'WordPress',
 			'pro_only'   => 'no',
@@ -5854,6 +5927,19 @@ function automator_pro_items_list() {
 				),
 			),
 			'actions'    => array(),
+		),
+		'WP_ACTIVITY_LOG' => array(
+			'name'       => 'WP Activity Log',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( 'Log {{an event}} to the activity log', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
 		),
 		'WP_ADMIN' => array(
 			'name'       => 'WP Admin',

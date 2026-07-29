@@ -594,8 +594,11 @@ class Automator_Cache_Handler {
 	 * @return void
 	 */
 	public function handle_condition_meta_update( $meta_id, $post_id, $meta_key, $meta_value ) {
-		$this->get_condition_popularity_tracker()
-			->handle_meta_update( $meta_id, $post_id, $meta_key, $meta_value );
+		$tracker = automator_get_condition_popularity_tracker();
+		if ( null === $tracker ) {
+			return;
+		}
+		$tracker->handle_meta_update( $meta_id, $post_id, $meta_key, $meta_value );
 	}
 
 	/**
@@ -609,8 +612,11 @@ class Automator_Cache_Handler {
 	 * @return void
 	 */
 	public function handle_condition_meta_delete( $meta_ids, $post_id, $meta_key, $meta_value ) {
-		$this->get_condition_popularity_tracker()
-			->handle_meta_delete( $meta_ids, $post_id, $meta_key, $meta_value );
+		$tracker = automator_get_condition_popularity_tracker();
+		if ( null === $tracker ) {
+			return;
+		}
+		$tracker->handle_meta_delete( $meta_ids, $post_id, $meta_key, $meta_value );
 	}
 
 	/**
@@ -624,8 +630,11 @@ class Automator_Cache_Handler {
 	 * @return void
 	 */
 	public function handle_condition_status_update( $post_id, $recipe_id, $post_status, $return_data ) {
-		$this->get_condition_popularity_tracker()
-			->handle_status_change( $post_id, $recipe_id, $post_status );
+		$tracker = automator_get_condition_popularity_tracker();
+		if ( null === $tracker ) {
+			return;
+		}
+		$tracker->handle_status_change( $post_id, $recipe_id, $post_status );
 	}
 
 	/**
@@ -652,16 +661,10 @@ class Automator_Cache_Handler {
 			return;
 		}
 
-		$this->get_condition_popularity_tracker()
-			->handle_status_change( $post->ID, $post->ID, $new_status );
-	}
-
-	/**
-	 * Get the condition popularity tracker instance.
-	 *
-	 * @return \Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Popularity\Filter_Condition_Popularity_Tracker
-	 */
-	private function get_condition_popularity_tracker() {
-		return \Uncanny_Automator\App\Integration_Catalog\Services\Utilities\Popularity\Filter_Condition_Popularity_Tracker::get_instance();
+		$tracker = automator_get_condition_popularity_tracker();
+		if ( null === $tracker ) {
+			return;
+		}
+		$tracker->handle_status_change( $post->ID, $post->ID, $new_status );
 	}
 }

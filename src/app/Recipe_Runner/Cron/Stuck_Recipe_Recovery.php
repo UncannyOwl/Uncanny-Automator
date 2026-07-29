@@ -177,7 +177,7 @@ class Stuck_Recipe_Recovery {
 					// Pass true so the resolver surfaces it as COMPLETED_WITH_ERRORS rather
 					// than silently upgrading the partial run to COMPLETED.
 					$this->runner->finalize_recipe( $recipe_id, $user_id, $recipe_log_id, true );
-					$this->log_recovery( $recipe_log_id, $threshold, (string) $row->date_time );
+					$this->log_recovery( $recipe_log_id, $threshold, (string) $row->last_action_activity );
 					++$recovered;
 				} catch ( \Throwable $e ) {
 					automator_log(
@@ -202,17 +202,38 @@ class Stuck_Recipe_Recovery {
 	}
 
 	/**
-	 * Find recipes stuck at NOT_COMPLETED older than the threshold.
+	 * Find recipes stuck at NOT_COMPLETED whose actions stopped progressing.
 	 *
-	 * Excludes recipes with any in-flight action — IN_PROGRESS, COMPLETED_AWAITING,
-	 * QUEUED, or IN_PROGRESS_WITH_ERROR. This mirrors the same "has_scheduled"
-	 * whitelist used by Recipe_Status_Resolver::resolve() so recovery cannot
-	 * finalize a recipe that the resolver would still call ongoing.
+	 * Two conditions define "stuck", and both are about *actions*:
 	 *
-	 * @param int $threshold_seconds How old a recipe must be before recovery.
+	 * 1. The run reached Stage 3 — it has at least one action log row. A run
+	 *    with no action rows has not started executing: it is a multi-trigger
+	 *    recipe still collecting triggers. Those legitimately stay open for
+	 *    days or weeks (22 "view a page" triggers under ALL logic, satisfied
+	 *    over an onboarding period), and finalizing them destroys the run.
+	 *    The INNER JOIN below is what excludes them.
+	 *
+	 * 2. No action row has been touched for $threshold_seconds. Age is measured
+	 *    from MAX( al.date_time ), NOT from rl.date_time — uap_recipe_log.date_time
+	 *    is a *completion* timestamp. insert_recipe_log_row() seeds it as
+	 *    '0000-00-00 00:00:00' and only mark_recipe_complete() writes a real value,
+	 *    so an in-flight row always compares as older than any threshold. Ageing
+	 *    against it made the threshold inert and swept live runs on the next tick.
+	 *
+	 * Recipes with an in-flight action — IN_PROGRESS, COMPLETED_AWAITING, QUEUED,
+	 * or IN_PROGRESS_WITH_ERROR — are excluded regardless of age. This mirrors the
+	 * "has_scheduled" whitelist in Recipe_Status_Resolver::resolve() so recovery
+	 * cannot finalize a recipe the resolver would still call ongoing.
+	 *
+	 * Trade-off: a run that fataled *before* writing its first action row is no
+	 * longer recovered. From uap_recipe_log alone it is indistinguishable from a
+	 * recipe awaiting triggers, and leaving it open (the pre-7.3 behaviour) is far
+	 * cheaper than destroying valid long-running runs.
+	 *
+	 * @param int $threshold_seconds How long actions must be idle before recovery.
 	 * @param int $batch_size        Max recipes per run.
 	 *
-	 * @return array Array of row objects with ID, automator_recipe_id, user_id, date_time.
+	 * @return array Row objects with ID, automator_recipe_id, user_id, date_time, last_action_activity.
 	 */
 	public function find_stuck_recipes( int $threshold_seconds, int $batch_size ): array {
 
@@ -221,22 +242,26 @@ class Stuck_Recipe_Recovery {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT rl.ID, rl.automator_recipe_id, rl.user_id, rl.date_time
+				"SELECT rl.ID, rl.automator_recipe_id, rl.user_id, rl.date_time,
+				        MAX( al.date_time ) AS last_action_activity
 				FROM {$wpdb->prefix}uap_recipe_log rl
+				INNER JOIN {$wpdb->prefix}uap_action_log al
+				        ON al.automator_recipe_log_id = rl.ID
 				WHERE rl.completed = 0
-				  AND rl.date_time < DATE_SUB( NOW(), INTERVAL %d SECOND )
 				  AND rl.ID NOT IN (
-				      SELECT DISTINCT al.automator_recipe_log_id
-				      FROM {$wpdb->prefix}uap_action_log al
-				      WHERE al.completed IN ( %d, %d, %d, %d )
+				      SELECT DISTINCT al2.automator_recipe_log_id
+				      FROM {$wpdb->prefix}uap_action_log al2
+				      WHERE al2.completed IN ( %d, %d, %d, %d )
 				  )
-				ORDER BY rl.date_time ASC
+				GROUP BY rl.ID, rl.automator_recipe_id, rl.user_id, rl.date_time
+				HAVING MAX( al.date_time ) < DATE_SUB( NOW(), INTERVAL %d SECOND )
+				ORDER BY last_action_activity ASC
 				LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$threshold_seconds,
 				Automator_Status::IN_PROGRESS,
 				Automator_Status::IN_PROGRESS_WITH_ERROR,
 				Automator_Status::COMPLETED_AWAITING,
 				Automator_Status::QUEUED,
+				$threshold_seconds,
 				$batch_size
 			)
 		);
@@ -249,13 +274,16 @@ class Stuck_Recipe_Recovery {
 	 *
 	 * @param int    $recipe_log_id     The recovered recipe log ID.
 	 * @param int    $threshold_seconds The threshold that was used.
-	 * @param string $date_time         The original recipe run date_time.
+	 * @param string $last_activity     Timestamp of the run's most recent action row.
 	 *
 	 * @return void
 	 */
-	private function log_recovery( int $recipe_log_id, int $threshold_seconds, string $date_time ): void {
+	private function log_recovery( int $recipe_log_id, int $threshold_seconds, string $last_activity ): void {
 
-		$age_seconds = time() - strtotime( $date_time );
+		// Guard against an unparseable timestamp. Ageing against a zero date
+		// previously reported ~2027 years of "age" in the log UI.
+		$last_activity_ts = strtotime( $last_activity );
+		$age_seconds      = false === $last_activity_ts ? 0 : max( 0, time() - $last_activity_ts );
 
 		$error = new Action_Error(
 			Error_Code::RECIPE_STUCK,

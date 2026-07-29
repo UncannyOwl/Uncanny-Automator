@@ -382,6 +382,52 @@ return array (
       ),
     ),
   ),
+  'KADENCE_ANON_SUBMITTED_FORM' => 
+  array (
+    'code' => 'KADENCE_ANON_SUBMITTED_FORM',
+    'class' => 'Uncanny_Automator\\Integrations\\Kadence\\KADENCE_ANON_FORM_SUBMITTED',
+    'integration' => 'KADENCE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'KADENCE_FORMS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'kadence_blocks_form_submission',
+        1 => 10,
+        2 => 4,
+      ),
+      1 => 
+      array (
+        0 => 'kadence_blocks_advanced_form_submission',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'KADENCE_USER_SUBMITTED_FORM' => 
+  array (
+    'code' => 'KADENCE_USER_SUBMITTED_FORM',
+    'class' => 'Uncanny_Automator\\Integrations\\Kadence\\KADENCE_FORM_SUBMITTED',
+    'integration' => 'KADENCE',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'KADENCE_FORMS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'kadence_blocks_form_submission',
+        1 => 10,
+        2 => 4,
+      ),
+      1 => 
+      array (
+        0 => 'kadence_blocks_advanced_form_submission',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
   'COURSEDONE' => 
   array (
     'code' => 'COURSEDONE',
@@ -667,6 +713,57 @@ return array (
       0 => 
       array (
         0 => 'pum_sub_form_success',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'PRLI_ANON_CREATE_LINK' => 
+  array (
+    'code' => 'PRLI_ANON_CREATE_LINK',
+    'class' => 'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_ANON_CREATE_A_LINK',
+    'integration' => 'PRETTY_LINKS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'PRLI_REDIRECTION',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'prli-create-link',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'PRLI_ANON_LINK_CLICKED' => 
+  array (
+    'code' => 'PRLI_ANON_LINK_CLICKED',
+    'class' => 'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_ANON_LINK_CLICKED',
+    'integration' => 'PRETTY_LINKS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'PRLI_LINKS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'prli_record_click',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'PRLI_LINK_CLICKED' => 
+  array (
+    'code' => 'PRLI_LINK_CLICKED',
+    'class' => 'Uncanny_Automator\\Integrations\\Pretty_Links\\PRLI_LINK_CLICKED',
+    'integration' => 'PRETTY_LINKS',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'PRLI_LINKS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'prli_record_click',
         1 => 10,
         2 => 1,
       ),

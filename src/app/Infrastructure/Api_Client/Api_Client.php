@@ -6,6 +6,7 @@ namespace Uncanny_Automator\App\Infrastructure\Api_Client;
 use Exception;
 use Uncanny_Automator\App\Infrastructure\Database\Interfaces\Api_Log_Store;
 use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client_Interface;
+use Uncanny_Automator\App\Infrastructure\Http\Transient_Retry;
 use Uncanny_Automator\App\Events\Dispatcher;
 
 /**
@@ -121,8 +122,10 @@ class Api_Client implements Api_Client_Interface {
 			)
 		);
 
-		$start       = microtime( true );
-		$wp_response = wp_remote_request( $url, $wp_args );
+		$start = microtime( true );
+		// Transient-failure retry: only provably-unsent failures (connection-class
+		// errors + CF origin-unreachable statuses) are retried — safe for POSTs.
+		$wp_response = Transient_Retry::request( $url, $wp_args );
 		$elapsed_ms  = ( microtime( true ) - $start ) * 1000.0;
 
 		// Transport-level failure (DNS, timeout, etc.).

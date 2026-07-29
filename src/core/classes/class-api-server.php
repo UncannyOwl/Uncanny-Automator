@@ -459,8 +459,10 @@ class Api_Server {
 
 		$time_before = microtime( true );
 
-		self::$last_response = wp_remote_request(
-			$params['url'],
+		// Transient-failure retry: only provably-unsent failures (connection-class
+		// errors + CF origin-unreachable statuses) are retried — safe for POSTs.
+		self::$last_response = \Uncanny_Automator\App\Infrastructure\Http\Transient_Retry::request(
+			(string) $params['url'],
 			$request
 		);
 

@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             7.4.0
+ * Version:             7.4.1
  * Requires at least:   5.8
  * Requires PHP:        7.4
  */
@@ -24,7 +24,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '7.4.0' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '7.4.1' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -130,6 +130,12 @@ require_once UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'globals.php';
  * call. Handles legacy class-name capitalisation inconsistencies across
  * 200+ integrations without requiring individual per-class fixes.
  *
+ * The classmap can reference files that are not on disk (optimized release
+ * classmaps on a partially updated install, or a tree/vendor desync).
+ * Composer soft-fails on those — its bare include only raises a warning —
+ * so this fallback must not upgrade the same miss into a fatal; the
+ * is_file() check keeps a stale entry a recoverable class-not-found.
+ *
  * @param string $class Fully-qualified class name requested by PHP.
  * @return void
  */
@@ -145,7 +151,7 @@ function automator_autoloader( $class ) {
 		}
 	}
 	$file = $ci_map[ strtolower( $class ) ] ?? null;
-	if ( null !== $file ) {
+	if ( null !== $file && is_file( $file ) ) {
 		require_once $file;
 	}
 }

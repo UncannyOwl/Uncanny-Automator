@@ -448,19 +448,46 @@ abstract class App_Helpers extends Abstract_Helpers {
 	 *
 	 * @return string
 	 */
+	/**
+	 * Prefix marking the authenticated (AES-256-GCM) at-rest format. Legacy
+	 * blobs carry no prefix — they begin with a raw 16-byte IV — so this lets
+	 * decrypt_data() tell the two formats apart and stay backward compatible.
+	 *
+	 * @var string
+	 */
+	const ENCRYPTION_V2_PREFIX = 'uoa:v2:';
+
 	public function encrypt_data( $data, $id, $type ) {
-		// Serialize data and generate random IV.
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Safe serialization for data at rest encryption
 		$serialized = serialize( $data );
-		$iv         = random_bytes( 16 );
 
-		// Create unique key using ID, salt, type, and IV
+		// Preferred path: authenticated AES-256-GCM. The key is derived from the
+		// per-record id, the site secret NONCE_SALT, and the type. GCM provides
+		// confidentiality AND integrity, unlike the previous repeating-key XOR,
+		// whose keystream was recoverable from the predictable serialize() output
+		// via known-plaintext analysis.
+		if ( function_exists( 'openssl_encrypt' ) ) {
+			$key        = hash( 'sha256', $id . NONCE_SALT . $type, true );
+			$nonce      = random_bytes( 12 );
+			$tag        = '';
+			$ciphertext = openssl_encrypt( $serialized, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $nonce, $tag );
+
+			if ( false !== $ciphertext ) {
+				// Format: prefix . nonce(12) . tag(16) . ciphertext, base64-encoded.
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Used for data encoding, not obfuscation
+				return base64_encode( self::ENCRYPTION_V2_PREFIX . $nonce . $tag . $ciphertext );
+			}
+		}
+
+		// Fallback for the rare install without OpenSSL: legacy repeating-key XOR,
+		// kept only so at-rest storage still functions there. decrypt_data() reads
+		// both formats.
+		$iv  = random_bytes( 16 );
 		$key = hash( 'sha256', $id . NONCE_SALT . $type . $iv );
 
-		// XOR encrypt with repeating key (handles any data size)
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- last-resort XOR fallback, handles any data size
 		$encrypted = $serialized ^ str_repeat( $key, ceil( strlen( $serialized ) / strlen( $key ) ) );
 
-		// Return IV + encrypted data as base64
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Used for data encoding, not obfuscation
 		return base64_encode( $iv . $encrypted );
 	}
@@ -490,21 +517,43 @@ abstract class App_Helpers extends Abstract_Helpers {
 			return array();
 		}
 
-		// Decode and validate minimum length (16 bytes for IV)
+		// Decode and validate minimum length (16 bytes for a legacy IV)
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Used for data decoding, not obfuscation
 		$decoded = base64_decode( $encrypted_data );
 		if ( false === $decoded || strlen( $decoded ) < 16 ) {
 			return array();
 		}
 
-		// Extract IV and encrypted data
+		$prefix_length = strlen( self::ENCRYPTION_V2_PREFIX );
+
+		// New authenticated format: prefix . nonce(12) . tag(16) . ciphertext.
+		if ( function_exists( 'openssl_decrypt' ) && 0 === strncmp( $decoded, self::ENCRYPTION_V2_PREFIX, $prefix_length ) ) {
+			$nonce      = substr( $decoded, $prefix_length, 12 );
+			$tag        = substr( $decoded, $prefix_length + 12, 16 );
+			$ciphertext = substr( $decoded, $prefix_length + 28 );
+			$key        = hash( 'sha256', $id . NONCE_SALT . $type, true );
+
+			$decrypted = openssl_decrypt( $ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $nonce, $tag );
+			if ( false === $decrypted ) {
+				return array();
+			}
+
+			// Note: Do NOT change serialize/unserialize to json — existing user data is stored in serialized format.
+			// allowed_classes => false prevents object injection while preserving backward compatibility.
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Safe unserialization for data at rest decryption
+			$data = unserialize( $decrypted, array( 'allowed_classes' => false ) );
+			return is_array( $data ) ? $data : array();
+		}
+
+		// Legacy repeating-key XOR format: iv(16) . ciphertext. Retained so data
+		// written before the AES-GCM upgrade still decrypts.
 		$iv        = substr( $decoded, 0, 16 );
 		$encrypted = substr( $decoded, 16 );
 
-		// Recreate the same unique key used for encryption
+		// Recreate the same unique key used for legacy encryption
 		$key = hash( 'sha256', $id . NONCE_SALT . $type . $iv );
 
-		// XOR decrypt with repeating key
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- reads pre-upgrade XOR blobs only
 		$decrypted = $encrypted ^ str_repeat( $key, ceil( strlen( $encrypted ) / strlen( $key ) ) );
 
 		// Unserialize and return original data

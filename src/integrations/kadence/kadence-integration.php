@@ -5,16 +5,18 @@ namespace Uncanny_Automator\Integrations\Kadence;
 use Uncanny_Automator\Integration;
 
 /**
- * Class Kadence_Integration
+ * Registers the Kadence integration and its form-submission triggers with
+ * Uncanny Automator.
  *
- * @pacakge Uncanny_Automator
+ * @package Uncanny_Automator\Integrations\Kadence
  */
 class Kadence_Integration extends Integration {
 
 	/**
-	 * Must use function in new integration to setup all required values
+	 * Set the integration's identity (code, name, icon) and instantiate its
+	 * helpers.
 	 *
-	 * @return mixed
+	 * @return void
 	 */
 	protected function setup() {
 		$this->helpers = new Kadence_Helpers();
@@ -24,47 +26,31 @@ class Kadence_Integration extends Integration {
 	}
 
 	/**
-	 * Load Integration Classes.
+	 * Load the integration's triggers. Each declares its Kadence hooks via
+	 * definition() (code-defined hooks), so they register directly with the
+	 * engine — no relay or shared-hook wiring is needed here.
 	 *
 	 * @return void
 	 */
 	public function load() {
-		// Load triggers.
 		new KADENCE_FORM_SUBMITTED( $this->helpers );
 		new KADENCE_ANON_FORM_SUBMITTED( $this->helpers );
-
-		add_action(
-			'kadence_blocks_form_submission',
-			array(
-				$this->helpers,
-				'automator_kadence_form_submitted_function',
-			),
-			4,
-			99
-		);
-		add_action(
-			'kadence_blocks_advanced_form_submission',
-			array(
-				$this->helpers,
-				'automator_kadence_form_submitted_function',
-			),
-			3,
-			99
-		);
 	}
 
 	/**
-	 * Check if Plugin is active.
+	 * Whether the integration's dependency (the Kadence theme or the Kadence
+	 * Blocks plugin) is present.
 	 *
 	 * @return bool
 	 */
 	public function plugin_active() {
-		// get the current theme
-		$theme = wp_get_theme();
-		if ( ( 'Kadence' == $theme->name || 'Kadence' == $theme->parent_theme ) || defined( 'KADENCE_BLOCKS_VERSION' ) ) {
+
+		if ( defined( 'KADENCE_BLOCKS_VERSION' ) ) {
 			return true;
 		}
 
-		return false;
+		$theme = wp_get_theme();
+
+		return 'Kadence' === $theme->name || 'Kadence' === $theme->parent_theme;
 	}
 }

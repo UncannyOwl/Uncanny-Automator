@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol;
 
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Client\Client_Context_Service;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Authenticated_Token_Context;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Token_Manager;
 use WP_Error;
 use WP_REST_Controller;
@@ -276,11 +277,32 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 		if ( $auth_header && preg_match( '/^Bearer\s+(.+)$/i', $auth_header, $matches ) ) {
 			$token = $matches[1];
 
-			// Validate token using Token_Manager.
-			$user       = $this->token_manager->get_user_from_token( $token );
+			// Authenticate the token without discarding its granted scopes.
+			$context    = $this->token_manager->get_context_from_token( $token );
 			$capability = $this->context_service->get_client_access_capability();
 
-			if ( $user && user_can( $user, $capability ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
+			if ( ! $context instanceof Authenticated_Token_Context ) {
+				return new WP_Error(
+					'mcp_invalid_token',
+					'Invalid or expired Bearer token.',
+					array( 'status' => 401 )
+				);
+			}
+
+			$required_scope = $this->get_required_scope( $request );
+			if ( ! $context->has_scope( $required_scope ) ) {
+				return new WP_Error(
+					'mcp_insufficient_scope',
+					'Bearer token does not grant the required MCP scope.',
+					array(
+						'status'         => 403,
+						'required_scope' => $required_scope,
+					)
+				);
+			}
+
+			$user = $context->get_user();
+			if ( user_can( $user, $capability ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
 				// Set current user for the request.
 				wp_set_current_user( $user->ID );
 				return true;
@@ -297,6 +319,29 @@ class Mcp_Rest_Controller extends WP_REST_Controller {
 		$capability = $this->context_service->get_client_access_capability();
 
 		return current_user_can( $capability ); // phpcs:ignore WordPress.WP.Capabilities.Undetermined -- Uncanny Agent uses a dedicated capability constant.
+	}
+
+	/**
+	 * Resolve the scope required by an MCP transport operation.
+	 *
+	 * Tool execution is the privileged MCP operation. Discovery, lifecycle,
+	 * resources, prompts, SSE, and session termination remain read operations.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return string Required scope.
+	 */
+	private function get_required_scope( $request ) {
+		if ( 'POST' !== strtoupper( (string) $request->get_method() ) ) {
+			return Authenticated_Token_Context::SCOPE_READ;
+		}
+
+		$message = $request->get_json_params();
+
+		if ( is_array( $message ) && 'tools/call' === ( $message['method'] ?? '' ) ) {
+			return Authenticated_Token_Context::SCOPE_TOOLS;
+		}
+
+		return Authenticated_Token_Context::SCOPE_READ;
 	}
 
 	/**
