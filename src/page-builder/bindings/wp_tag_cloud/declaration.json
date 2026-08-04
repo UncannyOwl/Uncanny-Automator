@@ -1,0 +1,28 @@
+{
+  "id": "wp_tag_cloud",
+  "title": "WordPress Tag Cloud",
+  "summary": "Render a tag cloud from any taxonomy",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-taxonomy": {
+      "required": false,
+      "default": "post_tag"
+    },
+    "data-count": {
+      "required": false,
+      "default": "45",
+      "cast": "int"
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "taxonomy",
+    "widget",
+    "sidebar",
+    "content"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "current_user_name",
+  "title": "Current User Name",
+  "summary": "Render the logged-in user's display name",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "user",
+    "identity",
+    "text",
+    "membership",
+    "personalization"
+  ]
+}

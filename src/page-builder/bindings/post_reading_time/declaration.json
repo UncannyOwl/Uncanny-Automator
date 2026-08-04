@@ -1,0 +1,13 @@
+{
+  "id": "post_reading_time",
+  "title": "Post Reading Time",
+  "summary": "Estimated reading time for the current post (e.g. 5 min read)",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["post", "text", "blog", "content", "time"]
+}

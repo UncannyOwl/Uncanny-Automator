@@ -1,0 +1,70 @@
+{
+  "name": "manage_canvas",
+  "description": "Manage canvas lifecycle operations through one facade. Canvas is the internal resource term; in user-facing replies, call the editing interface the Manual editor. List owned canvases, create a new page or reusable canvas, update working canvas properties, or attach an existing reusable section onto a page canvas. Page title updates are saved as unpublished working changes. Publication, visibility, Trash, and permanent page deletion are separate human actions. Reusable/global-part updates only support title changes.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/canvas"
+  },
+  "parameters": [
+    {
+      "name": "operation",
+      "type": "string",
+      "enum": ["list", "create", "update", "attach_reusable"],
+      "required": true,
+      "in": "body",
+      "description": "Canvas lifecycle operation. Use list, create, update, or attach_reusable."
+    },
+    {
+      "name": "canvas_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Existing canvas target ID for update or attach_reusable. Omit to use the Page Builder page or reusable currently open in the Manual editor.",
+      "inject_from": "current_page_id"
+    },
+    {
+      "name": "reusable_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Existing reusable/global-part post ID for operation=attach_reusable. Use a REUSABLE_ID from manage_reusable list."
+    },
+    {
+      "name": "kind",
+      "type": "string",
+      "enum": ["page", "global_part"],
+      "required": false,
+      "in": "body",
+      "description": "Canvas kind filter for list, or canvas kind for create. Use page or global_part."
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Canvas title. For create, blank falls back to an Untitled title. For a page update, the title is saved to unpublished working state and does not change the live page. For a reusable update, blank resets the title to the default reusable title."
+    },
+    {
+      "name": "shell_mode",
+      "type": "string",
+      "enum": ["uncanny_native", "theme_composition", "none"],
+      "required": false,
+      "in": "body",
+      "description": "Page-only shell mode for update. Use uncanny_native, theme_composition, or none."
+    },
+    {
+      "name": "global_part_type",
+      "type": "string",
+      "enum": ["header", "footer", "section"],
+      "required": false,
+      "in": "body",
+      "description": "Reusable/global-part type for create. Use header, footer, or section. Defaults to section."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain-text canvas result with COUNT for list responses, per-item CANVAS_ID, KIND, TITLE, STATUS, EDITOR_URL (the Manual editor URL), optional GLOBAL_PART_TYPE, and NEXT STEP guidance. Page TITLE is working state; STATUS remains the WordPress public status. attach_reusable returns the created SECTION_ID and reusable summary."
+  },
+  "auto_approve": false,
+  "group": "write"
+}

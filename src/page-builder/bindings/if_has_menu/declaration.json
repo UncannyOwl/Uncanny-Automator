@@ -1,0 +1,15 @@
+{
+  "id": "if_has_menu",
+  "title": "If Has Menu",
+  "summary": "Shows wrapper content only if the specified menu location has an assigned menu",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "conditional",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\ConditionalRenderer",
+  "query_attributes": {
+    "data-menu-location": { "required": true }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["conditional", "menu", "navigation"]
+}

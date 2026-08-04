@@ -1,0 +1,18 @@
+{
+  "id": "search_form",
+  "title": "Search Form",
+  "summary": "Render the WordPress search form",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "form",
+    "search",
+    "widget",
+    "header"
+  ]
+}

@@ -14,13 +14,14 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Application\Mcp\Agent;
 
+use Uncanny_Automator\App\Application\Mcp\Client_Page_Url_Sanitizer;
 use WP_Post;
 use WP_Screen;
 
 /**
  * Builds ModelContext from a URL rather than WordPress globals.
  *
- * Overrides the four protected seams in Agent_Context so the inherited
+ * Overrides the protected seams in Agent_Context so the inherited
  * build_*() methods work identically in REST context.
  *
  * @since 7.1.0
@@ -129,6 +130,15 @@ class Url_Agent_Context extends Agent_Context {
 	}
 
 	/**
+	 * Get the taxonomy term ID resolved from the source URL.
+	 *
+	 * @return int
+	 */
+	protected function get_current_taxonomy_term_id(): int {
+		return $this->resolved['tag_id'];
+	}
+
+	/**
 	 * Derive admin page title from the resolved URL data.
 	 *
 	 * @return string Best-effort title, or empty string.
@@ -176,6 +186,6 @@ class Url_Agent_Context extends Agent_Context {
 	 * @return string
 	 */
 	protected function get_current_admin_url(): string {
-		return $this->url;
+		return Client_Page_Url_Sanitizer::sanitize( $this->url, admin_url() );
 	}
 }

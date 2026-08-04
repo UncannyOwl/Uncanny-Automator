@@ -1,0 +1,18 @@
+{
+  "id": "current_user_role",
+  "title": "Current User Role",
+  "summary": "Render the logged-in user's primary role",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "user",
+    "identity",
+    "text",
+    "membership"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "wp_option",
+  "title": "WP Option",
+  "summary": "Render an allowlisted public wp_options value",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-key": { "required": true }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["site", "option", "settings", "text"]
+}

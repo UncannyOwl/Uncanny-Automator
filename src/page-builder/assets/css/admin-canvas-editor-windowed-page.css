@@ -1,0 +1,112 @@
+/* Screen takeover: mimic the widgets/post editor pattern inside wp-admin. */
+body.upb-canvas-editor-windowed-host {
+    background: #fff;
+}
+
+body.upb-canvas-editor-windowed-host #wpcontent {
+    padding-left: 0;
+}
+
+/* Viewport-locked host height contract. */
+body.upb-canvas-editor-windowed-host #wpbody-content {
+    height: calc(100vh - 46px);
+    min-height: calc(100vh - 46px);
+    overflow: hidden;
+    padding-bottom: 0;
+}
+
+body.upb-canvas-editor-windowed-host #wpbody-content > :not(#upb-canvas-editor-windowed-root):not(#screen-meta),
+body.upb-canvas-editor-windowed-host #wpfooter {
+    display: none;
+}
+
+/*
+ * Keep the root allowlist explicit. WordPress and third-party notices may print
+ * into this screen, while Page Builder's own states must remain visible.
+ */
+body.upb-canvas-editor-windowed-host #upb-canvas-editor-windowed-root > :not(.upb-canvas-editor-windowed-page__frame-stage):not(.upb-canvas-editor-windowed-page__empty-state):not(.upb-canvas-editor-windowed-page__blocking-state) {
+    display: none;
+}
+
+body.upb-canvas-editor-windowed-host #upb-canvas-editor-windowed-root {
+    height: 100%;
+}
+
+body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+@media (min-width: 783px) {
+    body.upb-canvas-editor-windowed-host #wpbody-content {
+        height: calc(100vh - 32px);
+        min-height: calc(100vh - 32px);
+    }
+
+    body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page {
+        min-height: 0;
+    }
+}
+
+body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page__frame-stage {
+    background: #f0f0f1;
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+}
+
+body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page__frame {
+    background: #fff;
+    border: 0;
+    display: block;
+    flex: 1 1 auto;
+    height: 100%;
+    width: 100%;
+}
+
+body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page__empty-state {
+    align-content: center;
+    background: #f6f7f7;
+    display: grid;
+    flex: 1 1 auto;
+    gap: 8px;
+    justify-items: center;
+    min-height: 0;
+    padding: 32px;
+    text-align: center;
+}
+
+/* Confirmed competing ownership replaces the iframe without blanking the host. */
+body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page__blocking-state {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page__blocking-state > .upb-editor-lock-screen {
+    flex: 1 1 auto;
+    min-height: 100%;
+    width: 100%;
+}
+
+body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page__empty-title {
+    font-size: 20px;
+    margin: 0;
+}
+
+body.upb-canvas-editor-windowed-host .upb-canvas-editor-windowed-page__empty-copy {
+    color: #50575e;
+    margin: 0;
+    max-width: 560px;
+}
+
+@media (max-width: 782px) {
+    body.upb-canvas-editor-windowed-host #wpbody-content {
+        height: calc(100vh - 46px);
+        min-height: calc(100vh - 46px);
+    }
+}

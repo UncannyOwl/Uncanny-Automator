@@ -1,0 +1,37 @@
+{
+  "id": "wp_pages",
+  "title": "WordPress Pages",
+  "summary": "Render top-level pages as repeating cards",
+  "type": "card",
+  "static_safety": "public_request_safe",
+  "output_shape": "card",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpChildrenCardRenderer",
+  "query_attributes": {
+    "data-count": {
+      "required": false,
+      "default": "10",
+      "cast": "int"
+    },
+    "data-orderby": {
+      "required": false,
+      "default": "menu_order",
+      "allowed_values": ["menu_order", "title", "date", "modified", "ID", "name", "rand"]
+    }
+  },
+  "bind_keys": [
+    "title",
+    "excerpt",
+    "permalink",
+    "thumbnail",
+    "date",
+    "order"
+  ],
+  "meta_bindings": false,
+  "tags": [
+    "page",
+    "loop",
+    "card",
+    "content",
+    "list"
+  ]
+}

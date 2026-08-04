@@ -1,0 +1,18 @@
+{
+  "id": "rss_url",
+  "title": "RSS Feed URL",
+  "summary": "Render the site RSS 2.0 feed URL",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "site",
+    "url",
+    "content",
+    "syndication"
+  ]
+}

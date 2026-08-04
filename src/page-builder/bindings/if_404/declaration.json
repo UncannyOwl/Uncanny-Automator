@@ -1,0 +1,13 @@
+{
+  "id": "if_404",
+  "title": "If 404 Not Found",
+  "summary": "Shows wrapper content only on the 404 error page",
+  "type": "self_rendering",
+  "static_safety": "not_static",
+  "output_shape": "conditional",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\ConditionalRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["conditional", "page-type", "404", "error"]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "post_type_label",
+  "title": "Post Type Label",
+  "summary": "Render the human-readable label of the current post type",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "post",
+    "text",
+    "identity",
+    "content"
+  ]
+}

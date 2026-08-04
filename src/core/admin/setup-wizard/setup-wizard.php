@@ -36,6 +36,9 @@ class Setup_Wizard {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 
+		// Persist the usage tracking opt-in before the step redirects run.
+		add_action( 'admin_init', array( $this, 'maybe_save_tracking_setting' ), 19 );
+
 		// Redirect to proper step.
 		add_action( 'admin_init', array( $this, 'redirect_if_connected' ), 20 );
 
@@ -313,6 +316,34 @@ class Setup_Wizard {
 			),
 			admin_url( 'edit.php' )
 		);
+	}
+
+	/**
+	 * Persists the usage tracking opt-in when the user accepts it from the wizard.
+	 *
+	 * The "Count me in!" button on step 2 links to step 3 with `automator_reporting=true`.
+	 *
+	 * @return void
+	 */
+	public function maybe_save_tracking_setting() {
+
+		if ( 'uncanny-automator-setup-wizard' !== automator_filter_input( 'page' ) ) {
+			return;
+		}
+
+		if ( ! automator_filter_input( 'automator_reporting', INPUT_GET, FILTER_VALIDATE_BOOLEAN ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( automator_get_admin_capability() ) ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( automator_filter_input( 'state' ), 'automator_setup_wizard_redirect_nonce' ) ) {
+			return;
+		}
+
+		automator_update_option( 'automator_reporting', true );
 	}
 
 	/**

@@ -1,0 +1,60 @@
+{
+  "name": "manage_binding",
+  "description": "Search bindings, read guides, inspect section bindings, or update a binding through one consolidated facade. Binding mutations save working draft source only and never update the live page; a human must Publish or Update live in the Manual editor.",
+  "http": {
+    "method": "MIXED",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/binding"
+  },
+  "parameters": [
+    {
+      "name": "operation",
+      "type": "string",
+      "enum": ["search", "guide", "inspect", "update_query", "update_template"],
+      "required": false,
+      "in": "query|body",
+      "description": "Optional binding action. Omit operation or use search for discovery, then use guide, inspect, update_query, or update_template as needed."
+    },
+    {
+      "name": "search",
+      "type": "string",
+      "required": false,
+      "in": "query",
+      "description": "Search term for operation=search. Omit to return category summary."
+    },
+    {
+      "name": "binding_id",
+      "type": "string",
+      "required": false,
+      "in": "query",
+      "description": "Exact binding ID for operation=guide."
+    },
+    {
+      "name": "section_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Section ID for operation=inspect, update_query, or update_template."
+    },
+    {
+      "name": "query_args",
+      "type": "object",
+      "required": false,
+      "in": "body",
+      "description": "Replacement binding query args for operation=update_query."
+    },
+    {
+      "name": "template_html",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Replacement binding template markup for operation=update_template."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain text binding search or guide response with NEXT STEP guidance."
+  },
+  "auto_approve": false,
+  "group": "write",
+  "requires_read_before_write": true
+}

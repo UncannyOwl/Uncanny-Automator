@@ -1,0 +1,46 @@
+{
+  "id": "wp_children",
+  "title": "WordPress Child Pages",
+  "summary": "Render child pages or posts of the current or specified parent as repeating cards",
+  "type": "card",
+  "static_safety": "public_request_safe",
+  "output_shape": "card",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpChildrenCardRenderer",
+  "query_attributes": {
+    "data-parent": {
+      "required": false,
+      "default": "0",
+      "cast": "int"
+    },
+    "data-count": {
+      "required": false,
+      "default": "10",
+      "cast": "int"
+    },
+    "data-orderby": {
+      "required": false,
+      "default": "menu_order",
+      "allowed_values": ["menu_order", "title", "date", "modified", "ID", "name", "rand"]
+    },
+    "data-post-type": {
+      "required": false,
+      "default": "page"
+    }
+  },
+  "bind_keys": [
+    "title",
+    "excerpt",
+    "permalink",
+    "thumbnail",
+    "date",
+    "order"
+  ],
+  "meta_bindings": false,
+  "tags": [
+    "page",
+    "loop",
+    "card",
+    "content",
+    "list"
+  ]
+}

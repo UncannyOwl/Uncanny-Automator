@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace UncannyPageBuilder\Infrastructure\i18\strings;
+
+final class InlineEditingPresentationStrings
+{
+    /**
+     * @return array<string, string>
+     */
+    public function toArray(): array
+    {
+        return [
+            'toolbar_save_label' => _x('Save', 'Page Builder', 'uncanny-automator'),
+            'toolbar_cancel_label' => _x('×', 'Page Builder', 'uncanny-automator'),
+            'toolbar_cancel_title' => _x('Cancel', 'Page Builder', 'uncanny-automator'),
+            /* translators: 1: The selected editable label. 2: The editable content type. */
+            'toolbar_label_format' => _x('%1$s (%2$s)', 'Page Builder', 'uncanny-automator'),
+            'image_picker_title' => _x('Select image', 'Page Builder', 'uncanny-automator'),
+            'background_image_picker_title' => _x('Select background image', 'Page Builder', 'uncanny-automator'),
+            'media_unavailable_message' => _x('WordPress media library is not available.', 'Page Builder', 'uncanny-automator'),
+            'link_url_label' => _x('URL', 'Page Builder', 'uncanny-automator'),
+            'link_text_label' => _x('Text', 'Page Builder', 'uncanny-automator'),
+            'link_url_placeholder' => _x('https://...', 'Page Builder', 'uncanny-automator'),
+        ];
+    }
+}

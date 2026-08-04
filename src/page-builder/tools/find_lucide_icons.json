@@ -1,0 +1,31 @@
+{
+  "name": "find_lucide_icons",
+  "description": "Recovery-only tool for unsupported Lucide icon warnings. Use this only after create_section or edit_part returns a WARNING about invalid/unsupported Lucide icon names. Do not call this before normal HTML generation or as a general icon-planning step.",
+  "http": {
+    "method": "GET",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/lucide-icons"
+  },
+  "parameters": [
+    {
+      "name": "query",
+      "type": "string",
+      "required": true,
+      "in": "query",
+      "description": "Invalid icon name or loose icon intent from a Lucide WARNING. Supports multiple searches separated by pipe, for example lock-icon | file lock | secure. Use pipe-separated searches when a warning names multiple invalid icons."
+    },
+    {
+      "name": "limit",
+      "type": "integer",
+      "required": false,
+      "default": 8,
+      "in": "query",
+      "description": "Maximum ICON suggestions per search. Values are clamped to 1-12."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain text grouped Lucide recovery results. Each SEARCH lists exact ICON names that can be used as data-lucide values."
+  },
+  "auto_approve": true,
+  "group": "read"
+}

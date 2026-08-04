@@ -1,0 +1,19 @@
+{
+  "id": "page_featured_image",
+  "title": "Page Featured Image",
+  "summary": "Render the featured image of the current page/post",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "post",
+    "image",
+    "content",
+    "media",
+    "blog"
+  ]
+}

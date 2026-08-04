@@ -1,0 +1,18 @@
+{
+  "id": "if_can",
+  "title": "If Capability",
+  "summary": "Shows wrapper content only if the current user has the specified capability",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "conditional",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\ConditionalRenderer",
+  "query_attributes": {
+    "data-capability": {
+      "required": true,
+      "allowed_values": ["read", "edit_posts", "publish_posts", "edit_pages", "publish_pages", "upload_files", "moderate_comments", "manage_options"]
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["conditional", "auth", "capability", "permissions"]
+}

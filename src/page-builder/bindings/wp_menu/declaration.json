@@ -1,0 +1,30 @@
+{
+  "id": "wp_menu",
+  "title": "WordPress Navigation Menu",
+  "summary": "Render a WordPress navigation menu as clean WordPress markup that the agent can style freely",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpMenuRenderer",
+  "region_contract": {
+    "replaces": "children",
+    "template": "first_child"
+  },
+  "query_attributes": {
+    "data-menu-id": {
+      "required": false,
+      "cast": "int"
+    },
+    "data-menu-location": {
+      "required": false
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "navigation",
+    "list",
+    "header",
+    "footer"
+  ]
+}

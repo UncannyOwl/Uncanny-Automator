@@ -8,7 +8,10 @@ namespace Uncanny_Automator\App\Infrastructure\License;
  *
  * Minimal contract for license information needed by License_Header_Injector
  * and other infrastructure components that only require identity / routing
- * fields (key, type, site, item). Lives flat alongside its implementations
+ * fields (key, type, site, item). The MCP SDK producer path needs cached
+ * snapshot access too, so it depends on the richer consumer-owned
+ * `App\Application\Mcp\Mcp_License_Provider_Interface` instead of widening
+ * this lower contract. Lives flat alongside its implementations
  * (`License_Manager`, etc.) per the app-layer skill rule against
  * `contracts/` subdirectories.
  *

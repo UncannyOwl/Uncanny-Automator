@@ -1,0 +1,13 @@
+{
+  "id": "if_author",
+  "title": "If Author Archive",
+  "summary": "Shows wrapper content only on author archive pages",
+  "type": "self_rendering",
+  "static_safety": "not_static",
+  "output_shape": "conditional",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\ConditionalRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["conditional", "taxonomy", "author", "archive"]
+}

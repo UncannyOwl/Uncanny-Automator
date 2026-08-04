@@ -150,6 +150,9 @@ class Fr_Tokens {
 						$value['format'],
 						strtotime( sprintf( '%s-%s-%s', $value['year'], $value['month'], $value['day'] ) )
 					);
+					// Check for timepicker sub-fields.
+				} elseif ( key_exists( 'hours', $value ) && key_exists( 'minutes', $value ) ) {
+					$value = $this->format_time_value( $value );
 					// Default join array values.
 				} else {
 					$value = join( ' ', $value );
@@ -158,6 +161,35 @@ class Fr_Tokens {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Format a Forminator timepicker value.
+	 *
+	 * Forminator submits a time field as an array of sub-fields — `hours`,
+	 * `minutes`, and `ampm` on twelve-hour fields — and only joins them into a
+	 * readable string when it renders the entry itself (see
+	 * Forminator_Form_Entry_Model::meta_value_to_string()). We store the raw
+	 * array, so the join has to happen here; without it the generic fallback
+	 * produced "10 30 am", which downstream actions cannot parse as a time.
+	 *
+	 * @param array $value Time sub-field values, keyed hours/minutes/ampm.
+	 *
+	 * @return string Formatted time, e.g. "10:30 am" or "14:30". Empty if unset.
+	 */
+	public function format_time_value( $value ) {
+
+		$hours   = trim( (string) $value['hours'] );
+		$minutes = trim( (string) $value['minutes'] );
+
+		if ( '' === $hours && '' === $minutes ) {
+			return '';
+		}
+
+		$time = sprintf( '%02d:%02d', $hours, $minutes );
+		$ampm = isset( $value['ampm'] ) ? trim( (string) $value['ampm'] ) : '';
+
+		return '' === $ampm ? $time : $time . ' ' . $ampm;
 	}
 
 	/**

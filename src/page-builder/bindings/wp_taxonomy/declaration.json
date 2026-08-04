@@ -1,0 +1,51 @@
+{
+  "id": "wp_taxonomy",
+  "title": "WordPress Taxonomy Terms",
+  "summary": "Render taxonomy terms (categories, tags, custom taxonomies) as repeating card grids",
+  "type": "card",
+  "static_safety": "public_request_safe",
+  "output_shape": "card",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpTaxonomyCardRenderer",
+  "query_attributes": {
+    "data-taxonomy": {
+      "required": false,
+      "default": "category"
+    },
+    "data-count": {
+      "required": false,
+      "default": "6",
+      "cast": "int"
+    },
+    "data-orderby": {
+      "required": false,
+      "default": "name",
+      "allowed_values": ["name", "slug", "term_group", "term_id", "id", "description", "count", "include"]
+    },
+    "data-hide-empty": {
+      "required": false,
+      "default": "true",
+      "cast": "bool"
+    },
+    "data-parent": {
+      "required": false,
+      "default": "-1",
+      "cast": "int"
+    }
+  },
+  "bind_keys": [
+    "name",
+    "description",
+    "count",
+    "permalink",
+    "thumbnail",
+    "slug"
+  ],
+  "meta_bindings": false,
+  "tags": [
+    "taxonomy",
+    "loop",
+    "card",
+    "archive",
+    "content"
+  ]
+}

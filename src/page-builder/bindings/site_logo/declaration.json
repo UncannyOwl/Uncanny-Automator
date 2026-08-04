@@ -1,0 +1,19 @@
+{
+  "id": "site_logo",
+  "title": "Site Logo",
+  "summary": "Render the site logo image from WordPress Customizer or Uncanny Page Builder branding",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\SiteLogoRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "site",
+    "identity",
+    "image",
+    "header",
+    "media"
+  ]
+}

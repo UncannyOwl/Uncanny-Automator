@@ -1,0 +1,18 @@
+{
+  "id": "current_user_url",
+  "title": "Current User Posts URL",
+  "summary": "Render the URL to the logged-in user's author archive page",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "user",
+    "url",
+    "archive",
+    "membership"
+  ]
+}

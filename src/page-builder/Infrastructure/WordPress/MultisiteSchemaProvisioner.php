@@ -1,0 +1,70 @@
+<?php
+
+declare(strict_types=1);
+
+namespace UncannyPageBuilder\Infrastructure\WordPress;
+
+use UncannyPageBuilder\Application\System\SchemaInstallerInterface;
+
+/**
+ * Provisions Page Builder tables when WordPress creates a multisite child site.
+ *
+ * Network activation installs existing sites, but it does not cover sites
+ * created later. The wp_initialize_site hook runs after WordPress has created
+ * the site's core tables, so switching the blog prefix here is safe and keeps
+ * the schema ready before that site can serve Page Builder traffic.
+ */
+final class MultisiteSchemaProvisioner
+{
+    public function __construct(
+        private readonly SchemaInstallerInterface $schemaInstaller,
+    ) {}
+
+    public function register(): void
+    {
+        add_action('wp_initialize_site', [$this, 'provisionSite'], 200, 2);
+    }
+
+    public function provisionSite(mixed $site, array $args = []): void
+    {
+        unset($args);
+
+        $siteId = $this->siteId($site);
+        if ($siteId <= 0) {
+            return;
+        }
+
+        if (
+            !function_exists('switch_to_blog')
+            || !function_exists('restore_current_blog')
+        ) {
+            return;
+        }
+
+        $currentSiteId = function_exists('get_current_blog_id')
+            ? (int) get_current_blog_id()
+            : 0;
+
+        if ($currentSiteId === $siteId) {
+            $this->schemaInstaller->installCurrentSite();
+
+            return;
+        }
+
+        switch_to_blog($siteId);
+        try {
+            $this->schemaInstaller->installCurrentSite();
+        } finally {
+            restore_current_blog();
+        }
+    }
+
+    private function siteId(mixed $site): int
+    {
+        if (is_object($site)) {
+            return max(0, (int) ($site->blog_id ?? $site->id ?? 0));
+        }
+
+        return max(0, (int) $site);
+    }
+}

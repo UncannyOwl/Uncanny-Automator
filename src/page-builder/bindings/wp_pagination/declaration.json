@@ -1,0 +1,13 @@
+{
+  "id": "wp_pagination",
+  "title": "WP Pagination",
+  "summary": "Renders archive pagination links",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["navigation", "pagination", "archive", "blog"]
+}

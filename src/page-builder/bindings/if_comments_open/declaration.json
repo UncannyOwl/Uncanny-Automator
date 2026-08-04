@@ -1,0 +1,13 @@
+{
+  "id": "if_comments_open",
+  "title": "If Comments Open",
+  "summary": "Shows wrapper content only if comments are open on the current post",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "conditional",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\ConditionalRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["conditional", "content", "comments"]
+}

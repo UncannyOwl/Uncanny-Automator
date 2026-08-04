@@ -1,0 +1,13 @@
+{
+  "id": "if_logged_in",
+  "title": "If Logged In",
+  "summary": "Shows wrapper content only if the user is logged in",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "conditional",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\ConditionalRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["conditional", "auth", "membership", "visibility"]
+}

@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0.2
 Requires PHP: 7.4
-Stable tag: 7.4.1
+Stable tag: 7.5.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -427,27 +427,19 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 = 7.4.1 [2026-07-29] =
 
-**Updated:**
+**New Feature:**
 
-* Kadence - Modernized the integration to use the latest framework. #8228
-* PrettyLinks - Modernized the integration with unified support for Pretty Links v3 and v4. #8219
+* Uncanny Page Builder - Create and refine beautiful pages through conversation with Uncanny Agent (requires an Uncanny Automator Pro AI + Automation plan) #8330
 
 **Fixed:**
 
-* AI settings - Closed an arbitrary code execution path by ensuring the provider settings save handler no longer executes request-supplied callbacks. #8273
-* Discord and Asana credentials - Replaced XOR encryption with authenticated AES-256-GCM to provide stronger protection for stored credentials. #8274
-* Facebook Groups - Repaired the nonce check on the app install verification handler to help prevent cross-site request forgery. #8272
-* Kadence - All triggers - Fixed an issue where forms would not fire recipes when gated loading was enabled. #8228
-* Recipe logs - Long-running multi-trigger recipes that became stuck are now correctly terminated by the recovery process. #8227
-* Setup wizard - Added a capability check to prevent lower-privileged users from changing the wizard's connection status. #8271
-* Translations - Fixed an issue where Recipe Builder strings were not loading correctly in Spanish. #7392
+* Closures - Restored the "Redirect when all triggers are completed" checkbox for all recipes. #8285
+* Forminator - Fixed an issue where Time field tokens rendered as "10:30 am" instead of "10 - 30 am". #8284
 
 **Under the hood:**
 
-* Core - Added automatic retries for app actions that fail before reaching the server, improving reliability without risking duplicate actions. #8225
-* Core - Missing classmap files no longer result in PHP errors when the fallback autoloader is used. #8175
-* Core - Internal OAuth tokens are now encrypted for improved security. #8230
-* Core - Trigger hooks fired during raw shutdown callbacks are now properly captured and delivered. #8221
+* Core - Fixed an issue where the "Immediately delete log entries when recipes are completed" setting never purged logs. #8294
+
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)
 

@@ -43,9 +43,12 @@ class Availability_Checker implements Availability_Checker_Interface {
 
 		$blockers = array();
 
-		// Check 1: Tier requirement.
+		// Check 1: Tier requirement. Stop here because inactive premium code can
+		// make its bundled integrations look like missing standalone plugins.
 		if ( ! empty( $data->user_tier_id ) && ! empty( $data->requires_tier ) && ! $this->tier_meets_requirement( $data->user_tier_id, $data->requires_tier ) ) {
 			$blockers[] = sprintf( 'Upgrade to %s plan at https://automatorplugin.com/pricing/', $this->format_tier_name( $data->requires_tier ) );
+
+			return $blockers;
 		}
 
 		// Check 2: Integration installed.

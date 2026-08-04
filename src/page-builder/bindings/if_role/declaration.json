@@ -1,0 +1,15 @@
+{
+  "id": "if_role",
+  "title": "If Role",
+  "summary": "Shows wrapper content only if the user has the specified role",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "conditional",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\ConditionalRenderer",
+  "query_attributes": {
+    "data-role": { "required": true }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["conditional", "auth", "membership", "visibility", "role"]
+}

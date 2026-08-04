@@ -1,0 +1,13 @@
+{
+  "id": "share_twitter",
+  "title": "Share on Twitter/X",
+  "summary": "Twitter/X share URL for the current page",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["social", "share", "url", "twitter"]
+}

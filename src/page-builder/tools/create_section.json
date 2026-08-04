@@ -1,0 +1,50 @@
+{
+  "name": "create_section",
+  "description": "Add a new section to a page. Provide HTML and CSS — the section is appended at the end. This saves working draft source only and never updates the live page; a human must Publish or Update live in the Manual editor. Returns plain text with the created section ID, preview URL, and NEXT STEP.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/page/{page_id}/sections"
+  },
+  "parameters": [
+    {
+      "name": "page_id",
+      "type": "integer",
+      "required": false,
+      "in": "path",
+      "description": "Uncanny Page Builder canvas page ID. Pass this when the user provides a canvas_id or a page_id known to be an Uncanny Page Builder canvas. For ordinary WordPress page URLs or names, resolve the target first; do not assume any page_id is editable. Omit to use the current page when a canvas is active.",
+      "inject_from": "current_page_id"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "required": true,
+      "in": "body",
+      "description": "Display name for the section (e.g. 'Hero Section', 'Pricing Table')."
+    },
+    {
+      "name": "html",
+      "type": "string",
+      "required": true,
+      "in": "body",
+      "description": "Section HTML markup. Must have a single root element with a unique class."
+    },
+    {
+      "name": "css",
+      "type": "string",
+      "required": true,
+      "in": "body",
+      "description": "Scoped CSS for the section. Use canvas-local selectors such as the section root class, child classes, :target, and local state classes. Avoid document-level selectors like body, html, and :root; if submitted, the write is accepted but returns a WARNING because compiled canvas CSS may filter those selectors."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain text result with PAGE_ID, SECTION_ID, POSITION, NAME, PREVIEW, optional WARNING lines for advisory issues, and NEXT STEP."
+  },
+  "errors": {
+    "422": "HTML validation failure — single root element required, no forbidden tags/attributes, valid editables and bindings.",
+    "404": "Page not found.",
+    "403": "Page not owned by Uncanny Page Builder."
+  },
+  "auto_approve": false,
+  "group": "write"
+}

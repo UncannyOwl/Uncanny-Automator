@@ -1,0 +1,30 @@
+{
+  "id": "wp_categories_list",
+  "title": "WordPress Categories List",
+  "summary": "Render a list of categories with optional post counts and hierarchy",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-show-count": {
+      "required": false,
+      "default": "false",
+      "cast": "bool"
+    },
+    "data-hierarchical": {
+      "required": false,
+      "default": "true",
+      "cast": "bool"
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "taxonomy",
+    "list",
+    "sidebar",
+    "widget",
+    "archive"
+  ]
+}

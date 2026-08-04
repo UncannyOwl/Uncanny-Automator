@@ -1,0 +1,15 @@
+{
+  "id": "wp_embed",
+  "title": "WP Embed",
+  "summary": "Render oEmbed content from WordPress sanctioned providers only",
+  "type": "self_rendering",
+  "static_safety": "not_static",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-url": { "required": true }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["media", "embed", "video", "content"]
+}

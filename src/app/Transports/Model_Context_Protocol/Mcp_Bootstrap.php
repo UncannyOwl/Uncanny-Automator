@@ -87,8 +87,16 @@ class Mcp_Bootstrap {
 		$this->rest_bearer_route_authorizer         = new Rest_Bearer_Route_Authorizer();
 		$this->internal_token_configuration_monitor = new Internal_Token_Configuration_Monitor();
 
-		// Initialize the chat client.
-		$this->client = Mcp_Client::get_instance();
+		// Initialize the chat client with the infrastructure license reader at the edge.
+		$this->client = new Mcp_Client(
+			\Uncanny_Automator\App\Infrastructure\automator_license_manager(),
+			null,
+			null,
+			null,
+			null,
+			null,
+			null
+		);
 
 		// Let valid MCP bearer tokens authenticate standard WordPress REST requests.
 		$this->rest_bearer_authenticator->init();

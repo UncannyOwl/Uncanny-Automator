@@ -1,0 +1,13 @@
+{
+  "id": "total_comments_count",
+  "title": "Total Comments Count",
+  "summary": "Total approved comments sitewide",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["counter", "comment", "stats", "text", "social"]
+}

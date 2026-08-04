@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth;
 
-use Uncanny_Automator\Admin_Settings_Uncanny_Agent_General;
-
 /**
  * Exposes internal-token configuration readiness to WordPress operators.
  *
@@ -20,13 +18,6 @@ class Internal_Token_Configuration_Monitor {
 	const SITE_HEALTH_TEST = 'automator_mcp_internal_token_configuration';
 
 	/**
-	 * Optional feature-state callback used by tests.
-	 *
-	 * @var callable|null
-	 */
-	private $feature_enabled_callback;
-
-	/**
 	 * Complete recoverable-token encryption readiness boundary.
 	 *
 	 * @var Internal_Token_Cache_Cipher
@@ -37,7 +28,7 @@ class Internal_Token_Configuration_Monitor {
 	 * Constructor.
 	 *
 	 * @param Internal_Token_Configuration|null $configuration Configuration policy.
-	 * @param callable|null                     $feature_enabled_callback Optional feature-state callback.
+	 * @param callable|null                     $feature_enabled_callback Legacy feature callback.
 	 * @param Internal_Token_Cache_Cipher|null  $cipher Complete encryption readiness boundary.
 	 */
 	public function __construct(
@@ -45,9 +36,10 @@ class Internal_Token_Configuration_Monitor {
 		?callable $feature_enabled_callback = null,
 		?Internal_Token_Cache_Cipher $cipher = null
 	) {
-		$configuration                  = $configuration ?? new Internal_Token_Configuration();
-		$this->feature_enabled_callback = $feature_enabled_callback;
-		$this->cipher                   = $cipher ?? new Internal_Token_Cache_Cipher( $configuration );
+		unset( $feature_enabled_callback );
+
+		$configuration = $configuration ?? new Internal_Token_Configuration();
+		$this->cipher  = $cipher ?? new Internal_Token_Cache_Cipher( $configuration );
 	}
 
 	/**
@@ -81,14 +73,6 @@ class Internal_Token_Configuration_Monitor {
 	 * @return array Site Health result.
 	 */
 	public function run_site_health_test(): array {
-		if ( ! $this->is_feature_enabled() ) {
-			return $this->build_site_health_result(
-				'good',
-				esc_html_x( 'Uncanny Agent internal token encryption is not currently required', 'Site Health result', 'uncanny-automator' ),
-				esc_html_x( 'Uncanny Agent is disabled. Strong external key material will be required before it can create an internal bearer token.', 'Site Health result', 'uncanny-automator' )
-			);
-		}
-
 		if ( $this->cipher->is_ready() ) {
 			return $this->build_site_health_result(
 				'good',
@@ -112,7 +96,6 @@ class Internal_Token_Configuration_Monitor {
 	public function render_admin_warning(): void {
 		if (
 			! current_user_can( 'manage_options' )
-			|| ! $this->is_feature_enabled()
 			|| $this->cipher->is_ready()
 		) {
 			return;
@@ -144,21 +127,6 @@ class Internal_Token_Configuration_Monitor {
 			'description' => '<p>' . esc_html( $description ) . '</p>',
 			'actions'     => '',
 			'test'        => self::SITE_HEALTH_TEST,
-		);
-	}
-
-	/**
-	 * Determine whether Uncanny Agent currently needs an internal token.
-	 *
-	 * @return bool Whether the feature is enabled.
-	 */
-	private function is_feature_enabled(): bool {
-		if ( null !== $this->feature_enabled_callback ) {
-			return (bool) call_user_func( $this->feature_enabled_callback );
-		}
-
-		return (bool) Admin_Settings_Uncanny_Agent_General::get_setting(
-			Admin_Settings_Uncanny_Agent_General::ENABLED_KEY
 		);
 	}
 }

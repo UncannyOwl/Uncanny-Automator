@@ -1,0 +1,19 @@
+{
+  "id": "site_title",
+  "title": "Site Title",
+  "summary": "Render the WordPress site name",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "site",
+    "identity",
+    "text",
+    "header",
+    "footer"
+  ]
+}

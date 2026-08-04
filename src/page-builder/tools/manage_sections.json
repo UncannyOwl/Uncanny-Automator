@@ -1,0 +1,46 @@
+{
+  "name": "manage_sections",
+  "description": "Manage section lifecycle operations through one facade. Mutations save working draft source only and never update the live page; a human must Publish or Update live in the Manual editor. This facade supports reorder and delete operations.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/page/{page_id}/sections/manage"
+  },
+  "parameters": [
+    {
+      "name": "page_id",
+      "type": "integer",
+      "required": false,
+      "in": "path",
+      "description": "Uncanny Page Builder canvas page ID. Pass this when the user provides a canvas_id or a page_id known to be an Uncanny Page Builder canvas. For ordinary WordPress page URLs or names, resolve the target first; do not assume any page_id is editable. Omit to use the current page when a canvas is active.",
+      "inject_from": "current_page_id"
+    },
+    {
+      "name": "operation",
+      "type": "string",
+      "enum": ["reorder", "delete"],
+      "required": true,
+      "in": "body",
+      "description": "Lifecycle operation. This slice recognizes reorder and delete."
+    },
+    {
+      "name": "section_ids",
+      "type": "array",
+      "required": false,
+      "in": "body",
+      "description": "Full ordered section ID list for reorder operations."
+    },
+    {
+      "name": "section_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Section ID for delete operations."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain-text lifecycle result or validation error with NEXT STEP guidance."
+  },
+  "auto_approve": false,
+  "group": "lifecycle"
+}

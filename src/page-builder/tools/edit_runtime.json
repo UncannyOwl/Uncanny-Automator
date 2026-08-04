@@ -1,0 +1,84 @@
+{
+  "name": "edit_runtime",
+  "description": "Replace, patch, or clear custom JavaScript saved through the Page Builder runtime lane. Every mutation saves working draft source only and never updates the live page; a human must Publish or Update live in the Manual editor. This tool is only for explicit page-level or reusable-part JavaScript. It does not edit section HTML. Warning: do not rely on section root id attributes in runtime code. Page Builder owns section root ids and may replace them with system ids like upb-section-<id>. Target runtime behavior with stable classes or explicit data-* attributes instead, or place custom ids on nested child elements. Read the current runtime first. For micro or local repairs, use preview_runtime_change then edit_runtime operation=source_patch with exact current substrings from read_runtime. Use operation=replace for broad rewrites and operation=clear for removal. When approved libraries are needed, request only those used through UPBJavaScriptLibraries.whenReady. Prefer the runtime argument's reveal() and mountSwiper() helpers for ordinary entrances and carousels; they own visible destinations, shared selector scope, library construction, fallback classes, and error reporting.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/runtime/edit"
+  },
+  "parameters": [
+    {
+      "name": "scope",
+      "type": "string",
+      "enum": ["page", "global_part"],
+      "required": true,
+      "in": "body",
+      "description": "Runtime owner scope: page or global_part."
+    },
+    {
+      "name": "page_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Uncanny Page Builder page ID when scope=page."
+    },
+    {
+      "name": "global_part_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Reusable global part post ID when scope=global_part."
+    },
+    {
+      "name": "operation",
+      "type": "string",
+      "enum": ["replace", "source_patch", "clear"],
+      "required": true,
+      "in": "body",
+      "description": "Write operation. Use source_patch for small exact edits, replace for broad rewrites, and clear for removal."
+    },
+    {
+      "name": "javascript",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Full replacement JavaScript source. Required and non-empty when operation=replace. If using approved libraries, load only the needed ones with UPBJavaScriptLibraries.whenReady(['swiper', 'anime'], function (libs, runtime) { /* prefer runtime.reveal() and runtime.mountSwiper() for ordinary entrances and carousels */ });. Use raw Anime.js v4 named APIs only for choreography the helpers cannot express; do not use the old callable anime({...}) v3 syntax."
+    },
+    {
+      "name": "javascript_patches",
+      "type": "array",
+      "required": false,
+      "in": "body",
+      "description": "For operation=source_patch only. Ordered exact JavaScript substring patches copied from read_runtime. Use {search:\"exact current non-empty JavaScript substring\", replace:\"replacement JavaScript\"} to replace, {action:\"insert_after\", search:\"...\", content:\"...\"} or {action:\"insert_before\", search:\"...\", content:\"...\"} to insert, and {action:\"delete\", search:\"...\"} to delete. The search value must not be empty and must match exactly once.",
+      "items": {
+        "type": "object",
+        "required": ["search"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["replace", "insert_after", "insert_before", "delete"],
+            "description": "Patch action: replace, insert_after, insert_before, or delete. Defaults to replace."
+          },
+          "search": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exact current non-empty JavaScript substring copied from read_runtime. Must match exactly once."
+          },
+          "replace": {
+            "type": "string",
+            "description": "Replacement JavaScript."
+          },
+          "content": {
+            "type": "string",
+            "description": "JavaScript to insert for insert_after or insert_before."
+          }
+        }
+      }
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain-text runtime write result with scope, owner id, operation summary, optional JAVASCRIPT DIFF for source_patch, and next-step guidance."
+  },
+  "auto_approve": true,
+  "group": "write"
+}

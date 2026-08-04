@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator\Integrations\Wp;
 
+use Uncanny_Automator\Closure_Redirect;
 use Uncanny_Automator\Integrations\Wp\Migrations\WP_Token_Aliases_Migration;
 use Uncanny_Automator\Integrations\Wp\Tokens\Loopable\Universal\Post_Categories;
 use Uncanny_Automator\Integrations\Wp\Tokens\Loopable\Universal\Post_Tags;
@@ -93,7 +94,14 @@ class Wp_Integration extends \Uncanny_Automator\Integration {
 		new \Uncanny_Automator\Wp_Post_Tokens();
 
 		// Closure — framework-agnostic, no overlap with migrated validate() logic.
+		// Must be instantiated, not just included: setup_closure() is what puts
+		// WP_REDIRECT into Automator()->get_closures(), which the recipe builder
+		// localizes as `UncannyAutomator.closures` to render the "Redirect when
+		// all triggers are completed" checkbox. The legacy Add_Wp_Integration got
+		// this for free from Recipe\Integrations::add_integration_directory_func(),
+		// which the abstract framework does not provide.
 		require_once __DIR__ . '/closures/closure-redirect.php';
+		new Closure_Redirect();
 
 		// === Free Triggers ===
 

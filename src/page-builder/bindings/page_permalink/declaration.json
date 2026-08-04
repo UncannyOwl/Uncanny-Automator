@@ -1,0 +1,18 @@
+{
+  "id": "page_permalink",
+  "title": "Page Permalink",
+  "summary": "Render the current page/post permanent URL",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "post",
+    "url",
+    "content",
+    "blog"
+  ]
+}

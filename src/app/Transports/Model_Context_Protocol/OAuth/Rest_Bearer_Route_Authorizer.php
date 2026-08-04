@@ -8,13 +8,14 @@ use WP_Error;
 use WP_REST_Request;
 
 /**
- * Restrict MCP bearer-authenticated requests to Writer-required REST routes.
+ * Restrict MCP bearer-authenticated requests to approved REST routes.
  *
  * Keeps native authentication (Basic/cookies/application passwords) untouched.
  * The allowlist is only applied when the request is authenticated by a valid
  * MCP bearer token.
  *
  * @since 7.2.3
+ * @since 7.2.3 Added Page Builder agent REST route access.
  */
 class Rest_Bearer_Route_Authorizer {
 
@@ -97,7 +98,7 @@ class Rest_Bearer_Route_Authorizer {
 		$method = strtoupper( (string) $request->get_method() );
 		$route  = $this->normalize_route( (string) $request->get_route() );
 
-		if ( ! $this->is_allowed_writer_route( $route, $method ) ) {
+		if ( ! $this->is_allowed_bearer_route( $route, $method, $request ) ) {
 			return new WP_Error(
 				'rest_forbidden',
 				'MCP bearer token is not allowed to access this REST route.',
@@ -105,14 +106,14 @@ class Rest_Bearer_Route_Authorizer {
 			);
 		}
 
-		$required_scope = $this->get_required_writer_scope( $method );
+		$required_scope = $this->get_required_bearer_scope( $method );
 		if ( $context->has_scope( $required_scope ) ) {
 			return $response;
 		}
 
 		return new WP_Error(
 			'rest_insufficient_scope',
-			'Bearer token does not grant the required Writer scope.',
+			'Bearer token does not grant the required REST scope.',
 			array(
 				'status'         => 403,
 				'required_scope' => $required_scope,
@@ -147,12 +148,12 @@ class Rest_Bearer_Route_Authorizer {
 	}
 
 	/**
-	 * Resolve the granular scope required by a Writer REST method.
+	 * Resolve the granular scope required by an allowed bearer REST method.
 	 *
 	 * @param string $method HTTP method.
 	 * @return string Required scope.
 	 */
-	private function get_required_writer_scope( string $method ): string {
+	private function get_required_bearer_scope( string $method ): string {
 		if ( 'GET' === $method ) {
 			return Authenticated_Token_Context::SCOPE_READ;
 		}
@@ -206,6 +207,50 @@ class Rest_Bearer_Route_Authorizer {
 	}
 
 	/**
+	 * Determine if route/method pair is allowed for MCP bearer REST access.
+	 *
+	 * @since 7.2.3
+	 * @since 7.2.3 Added PUT/PATCH support for writer update operations.
+	 * @since 7.2.3 Added Page Builder agent REST routes and extension filter.
+	 *
+	 * @param string $route  Normalized REST route.
+	 * @param string $method HTTP method.
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return bool
+	 */
+	private function is_allowed_bearer_route( string $route, string $method, WP_REST_Request $request ): bool {
+		if ( $this->is_allowed_writer_route( $route, $method ) ) {
+			return true;
+		}
+
+		if ( $this->is_allowed_page_builder_route( $route, $method ) ) {
+			return true;
+		}
+
+		/**
+		 * Allow trusted host integrations to opt MCP bearer tokens into their own REST routes.
+		 *
+		 * The route has already been normalized to a lowercase absolute path with no trailing slash.
+		 * Integrations should still use their own REST permission callbacks for object-level access.
+		 *
+		 * @since 7.2.3
+		 *
+		 * @param bool            $allowed Whether the route is allowed.
+		 * @param string          $route   Normalized REST route.
+		 * @param string          $method  HTTP method.
+		 * @param WP_REST_Request $request REST request object.
+		 */
+		return (bool) apply_filters(
+			'automator_mcp_bearer_allowed_rest_route',
+			false,
+			$route,
+			$method,
+			$request
+		);
+	}
+
+	/**
 	 * Determine if route/method pair is allowed for Writer REST access.
 	 *
 	 * @since 7.2.3
@@ -237,6 +282,30 @@ class Rest_Bearer_Route_Authorizer {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determine if route/method pair is allowed for Page Builder agent access.
+	 *
+	 * Page Builder exposes a dedicated /agent surface for AI-owned reads and
+	 * writes. Its REST permission callbacks still enforce user capabilities and
+	 * object ownership; this gate only allows MCP bearer auth to reach that surface.
+	 *
+	 * @since 7.2.3
+	 *
+	 * @param string $route  Normalized REST route.
+	 * @param string $method HTTP method.
+	 *
+	 * @return bool
+	 */
+	private function is_allowed_page_builder_route( string $route, string $method ): bool {
+		if ( ! in_array( $method, array( 'GET', 'POST', 'PUT', 'PATCH', 'DELETE' ), true ) ) {
+			return false;
+		}
+
+		$prefix = '/uncanny-page-builder/v1/agent';
+
+		return $route === $prefix || 0 === strpos( $route, $prefix . '/' );
 	}
 
 	/**

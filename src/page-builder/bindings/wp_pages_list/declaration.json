@@ -1,0 +1,24 @@
+{
+  "id": "wp_pages_list",
+  "title": "WordPress Pages List",
+  "summary": "Render a hierarchical list of pages",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-depth": {
+      "required": false,
+      "default": "0",
+      "cast": "int"
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "page",
+    "list",
+    "navigation",
+    "sidebar"
+  ]
+}

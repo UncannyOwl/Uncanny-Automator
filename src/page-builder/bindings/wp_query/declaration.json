@@ -1,0 +1,117 @@
+{
+  "id": "wp_query",
+  "title": "WordPress Post Query",
+  "summary": "Render posts, pages, or custom post types as repeating card grids",
+  "type": "card",
+  "static_safety": "request_sensitive",
+  "output_shape": "card",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpQueryCardRenderer",
+  "query_attributes": {
+    "data-post-type": {
+      "required": false,
+      "default": "post"
+    },
+    "data-count": {
+      "required": false,
+      "default": "3",
+      "cast": "int"
+    },
+    "data-orderby": {
+      "required": false,
+      "default": "date",
+      "allowed_values": ["date", "modified", "title", "name", "rand", "comment_count", "menu_order", "ID", "author", "relevance", "none", "meta_value"]
+    },
+    "data-order": {
+      "required": false,
+      "default": "DESC",
+      "allowed_values": ["ASC", "DESC"]
+    },
+    "data-category": {
+      "required": false,
+      "default": ""
+    },
+    "data-tag": {
+      "required": false,
+      "default": ""
+    },
+    "data-author": {
+      "required": false,
+      "default": "",
+      "cast": "int"
+    },
+    "data-offset": {
+      "required": false,
+      "default": "0",
+      "cast": "int"
+    },
+    "data-exclude": {
+      "required": false,
+      "default": ""
+    },
+    "data-include": {
+      "required": false,
+      "default": ""
+    },
+    "data-parent": {
+      "required": false,
+      "default": "",
+      "cast": "int"
+    },
+    "data-search": {
+      "required": false,
+      "default": ""
+    },
+    "data-status": {
+      "required": false,
+      "default": "publish",
+      "allowed_values": ["publish", "future", "pending"]
+    },
+    "data-taxonomy": {
+      "required": false,
+      "default": ""
+    },
+    "data-term": {
+      "required": false,
+      "default": ""
+    },
+    "data-meta-key": {
+      "required": false,
+      "default": ""
+    },
+    "data-meta-value": {
+      "required": false,
+      "default": ""
+    },
+    "data-paginate": {
+      "required": false,
+      "default": "false",
+      "cast": "bool"
+    }
+  },
+  "bind_keys": [
+    "title",
+    "excerpt",
+    "thumbnail",
+    "permalink",
+    "date",
+    "modified_date",
+    "author",
+    "author_url",
+    "author_avatar",
+    "categories",
+    "tags",
+    "comment_count",
+    "content",
+    "post_id"
+  ],
+  "meta_bindings": true,
+  "terms_bindings": true,
+  "tags": [
+    "content",
+    "post",
+    "loop",
+    "card",
+    "blog",
+    "archive"
+  ]
+}

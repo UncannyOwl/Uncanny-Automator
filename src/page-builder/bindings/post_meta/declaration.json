@@ -1,0 +1,16 @@
+{
+  "id": "post_meta",
+  "title": "Post Meta",
+  "summary": "Render a governed post meta field value",
+  "type": "self_rendering",
+  "static_safety": "not_static",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-key": { "required": true },
+    "data-post-id": { "required": false, "default": "0", "cast": "int" }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["post", "meta", "custom-field", "acf", "text"]
+}

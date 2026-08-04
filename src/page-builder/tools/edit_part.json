@@ -1,0 +1,206 @@
+{
+  "name": "edit_part",
+  "description": "Edit a section or global part through intent-based operation modes. Every mutation saves working draft source only and never updates the live page; a human must Publish or Update live in the Manual editor. Supports target edits, CSS rules, durable styles, element structure edits, exact source patches, and full source replacement. Conditional requirements depend on operation.mode: source_patch uses html_patches, css_patches, or css_rules; html_patches[].search is required, non-empty, and must match exactly once; css_patches[].search is required and must match exactly once unless replace/content is a complete selector block that can be promoted to css_rules. source_replace requires full replacement html and accepts optional css, name, and reason. durable_style requires target and styles. insert_element requires target, placement, and html. move_element requires source, destination, and placement. delete_element requires target. Fully projected dynamic regions appear as masks like <!-- upb:bindings:dynamic_data:site_logo -->; treat them as atomic — quote them verbatim in patches, delete the whole mask to remove the binding. Other dynamic regions (elements with data-ai-dynamic) appear as markup but are SYSTEM-CONTROLLED: the rendered output is projected by Uncanny Page Builder. You may edit the region element, its attributes, and card templates per the binding guide, but never author final content inside a projected region. For wp_menu, use data-menu-id for an exact user-selected menu; data-menu-location is only for theme-location menus.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/part/edit"
+  },
+  "parameters": [
+    {
+      "name": "part",
+      "type": "object",
+      "required": true,
+      "in": "body",
+      "description": "Part descriptor. For sections use {kind:\"section\", section_id:123}. For global parts on a reusable canvas, prefer {kind:\"global_part\", global_part_id:77}. For assigned site defaults, you may use {kind:\"global_part\", part_type:\"header\"|\"footer\"}.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["section", "global_part"],
+          "description": "Part kind. Use section or global_part."
+        },
+        "section_id": {
+          "type": "integer",
+          "description": "Existing section ID when kind=section."
+        },
+        "global_part_id": {
+          "type": "integer",
+          "description": "Concrete global part post ID when kind=global_part. Prefer this on a reusable canvas, including reusable sections."
+        },
+        "part_type": {
+          "type": "string",
+          "enum": ["header", "footer"],
+          "description": "Assigned site default global part type when kind=global_part. Use only for the assigned header or footer; reusable sections must use global_part_id."
+        }
+      }
+    },
+    {
+      "name": "operation",
+      "type": "object",
+      "required": true,
+      "in": "body",
+          "description": "Operation descriptor. Supported section modes: text, link, image, css_rule, durable_style, insert_element, move_element, delete_element, source_patch, source_replace. Supported global part modes: css_rule, source_patch, source_replace. For durable_style, prefer {mode:\"durable_style\", target:{source_path:\"0.0\", tag:\"h1\", identity:\"lens-abc\"}, styles:{color:\"#111\"}} using target data copied from read_part include=design_targets. If the target lists DATA_UPB_LENS_ID, pass it as target.identity. Runtime descendants inside data-ai-dynamic bindings are not valid target edits; style the stored binding wrapper, use scoped source CSS, or edit the binding. For wp_menu, exact selected menus should use data-menu-id from manage_navigation; data-menu-location is for theme slots only. The older changes array shape is also accepted. For source_patch, html_patches and exact css_patches must use search copied from read_part include=source. Use {search:\"exact current non-empty substring\", replace:\"replacement\"} to replace, {action:\"insert_after\", search:\"...\", content:\"...\"} or {action:\"insert_before\", search:\"...\", content:\"...\"} to insert, and {action:\"delete\", search:\"...\"} to delete. HTML search must not be empty and must match exactly once. If replacing an entire section/global part, use source_replace instead of an empty HTML search patch. For CSS selector changes, use css_rules entries like {selector:\".card\", set:{color:\"#111\"}}. If a css_patches item has empty search but replace/content is a complete selector block, the API treats it as css_rules. The friendlier declarations key is also accepted as an alias for set. CSS must use canvas-local selectors; avoid body, html, and :root. If document-level selectors are submitted, the write is accepted but returns a WARNING because compiled canvas CSS may filter them.",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["text", "link", "image", "css_rule", "durable_style", "insert_element", "move_element", "delete_element", "source_patch", "source_replace"],
+          "description": "Operation mode. Use source_patch only when replacing exact non-empty current substrings; use source_replace for whole-source replacement."
+        },
+        "text": {
+          "type": "string",
+          "description": "For text, link, or image modes. Replacement visible text, link label, or image alt-adjacent text when supported by the target mode."
+        },
+        "format": {
+          "type": "string",
+          "enum": ["plain", "safe_html"],
+          "description": "For text mode. Use plain unless read_part guidance says HTML formatting is intended."
+        },
+        "href": {
+          "type": "string",
+          "description": "For link mode. Replacement link URL."
+        },
+        "src": {
+          "type": "string",
+          "description": "For image mode. Replacement image URL."
+        },
+        "alt": {
+          "type": "string",
+          "description": "For image mode. Replacement alt text."
+        },
+        "loading": {
+          "type": "string",
+          "enum": ["lazy", "eager", "auto"],
+          "description": "For image mode. Optional image loading attribute."
+        },
+        "decoding": {
+          "type": "string",
+          "enum": ["async", "sync", "auto"],
+          "description": "For image mode. Optional image decoding attribute."
+        },
+        "width": {
+          "type": "integer",
+          "description": "For image mode. Optional image width."
+        },
+        "height": {
+          "type": "integer",
+          "description": "For image mode. Optional image height."
+        },
+        "target": {
+          "type": "object",
+          "description": "Target descriptor for text, link, image, durable_style, insert_element, or delete_element. For durable_style, copy SOURCE_PATH and TAG from read_part include=design_targets. If DATA_UPB_LENS_ID exists, send it as identity; stable_selector can also be sent as selector."
+        },
+        "source": {
+          "type": "object",
+          "description": "For move_element mode. Source element descriptor copied from read_part include=manifest or design_targets."
+        },
+        "destination": {
+          "type": "object",
+          "description": "For move_element mode. Destination element descriptor copied from read_part include=manifest or design_targets."
+        },
+        "placement": {
+          "type": "string",
+          "enum": ["before", "after", "append", "prepend"],
+          "description": "For insert_element or move_element modes. Placement relative to the target or destination. Supported values are before, after, append, and prepend."
+        },
+        "html": {
+          "type": "string",
+          "description": "For insert_element and source_replace modes. Inserted element HTML or full replacement HTML. Source replacement requires a single valid root for sections/global parts."
+        },
+        "css": {
+          "type": "string",
+          "description": "For source_replace mode. Full replacement CSS for the section or global part. Use an empty string only when the replacement intentionally has no CSS."
+        },
+        "name": {
+          "type": "string",
+          "description": "For source_replace mode. Optional replacement display name."
+        },
+        "reason": {
+          "type": "string",
+          "description": "For source_replace mode. Optional short state-based reason for choosing a broad replacement instead of a smaller patch."
+        },
+        "viewport": {
+          "type": "string",
+          "enum": ["desktop", "tablet", "mobile"],
+          "description": "For durable_style mode. Optional viewport scope; defaults to desktop."
+        },
+        "state": {
+          "type": "string",
+          "enum": ["normal", "hover", "focus", "active"],
+          "description": "For durable_style mode. Optional style state; defaults to normal."
+        },
+        "styles": {
+          "type": "object",
+          "description": "For durable_style only. CSS declarations for one selected element, for example {\"background-color\":\"#198754\",\"color\":\"#ffffff\"}. Use with target. Defaults to desktop normal state unless operation.viewport or operation.state is provided."
+        },
+        "changes": {
+          "type": "array",
+          "description": "Legacy durable_style shape. Prefer target+styles. When used, each item must include property, value, target, and optional viewport/state."
+        },
+        "css_rules": {
+          "type": "array",
+          "description": "For css_rule or source_patch modes. Selector-based CSS changes, for example {\"selector\":\".card\",\"set\":{\"color\":\"#111\"}}. The declarations key is accepted as an alias for set."
+        },
+        "html_patches": {
+          "type": "array",
+          "description": "For source_patch only. Ordered exact HTML substring patches. action defaults to replace. Replace patches require replace. insert_after and insert_before require content. delete requires only search.",
+          "items": {
+            "type": "object",
+            "required": ["search"],
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": ["replace", "insert_after", "insert_before", "delete"],
+                "description": "Patch action: replace, insert_after, insert_before, or delete. Defaults to replace."
+              },
+              "search": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Exact current non-empty HTML substring from read_part include=source. Must match exactly once. Never use an empty string."
+              },
+              "replace": {
+                "type": "string",
+                "description": "Replacement HTML."
+              },
+              "content": {
+                "type": "string",
+                "description": "HTML to insert for insert_after or insert_before."
+              }
+            }
+          }
+        },
+        "css_patches": {
+          "type": "array",
+          "description": "For source_patch only. Ordered exact CSS substring patches. action defaults to replace. Replace patches require replace. insert_after and insert_before require content. delete requires only search. Keep CSS canvas-local; avoid body, html, and :root selectors.",
+          "items": {
+            "type": "object",
+            "required": ["search"],
+            "properties": {
+              "action": {
+                "type": "string",
+                "enum": ["replace", "insert_after", "insert_before", "delete"],
+                "description": "Patch action: replace, insert_after, insert_before, or delete. Defaults to replace."
+              },
+              "search": {
+                "type": "string",
+                "description": "Exact current CSS substring from read_part include=source. Must match exactly once for exact patches. Empty string is only accepted when replace/content is a complete selector block that can be treated as css_rules."
+              },
+              "replace": {
+                "type": "string",
+                "description": "Replacement CSS."
+              },
+              "content": {
+                "type": "string",
+                "description": "CSS to insert for insert_after or insert_before."
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain-text write result with a change summary, optional WARNING lines for advisory issues, diff where applicable, and NEXT STEP guidance."
+  },
+  "auto_approve": false,
+  "group": "write"
+}

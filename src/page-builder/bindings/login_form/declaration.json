@@ -1,0 +1,18 @@
+{
+  "id": "login_form",
+  "title": "Login Form",
+  "summary": "Render a WordPress login form or welcome message if logged in",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "auth",
+    "form",
+    "membership",
+    "widget"
+  ]
+}

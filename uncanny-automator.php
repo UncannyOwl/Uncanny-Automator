@@ -9,7 +9,7 @@
  * Domain Path:         /languages
  * License:             GPLv3
  * License URI:         https://www.gnu.org/licenses/gpl-3.0.html
- * Version:             7.4.1
+ * Version:             7.5.0
  * Requires at least:   5.8
  * Requires PHP:        7.4
  */
@@ -24,7 +24,7 @@ if ( ! defined( 'AUTOMATOR_PLUGIN_VERSION' ) ) {
 	/*
 	 * Specify Automator version.
 	 */
-	define( 'AUTOMATOR_PLUGIN_VERSION', '7.4.1' );
+	define( 'AUTOMATOR_PLUGIN_VERSION', '7.5.0' );
 }
 
 if ( ! defined( 'AUTOMATOR_BASE_FILE' ) ) {
@@ -140,6 +140,10 @@ require_once UA_ABSPATH . 'src' . DIRECTORY_SEPARATOR . 'globals.php';
  * @return void
  */
 function automator_autoloader( $class ) {
+	if ( 0 === strncmp( $class, 'UncannyPageBuilder\\', strlen( 'UncannyPageBuilder\\' ) ) ) {
+		return;
+	}
+
 	static $ci_map = null;
 	if ( null === $ci_map ) {
 		$ci_map        = array();

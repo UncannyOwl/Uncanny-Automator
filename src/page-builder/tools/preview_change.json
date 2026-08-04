@@ -1,0 +1,111 @@
+{
+  "name": "preview_change",
+  "description": "Dry-run a part source patch and return validation plus HTML/CSS diffs without saving. Use mode=source_patch first. This reuses the same patch, sanitization, and validation path as the real source patch write.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/part/preview"
+  },
+  "parameters": [
+    {
+      "name": "section_id",
+      "type": "integer",
+      "required": true,
+      "in": "body",
+      "description": "Section ID to preview."
+    },
+    {
+      "name": "page_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Uncanny Page Builder canvas page ID. Pass this when the user provides a canvas_id or a page_id known to be an Uncanny Page Builder canvas. For ordinary WordPress page URLs or names, resolve the target first; do not assume any page_id is editable. Omit to use the current page when a canvas is active."
+    },
+    {
+      "name": "mode",
+      "type": "string",
+      "enum": ["source_patch"],
+      "required": false,
+      "in": "body",
+      "description": "Preview mode. Use source_patch."
+    },
+    {
+      "name": "html_patches",
+      "type": "array",
+      "required": false,
+      "in": "body",
+      "description": "Ordered exact HTML substring patches. Use {search:\"exact current non-empty HTML substring from read_part include=source\", replace:\"replacement HTML\"} to replace, {action:\"insert_after\", search:\"...\", content:\"...\"} or {action:\"insert_before\", search:\"...\", content:\"...\"} to insert, and {action:\"delete\", search:\"...\"} to delete. The search value must not be empty and must match exactly once in current HTML. Never use search:\"\"; use edit_part mode=source_replace for whole-source replacement.",
+      "items": {
+        "type": "object",
+        "required": ["search"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["replace", "insert_after", "insert_before", "delete"],
+            "description": "Patch action: replace, insert_after, insert_before, or delete. Defaults to replace."
+          },
+          "search": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exact current non-empty HTML substring copied from read_part include=source. Must match exactly once."
+          },
+          "replace": {
+            "type": "string",
+            "description": "Replacement HTML for the matched search substring."
+          },
+          "content": {
+            "type": "string",
+            "description": "HTML to insert for insert_after or insert_before."
+          }
+        }
+      }
+    },
+    {
+      "name": "css_patches",
+      "type": "array",
+      "required": false,
+      "in": "body",
+      "description": "Ordered exact CSS substring patches. Use {search:\"exact current non-empty CSS substring from read_part include=source\", replace:\"replacement CSS\"} to replace, {action:\"insert_after\", search:\"...\", content:\"...\"} or {action:\"insert_before\", search:\"...\", content:\"...\"} to insert, and {action:\"delete\", search:\"...\"} to delete. Exact patch search must match once in current CSS. Prefer css_rules for selector declarations. If search is empty but replace/content is a complete selector block, the API treats it as css_rules. Keep CSS canvas-local; avoid body, html, and :root selectors.",
+      "items": {
+        "type": "object",
+        "required": ["search"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["replace", "insert_after", "insert_before", "delete"],
+            "description": "Patch action: replace, insert_after, insert_before, or delete. Defaults to replace."
+          },
+          "search": {
+            "type": "string",
+            "description": "Exact current CSS substring copied from read_part include=source. Must match exactly once for exact patches. Empty string is only accepted when replace/content is a complete selector block that can be treated as css_rules."
+          },
+          "replace": {
+            "type": "string",
+            "description": "Replacement CSS for the matched search substring."
+          },
+          "content": {
+            "type": "string",
+            "description": "CSS to insert for insert_after or insert_before."
+          }
+        }
+      }
+    },
+    {
+      "name": "css_rules",
+      "type": "array",
+      "required": false,
+      "in": "body",
+      "description": "Selector-based CSS changes. Use entries like {selector:\".card\", set:{color:\"#111\"}}. The friendlier declarations key is also accepted as an alias for set. Selectors must be canvas-local; avoid body, html, and :root."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain text dry-run result with validation status, applied patch counts, HTML DIFF, CSS DIFF, and NEXT STEP guidance for edit_part mode=source_patch."
+  },
+  "errors": {
+    "400": "Unsupported mode or no patch group.",
+    "422": "Exact patch failed, CSS patch failed, or section validation failed.",
+    "404": "Section not found."
+  },
+  "auto_approve": true,
+  "group": "read"
+}
