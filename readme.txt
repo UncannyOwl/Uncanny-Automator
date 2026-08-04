@@ -224,6 +224,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Run Now](https://automatorplugin.com/integration/run-now/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
 - [SaveTo Wishlist](https://automatorplugin.com/integration/saveto-wishlist/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Schedule](https://automatorplugin.com/integration/schedule/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
+- [Site Kit by Google](https://automatorplugin.com/integration/site-kit-by-google/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [SliceWP](https://automatorplugin.com/integration/slicewp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Speed Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -430,6 +431,20 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 **New Feature:**
 
 * Uncanny Page Builder - Create and refine beautiful pages through conversation with Uncanny Agent (requires an Uncanny Automator Pro AI + Automation plan) #8330
+
+**New Integration:**
+
+* [Site Kit by Google](https://automatorplugin.com/integration/site-kit-by-google/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7528
+
+**New Triggers:**
+
+* Site Kit by Google - A module is activated #7526
+* Site Kit by Google - A module is deactivated #7525
+
+**New Actions:**
+
+* Site Kit by Google - Activate a module #7524
+* Site Kit by Google - Deactivate a module #7523
 
 **Fixed:**
 

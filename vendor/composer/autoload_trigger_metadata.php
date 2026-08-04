@@ -291,6 +291,63 @@ return array (
       ),
     ),
   ),
+  'GOOGLE_SITE_KIT_MODULE_ACTIVATED' => 
+  array (
+    'code' => 'GOOGLE_SITE_KIT_MODULE_ACTIVATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Google_Site_Kit\\Google_Site_Kit_Module_Activated',
+    'integration' => 'GOOGLE_SITE_KIT',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'GOOGLE_SITE_KIT_MODULE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'add_option_googlesitekit_active_modules',
+        1 => 10,
+        2 => 2,
+      ),
+      1 => 
+      array (
+        0 => 'update_option_googlesitekit_active_modules',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'GOOGLE_SITE_KIT_MODULE_DEACTIVATED' => 
+  array (
+    'code' => 'GOOGLE_SITE_KIT_MODULE_DEACTIVATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Google_Site_Kit\\Google_Site_Kit_Module_Deactivated',
+    'integration' => 'GOOGLE_SITE_KIT',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'GOOGLE_SITE_KIT_MODULE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'update_option_googlesitekit_active_modules',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'GOOGLE_SITE_KIT_USER_CONNECTS' => 
+  array (
+    'code' => 'GOOGLE_SITE_KIT_USER_CONNECTS',
+    'class' => 'Uncanny_Automator\\Integrations\\Google_Site_Kit\\Google_Site_Kit_User_Connects',
+    'integration' => 'GOOGLE_SITE_KIT',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'GOOGLE_SITE_KIT_CONNECT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'googlesitekit_authorize_user',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
   'ANON_GF_FORM_ENTRY_UPDATED' => 
   array (
     'code' => 'ANON_GF_FORM_ENTRY_UPDATED',
