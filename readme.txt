@@ -426,7 +426,7 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 7.4.1 [2026-07-29] =
+= 7.5.0 [2026-08-04] =
 
 **New Feature:**
 
