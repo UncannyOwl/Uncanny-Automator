@@ -1743,6 +1743,37 @@ return array(
 			),
 		),
 	),
+	'GOOGLE_SITE_KIT' => array(
+		'triggers' => array(
+			'GOOGLE_SITE_KIT_GOOGLE_SITE_KIT_MODULE_ACTIVATED' => array(
+				'code'  => 'GOOGLE_SITE_KIT_MODULE_ACTIVATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Google_Site_Kit\\Google_Site_Kit_Module_Activated',
+				'file'  => $baseDir . '/src/integrations/google-site-kit/triggers/google-site-kit-module-activated.php',
+			),
+			'GOOGLE_SITE_KIT_GOOGLE_SITE_KIT_MODULE_DEACTIVATED' => array(
+				'code'  => 'GOOGLE_SITE_KIT_MODULE_DEACTIVATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Google_Site_Kit\\Google_Site_Kit_Module_Deactivated',
+				'file'  => $baseDir . '/src/integrations/google-site-kit/triggers/google-site-kit-module-deactivated.php',
+			),
+			'GOOGLE_SITE_KIT_GOOGLE_SITE_KIT_USER_CONNECTS' => array(
+				'code'  => 'GOOGLE_SITE_KIT_USER_CONNECTS',
+				'class' => 'Uncanny_Automator\\Integrations\\Google_Site_Kit\\Google_Site_Kit_User_Connects',
+				'file'  => $baseDir . '/src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php',
+			),
+		),
+		'actions' => array(
+			'GOOGLE_SITE_KIT_GOOGLE_SITE_KIT_ACTIVATE_MODULE' => array(
+				'code'  => 'GOOGLE_SITE_KIT_ACTIVATE_MODULE',
+				'class' => 'Uncanny_Automator\\Integrations\\Google_Site_Kit\\Google_Site_Kit_Activate_Module',
+				'file'  => $baseDir . '/src/integrations/google-site-kit/actions/google-site-kit-activate-module.php',
+			),
+			'GOOGLE_SITE_KIT_GOOGLE_SITE_KIT_DEACTIVATE_MODULE' => array(
+				'code'  => 'GOOGLE_SITE_KIT_DEACTIVATE_MODULE',
+				'class' => 'Uncanny_Automator\\Integrations\\Google_Site_Kit\\Google_Site_Kit_Deactivate_Module',
+				'file'  => $baseDir . '/src/integrations/google-site-kit/actions/google-site-kit-deactivate-module.php',
+			),
+		),
+	),
 	'GP' => array(
 		'triggers' => array(
 			'GP_GPSPECIFICPOINTS' => array(

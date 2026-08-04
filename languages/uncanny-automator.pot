@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-04T19:00:30+00:00\n"
+"POT-Creation-Date: 2026-08-04T20:11:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -24362,6 +24362,159 @@ msgstr ""
 #: src/integrations/google-sheet/settings/settings-google-sheet.php:547
 msgctxt "Google Sheet"
 msgid "Confirm"
+msgstr ""
+
+#. translators: %1$s: Module.
+#: src/integrations/google-site-kit/actions/google-site-kit-activate-module.php:37
+#, php-format
+msgctxt "Site Kit by Google"
+msgid "Activate {{a module:%1$s}}"
+msgstr ""
+
+#: src/integrations/google-site-kit/actions/google-site-kit-activate-module.php:41
+msgctxt "Site Kit by Google"
+msgid "Activate {{a module}}"
+msgstr ""
+
+#: src/integrations/google-site-kit/actions/google-site-kit-activate-module.php:53
+#: src/integrations/google-site-kit/actions/google-site-kit-deactivate-module.php:50
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-activated.php:56
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-deactivated.php:55
+msgctxt "Site Kit by Google"
+msgid "Module"
+msgstr ""
+
+#: src/integrations/google-site-kit/actions/google-site-kit-activate-module.php:70
+#: src/integrations/google-site-kit/actions/google-site-kit-deactivate-module.php:67
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-activated.php:110
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-deactivated.php:109
+msgctxt "Site Kit by Google"
+msgid "Module slug"
+msgstr ""
+
+#: src/integrations/google-site-kit/actions/google-site-kit-activate-module.php:74
+#: src/integrations/google-site-kit/actions/google-site-kit-deactivate-module.php:71
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-activated.php:115
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-deactivated.php:114
+msgctxt "Site Kit by Google"
+msgid "Module name"
+msgstr ""
+
+#. translators: %1$s: Module.
+#: src/integrations/google-site-kit/actions/google-site-kit-deactivate-module.php:34
+#, php-format
+msgctxt "Site Kit by Google"
+msgid "Deactivate {{a module:%1$s}}"
+msgstr ""
+
+#: src/integrations/google-site-kit/actions/google-site-kit-deactivate-module.php:38
+msgctxt "Site Kit by Google"
+msgid "Deactivate {{a module}}"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:55
+msgctxt "Site Kit by Google"
+msgid "Analytics"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:56
+msgctxt "Site Kit by Google"
+msgid "AdSense"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:57
+msgctxt "Site Kit by Google"
+msgid "Tag Manager"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:58
+msgctxt "Site Kit by Google"
+msgid "PageSpeed Insights"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:59
+msgctxt "Site Kit by Google"
+msgid "Ads"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:60
+msgctxt "Site Kit by Google"
+msgid "Reader Revenue Manager"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:61
+msgctxt "Site Kit by Google"
+msgid "Sign in with Google"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:79
+msgctxt "Site Kit by Google"
+msgid "Search Console"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:80
+msgctxt "Site Kit by Google"
+msgid "Site Verification"
+msgstr ""
+
+#: src/integrations/google-site-kit/helpers/google-site-kit-helpers.php:112
+msgctxt "Site Kit by Google"
+msgid "Any module"
+msgstr ""
+
+#. translators: %1$s: Module.
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-activated.php:40
+#, php-format
+msgctxt "Site Kit by Google"
+msgid "{{A module:%1$s}} is activated"
+msgstr ""
+
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-activated.php:44
+msgctxt "Site Kit by Google"
+msgid "{{A module}} is activated"
+msgstr ""
+
+#. translators: %1$s: Module.
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-deactivated.php:39
+#, php-format
+msgctxt "Site Kit by Google"
+msgid "{{A module:%1$s}} is deactivated"
+msgstr ""
+
+#: src/integrations/google-site-kit/triggers/google-site-kit-module-deactivated.php:43
+msgctxt "Site Kit by Google"
+msgid "{{A module}} is deactivated"
+msgstr ""
+
+#: src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php:40
+#: src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php:41
+msgctxt "Site Kit by Google"
+msgid "A user connects their Google account"
+msgstr ""
+
+#: src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php:87
+msgctxt "Site Kit by Google"
+msgid "Scopes granted"
+msgstr ""
+
+#: src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php:92
+msgctxt "Site Kit by Google"
+msgid "Previous scopes"
+msgstr ""
+
+#: src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php:97
+msgctxt "Site Kit by Google"
+msgid "Is initial connection"
+msgstr ""
+
+#: src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php:121
+msgctxt "Site Kit by Google"
+msgid "Yes"
+msgstr ""
+
+#: src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php:122
+msgctxt "Site Kit by Google"
+msgid "No"
 msgstr ""
 
 #. translators: %s: Meeting subject

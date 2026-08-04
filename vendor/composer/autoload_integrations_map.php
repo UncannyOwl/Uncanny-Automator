@@ -903,6 +903,20 @@ return array(
 			$baseDir . '/src/integrations/google-sheet/helpers/google-sheet-helpers.php',
 		),
 	),
+	'google-site-kit' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/google-site-kit/actions/google-site-kit-activate-module.php',
+			$baseDir . '/src/integrations/google-site-kit/actions/google-site-kit-deactivate-module.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/google-site-kit/helpers/google-site-kit-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/google-site-kit/triggers/google-site-kit-module-activated.php',
+			$baseDir . '/src/integrations/google-site-kit/triggers/google-site-kit-module-deactivated.php',
+			$baseDir . '/src/integrations/google-site-kit/triggers/google-site-kit-user-connects.php',
+		),
+	),
 	'gotomeeting' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/gotomeeting/actions/gtm-createmeeting.php',
