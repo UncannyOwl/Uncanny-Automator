@@ -1,0 +1,23 @@
+{
+  "id": "post_type_archive_link",
+  "title": "Post Type Archive Link",
+  "summary": "Render the archive URL for a specific post type",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-post-type": {
+      "required": false,
+      "default": "post"
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "post",
+    "url",
+    "archive",
+    "content"
+  ]
+}

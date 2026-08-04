@@ -1,0 +1,21 @@
+{
+  "id": "wp_shortcode",
+  "title": "WordPress Shortcode",
+  "summary": "Render output from a WordPress shortcode through a Page Builder-owned dynamic region",
+  "type": "self_rendering",
+  "static_safety": "not_static",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-shortcode": {
+      "required": true
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "content",
+    "widget",
+    "form"
+  ]
+}

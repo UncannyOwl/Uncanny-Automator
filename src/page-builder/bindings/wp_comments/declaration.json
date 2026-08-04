@@ -1,0 +1,41 @@
+{
+  "id": "wp_comments",
+  "title": "WordPress Comments",
+  "summary": "Render approved comments for a post as repeating cards",
+  "type": "card",
+  "static_safety": "public_request_safe",
+  "output_shape": "card",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpCommentsCardRenderer",
+  "query_attributes": {
+    "data-post-id": {
+      "required": false,
+      "default": "0",
+      "cast": "int"
+    },
+    "data-count": {
+      "required": false,
+      "default": "5",
+      "cast": "int"
+    },
+    "data-orderby": {
+      "required": false,
+      "default": "comment_date_gmt",
+      "allowed_values": ["comment_date_gmt", "comment_date", "comment_author", "comment_type", "comment_ID"]
+    }
+  },
+  "bind_keys": [
+    "author",
+    "avatar",
+    "content",
+    "date",
+    "url"
+  ],
+  "meta_bindings": false,
+  "tags": [
+    "comment",
+    "loop",
+    "card",
+    "content",
+    "social"
+  ]
+}

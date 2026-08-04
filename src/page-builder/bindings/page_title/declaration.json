@@ -1,0 +1,19 @@
+{
+  "id": "page_title",
+  "title": "Page Title",
+  "summary": "Render the current page/post title",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "page",
+    "post",
+    "text",
+    "identity",
+    "content"
+  ]
+}

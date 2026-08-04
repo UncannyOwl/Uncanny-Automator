@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "package": {
+    "name": "design-lens",
+    "version": "1.0.0"
+  },
+  "contract": {
+    "version": "1.0.0",
+    "features": [
+      "box-model@1",
+      "compatibility-report@1",
+      "declared-style-value@1",
+      "host-boundary@1",
+      "path-contract@1",
+      "programmatic-hover@1",
+      "programmatic-selection@1",
+      "surface@1",
+      "layout-flex@1",
+      "layout-grid@1",
+      "computed-style@1",
+      "attributes@1",
+      "content@1",
+      "identity@1"
+    ]
+  },
+  "distribution": {
+    "mode": "vendored",
+    "registryPublished": false,
+    "vendoredIife": {
+      "source": "dist/design-lens.iife.js",
+      "filename": "design-lens.iife.min.js"
+    }
+  },
+  "artifacts": {
+    "dist/computed-style-groups.json": {
+      "bytes": 4805,
+      "sha256": "bf43b279066a9ac3b4b0eaeae03820192067c9f9bd0d7606685ed186a9c7020e"
+    },
+    "dist/design-lens.css": {
+      "bytes": 7708,
+      "sha256": "41ecf7f99c91ad4d07b8b66374d530e216f8022cbb49b944be2b66992e771862"
+    },
+    "dist/design-lens.es.js": {
+      "bytes": 181523,
+      "sha256": "584889f66c55ac3a61618efef25c65b06287102768a36ec0e23624a638628290"
+    },
+    "dist/design-lens.iife.js": {
+      "bytes": 133998,
+      "sha256": "f426eea81bbd32a2aebc41dce7ee171d6f695349e9cd0c3f57d18631c6fc60e0"
+    }
+  }
+}

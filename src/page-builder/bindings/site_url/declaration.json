@@ -1,0 +1,18 @@
+{
+  "id": "site_url",
+  "title": "Site URL",
+  "summary": "Render the site home URL",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "site",
+    "url",
+    "identity",
+    "header"
+  ]
+}

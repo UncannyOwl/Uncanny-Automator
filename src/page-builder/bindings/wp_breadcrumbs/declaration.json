@@ -1,0 +1,23 @@
+{
+  "id": "wp_breadcrumbs",
+  "title": "WordPress Breadcrumbs",
+  "summary": "Render a breadcrumb navigation trail for the current page",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-separator": {
+      "required": false,
+      "default": "/"
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "navigation",
+    "list",
+    "content",
+    "header"
+  ]
+}

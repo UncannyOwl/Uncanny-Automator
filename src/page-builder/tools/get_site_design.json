@@ -1,0 +1,15 @@
+{
+  "name": "get_site_design",
+  "description": "Fetch the site's design system in customer language, including logo, colors, fonts, text styles, spacing, breakpoints, button style, and protected design settings. Use this before broad design work.",
+  "http": {
+    "method": "GET",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/site-design"
+  },
+  "parameters": [],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain text site design summary with LOGO, COLORS, FONTS, TEXT STYLES, SPACING, BREAKPOINTS, BUTTON STYLE, LOCKED SETTINGS, and NEXT STEP."
+  },
+  "auto_approve": true,
+  "group": "read"
+}

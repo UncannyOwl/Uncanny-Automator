@@ -1,0 +1,17 @@
+{
+  "id": "logout_url",
+  "title": "Logout URL",
+  "summary": "Render the WordPress logout URL with redirect to home",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "auth",
+    "url",
+    "membership"
+  ]
+}

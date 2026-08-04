@@ -1,0 +1,66 @@
+/**
+ * Uncanny Page Builder — Canvas Bridge Styles
+ *
+ * Global canvas-only affordances. Editor chrome is rendered with WordPress
+ * components or component-local styles, so this file must not style buttons,
+ * toolbars, modals, panels, or other control-plane UI.
+ */
+
+/* ─── WordPress Media Modal Baseline ───────────────────────────
+ *
+ * wp.media appends its modal to <body>. The standalone canvas intentionally
+ * does not load wp-admin common.css because its broad resets can leak into
+ * page content, but the media modal still relies on the screen-reader utility
+ * from that file to hide accessibility-only headings.
+ */
+
+.media-modal .screen-reader-text,
+.media-modal .screen-reader-text span {
+	border: 0;
+	clip-path: inset(50%);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	word-wrap: normal !important;
+	word-break: normal !important;
+}
+
+/* ─── Editable Markers ───────────────────────────────────────── */
+
+[data-ai-editable].upb-hover {
+	outline: 2px dashed rgba(51, 102, 255, 0.6);
+	outline-offset: 4px;
+	cursor: pointer;
+}
+
+.upb-active[contenteditable="true"] {
+	/* The caret and inline toolbar already communicate active editing state. */
+	outline: none;
+	cursor: text;
+}
+
+/* ─── Viewport Preview Frame ─────────────────────────────────── */
+
+.upb-preview-frame {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 9998;
+	display: flex;
+	justify-content: center;
+	background: #f0f0f1;
+	overflow: auto;
+}
+
+.upb-preview-iframe {
+	height: 100%;
+	min-height: 100%;
+	border: 0;
+	background: #ffffff;
+	box-shadow: 0 0 0 1px #dcdcde;
+}

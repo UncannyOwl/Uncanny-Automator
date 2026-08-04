@@ -1,0 +1,18 @@
+{
+  "id": "privacy_policy_url",
+  "title": "Privacy Policy URL",
+  "summary": "Render the WordPress privacy policy page URL",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "site",
+    "url",
+    "footer",
+    "identity"
+  ]
+}

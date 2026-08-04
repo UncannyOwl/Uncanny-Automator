@@ -265,7 +265,15 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 				}
 				$status          = $entry['completed'] ?? '';
 				$entry['status'] = Automator_Status::get_class_name( $status );
-				return $entry;
+				return $this->to_int(
+					array(
+						'recipe_log_id',
+						'recipe_id',
+						'run_number',
+						'user_id',
+					),
+					$entry
+				);
 			},
 			$logs
 		);
@@ -283,6 +291,24 @@ class Get_Logs_Tool extends Abstract_MCP_Tool {
 			sprintf( 'Retrieved %d of %d recipe log(s)', count( $logs ), (int) $total_logs ),
 			$response_data
 		);
+	}
+
+	/**
+	 * Normalize a log list row to match the generated MCP output schema.
+	 *
+	 * @param array $fields Fields that must be integers.
+	 * @param array $entry Log list row.
+	 * @return array Schema-compatible log list row.
+	 */
+	private function to_int( array $fields, array $entry ): array {
+
+		foreach ( $fields as $field ) {
+			if ( isset( $entry[ $field ] ) && is_numeric( $entry[ $field ] ) ) {
+				$entry[ $field ] = (int) $entry[ $field ];
+			}
+		}
+
+		return $entry;
 	}
 
 	/**

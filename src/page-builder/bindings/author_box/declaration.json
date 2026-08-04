@@ -1,0 +1,15 @@
+{
+  "id": "author_box",
+  "title": "Author Box",
+  "summary": "Renders author bio box with avatar, name, bio, and link",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-user-id": { "required": false, "default": "0", "cast": "int" }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["user", "author", "blog", "post", "bio"]
+}

@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Uncanny_Automator\\App\\' => array($baseDir . '/src/app'),
+    'UncannyPageBuilder\\' => array($baseDir . '/src/page-builder'),
 );

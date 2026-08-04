@@ -1,0 +1,18 @@
+{
+  "id": "current_user_avatar",
+  "title": "Current User Avatar",
+  "summary": "Render the logged-in user's Gravatar image",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "user",
+    "image",
+    "membership",
+    "personalization"
+  ]
+}

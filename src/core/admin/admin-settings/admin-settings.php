@@ -19,6 +19,11 @@ class Admin_Settings {
 	public function __construct() {
 
 		add_action( 'admin_menu', array( $this, 'submenu_page' ) );
+
+		// Load the save handlers before admin_init. The settings page output
+		// occurs after WordPress builds the admin menu.
+		include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/uncanny-page-builder-tabs/general.php';
+		include_once __DIR__ . DIRECTORY_SEPARATOR . 'tabs/uncanny-agent-tabs/general.php';
 	}
 
 	/**
@@ -32,7 +37,7 @@ class Admin_Settings {
 			/* translators: 1. Trademarked term */
 			sprintf( esc_attr__( '%1$s settings', 'uncanny-automator' ), 'Uncanny Automator' ),
 			esc_attr__( 'Settings', 'uncanny-automator' ),
-			automator_get_admin_capability(),
+			automator_get_admin_capability(), // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 			'uncanny-automator-config',
 			array( $this, 'submenu_page_output' )
 		);
@@ -51,6 +56,7 @@ class Admin_Settings {
 			$this->load_tab( 'uncanny-agent' );
 		}
 
+		$this->load_tab( 'uncanny-page-builder' );
 		$this->load_tab( 'advanced' );
 		$this->load_tab( 'addons' );
 	}

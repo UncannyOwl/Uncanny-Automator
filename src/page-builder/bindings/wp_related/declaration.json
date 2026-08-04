@@ -1,0 +1,45 @@
+{
+  "id": "wp_related",
+  "title": "WordPress Related Posts",
+  "summary": "Render posts related by shared taxonomy terms as repeating cards",
+  "type": "card",
+  "static_safety": "public_request_safe",
+  "output_shape": "card",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpQueryCardRenderer",
+  "query_attributes": {
+    "data-taxonomy": {
+      "required": false,
+      "default": "category"
+    },
+    "data-count": {
+      "required": false,
+      "default": "3",
+      "cast": "int"
+    }
+  },
+  "bind_keys": [
+    "title",
+    "excerpt",
+    "thumbnail",
+    "permalink",
+    "date",
+    "modified_date",
+    "author",
+    "author_url",
+    "author_avatar",
+    "categories",
+    "tags",
+    "comment_count",
+    "content",
+    "post_id"
+  ],
+  "meta_bindings": true,
+  "terms_bindings": true,
+  "tags": [
+    "post",
+    "loop",
+    "card",
+    "blog",
+    "content"
+  ]
+}

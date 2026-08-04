@@ -3,10 +3,10 @@ declare( strict_types=1 );
 
 namespace Uncanny_Automator\App\Infrastructure\License;
 
+use Uncanny_Automator\App\Application\Mcp\Mcp_License_Provider_Interface;
 use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Request;
 use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client_Interface;
 use Uncanny_Automator\App\Infrastructure\Exceptions\Api_Exception;
-use Uncanny_Automator\App\Infrastructure\License\License_Provider_Interface;
 
 /**
  * Class License_Manager
@@ -19,7 +19,7 @@ use Uncanny_Automator\App\Infrastructure\License\License_Provider_Interface;
  * @since 7.0.0
  * @package Uncanny_Automator\App\Infrastructure\License
  */
-class License_Manager implements License_Provider_Interface {
+class License_Manager implements License_Provider_Interface, Mcp_License_Provider_Interface {
 
 	/**
 	 * Transient key for cached license data.

@@ -1,0 +1,19 @@
+{
+  "id": "home_link",
+  "title": "Home Link",
+  "summary": "Render a linked site name pointing to the home page",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "site",
+    "url",
+    "navigation",
+    "header",
+    "identity"
+  ]
+}

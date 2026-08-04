@@ -1,0 +1,13 @@
+{
+  "id": "total_users_count",
+  "title": "Total Users Count",
+  "summary": "Total number of registered users on the site",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["counter", "user", "stats", "text", "membership"]
+}

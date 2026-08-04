@@ -1,0 +1,299 @@
+/**
+ * Page style overrides metabox.
+ *
+ * The brand style field partials render on two surfaces. The settings page
+ * loads Automator's admin bundle and styles them with its components and
+ * utilities. This metabox renders the same partials on the page edit screen,
+ * which loads only the colour picker, so no component or utility reaches it.
+ *
+ * Every rule here is scoped to .upb-page-style-overrides, the metabox root, so
+ * the settings page keeps its component styling. Each block records why no
+ * component covers it. Add a rule only when the metabox needs a layout that
+ * Automator does not provide on this screen.
+ */
+
+/* Sections and collapsible groups.
+   The metabox keeps native <details> because a component would be inert
+   without the bundle, so the disclosure needs its own affordance. */
+
+.upb-page-style-overrides .upb-typography-settings__section {
+    margin-top: 16px;
+}
+
+.upb-page-style-overrides .upb-typography-role-group {
+    background: #f0f0f0;
+    border-radius: 6px;
+    margin-top: 5px;
+    overflow: hidden;
+    padding: 0 10px;
+}
+
+.upb-page-style-overrides .upb-typography-role-group__summary {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+    padding: 14px 0;
+}
+
+.upb-page-style-overrides .upb-typography-role-group__summary::-webkit-details-marker {
+    display: none;
+}
+
+.upb-page-style-overrides .upb-typography-role-group__summary::after {
+    color: #646970;
+    content: "+";
+    flex: 0 0 auto;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+    margin-left: 16px;
+}
+
+.upb-page-style-overrides .upb-typography-role-group[open] .upb-typography-role-group__summary::after {
+    content: "\2212";
+}
+
+.upb-page-style-overrides .upb-typography-role-group__summary-copy {
+    display: block;
+    min-width: 0;
+}
+
+.upb-page-style-overrides .upb-typography-role-group__title {
+    color: #1d2327;
+    display: block;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.upb-page-style-overrides .upb-typography-role-group__description {
+    color: #646970;
+    display: block;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+/* Role cards.
+   The metabox shows every role at once inside a postbox, so the cards need a
+   grid and a boundary of their own. */
+
+.upb-page-style-overrides .upb-typography-settings__roles {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.upb-page-style-overrides .upb-typography-role-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 10px 15px;
+}
+
+.upb-page-style-overrides .upb-typography-role-card__header {
+    align-items: start;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.upb-page-style-overrides .upb-typography-role-card__preview {
+    background: #f6f7f7;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+}
+
+.upb-page-style-overrides .upb-typography-role-card__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Card headings.
+   The heading names the card in the outline. Its size comes from a component
+   class on the settings page, which does not reach this screen. */
+
+.upb-page-style-overrides .upb-typography-role-card__header h4 {
+    color: #1d2327;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    margin: 0 0 6px;
+}
+
+/* Controls.
+   These are the shapes Automator gives its own fields and buttons, which the
+   settings page takes from its bundle. The values are written out because the
+   custom properties that carry them do not reach this screen either. Colour
+   inputs are excluded, since the picker replaces them with its own control. */
+
+.upb-page-style-overrides input[type="text"]:not(.upb-color-control),
+.upb-page-style-overrides input[type="number"],
+.upb-page-style-overrides select,
+.upb-page-style-overrides textarea {
+    background-color: #fff;
+    border: 1px solid #cdcdcd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .1);
+    color: #676b6f;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 8px 12px;
+    width: 100%;
+}
+
+.upb-page-style-overrides select {
+    max-width: 100%;
+}
+
+/* These are the values the Automator settings page gives the button beside its
+   licence field: the same colour and size, filling black on hover. */
+
+.upb-page-style-overrides .upb-typography-role-card__header .button,
+.upb-page-style-overrides .upb-page-style-overrides__footer .button {
+    background-color: #fff;
+    border: 1px solid #9e9e9e;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .1);
+    color: #000;
+    font-size: 14px;
+    /* The component reads medium in Figtree. This screen renders in the system
+       face instead, where the same weight reads bold, so it takes the regular
+       weight to match what the component shows. */
+    font-weight: 400;
+    height: 26px;
+    line-height: 20px;
+    /* WordPress holds its buttons open with a minimum height, which outlasts the
+       height above. The card buttons escape it through their small variant; the
+       colours button does not carry that variant. */
+    min-height: 26px;
+    padding: 0 8px;
+    transition: background .15s ease-in-out, color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+/* The component fills on hover and on focus, and rings on focus. */
+
+.upb-page-style-overrides .upb-typography-role-card__header .button:hover,
+.upb-page-style-overrides .upb-typography-role-card__header .button:focus,
+.upb-page-style-overrides .upb-page-style-overrides__footer .button:hover,
+.upb-page-style-overrides .upb-page-style-overrides__footer .button:focus {
+    background-color: #000;
+    border-color: #000;
+    color: #fff;
+}
+
+.upb-page-style-overrides .upb-typography-role-card__header .button:focus,
+.upb-page-style-overrides .upb-page-style-overrides__footer .button:focus {
+    box-shadow: 0 0 0 .2rem rgba(158, 158, 158, .5);
+}
+
+/* Paired rows.
+   The row places its cells side by side through a class from the bundle, which
+   this screen does not load. The cells stack here instead, so they need the
+   spacing the row would have given them. */
+
+.upb-page-style-overrides .uap-field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Fields.
+   uap-field-text and the spacing utilities carry these on the settings page
+   and reach nothing here, so the label and control need their own stacking. */
+
+.upb-page-style-overrides .upb-typography-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.upb-page-style-overrides .upb-typography-field label {
+    color: #1d2327;
+    font-weight: 600;
+}
+
+.upb-page-style-overrides .upb-typography-field select,
+.upb-page-style-overrides .upb-typography-field textarea,
+.upb-page-style-overrides .upb-typography-field .regular-text {
+    max-width: 100%;
+    width: 100%;
+}
+
+.upb-page-style-overrides .upb-typography-field__custom-value {
+    display: flex;
+    flex-direction: column;
+    /* The spacing utility on the field does not reach this screen, so the label
+       would otherwise sit against the field below it. */
+    gap: 6px;
+    margin-top: 8px;
+}
+
+/* Colour tokens.
+   The picker styles its own control. The surrounding group, label and swatch
+   have no component. */
+
+.upb-page-style-overrides .upb-typography-settings__tokens {
+    margin-top: 16px;
+}
+
+.upb-page-style-overrides .upb-token-group {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+}
+
+.upb-page-style-overrides .upb-token-group summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.upb-page-style-overrides .upb-token-group__fields {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.upb-page-style-overrides .upb-token-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.upb-page-style-overrides .upb-token-field label {
+    color: #1d2327;
+    font-weight: 600;
+}
+
+.upb-page-style-overrides .upb-token-field__control {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+
+.upb-page-style-overrides .upb-token-field__swatch {
+    border: 1px solid #dcdcde;
+    border-radius: 999px;
+    display: inline-block;
+    flex: 0 0 18px;
+    height: 18px;
+    width: 18px;
+}
+
+/* Metabox copy and footer. */
+
+.upb-page-style-overrides .upb-settings-description {
+    color: #50575e;
+    margin: 0 0 10px;
+}
+
+.upb-page-style-overrides__footer {
+    margin: 16px 0 4px;
+}

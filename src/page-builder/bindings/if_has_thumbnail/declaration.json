@@ -1,0 +1,13 @@
+{
+  "id": "if_has_thumbnail",
+  "title": "If Has Featured Image",
+  "summary": "Shows wrapper content only if the current post has a featured image",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "conditional",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\ConditionalRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["conditional", "content", "thumbnail", "featured-image"]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "wp_recent_posts",
+  "title": "WordPress Recent Posts",
+  "summary": "Render the most recent posts as repeating cards",
+  "type": "card",
+  "static_safety": "public_request_safe",
+  "output_shape": "card",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpQueryCardRenderer",
+  "query_attributes": {
+    "data-count": {
+      "required": false,
+      "default": "5",
+      "cast": "int"
+    },
+    "data-post-type": {
+      "required": false,
+      "default": "post"
+    }
+  },
+  "bind_keys": [
+    "title",
+    "excerpt",
+    "thumbnail",
+    "permalink",
+    "date",
+    "modified_date",
+    "author",
+    "author_url",
+    "author_avatar",
+    "categories",
+    "tags",
+    "comment_count",
+    "content",
+    "post_id"
+  ],
+  "meta_bindings": true,
+  "terms_bindings": true,
+  "tags": [
+    "post",
+    "loop",
+    "card",
+    "blog",
+    "sidebar"
+  ]
+}

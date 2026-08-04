@@ -11,9 +11,17 @@ namespace Uncanny_Automator;
  */
 class Admin_Settings_Uncanny_Agent_General {
 
-	const SETTINGS_GROUP = 'uncanny_automator_uncanny_agent';
-	const OPTION_NAME    = 'automator_uncanny_agent_settings';
-	const ENABLED_KEY    = 'enabled';
+	const SETTINGS_GROUP             = 'uncanny_automator_uncanny_agent';
+	const OPTION_NAME                = 'automator_uncanny_agent_settings';
+	const ENABLED_KEY                = 'enabled';
+	const TOP_BAR_BUTTON_ENABLED_KEY = 'top_bar_button_enabled';
+
+	/**
+	 * Result from the current save request.
+	 *
+	 * @var array{enabled: bool, top_bar_button_enabled: bool, saved: bool}|null
+	 */
+	private $save_result = null;
 
 	/**
 	 * Class constructor
@@ -22,19 +30,7 @@ class Admin_Settings_Uncanny_Agent_General {
 		// Define the tab.
 		$this->create_tab();
 
-		// Register the setting.
-		add_action(
-			'admin_init',
-			function () {
-				register_setting(
-					self::SETTINGS_GROUP,
-					self::OPTION_NAME,
-					array(
-						'sanitize_callback' => array( __CLASS__, 'sanitize_settings' ),
-					)
-				);
-			}
-		);
+		add_action( 'admin_init', array( $this, 'maybe_save_setting' ) );
 	}
 
 	/**
@@ -44,7 +40,8 @@ class Admin_Settings_Uncanny_Agent_General {
 	 */
 	public static function get_defaults(): array {
 		return array(
-			self::ENABLED_KEY => true,
+			self::ENABLED_KEY                => true,
+			self::TOP_BAR_BUTTON_ENABLED_KEY => true,
 		);
 	}
 
@@ -53,35 +50,40 @@ class Admin_Settings_Uncanny_Agent_General {
 	 *
 	 * Single source of truth for reading Uncanny Agent settings.
 	 *
-	 * @param string $key Setting key to retrieve.
+	 * @param string $key   Setting key to retrieve.
+	 * @param bool   $force Get the value from the database.
 	 *
 	 * @return mixed The setting value, or the default if not set.
 	 */
-	public static function get_setting( string $key ) {
+	public static function get_setting( string $key, bool $force = false ) {
+		$settings = self::get_settings( $force );
+
+		return array_key_exists( $key, $settings ) ? $settings[ $key ] : null;
+	}
+
+	/**
+	 * Get all Uncanny Agent presentation settings.
+	 *
+	 * @param bool $force Get the value from the database.
+	 *
+	 * @return array{enabled: bool, top_bar_button_enabled: bool}
+	 */
+	public static function get_settings( bool $force = false ): array {
 		$defaults = self::get_defaults();
-		$settings = automator_get_option( self::OPTION_NAME, $defaults );
+		$settings = automator_get_option( self::OPTION_NAME, $defaults, $force );
 
 		if ( ! is_array( $settings ) ) {
 			$settings = $defaults;
 		}
 
-		return array_key_exists( $key, $settings ) ? $settings[ $key ] : ( $defaults[ $key ] ?? null );
-	}
-
-	/**
-	 * Sanitize callback for the settings array.
-	 *
-	 * @param mixed $value The raw value from the form submission.
-	 *
-	 * @return array<string, mixed> Sanitized settings.
-	 */
-	public static function sanitize_settings( $value ): array {
-		$defaults  = self::get_defaults();
-		$sanitized = array();
-
-		$sanitized[ self::ENABLED_KEY ] = ! empty( $value[ self::ENABLED_KEY ] );
-
-		return wp_parse_args( $sanitized, $defaults );
+		return array(
+			self::ENABLED_KEY                => array_key_exists( self::ENABLED_KEY, $settings )
+				? (bool) $settings[ self::ENABLED_KEY ]
+				: $defaults[ self::ENABLED_KEY ],
+			self::TOP_BAR_BUTTON_ENABLED_KEY => array_key_exists( self::TOP_BAR_BUTTON_ENABLED_KEY, $settings )
+				? (bool) $settings[ self::TOP_BAR_BUTTON_ENABLED_KEY ]
+				: $defaults[ self::TOP_BAR_BUTTON_ENABLED_KEY ],
+		);
 	}
 
 	/**
@@ -110,12 +112,14 @@ class Admin_Settings_Uncanny_Agent_General {
 	 * Outputs the content of the "General" tab.
 	 */
 	public function tab_output() {
-		$is_enabled = self::get_setting( self::ENABLED_KEY );
+		$is_launcher_enabled       = self::get_setting( self::ENABLED_KEY );
+		$is_top_bar_button_enabled = self::get_setting( self::TOP_BAR_BUTTON_ENABLED_KEY );
+		$save_failed               = false;
 
-		// Check if updated and reset the state.
-		$updated = $this->save_setting();
-		if ( null !== $updated ) {
-			$is_enabled = $updated;
+		if ( null !== $this->save_result ) {
+			$is_launcher_enabled       = $this->save_result[ self::ENABLED_KEY ];
+			$is_top_bar_button_enabled = $this->save_result[ self::TOP_BAR_BUTTON_ENABLED_KEY ];
+			$save_failed               = ! $this->save_result['saved'];
 		}
 
 		// Load the view.
@@ -123,54 +127,105 @@ class Admin_Settings_Uncanny_Agent_General {
 	}
 
 	/**
-	 * Saves the enable/disable setting.
+	 * Save the settings and redirect successful requests to a fresh GET.
 	 *
-	 * @return bool|null The new state, or null if not saving.
+	 * @return void
 	 */
-	private function save_setting() {
-		// Defense-in-depth capability check.
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return null;
+	public function maybe_save_setting() {
+		$this->save_result = $this->save_setting();
+
+		if ( null === $this->save_result || ! $this->save_result['saved'] ) {
+			return;
 		}
 
-		$key = self::SETTINGS_GROUP;
+		wp_safe_redirect(
+			Admin_Settings_Uncanny_Agent::utility_get_uncanny_agent_page_link( 'general' ),
+			303,
+			'Uncanny Automator'
+		);
+		exit;
+	}
 
-		// Check if we are on the correct options page.
+	/**
+	 * Save the launcher settings.
+	 *
+	 * @return array{enabled: bool, top_bar_button_enabled: bool, saved: bool}|null Save result, or null when no save occurs.
+	 */
+	private function save_setting() {
 		if ( ! automator_filter_has_var( 'option_page', INPUT_POST ) ) {
 			return null;
 		}
 
-		if ( automator_filter_input( 'option_page', INPUT_POST ) !== $key ) {
-			return null;
-		}
-
-		// Validate the nonce.
 		if ( ! automator_filter_has_var( '_wpnonce', INPUT_POST ) ) {
 			return null;
 		}
 
-		if ( ! wp_verify_nonce( automator_filter_input( '_wpnonce', INPUT_POST ), "{$key}-options" ) ) {
+		$is_launcher_enabled = automator_filter_has_var( self::ENABLED_KEY, INPUT_POST )
+			&& automator_filter_input( self::ENABLED_KEY, INPUT_POST, FILTER_VALIDATE_BOOLEAN );
+
+		$is_top_bar_button_enabled = automator_filter_has_var( self::TOP_BAR_BUTTON_ENABLED_KEY, INPUT_POST )
+			&& automator_filter_input( self::TOP_BAR_BUTTON_ENABLED_KEY, INPUT_POST, FILTER_VALIDATE_BOOLEAN );
+
+		return $this->process_save_request(
+			automator_filter_input( 'option_page', INPUT_POST ),
+			automator_filter_input( '_wpnonce', INPUT_POST ),
+			$is_launcher_enabled,
+			$is_top_bar_button_enabled
+		);
+	}
+
+	/**
+	 * Validate and save one normalized request.
+	 *
+	 * @param string $option_page              Submitted option group.
+	 * @param string $nonce                    Submitted nonce.
+	 * @param bool   $is_launcher_enabled      Submitted launcher setting.
+	 * @param bool   $is_top_bar_button_enabled Submitted top-bar setting.
+	 *
+	 * @return array{enabled: bool, top_bar_button_enabled: bool, saved: bool}|null Save result, or null when validation fails.
+	 */
+	private function process_save_request(
+		string $option_page,
+		string $nonce,
+		bool $is_launcher_enabled,
+		bool $is_top_bar_button_enabled
+	) {
+		if ( ! current_user_can( automator_get_admin_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 			return null;
 		}
 
-		// Read existing settings.
+		if ( self::SETTINGS_GROUP !== $option_page ) {
+			return null;
+		}
+
+		if ( ! wp_verify_nonce( $nonce, self::SETTINGS_GROUP . '-options' ) ) {
+			return null;
+		}
+
 		$settings = automator_get_option( self::OPTION_NAME, self::get_defaults() );
 
 		if ( ! is_array( $settings ) ) {
 			$settings = self::get_defaults();
 		}
 
-		// Check if the toggle is present and enabled.
-		if ( automator_filter_has_var( self::ENABLED_KEY, INPUT_POST ) && automator_filter_input( self::ENABLED_KEY, INPUT_POST, FILTER_VALIDATE_BOOLEAN ) ) {
-			$settings[ self::ENABLED_KEY ] = true;
-			automator_update_option( self::OPTION_NAME, $settings );
-			return true;
+		$settings[ self::ENABLED_KEY ]                = $is_launcher_enabled;
+		$settings[ self::TOP_BAR_BUTTON_ENABLED_KEY ] = $is_top_bar_button_enabled;
+
+		if ( ! automator_update_option( self::OPTION_NAME, $settings ) ) {
+			$persisted = self::get_settings( true );
+
+			return array(
+				self::ENABLED_KEY                => $persisted[ self::ENABLED_KEY ],
+				self::TOP_BAR_BUTTON_ENABLED_KEY => $persisted[ self::TOP_BAR_BUTTON_ENABLED_KEY ],
+				'saved'                          => false,
+			);
 		}
 
-		// Toggle is off — save as disabled.
-		$settings[ self::ENABLED_KEY ] = false;
-		automator_update_option( self::OPTION_NAME, $settings );
-		return false;
+		return array(
+			self::ENABLED_KEY                => $is_launcher_enabled,
+			self::TOP_BAR_BUTTON_ENABLED_KEY => $is_top_bar_button_enabled,
+			'saved'                          => true,
+		);
 	}
 }
 

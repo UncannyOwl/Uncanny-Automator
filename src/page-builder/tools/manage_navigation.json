@@ -1,0 +1,131 @@
+{
+  "name": "manage_navigation",
+  "description": "Create, inspect, and edit WordPress navigation menus through one consolidated facade. GET is read-only and supports list_locations, list_menus, and read_menu. Use POST for create_menu, add_item, update_item, delete_item, move_item, replace_tree, or assign_location. These writes change WordPress-global navigation immediately and may affect visitors wherever the menu is rendered. They refresh working previews but never rebuild or move the selected Page Builder live artifact. When rendering a specific menu in a wp_menu binding, prefer data-menu-id from list_menus/read_menu; use data-menu-location only for theme-location menus.",
+  "http": {
+    "method": "MIXED",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/navigation"
+  },
+  "parameters": [
+    {
+      "name": "operation",
+      "type": "string",
+      "enum": ["list_locations", "list_menus", "read_menu", "create_menu", "add_item", "update_item", "delete_item", "move_item", "replace_tree", "assign_location"],
+      "required": false,
+      "in": "query|body",
+      "description": "Optional navigation action. Omit operation or use list_locations for GET discovery. GET also supports list_menus and read_menu; all create, item mutation, tree replacement, and location assignment operations require POST."
+    },
+    {
+      "name": "menu_id",
+      "type": "integer",
+      "required": false,
+      "in": "query|body",
+      "description": "Required for operation=read_menu, add_item, update_item, delete_item, move_item, replace_tree, or assign_location. Also use this id as data-menu-id on wp_menu bindings when the user wants this exact menu rendered."
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Required menu name for operation=create_menu."
+    },
+    {
+      "name": "item_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Required item id for operation=update_item, delete_item, or move_item."
+    },
+    {
+      "name": "type",
+      "type": "string",
+      "enum": ["custom", "post_type", "taxonomy"],
+      "required": false,
+      "in": "body",
+      "description": "Menu item type for add_item or update_item. Allowed: custom, post_type, taxonomy."
+    },
+    {
+      "name": "object_type",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Required for post_type or taxonomy menu items, for example page or category."
+    },
+    {
+      "name": "object_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Required object id for post_type or taxonomy menu items."
+    },
+    {
+      "name": "label",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Menu item label for add_item or update_item."
+    },
+    {
+      "name": "url",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Required custom URL for custom menu items."
+    },
+    {
+      "name": "parent_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Optional parent item id for add_item or update_item. Required for move_item."
+    },
+    {
+      "name": "position",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Required 1-based sibling position for move_item. Optional per item entry for replace_tree."
+    },
+    {
+      "name": "target",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Optional target value such as _blank."
+    },
+    {
+      "name": "classes",
+      "type": "array",
+      "required": false,
+      "in": "body",
+      "description": "Optional CSS classes for add_item or update_item."
+    },
+    {
+      "name": "replace_tree",
+      "type": "boolean",
+      "required": false,
+      "in": "body",
+      "description": "Required true flag for operation=replace_tree."
+    },
+    {
+      "name": "items",
+      "type": "array",
+      "required": false,
+      "in": "body",
+      "description": "Full menu item list for operation=replace_tree. Existing menus must include every current item_id."
+    },
+    {
+      "name": "location_slug",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Required theme location slug for operation=assign_location."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain text navigation summary with menu ids, immediate WordPress-global public impact for writes, the unchanged Page Builder live-artifact state, and NEXT STEP guidance. For wp_menu bindings, exact menus should be rendered with data-menu-id."
+  },
+  "auto_approve": false,
+  "group": "write",
+  "requires_read_before_write": true
+}

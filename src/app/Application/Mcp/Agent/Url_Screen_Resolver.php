@@ -108,6 +108,7 @@ class Url_Screen_Resolver {
 				return $this->resolve_edit_list( $query );
 
 			case 'edit-tags.php':
+			case 'term.php':
 				return $this->resolve_edit_tags( $query );
 
 			case 'admin.php':

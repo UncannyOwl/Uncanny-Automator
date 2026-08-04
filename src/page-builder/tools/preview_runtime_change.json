@@ -1,0 +1,76 @@
+{
+  "name": "preview_runtime_change",
+  "description": "Dry-run a runtime JavaScript source patch and return validation plus a JavaScript diff without saving. This is only for the custom JavaScript runtime lane, not section HTML or CSS. Read the current runtime first, then preview small repairs here before calling edit_runtime operation=source_patch.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/runtime/preview"
+  },
+  "parameters": [
+    {
+      "name": "scope",
+      "type": "string",
+      "enum": ["page", "global_part"],
+      "required": true,
+      "in": "body",
+      "description": "Runtime owner scope: page or global_part."
+    },
+    {
+      "name": "page_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Uncanny Page Builder page ID when scope=page."
+    },
+    {
+      "name": "global_part_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Reusable global part post ID when scope=global_part."
+    },
+    {
+      "name": "javascript_patches",
+      "type": "array",
+      "required": true,
+      "in": "body",
+      "description": "Ordered exact JavaScript substring patches copied from read_runtime. Use {search:\"exact current non-empty JavaScript substring\", replace:\"replacement JavaScript\"} to replace, {action:\"insert_after\", search:\"...\", content:\"...\"} or {action:\"insert_before\", search:\"...\", content:\"...\"} to insert, and {action:\"delete\", search:\"...\"} to delete. The search value must not be empty and must match exactly once.",
+      "items": {
+        "type": "object",
+        "required": ["search"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["replace", "insert_after", "insert_before", "delete"],
+            "description": "Patch action: replace, insert_after, insert_before, or delete. Defaults to replace."
+          },
+          "search": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exact current non-empty JavaScript substring copied from read_runtime. Must match exactly once."
+          },
+          "replace": {
+            "type": "string",
+            "description": "Replacement JavaScript for the matched search substring."
+          },
+          "content": {
+            "type": "string",
+            "description": "JavaScript to insert for insert_after or insert_before."
+          }
+        }
+      }
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain text dry-run result with validation status, applied patch counts, JAVASCRIPT DIFF, and NEXT STEP guidance for edit_runtime operation=source_patch."
+  },
+  "errors": {
+    "400": "Missing scope, owner id, or javascript_patches.",
+    "403": "Runtime lane disabled or unfiltered_html capability required.",
+    "404": "Runtime owner not found.",
+    "422": "Exact JavaScript patch failed.",
+    "413": "Patched JavaScript exceeds the runtime byte limit."
+  },
+  "auto_approve": true,
+  "group": "read"
+}

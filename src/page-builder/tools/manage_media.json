@@ -1,0 +1,73 @@
+{
+  "name": "manage_media",
+  "description": "Search, read, and upload WordPress media attachments through one consolidated facade. Use operation=search to find attachments by keyword or mime type, operation=read to inspect one attachment and its available sizes, and operation=upload to create a new attachment through the existing validated upload flow.",
+  "http": {
+    "method": "MIXED",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/media"
+  },
+  "parameters": [
+    {
+      "name": "operation",
+      "type": "string",
+      "enum": ["search", "read", "upload"],
+      "required": false,
+      "in": "query",
+      "description": "Optional media action. Omit operation or use search for discovery, then use read or upload as needed."
+    },
+    {
+      "name": "search",
+      "type": "string",
+      "required": false,
+      "in": "query",
+      "description": "Keyword search for operation=search."
+    },
+    {
+      "name": "mime_type",
+      "type": "string",
+      "required": false,
+      "in": "query",
+      "description": "Optional mime type filter for operation=search, for example image/jpeg."
+    },
+    {
+      "name": "attachment_id",
+      "type": "integer",
+      "required": false,
+      "in": "query",
+      "description": "Required attachment id for operation=read."
+    },
+    {
+      "name": "size",
+      "type": "string",
+      "required": false,
+      "in": "query",
+      "description": "Optional requested size for operation=search or read. Falls back to full."
+    },
+    {
+      "name": "image_data",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Required base64 image payload for operation=upload. Data URLs are accepted."
+    },
+    {
+      "name": "filename",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Optional upload filename for operation=upload."
+    },
+    {
+      "name": "alt",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Optional attachment alt text for operation=upload."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain text media results with attachment ids, metadata, available sizes, selected size URLs, or uploaded attachment details."
+  },
+  "auto_approve": false,
+  "group": "write"
+}

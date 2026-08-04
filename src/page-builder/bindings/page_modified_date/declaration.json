@@ -1,0 +1,18 @@
+{
+  "id": "page_modified_date",
+  "title": "Page Modified Date",
+  "summary": "Render the last modified date of the current page/post",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "post",
+    "text",
+    "blog",
+    "content"
+  ]
+}

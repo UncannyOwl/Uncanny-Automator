@@ -46,15 +46,35 @@ class Logger_Auto_Removal {
 	public function register_hooks() {
 
 		/**
-		 * @see \Uncanny_Automator\Automator_Recipe_Process_Complete
+		 * Fires once Stage 4 has written the final status onto the recipe log.
+		 *
+		 * This must not move earlier in the pipeline. log_remove() gates on the row
+		 * being in a removable status, and Stage 3's
+		 * `automator_recipe_process_complete_complete_actions_before_closures` runs
+		 * while the row is still NOT_COMPLETED, so the guard rejects every run.
+		 *
+		 * PHP_INT_MAX so the purge lands after every *synchronous* listener on this
+		 * hook. The furthest out is Automator_Cache_Handler::reset_recipes_after_completion
+		 * at 99999; the rest sit at the default 10.
+		 *
+		 * This deliberately makes no promise to Automator's own recipe-monitoring
+		 * triggers (uoa-recipecompleted and friends). Their declared `priority`
+		 * values are advisory metadata that never reach WordPress: Trigger_Engine
+		 * registers one shared listener per hook at priority 10, and Trigger_Queue
+		 * defers evaluation to wp_loaded/shutdown. They therefore read the log
+		 * tables after this purge no matter what priority is used here — inherent
+		 * to the feature, and the same before 7.3.
+		 *
+		 * @see \Uncanny_Automator\App\Recipe_Runner\Stages\Recipe_Complete_Stage::finalize_recipe
+		 * @see \Uncanny_Automator\App\Recipe_Runner\Stages\Recipe_Complete_Stage::recipe
 		 */
 		add_action(
-			'automator_recipe_process_complete_complete_actions_before_closures',
+			'automator_recipe_completed',
 			array(
 				$this,
 				'log_remove',
 			),
-			10,
+			PHP_INT_MAX,
 			4
 		);
 
@@ -67,7 +87,6 @@ class Logger_Auto_Removal {
 		 * Loops callback.
 		 */
 		add_action( 'automator_pro_loop_batch_completed', array( $this, 'log_loops_remove' ), 10, 3 );
-
 	}
 
 	/**
@@ -139,10 +158,9 @@ class Logger_Auto_Removal {
 
 		add_action( $identifier, array( $instance, 'log_loops_remove_handler' ) );
 
-		$count ++;
+		$count++;
 
 		return true;
-
 	}
 
 	/**
@@ -184,7 +202,6 @@ class Logger_Auto_Removal {
 		}
 
 		return false;
-
 	}
 
 	/**
@@ -231,6 +248,5 @@ class Logger_Auto_Removal {
 		}
 
 		return false;
-
 	}
 }

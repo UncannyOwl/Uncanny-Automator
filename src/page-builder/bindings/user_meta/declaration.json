@@ -1,0 +1,16 @@
+{
+  "id": "user_meta",
+  "title": "User Meta",
+  "summary": "Render a governed user meta field value",
+  "type": "self_rendering",
+  "static_safety": "request_sensitive",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-key": { "required": true },
+    "data-user-id": { "required": false, "default": "0", "cast": "int" }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["user", "meta", "custom-field", "membership", "text"]
+}

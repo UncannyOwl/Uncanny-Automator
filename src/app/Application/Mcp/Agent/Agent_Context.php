@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Application\Mcp\Agent;
 
+use Uncanny_Automator\App\Application\Mcp\Client_Page_Url_Sanitizer;
 use Uncanny_Automator\App\Bridge\Automator_Recipe_Object_Bridge;
 use Uncanny_Automator\App\Bridge\Recipe_Object_Bridge;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
@@ -201,9 +202,7 @@ class Agent_Context {
 
 		$taxonomy = sanitize_text_field( $screen->taxonomy );
 
-		// Check if editing a specific term.
-		// phpcs:ignore WordPress.Security.NonceVerification -- Reading only; no state change.
-		$tag_id = isset( $_GET['tag_ID'] ) ? absint( $_GET['tag_ID'] ) : 0;
+		$tag_id = $this->get_current_taxonomy_term_id();
 
 		$term = false;
 
@@ -222,6 +221,16 @@ class Agent_Context {
 			'taxonomy' => $taxonomy,
 			'term'     => $term,
 		);
+	}
+
+	/**
+	 * Get the current taxonomy term ID.
+	 *
+	 * @return int
+	 */
+	protected function get_current_taxonomy_term_id(): int {
+		// phpcs:ignore WordPress.Security.NonceVerification -- Reading only; no state change.
+		return isset( $_GET['tag_ID'] ) ? absint( $_GET['tag_ID'] ) : 0;
 	}
 
 	// ------------------------------------------------------------------
@@ -368,6 +377,6 @@ class Agent_Context {
 			return admin_url();
 		}
 
-		return home_url( $request_uri );
+		return Client_Page_Url_Sanitizer::sanitize( home_url( $request_uri ), admin_url() );
 	}
 }

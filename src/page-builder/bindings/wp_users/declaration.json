@@ -1,0 +1,39 @@
+{
+  "id": "wp_users",
+  "title": "WordPress Users",
+  "summary": "Render user cards with display name, avatar, bio, and profile URL",
+  "type": "card",
+  "static_safety": "public_request_safe",
+  "output_shape": "card",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpUsersCardRenderer",
+  "query_attributes": {
+    "data-role": {
+      "required": false,
+      "default": ""
+    },
+    "data-count": {
+      "required": false,
+      "default": "6",
+      "cast": "int"
+    },
+    "data-orderby": {
+      "required": false,
+      "default": "display_name",
+      "allowed_values": ["display_name", "user_nicename", "user_url", "user_registered", "ID", "include"]
+    }
+  },
+  "bind_keys": [
+    "display_name",
+    "avatar",
+    "bio",
+    "profile_url"
+  ],
+  "meta_bindings": true,
+  "tags": [
+    "user",
+    "loop",
+    "card",
+    "membership",
+    "list"
+  ]
+}

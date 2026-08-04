@@ -1,0 +1,33 @@
+{
+  "name": "read_page_context",
+  "description": "Read the page context as plain text for planning. Returns section IDs, names, positions, categories, optional active global parts, and recommended next steps. Use this first.",
+  "http": {
+    "method": "GET",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/page/{page_id}/context"
+  },
+  "parameters": [
+    {
+      "name": "page_id",
+      "type": "integer",
+      "required": false,
+      "in": "path",
+      "description": "Uncanny Page Builder canvas page ID. Pass this when the user provides a canvas_id or a page_id known to be an Uncanny Page Builder canvas. For ordinary WordPress page URLs or names, resolve the target first; do not assume any page_id is editable. Omit to use the current page when a canvas is active.",
+      "inject_from": "current_page_id"
+    },
+    {
+      "name": "include_global_parts",
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "in": "query",
+      "maps_to": "include=global_parts",
+      "description": "Set true to include the page-resolved active header/footer slots."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain-text page context with the unpublished working PAGE_TITLE and PAGE_SLUG, DRAFT_URL_PREVIEW plus DRAFT_URL_IS_LIVE=no, PAGE_MODE (render ownership: uncanny_native = Uncanny Page Builder owns the full page shell and renders only the global header/footer parts that exist; theme_composition = the theme owns the wrapper, header, and footer; none = standalone Uncanny canvas with no header or footer until a mode is chosen), optional page-resolved global part slots (honoring page mode and per-page overrides; non-native modes list none), and NEXT STEP guidance."
+  },
+  "auto_approve": true,
+  "group": "read"
+}

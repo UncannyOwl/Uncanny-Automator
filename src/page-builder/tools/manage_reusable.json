@@ -1,0 +1,63 @@
+{
+  "name": "manage_reusable",
+  "description": "Manage reusable/global-part lifecycle operations through one facade. List reusables, create a blank reusable, convert an existing page section into a reusable, update reusable properties, or delete a reusable. Mutations change shared working source only; they never update a live page, and a human must Publish or Update live in the Manual editor. Reusable types are header, footer, and section.",
+  "http": {
+    "method": "POST",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/reusable"
+  },
+  "parameters": [
+    {
+      "name": "operation",
+      "type": "string",
+      "enum": ["list", "create", "convert", "update", "delete"],
+      "required": true,
+      "in": "body",
+      "description": "Reusable lifecycle operation. Use list, create, convert, update, or delete."
+    },
+    {
+      "name": "reusable_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Existing reusable/global-part post ID for update or delete. Omit to use the reusable currently open in the Manual editor.",
+      "inject_from": "current_page_id"
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "required": false,
+      "in": "body",
+      "description": "Reusable title. Blank falls back to an Untitled reusable title, or the source section name during convert."
+    },
+    {
+      "name": "reusable_type",
+      "type": "string",
+      "enum": ["header", "footer", "section"],
+      "required": false,
+      "in": "body",
+      "description": "Reusable type filter for list, or reusable type for create, convert, or update. Use header, footer, or section. Defaults to section when omitted for create or convert."
+    },
+    {
+      "name": "section_id",
+      "type": "integer",
+      "required": false,
+      "in": "body",
+      "description": "Existing section ID for operation=convert."
+    },
+    {
+      "name": "delete_mode",
+      "type": "string",
+      "enum": ["trash", "delete"],
+      "required": false,
+      "default": "trash",
+      "in": "body",
+      "description": "Delete behavior for operation=delete. Use trash or delete."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain-text reusable result with COUNT for list responses, per-item REUSABLE_ID, TITLE, REUSABLE_TYPE, STATUS, EDITOR_URL (the Manual editor URL), optional SOURCE_SECTION_ID, and NEXT STEP guidance."
+  },
+  "auto_approve": false,
+  "group": "write"
+}

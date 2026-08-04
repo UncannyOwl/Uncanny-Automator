@@ -1,0 +1,29 @@
+{
+  "id": "wp_archives_list",
+  "title": "WordPress Archives List",
+  "summary": "Render monthly or yearly archive links",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "html",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {
+    "data-type": {
+      "required": false,
+      "default": "monthly"
+    },
+    "data-count": {
+      "required": false,
+      "default": "12",
+      "cast": "int"
+    }
+  },
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "content",
+    "list",
+    "archive",
+    "sidebar",
+    "widget"
+  ]
+}

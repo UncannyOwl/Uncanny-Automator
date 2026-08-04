@@ -1,0 +1,18 @@
+{
+  "id": "lost_password_url",
+  "title": "Lost Password URL",
+  "summary": "Render the WordPress lost password page URL",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": [
+    "auth",
+    "url",
+    "membership",
+    "form"
+  ]
+}

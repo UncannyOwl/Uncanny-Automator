@@ -1,0 +1,13 @@
+{
+  "id": "post_comment_count",
+  "title": "Post Comment Count",
+  "summary": "Comment count for the current post",
+  "type": "self_rendering",
+  "static_safety": "public_request_safe",
+  "output_shape": "text",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["post", "comment", "counter", "social", "blog"]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "post_prev_link",
+  "title": "Previous Post Link",
+  "summary": "URL to the previous post in chronological order",
+  "type": "self_rendering",
+  "static_safety": "static_safe",
+  "output_shape": "url",
+  "renderer_class": "UncannyPageBuilder\\Infrastructure\\Rendering\\WpSingleValueRenderer",
+  "query_attributes": {},
+  "bind_keys": [],
+  "meta_bindings": false,
+  "tags": ["post", "navigation", "url", "blog"]
+}

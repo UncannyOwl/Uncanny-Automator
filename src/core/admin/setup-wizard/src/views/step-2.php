@@ -52,7 +52,7 @@
 				</uo-button>
 
 				<uo-button
-					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
+					href="<?php echo esc_url( add_query_arg( 'automator_reporting', 'true', $this->get_dashboard_uri( 3 ) ) ); ?>"
 					style="margin-left: 10px;"
 					>
 					<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>
@@ -115,7 +115,7 @@
 				</uo-button>
 
 				<uo-button
-					href="<?php echo esc_url( $this->get_dashboard_uri( 3 ) ); ?>"
+					href="<?php echo esc_url( add_query_arg( 'automator_reporting', 'true', $this->get_dashboard_uri( 3 ) ) ); ?>"
 					style="margin-left: 10px;"
 					>
 					<?php esc_html_e( 'Count me in!', 'uncanny-automator' ); ?>

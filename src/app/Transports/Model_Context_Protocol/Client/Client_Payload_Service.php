@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Client;
 
+use Uncanny_Automator\App\Application\Mcp\Client_Page_Url_Sanitizer;
+use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
 use WP_Error;
 
@@ -151,6 +153,26 @@ class Client_Payload_Service {
 			$payload[ $key ] = $value;
 		}
 
+		$payload             = (array) Dispatcher::filter( 'automator_mcp_payload_data', $payload, $overrides );
+		$filtered_page_url   = $payload['page_url'] ?? '';
+		$payload['page_url'] = is_string( $filtered_page_url ) ? $this->sanitize_page_url( $filtered_page_url ) : '';
+
+		/*
+		 * WordPress user context is a reserved preference namespace. Reapply it
+		 * after extension filters so a payload customization cannot accidentally
+		 * make one user's conversation preference look like another user's.
+		 */
+		$user_id = absint( get_current_user_id() );
+		if ( $user_id > 0 ) {
+			$payload['wordpress_user_context'] = array(
+				'version' => '1',
+				'blog_id' => absint( get_current_blog_id() ),
+				'user_id' => $user_id,
+			);
+		} else {
+			unset( $payload['wordpress_user_context'] );
+		}
+
 		return $payload;
 	}
 
@@ -283,10 +305,20 @@ class Client_Payload_Service {
 	 */
 	private function resolve_page_url( array $overrides ): string {
 		if ( isset( $overrides['page_url'] ) && is_string( $overrides['page_url'] ) ) {
-			return esc_url_raw( sanitize_text_field( $overrides['page_url'] ) );
+			return $this->sanitize_page_url( $overrides['page_url'] );
 		}
 
-		return esc_url_raw( $this->context->get_request_uri() );
+		return $this->sanitize_page_url( $this->context->get_request_uri() );
+	}
+
+	/**
+	 * Sanitize a page URL for the MCP service.
+	 *
+	 * @param string $page_url Page URL.
+	 * @return string
+	 */
+	private function sanitize_page_url( string $page_url ): string {
+		return esc_url_raw( Client_Page_Url_Sanitizer::sanitize( $page_url, admin_url() ) );
 	}
 
 	/**

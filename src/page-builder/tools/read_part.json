@@ -1,0 +1,61 @@
+{
+  "name": "read_part",
+  "description": "Read a section or global part with requested details. Supports manifest, source, content targets, design targets, and bindings. Fully projected dynamic regions appear as masks like <!-- upb:bindings:dynamic_data:site_logo -->; treat them as atomic — quote them verbatim in patches, delete the whole mask to remove the binding. Other dynamic regions (elements with data-ai-dynamic) appear as markup but are SYSTEM-CONTROLLED: the rendered output is projected by Uncanny Page Builder. You may edit the region element, its attributes, and card templates per the binding guide, but never author final content inside a projected region. For wp_menu, preserve data-menu-id when present; it binds to an exact WordPress menu and is more stable than a theme location.",
+  "http": {
+    "method": "GET",
+    "path": "/wp-json/uncanny-page-builder/v1/agent/part"
+  },
+  "parameters": [
+    {
+      "name": "kind",
+      "type": "string",
+      "enum": ["section", "global_part"],
+      "required": true,
+      "in": "query",
+      "description": "Part kind: section or global_part."
+    },
+    {
+      "name": "section_id",
+      "type": "integer",
+      "required": false,
+      "in": "query",
+      "description": "Existing section ID when kind=section."
+    },
+    {
+      "name": "part_type",
+      "type": "string",
+      "enum": ["header", "footer"],
+      "required": false,
+      "in": "query",
+      "description": "Assigned site default global part type when kind=global_part. Use header or footer. Omit this and use global_part_id for reusable sections."
+    },
+    {
+      "name": "global_part_id",
+      "type": "integer",
+      "required": false,
+      "in": "query",
+      "description": "Concrete global part post ID when kind=global_part. Prefer this on a reusable canvas, including reusable sections."
+    },
+    {
+      "name": "page_id",
+      "type": "integer",
+      "required": false,
+      "in": "query",
+      "description": "Uncanny Page Builder canvas page ID. Pass this when the user provides a canvas_id or a page_id known to be an Uncanny Page Builder canvas. For ordinary WordPress page URLs or names, resolve the target first; do not assume any page_id is editable. Omit to use the current page where supported."
+    },
+    {
+      "name": "include",
+      "type": "string",
+      "required": false,
+      "default": "manifest",
+      "in": "query",
+      "description": "Comma list of requested details: manifest, source, content_targets, design_targets, bindings."
+    }
+  ],
+  "output": {
+    "content_type": "text/plain",
+    "description": "Plain-text part read with KIND, requested details, and NEXT STEP guidance."
+  },
+  "auto_approve": true,
+  "group": "read"
+}
