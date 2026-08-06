@@ -2,6 +2,10 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Transient\Application\Delete_Core_Transients;
+use Uncanny_Automator\App\Transient\Domain\Core_Transient_Keys;
+use Uncanny_Automator\App\Transient\Infrastructure\WP_Transient_Adapter;
+
 /**
  * Class Automator_Cache_Handler
  *
@@ -47,9 +51,21 @@ class Automator_Cache_Handler {
 	private $cache_enabled = null;
 
 	/**
+	 * Automator Free core transient cleanup use case.
+	 *
+	 * @var Delete_Core_Transients
+	 */
+	private $delete_core_transients;
+
+	/**
 	 * Cache_Handler constructor.
 	 */
 	public function __construct() {
+		// Load the cleanup classes before a plugin update can replace their files.
+		$this->delete_core_transients = new Delete_Core_Transients(
+			new WP_Transient_Adapter(),
+			Core_Transient_Keys::get_all()
+		);
 
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action(
@@ -81,7 +97,7 @@ class Automator_Cache_Handler {
 			'deactivated_plugin',
 			array(
 				$this,
-				'reset_integrations_directory',
+				'plugin_deactivated',
 			),
 			99999,
 			2
@@ -93,7 +109,7 @@ class Automator_Cache_Handler {
 				'upgrader_process_completed',
 			),
 			999,
-			0
+			2
 		);
 
 		// Append the cache-flush sub-item to the Automator admin-bar menu owned by Automator_WP_Admin_Bar.
@@ -286,6 +302,22 @@ class Automator_Cache_Handler {
 		$this->remove( 'automator_get_all_integrations' );
 		$this->remove( 'automator_actionified_triggers' );
 		do_action( 'automator_cache_reset_integrations_directory', $plugin, $network_wide );
+	}
+
+	/**
+	 * Reset integration caches after plugin deactivation.
+	 *
+	 * @param string $plugin       The deactivated plugin file.
+	 * @param bool   $network_wide Whether WordPress deactivated the plugin for the network.
+	 *
+	 * @return void
+	 */
+	public function plugin_deactivated( $plugin, $network_wide ) {
+		$this->reset_integrations_directory( $plugin, $network_wide );
+
+		if ( $this->is_automator_free_plugin( $plugin ) ) {
+			$this->delete_core_automator_transients();
+		}
 	}
 
 	/**
@@ -491,9 +523,81 @@ class Automator_Cache_Handler {
 
 	/**
 	 */
-	public function upgrader_process_completed() {
+	public function upgrader_process_completed( $upgrader = null, $options = array() ) {
 		$this->reset_integrations_directory( null, null );
+
+		foreach ( $this->resolve_updated_plugins( $upgrader, $options ) as $plugin ) {
+			if ( $this->is_automator_free_plugin( $plugin ) ) {
+				$this->delete_core_automator_transients();
+				break;
+			}
+		}
+
 		do_action( 'automator_cache_upgrader_process_completed' );
+	}
+
+	/**
+	 * Get plugin files from a WordPress upgrader event.
+	 *
+	 * WordPress provides different data for bulk updates, single updates, and
+	 * uploaded ZIP replacements. Normalize those forms into one plugin list.
+	 *
+	 * @param mixed $upgrader The WordPress upgrader instance.
+	 * @param array $options  The upgrader hook data.
+	 *
+	 * @return string[]
+	 */
+	private function resolve_updated_plugins( $upgrader, $options ) {
+		if ( 'plugin' !== ( $options['type'] ?? '' ) ) {
+			return array();
+		}
+
+		if ( ! in_array( $options['action'] ?? '', array( 'install', 'update' ), true ) ) {
+			return array();
+		}
+
+		if ( ! empty( $options['plugins'] ) && is_array( $options['plugins'] ) ) {
+			return array_values( $options['plugins'] );
+		}
+
+		if ( ! empty( $options['plugin'] ) && is_string( $options['plugin'] ) ) {
+			return array( $options['plugin'] );
+		}
+
+		if ( is_object( $upgrader ) && method_exists( $upgrader, 'plugin_info' ) ) {
+			$plugin = $upgrader->plugin_info();
+
+			if ( is_string( $plugin ) && '' !== $plugin ) {
+				return array( $plugin );
+			}
+		}
+
+		return array();
+	}
+
+	/**
+	 * Determine whether a plugin is Automator Free.
+	 *
+	 * @param mixed $plugin The plugin file.
+	 *
+	 * @return bool
+	 */
+	private function is_automator_free_plugin( $plugin ) {
+		if ( ! is_string( $plugin ) ) {
+			return false;
+		}
+
+		return plugin_basename( AUTOMATOR_BASE_FILE ) === str_replace( '\\', '/', $plugin );
+	}
+
+	/**
+	 * Delete Automator Free core transients.
+	 *
+	 * @return void
+	 */
+	private function delete_core_automator_transients() {
+		// TODO: Add deferred network-wide cleanup for multisite lifecycle events.
+		$this->delete_core_transients->execute();
 	}
 
 	/**

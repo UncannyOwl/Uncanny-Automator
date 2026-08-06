@@ -38,6 +38,13 @@ final class Authenticated_Token_Context {
 	const SCOPE_TOOLS = 'mcp:tools';
 
 	/**
+	 * Uncanny Agent site-key binding proof.
+	 *
+	 * @var string
+	 */
+	const SCOPE_KEY_BINDING = 'uncanny_agent:key_binding';
+
+	/**
 	 * Legacy umbrella scope retained for already-issued integrations.
 	 *
 	 * @var string

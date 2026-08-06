@@ -413,8 +413,8 @@ class Rag_Search_Service {
 	 * binding or one-time credentials if these endpoints later diverge in
 	 * privilege, data sensitivity, mutation, or material processing cost.
 	 *
-	 * Public-key lifecycle changes must retain compatibility for deployed
-	 * clients. Request freshness and identity remain authoritative downstream.
+	 * The envelope version and Agent key version identify the required decryption contract.
+	 * Request freshness and identity remain authoritative downstream.
 	 *
 	 * @param  string $body Exact JSON body sent to the RAG endpoint.
 	 * @return string|\WP_Error Encrypted credential or error.

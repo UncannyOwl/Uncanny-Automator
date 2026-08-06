@@ -563,7 +563,11 @@ class Api_Server {
 
 			$response = self::api_call( $params );
 
-			$license = $response['data'];
+			$license = $response['data'] ?? null;
+
+			if ( ! is_array( $license ) ) {
+				throw new Exception( 'Invalid license response.' );
+			}
 
 			self::$license = $license;
 
@@ -581,7 +585,7 @@ class Api_Server {
 
 			$error_message = 'Unable to fetch the license: ' . $e->getMessage();
 
-			set_transient( self::TRANSIENT_LICENSE_CHECK_FAILED, $error_message );
+			set_transient( self::TRANSIENT_LICENSE_CHECK_FAILED, $error_message, HOUR_IN_SECONDS );
 
 			throw new Exception( esc_html( $error_message ) );
 

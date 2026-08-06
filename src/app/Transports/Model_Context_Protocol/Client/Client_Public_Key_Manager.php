@@ -103,7 +103,7 @@ class Client_Public_Key_Manager {
 	public function ensure_public_key_ready( bool $force_refresh = false ): bool {
 		$record = $this->resolve_record( $force_refresh );
 
-		if ( $record->is_empty() ) {
+		if ( $record->is_empty() || '' === $record->get_version() ) {
 			$this->log( 'Public key unavailable; aborting MCP chat initialization.' );
 			return false;
 		}
@@ -136,6 +136,16 @@ class Client_Public_Key_Manager {
 		$pem = $this->convert_base64_to_pem( $base64 );
 
 		return Dispatcher::filter( 'automator_mcp_public_key', $pem, $version, $record->to_array() );
+	}
+
+	/**
+	 * Get the active public-key version.
+	 *
+	 * @param bool $force_refresh Force refresh.
+	 * @return string
+	 */
+	public function get_public_key_version( bool $force_refresh = false ): string {
+		return $this->resolve_record( $force_refresh )->get_version();
 	}
 
 	/**

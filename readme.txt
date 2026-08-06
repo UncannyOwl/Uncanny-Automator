@@ -2,9 +2,9 @@
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
-Tested up to: 7.0.2
+Tested up to: 7.0.3
 Requires PHP: 7.4
-Stable tag: 7.5.0
+Stable tag: 7.5.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -426,34 +426,18 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 7.5.0 [2026-08-04] =
-
-**New Feature:**
-
-* Uncanny Page Builder - Create and refine beautiful pages through conversation with Uncanny Agent (requires an Uncanny Automator Pro AI + Automation plan) #8330
-
-**New Integration:**
-
-* [Site Kit by Google](https://automatorplugin.com/integration/site-kit-by-google/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7528
-
-**New Triggers:**
-
-* Site Kit by Google - A module is activated #7526
-* Site Kit by Google - A module is deactivated #7525
-
-**New Actions:**
-
-* Site Kit by Google - Activate a module #7524
-* Site Kit by Google - Deactivate a module #7523
+= 7.5.0.1 [2026-08-06] =
 
 **Fixed:**
 
-* Closures - Restored the "Redirect when all triggers are completed" checkbox for all recipes. #8285
-* Forminator - Fixed an issue where Time field tokens rendered as "10:30 am" instead of "10 - 30 am". #8284
+* Uncanny Agent - Fixed an issue where the Agent could disappear from the WordPress admin until the Automator settings page was visited. #8341
+* Uncanny Agent - Improved recovery when WordPress security keys change to prevent the Agent from becoming unavailable. #8341
 
 **Under the hood:**
 
-* Core - Fixed an issue where the "Immediately delete log entries when recipes are completed" setting never purged logs. #8294
+* Core - Improved transient cleanup to prevent stale cached data after plugin deactivation. #8287
+* Uncanny Agent - Added Site Health diagnostics to help administrators identify Agent configuration issues. #8341
+* Uncanny Agent - Improved site identity, verification, and protection for information exchanged with the Agent. #8341
 
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)

@@ -10,6 +10,8 @@
 
 namespace Uncanny_Automator\App\Plan\Services\License;
 
+use Uncanny_Automator\App\Application\Mcp\Mcp_License_Provider_Interface;
+use Uncanny_Automator\App\Infrastructure\License\License_Manager;
 use Uncanny_Automator\Api_Server;
 use Exception;
 
@@ -20,7 +22,7 @@ use Exception;
  *
  * @since 7.0.0
  */
-class License_Service {
+class License_Service implements Mcp_License_Provider_Interface {
 
 	/**
 	 * License data cache.
@@ -35,6 +37,22 @@ class License_Service {
 	 * @var string|false|null Null if not yet fetched, 'pro'/'free'/false after fetch.
 	 */
 	private $license_type = null;
+
+	/**
+	 * Whether this service can request license data when the cache is empty.
+	 *
+	 * @var bool
+	 */
+	private $allow_remote_request;
+
+	/**
+	 * Create the license service.
+	 *
+	 * @param bool $allow_remote_request Whether this service can request license data when the cache is empty.
+	 */
+	public function __construct( bool $allow_remote_request = false ) {
+		$this->allow_remote_request = $allow_remote_request;
+	}
 
 	/**
 	 * Check if user has credits.
@@ -76,14 +94,45 @@ class License_Service {
 	 * @return array|null License data or null if no license.
 	 */
 	public function get_license(): ?array {
-		if ( false === $this->license ) {
-			$manager = $this->get_license_manager();
-			if ( null !== $manager ) {
-				$this->license = $manager->get_license_data();
-			} else {
-				$this->license = $this->fetch_license();
-			}
+		return $this->get_license_data();
+	}
+
+	/**
+	 * Get license data.
+	 *
+	 * When enabled, use the legacy service request if the infrastructure
+	 * cache reader cannot refresh an empty cache.
+	 *
+	 * @param bool $force_refresh Whether to bypass cached license data.
+	 *
+	 * @return array|null License data or null if no license is available.
+	 */
+	public function get_license_data( bool $force_refresh = false ): ?array {
+		if ( false !== $this->license && ! $force_refresh ) {
+			return $this->license;
 		}
+
+		$manager = $this->get_license_manager();
+
+		if ( $force_refresh && $this->allow_remote_request ) {
+			if ( null !== $manager ) {
+				$manager->reset_cache();
+			}
+
+			delete_transient( License_Manager::TRANSIENT_LICENSE );
+			delete_transient( Api_Server::TRANSIENT_LICENSE_CHECK_FAILED );
+
+			$this->license = $this->fetch_license();
+
+			return $this->license;
+		}
+
+		$this->license = null !== $manager ? $manager->get_license_data( $force_refresh ) : null;
+
+		if ( null === $this->license && $this->allow_remote_request ) {
+			$this->license = $this->fetch_license();
+		}
+
 		return $this->license;
 	}
 
@@ -93,13 +142,10 @@ class License_Service {
 	 * @return string License status or empty string if no license.
 	 */
 	public function get_license_status(): string {
-		$manager = $this->get_license_manager();
-		if ( null !== $manager ) {
-			$license = $manager->get_license_data();
-			return $license['license'] ?? '';
-		}
-		$license = $this->get_license();
-		return $license['license'] ?? '';
+		$license = $this->get_license_data();
+		$status  = is_array( $license ) ? ( $license['license'] ?? '' ) : '';
+
+		return is_scalar( $status ) ? (string) $status : '';
 	}
 
 	/**
@@ -143,8 +189,8 @@ class License_Service {
 	private function fetch_license(): ?array {
 		try {
 			$license = Api_Server::get_license();
-			// Convert false to null to match return type.
-			return false === $license ? null : $license;
+
+			return is_array( $license ) ? $license : null;
 		} catch ( Exception $e ) {
 			return null;
 		}
@@ -170,6 +216,15 @@ class License_Service {
 			return $manager->get_key();
 		}
 		return (string) Api_Server::get_license_key();
+	}
+
+	/**
+	 * Get the license key for MCP.
+	 *
+	 * @return string License key or empty string.
+	 */
+	public function get_key(): string {
+		return $this->get_license_key();
 	}
 
 	/**
