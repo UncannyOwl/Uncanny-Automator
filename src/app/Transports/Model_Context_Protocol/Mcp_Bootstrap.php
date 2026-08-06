@@ -3,6 +3,9 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol;
 
 use Uncanny_Automator\App\Application\Mcp\Mcp_Client;
+use Uncanny_Automator\App\Plan\Services\License\License_Service;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication\Key_Binding_Challenge_Controller;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication\Site_Signing_Key_Monitor;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Rest_Bearer_Authenticator;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Rest_Bearer_Route_Authorizer;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Internal_Token_Configuration_Monitor;
@@ -71,6 +74,20 @@ class Mcp_Bootstrap {
 	private $internal_token_configuration_monitor;
 
 	/**
+	 * WordPress site identity diagnostics.
+	 *
+	 * @var Site_Signing_Key_Monitor
+	 */
+	private $site_signing_key_monitor;
+
+	/**
+	 * WordPress site key-binding proof route.
+	 *
+	 * @var Key_Binding_Challenge_Controller
+	 */
+	private $key_binding_challenge_controller;
+
+	/**
 	 * Initialize MCP transport layer.
 	 *
 	 * @since 7.0.0
@@ -86,10 +103,12 @@ class Mcp_Bootstrap {
 		$this->rest_bearer_authenticator            = new Rest_Bearer_Authenticator();
 		$this->rest_bearer_route_authorizer         = new Rest_Bearer_Route_Authorizer();
 		$this->internal_token_configuration_monitor = new Internal_Token_Configuration_Monitor();
+		$this->site_signing_key_monitor             = new Site_Signing_Key_Monitor();
+		$this->key_binding_challenge_controller     = new Key_Binding_Challenge_Controller();
 
-		// Initialize the chat client with the infrastructure license reader at the edge.
+		// Initialize the chat client with the license service at the edge.
 		$this->client = new Mcp_Client(
-			\Uncanny_Automator\App\Infrastructure\automator_license_manager(),
+			new License_Service( true ),
 			null,
 			null,
 			null,
@@ -104,6 +123,8 @@ class Mcp_Bootstrap {
 		$this->rest_bearer_route_authorizer->init();
 		// Surface missing strong key material before Agent payload generation.
 		$this->internal_token_configuration_monitor->init();
+		// Surface site identity failures when payload rendering fails closed.
+		$this->site_signing_key_monitor->init();
 
 		// Register REST routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
@@ -119,5 +140,6 @@ class Mcp_Bootstrap {
 	public function register_rest_routes() {
 		$this->rest_controller->register_routes();
 		$this->dropdown_controller->register_routes();
+		$this->key_binding_challenge_controller->register_routes();
 	}
 }

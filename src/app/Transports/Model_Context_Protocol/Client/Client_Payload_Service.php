@@ -14,12 +14,41 @@ namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Client;
 use Uncanny_Automator\App\Application\Mcp\Client_Page_Url_Sanitizer;
 use Uncanny_Automator\App\Events\Dispatcher;
 use Uncanny_Automator\App\Integration_Catalog\Services\Integration_Registry_Service;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication\Site_Signing_Key_Manager;
 use WP_Error;
 
 /**
  * Class Client_Payload_Service
  */
 class Client_Payload_Service {
+
+	/**
+	 * Signed credential-envelope version.
+	 *
+	 * @var int
+	 */
+	private const ENVELOPE_VERSION = 2;
+
+	/**
+	 * Domain separator for credential-envelope signatures.
+	 *
+	 * @var string
+	 */
+	private const SIGNATURE_PREFIX = 'uncanny-agent-credential-envelope-v2';
+
+	/**
+	 * Fields covered by the credential-envelope signature.
+	 *
+	 * @var string[]
+	 */
+	private const SIGNED_FIELDS = array(
+		'version',
+		'agent_key_version',
+		'wordpress_public_key',
+		'wordpress_key_fingerprint',
+		'encrypted_key',
+		'encrypted_payload',
+	);
 
 	/**
 	 * Token service dependency.
@@ -36,11 +65,25 @@ class Client_Payload_Service {
 	private Client_Public_Key_Manager $public_key_manager;
 
 	/**
+	 * WordPress site signing-key manager.
+	 *
+	 * @var Site_Signing_Key_Manager
+	 */
+	private Site_Signing_Key_Manager $site_signing_key_manager;
+
+	/**
 	 * Context provider for payload values.
 	 *
 	 * @var Client_Payload_Context
 	 */
 	private Client_Payload_Context $context;
+
+	/**
+	 * Last payload error.
+	 *
+	 * @var WP_Error|null
+	 */
+	private ?WP_Error $last_error = null;
 
 	/**
 	 * Create a new builder instance.
@@ -54,18 +97,21 @@ class Client_Payload_Service {
 	/**
 	 * Constructor.
 	 *
-	 * @param Client_Token_Service|null      $token_service Optional token service.
-	 * @param Client_Public_Key_Manager|null $public_key_manager Optional public key manager.
-	 * @param Client_Payload_Context|null    $context Optional context overrides.
+	 * @param Client_Token_Service|null       $token_service Optional token service.
+	 * @param Client_Public_Key_Manager|null  $public_key_manager Optional public key manager.
+	 * @param Client_Payload_Context|null     $context Optional context overrides.
+	 * @param Site_Signing_Key_Manager|null   $site_signing_key_manager Optional site signing-key manager.
 	 */
 	public function __construct(
 		?Client_Token_Service $token_service = null,
 		?Client_Public_Key_Manager $public_key_manager = null,
-		?Client_Payload_Context $context = null
+		?Client_Payload_Context $context = null,
+		?Site_Signing_Key_Manager $site_signing_key_manager = null
 	) {
-		$this->token_service      = $token_service ? $token_service : new Client_Token_Service();
-		$this->public_key_manager = $public_key_manager ? $public_key_manager : new Client_Public_Key_Manager();
-		$this->context            = $context ? $context : new Client_Payload_Context();
+		$this->token_service            = $token_service ? $token_service : new Client_Token_Service();
+		$this->public_key_manager       = $public_key_manager ? $public_key_manager : new Client_Public_Key_Manager();
+		$this->context                  = $context ? $context : new Client_Payload_Context();
+		$this->site_signing_key_manager = $site_signing_key_manager ? $site_signing_key_manager : new Site_Signing_Key_Manager();
 	}
 
 	/**
@@ -75,22 +121,34 @@ class Client_Payload_Service {
 	 * @return string Empty string on failure.
 	 */
 	public function generate_encrypted_payload( array $overrides = array() ): string {
+		$this->last_error = null;
+
 		$bearer_token = $this->token_service->get_bearer_token();
 		if ( '' === $bearer_token ) {
 			return '';
 		}
 
-		$payload_data = $this->build_payload_data( $overrides, $bearer_token );
+		$site_identity = $this->site_signing_key_manager->get_public_key_record();
+		if ( $site_identity instanceof WP_Error ) {
+			$this->last_error = $site_identity;
+			return '';
+		}
 
-		return $this->generate_encrypted_package( $payload_data );
+		$payload_data = $this->build_payload_data_with_site_identity( $overrides, $bearer_token, $site_identity );
+
+		return $this->generate_encrypted_package_with_site_identity( $payload_data, $site_identity );
 	}
 
 	/**
-	 * Return the last token error when payload generation stopped early.
+	 * Return the last payload error.
 	 *
-	 * @return WP_Error|null Token error or null.
+	 * @return WP_Error|null Payload error or null.
 	 */
 	public function get_last_error(): ?WP_Error {
+		if ( $this->last_error instanceof WP_Error ) {
+			return $this->last_error;
+		}
+
 		return $this->token_service->get_last_error();
 	}
 
@@ -101,6 +159,29 @@ class Client_Payload_Service {
 	 * @return string Empty string on failure.
 	 */
 	public function generate_encrypted_package( array $payload_data ): string {
+		$this->last_error = null;
+
+		$site_identity = $this->site_signing_key_manager->get_public_key_record();
+		if ( $site_identity instanceof WP_Error ) {
+			$this->last_error = $site_identity;
+			return '';
+		}
+
+		return $this->generate_encrypted_package_with_site_identity( $payload_data, $site_identity );
+	}
+
+	/**
+	 * Generate a package with one authoritative WordPress site identity.
+	 *
+	 * @param array<string,mixed>                  $payload_data  Payload data.
+	 * @param array{public_key:string,fingerprint:string} $site_identity Site identity.
+	 * @return string Empty string on failure.
+	 */
+	private function generate_encrypted_package_with_site_identity( array $payload_data, array $site_identity ): string {
+		// The inner and outer identity values must describe the same WordPress site key.
+		$payload_data['wordpress_public_key']      = $site_identity['public_key'];
+		$payload_data['wordpress_key_fingerprint'] = $site_identity['fingerprint'];
+
 		$payload_json = wp_json_encode( $payload_data );
 		if ( false === $payload_json ) {
 			return '';
@@ -112,7 +193,22 @@ class Client_Payload_Service {
 			return '';
 		}
 
-		return $this->encrypt_payload( $payload_json, $public_key );
+		$agent_key_version = $this->public_key_manager->get_public_key_version();
+		if ( '' === $agent_key_version ) {
+			$this->last_error = new WP_Error(
+				'automator_mcp_public_key_version_unavailable',
+				esc_html_x( 'Unable to load the required encryption key version.', 'MCP client validation error', 'uncanny-automator' ),
+				array( 'status' => 500 )
+			);
+			return '';
+		}
+
+		$encrypted = $this->encrypt_payload( $payload_json, $public_key );
+		if ( null === $encrypted ) {
+			return '';
+		}
+
+		return $this->create_encryption_package( $encrypted, $agent_key_version, $site_identity );
 	}
 
 	/**
@@ -120,9 +216,27 @@ class Client_Payload_Service {
 	 *
 	 * @param array<string,mixed> $overrides   Optional overrides.
 	 * @param string|null         $bearer_token Pre-resolved bearer token.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	public function build_payload_data( array $overrides = array(), ?string $bearer_token = null ) {
+		$site_identity = $this->site_signing_key_manager->get_public_key_record();
+		if ( $site_identity instanceof WP_Error ) {
+			return $site_identity;
+		}
+
+		return $this->build_payload_data_with_site_identity( $overrides, $bearer_token, $site_identity );
+	}
+
+	/**
+	 * Build payload data with one authoritative WordPress site identity.
+	 *
+	 * @param array<string,mixed>                         $overrides    Optional overrides.
+	 * @param string|null                                $bearer_token Pre-resolved bearer token.
+	 * @param array{public_key:string,fingerprint:string} $site_identity Site identity.
 	 * @return array<string,mixed>
 	 */
-	public function build_payload_data( array $overrides = array(), ?string $bearer_token = null ): array {
+	private function build_payload_data_with_site_identity( array $overrides, ?string $bearer_token, array $site_identity ): array {
+
 		$user         = $this->get_current_user();
 		$bearer_token = null === $bearer_token ? $this->token_service->get_bearer_token() : $bearer_token;
 
@@ -158,6 +272,13 @@ class Client_Payload_Service {
 		$payload['page_url'] = is_string( $filtered_page_url ) ? $this->sanitize_page_url( $filtered_page_url ) : '';
 
 		/*
+		 * WordPress site identity is reserved. Extensions cannot replace the key
+		 * that signs the live key-binding proof.
+		 */
+		$payload['wordpress_public_key']      = $site_identity['public_key'];
+		$payload['wordpress_key_fingerprint'] = $site_identity['fingerprint'];
+
+		/*
 		 * WordPress user context is a reserved preference namespace. Reapply it
 		 * after extension filters so a payload customization cannot accidentally
 		 * make one user's conversation preference look like another user's.
@@ -181,28 +302,31 @@ class Client_Payload_Service {
 	 *
 	 * @param string $payload_json JSON payload.
 	 * @param string $public_key Public key.
-	 * @return string Empty string on failure.
+	 * @return array{encrypted_key:string,encrypted_payload:string}|null Null on failure.
 	 */
-	private function encrypt_payload( string $payload_json, string $public_key ): string {
+	private function encrypt_payload( string $payload_json, string $public_key ): ?array {
 		$aes_key = $this->generate_aes_key();
 
 		if ( '' === $aes_key ) {
-			return '';
+			return null;
 		}
 
 		$encrypted_payload = $this->encrypt_with_aes( $payload_json, $aes_key );
 
 		if ( '' === $encrypted_payload ) {
-			return '';
+			return null;
 		}
 
 		$encrypted_key = $this->encrypt_aes_key_with_rsa( $aes_key, $public_key );
 
 		if ( '' === $encrypted_key ) {
-			return '';
+			return null;
 		}
 
-		return $this->create_encryption_package( $encrypted_key, $encrypted_payload );
+		return array(
+			'encrypted_key'     => $encrypted_key,
+			'encrypted_payload' => $encrypted_payload,
+		);
 	}
 
 	/**
@@ -282,19 +406,65 @@ class Client_Payload_Service {
 	/**
 	 * Create the final encryption package.
 	 *
-	 * @param string $encrypted_key Encrypted AES key.
-	 * @param string $encrypted_payload Encrypted payload.
+	 * @param array{encrypted_key:string,encrypted_payload:string} $encrypted Encrypted values.
+	 * @param string                                               $agent_key_version Agent key version.
+	 * @param array{public_key:string,fingerprint:string}          $site_identity Site identity.
 	 * @return string Empty string on failure.
 	 */
-	private function create_encryption_package( string $encrypted_key, string $encrypted_payload ): string {
+	private function create_encryption_package( array $encrypted, string $agent_key_version, array $site_identity ): string {
 		$package = array(
-			'encrypted_key'     => $encrypted_key,
-			'encrypted_payload' => $encrypted_payload,
+			'version'                       => self::ENVELOPE_VERSION,
+			'agent_key_version'             => $agent_key_version,
+			'wordpress_public_key'          => $site_identity['public_key'],
+			'wordpress_key_fingerprint'     => $site_identity['fingerprint'],
+			'encrypted_key'                 => $encrypted['encrypted_key'],
+			'encrypted_payload'             => $encrypted['encrypted_payload'],
 		);
+
+		// The second identity load detects a site-key change during package generation.
+		$signed = $this->site_signing_key_manager->sign_with_public_key_record( $this->build_canonical_envelope( $package ) );
+
+		if ( $signed instanceof WP_Error ) {
+			$this->last_error = $signed;
+			return '';
+		}
+
+		if (
+			! hash_equals( $site_identity['public_key'], $signed['public_key'] )
+			|| ! hash_equals( $site_identity['fingerprint'], $signed['fingerprint'] )
+		) {
+			$this->last_error = new WP_Error(
+				'automator_mcp_site_identity_changed',
+				esc_html_x( 'Uncanny Agent site identity changed during payload generation.', 'MCP site signing key error', 'uncanny-automator' ),
+				array( 'status' => 500 )
+			);
+			return '';
+		}
+
+		$package['signature'] = $signed['signature'];
 
 		$encoded = wp_json_encode( $package );
 
 		return false === $encoded ? '' : $encoded;
+	}
+
+	/**
+	 * Build the bytes covered by the credential-envelope signature.
+	 *
+	 * @param array<string,mixed> $package Credential envelope.
+	 * @return string
+	 */
+	private function build_canonical_envelope( array $package ): string {
+		$canonical = self::SIGNATURE_PREFIX;
+
+		// Length prefixes remove field-boundary ambiguity without depending on JSON member order.
+		// Use exact wire values. Identity fields use unpadded base64url. Encrypted fields keep padded standard base64.
+		foreach ( self::SIGNED_FIELDS as $name ) {
+			$value      = (string) $package[ $name ];
+			$canonical .= strlen( $name ) . ':' . $name . strlen( $value ) . ':' . $value;
+		}
+
+		return $canonical;
 	}
 
 	/**

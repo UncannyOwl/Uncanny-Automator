@@ -98,6 +98,7 @@ class Client_Token_Service {
 				Authenticated_Token_Context::SCOPE_READ,
 				Authenticated_Token_Context::SCOPE_WRITE,
 				Authenticated_Token_Context::SCOPE_TOOLS,
+				Authenticated_Token_Context::SCOPE_KEY_BINDING,
 			),
 			DAY_IN_SECONDS,
 			'MCP Chat Session'

@@ -1059,7 +1059,17 @@ class Mcp_Client {
 			$page_url = Client_Page_Url_Sanitizer::sanitize( $page_url, admin_url() );
 		}
 
-		if ( ! $this->public_key_manager->ensure_public_key_ready() ) {
+		$force_public_key_refresh = $request->get_param( 'force_public_key_refresh' );
+
+		if ( null !== $force_public_key_refresh && ! is_bool( $force_public_key_refresh ) ) {
+			return new WP_Error(
+				'invalid_force_public_key_refresh',
+				esc_html_x( 'The public key refresh flag must be a boolean.', 'MCP client validation error', 'uncanny-automator' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( ! $this->public_key_manager->ensure_public_key_ready( true === $force_public_key_refresh ) ) {
 			return new WP_Error(
 				'public_key_unavailable',
 				esc_html_x( 'Unable to load the required encryption key.', 'MCP client validation error', 'uncanny-automator' ),

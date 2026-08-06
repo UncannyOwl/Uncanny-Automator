@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol\Client;
 
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication\Site_Signing_Key_Manager;
+
 /**
  * Builder for Client_Payload_Service instances.
  */
@@ -20,6 +22,13 @@ class Client_Payload_Service_Builder {
 	 * @var Client_Public_Key_Manager|null
 	 */
 	private ?Client_Public_Key_Manager $public_key_manager = null;
+
+	/**
+	 * WordPress site signing-key manager to inject.
+	 *
+	 * @var Site_Signing_Key_Manager|null
+	 */
+	private ?Site_Signing_Key_Manager $site_signing_key_manager = null;
 
 	/**
 	 * Context override.
@@ -110,6 +119,17 @@ class Client_Payload_Service_Builder {
 	 */
 	public function with_public_key_manager( Client_Public_Key_Manager $manager ): self {
 		$this->public_key_manager = $manager;
+		return $this;
+	}
+
+	/**
+	 * Provide a WordPress site signing-key manager.
+	 *
+	 * @param Site_Signing_Key_Manager $manager Site signing-key manager.
+	 * @return self
+	 */
+	public function with_site_signing_key_manager( Site_Signing_Key_Manager $manager ): self {
+		$this->site_signing_key_manager = $manager;
 		return $this;
 	}
 
@@ -248,7 +268,8 @@ class Client_Payload_Service_Builder {
 		return new Client_Payload_Service(
 			$this->token_service ? $this->token_service : new Client_Token_Service(),
 			$this->public_key_manager ? $this->public_key_manager : new Client_Public_Key_Manager(),
-			$context
+			$context,
+			$this->site_signing_key_manager ? $this->site_signing_key_manager : new Site_Signing_Key_Manager()
 		);
 	}
 }
