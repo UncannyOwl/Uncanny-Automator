@@ -33,7 +33,7 @@ final class CanvasHijacker
             return $template;
         }
 
-        $postId = get_the_ID();
+        $postId = (int) get_the_ID();
 
         // Global parts: require edit capability (not publicly viewable).
         if (is_singular('upb_global_part')) {
@@ -41,9 +41,17 @@ final class CanvasHijacker
                 return $this->denyGlobalPartAccess($template);
             }
 
+            if ($postId <= 0) {
+                return $template;
+            }
+
             // Global parts are authenticated working documents. They do not
             // have immutable page publication pointers.
             return $this->returnWorkingCanvas($template, $postId);
+        }
+
+        if ($postId <= 0) {
+            return $template;
         }
 
         $publishedPage = $this->publicPageRenderPolicy->publishedPage($postId);

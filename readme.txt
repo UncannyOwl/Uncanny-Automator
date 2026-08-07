@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0.3
 Requires PHP: 7.4
-Stable tag: 7.5.0.1
+Stable tag: 7.5.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -426,18 +426,12 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 
 == Changelog ==
 
-= 7.5.0.1 [2026-08-06] =
+= 7.5.0.2 [2026-08-07] =
 
 **Fixed:**
 
-* Uncanny Agent - Fixed an issue where the Agent could disappear from the WordPress admin until the Automator settings page was visited. #8341
-* Uncanny Agent - Improved recovery when WordPress security keys change to prevent the Agent from becoming unavailable. #8341
-
-**Under the hood:**
-
-* Core - Improved transient cleanup to prevent stale cached data after plugin deactivation. #8287
-* Uncanny Agent - Added Site Health diagnostics to help administrators identify Agent configuration issues. #8341
-* Uncanny Agent - Improved site identity, verification, and protection for information exchanged with the Agent. #8341
+* Uncanny Agent - Page Builder - Fixed a fatal error on some sites when themes did not provide a current post ID for singular page requests. #8348
+* Uncanny Agent - Fixed a Sodium compatibility fatal error on hosts without the native Sodium extension. #8348
 
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)

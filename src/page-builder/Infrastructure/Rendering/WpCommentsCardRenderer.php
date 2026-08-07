@@ -25,6 +25,9 @@ final class WpCommentsCardRenderer implements SectionRendererInterface
         if ($postId <= 0) {
             $postId = (int) get_the_ID();
         }
+        if ($postId <= 0) {
+            return '<!-- No comments found -->';
+        }
         $count   = DynamicCardCount::resolve($args['count'] ?? null, 5);
         $orderby = in_array($args['orderby'] ?? 'comment_date_gmt', self::ALLOWED_ORDERBY, true)
             ? ($args['orderby'] ?? 'comment_date_gmt')

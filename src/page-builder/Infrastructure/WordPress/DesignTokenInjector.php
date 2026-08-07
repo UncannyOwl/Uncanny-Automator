@@ -43,7 +43,11 @@ final class DesignTokenInjector
             return;
         }
 
-        $postId = get_the_ID();
+        $postId = (int) get_the_ID();
+        if ($postId <= 0) {
+            return;
+        }
+
         $css = $this->workingCss->render($postId, $isGlobalPart);
 
         echo '<style id="uncanny-engine-bootstrap-theme">' . $css . "</style>\n";

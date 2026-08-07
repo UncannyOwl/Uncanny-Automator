@@ -528,9 +528,14 @@ class Site_Signing_Key_Storage {
 	 * @return void
 	 */
 	private function clear_private_key( string &$private_key ): void {
-		if ( function_exists( 'sodium_memzero' ) ) {
+		// sodium_compat cannot securely clear PHP memory without a native sodium extension.
+		$has_native_sodium = extension_loaded( 'sodium' ) || extension_loaded( 'libsodium' );
+		if ( $has_native_sodium && function_exists( 'sodium_memzero' ) ) {
 			sodium_memzero( $private_key );
+			return;
 		}
+
+		$private_key = '';
 	}
 
 	/**
