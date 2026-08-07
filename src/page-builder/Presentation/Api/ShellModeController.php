@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Presentation\Api;
 
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Application\ShellModeService;
@@ -54,11 +55,13 @@ final class ShellModeController
                 'methods'             => 'GET',
                 'callback'            => [$this, 'readPageMode'],
                 'permission_callback' => [$this->permissions, 'canEdit'],
+                'args'                => ['page_id' => RequestId::routeArgument()],
             ],
             [
                 'methods'             => 'PUT',
                 'callback'            => [$this, 'updatePageMode'],
                 'permission_callback' => [$this->permissions, 'canEdit'],
+                'args'                => ['page_id' => RequestId::routeArgument()],
             ],
         ]);
 
@@ -108,7 +111,10 @@ final class ShellModeController
      */
     public function readPageMode(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = absint($request['page_id']);
+        $pageId = RequestId::fromUrl($request, 'page_id');
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         if (!$this->permissions->canEditPage($pageId)) {
             return ApiResponse::error(ErrorMessage::PageEditForbidden);
@@ -157,7 +163,10 @@ final class ShellModeController
      */
     public function updatePageMode(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = absint($request['page_id']);
+        $pageId = RequestId::fromUrl($request, 'page_id');
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         if (!$this->permissions->canEditPage($pageId)) {
             return ApiResponse::error(ErrorMessage::PageEditForbidden);

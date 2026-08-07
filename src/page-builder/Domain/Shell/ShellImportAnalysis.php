@@ -53,16 +53,87 @@ final class ShellImportAnalysis
     /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self
     {
+        $type = array_key_exists('type', $data) ? $data['type'] : 'header';
+        if (!is_string($type) || !in_array($type, ['header', 'footer'], true)) {
+            throw new \InvalidArgumentException('type must be header or footer.');
+        }
+
         return new self(
-            type: $data['type'] ?? 'header',
-            logoUrl: $data['logo_url'] ?? null,
-            logoText: $data['logo_text'] ?? null,
-            navLinks: $data['nav_links'] ?? [],
-            ctaLinks: $data['cta_links'] ?? [],
-            socialLinks: $data['social_links'] ?? [],
-            copyrightText: $data['copyright_text'] ?? null,
-            footerColumns: $data['footer_columns'] ?? 0,
-            warnings: $data['warnings'] ?? [],
+            type: $type,
+            logoUrl: self::nullableString($data, 'logo_url'),
+            logoText: self::nullableString($data, 'logo_text'),
+            navLinks: self::linkList($data, 'nav_links'),
+            ctaLinks: self::linkList($data, 'cta_links'),
+            socialLinks: self::stringList($data, 'social_links'),
+            copyrightText: self::nullableString($data, 'copyright_text'),
+            footerColumns: self::integer($data, 'footer_columns'),
+            warnings: self::stringList($data, 'warnings'),
         );
+    }
+
+    /** @param array<string, mixed> $data */
+    private static function nullableString(array $data, string $field): ?string
+    {
+        $value = $data[$field] ?? null;
+        if ($value !== null && !is_string($value)) {
+            throw new \InvalidArgumentException($field . ' must be a string or null.');
+        }
+
+        return $value;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<int, array{label: string, href: string}>
+     */
+    private static function linkList(array $data, string $field): array
+    {
+        $links = array_key_exists($field, $data) ? $data[$field] : [];
+        if (!is_array($links) || !array_is_list($links)) {
+            throw new \InvalidArgumentException($field . ' must be a list.');
+        }
+
+        foreach ($links as $link) {
+            if (
+                !is_array($link)
+                || !is_string($link['label'] ?? null)
+                || !is_string($link['href'] ?? null)
+            ) {
+                throw new \InvalidArgumentException($field . ' must contain links with string label and href fields.');
+            }
+        }
+
+        return $links;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return string[]
+     */
+    private static function stringList(array $data, string $field): array
+    {
+        $values = array_key_exists($field, $data) ? $data[$field] : [];
+        if (!is_array($values) || !array_is_list($values)) {
+            throw new \InvalidArgumentException($field . ' must be a list.');
+        }
+
+        foreach ($values as $value) {
+            if (!is_string($value)) {
+                throw new \InvalidArgumentException($field . ' must contain only strings.');
+            }
+        }
+
+        return $values;
+    }
+
+    /** @param array<string, mixed> $data */
+    private static function integer(array $data, string $field): int
+    {
+        $value = array_key_exists($field, $data) ? $data[$field] : 0;
+        if (!is_int($value)) {
+            throw new \InvalidArgumentException($field . ' must be an integer.');
+        }
+
+        return $value;
     }
 }

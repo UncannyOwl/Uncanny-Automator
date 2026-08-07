@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Api\AgentPageController\Routes;
 use UncannyPageBuilder\Api\AgentPageController;
 use UncannyPageBuilder\Api\AgentPageController\AgentWrite\AgentWriteGuard;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 
 /**
  * Registers the stable Agent page REST surface against the public facade.
@@ -21,11 +22,7 @@ final class AgentPageRouteRegistrar
     public function register(AgentPageController $controller): void
     {
         $namespace = 'uncanny-page-builder/v1';
-        $positiveId = static fn (): array => [
-            'required' => true,
-            'validate_callback' => static fn (mixed $value): bool => is_numeric($value) && (int) $value > 0,
-            'sanitize_callback' => 'absint',
-        ];
+        $positiveId = static fn (): array => RequestId::routeArgument();
 
         // ── Read facades ─────────────────────────────────────────────
         \register_rest_route($namespace, '/agent/page/(?P<page_id>\d+)/context', [

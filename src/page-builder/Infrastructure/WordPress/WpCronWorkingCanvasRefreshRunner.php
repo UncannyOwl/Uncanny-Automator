@@ -30,7 +30,7 @@ final class WpCronWorkingCanvasRefreshRunner
 
     public function run(): void
     {
-        $this->runBatch(self::BATCH_SIZE, 0);
+        $this->runBatch(self::BATCH_SIZE);
     }
 
     /**

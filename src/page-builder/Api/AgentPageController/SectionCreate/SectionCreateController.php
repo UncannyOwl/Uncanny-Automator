@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Api\AgentPageController\SectionCreate;
 
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
@@ -29,7 +30,11 @@ final class SectionCreateController
 
     public function create(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = \absint($request->get_param('page_id'));
+        $pageId = RequestId::fromUrl($request, 'page_id');
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
+
         $name = \sanitize_text_field($request->get_param('name') ?? '');
         $html = $request->get_param('html');
         $css = $request->get_param('css');

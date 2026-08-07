@@ -30,6 +30,10 @@ final class Plugin
             return;
         }
 
+        if (!class_exists(\DOMDocument::class)) {
+            return;
+        }
+
         self::$kernel = new ApplicationKernel();
         self::$kernel->bootstrap([
             CoreServiceProvider::class,

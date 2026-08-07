@@ -29,8 +29,10 @@ final class CanvasAdminBar
      * @param array<int, mixed> $classes
      * @return array<int, mixed>
      */
-    public function removeBodyClasses(array $classes): array
+    public function removeBodyClasses($classes = null): array
     {
+        $classes = is_array($classes) ? $classes : [];
+
         $blockedClasses = [
             'admin-bar'            => true,
             'no-customize-support' => true,

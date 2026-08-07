@@ -28,8 +28,10 @@ final class WpOwnedPageFinder implements OwnedPageFinderInterface
         $whereFilter = null;
 
         if ($afterPageId > 0 && function_exists('add_filter') && function_exists('remove_filter')) {
-            $whereFilter = static function (string $where) use ($afterPageId): string {
+            $whereFilter = static function ($where = null) use ($afterPageId): string {
                 global $wpdb;
+                $where = is_string($where) ? $where : '';
+
                 return $where . $wpdb->prepare(" AND {$wpdb->posts}.ID > %d", $afterPageId);
             };
             add_filter('posts_where', $whereFilter);

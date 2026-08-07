@@ -27,9 +27,12 @@ final class WorkingCanvasMenuChangeListener
         add_action('wp_delete_nav_menu', [$this, 'menuChanged'], 10, 1);
     }
 
-    public function menuChanged(int|string $menuId): void
+    public function menuChanged($menuId = null): void
     {
-        unset($menuId);
+        if (WordPressPostId::fromMixed($menuId) === null) {
+            return;
+        }
+
         $this->globalSource->run(static fn(): mixed => null);
         $this->refreshScheduler->enqueueAll();
     }

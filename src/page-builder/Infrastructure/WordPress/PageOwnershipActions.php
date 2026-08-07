@@ -27,8 +27,14 @@ final class PageOwnershipActions
 
     // Section: WordPress post-save transition
 
-    public function redirectAfterSave(string $location, int $postId): string
+    public function redirectAfterSave($location = null, $postId = null): string
     {
+        $location = is_string($location) ? $location : '';
+        $postId = WordPressPostId::fromMixed($postId);
+        if ($postId === null) {
+            return $location;
+        }
+
         $requested = $_POST[self::SWITCH_FIELD] ?? null;
         if (!is_scalar($requested) || wp_unslash((string) $requested) !== '1') {
             return $location;

@@ -60,6 +60,15 @@ final class WordPressPageSourceImageCollector implements PageSourceImageCollecto
             );
         }
 
+        // The archive manifest must record a MIME type detected from the file
+        // bytes. A filename-based fallback can create an archive that no site
+        // can import when the file extension does not match its content.
+        if (!class_exists(\finfo::class)) {
+            throw new SourcePackageValidationException(
+                'Page export needs Fileinfo support on this site. Ask your site administrator to enable it, then try again.',
+            );
+        }
+
         $candidates = [];
         $this->collectCandidateUrls($pageSource, $candidates);
 

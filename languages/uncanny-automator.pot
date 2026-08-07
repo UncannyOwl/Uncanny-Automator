@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.5.0.2\n"
+"Project-Id-Version: Uncanny Automator 7.5.0.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-07T15:33:10+00:00\n"
+"POT-Creation-Date: 2026-08-07T20:44:10+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -2940,29 +2940,29 @@ msgctxt "URL validation error"
 msgid "Invalid URL format: %s"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:151
+#: src/app/Components/Page_Builder/Module.php:153
 msgctxt "Site Health test label"
 msgid "Uncanny Page Builder runtime"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:173
+#: src/app/Components/Page_Builder/Module.php:175
 msgctxt "Site Health result"
 msgid "Uncanny Page Builder is active"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:174
+#: src/app/Components/Page_Builder/Module.php:176
 msgctxt "Site Health result"
 msgid "Uncanny Page Builder is not using the embedded runtime"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:177
+#: src/app/Components/Page_Builder/Module.php:179
 #: src/app/Transports/Model_Context_Protocol/Authentication/Site_Signing_Key_Monitor.php:130
 #: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:124
 msgctxt "Site Health badge"
 msgid "Uncanny Automator"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:224
+#: src/app/Components/Page_Builder/Module.php:229
 msgctxt "Page Builder module admin notice"
 msgid "Uncanny Page Builder runtime unavailable."
 msgstr ""
@@ -5196,7 +5196,7 @@ msgstr ""
 
 #: src/core/admin/admin-settings/tabs/general.php:54
 #: src/core/admin/admin-settings/tabs/uncanny-agent-tabs/general.php:98
-#: src/core/admin/admin-settings/tabs/uncanny-page-builder-tabs/general.php:69
+#: src/core/admin/admin-settings/tabs/uncanny-page-builder-tabs/general.php:71
 msgid "General"
 msgstr ""
 
@@ -5212,7 +5212,7 @@ msgstr ""
 msgid "Uncanny Agent"
 msgstr ""
 
-#: src/core/admin/admin-settings/tabs/uncanny-page-builder.php:59
+#: src/core/admin/admin-settings/tabs/uncanny-page-builder.php:61
 msgid "Uncanny Page Builder"
 msgstr ""
 
@@ -10235,11 +10235,11 @@ msgctxt "Reviews banner"
 msgid "No thanks"
 msgstr ""
 
-#: src/global-functions.php:1341
+#: src/global-functions.php:1340
 msgid "The URL resolves to a private or reserved IP address and cannot be used."
 msgstr ""
 
-#: src/global-functions.php:1370
+#: src/global-functions.php:1369
 msgid "The URL exceeded the maximum number of redirects allowed."
 msgstr ""
 
@@ -51661,10 +51661,10 @@ msgstr ""
 #. translators: %d: The page ID used in the fallback untitled title.
 #: src/page-builder/Application/Controls/Resolvers/CommandBarControlStateResolver.php:370
 #: src/page-builder/Application/Editor/EditorStateService.php:248
-#: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedPage.php:283
+#: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedPage.php:285
 #: src/page-builder/Infrastructure/WordPress/AiPagesListTable.php:196
-#: src/page-builder/Infrastructure/WordPress/MagicBridgeEnqueuer.php:356
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:56
+#: src/page-builder/Infrastructure/WordPress/MagicBridgeEnqueuer.php:363
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:58
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:184
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:565
 #: src/page-builder/Infrastructure/WordPress/WordPressPageDetailsProjection.php:73
@@ -51673,124 +51673,124 @@ msgctxt "Page Builder"
 msgid "Untitled page #%d"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:56
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:60
 msgctxt "Page Builder"
 msgid "Build this page for me"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:57
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:61
 msgctxt "Page Builder"
 msgid "Help me build this page. Ask me a couple of quick questions about what it should be about and who it's for, then create the sections."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:60
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:64
 msgctxt "Page Builder"
 msgid "Start with a homepage layout"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:61
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:65
 msgctxt "Page Builder"
 msgid "Create a homepage layout on this page: a hero, key benefits, social proof, and a call to action. Use placeholder copy I can refine."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:64
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:68
 msgctxt "Page Builder"
 msgid "Make a pricing page"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:65
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:69
 msgctxt "Page Builder"
 msgid "Turn this page into a pricing page with three plans. Ask me about the plans before you build."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:68
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:72
 msgctxt "Page Builder"
 msgid "Make a contact page"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:69
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:73
 msgctxt "Page Builder"
 msgid "Turn this page into a contact page with our details and a clear way to get in touch."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:72
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:93
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:76
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:97
 msgctxt "Page Builder"
 msgid "Match my brand styles"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:73
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:77
 msgctxt "Page Builder"
 msgid "When you build this page, make sure the colors, fonts, and spacing follow my brand styles."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:85
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:89
 msgctxt "Page Builder"
 msgid "Add a section"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:86
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:90
 msgctxt "Page Builder"
 msgid "Add a new section to this page. Ask me what it should contain, then design it to match the rest of the page."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:89
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:93
 msgctxt "Page Builder"
 msgid "Improve the writing"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:90
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:94
 msgctxt "Page Builder"
 msgid "Review the text on this page and rewrite the headlines and copy to be clearer and more confident. Keep the design exactly as it is."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:94
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:98
 msgctxt "Page Builder"
 msgid "Update this page so the colors, fonts, and spacing follow my brand styles."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:97
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:101
 msgctxt "Page Builder"
 msgid "Redesign a section"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:98
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:102
 msgctxt "Page Builder"
 msgid "Ask me which section of this page to redesign, then give it a fresh look while keeping its text and images."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:101
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:122
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:105
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:126
 msgctxt "Page Builder"
 msgid "Make it work on mobile"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:102
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:106
 msgctxt "Page Builder"
 msgid "Review this page at phone sizes and fix any sections that look cramped, overflow, or break the layout."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:114
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:118
 msgctxt "Page Builder"
 msgid "Build this reusable part for me"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:115
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:119
 msgctxt "Page Builder"
 msgid "Help me build this reusable part. Ask me where it will be used across my site, then create it."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:118
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:122
 msgctxt "Page Builder"
 msgid "Polish the design"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:119
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:123
 msgctxt "Page Builder"
 msgid "Refine the design of this reusable part so it looks polished and follows my brand styles. Remember it appears on every page that uses it."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:123
+#: src/page-builder/Infrastructure/Automator/McpConversationStarters.php:127
 msgctxt "Page Builder"
 msgid "Review this reusable part at phone sizes and fix anything that looks cramped or breaks the layout."
 msgstr ""
@@ -52361,8 +52361,7 @@ msgid "Update the draft title and URL slug. They stay private until you publish.
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/CanvasVisibleControlStrings.php:48
-#: src/page-builder/Infrastructure/WordPress/AdminBarButton.php:30
-#: src/page-builder/Infrastructure/WordPress/AdminBarButton.php:36
+#: src/page-builder/Infrastructure/WordPress/AdminBarButton.php:32
 msgctxt "Page Builder"
 msgid "New page"
 msgstr ""
@@ -52664,8 +52663,8 @@ msgstr ""
 #: src/page-builder/Infrastructure/i18/strings/CanvasVisibleControlStrings.php:405
 #: src/page-builder/Infrastructure/WordPress/AdminMenu.php:116
 #: src/page-builder/Infrastructure/WordPress/AdminMenu.php:117
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:871
-#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:150
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:889
+#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:160
 msgctxt "Page Builder"
 msgid "Settings"
 msgstr ""
@@ -53175,7 +53174,7 @@ msgstr ""
 #: src/page-builder/Infrastructure/i18/strings/GlobalPartModalPresentationStrings.php:34
 #: src/page-builder/Infrastructure/i18/strings/GlobalPartModalStrings.php:24
 #: src/page-builder/Infrastructure/i18/strings/ShellModeModalStrings.php:22
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:74
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:78
 #: src/page-builder/Presentation/Settings/layout-settings-form.php:52
 msgctxt "Page Builder"
 msgid "Header"
@@ -53189,7 +53188,7 @@ msgstr ""
 #: src/page-builder/Infrastructure/i18/strings/GlobalPartModalPresentationStrings.php:40
 #: src/page-builder/Infrastructure/i18/strings/GlobalPartModalStrings.php:23
 #: src/page-builder/Infrastructure/i18/strings/ShellModeModalStrings.php:21
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:92
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:96
 #: src/page-builder/Presentation/Settings/layout-settings-form.php:72
 msgctxt "Page Builder"
 msgid "Footer"
@@ -54196,7 +54195,7 @@ msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelBackgroundStrings.php:97
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelContentStrings.php:45
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:184
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:200
 msgctxt "Page Builder"
 msgid "Type"
 msgstr ""
@@ -54479,8 +54478,8 @@ msgstr ""
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelComponentStrings.php:37
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelComponentStrings.php:70
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelTokenStrings.php:22
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:634
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:855
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:652
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:873
 msgctxt "Page Builder"
 msgid "Brand styles"
 msgstr ""
@@ -55661,7 +55660,7 @@ msgid "Rich Edit"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelTokenStrings.php:15
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:714
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:732
 #: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:65
 #: src/page-builder/Presentation/Settings/colors-components-settings-form.php:41
 msgctxt "Page Builder"
@@ -55709,7 +55708,7 @@ msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelTokenStrings.php:30
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelTypographyStrings.php:60
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:639
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:657
 msgctxt "Page Builder"
 msgid "Typography"
 msgstr ""
@@ -55727,7 +55726,7 @@ msgid "Body"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelTokenStrings.php:33
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:758
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:776
 #: src/page-builder/Presentation/Settings/DesignSettingsFields.php:451
 #: src/page-builder/Presentation/Settings/partials/text-styles-fields.php:631
 #: src/page-builder/Presentation/Settings/partials/text-styles-fields.php:639
@@ -55738,7 +55737,7 @@ msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelTokenStrings.php:34
 #: src/page-builder/Infrastructure/i18/strings/WorkspaceTabPanelTokenStrings.php:61
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:734
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:752
 #: src/page-builder/Presentation/Settings/DesignSettingsFields.php:450
 #: src/page-builder/Presentation/Settings/partials/text-styles-fields.php:55
 #: src/page-builder/Presentation/Settings/text-styles-settings-form.php:42
@@ -56406,45 +56405,45 @@ msgctxt "Page Builder"
 msgid "View all posts"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:718
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:722
 msgctxt "Breadcrumb label"
 msgid "Home"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:995
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1031
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1003
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1039
 msgctxt "Logged-in user greeting"
 msgid "Welcome"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:998
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1034
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1006
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1042
 msgctxt "Page Builder"
 msgid "Log out"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1003
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1011
 msgctxt "Page Builder"
 msgid "Registration is currently disabled."
 msgstr ""
 
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1014
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1022
 msgctxt "Page Builder"
 msgid "Username"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1015
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1023
 msgctxt "Page Builder"
 msgid "Email"
 msgstr ""
 
-#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1017
+#: src/page-builder/Infrastructure/Rendering/WpSingleValueRenderer.php:1025
 msgctxt "Registration form submit button label"
 msgid "Register"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminBarButton.php:53
-#: src/page-builder/Infrastructure/WordPress/AdminBarButton.php:56
+#: src/page-builder/Infrastructure/WordPress/AdminBarButton.php:61
+#: src/page-builder/Infrastructure/WordPress/AdminBarButton.php:64
 #: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:87
 #: src/page-builder/Presentation/Pages/classic-editor-button.php:29
 msgctxt "Page Builder"
@@ -56513,7 +56512,7 @@ msgctxt "Page Builder"
 msgid "Open a reusable from the Reusables list to launch the manual editor."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedGlobalPartPage.php:245
+#: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedGlobalPartPage.php:247
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:220
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:291
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:386
@@ -56531,14 +56530,14 @@ msgid "Open a page from All Pages to launch the manual editor."
 msgstr ""
 
 #. translators: %s: link to the Page Builder pages list.
-#: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedPage.php:197
+#: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedPage.php:199
 #, php-format
 msgctxt "Page Builder"
 msgid "Select a valid page from <a href=\"%s\">this list</a>."
 msgstr ""
 
 #. translators: 1: page ID, 2: link to the Page Builder pages list.
-#: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedPage.php:202
+#: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedPage.php:204
 #, php-format
 msgctxt "Page Builder"
 msgid "Page %1$d does not exist or is no longer available. Select a valid page from <a href=\"%2$s\">this list</a>."
@@ -56547,7 +56546,7 @@ msgstr ""
 #: src/page-builder/Infrastructure/WordPress/AdminCanvasPage.php:62
 #: src/page-builder/Infrastructure/WordPress/AdminMenu.php:133
 #: src/page-builder/Infrastructure/WordPress/AdminMenu.php:147
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:599
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:617
 msgctxt "Page Builder"
 msgid "Manual editor"
 msgstr ""
@@ -56575,7 +56574,7 @@ msgstr ""
 
 #: src/page-builder/Infrastructure/WordPress/AdminMenu.php:101
 #: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:79
-#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:81
+#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:86
 #: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:77
 #: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:89
 #: src/page-builder/Presentation/Settings/settings-new-shell.php:26
@@ -56603,100 +56602,100 @@ msgctxt "Page Builder"
 msgid "View all pages"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:644
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:859
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:662
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:877
 #: src/page-builder/Presentation/Settings/personalization-settings-form.php:25
 msgctxt "Page Builder"
 msgid "Design direction"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:649
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:667
 #: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:109
 msgctxt "Page Builder"
 msgid "Page layout"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:654
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:672
 #: src/page-builder/Presentation/Settings/content-types-section.php:25
 #: src/page-builder/Presentation/Settings/content-types-section.php:55
 msgctxt "Page Builder"
 msgid "Post types"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:659
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:863
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:677
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:881
 #: src/page-builder/Presentation/Settings/javascript-section.php:25
 msgctxt "Page Builder"
 msgid "JavaScript"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:664
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:867
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:682
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:885
 #: src/page-builder/Presentation/Settings/tools-section.php:15
 msgctxt "Page Builder"
 msgid "Tools"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:702
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:720
 #: src/page-builder/Presentation/Settings/brand-identity-settings-form.php:46
 #: src/page-builder/Presentation/Settings/brand-identity-settings-form.php:64
 msgctxt "Page Builder"
 msgid "Logo"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:708
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:726
 #: src/page-builder/Presentation/Settings/font-library-settings-form.php:30
 msgctxt "Page Builder"
 msgid "Fonts"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:740
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:758
 #: src/page-builder/Presentation/Settings/partials/text-styles-fields.php:61
 #: src/page-builder/Presentation/Settings/text-styles-settings-form.php:43
 msgctxt "Page Builder"
 msgid "Body text"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:746
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:764
 #: src/page-builder/Presentation/Settings/partials/text-styles-fields.php:73
 #: src/page-builder/Presentation/Settings/text-styles-settings-form.php:44
 msgctxt "Page Builder"
 msgid "Small text"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:752
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:770
 #: src/page-builder/Presentation/Settings/partials/text-styles-fields.php:67
 #: src/page-builder/Presentation/Settings/text-styles-settings-form.php:45
 msgctxt "Page Builder"
 msgid "Navigation & buttons"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:817
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:835
 msgctxt "Page Builder"
 msgid "General"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:856
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:874
 msgctxt "Page Builder"
 msgid "Brand styles will live here."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:860
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:878
 msgctxt "Page Builder"
 msgid "Add design notes Uncanny Agent should follow when creating new pages."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:864
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:882
 msgctxt "Page Builder"
 msgid "JavaScript runtime settings will live here."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:868
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:886
 msgctxt "Page Builder"
 msgid "Maintenance tools for Page Builder pages will live here."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:872
+#: src/page-builder/Infrastructure/WordPress/AdminMenu.php:890
 msgctxt "Page Builder"
 msgid "Settings will live here."
 msgstr ""
@@ -56815,12 +56814,12 @@ msgid "Move to trash"
 msgstr ""
 
 #: src/page-builder/Infrastructure/WordPress/AiPagesListTable.php:372
-#: src/page-builder/Infrastructure/WordPress/AiPagesListTable.php:383
+#: src/page-builder/Infrastructure/WordPress/AiPagesListTable.php:376
 msgctxt "Page Builder"
 msgid "No pages yet."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/AiPagesListTable.php:385
+#: src/page-builder/Infrastructure/WordPress/AiPagesListTable.php:381
 msgctxt "Page Builder"
 msgid "Create your first page"
 msgstr ""
@@ -56870,46 +56869,46 @@ msgctxt "Page Builder"
 msgid "Save this page before opening Uncanny Page Builder."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:184
+#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:194
 msgctxt "Page Builder"
 msgid "Select a valid page to open in Uncanny Page Builder."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:185
+#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:195
 msgctxt "Page Builder"
 msgid "Page unavailable"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:192
+#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:202
 msgctxt "Page Builder"
 msgid "You do not have permission to open this page in Uncanny Page Builder. Ask a site administrator for access."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:193
+#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:203
 msgctxt "Page Builder"
 msgid "Permission denied"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:207
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:363
+#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:217
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:365
 msgctxt "Page Builder"
 msgid "Uncanny Page Builder is disabled. Enable it in Automator settings to create a new Page Builder page."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:212
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:368
+#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:222
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:370
 msgctxt "Page Builder"
 msgid "Uncanny Page Builder is disabled"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:218
+#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:228
 msgctxt "Page Builder"
 msgid "Page Builder could not safely take over this page. Review the page before trying again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:223
-#: src/page-builder/Infrastructure/WordPress/PageOwnershipActions.php:87
-#: src/page-builder/Infrastructure/WordPress/PageOwnershipActions.php:111
+#: src/page-builder/Infrastructure/WordPress/BlockEditorButton.php:233
+#: src/page-builder/Infrastructure/WordPress/PageOwnershipActions.php:93
+#: src/page-builder/Infrastructure/WordPress/PageOwnershipActions.php:117
 msgctxt "Page Builder"
 msgid "The page could not be switched"
 msgstr ""
@@ -56919,29 +56918,29 @@ msgctxt "Page Builder"
 msgid "Text styles"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:215
+#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:223
 msgctxt "Page Builder"
 msgid "Page Builder settings were not saved because a page style value was invalid."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:234
+#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:242
 msgctxt "Page Builder"
 msgid "Page style overrides were not saved because the page draft identity is missing."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:267
+#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:275
 msgctxt "Page Builder"
 msgid "load the newer saved draft in the Page Builder editor before changing page styles"
 msgstr ""
 
 #. translators: %s: validation error message.
-#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:332
+#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:340
 #, php-format
 msgctxt "Page Builder"
 msgid "Page style overrides were not saved: %s"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:354
+#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:362
 msgctxt "Page Builder"
 msgid "Some page style changes were not saved. Protected site settings keep their default values, and unknown settings were ignored."
 msgstr ""
@@ -56995,7 +56994,7 @@ msgid "Item is already being edited"
 msgstr ""
 
 #. translators: %s: display name of the current editor owner.
-#: src/page-builder/Infrastructure/WordPress/EditorLockHeartbeat.php:106
+#: src/page-builder/Infrastructure/WordPress/EditorLockHeartbeat.php:115
 #, php-format
 msgctxt "Page Builder"
 msgid "%s has taken over and is currently editing."
@@ -57022,6 +57021,8 @@ msgid "Add new"
 msgstr ""
 
 #: src/page-builder/Infrastructure/WordPress/GlobalPartCpt.php:17
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:50
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:56
 msgctxt "Page Builder"
 msgid "Add new reusable"
 msgstr ""
@@ -57106,13 +57107,13 @@ msgctxt "Page Builder"
 msgid "Content preview"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartMetaBox.php:70
+#: src/page-builder/Infrastructure/WordPress/GlobalPartMetaBox.php:78
 msgctxt "Page Builder"
 msgid "No sections yet."
 msgstr ""
 
 #. translators: %d: Reusable part ID.
-#: src/page-builder/Infrastructure/WordPress/GlobalPartMetaBox.php:137
+#: src/page-builder/Infrastructure/WordPress/GlobalPartMetaBox.php:150
 #, php-format
 msgctxt "Page Builder"
 msgid "Untitled reusable %d"
@@ -57125,85 +57126,85 @@ msgstr ""
 
 #. translators: %s: the default header label in parentheses when set, or an empty string when unset.
 #. translators: %s: the default footer label in parentheses when set, or an empty string when unset.
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:79
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:97
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:83
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:101
 #, php-format
 msgctxt "Page Builder"
 msgid "Site default%s"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:83
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:87
 msgctxt "Page Builder"
 msgid "None (no header)"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:101
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:105
 msgctxt "Page Builder"
 msgid "None (no footer)"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:109
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:113
 msgctxt "Page Builder"
 msgid "Choose which header and footer to use on this page, or keep the site default."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:134
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:138
 msgctxt "Page Builder"
 msgid "Page Builder settings were not saved because a header or footer selection was invalid."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:158
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:162
 msgctxt "Page Builder"
 msgid "Header and footer selections were not saved because the page draft identity is missing."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:195
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:199
 msgctxt "Page Builder"
 msgid "Header and footer selections were not saved. Load the newer saved draft in the Page Builder editor first."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:204
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:208
 msgctxt "Page Builder"
 msgid "Header and footer selections were not saved because this page changed in another request. Reload the page and choose again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:277
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:281
 msgctxt "Page Builder"
 msgid "Header and footer selections were not saved because one submitted selection is invalid or no longer available. Reload the page and choose again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:119
+#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:129
 msgctxt "Page Builder"
 msgid "(no title)"
 msgstr ""
 
 #. translators: %s: Page title.
-#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:125
+#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:135
 #, php-format
 msgctxt "Page Builder"
 msgid "Resolve Page Builder ownership for “%s”"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:129
+#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:139
 msgctxt "Page Builder"
 msgid "Page Builder settings"
 msgstr ""
 
 #. translators: %s: Page title.
-#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:137
+#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:147
 #, php-format
 msgctxt "Page Builder"
 msgid "Edit “%s” in Uncanny Page Builder"
 msgstr ""
 
 #. translators: %s: Page title.
-#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:142
+#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:152
 #, php-format
 msgctxt "Page Builder"
 msgid "Open WordPress settings for “%s”"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:148
+#: src/page-builder/Infrastructure/WordPress/NativePageListPresenter.php:158
 msgctxt "Page Builder"
 msgid "Edit"
 msgstr ""
@@ -57249,98 +57250,98 @@ msgctxt "Page Builder"
 msgid "Website status"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:147
+#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:151
 msgctxt "Page Builder"
 msgid "Switch this page back to the WordPress editor? Page Builder sections will stop rendering. Your Page Builder work will be kept, and any saved WordPress page body will be restored."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:160
+#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:164
 msgctxt "Page Builder"
 msgid "This page is managed by Uncanny Page Builder. Ask a site administrator with Page Builder access to edit its content or design."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:169
+#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:173
 msgctxt "Page Builder"
 msgid "This content is still managed by Uncanny Page Builder, but its post type is no longer eligible for Page Builder editing. Use “Switch to WordPress editor” above to restore the saved WordPress content safely."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:192
+#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:200
 msgctxt "Page Builder"
 msgid "This page changed while the editor was loading. Refresh before editing its source."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:212
+#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:220
 msgctxt "Page Builder"
 msgid "Untitled section"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:360
+#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:376
 msgctxt "Page Builder"
 msgid "Run"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:365
+#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:381
 msgctxt "Page Builder"
 msgid "Working..."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:366
+#: src/page-builder/Infrastructure/WordPress/PageEditorMetaBoxes.php:382
 msgctxt "Page Builder"
 msgid "Done"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:46
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:48
 msgctxt "Page Builder"
 msgid "You don't have permission to create Page Builder pages. Ask a site administrator for access."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:54
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:56
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:147
 msgctxt "Page Builder"
 msgid "Untitled page"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:66
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:247
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:269
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:68
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:249
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:271
 msgctxt "Page Builder"
 msgid "Could not create the page. Please try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:83
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:85
 msgctxt "Page Builder"
 msgid "You don't have permission to import Page Builder pages. Ask a site administrator for access."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:93
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:95
 msgctxt "Page Builder"
 msgid "Page import is not available. Please try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:107
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:109
 msgctxt "Page Builder"
 msgid "This page source contains custom JavaScript. Use an account that can publish unfiltered code to import it."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:116
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:118
 msgctxt "Page Builder"
 msgid "Imported page"
 msgstr ""
 
 #. translators: %d: the page ID used for the auto-generated title.
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:118
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:120
 #, php-format
 msgctxt "Page Builder"
 msgid "Imported page #%d"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:171
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:173
 msgctxt "Page Builder"
 msgid "The page source could not be imported. Export the page again and try again. Ask your site administrator for help if the problem continues."
 msgstr ""
 
 #. translators: %d: number of imported images.
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:181
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:183
 #, php-format
 msgctxt "Page Builder"
 msgid "Page imported with %d image."
@@ -57348,13 +57349,13 @@ msgid_plural "Page imported with %d images."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:184
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:186
 msgctxt "Page Builder"
 msgid "Page imported."
 msgstr ""
 
 #. translators: %d: number of import warnings.
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:188
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:190
 #, php-format
 msgctxt "Page Builder"
 msgid "%d compatibility warning was recorded."
@@ -57362,23 +57363,35 @@ msgid_plural "%d compatibility warnings were recorded."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:199
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:201
 msgctxt "Page Builder"
 msgid "Open imported page"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:241
-#: src/page-builder/Infrastructure/WordPress/PageFactory.php:263
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:243
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:265
 msgctxt "Page Builder"
 msgid "Could not create the imported page. Please try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageOwnershipActions.php:86
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:382
+msgctxt "Page Builder"
+msgid "Page creation requires a POST request."
+msgstr ""
+
+#: src/page-builder/Infrastructure/WordPress/PageFactory.php:383
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:167
+#: src/page-builder/Infrastructure/WordPress/WorkingCanvasAdminActions.php:122
+msgctxt "Page Builder"
+msgid "Invalid request"
+msgstr ""
+
+#: src/page-builder/Infrastructure/WordPress/PageOwnershipActions.php:92
 msgctxt "Page Builder"
 msgid "You don't have permission to switch this page back to WordPress. Ask a site administrator for access."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/PageOwnershipActions.php:106
+#: src/page-builder/Infrastructure/WordPress/PageOwnershipActions.php:112
 msgctxt "Page Builder"
 msgid "WordPress could not safely resume editing this page. Review the page before trying again."
 msgstr ""
@@ -57403,41 +57416,46 @@ msgctxt "Page Builder"
 msgid "You do not have permission to edit with Uncanny Page Builder."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:48
-#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:63
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:40
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:68
 msgctxt "Page Builder"
 msgid "You don't have permission to create reusable parts. Ask a site administrator for access."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:84
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:89
 msgctxt "Page Builder"
 msgid "You don't have permission to import reusable parts. Ask a site administrator for access."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:91
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:96
 msgctxt "Page Builder"
 msgid "Reusable import is not available. Please try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:109
-#: src/page-builder/Presentation/Api/GlobalPartController.php:148
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:114
+#: src/page-builder/Presentation/Api/GlobalPartController.php:155
 msgctxt "Page Builder"
 msgid "This reusable source contains custom JavaScript. Use an account that can publish unfiltered code to import it."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:120
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:125
 msgctxt "Page Builder"
 msgid "Could not import the reusable. Check the file and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:127
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:132
 msgctxt "Page Builder"
 msgid "Reusable imported."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:129
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:134
 msgctxt "Page Builder"
 msgid "Open imported reusable"
+msgstr ""
+
+#: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:166
+msgctxt "Page Builder"
+msgid "Reusable creation requires a POST request."
 msgstr ""
 
 #: src/page-builder/Infrastructure/WordPress/SectionOrderMetaBox.php:50
@@ -57445,13 +57463,13 @@ msgctxt "Page Builder"
 msgid "Section order"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/SectionOrderMetaBox.php:106
-#: src/page-builder/Infrastructure/WordPress/SectionOrderMetaBox.php:149
+#: src/page-builder/Infrastructure/WordPress/SectionOrderMetaBox.php:110
+#: src/page-builder/Infrastructure/WordPress/SectionOrderMetaBox.php:153
 msgctxt "Page Builder"
 msgid "Section order was not saved because the submitted draft identity was invalid."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/SectionOrderMetaBox.php:170
+#: src/page-builder/Infrastructure/WordPress/SectionOrderMetaBox.php:174
 msgctxt "Page Builder"
 msgid "Section order was not saved because this page changed in another request. Reload the page and reorder again."
 msgstr ""
@@ -57463,14 +57481,19 @@ msgctxt "Page Builder"
 msgid "Untitled reusable #%d"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/WorkingCanvasAdminActions.php:49
+#: src/page-builder/Infrastructure/WordPress/WorkingCanvasAdminActions.php:48
 msgctxt "Page Builder"
 msgid "You don't have permission to refresh Page Builder previews. Ask a site administrator for access."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/WorkingCanvasAdminActions.php:70
+#: src/page-builder/Infrastructure/WordPress/WorkingCanvasAdminActions.php:71
 msgctxt "Page Builder"
 msgid "You don't have permission to clear Page Builder preview failures. Ask a site administrator for access."
+msgstr ""
+
+#: src/page-builder/Infrastructure/WordPress/WorkingCanvasAdminActions.php:121
+msgctxt "Page Builder"
+msgid "This maintenance action requires a POST request."
 msgstr ""
 
 #: src/page-builder/Infrastructure/WordPress/WorkingCanvasRefreshNotice.php:66
@@ -57483,53 +57506,53 @@ msgctxt "Page Builder"
 msgid "Your pages are safe."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/WorkingCanvasRefreshNotice.php:78
+#: src/page-builder/Infrastructure/WordPress/WorkingCanvasRefreshNotice.php:79
 msgctxt "Page Builder"
 msgid "Clear this notice"
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/EditorEnvironmentProvider.php:401
+#: src/page-builder/Kernel/Providers/WordPress/Admin/EditorEnvironmentProvider.php:429
 msgctxt "Page Builder"
 msgid "Page layout was not saved because the page draft identity is missing."
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/EditorEnvironmentProvider.php:440
+#: src/page-builder/Kernel/Providers/WordPress/Admin/EditorEnvironmentProvider.php:468
 msgctxt "Page Builder"
 msgid "Page Builder settings were not saved because the page layout choice was invalid."
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:103
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:104
 msgctxt "Page Builder"
 msgid "Import reusable"
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:140
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:148
 msgctxt "Reusable list row action"
 msgid "Edit"
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:145
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:153
 msgctxt "Reusable list row action"
 msgid "Settings"
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:213
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:230
 msgctxt "Reusable status badge"
 msgid "Default"
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:272
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:293
 msgctxt "Page Builder"
 msgid "Source code"
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:338
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:364
 msgctxt "Page Builder"
 msgid "The reusable JavaScript could not be saved because this user cannot publish unfiltered code."
 msgstr ""
 
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:346
-#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:348
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:372
+#: src/page-builder/Kernel/Providers/WordPress/Admin/GlobalPartEditorProvider.php:374
 msgctxt "Page Builder"
 msgid "The reusable code could not be saved."
 msgstr ""
@@ -57544,7 +57567,7 @@ msgctxt "Page Builder"
 msgid "Editing ownership could not be verified. Try saving again."
 msgstr ""
 
-#: src/page-builder/Presentation/Api/GlobalPartController.php:136
+#: src/page-builder/Presentation/Api/GlobalPartController.php:143
 msgctxt "Page Builder"
 msgid "Upload a valid Page Builder reusable JSON export."
 msgstr ""
@@ -58767,7 +58790,7 @@ msgctxt "Page Builder"
 msgid "Page %1$d: %2$s %3$s"
 msgstr ""
 
-#: src/page-builder/Presentation/Settings/tools-section.php:93
+#: src/page-builder/Presentation/Settings/tools-section.php:96
 msgctxt "Page Builder"
 msgid "Refresh all working previews"
 msgstr ""

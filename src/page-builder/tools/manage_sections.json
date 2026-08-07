@@ -25,6 +25,10 @@
     {
       "name": "section_ids",
       "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
       "required": false,
       "in": "body",
       "description": "Full ordered section ID list for reorder operations."

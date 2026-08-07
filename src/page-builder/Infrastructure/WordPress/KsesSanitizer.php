@@ -38,13 +38,15 @@ final class KsesSanitizer
     }
 
     /** @param array<string, array> $tags */
-    public function extend(array $tags, string $context): array
+    public function extend($tags = null, $context = null): array
     {
+        $tags = is_array($tags) ? $tags : [];
+
         if ($this->builderWriteDepth < 1 || $context !== 'post') {
             return $tags;
         }
 
-        $safeAttrs = apply_filters('uncanny_page_builder_kses_allowlist', [
+        $defaultSafeAttrs = [
             'data-ai-editable' => true,
             'data-ai-type'     => true,
             'data-ai-dynamic'  => true,
@@ -66,7 +68,9 @@ final class KsesSanitizer
             'role'             => true,
             'aria-label'       => true,
             'aria-hidden'      => true,
-        ]);
+        ];
+        $filteredSafeAttrs = apply_filters('uncanny_page_builder_kses_allowlist', $defaultSafeAttrs);
+        $safeAttrs = is_array($filteredSafeAttrs) ? $filteredSafeAttrs : $defaultSafeAttrs;
         $trustedRuntimeAttrs = current_user_can('unfiltered_html')
             ? [
                 'x-data'       => true,

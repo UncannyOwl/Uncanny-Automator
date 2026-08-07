@@ -8,6 +8,7 @@ use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
 use UncannyPageBuilder\Application\ContentType\SupportsPostTypeUseCase;
 use UncannyPageBuilder\Application\EditorLock\RefreshEditorOwnership;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
+use UncannyPageBuilder\Domain\EditorLock\EditorLockToken;
 use UncannyPageBuilder\Domain\EditorLock\EditorOwnershipState;
 use UncannyPageBuilder\Domain\EditorLock\EditorOwnershipStatus;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
@@ -33,17 +34,25 @@ final class EditorLockHeartbeat
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
-    public function refresh(array $response, array $data, string $screenId): array
+    public function refresh($response = null, $data = null, $screenId = null): array
     {
         unset($screenId);
+
+        $response = is_array($response) ? $response : [];
+        $data = is_array($data) ? $data : [];
 
         $received = $data['wp-refresh-post-lock'] ?? null;
         if (!is_array($received)) {
             return $response;
         }
 
-        $postId = absint($received['post_id'] ?? 0);
-        $post = $postId > 0 ? get_post($postId) : null;
+        $postId = WordPressPostId::fromMixed($received['post_id'] ?? null);
+        $lock = $received['lock'] ?? null;
+        if ($postId === null || !is_string($lock) || EditorLockToken::parse($lock) === null) {
+            return $response;
+        }
+
+        $post = get_post($postId);
         if (
             !$post instanceof \WP_Post
             || !$this->allowedCapabilities->currentUserHasAllowedCapability()
@@ -56,7 +65,7 @@ final class EditorLockHeartbeat
         $state = $this->refreshOwnership->execute(
             $postId,
             (int) get_current_user_id(),
-            (string) ($received['lock'] ?? ''),
+            $lock,
         );
 
         try {

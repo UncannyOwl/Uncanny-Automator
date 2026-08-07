@@ -21,7 +21,11 @@ final class PublishedPageAssetEnqueuer
             return;
         }
 
-        $pageId = (int) get_the_ID();
+        $pageId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+        if ($pageId === null) {
+            return;
+        }
+
         $page = $this->publicPages->publishedPage($pageId);
         if ($page === null) {
             return;

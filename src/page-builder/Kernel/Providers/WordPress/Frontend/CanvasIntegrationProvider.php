@@ -22,6 +22,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\MagicBridgeEnqueuer;
 use UncannyPageBuilder\Infrastructure\WordPress\PublishedPageAssetEnqueuer;
 use UncannyPageBuilder\Infrastructure\WordPress\WorkingDesignTokenCss;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressFontSettings;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Infrastructure\WordPress\WorkingCanvasAssetEnqueuer;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
@@ -119,8 +120,8 @@ final class CanvasIntegrationProvider implements ServiceProviderInterface
             if (!is_singular()) {
                 return;
             }
-            $postId = get_the_ID();
-            if (!$postId) {
+            $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+            if ($postId === null) {
                 return;
             }
             $isGlobalPart = get_post_type($postId) === 'upb_global_part';

@@ -140,6 +140,7 @@ final class ControlPlaneProvider implements ServiceProviderInterface
         $container->factory(PageStaticExportHandler::class, static function (Container $c): PageStaticExportHandler {
             return new PageStaticExportHandler(
                 $c->typed(StaticPageExportService::class),
+                $c->typed(PageDetailsPortInterface::class),
             );
         });
         $container->factory(PageSourceExportHandler::class, static function (Container $c): PageSourceExportHandler {

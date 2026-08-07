@@ -11,6 +11,7 @@ use UncannyPageBuilder\Application\Rendering\PublishedPage;
 use UncannyPageBuilder\Application\Rendering\PublishedPageStatus;
 use UncannyPageBuilder\Application\Rendering\LucideRuntimeInitializer;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 
 /**
  * Renders one exact published artifact through the_content filter.
@@ -36,14 +37,16 @@ final class ContentRenderer
      *
      * Hook on the_content at priority 7 when the pointer runtime is activated.
      */
-    public function selectOriginalContent(string $content): string
+    public function selectOriginalContent($content = null): string
     {
+        $content = is_string($content) ? $content : '';
+
         if (is_admin() || !is_singular() || !is_main_query()) {
             return $content;
         }
 
-        $postId = (int) get_the_ID();
-        if ($postId <= 0) {
+        $postId = $this->currentPostId();
+        if ($postId === null || !$this->isActivePost($postId)) {
             return $content;
         }
 
@@ -68,8 +71,10 @@ final class ContentRenderer
     /**
      * Hook on the_content at priority 99 (after wpautop/shortcodes).
      */
-    public function filter(string $content): string
+    public function filter($content = null): string
     {
+        $content = is_string($content) ? $content : '';
+
         // Theme composition frontend rendering never runs inside the admin canvas.
         if (is_admin()) {
             return $content;
@@ -79,9 +84,9 @@ final class ContentRenderer
             return $content;
         }
 
-        $postId = get_the_ID();
+        $postId = $this->currentPostId();
 
-        if (!$postId) {
+        if ($postId === null || !$this->isActivePost($postId)) {
             return $content;
         }
 
@@ -108,17 +113,21 @@ final class ContentRenderer
      * Pointer-derived shell classes for the eventual exact-render cutover.
      * Working draft shell state must never affect the public body class.
      *
-     * @param string[] $classes
+     * @param mixed $classes
      * @return string[]
      */
-    public function bodyClasses(array $classes): array
+    public function bodyClasses($classes = null): array
     {
+        $classes = is_array($classes)
+            ? array_values(array_filter($classes, 'is_string'))
+            : [];
+
         if (is_admin() || !is_singular()) {
             return $classes;
         }
 
-        $postId = (int) get_the_ID();
-        $page = $postId > 0 ? $this->publicPageRenderPolicy->publishedPage($postId) : null;
+        $postId = $this->currentPostId();
+        $page = $postId !== null ? $this->publicPageRenderPolicy->publishedPage($postId) : null;
         if (!$page instanceof PublishedPage) {
             return $classes;
         }
@@ -148,9 +157,9 @@ final class ContentRenderer
             return;
         }
 
-        $postId = get_the_ID();
+        $postId = $this->currentPostId();
 
-        $page = $postId ? $this->themeCompositionPage($postId) : null;
+        $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
         if (!$page instanceof PublishedPage) {
             return;
         }
@@ -177,9 +186,9 @@ final class ContentRenderer
             return;
         }
 
-        $postId = get_the_ID();
+        $postId = $this->currentPostId();
 
-        $page = $postId ? $this->themeCompositionPage($postId) : null;
+        $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
         if (!$page instanceof PublishedPage) {
             return;
         }
@@ -204,9 +213,9 @@ final class ContentRenderer
             return;
         }
 
-        $postId = get_the_ID();
+        $postId = $this->currentPostId();
 
-        $page = $postId ? $this->themeCompositionPage($postId) : null;
+        $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
         if (!$page instanceof PublishedPage) {
             return;
         }
@@ -230,9 +239,9 @@ final class ContentRenderer
             return;
         }
 
-        $postId = get_the_ID();
+        $postId = $this->currentPostId();
 
-        $page = $postId ? $this->themeCompositionPage($postId) : null;
+        $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
         if (!$page instanceof PublishedPage) {
             return;
         }
@@ -253,5 +262,15 @@ final class ContentRenderer
         return $page instanceof PublishedPage && $page->shellMode() === ShellMode::ThemeComposition
             ? $page
             : null;
+    }
+
+    private function currentPostId(): ?int
+    {
+        return WordPressPostId::fromCurrentQuery(get_queried_object_id());
+    }
+
+    private function isActivePost(int $queriedPostId): bool
+    {
+        return WordPressPostId::fromMixed(get_the_ID()) === $queriedPostId;
     }
 }

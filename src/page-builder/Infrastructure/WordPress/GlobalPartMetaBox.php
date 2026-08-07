@@ -46,8 +46,12 @@ final class GlobalPartMetaBox
         }
     }
 
-    public function render(\WP_Post $post): void
+    public function render($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         $current = GlobalPartType::fromString(
             (string) get_post_meta($post->ID, self::META_KEY, true)
         );
@@ -57,8 +61,12 @@ final class GlobalPartMetaBox
         include __DIR__ . '/../../Presentation/GlobalParts/type-selector.php';
     }
 
-    public function renderPreview(\WP_Post $post): void
+    public function renderPreview($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         if ($this->globalPartRepo === null) {
             return;
         }
@@ -97,8 +105,13 @@ final class GlobalPartMetaBox
         include __DIR__ . '/../../Presentation/GlobalParts/preview.php';
     }
 
-    public function save(int $postId, \WP_Post $post): void
+    public function save($postId = null, $post = null): void
     {
+        $postId = WordPressPostId::fromMixed($postId);
+        if ($postId === null || !$post instanceof \WP_Post) {
+            return;
+        }
+
         if ($this->saving) {
             return;
         }
@@ -169,8 +182,11 @@ final class GlobalPartMetaBox
      * @param array<string, mixed> $postarr
      * @return array<string, mixed>
      */
-    public function protectPostData(array $data, array $postarr): array
+    public function protectPostData($data = null, $postarr = null): array
     {
+        $data = is_array($data) ? $data : [];
+        $postarr = is_array($postarr) ? $postarr : [];
+
         if (($data['post_type'] ?? '') !== 'upb_global_part' || $this->globalSource->isRunning()) {
             return $data;
         }

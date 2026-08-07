@@ -78,7 +78,7 @@ final class DynamicRenderer
 
         // Phase 1: Resolve conditional wrappers (show/hide based on auth state).
         // Must run before content bindings to prevent nesting destruction.
-        $this->resolveConditionals($xpath);
+        $this->resolveConditionals($xpath, $pageIdentity);
 
         // Phase 2: Process content bindings on the (possibly pruned) DOM.
         $nodes = $xpath->query('//*[@data-ai-dynamic]');
@@ -95,10 +95,12 @@ final class DynamicRenderer
             return $output;
         }
 
-        $renderers = apply_filters(
+        $defaultRenderers = $this->buildRendererCallables($pageIdentity);
+        $filteredRenderers = apply_filters(
             'uncanny_page_builder_dynamic_renderers',
-            $this->buildRendererCallables($pageIdentity)
+            $defaultRenderers
         );
+        $renderers = is_array($filteredRenderers) ? $filteredRenderers : $defaultRenderers;
 
         // Collect into array — DOM mutations during iteration invalidate DOMNodeList.
         $nodeList = [];
@@ -135,6 +137,9 @@ final class DynamicRenderer
                     }
 
                     $renderedCards = call_user_func($renderers[$source], '', $args);
+                    if (!is_string($renderedCards)) {
+                        throw new \UnexpectedValueException('Renderer output must be a string.');
+                    }
 
                     $trimmed = trim($renderedCards);
                     $tagName = strtolower($node->nodeName);
@@ -171,6 +176,9 @@ final class DynamicRenderer
                     // from wp_recent_posts and would silently render the same loop.
                     $args['_binding_id'] = $source;
                     $renderedCards = call_user_func($renderers[$source], $cardTemplate, $args);
+                    if (!is_string($renderedCards)) {
+                        throw new \UnexpectedValueException('Renderer output must be a string.');
+                    }
                 }
             } catch (\Throwable $e) {
                 error_log(sprintf('[DynamicRenderer] Renderer "%s" threw %s: %s', $source, get_class($e), $e->getMessage()));
@@ -247,16 +255,18 @@ final class DynamicRenderer
      * If condition is true: strip data-ai-dynamic, leave children for phase 2.
      * If condition is false: remove the entire node from DOM.
      */
-    private function resolveConditionals(\DOMXPath $xpath): void
-    {
+    private function resolveConditionals(
+        \DOMXPath $xpath,
+        ?StaticExportPageIdentity $pageIdentity = null,
+    ): void {
         $nodes = $xpath->query('//*[starts-with(@data-ai-dynamic, "if_")]');
 
         if ($nodes->length === 0) {
             return;
         }
 
-        /** @var array<string, callable(\DOMElement): bool> */
-        $customEvaluators = apply_filters('uncanny_page_builder_conditional_evaluators', []);
+        $filteredEvaluators = apply_filters('uncanny_page_builder_conditional_evaluators', []);
+        $customEvaluators = is_array($filteredEvaluators) ? $filteredEvaluators : [];
 
         // Collect — removal during iteration invalidates DOMNodeList.
         $nodeList = [];
@@ -303,14 +313,14 @@ final class DynamicRenderer
                 'if_author'         => is_author(),
 
                 // Content
-                'if_has_thumbnail'  => has_post_thumbnail(),
-                'if_has_excerpt'    => has_excerpt(),
-                'if_comments_open'  => comments_open(),
+                'if_has_thumbnail'  => has_post_thumbnail($pageIdentity?->pageId()),
+                'if_has_excerpt'    => has_excerpt($pageIdentity?->pageId()),
+                'if_comments_open'  => comments_open($pageIdentity?->pageId()),
                 'if_has_menu'       => $this->hasMenu($node),
 
                 // Custom evaluators registered via filter, then fail-closed for unknown.
                 default => isset($customEvaluators[$type]) && is_callable($customEvaluators[$type])
-                    ? (bool) call_user_func($customEvaluators[$type], $node)
+                    ? $this->evaluateCustomConditional($customEvaluators[$type], $node, $type)
                     : $this->rejectUnknownConditional($type),
             };
 
@@ -319,6 +329,21 @@ final class DynamicRenderer
             } elseif ($node->parentNode !== null) {
                 $node->parentNode->removeChild($node);
             }
+        }
+    }
+
+    private function evaluateCustomConditional(callable $evaluator, \DOMElement $node, string $type): bool
+    {
+        try {
+            return $evaluator($node) === true;
+        } catch (\Throwable $exception) {
+            error_log(sprintf(
+                '[DynamicRenderer] Conditional "%s" threw %s and failed closed',
+                $type,
+                get_class($exception),
+            ));
+
+            return false;
         }
     }
 
@@ -475,9 +500,13 @@ final class DynamicRenderer
                 continue;
             }
 
-            $instance = $class === WpSingleValueRenderer::class
-                ? new WpSingleValueRenderer($pageIdentity)
-                : new $class();
+            $instance = match ($class) {
+                WpSingleValueRenderer::class,
+                WpChildrenCardRenderer::class,
+                WpCommentsCardRenderer::class,
+                WpQueryCardRenderer::class => new $class($pageIdentity),
+                default => new $class(),
+            };
             $map[$id] = [$instance, 'render'];
         }
         return $map;

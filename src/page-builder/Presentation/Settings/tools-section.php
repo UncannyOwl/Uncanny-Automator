@@ -4,7 +4,7 @@
  *
  * @var array{class: string, message: string}|null $notice
  * @var array{pending: int, terminal_failures: array<int, array{page_id: int, attempts: int, next_run_at: int, claimed_at: int|null, last_error_code: string, last_error_message: string, terminal_at: int|null}>} $queueStatus
- * @var string $refreshAllUrl
+ * @var string $workingCanvasActionUrl
  */
 
 defined('ABSPATH') || exit;
@@ -89,9 +89,13 @@ defined('ABSPATH') || exit;
                 </div>
 
                 <div class="upb-settings-tools__actions">
-                    <uo-button size="small" href="<?php echo esc_url($refreshAllUrl); ?>">
-                        <?php echo esc_html_x('Refresh all working previews', 'Page Builder', 'uncanny-automator'); ?>
-                    </uo-button>
+                    <form method="post" action="<?php echo esc_url($workingCanvasActionUrl); ?>">
+                        <input type="hidden" name="action" value="<?php echo esc_attr(\UncannyPageBuilder\Infrastructure\WordPress\WorkingCanvasAdminActions::REFRESH_ALL_ACTION); ?>">
+                        <?php wp_nonce_field(\UncannyPageBuilder\Infrastructure\WordPress\WorkingCanvasAdminActions::REFRESH_ALL_ACTION); ?>
+                        <button type="submit" class="button button-secondary button-small">
+                            <?php echo esc_html_x('Refresh all working previews', 'Page Builder', 'uncanny-automator'); ?>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

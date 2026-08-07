@@ -39,14 +39,21 @@ final class ShellController
         $headerHtml = $request->get_param('header_html');
         $footerHtml = $request->get_param('footer_html');
 
-        if (empty($headerHtml) && empty($footerHtml)) {
+        if (
+            ($headerHtml !== null && !is_string($headerHtml))
+            || ($footerHtml !== null && !is_string($footerHtml))
+        ) {
+            return ApiResponse::error(ErrorMessage::ShellMissingHtml);
+        }
+
+        if (trim($headerHtml ?? '') === '' && trim($footerHtml ?? '') === '') {
             return ApiResponse::error(ErrorMessage::ShellMissingHtml);
         }
 
         try {
             $result = $this->shellImportService->analyze(
-                is_string($headerHtml) ? $headerHtml : null,
-                is_string($footerHtml) ? $footerHtml : null,
+                $headerHtml,
+                $footerHtml,
             );
         } catch (ShellHtmlTooLargeException $e) {
             return ApiResponse::error(ErrorMessage::ShellHtmlTooLarge, [
@@ -67,14 +74,23 @@ final class ShellController
         $header = $request->get_param('header');
         $footer = $request->get_param('footer');
 
-        if (empty($header) && empty($footer)) {
+        if (
+            ($header !== null && !is_array($header))
+            || ($footer !== null && !is_array($footer))
+        ) {
             return ApiResponse::error(ErrorMessage::ShellMissingAnalysis);
         }
 
-        $result = $this->shellImportService->import(
-            is_array($header) ? $header : null,
-            is_array($footer) ? $footer : null,
-        );
+        if (($header === null || $header === []) && ($footer === null || $footer === [])) {
+            return ApiResponse::error(ErrorMessage::ShellMissingAnalysis);
+        }
+
+        try {
+            $result = $this->shellImportService->import($header, $footer);
+        } catch (\InvalidArgumentException) {
+            return ApiResponse::error(ErrorMessage::ShellMissingAnalysis);
+        }
+
         return ApiResponse::created([
             'header_id' => $result['header_id'] ?? null,
             'footer_id' => $result['footer_id'] ?? null,

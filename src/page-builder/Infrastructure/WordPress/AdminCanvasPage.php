@@ -162,8 +162,8 @@ final class AdminCanvasPage
         add_filter('automator_mcp_launcher_parent_selector', static function (): string {
             return '#uncanny-pb-editor-layout';
         });
-        add_filter('automator_mcp_in_allowed_pages', function (bool $allowed): bool {
-            return $allowed || $this->allowedCapabilities->currentUserHasAllowedCapability();
+        add_filter('automator_mcp_in_allowed_pages', function ($allowed = null): bool {
+            return $allowed === true || $this->allowedCapabilities->currentUserHasAllowedCapability();
         });
 
         // The admin canvas exits before wp-admin reaches admin_footer, so it
@@ -225,7 +225,7 @@ final class AdminCanvasPage
 
         add_filter(
             'uncanny_page_builder_bridge_data',
-            static function (array $data) use (
+            static function ($data = null) use (
                 $enabled,
                 $state,
                 $post,
@@ -233,6 +233,7 @@ final class AdminCanvasPage
                 $sourceGeneration,
                 $exitUrl,
             ): array {
+                $data = is_array($data) ? $data : [];
                 $data['editorLock'] = [
                     'enabled'           => $enabled,
                     'state'             => $state,

@@ -20,6 +20,7 @@ use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
 use UncannyPageBuilder\Infrastructure\Automator\AutomatorSetupWizardUrl;
 use UncannyPageBuilder\Infrastructure\Section\HtmlBridgeArtifactCleaner;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 
 final class CanvasRenderer implements CanvasGlobalPartRendererInterface
 {
@@ -55,7 +56,10 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
 
     public function render(): void
     {
-        $postId = get_the_ID();
+        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+        if ($postId === null) {
+            return;
+        }
 
         // Global part canvas — render only the global part's sections.
         if (get_post_type($postId) === 'upb_global_part') {
@@ -172,8 +176,10 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
             ) ?? $html;
         }
 
-        /** @var string $html */
-        $html = apply_filters('uncanny_page_builder_section_html', $html, $sectionId);
+        $filteredHtml = apply_filters('uncanny_page_builder_section_html', $html, $sectionId);
+        if (is_string($filteredHtml)) {
+            $html = $filteredHtml;
+        }
 
         return AlpineVisibilityGuard::addCloakToXShow($html);
     }

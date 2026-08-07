@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Presentation\Api;
 
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
@@ -28,11 +29,13 @@ final class SectionController
                 'methods'             => 'PATCH',
                 'callback'            => [$this, 'patch'],
                 'permission_callback' => [$this->permissions, 'canEdit'],
+                'args'                => ['section_id' => RequestId::routeArgument()],
             ],
             [
                 'methods'             => 'DELETE',
                 'callback'            => [$this, 'delete'],
                 'permission_callback' => [$this->permissions, 'canManage'],
+                'args'                => ['section_id' => RequestId::routeArgument()],
             ],
         ]);
 
@@ -40,16 +43,21 @@ final class SectionController
             'methods'             => 'PUT',
             'callback'            => [$this, 'restore'],
             'permission_callback' => [$this->permissions, 'canEdit'],
+            'args'                => ['page_id' => RequestId::routeArgument()],
         ]);
     }
 
     public function patch(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $sectionId = absint($request->get_param('section_id'));
+        $sectionId = RequestId::fromUrl($request, 'section_id');
         $pageId    = absint($request->get_param('page_id'));
         $html      = $request->get_param('html');
 
-        if (!$html) {
+        if ($sectionId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
+
+        if (!is_string($html) || !$html) {
             return ApiResponse::error(ErrorMessage::HtmlRequired);
         }
 
@@ -86,8 +94,12 @@ final class SectionController
 
     public function delete(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $sectionId = absint($request->get_param('section_id'));
+        $sectionId = RequestId::fromUrl($request, 'section_id');
         $pageId    = absint($request->get_param('page_id'));
+
+        if ($sectionId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         if (!$pageId) {
             return ApiResponse::error(ErrorMessage::LayoutParamsRequired);
@@ -119,8 +131,12 @@ final class SectionController
 
     public function restore(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId   = absint($request->get_param('page_id'));
+        $pageId   = RequestId::fromUrl($request, 'page_id');
         $sections = $request->get_param('sections');
+
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         if (!is_array($sections)) {
             return ApiResponse::error(ErrorMessage::SectionsRequired);

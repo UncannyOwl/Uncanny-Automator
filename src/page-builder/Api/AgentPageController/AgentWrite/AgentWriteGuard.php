@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Api\AgentPageController\AgentWrite;
 
 use UncannyPageBuilder\Api\AgentTextResponse;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\Concurrency\PageSourceMutation;
 use UncannyPageBuilder\Application\Editor\SelectEditorPageSource;
 use UncannyPageBuilder\Application\Publishing\PageLiveStateReaderInterface;
@@ -216,7 +217,7 @@ final class AgentWriteGuard
 
     private function requestPageId(\WP_REST_Request $request): int
     {
-        $pageId = \absint($request->get_param('page_id'));
+        $pageId = RequestId::fromUrl($request, 'page_id') ?? 0;
         if ($pageId > 0) {
             return $pageId;
         }

@@ -373,16 +373,12 @@ final class AiPagesListTable extends \WP_List_Table
             return;
         }
 
-        $createUrl = wp_nonce_url(
-            admin_url('admin-post.php?action=uncanny_page_builder_create_page'),
-            'uncanny_page_builder_create_page'
-        );
-
-        printf(
-            '%s <a href="%s">%s</a>',
-            esc_html_x('No pages yet.', 'Page Builder', 'uncanny-automator'),
-            esc_url($createUrl),
-            esc_html_x('Create your first page', 'Page Builder', 'uncanny-automator')
-        );
+        echo esc_html_x('No pages yet.', 'Page Builder', 'uncanny-automator');
+        echo ' <form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" style="display:inline">';
+        echo '<input type="hidden" name="action" value="' . esc_attr(PageFactory::CREATE_ACTION) . '">';
+        wp_nonce_field(PageFactory::CREATE_ACTION);
+        echo '<button type="submit" class="button-link">';
+        echo esc_html_x('Create your first page', 'Page Builder', 'uncanny-automator');
+        echo '</button></form>';
     }
 }

@@ -8,7 +8,7 @@ final class GlobalPartCpt
 {
     public function register(): void
     {
-        $labels = apply_filters('uncanny_page_builder_global_parts_labels', [
+        $defaultLabels = [
             'name'                  => _x('Reusable parts', 'Page Builder', 'uncanny-automator'),
             'singular_name'         => _x('Reusable part', 'Page Builder', 'uncanny-automator'),
             'menu_name'             => _x('Reusable parts', 'Page Builder', 'uncanny-automator'),
@@ -29,7 +29,9 @@ final class GlobalPartCpt
             'filter_items_list'     => _x('Filter reusables list', 'Page Builder', 'uncanny-automator'),
             'items_list_navigation' => _x('Reusables list navigation', 'Page Builder', 'uncanny-automator'),
             'items_list'            => _x('Reusables list', 'Page Builder', 'uncanny-automator'),
-        ]);
+        ];
+        $filteredLabels = apply_filters('uncanny_page_builder_global_parts_labels', $defaultLabels);
+        $labels = is_array($filteredLabels) ? $filteredLabels : $defaultLabels;
         $menuCapability = PageBuilderAccessCapability::NAME;
 
         register_post_type('upb_global_part', [

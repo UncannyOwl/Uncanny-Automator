@@ -4,7 +4,7 @@ Tags: automation, google sheets, openai, learndash, webhooks
 Requires at least: 5.8
 Tested up to: 7.0.3
 Requires PHP: 7.4
-Stable tag: 7.5.0.2
+Stable tag: 7.5.0.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -425,6 +425,17 @@ We're a Toronto-based WordPress company specializing in elearning and automation
 8. Create powerful recipes that just work, all with one plugin
 
 == Changelog ==
+
+= 7.5.0.3 [2026-08-07] =
+
+**Fixed:**
+
+* Uncanny Agent - Page Builder - Improved validation of page, section, canvas, reusable-part, and other request identifiers to prevent malformed data from causing errors or targeting unintended content.
+* Uncanny Agent - Page Builder - Hardened WordPress hooks, administration callbacks, meta boxes, editor requests, and cleanup operations against missing or unexpected data.
+* Uncanny Agent - Page Builder - Improved rendering safeguards to prevent invalid dynamic or conditional content, unintended published content, and stale page data from affecting output.
+* Uncanny Agent - Page Builder - Improved validation and reliability of import, export, shell analysis, and static export operations.
+* Uncanny Agent - Page Builder - Added permission checks for canvas deletion and improved handling of sensitive error information.
+* Uncanny Agent - Page Builder - Improved compatibility and error handling on sites with missing server extensions or unexpected request data.
 
 = 7.5.0.2 [2026-08-07] =
 

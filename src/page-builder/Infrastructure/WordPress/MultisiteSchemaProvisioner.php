@@ -25,7 +25,7 @@ final class MultisiteSchemaProvisioner
         add_action('wp_initialize_site', [$this, 'provisionSite'], 200, 2);
     }
 
-    public function provisionSite(mixed $site, array $args = []): void
+    public function provisionSite($site = null, $args = null): void
     {
         unset($args);
 
@@ -65,6 +65,14 @@ final class MultisiteSchemaProvisioner
             return max(0, (int) ($site->blog_id ?? $site->id ?? 0));
         }
 
-        return max(0, (int) $site);
+        if (is_int($site)) {
+            return max(0, $site);
+        }
+
+        if (is_string($site) && ctype_digit($site)) {
+            return max(0, (int) $site);
+        }
+
+        return 0;
     }
 }

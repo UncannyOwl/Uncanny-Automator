@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Api\AgentPageController;
 
 use UncannyPageBuilder\Api\AgentTextResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\Access\PageBuilderDisabledException;
 use UncannyPageBuilder\Application\Canvas\AttachReusableToCanvasCommand;
 use UncannyPageBuilder\Application\Canvas\AttachReusableToCanvasUseCase;
@@ -246,6 +247,14 @@ final class CanvasController
 
     private function deleteFromRequest(\WP_REST_Request $request): \WP_REST_Response
     {
+        $requestedCanvasId = $request->get_param('canvas_id');
+        if ($requestedCanvasId !== null && RequestId::positive($requestedCanvasId) === null) {
+            return $this->textToolError('manage_canvas', 400, 'invalid_canvas_id', [
+                'NEXT STEP',
+                'Retry with a positive integer canvas_id.',
+            ]);
+        }
+
         $canvasId = $this->requestedCanvasId($request);
         if ($canvasId <= 0) {
             return $this->textToolError('manage_canvas', 400, 'missing_canvas_id', [
@@ -260,6 +269,14 @@ final class CanvasController
                 'DETAIL: Uncanny Agent cannot trash or permanently delete a page.',
                 'NEXT STEP',
                 'A human can move the page to Trash from the Manual editor or WordPress Pages screen.',
+            ]);
+        }
+
+        if (!$this->permissions->canManagePost($canvasId)) {
+            return $this->textToolError('manage_canvas', 403, 'canvas_manage_forbidden', [
+                'CANVAS_ID: ' . $canvasId,
+                'NEXT STEP',
+                'Ask a site administrator for permission to manage this canvas.',
             ]);
         }
 
@@ -412,19 +429,19 @@ final class CanvasController
 
     private function requestedCanvasId(\WP_REST_Request $request): int
     {
-        $canvasId = absint($request->get_param('canvas_id'));
-        if ($canvasId > 0) {
-            return $canvasId;
+        $canvasIdValue = $request->get_param('canvas_id');
+        if ($canvasIdValue !== null) {
+            return RequestId::positive($canvasIdValue) ?? 0;
         }
 
-        $pageId = absint($request->get_param('page_id'));
-        if ($pageId > 0) {
-            return $pageId;
+        $pageIdValue = $request->get_param('page_id');
+        if ($pageIdValue !== null) {
+            return RequestId::positive($pageIdValue) ?? 0;
         }
 
-        $globalPartId = $this->requestGlobalPartId($request);
-        if ($globalPartId > 0) {
-            return $globalPartId;
+        $globalPartIdValue = $request->get_param('global_part_id');
+        if ($globalPartIdValue !== null) {
+            return RequestId::positive($globalPartIdValue) ?? 0;
         }
 
         $context = $request->get_param('page_builder_context');
@@ -432,12 +449,11 @@ final class CanvasController
             return 0;
         }
 
-        $contextGlobalPartId = absint($context['global_part_id'] ?? 0);
-        if ($contextGlobalPartId > 0) {
-            return $contextGlobalPartId;
+        if (array_key_exists('global_part_id', $context)) {
+            return RequestId::positive($context['global_part_id']) ?? 0;
         }
 
-        return absint($context['page_id'] ?? 0);
+        return RequestId::positive($context['page_id'] ?? null) ?? 0;
     }
 
     private function requestedCanvasKind(\WP_REST_Request $request): CanvasKind|false|null

@@ -16,6 +16,7 @@ use UncannyPageBuilder\Domain\SourcePackage\SourcePackageValidationException;
 
 final class PageFactory
 {
+    public const CREATE_ACTION = 'uncanny_page_builder_create_page';
     public const IMPORT_ACTION = 'uncanny_page_builder_import_page';
     public const IMPORT_NOTICE_SCREEN = 'page_source_import';
 
@@ -39,7 +40,8 @@ final class PageFactory
 
     public function create(): void
     {
-        check_admin_referer('uncanny_page_builder_create_page');
+        $this->assertPostRequest();
+        check_admin_referer(self::CREATE_ACTION);
 
         if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
             wp_die(
@@ -367,6 +369,19 @@ final class PageFactory
             ),
             esc_html_x('Uncanny Page Builder is disabled', 'Page Builder', 'uncanny-automator'),
             ['response' => 403],
+        );
+    }
+
+    private function assertPostRequest(): void
+    {
+        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST') {
+            return;
+        }
+
+        wp_die(
+            esc_html_x('Page creation requires a POST request.', 'Page Builder', 'uncanny-automator'),
+            esc_html_x('Invalid request', 'Page Builder', 'uncanny-automator'),
+            ['response' => 405],
         );
     }
 }

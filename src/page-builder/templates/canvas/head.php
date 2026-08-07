@@ -39,7 +39,8 @@ defined('ABSPATH') || exit;
     ?>
     <style id="uncanny-page-builder-reset"><?php echo StyleElementCss::escape(CanvasResetCss::render()); ?></style>
 
-    <?php echo wp_kses_post(apply_filters('uncanny_page_builder_canvas_head', '')); ?>
+    <?php $canvasHead = apply_filters('uncanny_page_builder_canvas_head', ''); ?>
+    <?php echo wp_kses_post(is_string($canvasHead) ? $canvasHead : ''); ?>
 
     <?php
     /*

@@ -66,8 +66,13 @@ final class NativePageListPresenter
      * @param array<int|string, string> $states
      * @return array<int|string, string>
      */
-    public function addOwnershipState(array $states, \WP_Post $post): array
+    public function addOwnershipState($states = null, $post = null): array
     {
+        $states = is_array($states) ? $states : [];
+        if (!$post instanceof \WP_Post) {
+            return $states;
+        }
+
         if (!$this->isPresentedAsOwned($post)) {
             return $states;
         }
@@ -92,8 +97,13 @@ final class NativePageListPresenter
      * @param array<string, string> $actions
      * @return array<string, string>
      */
-    public function routeOwnedPageActions(array $actions, \WP_Post $post): array
+    public function routeOwnedPageActions($actions = null, $post = null): array
     {
+        $actions = is_array($actions) ? $actions : [];
+        if (!$post instanceof \WP_Post) {
+            return $actions;
+        }
+
         if (!$this->isPresentedAsOwned($post)) {
             return $actions;
         }
@@ -166,11 +176,15 @@ final class NativePageListPresenter
      * dashboard links, and the admin bar. Restrict this override to the native
      * Pages list so Settings saves remain on the WordPress settings screen.
      */
-    public function routeOwnedPageEditLink(string $location, int $postId, string $context = 'display'): string
+    public function routeOwnedPageEditLink($location = null, $postId = null, $context = 'display'): string
     {
+        $location = is_string($location) ? $location : '';
+        $postId = WordPressPostId::fromMixed($postId);
+        $context = is_string($context) ? $context : 'display';
+
         if (
             !$this->isNativePagesListScreen()
-            || $postId <= 0
+            || $postId === null
             || !$this->supportsPostId($postId)
             || !$this->ownership->isOwned($postId)
         ) {

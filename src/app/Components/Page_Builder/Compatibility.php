@@ -35,6 +35,10 @@ class Compatibility {
 			return $this->result( 'wordpress_incompatible', 'Page Builder requires WordPress 6.3 or newer.' );
 		}
 
+		if ( empty( $environment['dom_available'] ) ) {
+			return $this->result( 'dom_extension_missing', 'Page Builder requires the PHP DOM extension.' );
+		}
+
 		if ( ! empty( $environment['ownership_marker_defined'] ) ) {
 			return $this->result(
 				! empty( $environment['owns_runtime'] ) ? 'already_owned' : 'ownership_marker_conflict',

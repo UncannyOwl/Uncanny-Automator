@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Presentation\Api;
 
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\Canvas\CanvasGlobalPartsProviderInterface;
 use UncannyPageBuilder\Application\Editor\SelectEditorPageSource;
@@ -42,6 +43,7 @@ final class LayoutController
             'methods'             => 'GET',
             'callback'            => [$this, 'read'],
             'permission_callback' => [$this->permissions, 'canEdit'],
+            'args'                => ['page_id' => RequestId::nonNegativeRouteArgument()],
         ]);
     }
 
@@ -70,7 +72,7 @@ final class LayoutController
             }
         }
 
-        if (!$pageId || !$content) {
+        if (!$pageId || !is_array($content) || !$content) {
             return ApiResponse::error(ErrorMessage::LayoutParamsRequired);
         }
 
@@ -109,8 +111,12 @@ final class LayoutController
 
     public function read(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = absint($request->get_param('page_id'));
+        $pageId = RequestId::nonNegativeFromUrl($request, 'page_id');
         $globalPartId = absint($request->get_param('global_part_id'));
+
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         // Reusable canvases refresh through the same layout facade, but they
         // must read from the global-part lane before the page lane.

@@ -65,17 +65,32 @@ final class ShellImportService
         $headerId = null;
         $footerId = null;
         $warnings = [];
+        $header = null;
+        $footer = null;
 
         if ($headerAnalysis !== null) {
-            $analysis = ShellImportAnalysis::fromArray($headerAnalysis);
-            $warnings = array_merge($warnings, $analysis->warnings);
+            $header = ShellImportAnalysis::fromArray($headerAnalysis);
+            if ($header->type !== 'header') {
+                throw new \InvalidArgumentException('Header analysis type must be header.');
+            }
+            $warnings = array_merge($warnings, $header->warnings);
+        }
 
+        if ($footerAnalysis !== null) {
+            $footer = ShellImportAnalysis::fromArray($footerAnalysis);
+            if ($footer->type !== 'footer') {
+                throw new \InvalidArgumentException('Footer analysis type must be footer.');
+            }
+            $warnings = array_merge($warnings, $footer->warnings);
+        }
+
+        if ($header !== null) {
             $result = $this->globalPartService->createOrReplace(
                 'Imported Header',
                 [
                     'name'    => 'Imported Header',
                     'content' => [
-                        'html' => $this->buildHeaderHtml($analysis),
+                        'html' => $this->buildHeaderHtml($header),
                         'css'  => $this->buildHeaderCss(),
                     ],
                 ],
@@ -84,16 +99,13 @@ final class ShellImportService
             $headerId = $result['id'];
         }
 
-        if ($footerAnalysis !== null) {
-            $analysis = ShellImportAnalysis::fromArray($footerAnalysis);
-            $warnings = array_merge($warnings, $analysis->warnings);
-
+        if ($footer !== null) {
             $result = $this->globalPartService->createOrReplace(
                 'Imported Footer',
                 [
                     'name'    => 'Imported Footer',
                     'content' => [
-                        'html' => $this->buildFooterHtml($analysis),
+                        'html' => $this->buildFooterHtml($footer),
                         'css'  => $this->buildFooterCss(),
                     ],
                 ],

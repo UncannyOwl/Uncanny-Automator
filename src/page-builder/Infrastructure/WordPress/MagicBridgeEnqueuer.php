@@ -90,7 +90,10 @@ final class MagicBridgeEnqueuer
             return;
         }
 
-        $postId = get_the_ID();
+        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+        if ($postId === null) {
+            return;
+        }
 
         // Global part canvas — bypass page ownership check.
         $isGlobalPart = is_singular('upb_global_part');
@@ -278,8 +281,10 @@ final class MagicBridgeEnqueuer
             'strings'        => $this->bridgeStrings(),
         ];
 
-        /** @var array<string, mixed> $bridgeData */
-        $bridgeData = apply_filters('uncanny_page_builder_bridge_data', $bridgeData, $postId);
+        $filteredBridgeData = apply_filters('uncanny_page_builder_bridge_data', $bridgeData, $postId);
+        if (is_array($filteredBridgeData)) {
+            $bridgeData = $filteredBridgeData;
+        }
 
         $this->addBrandingInlineScript($postId);
         $this->addTypographyInlineScript();
@@ -336,8 +341,10 @@ final class MagicBridgeEnqueuer
             'strings'         => $this->bridgeStrings(),
         ];
 
-        /** @var array<string, mixed> $bridgeData */
-        $bridgeData = apply_filters('uncanny_page_builder_bridge_data', $bridgeData, $globalPartId);
+        $filteredBridgeData = apply_filters('uncanny_page_builder_bridge_data', $bridgeData, $globalPartId);
+        if (is_array($filteredBridgeData)) {
+            $bridgeData = $filteredBridgeData;
+        }
 
         $this->addBrandingInlineScript(0);
         $this->addTypographyInlineScript();
@@ -577,8 +584,10 @@ final class MagicBridgeEnqueuer
      * @param array<int, string> $classes
      * @return array<int, string>
      */
-    public function addAdminBaselineBodyClasses(array $classes): array
+    public function addAdminBaselineBodyClasses($classes = null): array
     {
+        $classes = is_array($classes) ? $classes : [];
+
         $classes[] = 'wp-core-ui';
 
         $scheme = get_user_option('admin_color');

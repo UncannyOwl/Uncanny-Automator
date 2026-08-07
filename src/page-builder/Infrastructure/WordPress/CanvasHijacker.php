@@ -27,13 +27,15 @@ final class CanvasHijacker
         $this->assetAllowlist   = $assetAllowlist ?? new CanvasAssetAllowlist();
     }
 
-    public function hijack(string $template): string
+    public function hijack($template = null): string
     {
+        $template = is_string($template) ? $template : '';
+
         if (!is_singular()) {
             return $template;
         }
 
-        $postId = (int) get_the_ID();
+        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
 
         // Global parts: require edit capability (not publicly viewable).
         if (is_singular('upb_global_part')) {
@@ -41,7 +43,7 @@ final class CanvasHijacker
                 return $this->denyGlobalPartAccess($template);
             }
 
-            if ($postId <= 0) {
+            if ($postId === null) {
                 return $template;
             }
 
@@ -50,7 +52,7 @@ final class CanvasHijacker
             return $this->returnWorkingCanvas($template, $postId);
         }
 
-        if ($postId <= 0) {
+        if ($postId === null) {
             return $template;
         }
 
@@ -77,7 +79,11 @@ final class CanvasHijacker
 
         $this->prepareCanvasResponse();
 
-        return apply_filters('uncanny_page_builder_canvas_template', $canvas, $postId);
+        $filteredCanvas = apply_filters('uncanny_page_builder_canvas_template', $canvas, $postId);
+
+        return is_string($filteredCanvas) && $filteredCanvas !== '' && is_readable($filteredCanvas)
+            ? $filteredCanvas
+            : $canvas;
     }
 
     private function returnPublishedCanvas(string $fallback): string

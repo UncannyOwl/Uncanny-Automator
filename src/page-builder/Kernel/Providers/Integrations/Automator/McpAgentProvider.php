@@ -53,8 +53,8 @@ final class McpAgentProvider implements ServiceProviderInterface
         $conversationStarters = new \UncannyPageBuilder\Infrastructure\Automator\McpConversationStarters($sectionRepo);
         add_filter('automator_mcp_conversation_starters', [$conversationStarters, 'filter'], 10, 2);
 
-        add_filter('automator_mcp_in_allowed_pages', static function (bool $allowed) use ($allowedCapabilities): bool {
-            if ($allowed) {
+        add_filter('automator_mcp_in_allowed_pages', static function ($allowed = null) use ($allowedCapabilities): bool {
+            if ($allowed === true) {
                 return true;
             }
             if (! $allowedCapabilities->currentUserHasAllowedCapability()) {

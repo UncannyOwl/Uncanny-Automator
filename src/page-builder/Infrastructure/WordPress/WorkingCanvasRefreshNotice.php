@@ -72,23 +72,12 @@ final class WorkingCanvasRefreshNotice
         echo esc_html_x('Your pages are safe.', 'Page Builder', 'uncanny-automator');
         echo '</strong>';
         echo '</p>';
-        echo '<p><a class="button button-small" href="';
-        echo esc_url($this->clearFailuresUrl());
-        echo '">';
+        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        echo '<input type="hidden" name="action" value="' . esc_attr(WorkingCanvasAdminActions::CLEAR_FAILURES_ACTION) . '">';
+        wp_nonce_field(WorkingCanvasAdminActions::CLEAR_FAILURES_ACTION);
+        echo '<button type="submit" class="button button-small">';
         echo esc_html_x('Clear this notice', 'Page Builder', 'uncanny-automator');
-        echo '</a></p>';
+        echo '</button></form>';
         echo '</div>';
-    }
-
-    /**
-     * Nonce functions load after plugins bootstrap, so build this URL only
-     * while WordPress is rendering the authenticated admin notice.
-     */
-    private function clearFailuresUrl(): string
-    {
-        return wp_nonce_url(
-            admin_url('admin-post.php?action=' . WorkingCanvasAdminActions::CLEAR_FAILURES_ACTION),
-            WorkingCanvasAdminActions::CLEAR_FAILURES_ACTION,
-        );
     }
 }

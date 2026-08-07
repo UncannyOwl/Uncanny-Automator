@@ -70,8 +70,12 @@ final class DesignStandardsMetaBox
         );
     }
 
-    public function renderTextStyles(\WP_Post $post): void
+    public function renderTextStyles($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         [
             'typographyRoles' => $typographyRoles,
             'typographyDefaults' => $typographyDefaults,
@@ -87,8 +91,12 @@ final class DesignStandardsMetaBox
         include __DIR__ . '/../../Presentation/DesignStandards/page-text-styles.php';
     }
 
-    public function renderColors(\WP_Post $post): void
+    public function renderColors($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         [
             'tokenGroups' => $tokenGroups,
             'lockedTokenKeys' => $lockedTokenKeys,

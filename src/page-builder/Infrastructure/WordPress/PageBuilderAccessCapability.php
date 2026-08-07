@@ -33,9 +33,13 @@ final class PageBuilderAccessCapability
      * @param array<int, mixed> $args
      * @return array<string, bool>
      */
-    public function grantCapability(array $allCaps, array $requestedCaps, array $args, mixed $user): array
+    public function grantCapability($allCaps = null, $requestedCaps = null, $args = null, $user = null): array
     {
         unset($user);
+
+        $allCaps = is_array($allCaps) ? $allCaps : [];
+        $requestedCaps = is_array($requestedCaps) ? $requestedCaps : [];
+        $args = is_array($args) ? $args : [];
 
         $requestedCapability = is_string($args[0] ?? null)
             ? $args[0]

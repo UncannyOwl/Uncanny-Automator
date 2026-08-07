@@ -34,17 +34,16 @@ final class WorkingCanvasAdminActions
     }
 
     // Settings tools entry point
-    public function refreshAllUrl(): string
+    public function actionUrl(): string
     {
-        return wp_nonce_url(
-            admin_url('admin-post.php?action=' . self::REFRESH_ALL_ACTION),
-            self::REFRESH_ALL_ACTION
-        );
+        return admin_url('admin-post.php');
     }
 
     // Hidden admin-post controller
     public function refreshAll(): never
     {
+        $this->assertPostRequest();
+
         if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
             wp_die(esc_html_x("You don't have permission to refresh Page Builder previews. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'));
         }
@@ -66,6 +65,8 @@ final class WorkingCanvasAdminActions
 
     public function clearFailures(): never
     {
+        $this->assertPostRequest();
+
         if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
             wp_die(esc_html_x("You don't have permission to clear Page Builder preview failures. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'));
         }
@@ -108,5 +109,18 @@ final class WorkingCanvasAdminActions
         }
 
         return $this->inlineRefreshRunner->runBatch(self::INLINE_REBUILD_LIMIT);
+    }
+
+    private function assertPostRequest(): void
+    {
+        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST') {
+            return;
+        }
+
+        wp_die(
+            esc_html_x('This maintenance action requires a POST request.', 'Page Builder', 'uncanny-automator'),
+            esc_html_x('Invalid request', 'Page Builder', 'uncanny-automator'),
+            ['response' => 405],
+        );
     }
 }

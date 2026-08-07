@@ -93,8 +93,12 @@ final class BlockEditorButton
 
     // Section: Classic Editor entry point
 
-    public function renderClassicEditorButton(\WP_Post $post): void
+    public function renderClassicEditorButton($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         /*
          * Gutenberg fires edit_form_after_title while scraping hidden fields
          * from Classic Editor integrations. Do not let that compatibility pass
@@ -125,8 +129,14 @@ final class BlockEditorButton
      * save request. Invalid or forged requests fall back to WordPress's own
      * redirect without changing Page Builder ownership.
      */
-    public function redirectClassicEditorSave(string $location, int $postId): string
+    public function redirectClassicEditorSave($location = null, $postId = null): string
     {
+        $location = is_string($location) ? $location : '';
+        $postId = WordPressPostId::fromMixed($postId);
+        if ($postId === null) {
+            return $location;
+        }
+
         $requested = $_POST[self::CLASSIC_OPEN_FIELD] ?? null;
         if (!is_scalar($requested) || wp_unslash((string) $requested) !== '1') {
             return $location;

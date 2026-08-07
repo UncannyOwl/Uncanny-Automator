@@ -64,7 +64,9 @@ class Admin_Settings_Uncanny_Page_Builder_General {
 	 *
 	 * @return array<string, object>
 	 */
-	public function register_tab( $tabs ) {
+	public function register_tab( $tabs = null ) {
+		$tabs = is_array( $tabs ) ? $tabs : array();
+
 		$tabs['general'] = (object) array(
 			'name'     => esc_html__( 'General', 'uncanny-automator' ),
 			'function' => array( $this, 'tab_output' ),

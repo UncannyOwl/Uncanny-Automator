@@ -162,8 +162,10 @@ final class AdminCanvasEditorWindowedPage
 HTML;
     }
 
-    public function addAdminBodyClass(string $classes): string
+    public function addAdminBodyClass($classes = null): string
     {
+        $classes = is_string($classes) ? $classes : '';
+
         return trim($classes . ' upb-canvas-editor-windowed-host');
     }
 
@@ -207,9 +209,9 @@ HTML;
         };
     }
 
-    public function filterHostAgentSurface(bool $shouldRender, string $surface): bool
+    public function filterHostAgentSurface($shouldRender = null, $surface = null): bool
     {
-        if (!$shouldRender) {
+        if ($shouldRender !== true || !is_string($surface)) {
             return false;
         }
 

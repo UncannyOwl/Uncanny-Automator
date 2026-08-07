@@ -25,14 +25,6 @@ final class ReusableFactory
         private readonly ?ReusableSourcePackageService $sourcePackages = null,
     ) {}
 
-    public static function creationUrl(): string
-    {
-        return admin_url(
-            'admin-post.php?action=' . self::CREATE_ACTION
-            . '&_wpnonce=' . rawurlencode((string) wp_create_nonce(self::CREATE_ACTION))
-        );
-    }
-
     public function redirectPostNewForReusable(): void
     {
         $postType = isset($_GET['post_type']) && is_string($_GET['post_type'])
@@ -50,12 +42,25 @@ final class ReusableFactory
             );
         }
 
-        wp_safe_redirect(self::creationUrl(), 303, 'Uncanny Page Builder');
-        exit;
+        $formId = 'upb-create-reusable-form';
+        $form = '<form id="' . esc_attr($formId) . '" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">'
+            . '<input type="hidden" name="action" value="' . esc_attr(self::CREATE_ACTION) . '">'
+            . '<input type="hidden" name="_wpnonce" value="' . esc_attr((string) wp_create_nonce(self::CREATE_ACTION)) . '">'
+            . '<button type="submit" class="button button-primary">'
+            . esc_html_x('Add new reusable', 'Page Builder', 'uncanny-automator')
+            . '</button></form>'
+            . '<script>document.getElementById("' . esc_js($formId) . '").submit();</script>';
+
+        wp_die(
+            $form,
+            esc_html_x('Add new reusable', 'Page Builder', 'uncanny-automator'),
+            ['response' => 200],
+        );
     }
 
     public function create(): void
     {
+        $this->assertPostRequest();
         check_admin_referer(self::CREATE_ACTION);
 
         if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
@@ -149,5 +154,18 @@ final class ReusableFactory
             'Uncanny Page Builder',
         );
         exit;
+    }
+
+    private function assertPostRequest(): void
+    {
+        if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? '')) === 'POST') {
+            return;
+        }
+
+        wp_die(
+            esc_html_x('Reusable creation requires a POST request.', 'Page Builder', 'uncanny-automator'),
+            esc_html_x('Invalid request', 'Page Builder', 'uncanny-automator'),
+            ['response' => 405],
+        );
     }
 }

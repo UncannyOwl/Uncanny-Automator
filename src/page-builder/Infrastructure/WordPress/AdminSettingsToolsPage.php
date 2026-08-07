@@ -17,7 +17,7 @@ final class AdminSettingsToolsPage
     {
         $notice = $this->resultNotice();
         $queueStatus = $this->queueStatus();
-        $refreshAllUrl = $this->workingCanvasAdminActions->refreshAllUrl();
+        $workingCanvasActionUrl = $this->workingCanvasAdminActions->actionUrl();
 
         include __DIR__ . '/../../Presentation/Settings/tools-section.php';
     }

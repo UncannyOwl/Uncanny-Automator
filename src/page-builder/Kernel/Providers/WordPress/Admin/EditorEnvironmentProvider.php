@@ -24,6 +24,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\BlockEditorButton;
 use UncannyPageBuilder\Infrastructure\WordPress\PageEditorMetaBoxes;
 use UncannyPageBuilder\Infrastructure\WordPress\PageOwnershipActions;
 use UncannyPageBuilder\Infrastructure\WordPress\NativePageSave;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Infrastructure\WordPress\WpOriginalPageContentStore;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
 use UncannyPageBuilder\Kernel\Container;
@@ -120,7 +121,10 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
         // A stale WordPress editor can submit after Page Builder takes active
         // ownership. Protect public fields only while administrator intent
         // keeps Page Builder active for this post type.
-        add_filter('wp_insert_post_data', static function (array $data, array $postarr) use ($sectionRepo, $supportsPostType): array {
+        add_filter('wp_insert_post_data', static function ($data = null, $postarr = null) use ($sectionRepo, $supportsPostType): array {
+            $data = is_array($data) ? $data : [];
+            $postarr = is_array($postarr) ? $postarr : [];
+
             return self::protectOwnedPublicFields($data, $postarr, $sectionRepo, $supportsPostType);
         }, 10, 2);
 
@@ -130,20 +134,36 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
          * a visibility-only action never rebuilds the working Page Builder
          * canvas or enters its publication transaction.
          */
-        add_action('wp_trash_post', static function (int $postId): void {
+        add_action('wp_trash_post', static function ($postId = null): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null) {
+                return;
+            }
             self::$nativeTrashLifecyclePages[$postId] = true;
         }, 1);
-        add_action('untrash_post', static function (int $postId): void {
+        add_action('untrash_post', static function ($postId = null): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null) {
+                return;
+            }
             self::$nativeTrashLifecyclePages[$postId] = true;
         }, 1);
-        add_action('trashed_post', static function (int $postId): void {
+        add_action('trashed_post', static function ($postId = null): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null) {
+                return;
+            }
             unset(self::$nativeTrashLifecyclePages[$postId]);
         }, PHP_INT_MAX);
-        add_action('untrashed_post', static function (int $postId): void {
+        add_action('untrashed_post', static function ($postId = null): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null) {
+                return;
+            }
             unset(self::$nativeTrashLifecyclePages[$postId]);
         }, PHP_INT_MAX);
 
-        add_filter('use_block_editor_for_post', static function ($useBlockEditor, $post) use ($sectionRepo, $supportsPostType): bool {
+        add_filter('use_block_editor_for_post', static function ($useBlockEditor = null, $post = null) use ($sectionRepo, $supportsPostType): bool {
             if (
                 $post instanceof \WP_Post
                 && $supportsPostType->isEnabledByAdministrator($post->post_type)
@@ -151,12 +171,14 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             ) {
                 return false;
             }
-            return $useBlockEditor;
+            return (bool) $useBlockEditor;
         }, 10, 2);
 
-        add_action('add_meta_boxes', static function (string $postType, object $post) use ($pageEditorMetaBoxes, $sectionRepo, $supportsPostType): void {
+        // Third-party admin pages can dispatch this hook without a post object.
+        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($pageEditorMetaBoxes, $sectionRepo, $supportsPostType): void {
             if (
-                $post instanceof \WP_Post
+                is_string($postType)
+                && $post instanceof \WP_Post
                 && $supportsPostType->isEnabledByAdministrator($postType)
                 && (
                     $supportsPostType->isSupported($postType)
@@ -172,8 +194,8 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
          * hook. Schedule pruning on that later hook so boxes registered through
          * either lane are present before the allowlist is enforced.
          */
-        add_action('add_meta_boxes', static function (string $postType, object $post) use ($sectionRepo, $supportsPostType): void {
-            if (!$post instanceof \WP_Post) {
+        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($sectionRepo, $supportsPostType): void {
+            if (!is_string($postType) || !$post instanceof \WP_Post) {
                 return;
             }
 
@@ -183,7 +205,7 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             }
             $scheduledPostTypes[$postType] = true;
 
-            add_action('add_meta_boxes_' . $postType, static function (object $dynamicPost) use ($postType, $sectionRepo, $supportsPostType): void {
+            add_action('add_meta_boxes_' . $postType, static function ($dynamicPost = null) use ($postType, $sectionRepo, $supportsPostType): void {
                 if (
                     !$dynamicPost instanceof \WP_Post
                     || !$supportsPostType->isEnabledByAdministrator($postType)
@@ -197,8 +219,8 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             }, PHP_INT_MAX);
         }, PHP_INT_MAX, 2);
 
-        add_action('admin_enqueue_scripts', static function (string $hook) use ($sectionRepo, $supportsPostType): void {
-            if ($hook !== 'post.php' && $hook !== 'post-new.php') {
+        add_action('admin_enqueue_scripts', static function ($hook = null) use ($sectionRepo, $supportsPostType): void {
+            if (!is_string($hook) || ($hook !== 'post.php' && $hook !== 'post-new.php')) {
                 return;
             }
             $post = get_post();
@@ -226,8 +248,8 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
         }
 
         add_action('save_post', static function (
-            int $postId,
-            \WP_Post $post
+            $postId = null,
+            $post = null
         ) use (
             $sectionRepo,
             $shellModeService,
@@ -239,6 +261,11 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             $pageSources,
             $nativePageSave,
         ): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null || !$post instanceof \WP_Post) {
+                return;
+            }
+
             self::handleSave(
                 $postId,
                 $post,
@@ -362,6 +389,7 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             return;
         }
         if (isset(self::$nativeTrashLifecyclePages[$postId])) {
+            unset(self::$nativeTrashLifecyclePages[$postId]);
             return;
         }
         if (

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Api\AgentPageController\PartEdit;
 
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Api\AgentPageController\ContentTargetController;
 use UncannyPageBuilder\Api\AgentPageController\DesignStyleController;
 use UncannyPageBuilder\Api\AgentPageController\ElementController;
@@ -83,8 +84,8 @@ final class PartEditController
         string $mode,
         array $operation,
     ): \WP_REST_Response|\WP_Error {
-        $sectionId = absint($part['section_id'] ?? 0);
-        if ($sectionId <= 0) {
+        $sectionId = RequestId::positive($part['section_id'] ?? null);
+        if ($sectionId === null) {
             return $this->responses->error(400, 'missing_section_id', [
                 'KIND: section',
                 'NEXT STEP',
@@ -92,9 +93,18 @@ final class PartEditController
             ]);
         }
 
-        $pageId = absint($request->get_param('page_id') ?? 0);
+        $pageIdValue = $request->get_param('page_id');
+        $pageId = $pageIdValue === null ? null : RequestId::positive($pageIdValue);
+        if ($pageIdValue !== null && $pageId === null) {
+            return $this->responses->error(400, 'invalid_page_id', [
+                'KIND: section',
+                'NEXT STEP',
+                'Retry with a positive integer page_id.',
+            ]);
+        }
+
         $base = ['section_id' => $sectionId];
-        if ($pageId > 0) {
+        if ($pageId !== null) {
             $base['page_id'] = $pageId;
         }
 

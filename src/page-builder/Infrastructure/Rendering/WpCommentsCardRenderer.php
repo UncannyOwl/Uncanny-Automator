@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\Rendering;
 
+use UncannyPageBuilder\Domain\Export\StaticExportPageIdentity;
+
 /**
  * Render data-ai-dynamic="wp_comments" regions.
  *
@@ -16,6 +18,10 @@ final class WpCommentsCardRenderer implements SectionRendererInterface
         'comment_type', 'comment_ID',
     ];
 
+    public function __construct(
+        private readonly ?StaticExportPageIdentity $pageIdentity = null,
+    ) {}
+
     public function render(string $cardTemplate, array $args): string
     {
         // Section: declaration defaults pass post_id=0 through the renderer, so
@@ -23,7 +29,7 @@ final class WpCommentsCardRenderer implements SectionRendererInterface
         // relying on the null-coalescing fallback.
         $postId  = (int) ($args['post_id'] ?? 0);
         if ($postId <= 0) {
-            $postId = (int) get_the_ID();
+            $postId = $this->pageIdentity?->pageId() ?? (int) get_the_ID();
         }
         if ($postId <= 0) {
             return '<!-- No comments found -->';

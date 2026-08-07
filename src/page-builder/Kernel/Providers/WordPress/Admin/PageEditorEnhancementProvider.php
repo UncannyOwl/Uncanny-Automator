@@ -20,6 +20,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\DesignStandardsMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartSelectorMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\NativePageSave;
 use UncannyPageBuilder\Infrastructure\WordPress\SectionOrderMetaBox;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
 
@@ -87,56 +88,74 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
         };
 
         // 10. Design Standards page overrides meta box
-        add_action('add_meta_boxes', static function (string $postType, object $post) use ($supportsPostType, $dsMetaBox, $canEditWorkingSource): void {
+        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($supportsPostType, $dsMetaBox, $canEditWorkingSource): void {
             if (
-                $post instanceof \WP_Post
+                is_string($postType)
+                && $post instanceof \WP_Post
                 && $supportsPostType->isSupported($postType)
                 && $canEditWorkingSource($post->ID)
             ) {
                 $dsMetaBox->register($post);
             }
         }, 10, 2);
-        add_action('save_post', static function (int $postId, \WP_Post $post) use ($supportsPostType, $dsMetaBox): void {
+        add_action('save_post', static function ($postId = null, $post = null) use ($supportsPostType, $dsMetaBox): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null || !$post instanceof \WP_Post) {
+                return;
+            }
+
             if ($supportsPostType->isSupported($post->post_type)) {
                 $dsMetaBox->save($postId, $post);
             }
         }, 10, 2);
 
         // 10b-gp. Header & Footer selector meta box
-        add_action('add_meta_boxes', static function (string $postType, object $post) use ($supportsPostType, $gpSelectorMetaBox, $canEditWorkingSource): void {
+        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($supportsPostType, $gpSelectorMetaBox, $canEditWorkingSource): void {
             if (
-                $post instanceof \WP_Post
+                is_string($postType)
+                && $post instanceof \WP_Post
                 && $supportsPostType->isSupported($postType)
                 && $canEditWorkingSource($post->ID)
             ) {
                 $gpSelectorMetaBox->register($post);
             }
         }, 10, 2);
-        add_action('save_post', static function (int $postId, \WP_Post $post) use ($supportsPostType, $gpSelectorMetaBox): void {
+        add_action('save_post', static function ($postId = null, $post = null) use ($supportsPostType, $gpSelectorMetaBox): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null || !$post instanceof \WP_Post) {
+                return;
+            }
+
             if ($supportsPostType->isSupported($post->post_type)) {
                 $gpSelectorMetaBox->save($postId, $post);
             }
         }, 10, 2);
 
         // 10c. Section order meta box (drag-and-drop reordering)
-        add_action('add_meta_boxes', static function (string $postType, object $post) use ($supportsPostType, $sectionOrderMetaBox, $canEditWorkingSource): void {
+        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($supportsPostType, $sectionOrderMetaBox, $canEditWorkingSource): void {
             if (
-                $post instanceof \WP_Post
+                is_string($postType)
+                && $post instanceof \WP_Post
                 && $supportsPostType->isSupported($postType)
                 && $canEditWorkingSource($post->ID)
             ) {
                 $sectionOrderMetaBox->register($post);
             }
         }, 10, 2);
-        add_action('save_post', static function (int $postId, \WP_Post $post) use ($supportsPostType, $sectionOrderMetaBox): void {
+        add_action('save_post', static function ($postId = null, $post = null) use ($supportsPostType, $sectionOrderMetaBox): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null || !$post instanceof \WP_Post) {
+                return;
+            }
+
             if ($supportsPostType->isSupported($post->post_type)) {
                 $sectionOrderMetaBox->save($postId, $post);
             }
         }, 5, 2);
         add_action('admin_notices', [$sectionOrderMetaBox, 'renderSaveNotice']);
 
-        add_action('admin_enqueue_scripts', static function (string $hook) use ($sectionRepo, $allowedCapabilities, $supportsPostType, $canEditWorkingSource): void {
-            if ($hook !== 'post.php' && $hook !== 'post-new.php') {
+        add_action('admin_enqueue_scripts', static function ($hook = null) use ($sectionRepo, $allowedCapabilities, $supportsPostType, $canEditWorkingSource): void {
+            if (!is_string($hook) || ($hook !== 'post.php' && $hook !== 'post-new.php')) {
                 return;
             }
             $postId = absint($_GET['post'] ?? 0);

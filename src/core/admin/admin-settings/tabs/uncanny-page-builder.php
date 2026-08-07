@@ -50,7 +50,9 @@ class Admin_Settings_Uncanny_Page_Builder {
 	 *
 	 * @return array<string,object>
 	 */
-	public function register_tab( $tabs ) {
+	public function register_tab( $tabs = null ) {
+		$tabs = is_array( $tabs ) ? $tabs : array();
+
 		if ( ! $this->can_load_page_builder->execute() ) {
 			return $tabs;
 		}
@@ -77,8 +79,15 @@ class Admin_Settings_Uncanny_Page_Builder {
 		$layout_version                   = automator_filter_has_var( 'automator_hide_settings_tabs' ) ? 'focus' : 'default';
 
 		foreach ( $uncanny_page_builder_tabs as $tab_key => $tab ) {
-			if ( isset( $tab->function ) ) {
-				add_action( 'automator_settings_uncanny_page_builder_' . $tab_key . '_tab', $tab->function );
+			if ( isset( $tab->function ) && is_callable( $tab->function ) ) {
+				$callback = $tab->function;
+				add_action(
+					'automator_settings_uncanny_page_builder_' . $tab_key . '_tab',
+					static function ( ...$ignored ) use ( $callback ): void {
+						unset( $ignored );
+						$callback();
+					}
+				);
 			}
 
 			$tab->is_selected = $tab_key === $current_uncanny_page_builder_tab;

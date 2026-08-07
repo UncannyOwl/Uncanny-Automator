@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Application\Controls\Handlers;
 use UncannyPageBuilder\Application\Controls\ControlHandlerInterface;
 use UncannyPageBuilder\Application\Controls\ControlInvokeRequest;
 use UncannyPageBuilder\Application\Controls\ControlInvokeResult;
+use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\Export\StaticPageExportService;
 
 /**
@@ -16,6 +17,7 @@ final class PageStaticExportHandler implements ControlHandlerInterface
 {
     public function __construct(
         private readonly StaticPageExportService $exports,
+        private readonly PageDetailsPortInterface $pageDetails,
     ) {}
 
     public function __invoke(ControlInvokeRequest $request): ControlInvokeResult
@@ -24,7 +26,16 @@ final class PageStaticExportHandler implements ControlHandlerInterface
             throw new \InvalidArgumentException('page_id is required.');
         }
 
-        $export = $this->exports->buildForPage($request->pageId());
+        $details = $this->pageDetails->find($request->pageId());
+        if ($details === null) {
+            throw new \InvalidArgumentException('Page details are unavailable.');
+        }
+
+        $export = $this->exports->buildForPage(
+            $request->pageId(),
+            $details->title(),
+            $details->permalink(),
+        );
 
         return ControlInvokeResult::success(
             controlId: $request->controlId(),

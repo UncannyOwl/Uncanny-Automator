@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Api\AgentPageController;
 use UncannyPageBuilder\Api\AgentTextResponse;
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\Controls\PageDetails;
 use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
@@ -51,7 +52,11 @@ final class PageContextController
         \WP_REST_Request $request,
         string $toolName,
     ): \WP_REST_Response|\WP_Error {
-        $pageId = \absint($request->get_param('page_id'));
+        $pageId = RequestId::fromUrl($request, 'page_id');
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
+
         $globalPartId = $this->contextGlobalPartId($request, $pageId);
         if ($globalPartId > 0) {
             return $this->readGlobalPartContext($toolName, $globalPartId);

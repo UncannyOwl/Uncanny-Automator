@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Kernel\Providers\Api;
 use UncannyPageBuilder\Api\PermissionChecker;
 use UncannyPageBuilder\Application\Controls\ControlDispatcher;
 use UncannyPageBuilder\Application\Controls\ControlRegistry;
+use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\EditorLock\CheckHumanWriteOwnership;
 use UncannyPageBuilder\Application\Canvas\CanvasGlobalPartsProviderInterface;
 use UncannyPageBuilder\Application\Controls\ControlStateService;
@@ -138,6 +139,7 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(StaticPageExportService::class),
                 $c->typed(DatabaseSectionRepository::class),
                 $c->typed(PermissionChecker::class),
+                $c->typed(PageDetailsPortInterface::class),
             );
         });
     }

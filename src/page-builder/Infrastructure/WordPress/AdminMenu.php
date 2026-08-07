@@ -310,8 +310,10 @@ final class AdminMenu
         add_filter('admin_body_class', [$this, 'filterSettingsNewBodyClass']);
     }
 
-    public function filterSettingsNewBodyClass(string $classes): string
+    public function filterSettingsNewBodyClass($classes = null): string
     {
+        $classes = is_string($classes) ? $classes : '';
+
         return trim($classes . ' uo-recipe_page_uncanny-automator-config');
     }
 
@@ -351,8 +353,10 @@ final class AdminMenu
         $this->canvasEditorWindowedGlobalPartPage->prepareAdminHost();
     }
 
-    public function filterCanvasEditorWindowedParentFile(string $parentFile): string
+    public function filterCanvasEditorWindowedParentFile($parentFile = null): string
     {
+        $parentFile = is_string($parentFile) ? $parentFile : '';
+
         if (!$this->isCanvasEditorWindowedRequest()) {
             return $parentFile;
         }
@@ -366,8 +370,10 @@ final class AdminMenu
         return self::NATIVE_PAGES_MENU_SLUG;
     }
 
-    public function filterCanvasEditorWindowedSubmenuFile(?string $submenuFile): ?string
+    public function filterCanvasEditorWindowedSubmenuFile($submenuFile = null): ?string
     {
+        $submenuFile = is_string($submenuFile) ? $submenuFile : null;
+
         if (!$this->isCanvasEditorWindowedRequest()) {
             return $submenuFile;
         }
@@ -375,8 +381,10 @@ final class AdminMenu
         return self::NATIVE_PAGES_MENU_SLUG;
     }
 
-    public function filterCanvasEditorWindowedGlobalPartParentFile(string $parentFile): string
+    public function filterCanvasEditorWindowedGlobalPartParentFile($parentFile = null): string
     {
+        $parentFile = is_string($parentFile) ? $parentFile : '';
+
         if (!$this->isCanvasEditorWindowedGlobalPartRequest()) {
             return $parentFile;
         }
@@ -389,8 +397,10 @@ final class AdminMenu
         return self::MENU_SLUG;
     }
 
-    public function filterCanvasEditorWindowedGlobalPartSubmenuFile(?string $submenuFile): ?string
+    public function filterCanvasEditorWindowedGlobalPartSubmenuFile($submenuFile = null): ?string
     {
+        $submenuFile = is_string($submenuFile) ? $submenuFile : null;
+
         if (!$this->isCanvasEditorWindowedGlobalPartRequest()) {
             return $submenuFile;
         }
@@ -399,8 +409,12 @@ final class AdminMenu
         return 'edit.php?post_type=upb_global_part';
     }
 
-    public function enqueueSettingsNewAssets(string $hookSuffix): void
+    public function enqueueSettingsNewAssets($hookSuffix = null): void
     {
+        if (!is_string($hookSuffix)) {
+            return;
+        }
+
         if (!str_ends_with($hookSuffix, '_page_' . self::SETTINGS_NEW_SLUG)) {
             return;
         }
@@ -450,8 +464,12 @@ final class AdminMenu
         wp_enqueue_media();
     }
 
-    public function enqueueCanvasEditorWindowedPageAssets(string $hookSuffix): void
+    public function enqueueCanvasEditorWindowedPageAssets($hookSuffix = null): void
     {
+        if (!is_string($hookSuffix)) {
+            return;
+        }
+
         $isWindowedHost = $hookSuffix === $this->canvasEditorWindowedPageHookSuffix
             || $hookSuffix === $this->canvasEditorWindowedGlobalPartPageHookSuffix;
         if (!$isWindowedHost) {

@@ -448,7 +448,9 @@ function automator_filter_input_array( $variable = null, $type = INPUT_GET, $fla
  */
 function automator_request_input( $variable ) {
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-	return isset( $_REQUEST[ $variable ] ) ? sanitize_text_field( wp_unslash( urldecode( $_REQUEST[ $variable ] ) ) ) : '';
+	$value = isset( $_REQUEST[ $variable ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ $variable ] ) ) : '';
+
+	return sanitize_text_field( urldecode( $value ) );
 }
 
 /**
@@ -739,7 +741,8 @@ function is_automator_admin_page() {
  */
 function automator_request_contains( $segment ) {
 
-	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( urldecode( $_SERVER['REQUEST_URI'] ) ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+	$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+	$request_uri = sanitize_text_field( urldecode( $request_uri ) );
 
 	if ( '' !== $request_uri && false !== strpos( $request_uri, $segment ) ) {
 		return true;
@@ -747,7 +750,8 @@ function automator_request_contains( $segment ) {
 
 	// Plain permalink fallback — REQUEST_URI may omit the query string on some servers.
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-	$rest_route = isset( $_GET['rest_route'] ) ? sanitize_text_field( wp_unslash( urldecode( $_GET['rest_route'] ) ) ) : '';
+	$rest_route = isset( $_GET['rest_route'] ) ? sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ) : '';
+	$rest_route = sanitize_text_field( urldecode( $rest_route ) );
 
 	return '' !== $rest_route && false !== strpos( $rest_route, $segment );
 }
@@ -848,13 +852,8 @@ function automator_do_identify_tokens() {
 		return false;
 	}
 
-	if (
-		isset( $_REQUEST['action'] ) && //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		(
-			'heartbeat' === (string) sanitize_text_field( wp_unslash( urldecode( $_REQUEST['action'] ) ) ) || //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			'wp-remove-post-lock' === (string) sanitize_text_field( wp_unslash( urldecode( $_REQUEST['action'] ) ) )  //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		)
-	) { //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$action = automator_request_input( 'action' );
+	if ( in_array( $action, array( 'heartbeat', 'wp-remove-post-lock' ), true ) ) {
 		// if it's heartbeat, post lock actions bail
 		return false;
 	}
@@ -956,7 +955,7 @@ if ( ! function_exists( 'str_contains' ) ) {
 	 * @return bool
 	 */
 	function str_contains( $haystack, $needle ) {
-		return '' !== $needle && mb_strpos( $haystack, $needle ) !== false;
+		return '' !== $needle && strpos( $haystack, $needle ) !== false;
 	}
 }
 

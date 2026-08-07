@@ -6,6 +6,8 @@ namespace UncannyPageBuilder\Presentation\Api;
 
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
+use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\Export\StaticPageExportService;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
@@ -17,6 +19,7 @@ final class StaticExportController
         private readonly StaticPageExportService $exportService,
         private readonly SectionRepositoryInterface $sections,
         private readonly PermissionChecker $permissions,
+        private readonly PageDetailsPortInterface $pageDetails,
     ) {}
 
     public function registerRoutes(): void
@@ -25,12 +28,16 @@ final class StaticExportController
             'methods'             => 'GET',
             'callback'            => [$this, 'read'],
             'permission_callback' => [$this->permissions, 'canEdit'],
+            'args'                => ['page_id' => RequestId::routeArgument()],
         ]);
     }
 
     public function read(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = absint($request->get_param('page_id'));
+        $pageId = RequestId::fromUrl($request, 'page_id');
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         if (!$this->permissions->canEditPage($pageId)) {
             return ApiResponse::error(ErrorMessage::PageEditForbidden);
@@ -41,7 +48,16 @@ final class StaticExportController
         }
 
         try {
-            return ApiResponse::ok($this->exportService->buildForPage($pageId)->toArray())->toResponse();
+            $details = $this->pageDetails->find($pageId);
+            if ($details === null) {
+                return ApiResponse::error(ErrorMessage::PageNotFound);
+            }
+
+            return ApiResponse::ok($this->exportService->buildForPage(
+                $pageId,
+                $details->title(),
+                $details->permalink(),
+            )->toArray())->toResponse();
         } catch (PageNotFoundException $e) {
             return ApiResponse::error(ErrorMessage::PageNotFound);
         } catch (\Throwable $e) {

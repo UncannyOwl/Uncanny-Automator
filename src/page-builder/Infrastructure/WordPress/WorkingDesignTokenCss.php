@@ -52,7 +52,8 @@ final class WorkingDesignTokenCss
         }
         $css = DesignTokenCssRenderer::renderProfile($profile, DesignTokenCssRenderer::CANVAS_SELECTOR);
 
-        /** @var string $css */
-        return apply_filters('uncanny_engine_theme_css', $css, $pageId);
+        $filteredCss = apply_filters('uncanny_engine_theme_css', $css, $pageId);
+
+        return is_string($filteredCss) ? $filteredCss : $css;
     }
 }

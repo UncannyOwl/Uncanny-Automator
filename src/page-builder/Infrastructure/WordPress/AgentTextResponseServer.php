@@ -20,10 +20,14 @@ final class AgentTextResponseServer
         add_filter('rest_pre_serve_request', [$this, 'serve'], self::FILTER_PRIORITY, 2);
     }
 
-    public function serve(bool $served, \WP_HTTP_Response $result): bool
+    public function serve($served = null, $result = null): bool
     {
         if ($served) {
             return true;
+        }
+
+        if (!$result instanceof \WP_HTTP_Response) {
+            return false;
         }
 
         $data = $result->get_data();

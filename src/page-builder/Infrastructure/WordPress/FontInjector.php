@@ -26,8 +26,8 @@ final class FontInjector
             return;
         }
 
-        $postId = get_the_ID();
-        if (!$postId) {
+        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+        if ($postId === null) {
             return;
         }
 
@@ -76,8 +76,10 @@ final class FontInjector
 
         $url = 'https://fonts.googleapis.com/css2?' . implode('&', $params) . '&display=swap';
 
-        /** @var string $url */
-        $url = apply_filters('uncanny_page_builder_google_fonts_url', $url, $families);
+        $filteredUrl = apply_filters('uncanny_page_builder_google_fonts_url', $url, $families);
+        if (is_string($filteredUrl)) {
+            $url = $filteredUrl;
+        }
 
         echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
         echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
@@ -114,8 +116,10 @@ final class FontInjector
         }
 
         if ($css !== '') {
-            /** @var string $css */
-            $css = apply_filters('uncanny_page_builder_custom_fonts_css', $css, $fonts);
+            $filteredCss = apply_filters('uncanny_page_builder_custom_fonts_css', $css, $fonts);
+            if (is_string($filteredCss)) {
+                $css = $filteredCss;
+            }
 
             echo '<style id="uncanny-page-builder-custom-fonts">' . $css . "</style>\n";
         }

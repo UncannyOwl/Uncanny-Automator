@@ -43,8 +43,8 @@ final class DesignTokenInjector
             return;
         }
 
-        $postId = (int) get_the_ID();
-        if ($postId <= 0) {
+        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+        if ($postId === null) {
             return;
         }
 

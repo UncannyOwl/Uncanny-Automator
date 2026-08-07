@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Infrastructure\Automator;
 use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
 use UncannyPageBuilder\Application\ContentType\SupportsPostTypeUseCase;
 use UncannyPageBuilder\Application\Personalization\SitePersonalizationService;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Application\ShellModeService;
 use UncannyPageBuilder\Application\Settings\ToolSettingsAccess;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartRepositoryInterface;
@@ -37,11 +38,13 @@ final class McpPayloadContextResolver
     ) {}
 
     /**
-     * @param array<string, mixed> $payload
+     * @param mixed $payload
      * @return array<string, mixed>
      */
-    public function apply(array $payload): array
+    public function apply($payload = null): array
     {
+        $payload = is_array($payload) ? $payload : [];
+
         $trustedTargetId = $this->resolveTrustedTargetPostId($payload['page_url'] ?? null);
         if ($trustedTargetId !== null) {
             return $this->withPageBuilderContext($payload, $trustedTargetId);
@@ -63,12 +66,15 @@ final class McpPayloadContextResolver
      * Builder only opts in when this plugin is loaded and the current user can
      * use Page Builder on this site.
      *
-     * @param array<string, mixed> $availability
-     * @param array<string, mixed> $requestContext
+     * @param mixed $availability
+     * @param mixed $requestContext
      * @return array{status:string,available:bool,enabled:bool,reason:string,canvasActive:bool}
      */
-    public function availability(array $availability, array $requestContext = []): array
+    public function availability($availability = null, $requestContext = null): array
     {
+        unset($availability);
+        $requestContext = is_array($requestContext) ? $requestContext : [];
+
         if (! $this->allowedCapabilities->currentUserHasAllowedCapability()) {
             return [
                 'status'       => 'disabled',
@@ -114,12 +120,7 @@ final class McpPayloadContextResolver
             return null;
         }
 
-        $postId = get_the_ID();
-        if (! $postId) {
-            return null;
-        }
-
-        return (int) $postId;
+        return WordPressPostId::fromCurrentQuery(get_queried_object_id());
     }
 
     private function resolvePostIdFromPageUrl(mixed $pageUrl): ?int

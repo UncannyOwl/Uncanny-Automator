@@ -162,7 +162,9 @@ final class SystemEnvironmentProvider implements ServiceProviderInterface
         add_action('wp', [$autopDisabler, 'maybeDisable']);
 
         // 3b. Allow font uploads (admin only, wp-admin only)
-        add_filter('upload_mimes', static function (array $mimes) use ($allowedCapabilities): array {
+        add_filter('upload_mimes', static function ($mimes = null) use ($allowedCapabilities): array {
+            $mimes = is_array($mimes) ? $mimes : [];
+
             if (!is_admin() || !$allowedCapabilities->currentUserHasAllowedCapability()) {
                 return $mimes;
             }

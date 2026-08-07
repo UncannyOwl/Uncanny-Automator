@@ -39,8 +39,13 @@ final class GlobalPartDeletionCleanup
         add_action('untrashed_post', [$this, 'markUntrashed'], 10, 2);
     }
 
-    public function cleanup(int $postId, mixed $post = null): void
+    public function cleanup($postId = null, $post = null): void
     {
+        $postId = WordPressPostId::fromMixed($postId);
+        if ($postId === null) {
+            return;
+        }
+
         if (!$this->isGlobalPart($postId, $post)) {
             return;
         }
@@ -64,8 +69,13 @@ final class GlobalPartDeletionCleanup
         }
     }
 
-    public function clearReferences(int $postId, mixed $post = null): void
+    public function clearReferences($postId = null, $post = null): void
     {
+        $postId = WordPressPostId::fromMixed($postId);
+        if ($postId === null) {
+            return;
+        }
+
         if (!$this->isGlobalPart($postId, $post)) {
             return;
         }
@@ -81,8 +91,13 @@ final class GlobalPartDeletionCleanup
         $this->clearGlobalPartReferences($postId);
     }
 
-    public function markUntrashed(int $postId, mixed $post = null): void
+    public function markUntrashed($postId = null, $post = null): void
     {
+        $postId = WordPressPostId::fromMixed($postId);
+        if ($postId === null) {
+            return;
+        }
+
         if (!$this->isGlobalPart($postId, $post)) {
             return;
         }

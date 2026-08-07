@@ -71,6 +71,12 @@ final class SourcePackageUploadReader
             );
         }
 
+        if (!class_exists(\finfo::class)) {
+            throw new SourcePackageValidationException(
+                'Page import needs Fileinfo support on this site. Ask your site administrator to enable it, then try again.',
+            );
+        }
+
         try {
             return self::readZipArchive((string) $file['tmp_name']);
         } catch (SourcePackageValidationException $e) {

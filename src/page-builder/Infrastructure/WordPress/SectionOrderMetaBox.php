@@ -55,8 +55,12 @@ final class SectionOrderMetaBox
         );
     }
 
-    public function render(\WP_Post $post): void
+    public function render($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         $pageId = $post->ID;
         $sections = $this->repository->findByPageId($pageId);
         $workingGeneration = $this->sourceGenerations?->pageGeneration($pageId)

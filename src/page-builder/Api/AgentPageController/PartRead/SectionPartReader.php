@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Api\AgentPageController\PartRead;
 use UncannyPageBuilder\Api\AgentTextResponse;
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\SectionNotFoundException;
@@ -30,12 +31,21 @@ final class SectionPartReader
      */
     public function readPart(\WP_REST_Request $request, array $includes): \WP_REST_Response|\WP_Error
     {
-        $sectionId = \absint($request->get_param('section_id'));
-        if ($sectionId <= 0) {
+        $sectionId = RequestId::positive($request->get_param('section_id'));
+        if ($sectionId === null) {
             return $this->textToolError('read_part', 400, 'missing_section_id', [
                 'KIND: section',
                 'NEXT STEP',
                 'Retry with a valid section_id.',
+            ]);
+        }
+
+        $pageIdValue = $request->get_param('page_id');
+        if ($pageIdValue !== null && RequestId::positive($pageIdValue) === null) {
+            return $this->textToolError('read_part', 400, 'invalid_page_id', [
+                'KIND: section',
+                'NEXT STEP',
+                'Retry with a positive integer page_id.',
             ]);
         }
 
@@ -52,24 +62,38 @@ final class SectionPartReader
      */
     private function resolve(\WP_REST_Request $request): array
     {
-        $sectionId = \absint($request->get_param('section_id'));
+        $sectionId = RequestId::positive($request->get_param('section_id')) ?? 0;
+        $requestedPageId = RequestId::positive($request->get_param('page_id')) ?? 0;
+        if ($requestedPageId !== 0) {
+            if (!$this->permissions->canEditPage($requestedPageId)) {
+                return [null, 0, ApiResponse::error(ErrorMessage::PageEditForbidden)];
+            }
+            if (!$this->sectionService->isPageOwned($requestedPageId)) {
+                return [null, 0, ApiResponse::error(ErrorMessage::PageNotOwned)];
+            }
+        }
 
         try {
             $section = $this->sections->findById($sectionId);
         } catch (SectionNotFoundException) {
-            return [null, 0, ApiResponse::error(ErrorMessage::SectionNotFound)];
+            $error = $requestedPageId === 0
+                ? ErrorMessage::SectionNotFound
+                : ErrorMessage::SectionNotFoundOnPage;
+
+            return [null, 0, ApiResponse::error($error)];
         }
 
         $pageId = $section->pageId();
-        $requestedPageId = \absint($request->get_param('page_id') ?: 0);
         if ($requestedPageId !== 0 && $requestedPageId !== $pageId) {
             return [null, 0, ApiResponse::error(ErrorMessage::SectionNotFoundOnPage)];
         }
-        if (!$this->permissions->canEditPage($pageId)) {
-            return [null, 0, ApiResponse::error(ErrorMessage::PageEditForbidden)];
-        }
-        if (!$this->sectionService->isPageOwned($pageId)) {
-            return [null, 0, ApiResponse::error(ErrorMessage::PageNotOwned)];
+        if ($requestedPageId === 0) {
+            if (!$this->permissions->canEditPage($pageId)) {
+                return [null, 0, ApiResponse::error(ErrorMessage::SectionNotFound)];
+            }
+            if (!$this->sectionService->isPageOwned($pageId)) {
+                return [null, 0, ApiResponse::error(ErrorMessage::SectionNotFound)];
+            }
         }
 
         return [$section, $pageId, null];

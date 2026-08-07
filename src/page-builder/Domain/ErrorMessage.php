@@ -101,6 +101,7 @@ enum ErrorMessage
 
     // Agent Tool Responses
     case AgentToolContractInvalid;
+    case InvalidRouteId;
 
     // Media Upload
     case MediaImageDataRequired;
@@ -205,6 +206,7 @@ enum ErrorMessage
         'PublicationArtifactPersistFailed' => ["We couldn't prepare the live page, but your draft is safe. Try again in a moment.", 500],
         'PublicationCommitFailed'    => ["We couldn't update the live page, but your draft is safe. Try again in a moment.", 500],
         'AgentToolContractInvalid'   => ['The server produced an invalid tool response. Please try again.', 500],
+        'InvalidRouteId'             => ['The URL contains an invalid or conflicting ID.', 400],
         'MediaImageDataRequired'     => ["We couldn't read that image. Choose it again and retry.", 400],
         'MediaBase64DecodeFailed'    => ["We couldn't read that image file. Choose another image and try again.", 400],
         'MediaUploadFailed'          => ["We couldn't save that image to the media library. Try again or choose another file.", 500],

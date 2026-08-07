@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\Rendering;
 
+use UncannyPageBuilder\Domain\Export\StaticExportPageIdentity;
+
 /**
  * Render data-ai-dynamic="wp_children" regions.
  *
@@ -21,6 +23,10 @@ final class WpChildrenCardRenderer implements SectionRendererInterface
         'rand',
     ];
 
+    public function __construct(
+        private readonly ?StaticExportPageIdentity $pageIdentity = null,
+    ) {}
+
     public function render(string $cardTemplate, array $args): string
     {
         $bindingId = (string) ($args['_binding_id'] ?? 'wp_children');
@@ -35,7 +41,7 @@ final class WpChildrenCardRenderer implements SectionRendererInterface
             // wp_children: parent defaults to the current page; a parent of 0
             // (the declaration default) also means "current page" per the guide.
             $rawParent = (int) ($args['parent'] ?? 0);
-            $parentId  = $rawParent > 0 ? $rawParent : (int) get_the_ID();
+            $parentId  = $rawParent > 0 ? $rawParent : $this->currentPostId();
             $postType  = sanitize_key($args['post_type'] ?? 'page');
 
             // No explicit parent and no current post context: fail closed rather
@@ -89,6 +95,11 @@ final class WpChildrenCardRenderer implements SectionRendererInterface
         }
 
         return $output;
+    }
+
+    private function currentPostId(): int
+    {
+        return $this->pageIdentity?->pageId() ?? (int) get_the_ID();
     }
 
     private function sanitizeOrderby(mixed $orderby): string

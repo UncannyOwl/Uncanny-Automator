@@ -19,6 +19,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\CssSanitizationGate;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartDeletionCleanup;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\ReusableFactory;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Infrastructure\Persistence\DatabaseGlobalPartRepository;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
@@ -111,7 +112,9 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
         // published-only. Coerce editorial draft/pending saves back to 'publish'
         // so a stray "Save Draft" can't strand a reusable that reads can no
         // longer find. Trashing is intentionally left intact.
-        add_filter('wp_insert_post_data', static function (array $data): array {
+        add_filter('wp_insert_post_data', static function ($data = null): array {
+            $data = is_array($data) ? $data : [];
+
             if (($data['post_type'] ?? '') !== 'upb_global_part') {
                 return $data;
             }
@@ -124,7 +127,12 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
         });
 
         // 9b. Global parts list — approachable edit/settings actions.
-        add_filter('post_row_actions', static function (array $actions, \WP_Post $post): array {
+        add_filter('post_row_actions', static function ($actions = null, $post = null): array {
+            $actions = is_array($actions) ? $actions : [];
+            if (!$post instanceof \WP_Post) {
+                return $actions;
+            }
+
             if ($post->post_type !== 'upb_global_part') {
                 return $actions;
             }
@@ -160,7 +168,13 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
             return $updatedActions;
         }, 10, 2);
 
-        add_filter('get_edit_post_link', static function (string $location, int $postId): string {
+        add_filter('get_edit_post_link', static function ($location = null, $postId = null): string {
+            $location = is_string($location) ? $location : '';
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null) {
+                return $location;
+            }
+
             $post = get_post($postId);
             if (!$post instanceof \WP_Post || $post->post_type !== 'upb_global_part') {
                 return $location;
@@ -176,7 +190,9 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
         // 9b-1. Global parts list — Type + Default badge columns.
         $gpDefaults = $container->typed(GlobalPartDefaultsService::class);
 
-        add_filter('manage_upb_global_part_posts_columns', static function (array $columns): array {
+        add_filter('manage_upb_global_part_posts_columns', static function ($columns = null): array {
+            $columns = is_array($columns) ? $columns : [];
+
             $out = [];
             foreach ($columns as $key => $label) {
                 $out[$key] = $label;
@@ -187,8 +203,9 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
             return $out;
         });
 
-        add_action('manage_upb_global_part_posts_custom_column', static function (string $column, int $postId) use ($gpDefaults): void {
-            if ($column !== 'upb_type') {
+        add_action('manage_upb_global_part_posts_custom_column', static function ($column = null, $postId = null) use ($gpDefaults): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($column !== 'upb_type' || $postId === null) {
                 return;
             }
 
@@ -216,8 +233,8 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
         }, 10, 2);
 
         // 9b-2. Enqueue CodeMirror 6 editor on global-part edit screens.
-        add_action('admin_enqueue_scripts', static function (string $hook): void {
-            if (!in_array($hook, ['post.php', 'post-new.php'], true)) {
+        add_action('admin_enqueue_scripts', static function ($hook = null): void {
+            if (!is_string($hook) || !in_array($hook, ['post.php', 'post-new.php'], true)) {
                 return;
             }
             $screen = get_current_screen();
@@ -255,7 +272,11 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
         });
 
         // 9c. Global part post editor — editable code editor meta box.
-        add_action('add_meta_boxes_upb_global_part', static function (\WP_Post $post) use ($globalPartService, $javaScriptRuntime, $toolSettingsAccess, $allowedCapabilities): void {
+        add_action('add_meta_boxes_upb_global_part', static function ($post = null) use ($globalPartService, $javaScriptRuntime, $toolSettingsAccess, $allowedCapabilities): void {
+            if (!$post instanceof \WP_Post) {
+                return;
+            }
+
             $sourceSection = $globalPartService->sourceSection($post->ID);
             if ($sourceSection === null) {
                 return;
@@ -282,7 +303,12 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
 
         // 9d. Save global part code on post save through the canonical source
         // row so the compiled projection stays in sync with the editor form.
-        add_action('save_post_upb_global_part', static function (int $postId, \WP_Post $post) use ($globalPartService, $javaScriptRuntime, $toolSettingsAccess, $allowedCapabilities): void {
+        add_action('save_post_upb_global_part', static function ($postId = null, $post = null) use ($globalPartService, $javaScriptRuntime, $toolSettingsAccess, $allowedCapabilities): void {
+            $postId = WordPressPostId::fromMixed($postId);
+            if ($postId === null || !$post instanceof \WP_Post) {
+                return;
+            }
+
             // Guard against infinite loop: the compiled projection write calls
             // wp_update_post() which re-triggers save_post_upb_global_part.
             static $saving = [];

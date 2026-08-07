@@ -112,9 +112,9 @@ final class WordPressPageSourceArchiveArtifactStore implements PageSourceArchive
         }
     }
 
-    public function deleteExpired(string $archiveName): void
+    public function deleteExpired($archiveName = null): void
     {
-        if (!preg_match(self::ARCHIVE_PATTERN, $archiveName)) {
+        if (!is_string($archiveName) || !preg_match(self::ARCHIVE_PATTERN, $archiveName)) {
             return;
         }
 

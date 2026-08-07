@@ -27,11 +27,15 @@ final class McpConversationStarters
     }
 
     /**
-     * @param array<int, array{id: int, label: string, prompt: string}> $starters
+     * @param mixed $starters
+     * @param mixed $url
      * @return array<int, array{id: int, label: string, prompt: string}>
      */
-    public function filter(array $starters, string $url): array
+    public function filter($starters = null, $url = null): array
     {
+        $starters = is_array($starters) ? $starters : [];
+        $url = is_string($url) ? $url : '';
+
         $canvasId = $this->canvasIdFromUrl($url);
         if ($canvasId === null) {
             return $starters;

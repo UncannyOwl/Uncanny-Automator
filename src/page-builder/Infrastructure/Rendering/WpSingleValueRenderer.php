@@ -437,6 +437,10 @@ final class WpSingleValueRenderer implements SectionRendererInterface
 
     private function currentPostId(): int
     {
+        if ($this->pageIdentity instanceof StaticExportPageIdentity) {
+            return $this->pageIdentity->pageId();
+        }
+
         // Section: prefer the queried page/post object over the active loop item.
         // Archive, taxonomy, and blog-index renders can have get_the_ID() set to
         // the first loop post, which would make "current page/post" bindings lie.
@@ -719,7 +723,7 @@ final class WpSingleValueRenderer implements SectionRendererInterface
             ),
         ];
 
-        $id = (int) get_the_ID();
+        $id = $this->pageIdentity?->pageId() ?? (int) get_the_ID();
         if ($id > 0) {
             foreach (array_reverse(get_post_ancestors($id)) as $ancestorId) {
                 $crumbs[] = sprintf(
@@ -728,7 +732,8 @@ final class WpSingleValueRenderer implements SectionRendererInterface
                     esc_html(get_the_title($ancestorId))
                 );
             }
-            $crumbs[] = '<span aria-current="page">' . esc_html(get_the_title($id)) . '</span>';
+            $currentTitle = $this->pageIdentity?->title() ?? get_the_title($id);
+            $crumbs[] = '<span aria-current="page">' . esc_html($currentTitle) . '</span>';
         }
 
         $sep = ' <span class="upb-breadcrumb-sep">' . esc_html($separator) . '</span> ';
@@ -751,7 +756,10 @@ final class WpSingleValueRenderer implements SectionRendererInterface
      */
     private function renderGallery(array $args): string
     {
-        $postId = (int) ($args['post_id'] ?? get_the_ID());
+        $postId = (int) ($args['post_id'] ?? 0);
+        if ($postId <= 0) {
+            $postId = $this->pageIdentity?->pageId() ?? (int) get_the_ID();
+        }
         if ($postId <= 0) {
             return '';
         }

@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Presentation\Api;
 
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\DesignStandardsService;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 use UncannyPageBuilder\Application\SectionService;
@@ -54,11 +55,13 @@ final class DesignStandardsController
                 'methods'             => 'GET',
                 'callback'            => [$this, 'readPageOverrides'],
                 'permission_callback' => [$this->permissions, 'canEdit'],
+                'args'                => ['page_id' => RequestId::routeArgument()],
             ],
             [
                 'methods'             => 'PUT',
                 'callback'            => [$this, 'updatePageOverrides'],
                 'permission_callback' => [$this->permissions, 'canEdit'],
+                'args'                => ['page_id' => RequestId::routeArgument()],
             ],
         ]);
 
@@ -67,6 +70,7 @@ final class DesignStandardsController
                 'methods'             => 'GET',
                 'callback'            => [$this, 'readSectionConsumed'],
                 'permission_callback' => [$this->permissions, 'canEdit'],
+                'args'                => ['section_id' => RequestId::routeArgument()],
             ],
         ]);
     }
@@ -157,7 +161,10 @@ final class DesignStandardsController
      */
     public function readPageOverrides(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = absint($request['page_id']);
+        $pageId = RequestId::fromUrl($request, 'page_id');
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         if (!$this->permissions->canEditPage($pageId)) {
             return ApiResponse::error(ErrorMessage::PageEditForbidden);
@@ -197,7 +204,10 @@ final class DesignStandardsController
      */
     public function updatePageOverrides(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = absint($request['page_id']);
+        $pageId = RequestId::fromUrl($request, 'page_id');
+        if ($pageId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         if (!$this->permissions->canEditPage($pageId)) {
             return ApiResponse::error(ErrorMessage::PageEditForbidden);
@@ -283,8 +293,12 @@ final class DesignStandardsController
      */
     public function readSectionConsumed(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $sectionId = absint($request['section_id']);
+        $sectionId = RequestId::fromUrl($request, 'section_id');
         $pageId = absint($request->get_param('page_id'));
+
+        if ($sectionId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
 
         if ($pageId <= 0) {
             return ApiResponse::error(ErrorMessage::MissingPageId);

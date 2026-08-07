@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\Rendering;
 
+use UncannyPageBuilder\Domain\Export\StaticExportPageIdentity;
 use UncannyPageBuilder\Domain\Section\DynamicContentConfig;
 
 /**
@@ -43,6 +44,24 @@ final class WpQueryCardRenderer implements SectionRendererInterface
     private const FEATURED_IMAGE_PLACEHOLDER_PATH =
         'assets/images/bindings/feat-image-placeholders/placeholder-1.png';
 
+    /** @var list<string> */
+    private const POSTDATA_GLOBAL_KEYS = [
+        'post',
+        'id',
+        'authordata',
+        'currentday',
+        'currentmonth',
+        'page',
+        'pages',
+        'multipage',
+        'more',
+        'numpages',
+    ];
+
+    public function __construct(
+        private readonly ?StaticExportPageIdentity $pageIdentity = null,
+    ) {}
+
     public function render(string $cardTemplate, array $args): string
     {
         $this->markPageAsNonCacheableWhenStatusIsViewerSpecific($args);
@@ -67,70 +86,77 @@ final class WpQueryCardRenderer implements SectionRendererInterface
         $metaBindKeys = $this->extractMetaBindKeys($cardTemplate);
         $termsBindKeys = $this->extractTermsBindKeys($cardTemplate);
         $output = '';
+        $postDataSnapshot = $this->postDataSnapshot();
 
-        while ($query->have_posts()) {
-            $query->the_post();
-            $card = $cardTemplate;
+        try {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $card = $cardTemplate;
 
-            // ── Prepare values ──
-            $thumbnail = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: $this->featuredImagePlaceholderUrl();
-            $avatarUrl = get_avatar_url(get_the_author_meta('ID'), ['size' => 96]) ?: '';
-            $cats      = get_the_category();
-            $tags      = get_the_tags();
+                // ── Prepare values ──
+                $thumbnail = get_the_post_thumbnail_url(get_the_ID(), 'large') ?: $this->featuredImagePlaceholderUrl();
+                $avatarUrl = get_avatar_url(get_the_author_meta('ID'), ['size' => 96]) ?: '';
+                $cats      = get_the_category();
+                $tags      = get_the_tags();
 
-            $postContent = $this->preparePostContent(get_the_content());
+                $postContent = $this->preparePostContent(get_the_content());
 
-            // ── Text bindings ──
-            $textBindings = [
-                'title'         => esc_html(get_the_title()),
-                'excerpt'       => esc_html(wp_trim_words(get_the_excerpt(), 20)),
-                'date'          => esc_html(get_the_date()),
-                'modified_date' => esc_html(get_the_modified_date()),
-                'author'        => esc_html(get_the_author()),
-                'categories'    => esc_html($cats ? implode(', ', wp_list_pluck($cats, 'name')) : ''),
-                'tags'          => esc_html($tags ? implode(', ', wp_list_pluck($tags, 'name')) : ''),
-                'comment_count' => esc_html((string) get_comments_number()),
-                'content'       => wp_kses_post($postContent),
-                'post_id'       => esc_html((string) get_the_ID()),
-            ];
+                // ── Text bindings ──
+                $textBindings = [
+                    'title'         => esc_html(get_the_title()),
+                    'excerpt'       => esc_html(wp_trim_words(get_the_excerpt(), 20)),
+                    'date'          => esc_html(get_the_date()),
+                    'modified_date' => esc_html(get_the_modified_date()),
+                    'author'        => esc_html(get_the_author()),
+                    'categories'    => esc_html($cats ? implode(', ', wp_list_pluck($cats, 'name')) : ''),
+                    'tags'          => esc_html($tags ? implode(', ', wp_list_pluck($tags, 'name')) : ''),
+                    'comment_count' => esc_html((string) get_comments_number()),
+                    'content'       => wp_kses_post($postContent),
+                    'post_id'       => esc_html((string) get_the_ID()),
+                ];
 
-            foreach ($textBindings as $key => $safeValue) {
-                $card = CardBindingEngine::text($card, $key, $safeValue);
-            }
-
-            // ── Image bindings ──
-            $card = CardBindingEngine::image($card, 'thumbnail', esc_url($thumbnail));
-            $card = CardBindingEngine::image($card, 'author_avatar', esc_url($avatarUrl));
-
-            // ── Href bindings ──
-            $card = CardBindingEngine::href($card, 'permalink', esc_url(get_permalink()));
-            $card = CardBindingEngine::href($card, 'author_url', esc_url(get_author_posts_url(get_the_author_meta('ID'))));
-
-            // ── Taxonomy terms bindings (terms.<taxonomy>) ──
-            foreach ($termsBindKeys as $taxonomy) {
-                $taxonomy = sanitize_key($taxonomy);
-                $terms = get_the_terms(get_the_ID(), $taxonomy);
-                $termNames = ($terms && !is_wp_error($terms))
-                    ? implode(', ', wp_list_pluck($terms, 'name'))
-                    : '';
-                $bindAttr = 'terms.' . $taxonomy;
-                $card = CardBindingEngine::text($card, $bindAttr, esc_html($termNames));
-            }
-
-            // ── Post meta bindings (blocklist-governed) ──
-            foreach ($metaBindKeys as $metaKey) {
-                if (!DynamicContentConfig::isMetaKeyAllowed($metaKey)) {
-                    continue;
+                foreach ($textBindings as $key => $safeValue) {
+                    $card = CardBindingEngine::text($card, $key, $safeValue);
                 }
-                $bindAttr = 'meta.' . $metaKey;
-                $metaValue = get_post_meta(get_the_ID(), $metaKey, true);
-                $card = MetaBindingHelper::applyMetaBinding($card, $bindAttr, $metaValue, $metaKey);
+
+                // ── Image bindings ──
+                $card = CardBindingEngine::image($card, 'thumbnail', esc_url($thumbnail));
+                $card = CardBindingEngine::image($card, 'author_avatar', esc_url($avatarUrl));
+
+                // ── Href bindings ──
+                $card = CardBindingEngine::href($card, 'permalink', esc_url(get_permalink()));
+                $card = CardBindingEngine::href($card, 'author_url', esc_url(get_author_posts_url(get_the_author_meta('ID'))));
+
+                // ── Taxonomy terms bindings (terms.<taxonomy>) ──
+                foreach ($termsBindKeys as $taxonomy) {
+                    $taxonomy = sanitize_key($taxonomy);
+                    $terms = get_the_terms(get_the_ID(), $taxonomy);
+                    $termNames = ($terms && !is_wp_error($terms))
+                        ? implode(', ', wp_list_pluck($terms, 'name'))
+                        : '';
+                    $bindAttr = 'terms.' . $taxonomy;
+                    $card = CardBindingEngine::text($card, $bindAttr, esc_html($termNames));
+                }
+
+                // ── Post meta bindings (blocklist-governed) ──
+                foreach ($metaBindKeys as $metaKey) {
+                    if (!DynamicContentConfig::isMetaKeyAllowed($metaKey)) {
+                        continue;
+                    }
+                    $bindAttr = 'meta.' . $metaKey;
+                    $metaValue = get_post_meta(get_the_ID(), $metaKey, true);
+                    $card = MetaBindingHelper::applyMetaBinding($card, $bindAttr, $metaValue, $metaKey);
+                }
+
+                $output .= $card . "\n";
             }
-
-            $output .= $card . "\n";
+        } finally {
+            try {
+                wp_reset_postdata();
+            } finally {
+                $this->restorePostData($postDataSnapshot);
+            }
         }
-
-        wp_reset_postdata();
 
         if ($plan['paginate']) {
             $totalPages = $this->paginationTotalPages(
@@ -145,6 +171,36 @@ final class WpQueryCardRenderer implements SectionRendererInterface
         }
 
         return $output;
+    }
+
+    /**
+     * @return array<string, array{present: bool, value: mixed}>
+     */
+    private function postDataSnapshot(): array
+    {
+        $snapshot = [];
+        foreach (self::POSTDATA_GLOBAL_KEYS as $key) {
+            $snapshot[$key] = [
+                'present' => array_key_exists($key, $GLOBALS),
+                'value' => $GLOBALS[$key] ?? null,
+            ];
+        }
+
+        return $snapshot;
+    }
+
+    /**
+     * @param array<string, array{present: bool, value: mixed}> $snapshot
+     */
+    private function restorePostData(array $snapshot): void
+    {
+        foreach ($snapshot as $key => $state) {
+            if ($state['present']) {
+                $GLOBALS[$key] = $state['value'];
+            } else {
+                unset($GLOBALS[$key]);
+            }
+        }
     }
 
     /**
@@ -280,7 +336,7 @@ final class WpQueryCardRenderer implements SectionRendererInterface
                 return $queryArgs;
 
             case 'wp_related':
-                $currentId = (int) get_the_ID();
+                $currentId = $this->pageIdentity?->pageId() ?? (int) get_the_ID();
                 if ($currentId <= 0) {
                     return null;
                 }

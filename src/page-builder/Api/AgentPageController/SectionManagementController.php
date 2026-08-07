@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Api\AgentPageController;
 use UncannyPageBuilder\Api\AgentTextResponse;
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Domain\ErrorMessage;
@@ -18,10 +19,8 @@ use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 /**
  * Handles Agent-facing page section lifecycle operations.
  *
- * Reorder and delete remain revision-aware SectionService operations. The
- * repository is used only to resolve the delete target before authorization,
- * preserving the existing rule that permissions are checked against the
- * section's actual owning page rather than an untrusted request page ID.
+ * Reorder and delete remain revision-aware SectionService operations.
+ * The delete path authorizes an explicit page target before it reads the section.
  */
 final class SectionManagementController
 {
@@ -34,8 +33,16 @@ final class SectionManagementController
 
     public function manage(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = \absint($request->get_param('page_id'));
+        $pageIdValue = $request->get_param('page_id');
+        $pageId = $pageIdValue === null ? 0 : RequestId::fromUrl($request, 'page_id');
         $operation = trim((string) ($request->get_param('operation') ?? ''));
+
+        if ($pageIdValue !== null && $pageId === null) {
+            return $this->textToolError('manage_sections', 400, 'invalid_page_id', [
+                'NEXT STEP',
+                'Retry with a positive integer page_id.',
+            ]);
+        }
 
         if (!in_array($operation, ['reorder', 'delete'], true)) {
             return $this->textToolError('manage_sections', 400, 'invalid_operation', [
@@ -48,6 +55,12 @@ final class SectionManagementController
 
         if ($operation === 'reorder') {
             return $this->reorder($request);
+        }
+        if (RequestId::positive($request->get_param('section_id')) === null) {
+            return $this->textToolError('manage_sections', 400, 'invalid_section_id', [
+                'NEXT STEP',
+                'Retry with a positive integer section_id.',
+            ]);
         }
 
         $result = $this->performDeleteSection($request);
@@ -74,14 +87,19 @@ final class SectionManagementController
 
     public function reorder(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $pageId = \absint($request->get_param('page_id'));
-        $sectionIds = $request->get_param('section_ids');
-
-        if (!is_array($sectionIds) || $sectionIds === []) {
-            return ApiResponse::error(ErrorMessage::AgentMissingSectionIds);
+        $pageIdValue = $request->get_param('page_id');
+        $pageId = $pageIdValue === null ? 0 : RequestId::fromUrl($request, 'page_id');
+        if ($pageIdValue !== null && $pageId === null) {
+            return $this->textToolError('manage_sections', 400, 'invalid_page_id', [
+                'NEXT STEP',
+                'Retry with a positive integer page_id.',
+            ]);
         }
 
-        $sectionIds = array_map('absint', $sectionIds);
+        $sectionIds = RequestId::positiveList($request->get_param('section_ids'));
+        if ($sectionIds === null) {
+            return ApiResponse::error(ErrorMessage::AgentMissingSectionIds);
+        }
 
         if (!$this->permissions->canEditPage($pageId)) {
             return ApiResponse::error(ErrorMessage::PageEditForbidden);
@@ -127,6 +145,20 @@ final class SectionManagementController
 
     public function delete(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        $pageIdValue = $request->get_param('page_id');
+        if ($pageIdValue !== null && RequestId::fromUrl($request, 'page_id') === null) {
+            return $this->textToolError('manage_sections', 400, 'invalid_page_id', [
+                'NEXT STEP',
+                'Retry with a positive integer page_id.',
+            ]);
+        }
+        if (RequestId::positive($request->get_param('section_id')) === null) {
+            return $this->textToolError('manage_sections', 400, 'invalid_section_id', [
+                'NEXT STEP',
+                'Retry with a positive integer section_id.',
+            ]);
+        }
+
         $result = $this->performDeleteSection($request);
         if ($result instanceof \WP_Error) {
             return $result;
@@ -153,13 +185,25 @@ final class SectionManagementController
      */
     private function performDeleteSection(\WP_REST_Request $request): array|\WP_Error
     {
-        $sectionId = \absint($request->get_param('section_id'));
-        $requestedPageId = \absint($request->get_param('page_id') ?? 0);
+        $sectionId = RequestId::positive($request->get_param('section_id')) ?? 0;
+        $requestedPageId = RequestId::fromUrl($request, 'page_id') ?? 0;
+        if ($requestedPageId !== 0) {
+            if (!$this->permissions->canManagePage($requestedPageId)) {
+                return ApiResponse::error(ErrorMessage::PageEditForbidden);
+            }
+            if (!$this->sections->isPageOwned($requestedPageId)) {
+                return ApiResponse::error(ErrorMessage::PageNotOwned);
+            }
+        }
 
         try {
             $section = $this->sectionRepository->findById($sectionId);
         } catch (SectionNotFoundException) {
-            return ApiResponse::error(ErrorMessage::SectionNotFound);
+            return ApiResponse::error(
+                $requestedPageId === 0
+                    ? ErrorMessage::SectionNotFound
+                    : ErrorMessage::SectionNotFoundOnPage,
+            );
         }
 
         $pageId = $section->pageId();
@@ -167,11 +211,13 @@ final class SectionManagementController
             return ApiResponse::error(ErrorMessage::SectionNotFoundOnPage);
         }
 
-        if (!$this->permissions->canManagePage($pageId)) {
-            return ApiResponse::error(ErrorMessage::PageEditForbidden);
-        }
-        if (!$this->sections->isPageOwned($pageId)) {
-            return ApiResponse::error(ErrorMessage::PageNotOwned);
+        if ($requestedPageId === 0) {
+            if (!$this->permissions->canManagePage($pageId)) {
+                return ApiResponse::error(ErrorMessage::SectionNotFound);
+            }
+            if (!$this->sections->isPageOwned($pageId)) {
+                return ApiResponse::error(ErrorMessage::SectionNotFound);
+            }
         }
 
         try {

@@ -128,8 +128,12 @@ final class PageEditorMetaBoxes
      * admin-surface controls (e.g. Export HTML). Hooked on
      * edit_form_after_title.
      */
-    public function renderActionsRow(\WP_Post $post): void
+    public function renderActionsRow($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         if (
             !$this->supportsPostType->isEnabledByAdministrator($post->post_type)
             || !$this->ownsPage($post)
@@ -173,8 +177,12 @@ final class PageEditorMetaBoxes
         ) . '</p>';
     }
 
-    public function renderSections(\WP_Post $post): void
+    public function renderSections($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         $editorState = $this->editorStateService
             ->buildForPage($post->ID, $this->capabilities($post->ID))
             ->toArray();
@@ -268,8 +276,12 @@ final class PageEditorMetaBoxes
         include __DIR__ . '/../../Presentation/Pages/page-sections-metabox.php';
     }
 
-    public function renderLayout(\WP_Post $post): void
+    public function renderLayout($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         $workingShellCtx = $this->shellModeService->resolveForPage($post->ID);
         $sourceSelection = $this->pageSources?->forPage($post->ID);
         $workingGeneration = $sourceSelection?->workingGeneration()
@@ -293,8 +305,12 @@ final class PageEditorMetaBoxes
         include __DIR__ . '/../../Presentation/Pages/page-layout-metabox.php';
     }
 
-    public function renderWebsiteStatus(\WP_Post $post): void
+    public function renderWebsiteStatus($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         $pageLiveStatus = $this->pageLiveState->forPage($post->ID);
         $publicationRead = $this->publishedPages->read($post->ID);
 

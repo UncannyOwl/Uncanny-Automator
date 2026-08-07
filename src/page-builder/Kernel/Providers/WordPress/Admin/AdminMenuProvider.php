@@ -273,7 +273,7 @@ final class AdminMenuProvider implements ServiceProviderInterface
         add_filter('page_row_actions', [$nativePageList, 'routeOwnedPageActions'], PHP_INT_MAX, 2);
         add_filter('post_row_actions', [$nativePageList, 'routeOwnedPageActions'], PHP_INT_MAX, 2);
         add_filter('get_edit_post_link', [$nativePageList, 'routeOwnedPageEditLink'], PHP_INT_MAX, 3);
-        add_action('admin_post_uncanny_page_builder_create_page', [$pageFactory, 'create']);
+        add_action('admin_post_' . PageFactory::CREATE_ACTION, [$pageFactory, 'create']);
         add_action('admin_post_' . PageFactory::IMPORT_ACTION, [$pageFactory, 'importPage']);
         add_action('admin_post_' . PageSourceArchiveDownloadAction::ACTION, [$pageArchiveExport, 'handle']);
         $pageArchiveArtifacts->register();

@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Presentation\Api;
 
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
 use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\SourcePackage\ReusableSourcePackageService;
@@ -55,6 +56,7 @@ final class GlobalPartController
             'methods'             => 'GET',
             'callback'            => [$this, 'readSectionSource'],
             'permission_callback' => [$this->permissions, 'canManage'],
+            'args'                => ['global_part_id' => RequestId::routeArgument()],
         ]);
     }
 
@@ -86,10 +88,15 @@ final class GlobalPartController
 
     public function createFromAi(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        $setAsDefaultValue = $request->get_param('set_as_default');
+        if ($setAsDefaultValue !== null && !is_bool($setAsDefaultValue)) {
+            return ApiResponse::error(ErrorMessage::InvalidBody);
+        }
+
         $title   = sanitize_text_field($request->get_param('title') ?? '');
         $type    = sanitize_text_field($request->get_param('type') ?? '');
         $section = $request->get_param('section');
-        $setAsDefault = (bool) $request->get_param('set_as_default');
+        $setAsDefault = $setAsDefaultValue === true;
 
         if (empty($title)) {
             return ApiResponse::error(ErrorMessage::GpTitleRequired);
@@ -188,7 +195,11 @@ final class GlobalPartController
 
     public function readSectionSource(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $globalPartId = absint($request['global_part_id']);
+        $globalPartId = RequestId::fromUrl($request, 'global_part_id');
+        if ($globalPartId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
+
         $source = $this->globalPartService->resolveSourceContent($globalPartId);
         if (!is_array($source) || !is_array($source['content'] ?? null)) {
             return ApiResponse::error(ErrorMessage::SectionNotFound);

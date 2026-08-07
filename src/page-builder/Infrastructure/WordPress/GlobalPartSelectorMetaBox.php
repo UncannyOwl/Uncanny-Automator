@@ -55,8 +55,12 @@ final class GlobalPartSelectorMetaBox
         );
     }
 
-    public function render(\WP_Post $post): void
+    public function render($post = null): void
     {
+        if (!$post instanceof \WP_Post) {
+            return;
+        }
+
         $pageId = $post->ID;
         $headers = $this->gpDefaults->listByType(GlobalPartType::Header);
         $footers = $this->gpDefaults->listByType(GlobalPartType::Footer);

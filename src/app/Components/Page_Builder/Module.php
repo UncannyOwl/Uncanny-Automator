@@ -146,7 +146,9 @@ class Module {
 	 * @param array $tests Existing tests.
 	 * @return array
 	 */
-	public function register_site_health_test( array $tests ): array {
+	public function register_site_health_test( $tests = null ): array {
+		$tests = is_array( $tests ) ? $tests : array();
+
 		$tests['direct'][ self::SITE_HEALTH_TEST ] = array(
 			'label' => esc_html_x( 'Uncanny Page Builder runtime', 'Site Health test label', 'uncanny-automator' ),
 			'test'  => array( $this, 'run_site_health_test' ),
@@ -164,7 +166,7 @@ class Module {
 		$healthy = in_array( $this->status, array( 'active', 'already_owned' ), true );
 		$status  = $healthy ? 'good' : 'recommended';
 
-		if ( in_array( $this->status, array( 'boot_failed', 'module_class_missing', 'standalone_runtime_active' ), true ) ) {
+		if ( in_array( $this->status, array( 'boot_failed', 'module_class_missing', 'standalone_runtime_active', 'dom_extension_missing' ), true ) ) {
 			$status = 'critical';
 		}
 
@@ -189,7 +191,9 @@ class Module {
 	 * @param array $report Existing report.
 	 * @return array
 	 */
-	public function add_system_report( array $report ): array {
+	public function add_system_report( $report = null ): array {
+		$report = is_array( $report ) ? $report : array();
+
 		$report['page_builder_module'] = array(
 			'status'                 => $this->status,
 			'detail'                 => $this->detail,
@@ -197,6 +201,7 @@ class Module {
 			'minimum_bridge_version' => self::MINIMUM_BRIDGE_VERSION,
 			'php_version'            => PHP_VERSION,
 			'wordpress_version'      => $this->wordpress_version(),
+			'dom_available'          => class_exists( 'DOMDocument' ),
 		);
 
 		return $report;
@@ -212,7 +217,7 @@ class Module {
 			! current_user_can( 'manage_options' )
 			|| ! in_array(
 				$this->status,
-				array( 'standalone_runtime_active', 'standalone_bridge_incompatible', 'module_class_missing', 'boot_failed' ),
+				array( 'standalone_runtime_active', 'standalone_bridge_incompatible', 'module_class_missing', 'boot_failed', 'dom_extension_missing' ),
 				true
 			)
 		) {
@@ -301,8 +306,9 @@ class Module {
 			'disabled'                 => defined( 'AUTOMATOR_PAGE_BUILDER_DISABLED' ) && AUTOMATOR_PAGE_BUILDER_DISABLED,
 			'php_version'              => PHP_VERSION,
 			'wordpress_version'        => $this->wordpress_version(),
+			'dom_available'            => class_exists( 'DOMDocument' ),
 			'ownership_marker_defined' => defined( 'AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME' ),
-			'owns_runtime'              => defined( 'AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME' )
+			'owns_runtime'             => defined( 'AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME' )
 				&& AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME,
 			'legacy_runtime_constants' => defined( 'UNCANNY_PB_VERSION' )
 				|| defined( 'UNCANNY_PB_PATH' )
