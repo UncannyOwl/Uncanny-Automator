@@ -17,7 +17,6 @@ use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefreshScheduler;
 final class WorkingCanvasInputVersionListener
 {
     private const OPTION_KEY = 'uncanny_page_builder_working_canvas_input_version';
-
     public function __construct(
         private readonly WorkingCanvasRefreshScheduler $refreshScheduler,
         private readonly string $workingCanvasInputFingerprint,
@@ -37,18 +36,28 @@ final class WorkingCanvasInputVersionListener
             return;
         }
 
-        $stored = get_option(self::OPTION_KEY, '');
-        if (!is_string($stored) || trim($stored) === '') {
+        try {
+            $stored = get_option(self::OPTION_KEY, '');
+            if (!is_string($stored) || trim($stored) === '') {
+                $this->refreshScheduler->enqueueAll();
+                update_option(self::OPTION_KEY, $current, false);
+                return;
+            }
+
+            if ($stored === $current) {
+                return;
+            }
+
             $this->refreshScheduler->enqueueAll();
             update_option(self::OPTION_KEY, $current, false);
-            return;
+        } catch (\Throwable $failure) {
+            // WordPress runs this callback during init and admin_init. A
+            // failure must not terminate the shared request. The stored input
+            // version stays unchanged, so the next request retries the work.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Working canvas input-version refresh failed (%s).',
+                $failure::class,
+            ));
         }
-
-        if ($stored === $current) {
-            return;
-        }
-
-        $this->refreshScheduler->enqueueAll();
-        update_option(self::OPTION_KEY, $current, false);
     }
 }

@@ -6,23 +6,21 @@ namespace UncannyPageBuilder\Application\Canvas;
 
 interface CanvasGlobalPartsProviderInterface
 {
-    /**
-     * @return array{
-     *     header: array{post_id: int, type: string, html: string, css: string}|null,
-     *     footer: array{post_id: int, type: string, html: string, css: string}|null
-     * }
-     */
-    public function forPage(int $pageId): array;
+    /** @return array{post_id: int, type: string, html: string, css: string}|null */
+    public function headerForPage(int $pageId): ?array;
+
+    /** @return array{post_id: int, type: string, html: string, css: string}|null */
+    public function footerForPage(int $pageId): ?array;
 
     /**
-     * Resolve current reusable content through page-owned selections captured
-     * in an immutable published source snapshot.
-     *
      * @param array<string, mixed> $source
-     * @return array{
-     *     header: array{post_id: int, type: string, html: string, css: string}|null,
-     *     footer: array{post_id: int, type: string, html: string, css: string}|null
-     * }
+     * @return array{post_id: int, type: string, html: string, css: string}|null
      */
-    public function forPageSource(int $pageId, array $source): array;
+    public function headerForPageSource(int $pageId, array $source): ?array;
+
+    /**
+     * @param array<string, mixed> $source
+     * @return array{post_id: int, type: string, html: string, css: string}|null
+     */
+    public function footerForPageSource(int $pageId, array $source): ?array;
 }

@@ -35,6 +35,9 @@ $upbInlineJson = static function (mixed $value): string {
 <p class="description">
     <?php echo esc_html_x('Preview a section or open the code editor when you need a precise fix.', 'Page Builder', 'uncanny-automator'); ?>
 </p>
+<div id="upb-section-code-unavailable" class="notice notice-error inline" role="alert" hidden>
+    <p><?php echo esc_html_x('Section code editor is unavailable. Reload this page and try again.', 'Page Builder', 'uncanny-automator'); ?></p>
+</div>
 
 <?php if ($sectionRows === []): ?>
     <p><?php echo esc_html_x('No generated sections yet.', 'Page Builder', 'uncanny-automator'); ?></p>

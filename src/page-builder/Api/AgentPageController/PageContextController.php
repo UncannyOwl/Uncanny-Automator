@@ -45,7 +45,16 @@ final class PageContextController
 
     public function readContext(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        return $this->readContextText($request, 'read_page_context');
+        try {
+            return $this->readContextText($request, 'read_page_context');
+        } catch (\Throwable $failure) {
+            error_log(sprintf('[Uncanny Page Builder] read_page_context failed (%s).', $failure::class));
+
+            return $this->textToolError('read_page_context', 500, 'read_failed', [
+                'NEXT STEP',
+                'Retry read_page_context. If the error continues, review the WordPress error log.',
+            ]);
+        }
     }
 
     private function readContextText(

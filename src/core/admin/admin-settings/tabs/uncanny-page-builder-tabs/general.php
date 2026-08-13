@@ -67,12 +67,16 @@ class Admin_Settings_Uncanny_Page_Builder_General {
 	public function register_tab( $tabs = null ) {
 		$tabs = is_array( $tabs ) ? $tabs : array();
 
-		$tabs['general'] = (object) array(
-			'name'     => esc_html__( 'General', 'uncanny-automator' ),
-			'function' => array( $this, 'tab_output' ),
-			'preload'  => false,
-			'icon'     => 'cog',
-		);
+		try {
+			$tabs['general'] = (object) array(
+				'name'     => esc_html__( 'General', 'uncanny-automator' ),
+				'function' => array( $this, 'tab_output' ),
+				'preload'  => false,
+				'icon'     => 'cog',
+			);
+		} catch ( \Throwable $throwable ) {
+			error_log( sprintf( '[Uncanny Page Builder] General settings tab registration failed (%s).', get_class( $throwable ) ) );
+		}
 
 		return $tabs;
 	}
@@ -83,16 +87,20 @@ class Admin_Settings_Uncanny_Page_Builder_General {
 	 * @return void
 	 */
 	public function tab_output() {
-		$is_enabled  = self::get_setting( self::ENABLED_KEY );
-		$save_failed = false;
-		$save_result = $this->save_result;
+		try {
+			$is_enabled  = self::get_setting( self::ENABLED_KEY );
+			$save_failed = false;
+			$save_result = $this->save_result;
 
-		if ( null !== $save_result ) {
-			$is_enabled  = $save_result['enabled'];
-			$save_failed = ! $save_result['saved'];
+			if ( null !== $save_result ) {
+				$is_enabled  = $save_result['enabled'];
+				$save_failed = ! $save_result['saved'];
+			}
+
+			include Utilities::automator_get_view( 'admin-settings/tab/uncanny-page-builder/general.php' );
+		} catch ( \Throwable $throwable ) {
+			error_log( sprintf( '[Uncanny Page Builder] General settings output failed (%s).', get_class( $throwable ) ) );
 		}
-
-		include Utilities::automator_get_view( 'admin-settings/tab/uncanny-page-builder/general.php' );
 	}
 
 	/**
@@ -101,14 +109,19 @@ class Admin_Settings_Uncanny_Page_Builder_General {
 	 * @return void
 	 */
 	public function maybe_save_setting() {
-		$this->save_result = $this->save_setting();
+		try {
+			$this->save_result = $this->save_setting();
 
-		if ( null === $this->save_result || ! $this->save_result['saved'] ) {
+			if ( null === $this->save_result || ! $this->save_result['saved'] ) {
+				return;
+			}
+
+			wp_safe_redirect( Admin_Settings::utility_get_settings_page_link( 'uncanny-page-builder' ) );
+			exit;
+		} catch ( \Throwable $throwable ) {
+			error_log( sprintf( '[Uncanny Page Builder] General settings save failed (%s).', get_class( $throwable ) ) );
 			return;
 		}
-
-		wp_safe_redirect( Admin_Settings::utility_get_settings_page_link( 'uncanny-page-builder' ) );
-		exit;
 	}
 
 	/**

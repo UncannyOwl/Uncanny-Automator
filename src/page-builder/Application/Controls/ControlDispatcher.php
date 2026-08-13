@@ -10,6 +10,7 @@ use UncannyPageBuilder\Application\Publishing\PagePublicationFailed;
 use UncannyPageBuilder\Application\Publishing\PagePublicationOutcome;
 use UncannyPageBuilder\Application\SourcePackage\PageSourceExportException;
 use UncannyPageBuilder\Domain\ErrorMessage;
+use UncannyPageBuilder\Domain\GlobalPart\GlobalPartCreationUncertainException;
 use UncannyPageBuilder\Domain\Exception\EditableUpdateException;
 use UncannyPageBuilder\Domain\Exception\HistorySnapshotConflictException;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
@@ -94,10 +95,25 @@ final class ControlDispatcher
                 'detail' => $e->getMessage(),
                 'details' => $e->details(),
             ]);
-        } catch (\Throwable $e) {
-            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, [
+        } catch (GlobalPartCreationUncertainException $e) {
+            return ApiResponse::error(ErrorMessage::GpCreationUncertain, [
                 'control_id' => $definition->id(),
+                'retryable' => false,
+                'requires_read' => true,
+                'possible_global_part_id' => $e->globalPartId(),
+                'detail' => 'The creation result is uncertain. Read the reusable list before another create request.',
             ]);
+        } catch (\Throwable $e) {
+            if ($definition->writesEditorState()) {
+                return ApiResponse::error(ErrorMessage::WriteResultUncertain, [
+                    'control_id' => $definition->id(),
+                    'retryable' => false,
+                    'requires_read' => true,
+                    'detail' => 'The write result is uncertain. Read the current editor source before another write.',
+                ]);
+            }
+
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['control_id' => $definition->id()]);
         }
     }
 

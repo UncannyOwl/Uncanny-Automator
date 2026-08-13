@@ -24,6 +24,7 @@ enum ErrorMessage
     case GpTitleRequired;
     case GpSectionRequired;
     case GpCreationFailed;
+    case GpCreationUncertain;
     case GpAiTypeNotAllowed;
     case GpInvalidAiMarkup;
 
@@ -91,6 +92,7 @@ enum ErrorMessage
     case ControlInvokeForbidden;
     case ControlInvalidRequest;
     case ControlInvokeFailed;
+    case WriteResultUncertain;
 
     // Publication
     case PublicationStaticSafetyFailed;
@@ -108,6 +110,7 @@ enum ErrorMessage
     case MediaBase64DecodeFailed;
     case MediaUploadFailed;
     case MediaAttachmentFailed;
+    case MediaCleanupUncertain;
     case MediaUploadForbidden;
     case MediaUnsupportedType;
     case MediaTooLarge;
@@ -149,6 +152,7 @@ enum ErrorMessage
         'GpTitleRequired'            => ['Enter a name before saving this reusable.', 400],
         'GpSectionRequired'          => ["This section doesn't have any content to save yet. Add some content and try again.", 400],
         'GpCreationFailed'           => ["We couldn't save this reusable. Your section is unchanged; try again.", 500],
+        'GpCreationUncertain'        => ["We couldn't confirm whether the reusable was removed. Refresh the reusable list before you try again.", 500],
         'GpAiTypeNotAllowed'         => ['Uncanny Agent can create reusable headers and footers here. Choose one of those types and try again.', 400],
         'GpInvalidAiMarkup'          => ["We couldn't save this reusable because some of its content isn't supported. Ask Uncanny Agent to rebuild it and try again.", 422],
         'PageNotOwned'               => ['This page is not managed by Uncanny Page Builder.', 403],
@@ -200,6 +204,7 @@ enum ErrorMessage
         'ControlInvokeForbidden'     => ["You don't have permission to make this change. Ask a site administrator for access.", 403],
         'ControlInvalidRequest'      => ["We couldn't complete that action because some information was missing or invalid. Refresh the editor and try again.", 400],
         'ControlInvokeFailed'        => ["We couldn't complete that action. Try again. If it keeps happening, ask your site administrator for help.", 500],
+        'WriteResultUncertain'       => ["We couldn't confirm whether that change was saved. Reload the editor before you make another change.", 500],
         'PublicationStaticSafetyFailed' => ["One of this page's sections contains something we cannot publish safely. Review your latest changes, then try again.", 422],
         'PublicationNothingToPublish' => ['This page needs at least one section before it can be published. Add a section, then try again.', 422],
         'PublicationSlugConflict'    => ['That page URL is already in use. Choose a different URL in the page settings, then try again.', 409],
@@ -211,6 +216,7 @@ enum ErrorMessage
         'MediaBase64DecodeFailed'    => ["We couldn't read that image file. Choose another image and try again.", 400],
         'MediaUploadFailed'          => ["We couldn't save that image to the media library. Try again or choose another file.", 500],
         'MediaAttachmentFailed'      => ["The image was uploaded, but we couldn't add it to the media library. Try again.", 500],
+        'MediaCleanupUncertain'      => ["We couldn't confirm that the incomplete media upload was removed. Check the Media Library before you try again.", 500],
         'MediaUploadForbidden'       => ['You do not have permission to upload media files.', 403],
         'MediaUnsupportedType'       => ['Choose a PNG, JPEG, GIF, or WebP image.', 422],
         'MediaTooLarge'              => ["That image is larger than this site's upload limit. Choose a smaller file and try again.", 413],

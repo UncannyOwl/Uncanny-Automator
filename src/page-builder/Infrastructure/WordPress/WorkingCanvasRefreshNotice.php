@@ -16,7 +16,8 @@ final class WorkingCanvasRefreshNotice
 
     public function register(): void
     {
-        add_action('admin_notices', [$this, 'render']);
+        $callbacks = new WordPressCallbackBoundary();
+        add_action('admin_notices', $callbacks->action('working_canvas.notice', [$this, 'render']));
     }
 
     public function render(): void

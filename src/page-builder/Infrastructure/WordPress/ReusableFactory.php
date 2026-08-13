@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Infrastructure\WordPress;
 
 use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\Reusable\CreateReusableCommand;
 use UncannyPageBuilder\Application\Reusable\CreateReusableUseCase;
 use UncannyPageBuilder\Application\SourcePackage\ReusableSourcePackageService;
@@ -23,6 +24,7 @@ final class ReusableFactory
         private readonly CreateReusableUseCase $createReusable,
         private readonly GetPageBuilderAllowedCapabilities $allowedCapabilities,
         private readonly ?ReusableSourcePackageService $sourcePackages = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function redirectPostNewForReusable(): void
@@ -35,7 +37,11 @@ final class ReusableFactory
             return;
         }
 
-        if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+        $hasAccess = (bool) WordPressCallbackBoundary::valueOrDie(
+            'reusable.post_new.authorize',
+            fn (): bool => $this->allowedCapabilities->currentUserHasAllowedCapability(),
+        );
+        if (!$hasAccess) {
             wp_die(
                 esc_html_x("You don't have permission to create reusable parts. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'),
                 403,
@@ -63,14 +69,31 @@ final class ReusableFactory
         $this->assertPostRequest();
         check_admin_referer(self::CREATE_ACTION);
 
-        if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+        $hasAccess = (bool) WordPressCallbackBoundary::valueOrDie(
+            'reusable.create.authorize',
+            fn (): bool => $this->allowedCapabilities->currentUserHasAllowedCapability(),
+        );
+        if (!$hasAccess) {
             wp_die(
                 esc_html_x("You don't have permission to create reusable parts. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'),
                 403,
             );
         }
 
-        $reusable = ($this->createReusable)(new CreateReusableCommand());
+        try {
+            $reusable = ($this->createReusable)(new CreateReusableCommand());
+        } catch (\Throwable $failure) {
+            // admin-post.php is a public WordPress boundary. Report the
+            // internal failure and return a controlled response instead of
+            // exposing an uncaught exception as a fatal-error page.
+            $this->reportFailure('reusable.create', $failure);
+
+            wp_die(
+                esc_html_x('Could not create the reusable. Please try again.', 'Page Builder', 'uncanny-automator'),
+                esc_html_x('Reusable creation failed', 'Page Builder', 'uncanny-automator'),
+                ['response' => 500],
+            );
+        }
 
         wp_safe_redirect(
             AdminCanvasEditorWindowedGlobalPartPage::editorUrl($reusable->id()),
@@ -84,7 +107,11 @@ final class ReusableFactory
     {
         check_admin_referer(self::IMPORT_ACTION);
 
-        if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+        $hasAccess = (bool) WordPressCallbackBoundary::valueOrDie(
+            'reusable.import.authorize',
+            fn (): bool => $this->allowedCapabilities->currentUserHasAllowedCapability(),
+        );
+        if (!$hasAccess) {
             wp_die(
                 esc_html_x("You don't have permission to import reusable parts. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'),
                 403,
@@ -105,10 +132,32 @@ final class ReusableFactory
             // the create-only import mutates global-part state.
             $package = $this->sourcePackages->validateReusable($payload);
         } catch (SourcePackageValidationException $e) {
-            $this->redirectImportNotice('error', $e->getMessage());
+            $this->redirectImportNotice('error', $e->userMessage());
+        } catch (\Throwable $failure) {
+            // admin-post.php is a public WordPress boundary. Report the
+            // internal failure and return the controlled import notice
+            // instead of exposing an uncaught exception as a fatal page.
+            $this->reportFailure('reusable.import.validate', $failure);
+            $this->redirectImportNotice(
+                'error',
+                _x('Could not import the reusable. Check the file and try again.', 'Page Builder', 'uncanny-automator')
+            );
         }
 
-        if (trim($package->customJavaScript()) !== '' && !current_user_can('unfiltered_html')) {
+        try {
+            $importBlockedByJavaScriptCapability = trim($package->customJavaScript()) !== ''
+                && !current_user_can('unfiltered_html');
+        } catch (\Throwable $failure) {
+            // The capability decision must fail into the controlled import
+            // notice, never into a fatal page.
+            $this->reportFailure('reusable.import.capability', $failure);
+            $this->redirectImportNotice(
+                'error',
+                _x('Could not import the reusable. Check the file and try again.', 'Page Builder', 'uncanny-automator')
+            );
+        }
+
+        if ($importBlockedByJavaScriptCapability) {
             $this->redirectImportNotice(
                 'error',
                 _x('This reusable source contains custom JavaScript. Use an account that can publish unfiltered code to import it.', 'Page Builder', 'uncanny-automator'),
@@ -118,21 +167,28 @@ final class ReusableFactory
         try {
             $result = $this->sourcePackages->importReusable($payload);
         } catch (SourcePackageValidationException $e) {
-            $this->redirectImportNotice('error', $e->getMessage());
-        } catch (\Throwable) {
+            $this->redirectImportNotice('error', $e->userMessage());
+        } catch (\Throwable $failure) {
+            $this->reportFailure('reusable.import.write', $failure);
             $this->redirectImportNotice(
                 'error',
                 _x('Could not import the reusable. Check the file and try again.', 'Page Builder', 'uncanny-automator')
             );
         }
 
-        AdminImportNoticeStore::remember(
-            self::IMPORT_NOTICE_SCREEN,
-            'success',
-            _x('Reusable imported.', 'Page Builder', 'uncanny-automator'),
-            AdminCanvasEditorWindowedGlobalPartPage::editorUrl((int) $result['id']),
-            _x('Open imported reusable', 'Page Builder', 'uncanny-automator'),
-        );
+        try {
+            AdminImportNoticeStore::remember(
+                self::IMPORT_NOTICE_SCREEN,
+                'success',
+                _x('Reusable imported.', 'Page Builder', 'uncanny-automator'),
+                AdminCanvasEditorWindowedGlobalPartPage::editorUrl((int) $result['id']),
+                _x('Open imported reusable', 'Page Builder', 'uncanny-automator'),
+            );
+        } catch (\Throwable $failure) {
+            // The reusable already exists. An optional notice failure must not
+            // replace the successful import with an admin-post fatal page.
+            $this->reportFailure('reusable.import.notice', $failure);
+        }
 
         wp_safe_redirect(
             AdminImportNoticeStore::url(AdminCanvasEditorWindowedGlobalPartPage::reusablesScreenUrl(), self::IMPORT_NOTICE_SCREEN),
@@ -167,5 +223,23 @@ final class ReusableFactory
             esc_html_x('Invalid request', 'Page Builder', 'uncanny-automator'),
             ['response' => 405],
         );
+    }
+
+    private function reportFailure(string $code, \Throwable $failure): void
+    {
+        try {
+            if ($this->failureReporter instanceof FailureReporterInterface) {
+                $this->failureReporter->report('reusable admin', 0, $code, $failure);
+                return;
+            }
+        } catch (\Throwable) {
+            // A reporting failure cannot replace the controlled admin response.
+        }
+
+        error_log(sprintf(
+            '[Uncanny Page Builder] %s failed (%s).',
+            $code,
+            $failure::class,
+        ));
     }
 }

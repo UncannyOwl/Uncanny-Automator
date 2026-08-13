@@ -46,85 +46,97 @@ final class KsesSanitizer
             return $tags;
         }
 
-        $defaultSafeAttrs = [
-            'data-ai-editable' => true,
-            'data-ai-type'     => true,
-            'data-ai-dynamic'  => true,
-            'data-ai-bind'     => true,
-            'data-post-type'   => true,
-            'data-menu-id'     => true,
-            'data-menu-location' => true,
-            'data-depth'       => true,
-            'data-count'       => true,
-            'data-orderby'     => true,
-            'data-paginate'    => true,
-            'data-role'        => true,
-            'class'            => true,
-            'id'               => true,
-            'href'             => true,
-            'src'              => true,
-            'srcset'           => true,
-            'alt'              => true,
-            'role'             => true,
-            'aria-label'       => true,
-            'aria-hidden'      => true,
-        ];
-        $filteredSafeAttrs = apply_filters('uncanny_page_builder_kses_allowlist', $defaultSafeAttrs);
-        $safeAttrs = is_array($filteredSafeAttrs) ? $filteredSafeAttrs : $defaultSafeAttrs;
-        $trustedRuntimeAttrs = current_user_can('unfiltered_html')
-            ? [
-                'x-data'       => true,
-                'x-show'       => true,
-                'x-transition' => true,
-                'x-text'       => true,
-                'x-bind'       => true,
-                'x-cloak'      => true,
-                '@click'       => true,
-                'style'        => true,
-            ]
-            : [];
-        $aiAttrs = array_merge($safeAttrs, $trustedRuntimeAttrs);
+        // Arrays copy on write: $original stays untouched while the try
+        // body mutates $tags, so a failure returns the unchanged input.
+        $original = $tags;
 
-        $elements = [
-            'div', 'section', 'header', 'footer', 'main', 'article', 'aside', 'nav',
-            'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-            'a', 'img', 'button', 'figure', 'figcaption',
-            'ul', 'ol', 'li',
-            'svg', 'path', 'circle', 'rect', 'g',
-            'video', 'source',
-        ];
+        try {
+            $defaultSafeAttrs = [
+                'data-ai-editable' => true,
+                'data-ai-type'     => true,
+                'data-ai-dynamic'  => true,
+                'data-ai-bind'     => true,
+                'data-post-type'   => true,
+                'data-menu-id'     => true,
+                'data-menu-location' => true,
+                'data-depth'       => true,
+                'data-count'       => true,
+                'data-orderby'     => true,
+                'data-paginate'    => true,
+                'data-role'        => true,
+                'class'            => true,
+                'id'               => true,
+                'href'             => true,
+                'src'              => true,
+                'srcset'           => true,
+                'alt'              => true,
+                'role'             => true,
+                'aria-label'       => true,
+                'aria-hidden'      => true,
+            ];
+            $filteredSafeAttrs = apply_filters('uncanny_page_builder_kses_allowlist', $defaultSafeAttrs);
+            $safeAttrs = is_array($filteredSafeAttrs) ? $filteredSafeAttrs : $defaultSafeAttrs;
+            $trustedRuntimeAttrs = current_user_can('unfiltered_html')
+                ? [
+                    'x-data'       => true,
+                    'x-show'       => true,
+                    'x-transition' => true,
+                    'x-text'       => true,
+                    'x-bind'       => true,
+                    'x-cloak'      => true,
+                    '@click'       => true,
+                    'style'        => true,
+                ]
+                : [];
+            $aiAttrs = array_merge($safeAttrs, $trustedRuntimeAttrs);
 
-        foreach ($elements as $tag) {
-            $tags[$tag] = array_merge($tags[$tag] ?? [], $aiAttrs);
+            $elements = [
+                'div', 'section', 'header', 'footer', 'main', 'article', 'aside', 'nav',
+                'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                'a', 'img', 'button', 'figure', 'figcaption',
+                'ul', 'ol', 'li',
+                'svg', 'path', 'circle', 'rect', 'g',
+                'video', 'source',
+            ];
+
+            foreach ($elements as $tag) {
+                $tags[$tag] = array_merge($tags[$tag] ?? [], $aiAttrs);
+            }
+
+            if (current_user_can('unfiltered_html')) {
+                $tags['style'] = ['type' => true, 'id' => true];
+            } else {
+                unset($tags['style']);
+            }
+
+            // Form elements for shortcode output (Contact Form 7, WooCommerce, etc.).
+            $formAttrs = [
+                'class' => true, 'id' => true,
+                'action' => true, 'method' => true, 'enctype' => true,
+                'name' => true, 'value' => true, 'type' => true,
+                'placeholder' => true, 'required' => true, 'disabled' => true,
+                'checked' => true, 'selected' => true, 'readonly' => true,
+                'for' => true, 'rows' => true, 'cols' => true,
+                'min' => true, 'max' => true, 'step' => true,
+                'multiple' => true, 'maxlength' => true, 'minlength' => true,
+                'pattern' => true, 'autocomplete' => true,
+                'aria-label' => true, 'aria-required' => true, 'aria-invalid' => true,
+                'role' => true, 'tabindex' => true,
+            ];
+            if (current_user_can('unfiltered_html')) {
+                $formAttrs['style'] = true;
+            }
+            foreach (['form', 'input', 'select', 'textarea', 'option', 'optgroup', 'label', 'fieldset', 'legend'] as $formTag) {
+                $tags[$formTag] = array_merge($tags[$formTag] ?? [], $formAttrs);
+            }
+
+            return $tags;
+        } catch (\Throwable $failure) {
+            // wp_kses_allowed_html decides sanitization for the whole site.
+            // A Page Builder failure must leave the allowed tags unchanged.
+            error_log('[Uncanny Page Builder] Kses allowlist extension failed (' . $failure::class . ')');
+
+            return $original;
         }
-
-        if (current_user_can('unfiltered_html')) {
-            $tags['style'] = ['type' => true, 'id' => true];
-        } else {
-            unset($tags['style']);
-        }
-
-        // Form elements for shortcode output (Contact Form 7, WooCommerce, etc.).
-        $formAttrs = [
-            'class' => true, 'id' => true,
-            'action' => true, 'method' => true, 'enctype' => true,
-            'name' => true, 'value' => true, 'type' => true,
-            'placeholder' => true, 'required' => true, 'disabled' => true,
-            'checked' => true, 'selected' => true, 'readonly' => true,
-            'for' => true, 'rows' => true, 'cols' => true,
-            'min' => true, 'max' => true, 'step' => true,
-            'multiple' => true, 'maxlength' => true, 'minlength' => true,
-            'pattern' => true, 'autocomplete' => true,
-            'aria-label' => true, 'aria-required' => true, 'aria-invalid' => true,
-            'role' => true, 'tabindex' => true,
-        ];
-        if (current_user_can('unfiltered_html')) {
-            $formAttrs['style'] = true;
-        }
-        foreach (['form', 'input', 'select', 'textarea', 'option', 'optgroup', 'label', 'fieldset', 'legend'] as $formTag) {
-            $tags[$formTag] = array_merge($tags[$formTag] ?? [], $formAttrs);
-        }
-
-        return $tags;
     }
 }

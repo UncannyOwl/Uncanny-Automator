@@ -107,7 +107,7 @@ final class PageOwnershipActions
         try {
             $changed = ($this->returnToWordPress)($postId);
         } catch (\Throwable $error) {
-            do_action('uncanny_page_builder_page_switch_failed', $postId, $error);
+            $this->notifyObservers('uncanny_page_builder_page_switch_failed', $postId, $error);
             wp_die(
                 esc_html_x(
                     'WordPress could not safely resume editing this page. Review the page before trying again.',
@@ -120,7 +120,22 @@ final class PageOwnershipActions
         }
 
         if ($changed) {
-            do_action('uncanny_page_builder_page_returned_to_wordpress', $postId);
+            $this->notifyObservers('uncanny_page_builder_page_returned_to_wordpress', $postId);
+        }
+    }
+
+    private function notifyObservers(string $hook, mixed ...$args): void
+    {
+        try {
+            do_action($hook, ...$args);
+        } catch (\Throwable $error) {
+            // The ownership transition is complete before this notification.
+            // An observer cannot reverse it or replace its response.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Observer %s failed (%s).',
+                $hook,
+                $error::class,
+            ));
         }
     }
 
@@ -130,10 +145,13 @@ final class PageOwnershipActions
             return false;
         }
 
-        return $post->ID > 0
-            && $this->allowedCapabilities->currentUserHasAllowedCapability()
-            && current_user_can('edit_post', $post->ID)
-            && (($post->post_status ?? '') !== 'publish' || $this->currentUserCanPublish($post));
+        return (bool) WordPressCallbackBoundary::valueOrDie(
+            'page_ownership.authorize',
+            fn (): bool => $post->ID > 0
+                && $this->allowedCapabilities->currentUserHasAllowedCapability()
+                && current_user_can('edit_post', $post->ID)
+                && (($post->post_status ?? '') !== 'publish' || $this->currentUserCanPublish($post)),
+        );
     }
 
     private function currentUserCanPublish(\WP_Post $post): bool

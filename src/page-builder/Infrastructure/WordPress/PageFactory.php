@@ -43,7 +43,11 @@ final class PageFactory
         $this->assertPostRequest();
         check_admin_referer(self::CREATE_ACTION);
 
-        if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+        $hasAccess = (bool) WordPressCallbackBoundary::valueOrDie(
+            'page.create.authorize',
+            fn (): bool => $this->allowedCapabilities->currentUserHasAllowedCapability(),
+        );
+        if (!$hasAccess) {
             wp_die(
                 esc_html_x("You don't have permission to create Page Builder pages. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'),
                 403
@@ -52,17 +56,24 @@ final class PageFactory
 
         $this->assertNewPagesAvailable();
 
-        $pageId = $this->createDraftPage(
-            _x('Untitled page', 'Page Builder', 'uncanny-automator'),
-            /* translators: %d: the page ID used for the auto-generated title. */
-            _x('Untitled page #%d', 'Page Builder', 'uncanny-automator'),
-        );
-
+        $pageId = 0;
         try {
+            $pageId = $this->createDraftPage(
+                _x('Untitled page', 'Page Builder', 'uncanny-automator'),
+                /* translators: %d: the page ID used for the auto-generated title. */
+                _x('Untitled page #%d', 'Page Builder', 'uncanny-automator'),
+            );
             $this->repository->markAsOwned($pageId);
             $this->shellModeService->setForPage($pageId, ShellMode::None);
             $this->pageDetails->initialize($pageId, max(0, (int) get_current_user_id()));
-        } catch (\Throwable) {
+        } catch (\Throwable $failure) {
+            // admin-post.php is a public WordPress boundary. Any unexpected
+            // failure must end in the same controlled error response the
+            // known failures use, never a raw fatal page.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Page creation failed (%s).',
+                $failure::class,
+            ));
             $this->deleteCreatedPage($pageId);
             wp_die(
                 esc_html_x('Could not create the page. Please try again.', 'Page Builder', 'uncanny-automator'),
@@ -70,7 +81,7 @@ final class PageFactory
             );
         }
 
-        do_action('uncanny_page_builder_page_created', $pageId);
+        $this->notifyObservers('uncanny_page_builder_page_created', $pageId);
 
         wp_safe_redirect(AdminCanvasEditorWindowedPage::editorUrl($pageId), 303, 'Uncanny Page Builder');
         exit;
@@ -80,7 +91,11 @@ final class PageFactory
     {
         check_admin_referer(self::IMPORT_ACTION);
 
-        if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+        $hasAccess = (bool) WordPressCallbackBoundary::valueOrDie(
+            'page.import.authorize',
+            fn (): bool => $this->allowedCapabilities->currentUserHasAllowedCapability(),
+        );
+        if (!$hasAccess) {
             wp_die(
                 esc_html_x("You don't have permission to import Page Builder pages. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'),
                 403
@@ -97,36 +112,52 @@ final class PageFactory
             );
         }
 
+        $requiresUnfilteredHtml = false;
         try {
             $upload = SourcePackageUploadReader::readPageSource(self::SOURCE_PACKAGE_FILE_FIELD);
             $payload = $upload->payload();
             // Validate before creating the draft so a bad file never leaves an
             // orphan Page Builder page in the Pages list.
             $package = $this->sourcePackages->validatePage($payload);
-            if (trim($package->customJavaScript()) !== '' && !current_user_can('unfiltered_html')) {
-                $this->redirectImportNotice(
-                    'error',
-                    _x('This page source contains custom JavaScript. Use an account that can publish unfiltered code to import it.', 'Page Builder', 'uncanny-automator'),
-                    $returnPageId,
-                );
-            }
+            $requiresUnfilteredHtml = trim($package->customJavaScript()) !== '';
         } catch (SourcePackageValidationException $e) {
             $this->redirectImportNotice('error', $e->userMessage(), $returnPageId);
+        } catch (\Throwable $failure) {
+            // Terminal containment for the upload read: an unexpected failure
+            // must produce the standard import notice, not a raw fatal page.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Page import failed while reading the upload (%s).',
+                $failure::class,
+            ));
+            $this->redirectImportNotice(
+                'error',
+                _x('The page source could not be imported. Export the page again and try again. Ask your site administrator for help if the problem continues.', 'Page Builder', 'uncanny-automator'),
+                $returnPageId,
+            );
         }
 
-        $pageId = $this->createDraftPage(
-            _x('Imported page', 'Page Builder', 'uncanny-automator'),
-            /* translators: %d: the page ID used for the auto-generated title. */
-            _x('Imported page #%d', 'Page Builder', 'uncanny-automator'),
-            redirectOnFailure: true,
-            returnPageId: $returnPageId,
-        );
+        if ($requiresUnfilteredHtml && !current_user_can('unfiltered_html')) {
+            $this->redirectImportNotice(
+                'error',
+                _x('This page source contains custom JavaScript. Use an account that can publish unfiltered code to import it.', 'Page Builder', 'uncanny-automator'),
+                $returnPageId,
+            );
+        }
 
         $attachmentIds = [];
         $importWarnings = [];
         $importedImageCount = 0;
-        $phase = 'initialize_page';
+        $pageId = 0;
+        $phase = 'create_page';
         try {
+            $pageId = $this->createDraftPage(
+                _x('Imported page', 'Page Builder', 'uncanny-automator'),
+                /* translators: %d: the page ID used for the auto-generated title. */
+                _x('Imported page #%d', 'Page Builder', 'uncanny-automator'),
+                redirectOnFailure: true,
+                returnPageId: $returnPageId,
+            );
+            $phase = 'initialize_page';
             $this->repository->markAsOwned($pageId);
             $this->shellModeService->setForPage($pageId, ShellMode::None);
             // Source restoration refreshes the working canvas. Initialize the
@@ -175,31 +206,40 @@ final class PageFactory
             );
         }
 
-        do_action('uncanny_page_builder_page_imported', $pageId);
+        $this->notifyObservers('uncanny_page_builder_page_imported', $pageId);
 
-        $message = $importedImageCount > 0
-            ? sprintf(
-                /* translators: %d: number of imported images. */
-                _nx('Page imported with %d image.', 'Page imported with %d images.', $importedImageCount, 'Page Builder', 'uncanny-automator'),
-                $importedImageCount,
-            )
-            : _x('Page imported.', 'Page Builder', 'uncanny-automator');
-        if ($importWarnings !== []) {
-            $message .= ' ' . sprintf(
-                /* translators: %d: number of import warnings. */
-                _nx('%d compatibility warning was recorded.', '%d compatibility warnings were recorded.', count($importWarnings), 'Page Builder', 'uncanny-automator'),
-                count($importWarnings),
+        try {
+            $message = $importedImageCount > 0
+                ? sprintf(
+                    /* translators: %d: number of imported images. */
+                    _nx('Page imported with %d image.', 'Page imported with %d images.', $importedImageCount, 'Page Builder', 'uncanny-automator'),
+                    $importedImageCount,
+                )
+                : _x('Page imported.', 'Page Builder', 'uncanny-automator');
+            if ($importWarnings !== []) {
+                $message .= ' ' . sprintf(
+                    /* translators: %d: number of import warnings. */
+                    _nx('%d compatibility warning was recorded.', '%d compatibility warnings were recorded.', count($importWarnings), 'Page Builder', 'uncanny-automator'),
+                    count($importWarnings),
+                );
+                $message .= ' ' . implode(' ', array_slice($importWarnings, 0, 3));
+            }
+
+            AdminImportNoticeStore::remember(
+                self::IMPORT_NOTICE_SCREEN,
+                'success',
+                $message,
+                AdminCanvasEditorWindowedPage::editorUrl($pageId),
+                _x('Open imported page', 'Page Builder', 'uncanny-automator'),
             );
-            $message .= ' ' . implode(' ', array_slice($importWarnings, 0, 3));
+        } catch (\Throwable $failure) {
+            // The import already succeeded. A notice failure must not replace
+            // the success redirect with an error page.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Page import success notice failed (%s).',
+                $failure::class,
+            ));
         }
-
-        AdminImportNoticeStore::remember(
-            self::IMPORT_NOTICE_SCREEN,
-            'success',
-            $message,
-            AdminCanvasEditorWindowedPage::editorUrl($pageId),
-            _x('Open imported page', 'Page Builder', 'uncanny-automator'),
-        );
 
         if ($returnPageId > 0) {
             wp_safe_redirect(
@@ -286,7 +326,16 @@ final class PageFactory
             return;
         }
 
-        $deleted = \wp_delete_post($pageId, true);
+        try {
+            $deleted = \wp_delete_post($pageId, true);
+        } catch (\Throwable $failure) {
+            error_log(sprintf(
+                '[Uncanny Page Builder] Page cleanup failed for page %d (%s).',
+                $pageId,
+                $failure::class,
+            ));
+            return;
+        }
         if ($deleted === false || $deleted === null) {
             error_log(sprintf(
                 '[Uncanny Page Builder] Failed to delete compensated page %d after import failure.',
@@ -336,7 +385,10 @@ final class PageFactory
         if (
             $pageId <= 0
             || !current_user_can('edit_post', $pageId)
-            || !$this->repository->isOwnedPage($pageId)
+            || !WordPressCallbackBoundary::valueOrDie(
+                'page.import_return.authorize',
+                fn (): bool => $this->repository->isOwnedPage($pageId),
+            )
         ) {
             return 0;
         }
@@ -347,17 +399,35 @@ final class PageFactory
     private function reportImportFailure(int $pageId, string $phase, \Throwable $error): void
     {
         error_log(sprintf(
-            '[Uncanny Page Builder] Page import failed during %s for page %d: %s: %s',
+            '[Uncanny Page Builder] Page import failed during %s for page %d (%s).',
             sanitize_key($phase),
             $pageId,
             $error::class,
-            $error->getMessage(),
         ));
+    }
+
+    private function notifyObservers(string $hook, mixed ...$args): void
+    {
+        try {
+            do_action($hook, ...$args);
+        } catch (\Throwable $error) {
+            // These observers run after the page write. Their failure cannot
+            // reverse that write and must not replace the success response.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Observer %s failed (%s).',
+                $hook,
+                $error::class,
+            ));
+        }
     }
 
     private function assertNewPagesAvailable(): void
     {
-        if ($this->availability->allowsNewPages()) {
+        $isAvailable = (bool) WordPressCallbackBoundary::valueOrDie(
+            'page.availability',
+            fn (): bool => $this->availability->allowsNewPages(),
+        );
+        if ($isAvailable) {
             return;
         }
 

@@ -8,6 +8,7 @@ use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
 use UncannyPageBuilder\Application\Concurrency\GlobalSourceMutation;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
 use UncannyPageBuilder\Application\GlobalPartService;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\PageJavaScriptRuntimeService;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefreshScheduler;
 use UncannyPageBuilder\Application\Reusable\CreateReusableUseCase;
@@ -20,6 +21,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartDeletionCleanup;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\ReusableFactory;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressCallbackBoundary;
 use UncannyPageBuilder\Infrastructure\Persistence\DatabaseGlobalPartRepository;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
@@ -33,6 +35,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 $c->typed(DatabaseGlobalPartRepository::class),
                 $c->typed(GetPageBuilderAllowedCapabilities::class),
                 $c->typed(GlobalSourceMutation::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -40,6 +43,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
             return new GlobalPartDeletionCleanup(
                 $c->typed(GlobalSourceMutation::class),
                 $c->typed(WorkingCanvasRefreshScheduler::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -48,6 +52,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 $c->typed(CreateReusableUseCase::class),
                 $c->typed(GetPageBuilderAllowedCapabilities::class),
                 $c->typed(ReusableSourcePackageService::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
     }
@@ -61,26 +66,28 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
         $toolSettingsAccess = $container->typed(ToolSettingsAccess::class);
         $allowedCapabilities = $container->typed(GetPageBuilderAllowedCapabilities::class);
         $reusableFactory = $container->typed(ReusableFactory::class);
+        $callbacks = new WordPressCallbackBoundary();
 
         // 9. Global Part meta box
         add_action('add_meta_boxes', [$metaBox, 'register']);
-        add_action('save_post_upb_global_part', [$metaBox, 'save'], 10, 2);
+        add_action('save_post_upb_global_part', $callbacks->action('reusable_metabox.save', [$metaBox, 'save']), 10, 2);
+        add_action('admin_notices', $callbacks->action('reusable_metabox.notice', [$metaBox, 'renderSaveNotice']));
         add_filter('wp_insert_post_data', [$metaBox, 'protectPostData'], 20, 2);
         add_action('admin_post_' . ReusableFactory::CREATE_ACTION, [$reusableFactory, 'create']);
         add_action('admin_post_' . ReusableFactory::IMPORT_ACTION, [$reusableFactory, 'importReusable']);
-        add_action('load-post-new.php', [$reusableFactory, 'redirectPostNewForReusable']);
+        add_action('load-post-new.php', $callbacks->action('reusable.post_new_redirect', [$reusableFactory, 'redirectPostNewForReusable']));
         $deletionCleanup->register();
 
-        add_action('admin_notices', static function (): void {
+        add_action('admin_notices', $callbacks->action('reusable.import_notice', static function (): void {
             $screen = function_exists('get_current_screen') ? get_current_screen() : null;
             if ($screen === null || $screen->base !== 'edit' || $screen->post_type !== 'upb_global_part') {
                 return;
             }
 
             \UncannyPageBuilder\Infrastructure\WordPress\AdminImportNoticeStore::render(ReusableFactory::IMPORT_NOTICE_SCREEN);
-        });
+        }));
 
-        add_action('admin_footer-edit.php', static function () use ($allowedCapabilities): void {
+        add_action('admin_footer-edit.php', $callbacks->action('reusable.import_form', static function () use ($allowedCapabilities): void {
             $screen = function_exists('get_current_screen') ? get_current_screen() : null;
             if ($screen === null || $screen->post_type !== 'upb_global_part') {
                 return;
@@ -105,7 +112,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 . '</button>';
             echo '</form>';
             echo '<script>(function(){var form=document.getElementById("upb-import-reusable-source-form");var target=document.querySelector(".wrap .page-title-action");var input=document.getElementById("' . esc_js($fileInputId) . '");if(!form||!target||!input){return;}target.insertAdjacentElement("afterend",form);form.style.display="inline-block";var trigger=form.querySelector("[data-upb-file-trigger]");if(!trigger){return;}trigger.addEventListener("click",function(){input.click();});input.addEventListener("change",function(){if(input.files&&input.files.length>0){form.submit();}});})();</script>';
-        });
+        }));
 
         // 9a. Reusables are an always-published internal source surface: the
         // canvas hides the draft/publish lifecycle and every read path is
@@ -272,7 +279,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
         });
 
         // 9c. Global part post editor — editable code editor meta box.
-        add_action('add_meta_boxes_upb_global_part', static function ($post = null) use ($globalPartService, $javaScriptRuntime, $toolSettingsAccess, $allowedCapabilities): void {
+        add_action('add_meta_boxes_upb_global_part', $callbacks->action('reusable.code_metabox', static function ($post = null) use ($globalPartService, $javaScriptRuntime, $toolSettingsAccess, $allowedCapabilities): void {
             if (!$post instanceof \WP_Post) {
                 return;
             }
@@ -292,18 +299,24 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 'upb_global_part_code',
                 _x('Source code', 'Page Builder', 'uncanny-automator'),
                 static function () use ($sourceSection, $legacySourceRowCount, $runtimeJavaScriptEnabled, $runtimeJavaScript, $post, $allowedCapabilities): void {
-                    $canEditCode = $allowedCapabilities->currentUserHasAllowedCapability();
-                    include __DIR__ . '/../../../../Presentation/GlobalParts/code-editor.php';
+                    try {
+                        $canEditCode = $allowedCapabilities->currentUserHasAllowedCapability();
+                        include __DIR__ . '/../../../../Presentation/GlobalParts/code-editor.php';
+                    } catch (\Throwable $failure) {
+                        // Render nothing further; a metabox failure must not
+                        // fail the complete WordPress edit screen.
+                        error_log('[Uncanny Page Builder] Reusable code metabox render failed (' . $failure::class . ')');
+                    }
                 },
                 'upb_global_part',
                 'normal',
                 'low'
             );
-        });
+        }));
 
         // 9d. Save global part code on post save through the canonical source
         // row so the compiled projection stays in sync with the editor form.
-        add_action('save_post_upb_global_part', static function ($postId = null, $post = null) use ($globalPartService, $javaScriptRuntime, $toolSettingsAccess, $allowedCapabilities): void {
+        add_action('save_post_upb_global_part', $callbacks->action('reusable.code_save', static function ($postId = null, $post = null) use ($globalPartService, $javaScriptRuntime, $toolSettingsAccess, $allowedCapabilities): void {
             $postId = WordPressPostId::fromMixed($postId);
             if ($postId === null || !$post instanceof \WP_Post) {
                 return;
@@ -372,13 +385,18 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 self::rememberCodeEditorError($postId, _x('The reusable code could not be saved.', 'Page Builder', 'uncanny-automator'));
             } catch (\RuntimeException $e) {
                 self::rememberCodeEditorError($postId, _x('The reusable code could not be saved.', 'Page Builder', 'uncanny-automator'));
+            } catch (\Throwable $failure) {
+                // WordPress completed its own save before this observer ran.
+                // Contain the failure and surface the standard editor notice.
+                error_log('[Uncanny Page Builder] Reusable code save failed (' . $failure::class . ')');
+                self::rememberCodeEditorError($postId, _x('The reusable code could not be saved.', 'Page Builder', 'uncanny-automator'));
             } finally {
                 unset($saving[$postId]);
             }
-        }, 20, 2);
+        }), 20, 2);
 
         // 9e. Surface guarded-save failures on the next edit-screen load.
-        add_action('admin_notices', static function (): void {
+        add_action('admin_notices', $callbacks->action('reusable.code_notice', static function (): void {
             $screen = function_exists('get_current_screen') ? get_current_screen() : null;
             if ($screen === null || $screen->base !== 'post' || $screen->post_type !== 'upb_global_part') {
                 return;
@@ -396,7 +414,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
             delete_transient(self::codeEditorErrorKey($postId));
 
             echo '<div class="notice notice-error"><p>' . esc_html($message) . '</p></div>';
-        });
+        }));
     }
 
     private static function rememberCodeEditorError(int $postId, string $message): void

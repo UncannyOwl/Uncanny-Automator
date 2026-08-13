@@ -134,29 +134,35 @@ final class PageEditorMetaBoxes
             return;
         }
 
-        if (
-            !$this->supportsPostType->isEnabledByAdministrator($post->post_type)
-            || !$this->ownsPage($post)
-            || !$this->permissions->canEditPost($post->ID)
-        ) {
-            return;
+        try {
+            if (
+                !$this->supportsPostType->isEnabledByAdministrator($post->post_type)
+                || !$this->ownsPage($post)
+                || !$this->permissions->canEditPost($post->ID)
+            ) {
+                return;
+            }
+
+            $showEditor = $this->supportsPostType->isSupported($post->post_type);
+            $viewUrl = $showEditor ? AiPagesListTable::frontendEditorUrl($post->ID) : '';
+            $adminControls = $showEditor ? $this->adminHeaderControls($post)['controls'] : [];
+            $switchField = PageOwnershipActions::SWITCH_FIELD;
+            $switchNonceField = PageOwnershipActions::NONCE_FIELD;
+            $switchNonceAction = PageOwnershipActions::NONCE_ACTION;
+            $switchConfirmMessage = _x(
+                'Switch this page back to the WordPress editor? Page Builder sections will stop rendering. Your Page Builder work will be kept, and any saved WordPress page body will be restored.',
+                'Page Builder',
+                'uncanny-automator',
+            );
+            $canSwitchToWordPress = ($post->post_status ?? '') !== 'publish'
+                || $this->permissions->canPublishPost($post->ID);
+
+            include __DIR__ . '/../../Presentation/Pages/editor-actions.php';
+        } catch (\Throwable $failure) {
+            // This callback shares the WordPress edit screen. On failure,
+            // render nothing further instead of failing the complete screen.
+            error_log('[Uncanny Page Builder] Page actions row render failed (' . $failure::class . ')');
         }
-
-        $showEditor = $this->supportsPostType->isSupported($post->post_type);
-        $viewUrl = $showEditor ? AiPagesListTable::frontendEditorUrl($post->ID) : '';
-        $adminControls = $showEditor ? $this->adminHeaderControls($post)['controls'] : [];
-        $switchField = PageOwnershipActions::SWITCH_FIELD;
-        $switchNonceField = PageOwnershipActions::NONCE_FIELD;
-        $switchNonceAction = PageOwnershipActions::NONCE_ACTION;
-        $switchConfirmMessage = _x(
-            'Switch this page back to the WordPress editor? Page Builder sections will stop rendering. Your Page Builder work will be kept, and any saved WordPress page body will be restored.',
-            'Page Builder',
-            'uncanny-automator',
-        );
-        $canSwitchToWordPress = ($post->post_status ?? '') !== 'publish'
-            || $this->permissions->canPublishPost($post->ID);
-
-        include __DIR__ . '/../../Presentation/Pages/editor-actions.php';
     }
 
     public function renderAccessNotice(): void
@@ -183,97 +189,103 @@ final class PageEditorMetaBoxes
             return;
         }
 
-        $editorState = $this->editorStateService
-            ->buildForPage($post->ID, $this->capabilities($post->ID))
-            ->toArray();
-        $sectionStateById = $this->indexEditorSections($editorState['sections'] ?? []);
-        $sourceState = is_array($editorState['source'] ?? null) ? $editorState['source'] : [];
-        $sourceSelection = $this->pageSources?->forPage($post->ID);
-        if (
-            $sourceSelection !== null
-            && (
-                $sourceSelection->loadedSource() !== ($sourceState['loaded_source'] ?? null)
-                || $sourceSelection->workingGeneration() !== ($sourceState['working_generation'] ?? null)
-                || $sourceSelection->toArray()['loaded_snapshot_id'] !== ($sourceState['loaded_snapshot_id'] ?? null)
-            )
-        ) {
-            echo '<p>' . esc_html_x(
-                'This page changed while the editor was loading. Refresh before editing its source.',
-                'Page Builder',
-                'uncanny-automator',
-            ) . '</p>';
-            return;
-        }
-        $publishedSource = $sourceSelection?->loadedSource() === 'published'
-            ? $sourceSelection->publishedSnapshot()?->source()
-            : null;
-        $sourceSections = is_array($publishedSource)
-            ? array_values(array_filter($publishedSource['sections'] ?? [], 'is_array'))
-            : $this->sectionRepo->findByPageId($post->ID)->toArray();
-
-        $sectionRows = array_map(
-            static fn(array $section, int $index): array => [
-                'id' => (string) ((int) ($section['id'] ?? 0)),
-                'index' => $index + 1,
-                'name' => (string) ($section['name'] ?? '') !== ''
-                    ? (string) $section['name']
-                    : _x('Untitled section', 'Page Builder', 'uncanny-automator'),
-            ],
-            $sourceSections,
-            array_keys($sourceSections),
-        );
-
-        $sectionCodeData = [];
-        foreach ($sourceSections as $sourceSection) {
-            $sectionId = (int) ($sourceSection['id'] ?? 0);
-            $sectionState = $sectionStateById[$sectionId] ?? [];
-            $content = is_array($sourceSection['content'] ?? null) ? $sourceSection['content'] : [];
-            // Display-side canonicalization (nothing is persisted here): rows
-            // saved before the current normalizer rules still show clean
-            // binding tokens instead of stale resolved placeholders, and the
-            // save path decodes the token right back — display, save, and
-            // render always agree.
-            $sectionCodeData[$sectionId] = [
-                'html' => DynamicRegionToken::encodeForCodeEditor(
-                    SiteLogoImageNormalizer::normalize((string) ($content['html'] ?? '')),
-                    $this->bindingRegistry?->maskableRegionBindingIds(),
-                ),
-                'css'  => (string) ($content['css'] ?? ''),
-                'name' => (string) ($sectionState['name'] ?? $sourceSection['name'] ?? ''),
-            ];
-        }
-
-        $sectionRewriteControlId = $this->adminHeaderControls($post)['rewriteControlId'];
-
-        // Section: Page runtime lane
-        $pageRuntimeData = [
-            'enabled' => ($this->toolSettingsAccess?->pageCustomJavaScriptEnabled() ?? true)
-                && $this->permissions->canCapability('unfiltered_html'),
-            'ownerId' => (int) $post->ID,
-            'javascript' => is_array($publishedSource)
-                ? (string) ($publishedSource['custom_javascript'] ?? '')
-                : ($this->javaScriptRuntime?->readForPage($post->ID) ?? ''),
-            'source' => [
-                'loaded_source' => (string) ($sourceState['loaded_source'] ?? 'working'),
-                'working_generation' => (int) ($sourceState['working_generation'] ?? 0),
-                'snapshot_id' => isset($sourceState['loaded_snapshot_id'])
-                    ? (int) $sourceState['loaded_snapshot_id']
-                    : null,
-            ],
-        ];
-
-        // Preview iframe dependencies.
-        $bootstrapUrl = esc_url(UNCANNY_PB_URL . 'assets/css/bootstrap.min.css');
-        $tokenCss = '';
-        $tokens = (new WpDesignStandardsRepository())
-            ->load()?->tokens()->toArray() ?? [];
-        foreach ($tokens as $key => $val) {
-            if (is_string($key) && is_string($val) && $val !== '' && str_starts_with($key, '--')) {
-                $tokenCss .= esc_attr($key) . ':' . esc_attr($val) . ';';
+        try {
+            $editorState = $this->editorStateService
+                ->buildForPage($post->ID, $this->capabilities($post->ID))
+                ->toArray();
+            $sectionStateById = $this->indexEditorSections($editorState['sections'] ?? []);
+            $sourceState = is_array($editorState['source'] ?? null) ? $editorState['source'] : [];
+            $sourceSelection = $this->pageSources?->forPage($post->ID);
+            if (
+                $sourceSelection !== null
+                && (
+                    $sourceSelection->loadedSource() !== ($sourceState['loaded_source'] ?? null)
+                    || $sourceSelection->workingGeneration() !== ($sourceState['working_generation'] ?? null)
+                    || $sourceSelection->toArray()['loaded_snapshot_id'] !== ($sourceState['loaded_snapshot_id'] ?? null)
+                )
+            ) {
+                echo '<p>' . esc_html_x(
+                    'This page changed while the editor was loading. Refresh before editing its source.',
+                    'Page Builder',
+                    'uncanny-automator',
+                ) . '</p>';
+                return;
             }
-        }
+            $publishedSource = $sourceSelection?->loadedSource() === 'published'
+                ? $sourceSelection->publishedSnapshot()?->source()
+                : null;
+            $sourceSections = is_array($publishedSource)
+                ? array_values(array_filter($publishedSource['sections'] ?? [], 'is_array'))
+                : $this->sectionRepo->findByPageId($post->ID)->toArray();
 
-        include __DIR__ . '/../../Presentation/Pages/page-sections-metabox.php';
+            $sectionRows = array_map(
+                static fn(array $section, int $index): array => [
+                    'id' => (string) ((int) ($section['id'] ?? 0)),
+                    'index' => $index + 1,
+                    'name' => (string) ($section['name'] ?? '') !== ''
+                        ? (string) $section['name']
+                        : _x('Untitled section', 'Page Builder', 'uncanny-automator'),
+                ],
+                $sourceSections,
+                array_keys($sourceSections),
+            );
+
+            $sectionCodeData = [];
+            foreach ($sourceSections as $sourceSection) {
+                $sectionId = (int) ($sourceSection['id'] ?? 0);
+                $sectionState = $sectionStateById[$sectionId] ?? [];
+                $content = is_array($sourceSection['content'] ?? null) ? $sourceSection['content'] : [];
+                // Display-side canonicalization (nothing is persisted here): rows
+                // saved before the current normalizer rules still show clean
+                // binding tokens instead of stale resolved placeholders, and the
+                // save path decodes the token right back — display, save, and
+                // render always agree.
+                $sectionCodeData[$sectionId] = [
+                    'html' => DynamicRegionToken::encodeForCodeEditor(
+                        SiteLogoImageNormalizer::normalize((string) ($content['html'] ?? '')),
+                        $this->bindingRegistry?->maskableRegionBindingIds(),
+                    ),
+                    'css'  => (string) ($content['css'] ?? ''),
+                    'name' => (string) ($sectionState['name'] ?? $sourceSection['name'] ?? ''),
+                ];
+            }
+
+            $sectionRewriteControlId = $this->adminHeaderControls($post)['rewriteControlId'];
+
+            // Section: Page runtime lane
+            $pageRuntimeData = [
+                'enabled' => ($this->toolSettingsAccess?->pageCustomJavaScriptEnabled() ?? true)
+                    && $this->permissions->canCapability('unfiltered_html'),
+                'ownerId' => (int) $post->ID,
+                'javascript' => is_array($publishedSource)
+                    ? (string) ($publishedSource['custom_javascript'] ?? '')
+                    : ($this->javaScriptRuntime?->readForPage($post->ID) ?? ''),
+                'source' => [
+                    'loaded_source' => (string) ($sourceState['loaded_source'] ?? 'working'),
+                    'working_generation' => (int) ($sourceState['working_generation'] ?? 0),
+                    'snapshot_id' => isset($sourceState['loaded_snapshot_id'])
+                        ? (int) $sourceState['loaded_snapshot_id']
+                        : null,
+                ],
+            ];
+
+            // Preview iframe dependencies.
+            $bootstrapUrl = esc_url(UNCANNY_PB_URL . 'assets/css/bootstrap.min.css');
+            $tokenCss = '';
+            $tokens = (new WpDesignStandardsRepository())
+                ->load()?->tokens()->toArray() ?? [];
+            foreach ($tokens as $key => $val) {
+                if (is_string($key) && is_string($val) && $val !== '' && str_starts_with($key, '--')) {
+                    $tokenCss .= esc_attr($key) . ':' . esc_attr($val) . ';';
+                }
+            }
+
+            include __DIR__ . '/../../Presentation/Pages/page-sections-metabox.php';
+        } catch (\Throwable $failure) {
+            // Render nothing further; a metabox failure must not fail the
+            // complete WordPress edit screen.
+            error_log('[Uncanny Page Builder] Page sections metabox render failed (' . $failure::class . ')');
+        }
     }
 
     public function renderLayout($post = null): void
@@ -282,27 +294,33 @@ final class PageEditorMetaBoxes
             return;
         }
 
-        $workingShellCtx = $this->shellModeService->resolveForPage($post->ID);
-        $sourceSelection = $this->pageSources?->forPage($post->ID);
-        $workingGeneration = $sourceSelection?->workingGeneration()
-            ?? $this->sectionRepo->findByPageId($post->ID)->generation();
-        $publishedSource = $sourceSelection?->loadedSource() === 'published'
-            ? $sourceSelection->publishedSnapshot()?->source()
-            : null;
-        $layoutReadOnly = is_array($publishedSource);
-        $snapshotMode = $layoutReadOnly
-            ? ShellMode::tryFrom((string) ($publishedSource['shell_mode'] ?? ''))
-            : null;
-        $shellCtx = $layoutReadOnly
-            ? new ShellModeContext(
-                mode: $snapshotMode ?? $workingShellCtx->mode,
-                hasUncannyHeader: $workingShellCtx->hasUncannyHeader,
-                hasUncannyFooter: $workingShellCtx->hasUncannyFooter,
-                isExplicit: (bool) ($publishedSource['shell_mode_explicit'] ?? false),
-            )
-            : $workingShellCtx;
+        try {
+            $workingShellCtx = $this->shellModeService->resolveForPage($post->ID);
+            $sourceSelection = $this->pageSources?->forPage($post->ID);
+            $workingGeneration = $sourceSelection?->workingGeneration()
+                ?? $this->sectionRepo->findByPageId($post->ID)->generation();
+            $publishedSource = $sourceSelection?->loadedSource() === 'published'
+                ? $sourceSelection->publishedSnapshot()?->source()
+                : null;
+            $layoutReadOnly = is_array($publishedSource);
+            $snapshotMode = $layoutReadOnly
+                ? ShellMode::tryFrom((string) ($publishedSource['shell_mode'] ?? ''))
+                : null;
+            $shellCtx = $layoutReadOnly
+                ? new ShellModeContext(
+                    mode: $snapshotMode ?? $workingShellCtx->mode,
+                    hasUncannyHeader: $workingShellCtx->hasUncannyHeader,
+                    hasUncannyFooter: $workingShellCtx->hasUncannyFooter,
+                    isExplicit: (bool) ($publishedSource['shell_mode_explicit'] ?? false),
+                )
+                : $workingShellCtx;
 
-        include __DIR__ . '/../../Presentation/Pages/page-layout-metabox.php';
+            include __DIR__ . '/../../Presentation/Pages/page-layout-metabox.php';
+        } catch (\Throwable $failure) {
+            // Render nothing further; a metabox failure must not fail the
+            // complete WordPress edit screen.
+            error_log('[Uncanny Page Builder] Page layout metabox render failed (' . $failure::class . ')');
+        }
     }
 
     public function renderWebsiteStatus($post = null): void
@@ -311,10 +329,16 @@ final class PageEditorMetaBoxes
             return;
         }
 
-        $pageLiveStatus = $this->pageLiveState->forPage($post->ID);
-        $publicationRead = $this->publishedPages->read($post->ID);
+        try {
+            $pageLiveStatus = $this->pageLiveState->forPage($post->ID);
+            $publicationRead = $this->publishedPages->read($post->ID);
 
-        include __DIR__ . '/../../Presentation/Pages/website-status-metabox.php';
+            include __DIR__ . '/../../Presentation/Pages/website-status-metabox.php';
+        } catch (\Throwable $failure) {
+            // Render nothing further; a metabox failure must not fail the
+            // complete WordPress edit screen.
+            error_log('[Uncanny Page Builder] Website status metabox render failed (' . $failure::class . ')');
+        }
     }
 
     private function ownsPage(\WP_Post $post): bool

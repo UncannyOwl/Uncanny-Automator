@@ -21,6 +21,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartSelectorMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\NativePageSave;
 use UncannyPageBuilder\Infrastructure\WordPress\SectionOrderMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressCallbackBoundary;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
 
@@ -86,9 +87,10 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             return $allowedByPage[$pageId] = !$pageSources instanceof SelectEditorPageSource
                 || $pageSources->forPage($pageId)->loadedSource() === 'working';
         };
+        $callbacks = new WordPressCallbackBoundary();
 
         // 10. Design Standards page overrides meta box
-        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($supportsPostType, $dsMetaBox, $canEditWorkingSource): void {
+        add_action('add_meta_boxes', $callbacks->action('page_design_metabox.register', static function ($postType = null, $post = null) use ($supportsPostType, $dsMetaBox, $canEditWorkingSource): void {
             if (
                 is_string($postType)
                 && $post instanceof \WP_Post
@@ -97,20 +99,26 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             ) {
                 $dsMetaBox->register($post);
             }
-        }, 10, 2);
+        }), 10, 2);
         add_action('save_post', static function ($postId = null, $post = null) use ($supportsPostType, $dsMetaBox): void {
             $postId = WordPressPostId::fromMixed($postId);
             if ($postId === null || !$post instanceof \WP_Post) {
                 return;
             }
 
-            if ($supportsPostType->isSupported($post->post_type)) {
-                $dsMetaBox->save($postId, $post);
+            try {
+                if ($supportsPostType->isSupported($post->post_type)) {
+                    $dsMetaBox->save($postId, $post);
+                }
+            } catch (\Throwable $failure) {
+                // WordPress completed its own save before this observer ran.
+                // Contain the failure so the shared save request stays intact.
+                error_log('[Uncanny Page Builder] Page style overrides save observer failed (' . $failure::class . ')');
             }
         }, 10, 2);
 
         // 10b-gp. Header & Footer selector meta box
-        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($supportsPostType, $gpSelectorMetaBox, $canEditWorkingSource): void {
+        add_action('add_meta_boxes', $callbacks->action('page_global_parts_metabox.register', static function ($postType = null, $post = null) use ($supportsPostType, $gpSelectorMetaBox, $canEditWorkingSource): void {
             if (
                 is_string($postType)
                 && $post instanceof \WP_Post
@@ -119,20 +127,26 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             ) {
                 $gpSelectorMetaBox->register($post);
             }
-        }, 10, 2);
+        }), 10, 2);
         add_action('save_post', static function ($postId = null, $post = null) use ($supportsPostType, $gpSelectorMetaBox): void {
             $postId = WordPressPostId::fromMixed($postId);
             if ($postId === null || !$post instanceof \WP_Post) {
                 return;
             }
 
-            if ($supportsPostType->isSupported($post->post_type)) {
-                $gpSelectorMetaBox->save($postId, $post);
+            try {
+                if ($supportsPostType->isSupported($post->post_type)) {
+                    $gpSelectorMetaBox->save($postId, $post);
+                }
+            } catch (\Throwable $failure) {
+                // WordPress completed its own save before this observer ran.
+                // Contain the failure so the shared save request stays intact.
+                error_log('[Uncanny Page Builder] Header and footer save observer failed (' . $failure::class . ')');
             }
         }, 10, 2);
 
         // 10c. Section order meta box (drag-and-drop reordering)
-        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($supportsPostType, $sectionOrderMetaBox, $canEditWorkingSource): void {
+        add_action('add_meta_boxes', $callbacks->action('page_section_order_metabox.register', static function ($postType = null, $post = null) use ($supportsPostType, $sectionOrderMetaBox, $canEditWorkingSource): void {
             if (
                 is_string($postType)
                 && $post instanceof \WP_Post
@@ -141,20 +155,26 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             ) {
                 $sectionOrderMetaBox->register($post);
             }
-        }, 10, 2);
+        }), 10, 2);
         add_action('save_post', static function ($postId = null, $post = null) use ($supportsPostType, $sectionOrderMetaBox): void {
-            $postId = WordPressPostId::fromMixed($postId);
-            if ($postId === null || !$post instanceof \WP_Post) {
-                return;
-            }
+            try {
+                $postId = WordPressPostId::fromMixed($postId);
+                if ($postId === null || !$post instanceof \WP_Post) {
+                    return;
+                }
 
-            if ($supportsPostType->isSupported($post->post_type)) {
-                $sectionOrderMetaBox->save($postId, $post);
+                if ($supportsPostType->isSupported($post->post_type)) {
+                    $sectionOrderMetaBox->save($postId, $post);
+                }
+            } catch (\Throwable $failure) {
+                // WordPress has already saved its post. Keep this observer
+                // failure inside Page Builder and leave the native request usable.
+                error_log('[Uncanny Page Builder] Section order save observer failed (' . $failure::class . ')');
             }
         }, 5, 2);
         add_action('admin_notices', [$sectionOrderMetaBox, 'renderSaveNotice']);
 
-        add_action('admin_enqueue_scripts', static function ($hook = null) use ($sectionRepo, $allowedCapabilities, $supportsPostType, $canEditWorkingSource): void {
+        add_action('admin_enqueue_scripts', $callbacks->action('page_section_order.assets', static function ($hook = null) use ($sectionRepo, $allowedCapabilities, $supportsPostType, $canEditWorkingSource): void {
             if (!is_string($hook) || ($hook !== 'post.php' && $hook !== 'post-new.php')) {
                 return;
             }
@@ -170,7 +190,7 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             ) {
                 wp_enqueue_script('jquery-ui-sortable');
             }
-        });
+        }));
 
         // Page-level style overrides are rendered by the shared page editor
         // admin bundle enqueued by EditorEnvironmentProvider.

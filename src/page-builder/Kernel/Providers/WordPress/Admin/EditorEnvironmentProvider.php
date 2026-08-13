@@ -15,8 +15,10 @@ use UncannyPageBuilder\Application\Controls\ControlStateService;
 use UncannyPageBuilder\Application\Editor\EditorStateService;
 use UncannyPageBuilder\Application\Editor\SelectEditorPageSource;
 use UncannyPageBuilder\Application\PageJavaScriptRuntimeService;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\Publishing\PageLiveStateReaderInterface;
 use UncannyPageBuilder\Application\Rendering\PublishedPageReaderInterface;
+use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefreshQueueInterface;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 use UncannyPageBuilder\Application\Settings\ToolSettingsAccess;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
@@ -25,6 +27,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\PageEditorMetaBoxes;
 use UncannyPageBuilder\Infrastructure\WordPress\PageOwnershipActions;
 use UncannyPageBuilder\Infrastructure\WordPress\NativePageSave;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressCallbackBoundary;
 use UncannyPageBuilder\Infrastructure\WordPress\WpOriginalPageContentStore;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
 use UncannyPageBuilder\Kernel\Container;
@@ -94,6 +97,9 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
         $shellModeService = $container->typed(ShellModeService::class);
         $pageEditorMetaBoxes = $container->typed(PageEditorMetaBoxes::class);
         $workingCanvas = $container->typed(WorkingCanvasRefresherInterface::class);
+        $workingCanvasRefreshQueue = $container->has(WorkingCanvasRefreshQueueInterface::class)
+            ? $container->typed(WorkingCanvasRefreshQueueInterface::class)
+            : null;
         $allowedCapabilities = $container->typed(GetPageBuilderAllowedCapabilities::class);
         $supportsPostType = $container->typed(SupportsPostTypeUseCase::class);
         $blockEditorButton = $container->typed(BlockEditorButton::class);
@@ -110,13 +116,17 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
         $nativePageSave = $container->has(NativePageSave::class)
             ? $container->typed(NativePageSave::class)
             : null;
+        $failureReporter = $container->has(FailureReporterInterface::class)
+            ? $container->typed(FailureReporterInterface::class)
+            : null;
+        $callbacks = new WordPressCallbackBoundary();
 
-        add_action('enqueue_block_editor_assets', [$blockEditorButton, 'enqueue']);
+        add_action('enqueue_block_editor_assets', $callbacks->action('block_editor.enqueue', [$blockEditorButton, 'enqueue']));
         add_action('admin_post_' . BlockEditorButton::ACTION, [$blockEditorButton, 'open']);
         add_action('admin_post_' . PageOwnershipActions::ACTION, [$pageOwnershipActions, 'switchNow']);
         add_action('edit_form_after_title', [$blockEditorButton, 'renderClassicEditorButton']);
-        add_filter('redirect_post_location', [$blockEditorButton, 'redirectClassicEditorSave'], 10, 2);
-        add_filter('redirect_post_location', [$pageOwnershipActions, 'redirectAfterSave'], 20, 2);
+        add_filter('redirect_post_location', $callbacks->filter('block_editor.redirect', [$blockEditorButton, 'redirectClassicEditorSave']), 10, 2);
+        add_filter('redirect_post_location', $callbacks->filter('page_ownership.redirect', [$pageOwnershipActions, 'redirectAfterSave']), 20, 2);
 
         // A stale WordPress editor can submit after Page Builder takes active
         // ownership. Protect public fields only while administrator intent
@@ -163,7 +173,7 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             unset(self::$nativeTrashLifecyclePages[$postId]);
         }, PHP_INT_MAX);
 
-        add_filter('use_block_editor_for_post', static function ($useBlockEditor = null, $post = null) use ($sectionRepo, $supportsPostType): bool {
+        add_filter('use_block_editor_for_post', $callbacks->filter('block_editor.eligibility', static function ($useBlockEditor = null, $post = null) use ($sectionRepo, $supportsPostType): bool {
             if (
                 $post instanceof \WP_Post
                 && $supportsPostType->isEnabledByAdministrator($post->post_type)
@@ -172,10 +182,10 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
                 return false;
             }
             return (bool) $useBlockEditor;
-        }, 10, 2);
+        }), 10, 2);
 
         // Third-party admin pages can dispatch this hook without a post object.
-        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($pageEditorMetaBoxes, $sectionRepo, $supportsPostType): void {
+        add_action('add_meta_boxes', $callbacks->action('page_metaboxes.register', static function ($postType = null, $post = null) use ($pageEditorMetaBoxes, $sectionRepo, $supportsPostType): void {
             if (
                 is_string($postType)
                 && $post instanceof \WP_Post
@@ -187,14 +197,14 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             ) {
                 $pageEditorMetaBoxes->register($post);
             }
-        }, 10, 2);
+        }), 10, 2);
 
         /*
          * WordPress fires generic add_meta_boxes before the post-type-specific
          * hook. Schedule pruning on that later hook so boxes registered through
          * either lane are present before the allowlist is enforced.
          */
-        add_action('add_meta_boxes', static function ($postType = null, $post = null) use ($sectionRepo, $supportsPostType): void {
+        add_action('add_meta_boxes', $callbacks->action('page_metaboxes.prune_schedule', static function ($postType = null, $post = null) use ($sectionRepo, $supportsPostType): void {
             if (!is_string($postType) || !$post instanceof \WP_Post) {
                 return;
             }
@@ -206,20 +216,24 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             $scheduledPostTypes[$postType] = true;
 
             add_action('add_meta_boxes_' . $postType, static function ($dynamicPost = null) use ($postType, $sectionRepo, $supportsPostType): void {
-                if (
-                    !$dynamicPost instanceof \WP_Post
-                    || !$supportsPostType->isEnabledByAdministrator($postType)
-                    || !$sectionRepo->isOwnedPage($dynamicPost->ID)
-                ) {
-                    return;
+                try {
+                    if (
+                        !$dynamicPost instanceof \WP_Post
+                        || !$supportsPostType->isEnabledByAdministrator($postType)
+                        || !$sectionRepo->isOwnedPage($dynamicPost->ID)
+                    ) {
+                        return;
+                    }
+
+                    self::pruneOwnedPostMetaBoxes($postType);
+                    self::pruneForeignEditFormCallbacks();
+                } catch (\Throwable $failure) {
+                    error_log('[Uncanny Page Builder] Page metabox pruning failed (' . $failure::class . ')');
                 }
-
-                self::pruneOwnedPostMetaBoxes($postType);
-                self::pruneForeignEditFormCallbacks();
             }, PHP_INT_MAX);
-        }, PHP_INT_MAX, 2);
+        }), PHP_INT_MAX, 2);
 
-        add_action('admin_enqueue_scripts', static function ($hook = null) use ($sectionRepo, $supportsPostType): void {
+        add_action('admin_enqueue_scripts', $callbacks->action('page_editor.assets', static function ($hook = null) use ($sectionRepo, $supportsPostType): void {
             if (!is_string($hook) || ($hook !== 'post.php' && $hook !== 'post-new.php')) {
                 return;
             }
@@ -240,26 +254,28 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
                 (string) filemtime(UNCANNY_PB_PATH . 'assets/js/admin-codemirror.js'),
                 true,
             );
-        });
+        }));
 
         add_action('edit_form_after_title', [$pageEditorMetaBoxes, 'renderActionsRow']);
         if ($nativePageSave instanceof NativePageSave) {
             add_action('admin_notices', [$nativePageSave, 'renderNotice']);
         }
 
-        add_action('save_post', static function (
+        add_action('save_post', $callbacks->action('native_page.save', static function (
             $postId = null,
             $post = null
         ) use (
             $sectionRepo,
             $shellModeService,
             $workingCanvas,
+            $workingCanvasRefreshQueue,
             $allowedCapabilities,
             $supportsPostType,
             $pageSource,
             $pageStates,
             $pageSources,
             $nativePageSave,
+            $failureReporter,
         ): void {
             $postId = WordPressPostId::fromMixed($postId);
             if ($postId === null || !$post instanceof \WP_Post) {
@@ -278,8 +294,10 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
                 $pageStates,
                 $pageSources,
                 $nativePageSave,
+                $workingCanvasRefreshQueue,
+                $failureReporter,
             );
-        }, 100, 2);
+        }), 100, 2);
     }
 
     /**
@@ -382,6 +400,8 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
         ?PageStateRepositoryInterface $pageStates = null,
         ?SelectEditorPageSource $pageSources = null,
         ?NativePageSave $nativePageSave = null,
+        ?WorkingCanvasRefreshQueueInterface $workingCanvasRefreshQueue = null,
+        ?FailureReporterInterface $failureReporter = null,
     ): void {
         $supportsPostType ??= new SupportsPostTypeUseCase();
 
@@ -408,85 +428,169 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             return;
         }
 
-        $hasShellNonce = self::hasValidPostedNonce(self::SHELL_MODE_NONCE_KEY, self::SHELL_MODE_NONCE_ACTION);
-        $isSwitchingToWordPress = self::hasPostedValue(PageOwnershipActions::SWITCH_FIELD, '1')
-            && self::hasValidPostedNonce(PageOwnershipActions::NONCE_FIELD, PageOwnershipActions::NONCE_ACTION);
-        if ($hasShellNonce) {
-            $modeValue = sanitize_text_field((string) ($_POST['uncanny_page_builder_shell_mode'] ?? ''));
-            $mode = ShellMode::tryFrom($modeValue);
+        try {
+            $hasShellNonce = self::hasValidPostedNonce(self::SHELL_MODE_NONCE_KEY, self::SHELL_MODE_NONCE_ACTION);
+            $isSwitchingToWordPress = self::hasPostedValue(PageOwnershipActions::SWITCH_FIELD, '1')
+                && self::hasValidPostedNonce(PageOwnershipActions::NONCE_FIELD, PageOwnershipActions::NONCE_ACTION);
+            if ($hasShellNonce) {
+                $modeValue = sanitize_text_field((string) ($_POST['uncanny_page_builder_shell_mode'] ?? ''));
+                $mode = ShellMode::tryFrom($modeValue);
 
-            if ($mode !== null) {
-                $saveShellMode = fn() => $shellModeService->setForPage($postId, $mode);
-                $currentMode = $shellModeService->resolveForPage($postId);
-                if ($currentMode->mode === $mode && $currentMode->isExplicit) {
-                    // The native Update form submitted the already-persisted
-                    // explicit mode; do not create a new draft generation.
-                } elseif ($nativePageSave instanceof NativePageSave) {
-                    $expectedGeneration = $nativePageSave->postedGeneration();
-                    if ($expectedGeneration === null) {
-                        $nativePageSave->reject(
-                            $postId,
-                            _x('Page layout was not saved because the page draft identity is missing.', 'Page Builder', 'uncanny-automator'),
-                        );
+                if ($mode !== null) {
+                    $saveShellMode = fn() => $shellModeService->setForPage($postId, $mode);
+                    $currentMode = $shellModeService->resolveForPage($postId);
+                    if ($currentMode->mode === $mode && $currentMode->isExplicit) {
+                        // The native Update form submitted the already-persisted
+                        // explicit mode; do not create a new draft generation.
+                    } elseif ($nativePageSave instanceof NativePageSave) {
+                        $expectedGeneration = $nativePageSave->postedGeneration();
+                        if ($expectedGeneration === null) {
+                            $nativePageSave->reject(
+                                $postId,
+                                _x('Page layout was not saved because the page draft identity is missing.', 'Page Builder', 'uncanny-automator'),
+                            );
+                        } else {
+                            $nativePageSave->stage($postId, $expectedGeneration, $saveShellMode);
+                        }
+                    } elseif (
+                        $pageSource instanceof PageSourceMutation
+                        && $pageStates instanceof PageStateRepositoryInterface
+                    ) {
+                        try {
+                            $pageSource->runAsHumanSave(
+                                $postId,
+                                $saveShellMode,
+                                function () use ($pageStates, $postId): void {
+                                    $pageStates->saveDraftResumePolicy(
+                                        $postId,
+                                        DraftResumePolicy::Parked,
+                                    );
+                                },
+                                static function () use ($pageSources, $postId): void {
+                                    if (
+                                        $pageSources instanceof SelectEditorPageSource
+                                        && $pageSources->forPage($postId)->loadedSource() !== 'working'
+                                    ) {
+                                        throw new ParkedDraftNotLoadedException();
+                                    }
+                                },
+                            );
+                        } catch (ParkedDraftNotLoadedException) {
+                            // The corresponding metabox is read-only while a newer
+                            // parked draft is hidden. A stale browser form cannot
+                            // write through that source boundary.
+                        }
                     } else {
-                        $nativePageSave->stage($postId, $expectedGeneration, $saveShellMode);
+                        $saveShellMode();
                     }
-                } elseif (
-                    $pageSource instanceof PageSourceMutation
-                    && $pageStates instanceof PageStateRepositoryInterface
-                ) {
-                    try {
-                        $pageSource->runAsHumanSave(
-                            $postId,
-                            $saveShellMode,
-                            function () use ($pageStates, $postId): void {
-                                $pageStates->saveDraftResumePolicy(
-                                    $postId,
-                                    DraftResumePolicy::Parked,
-                                );
-                            },
-                            static function () use ($pageSources, $postId): void {
-                                if (
-                                    $pageSources instanceof SelectEditorPageSource
-                                    && $pageSources->forPage($postId)->loadedSource() !== 'working'
-                                ) {
-                                    throw new ParkedDraftNotLoadedException();
-                                }
-                            },
-                        );
-                    } catch (ParkedDraftNotLoadedException) {
-                        // The corresponding metabox is read-only while a newer
-                        // parked draft is hidden. A stale browser form cannot
-                        // write through that source boundary.
-                    }
-                } else {
-                    $saveShellMode();
+                } elseif ($nativePageSave instanceof NativePageSave) {
+                    $nativePageSave->reject(
+                        $postId,
+                        _x('Page Builder settings were not saved because the page layout choice was invalid.', 'Page Builder', 'uncanny-automator'),
+                    );
                 }
-            } elseif ($nativePageSave instanceof NativePageSave) {
-                $nativePageSave->reject(
-                    $postId,
-                    _x('Page Builder settings were not saved because the page layout choice was invalid.', 'Page Builder', 'uncanny-automator'),
-                );
+            }
+
+            if ($nativePageSave instanceof NativePageSave && !$nativePageSave->commit($postId)) {
+                return;
+            }
+
+            // The ownership transition restores post_content after this normal
+            // WordPress save. Do not replace legacy or saved WordPress content
+            // with a fresh Page Builder artifact immediately before restoration.
+            if ($isSwitchingToWordPress) {
+                return;
+            }
+
+            // Run after page-owned metaboxes save so the working canvas sees the
+            // newest shell, design override, and header/footer selection. This
+            // refresh never creates or selects public output.
+            if ($workingCanvas instanceof WorkingCanvasRefresherInterface) {
+                self::refreshWorkingCanvas($postId, $workingCanvas, $workingCanvasRefreshQueue, $failureReporter);
+            }
+        } catch (\Throwable $failure) {
+            // WordPress completed its own save before this observer ran. A
+            // Page Builder failure must not turn that save into a fatal
+            // response for the shared save_post request.
+            error_log('[Uncanny Page Builder] Native page save observer failed (' . $failure::class . ')');
+            self::rejectNativeSaveAfterObserverFailure($postId, $nativePageSave);
+        }
+    }
+
+    private static function rejectNativeSaveAfterObserverFailure(
+        int $postId,
+        ?NativePageSave $nativePageSave,
+    ): void {
+        if (!$nativePageSave instanceof NativePageSave) {
+            return;
+        }
+
+        $message = 'Page Builder settings were not saved because an unexpected error occurred. Reload the page and try again.';
+        try {
+            $message = _x(
+                'Page Builder settings were not saved because an unexpected error occurred. Reload the page and try again.',
+                'Page Builder',
+                'uncanny-automator',
+            );
+        } catch (\Throwable) {
+            // Keep the fixed fallback message for the save notice.
+        }
+
+        try {
+            $nativePageSave->reject($postId, $message);
+            $nativePageSave->commit($postId);
+        } catch (\Throwable $noticeFailure) {
+            error_log('[Uncanny Page Builder] Native page save failure notice failed (' . $noticeFailure::class . ')');
+        }
+    }
+
+    private static function refreshWorkingCanvas(
+        int $postId,
+        WorkingCanvasRefresherInterface $workingCanvas,
+        ?WorkingCanvasRefreshQueueInterface $workingCanvasRefreshQueue,
+        ?FailureReporterInterface $failureReporter,
+    ): void {
+        try {
+            $workingCanvas->refresh($postId);
+        } catch (\Throwable $failure) {
+            // WordPress has already saved the page. The working canvas is
+            // derived state, so record the failure and queue a safe retry
+            // instead of making the shared save_post request fatal.
+            self::reportWorkingCanvasFailure($postId, 'native_save.working_canvas.refresh', $failure, $failureReporter);
+
+            if (!$workingCanvasRefreshQueue instanceof WorkingCanvasRefreshQueueInterface) {
+                return;
+            }
+
+            try {
+                $workingCanvasRefreshQueue->enqueuePages([$postId]);
+            } catch (\Throwable $queueFailure) {
+                self::reportWorkingCanvasFailure($postId, 'native_save.working_canvas.enqueue', $queueFailure, $failureReporter);
             }
         }
+    }
 
-        if ($nativePageSave instanceof NativePageSave && !$nativePageSave->commit($postId)) {
-            return;
+    private static function reportWorkingCanvasFailure(
+        int $postId,
+        string $step,
+        \Throwable $failure,
+        ?FailureReporterInterface $failureReporter,
+    ): void {
+        try {
+            if ($failureReporter instanceof FailureReporterInterface) {
+                $failureReporter->report('native page save', $postId, $step, $failure);
+                return;
+            }
+        } catch (\Throwable) {
+            // A reporting failure cannot escape the shared save_post request.
         }
 
-        // The ownership transition restores post_content after this normal
-        // WordPress save. Do not replace legacy or saved WordPress content
-        // with a fresh Page Builder artifact immediately before restoration.
-        if ($isSwitchingToWordPress) {
-            return;
-        }
-
-        // Run after page-owned metaboxes save so the working canvas sees the
-        // newest shell, design override, and header/footer selection. This
-        // refresh never creates or selects public output.
-        if ($workingCanvas instanceof WorkingCanvasRefresherInterface) {
-            $workingCanvas->refresh($postId);
-        }
+        error_log(sprintf(
+            '[Uncanny Page Builder] Native save for page %d completed, but %s failed (%s).',
+            $postId,
+            $step,
+            $failure::class,
+        ));
     }
 
     /**

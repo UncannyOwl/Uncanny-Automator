@@ -324,7 +324,12 @@ final class WpCronWorkingCanvasRefreshQueue implements
         }
 
         ksort($entries);
-        update_option(self::OPTION_KEY, array_values($entries), false);
+        $updated = update_option(self::OPTION_KEY, array_values($entries), false);
+        if ($updated === false && $this->loadEntries() !== $entries) {
+            // update_option() also returns false for an unchanged value. Read
+            // the queue back before treating that ambiguous result as success.
+            throw new \RuntimeException('Could not persist the Page Builder working-canvas refresh queue.');
+        }
     }
 
     /**
@@ -489,6 +494,16 @@ final class WpCronWorkingCanvasRefreshQueue implements
             wp_unschedule_event((int) $existing, self::HOOK);
         }
 
-        wp_schedule_single_event($timestamp, self::HOOK);
+        $scheduled = wp_schedule_single_event($timestamp, self::HOOK);
+        if ($scheduled !== false) {
+            return;
+        }
+
+        // WordPress can return false when another request scheduled the same
+        // event first. Confirm that an event now runs no later than requested.
+        $confirmed = wp_next_scheduled(self::HOOK);
+        if ($confirmed === false || (int) $confirmed > $timestamp) {
+            throw new \RuntimeException('Could not schedule the Page Builder working-canvas refresh queue.');
+        }
     }
 }

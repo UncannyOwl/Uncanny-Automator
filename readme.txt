@@ -1,64 +1,94 @@
-=== Uncanny Automator - Easy Automation, Integration, Webhooks & Workflow Builder Plugin ===
+=== Uncanny Automator - AI + Automation for WordPress | AI Agent, AI Page Builder, Free AI Usage Included ===
 Contributors: uncannyautomator, uncannyowl, smub
-Tags: automation, google sheets, openai, learndash, webhooks
+Tags: ai, automation, ai agent, ai assistant, workflow automation
 Requires at least: 5.8
 Tested up to: 7.0.3
 Requires PHP: 7.4
-Stable tag: 7.5.0.3
+Stable tag: 7.5.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Uncanny Automator is the easiest and most powerful way to connect your WordPress plugins, sites and apps together with powerful automations.
+The AI + Automation platform for WordPress. Automate workflows across all your plugins and apps, add an AI agent, and build pages with AI — no code.
 
 == Description ==
 
-Uncanny Automator is the easiest and most powerful way to automate your WordPress site with no code. Build automations in minutes that connect your WordPress plugins, sites and apps together using billions of recipe combinations.
+**Uncanny Automator is a truly unique AI + Automation platform for WordPress.** It combines the most powerful no-code automation engine in the WordPress ecosystem with the most capable AI assistant for WordPress and the first true WordPress AI page builder. In other words, everything you need to grow your WordPress business in one plugin.
 
-Here's how Uncanny Automator works:
+Whether you want to connect your favorite plugins and apps, put an **AI agent** to work managing your WordPress site, or **build beautiful pages with AI** (instead of learning how to use complicated page builders), Uncanny Automator does it all natively inside WordPress in one easy-to-use package.
 
-When something happens, Automator can make other things happen.
+Trusted by 40,000+ active sites with a 4.9/5 star rating and 2,000,000+ downloads, Uncanny Automator brings AI and automation together in one place.
 
-When a user buys a product, add them to a membership level, enroll them in a course and pass their information to Google Sheets.
+= Free AI included — no AI subscription, no API keys, no setup =
 
-It's that simple! Here's a video outlining how it all works.
+Most WordPress AI plugins make you bring your own API key, pay for a separate AI subscription, or wire up an MCP server before you can do anything. **Uncanny Automator is different — enough free Uncanny Agent usage is included to get you started, and the Pro version includes more than enough AI usage for everyday use.** No separate AI subscription. No API keys to copy and paste. No MCP servers to wire up.
 
-https://www.youtube.com/watch?v=LMR5YIPu2Kk
+Just install the plugin, create your free account, and start chatting with Uncanny Agent right inside your WordPress site.
 
-If you've used Zapier, setting things up will be intuitive. And if not, that's okay too!
+= Three core capabilities, one platform =
 
-= E-commerce Automation =
+**1. Uncanny Recipe Builder — no-code WordPress automation.** Build automated workflows ("recipes") that connect your WordPress plugins and apps using triggers and actions. When something happens on your site, Automator makes other things happen — automatically.
 
-Improve customer engagement by having your purchases trigger marketing automation campaigns, award store credit, promote 5-star reviews, schedule time-limited bonus offers and offer profile-driven discounts. Or for advanced reporting and customer service, create WooCommerce automations that send purchase details to Google Sheets, Slack and ActiveCampaign with our native integrations. It all happens automatically!
+**2. Uncanny Agent — your AI assistant for WordPress.** A conversational AI assistant built right into your WordPress admin, with some free AI usage included. Ask it about your site. Ask it about your business. Ask it to get things done. It works alongside your automations to help you manage your WordPress site.
 
-= Google Sheets Automation =
+**3. Uncanny Page Builder — build pages with conversation.** The page builder for WordPress designed from the ground up to be AI-first. Describe the page you want and Uncanny Agent designs AND builds it, outputting professional-looking designs built from clean HTML and CSS. That means no shortcodes, no block markup, and **no page builder lock-in.**
 
-Build powerful reports and dashboards based on almost any WordPress activity or data with 1-click Google Sheets integration. Track purchases, course completions, blog post updates, forum posts and more. Not only can you create new rows for reports with Uncanny Automator, but you can update existing records, making it perfect for dashboard reporting.
+= Uncanny Recipe Builder: integrate anything, automate everything =
 
-= Webhook Automation =
+Connect the plugins and apps you already use and let them work together. With triggers and actions, you can automate virtually any task — from a simple email notification to complex multi-step business processes.
 
-Looking for the most powerful and comprehensive webhook support to connect your WordPress site to other apps? Uncanny Automator has support for security headers, any request method and any data format (including nesting support, JSON, XML, arrays and more). Use our 1-click sample generation and debug records to simplify connecting to other sites and systems, and send unlimited outgoing webhooks with the free version.
+- **Automate WooCommerce (and other eCommerce plugins):** add customers to a list, enroll them in a course, or grant membership access the moment they buy.
+- **Automate LearnDash, LifterLMS & Tutor LMS (and other LMS plugins):** auto-enroll students, issue certificates, and trigger follow-ups on course completion.
+- **Automate forms:** turn your WPForms, Gravity Forms, Fluent Forms, Contact Form 7 forms, Forminator forms, or Ninja Forms into powerful self-service tools by automating what happens on form submission.
+- **Sync data:** push form submissions and site activity to Google Sheets, your CRM, or any app via webhooks.
+- **Connect anything:** Slack, Mailchimp, ActiveCampaign, HubSpot, Zoom, Notion, and hundreds more.
 
-= LearnDash and E-Learning Automation =
+It's the WordPress-native way to do what Zapier and Make do — with deeper integration and no per-task fees.
 
-Personalize student experiences and deliver better learning outcomes with no-code automations. Notify an instructor when users fail a quiz and enroll them in a remedial course–automatically. Add users to groups based on performance to allow easy collaboration. Automate student outreach when users fall behind in their coursework and offer easy learning interventions.
+= Uncanny Agent: an AI agent for WordPress that gets things done =
 
-= Social Media Automation =
+Uncanny Agent is a conversational **AI assistant for WordPress** that understands your site and completes tasks on your behalf. Ask it. It does it — using the free starter AI usage included with the plugin, with no separate subscription required.
 
-Spend less time sharing your posts and announcements on social media with automatic posting. Automatically post anything you want to Facebook Pages, Facebook Groups, X/Twitter, LinkedIn and Instagram, including with images and links. Sign up for a free account to get 250 credits for social posting; Pro plugin users get unlimited posting.
+- **Ask about your site:** "How are my sales trending this month?" "What quizzes are users struggling with, and what questions are they having the most difficulty with?" "Review my site and suggest SEO improvements."
+- **Ask it anything about WordPress:** no question is too basic and none too advanced — "What's a permalink?" "How do I duplicate a page?" Uncanny Agent can also walk you through setting up WordPress, your theme, and your plugins — or often just do it for you. And unlike a generic chatbot, its answers fit *your* site — your theme, your plugins, your settings.
+- **Ask it to do things:** "Create a blog post draft about our spring sale." "Add a contact form to the About page." "Update the site tagline."
+- **Put it to work across your integrations:** Uncanny Agent can run actions from your connected integrations directly, without building a recipe first. "Add this customer to my Mailchimp list." "Post this announcement to Slack." "Add today's orders to my Google Sheet."
+- **It does more than answer:** Uncanny Agent builds pages, updates settings, and generates code snippets you can review before using.
+- **Works alongside your automations:** Uncanny Agent handles the conversational, ad-hoc work while your recipes handle the systematic, recurring workflows.
+- **Powered by leading AI models:** Uncanny Agent runs on leading AI models selected and managed for you — nothing to configure. (In your recipes, you can also connect your own AI providers including OpenAI (ChatGPT), Anthropic (Claude), Google Gemini, Perplexity, Mistral AI, Cohere, and xAI.)
 
-= OpenAI Automation =
+Uncanny Agent is the most powerful, most capable conversational AI assistant for WordPress. Try it and see for yourself!
 
-Connect your new posts and site activity to OpenAI, with full support for ChatGPT and Dall-E models. Use Automator and the OpenAI to generate article summaries, social media posts, SEO descriptions, translations, email campaigns, featured images and more.
+= Uncanny Page Builder: build WordPress pages with AI =
 
-= Marketing Automation =
+Uncanny Page Builder is the first WordPress page builder with AI at its foundation.
 
-Integrate your favourite CRM with your WordPress plugins for full marketing automation. Add or remove tags based on course activity, purchases and more, and keep your email lists updated automatically. Or, with Automator Pro and Loops, send emails out in bulk and use Automator as your own CRM.
+But it's much more than a page builder.
 
-= Free doesn't mean limited =
+Builders like Elementor, Kadence, and Spectra still expect *you* to supply the design: pick a template, or build a layout from scratch using whatever design skills you have.
 
-The free version of Automator is incredibly powerful and comes with built-in automation and integration support for all of these popular apps and WordPress plugins:
+Uncanny Agent brings the design intelligence — describe what you want and Agent designs *and* builds it. It's less like swapping page builders and more like having a designer and developer on call.
 
-= Supported apps =
+- **Describe it, Uncanny Agent designs and builds it:** "Create a landing page with a hero section, three feature cards, a testimonial slider, and a call-to-action." Agent makes the design decisions — layout, hierarchy, spacing, and style — then builds the page. Refine it through conversation.
+- **Build from any example:** upload a screenshot of a page or design you admire and Uncanny Agent builds something in that style — no design brief required.
+- **Images and icons, handled for you:** Uncanny Agent searches your media library and includes images as part of a build, and draws on thousands of built-in icons — no hunting down assets before you start.
+- **Pages that keep themselves current:** add live content from 90+ built-in live elements — latest-posts sections that update themselves, content that welcomes logged-in members by name, login and registration forms, menus that stay in sync, and live site stats — all rendered server-side into clean HTML.
+- **Your brand, locked in:** set your logo, colors, and fonts once, lock the choices that matter, and give Uncanny Agent standing design direction it applies to every page it builds. On-brand by default.
+- **Works with the site you already have:** keep your theme's header and footer or go full-page design. Redesign an existing page and the original is saved automatically — restore it anytime, exactly as it was.
+- **Menus too, not just pages:** ask Uncanny Agent to create a navigation menu, add or reorder items, or assign it to a location — all by conversation.
+- **You stay in control:** significant Uncanny Agent changes wait for your approval, edits land on an unsaved draft — your live page doesn't change until you save — and edits can be undone.
+- **No lock-in, ever:** unlike traditional page builders that embed proprietary shortcodes and block markup, Uncanny Page Builder outputs clean, portable HTML and CSS. Deactivate the plugin and your content and design stay intact (live elements simply pause) — you can even download any page as a standalone web page and host it anywhere.
+- **AI-first, not AI-assisted:** other builders bolt AI onto a drag-and-drop interface. Uncanny Page Builder was designed from day one to be an AI page builder.
+- **Still fully editable:** fine-tune text and swap images directly with click-to-edit capabilities whenever you want — and styles can differ by device and by state, so "make the buttons bigger on mobile" and "darken the button on hover" are things you can simply ask for.
+
+It's AI website building for WordPress — but really, it's like having a designer and developer build your pages for you. The lean, portable alternative to Elementor, Divi, Kadence, and the block editor — faster to build with than any of them, without the design skills, the learning curve, or a designer's budget.
+
+= Connect everything on your WordPress site =
+
+Uncanny Automator connects the most popular WordPress plugins and apps. Mix and match any of them in a recipe, and put Uncanny Agent to work across them too. Here's the complete list.
+
+**AI models:** use leading AI inside your recipes — OpenAI (ChatGPT), Anthropic (Claude), Google Gemini, Mistral AI, Perplexity, Cohere, and xAI (Grok). Uncanny Agent itself runs on leading models selected and managed for you.
+
+**Apps & external services:**
 
 - [ActiveCampaign](https://automatorplugin.com/integration/activecampaign/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Anthropic](https://automatorplugin.com/integration/anthropic/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -74,7 +104,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [DeepSeek](https://automatorplugin.com/integration/deepseek/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Deprecated)
 - [Discord](https://automatorplugin.com/integration/discord/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Drip](https://automatorplugin.com/integration/drip/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
-- [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Facebook Groups](https://automatorplugin.com/integration/facebook-groups/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Deprecated)
 - [Facebook Lead Ads](https://automatorplugin.com/integration/facebook-lead-ads/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Facebook Pages](https://automatorplugin.com/integration/facebook/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [GetResponse](https://automatorplugin.com/integration/getresponse/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -118,8 +148,9 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Zoom Meetings](https://automatorplugin.com/integration/zoom-meetings/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Zoom Webinars](https://automatorplugin.com/integration/zoom-webinars/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 
-= WordPress Plugins Integrations =
+**WordPress plugins:**
 
+- [AcyMailing](https://automatorplugin.com/integration/acymailing/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (3rd party)
 - [Advanced Ads](https://automatorplugin.com/integration/advanced-ads/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Advanced Coupons](https://automatorplugin.com/integration/advanced-coupons/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Advanced Custom Fields](https://automatorplugin.com/integration/advanced-custom-fields/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
@@ -129,6 +160,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Amelia](https://automatorplugin.com/integration/amelia/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [ARMember](https://automatorplugin.com/integration/armember/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Automator Core](https://automatorplugin.com/integration/automator-core/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Automator for PayPal](https://automatorplugin.com/integration/automator-for-paypal/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (3rd party)
 - [FunnelKit Automations](https://automatorplugin.com/integration/autonami/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [BadgeOS](https://automatorplugin.com/integration/badgeos/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Beaver Builder](https://automatorplugin.com/integration/beaver-builder/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -158,6 +190,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Everest Forms](https://automatorplugin.com/integration/everest-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [ExactMetrics](https://automatorplugin.com/integration/exactmetrics/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (3rd party)
 - [Fluent Forms](https://automatorplugin.com/integration/wp-fluent-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Fluent Support](https://automatorplugin.com/integration/fluent-support/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [FluentBooking](https://automatorplugin.com/integration/fluentbooking/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -196,12 +229,13 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Mailster](https://automatorplugin.com/integration/mailster/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Make](https://automatorplugin.com/integration/make/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [MasterStudy LMS](https://automatorplugin.com/integration/masterstudy-lms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
-- [Memberium For Keap](https://automatorplugin.com/integration/memberium-for-keap/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Memberium for Keap](https://automatorplugin.com/integration/memberium-keap/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [MemberMouse](https://automatorplugin.com/integration/membermouse/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [MemberPress](https://automatorplugin.com/integration/memberpress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [MemberPress Courses](https://automatorplugin.com/integration/memberpress-courses/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Meta Box](https://automatorplugin.com/integration/meta-box/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
 - [Modern Events Calendar](https://automatorplugin.com/integration/modern-events-calendar/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [MonsterInsights](https://automatorplugin.com/integration/monsterinsights/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (3rd party)
 - [myCred](https://automatorplugin.com/integration/mycred/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Newsletter](https://automatorplugin.com/integration/newsletter/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
 - [Ninja Forms](https://automatorplugin.com/integration/ninja-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -211,10 +245,13 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Plugin Actions](https://automatorplugin.com/integration/plugin-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
 - [Popup Maker](https://automatorplugin.com/integration/popup-maker/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [PressPrimer Assignment](https://automatorplugin.com/integration/pressprimer-assignment/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (3rd party)
+- [PressPrimer Quiz](https://automatorplugin.com/integration/pressprimer-quiz/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (3rd party)
 - [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
-- [PrettyLinks](https://automatorplugin.com/integration/pretty-links/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Pretty Links](https://automatorplugin.com/integration/pretty-links/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [QR Code](https://automatorplugin.com/integration/qr-code/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
-- [RafflePress](https://automatorplugin.com/integration/rafflespress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Quiz Maker by AYS](https://automatorplugin.com/integration/quiz-maker-by-ays/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (3rd party)
+- [RafflePress](https://automatorplugin.com/integration/rafflepress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Rank Math SEO](https://automatorplugin.com/integration/rank-math-seo/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Redirection](https://automatorplugin.com/integration/redirection/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Restrict Content Pro](https://automatorplugin.com/integration/restrict-content/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -249,7 +286,7 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [Ultimate Member](https://automatorplugin.com/integration/ultimate-member/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [User Lists](https://automatorplugin.com/integration/user-lists-addon/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Plus Addon)
 - [Uncanny Codes](https://automatorplugin.com/integration/uncanny-codes/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
-- [Uncanny Continuing Education Credits](https://automatorplugin.com/integration/uncanny-ceus/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Uncanny Continuing Education Credits](https://automatorplugin.com/integration/uncanny-continuing-education-credits-for-learndash/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Uncanny Groups](https://automatorplugin.com/integration/uncanny-groups/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Uncanny Toolkit](https://automatorplugin.com/integration/uncanny-toolkit/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Upsell Plugin](https://automatorplugin.com/integration/upsell-plugin/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -263,11 +300,11 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WooCommerce Bookings](https://automatorplugin.com/integration/woocommerce-bookings/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [WooCommerce Memberships](https://automatorplugin.com/integration/woocommerce-memberships/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [WooCommerce ShipStation](https://automatorplugin.com/integration/woocommerce-shipstation/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
-- [WooCommerce Subscriptions](https://automatorplugin.com/integration/woocommerce-subscriptions/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WooCommerce Subscriptions](https://automatorplugin.com/integration/woocommerce-subscriptions/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
 - [WordPress](https://automatorplugin.com/integration/wordpress-core/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [WordPress Multisite](https://automatorplugin.com/integration/wordpress-multisite/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
 - [WordPress Download Manager](https://automatorplugin.com/integration/wp-download-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
-- [Wordfence Security](https://automatorplugin.com/integration/wordfence/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Wordfence Security](https://automatorplugin.com/integration/wordfence-security/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [WP Activity Log](https://automatorplugin.com/integration/wp-activity-log/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [WP Admin](https://automatorplugin.com/integration/wp-admin/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
 - [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
@@ -288,161 +325,171 @@ The free version of Automator is incredibly powerful and comes with built-in aut
 - [WP-Polls](https://automatorplugin.com/integration/wp-polls/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [WPCode](https://automatorplugin.com/integration/wpcode/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [WPForms](https://automatorplugin.com/integration/wp-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
-- [WS Form LITE](https://automatorplugin.com/integration/ws-form-lite/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [WS Form](https://automatorplugin.com/integration/ws-form/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [wpDiscuz](https://automatorplugin.com/integration/wpdiscuz/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
-- [wpForo](https://automatorplugin.com/integration/wp-foro/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [wpForo](https://automatorplugin.com/integration/wpforo/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [XML](https://automatorplugin.com/integration/xml/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (Pro)
 - [Yoast SEO](https://automatorplugin.com/integration/yoast-seo/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
 - [Zapier](https://automatorplugin.com/integration/zapier/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list)
+- [Zoomy](https://automatorplugin.com/integration/zoomy/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list) (3rd party)
 
-Over 350 automation triggers and actions are available for the plugins and apps listed above in the free version. There's straightforward documentation in our [Knowledge Base](https://automatorplugin.com/knowledge-base/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list), including some quick and straightforward instructional videos. Developers, there's robust documentation and code samples for you too!
+**Built-in capabilities:** send data anywhere with unlimited outgoing webhooks, send emails, and automate WordPress core functions — all free. Pro adds incoming webhooks, database queries, advanced actions for developers, importing CSV / RSS / JSON / XML, schedules and delays, loops (running bulk actions on users, posts and more), QR codes, data formatting, and thousands of additional triggers, actions and tokens.
 
-Beyond the plugin and app integrations, this free version of Uncanny Automator also supports common WP triggers and actions in automations:
+Don't see what you need? Connect to virtually any plugin with custom triggers and actions, or any app with robust webhook support.
 
-- A user views a page
-- A user submits a comment
-- A user logs in
-- A user publishes a post
-- Send an email
-- Create a post
-- Add a WP role
+= Who it's for =
 
-All WP plugin triggers and actions included in Uncanny Automator come with a forever free license, which allows unlimited usage on your WordPress site. By creating a free, optional Automator account, you can unlock [250 credits](https://automatorplugin.com/knowledge-base/what-are-credits) to try out app integrations. You can use credits on your site to:
+- **WordPress beginners** who need a guide as much as a tool — ask Uncanny Agent any WordPress question, get step-by-step help setting up your site, and build your first pages by describing them. Free to start.
+- **Solopreneurs & small business owners** who want to save 5–10 hours a week, get an AI assistant for their site, and build pages without learning a builder.
+- **Marketing managers** connecting WordPress to their marketing stack and automating campaigns — a WordPress-native alternative to Zapier with AI included.
+- **eCommerce, eLearning & membership site operators** automating the full user lifecycle across WooCommerce, LearnDash, MemberPress, and more.
+- **Developers** replacing fragile custom integration code with maintainable recipes, and using AI to explore data structures and generate snippets.
+- **Agencies** standardizing automation, AI, and page building across every client site — with no page builder lock-in.
 
-- Post new content to Facebook Groups, Facebook Pages, X/Twitter and Instagram
-- Pass records to Google Sheets (to generate charts or reports or manipulate data outside of WordPress)
-- Notify staff of key events in Slack
-- Register customers in Zoom events on product purchase
-- Send Mailchimp campaigns when new blog posts are published
-- Generate, proofread or translate text with OpenAI and GPT
-- and more
+= Praise for Uncanny Automator =
 
-= Take automation to the next level =
+- "With this plugin, WordPress sites become **intelligent**. It is an exceptionally useful product and the customer service I experienced was fast and thorough." — *Stephen P*
+- "Uncanny Automator stands out in its ease of use, configurability and **flexibility**. With Uncanny Automator, we pretty much stopped using Zapier." — *Jing*
+- "I've been testing and building automation **solutions for clients** over the past 10 years. Once I found Uncanny Automator, I stopped looking for other software." — *Adam C*
+- "I tried 3 or 4 automator plugins before I decided on Uncanny. Boy did I make the right choice, as the **support** I've received has been exceptional." — *Noel A*
+- "Really impressed by Uncanny Automator—a **gamechanger**. The plugin is clearly built very well and performs cleanly and consistently." — *Richard F*
+- "I love it so much that I'm looking for more ways to streamline and **automate** our processes now. Such a great product!" — *Steph W*
 
-[Uncanny Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp-repo&utm_medium=readme&utm_content=take-automation-next-level), our premium plugin, adds even more features and integrations, including the ability to create users and posts, delay and schedule actions, connect multiple sites together, add conditions to actions, and unlock unlimited use of app integrations like Google Sheets and X/Twitter. It also triples the number of available triggers and actions.
+= What you get free with Uncanny Automator =
 
-Pro also adds features like [Run Now](https://automatorplugin.com/knowledge-base/run-now/?utm_source=wp-repo&utm_medium=readme) and [Loops](https://automatorplugin.com/knowledge-base/user-loops/?utm_source=wp-repo&utm_medium=readme), which allow you to do things like send emails to all users matching certain criteria, tagging users based on site activity, or even generating instant reports in Google Sheets of all users that completed a specific course, purchased a certain product, or anything else you can imagine. 
+Uncanny Automator is free to install and use, and includes:
 
-Here are some of the other really cool automations you can create with [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp-repo&utm_medium=readme&utm_content=create-really-cool-automations):
+- **Uncanny Recipe Builder** with unlimited plugin-to-plugin automations — connect the plugins on your site with no limits.
+- **Hundreds of free triggers and actions** across your favorite WordPress plugins.
+- **Free Uncanny Agent usage to get you started** — enough to experience it firsthand, with no separate subscription required and no API keys to manage.
+- **Free access to try Uncanny Page Builder** — build a few pages with AI and see it for yourself. Because Uncanny Agent does the building, page building draws on Uncanny Agent usage.
+- **250 free app credits** to use 250 free triggers/actions with external apps like Google Sheets, Slack, and Mailchimp.
 
-- When a user makes a purchase using WooCommerce on one site, create a user on another WP site, send the user a link to set a new password, enroll the user in a course and add a membership level.
-- When a user submits a form, add the user to a mailing list if their email address matches a certain domain, add them to a social group and schedule their trial access to expire in 7 days if they don't make a purchase.
-- When a new course is published, send an email campaign, post to X/Twitter and Facebook with GPT-generated content, post to the BuddyBoss sitewide activity stream and notify instructors in a Slack channel.
-- Whenever you want, generate a list of all users in a group that haven't yet completed a course.
+Create a free account and start automating and chatting in minutes — no credit card required.
 
-And here are some of the key features in the Pro version that allow incredibly flexible and powerful automations for WP:
+= Upgrade to Uncanny Automator Pro =
 
-- Run recipes for logged out users with [Everyone recipes](https://automatorplugin.com/knowledge-base/anonymous-recipes/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-recipe-example); you can even create and update existing users.
-- Have external apps [trigger recipes](https://automatorplugin.com/knowledge-base/webhook-triggers/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-recipe-example) and vice versa.
-- Set up [buttons and links](https://automatorplugin.com/knowledge-base/magic-button/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-recipe-example) that can trigger any recipe on click.
-- Set custom user and post meta, both individually and in bulk via loops.
-- [Delay or Schedule an action](https://automatorplugin.com/knowledge-base/scheduled-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-recipe-example)
-- [Filter actions](https://automatorplugin.com/knowledge-base/action-filters-conditions/) so they only run when conditions are met, like a matching user email domain or WordPress role.
-- [Run any WordPress hook](https://automatorplugin.com/knowledge-base/run-a-wordpress-hook/) or [call custom functions](https://automatorplugin.com/knowledge-base/call-a-custom-function-method/) in your recipes.
-- Automatic [log pruning](https://automatorplugin.com/knowledge-base/using-automator-logs/#cleaning-up-the-logs) to keep log size down.
+Uncanny Automator Pro unlocks the full platform:
 
-Plus licenses and higher get access to our [Custom User Fields](https://automatorplugin.com/custom-user-fields-addon/?utm_source=wp-repo&utm_medium=readme), [Restrict Content](https://automatorplugin.com/restrict-content-addon/?utm_source=wp-repo&utm_medium=readme), and [User Lists](https://automatorplugin.com/user-lists-addon/?utm_source=wp-repo&utm_medium=readme) addons which makes it really easy to create and manage user profile fields in WordPress. Automatically add new fields to user edit pages and connect fields to your recipes and plugins like Advanced Custom Fields.
+- **Generous Uncanny Agent usage** — Monthly usage that refreshes automatically, plus Anytime usage you can spend whenever you need it, for business analysis, content creation, page building, and everyday site management.
+- **Pro triggers, actions, and tokens** — the complete library, including premium WordPress plugins and external apps, plus advanced data tokens for dynamic, personalized recipes.
+- **Advanced workflow logic** — delays and scheduling to control the timing of your workflows, conditions to build sophisticated multi-step automations and loops that process users and posts in bulk.
+- **Unlimited app automations** — no per-task fees.
+- **Higher plans add even more** — Multisite support, addons including Custom User Fields, User Lists, Restrict Content, and Dynamic Content, and Elite Integrations like Salesforce and QuickBooks Online. See the pricing page for what each plan includes.
 
-An [Automator Pro](https://automatorplugin.com/pricing/?utm_source=wp-repo&utm_medium=readme&utm_content=pro-support) license also includes access to our world-class premium support. 
+= One subscription replaces many =
 
-For the full list of triggers and actions, make sure to check out [this list](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=full-list-below-recipe-examples).
+A single Uncanny Automator Pro subscription can replace an entire stack of subscriptions — and do the work you'd otherwise hire specialists for:
 
-Here's what other people are saying about Uncanny Automator:
+- **Your automation subscription** — Zapier, Make, or Pabbly Connect
+- **Your AI subscription** — ChatGPT, Claude, or Gemini, now built into WordPress
+- **Your page builder subscription** — Elementor, Kadence, or Spectra
+- **A graphic designer** — design landing pages and layouts with AI
+- **A WordPress developer** — let Uncanny Agent explore your data, generate code snippets, and complete admin tasks
+- **A virtual WordPress assistant** — Uncanny Agent completes routine site-management tasks for you
+- **A content writer** — draft posts, pages, and product descriptions with AI
+- **An SEO specialist** — generate meta titles, descriptions, and optimized content
 
-- [Automate Your Workflows Like a Pro](https://www.wpexplorer.com/uncanny-automator-review/)
-- [Uncanny Automator - Zapier for WordPress](https://helpiewp.com/uncanny-automator/)
-- [It's Like Zapier For Your WordPress Site](https://wplift.com/uncanny-automator-review)
-- [Automate WordPress Like Zapier (Or With Zapier!)](https://wpmayor.com/uncanny-automator-review-automate-wordpress-like-zapier-or-with-zapier/)
-- [E-Learning Automation with Uncanny Automator](https://www.learndash.com/e-learning-automation-with-uncanny-automator/)
+Every plan includes all three capabilities — Uncanny Recipe Builder, Uncanny Agent, and Uncanny Page Builder. With plans starting at only $25/month (billed annually), Uncanny Automator is the smartest decision you can make for your organization running on WordPress. See [https://automatorplugin.com/pricing/](https://automatorplugin.com/pricing/) for details.
+
+= Learn more =
+
+- Website: [https://automatorplugin.com/](https://automatorplugin.com/)
+- All integrations: [https://automatorplugin.com/integrations/](https://automatorplugin.com/integrations/)
+- Knowledge base: [https://automatorplugin.com/knowledge-base/](https://automatorplugin.com/knowledge-base/)
 
 == Frequently Asked Questions ==
 
-= Where can I find Automator documentation and more info? =
+= What is Uncanny Automator? =
 
-You can learn more about Uncanny Automator on our website at [https://automatorplugin.com/](https://automatorplugin.com/?utm_source=wp-repo&utm_medium=readme&utm_content=more-documentation) and our Knowledge Base is here: [https://automatorplugin.com/knowledge-base/](https://automatorplugin.com/knowledge-base/?utm_source=wp-repo&utm_medium=readme&utm_content=more-documentation)
+Uncanny Automator is the go-to AI + Automation plugin for WordPress. It combines a no-code automation engine (the Uncanny Recipe Builder), a conversational AI assistant (Uncanny Agent), and an AI-first page builder (Uncanny Page Builder) in a single plugin.
 
-= How do I get started with my first automation? =
+= Is the AI really free? =
 
-Have a look at [https://automatorplugin.com/knowledge-base/creating-a-recipe/](https://automatorplugin.com/knowledge-base/creating-a-recipe/?utm_source=wp-repo&utm_medium=readme&utm_content=how-to-create-first-automation). There's also an onboarding wizard inside the plugin to help you build your first recipe. Hopefully it will be the first of many!
+Yes — install the plugin and create your free account, and you'll have free Uncanny Agent usage to get you started, enough to experience it for yourself. There's no separate AI subscription to buy, no API keys to copy and paste, and no MCP servers to deal with. Start chatting with AI inside WordPress right away — and when you want more, paid plans include Monthly usage that refreshes every month plus Anytime usage you can spend whenever you need it.
 
-= Will Uncanny Automator slow down my website? =
+= What is Uncanny Agent? =
 
-Uncanny Automator is built from the ground up for efficiency and performance. Automator adds negligible overhead to WordPress sites and has been rigorously tested across dozens of hosting environments.
+Uncanny Agent is an AI assistant built into your WordPress admin. It understands your site, answers questions about it, and completes tasks on your behalf — like creating content, adding a form to a page, or updating settings. It works alongside your automations to help you manage your site more efficiently.
 
-= What are the limits of your free version? =
+= Is this an AI agent for WordPress? =
 
-All integrations, triggers, actions and tokens listed [here](https://automatorplugin.com/all-triggers-and-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=what-are-the-limits-of-your-free-version) that don't have a "Pro" label are available in our free version. For the WordPress plugins listed, we include a forever-free license that allows you to run recipes with these triggers and actions an unlimited number of times. There are also no limits on the number of recipes you can set up or what you can include in each. For recipes that include apps, like X/Twitter and Facebook, you can create a free account to unlock 250 credits to try out these integrations.
+Yes. Uncanny Agent is a general-purpose conversational AI assistant that can understand your WordPress site and complete tasks through natural language. Unlike other AI chatbots, it doesn't just provide generic suggestions, leaving you to do the actual work. And unlike other automation platforms that advertise AI features, Uncanny Agent isn't just AI steps inside a workflow. No other WordPress plugin offers anything close.
 
-= Is Automator translation friendly? =
+= Which AI models does it work with? =
 
-Absolutely! The plugin was created with translation in mind and tested with a variety of translation plugins. We will support any translation issues you run into.
+Uncanny Agent runs on multiple LLMs selected by the Uncanny Agent team to maximize agent effectiveness and efficiency.
 
-= How can I request an integration for a plugin? =
+The Uncanny Recipe Builder includes integrations with all of the leading AI providers, including OpenAI (ChatGPT), Anthropic (Claude), Google Gemini, Perplexity, Mistral AI, Cohere, and xAI so you can use these models inside your automation recipes.
 
-The best thing you can do is reach out to the creator of the plugin that you want an integration for. Let them know you're using Uncanny Automator and that they could greatly extend the capabilities of their plugin by helping us develop an integration for it. As more plugin authors become aware of Uncanny Automator and realize its potential for their users, we'll be able to continue to invest in expanding Uncanny Automator's capabilities! Also, fill out [this form](https://automatorplugin.com/feedback/?utm_source=wp-repo&utm_medium=readme&utm_content=request-integration) on our site to let us know what you're looking for.
+= What is Uncanny Page Builder? =
 
-= How can I add an integration for my plugin? =
+Uncanny Page Builder is the first true AI page builder for WordPress. Instead of manually dragging and dropping and configuring hundreds of blocks or widgets, you describe the page you want and Uncanny Agent builds it, outputting clean HTML and CSS with no shortcodes, no block markup, and no page builder lock-in. You can still edit text and images directly in the interface. Because Uncanny Agent does the building, page building uses your Uncanny Agent usage.
 
-Check out our developer documentation over at [https://developer.automatorplugin.com/](https://developer.automatorplugin.com/?utm_source=wp-repo&utm_medium=readme&utm_content=code-integration). Also consider reaching out to our team, maybe we can help or even turn it into an official integration!
+= Can AI build my WordPress pages? =
 
-= Can I automatically share posts & updates on social media? =
+Yes. With Uncanny Page Builder, you describe the page in plain language and Uncanny Agent builds it for you. Because the output is clean HTML and CSS, your pages stay fast, portable, and yours, even if you deactivate the plugin.
 
-Yes. It is easy to set up automation and share content on Social Media platforms. Set up integrations with Instagram, Facebook Pages, Facebook Groups, LinkedIn Pages and X/Twitter by creating a free account to unlock 250 free credits.
+= Can my WordPress pages show dynamic, always-current content? =
 
-= Do I need coding skills or help from a developer? =
+Yes, that's live content. Uncanny Page Builder includes over 90 built-in live elements: latest-posts sections that update themselves, content that welcomes logged-in members by name, login and registration forms, menus that stay in sync with your site, and live site stats. Everything renders server-side into clean HTML and stays current on every page view.
 
-No coding skills are required. Uncanny Automator is built for non-developers to build automations using our intuitive recipe builder.
+= Will Uncanny Page Builder work with my theme and existing site? =
 
-= Does Automator work with LearnDash? =
+Yes. Page by page, you choose whether to keep your theme's header and footer or let Uncanny Page Builder design the entire page. Adopt it gradually — redesign one page and leave the rest of your site untouched. When it takes over an existing page, the original is saved automatically and can be restored anytime, exactly as it was. Uncanny Page Builder requires WordPress 6.0+ and PHP 8.1+.
 
-Absolutely! LearnDash is our most popular integration. Automator provides an easy way to build powerful LearnDash activity reports, personalize learning paths, connect LearnDash to live events and more.
+= Is Uncanny Automator a Zapier alternative? =
 
-= How does Automator use OpenAI? =
+Yes. Uncanny Automator does what Zapier and Make do, but natively inside WordPress — with deeper integrations, no per-task fees, and an AI assistant included.
 
-By connecting your recipes to an OpenAI API account, you can send prompts to OpenAI and use the responses in other actions. Generate titles and descriptions, excerpts for social media, translations, new blog posts and more; you can even perform sentiment analysis on submitted text. Automator supports GPT-3.5, GPT-4 and other OpenAI models.
+= Do I need to know how to code? =
 
-= Does Uncanny Automator allow me to customize the look and design of the emails it sends? =
+No. Everything — automations, AI assistance, and page building — is no-code.
 
-Yes, with WordPress's "Send Email" action, send rich text, plain text and raw HTML emails. Create follow-up emails with your own custom HTML templates.
+= I'm new to WordPress — is Uncanny Automator a good plugin for beginners? =
 
-= Why should I consider upgrading to Uncanny Automator Pro? =
+Yes! In fact, it may be the best first plugin to install on a new WordPress site. Uncanny Agent answers any WordPress question, no matter how basic ("What's a permalink?" "How do I change user roles and permissions?"), with answers that fit your actual site — and it can walk you through setting up WordPress, your theme, and your plugins, or often just do the task for you. Uncanny Page Builder builds your first pages from a plain-language description, and Uncanny Recipe Builder is ready to make your plugins work together as your site grows. Free to start — no credit card required.
 
-You can use the free version forever without purchasing the Uncanny Automator Pro version. However, with Uncanny Automator Pro, you'll get access to more automation triggers and actions, additional features, and unlimited credits for app integrations. Visit [our plans page](https://automatorplugin.com/pricing/?utm_source=wp-repo&utm_medium=readme&utm_campaign=faq) to learn more.
+= What integrations does it support? =
 
-= Who is Uncanny Owl? =
+WordPress and app integrations spanning WooCommerce, LearnDash, MemberPress, Gravity Forms, WPForms, Mailchimp, ActiveCampaign, HubSpot, Slack, Google Sheets, Zoom, Notion, and many more, plus webhooks. See [https://automatorplugin.com/integrations/](https://automatorplugin.com/integrations/).
 
-We're a Toronto-based WordPress company specializing in elearning and automation solutions for WordPress. We're behind the popular [Uncanny LearnDash Toolkit plugin](https://wordpress.org/plugins/uncanny-learndash-toolkit/) and we also have a suite of highly-acclaimed [commercial LearnDash add-ons](https://www.uncannyowl.com/plugins/?utm_source=wp-repo&utm_medium=readme&utm_content=who-is-uncannyowl).
+= What does Pro add? =
+
+Uncanny Automator Pro unlocks the complete library of Pro triggers, actions, and tokens; advanced workflow logic (delays, scheduling, conditions, and loops); generous Uncanny Agent usage (Monthly usage plus Anytime usage); and unlimited app automations with no per-task fees. Higher plans add multisite support, Elite Integrations like Salesforce and QuickBooks Online, and addons such as Custom User Fields, User Lists, Restrict Content, and Dynamic Content — see [https://automatorplugin.com/pricing/](https://automatorplugin.com/pricing/) for what each plan includes. One Pro subscription can replace your Zapier/Make/Pabbly, ChatGPT/Claude/Gemini, and Elementor/Kadence/Spectra subscriptions, while doing the work you'd otherwise hire a designer, developer, or writer for.
+
+= Is there a free version? =
+
+Yes — Uncanny Automator is free to install and use. It includes Uncanny Recipe Builder with unlimited WordPress plugin integrations, hundreds of triggers and actions, free Uncanny Agent usage to get you started (no API key or AI subscription required), and free access to try Uncanny Page Builder. Create a free account and start automating and chatting in minutes.
 
 == Screenshots ==
 
-1. Set up your first recipe in 5 minutes
-2. Add one or more triggers from dozens of plugins and thousands of apps
-3. Identify what starts the recipe, like a purchase or form submission
-4. Set conditions and options for the trigger(s)
-5. Add one or more actions from any of the available integrations
-6. When the triggers are completed, actions run automatically
-7. Customize your actions to do exactly what you need
-8. Create powerful recipes that just work, all with one plugin
+1. Uncanny Agent — ask your AI assistant anything about your site, right from the WordPress admin. Free AI usage included, no API keys required.
+2. Ask Uncanny Agent to get things done — here it assigned the new user the Student role and sent them a welcome email.
+3. Uncanny Page Builder — describe the page you want and Uncanny Agent designs and builds it in clean HTML and CSS.
+4. Live, dynamic content built by conversation — a working book search that pulls results from an external catalogue.
+5. Your brand, locked in — set your colors and fonts once and Uncanny Agent applies them across every page it builds.
+6. No lock-in, ever — export a page or download it as portable, standalone HTML whenever you want.
+7. Uncanny Recipe Builder — set up your first no-code automation in 5 minutes, connecting hundreds of plugins and apps.
 
 == Changelog ==
 
-= 7.5.0.3 [2026-08-07] =
+= 7.5.1 [2026-08-13] =
+
+**New Feature:**
+
+* Uncanny Agent - Lite users now get free starter usage of Uncanny Agent
+
+**Updated:**
+
+* Setup wizard - Improved the setup flow, navigation, security, and interface for a smoother onboarding experience. #8332
 
 **Fixed:**
 
-* Uncanny Agent - Page Builder - Improved validation of page, section, canvas, reusable-part, and other request identifiers to prevent malformed data from causing errors or targeting unintended content.
-* Uncanny Agent - Page Builder - Hardened WordPress hooks, administration callbacks, meta boxes, editor requests, and cleanup operations against missing or unexpected data.
-* Uncanny Agent - Page Builder - Improved rendering safeguards to prevent invalid dynamic or conditional content, unintended published content, and stale page data from affecting output.
-* Uncanny Agent - Page Builder - Improved validation and reliability of import, export, shell analysis, and static export operations.
-* Uncanny Agent - Page Builder - Added permission checks for canvas deletion and improved handling of sensitive error information.
-* Uncanny Agent - Page Builder - Improved compatibility and error handling on sites with missing server extensions or unexpected request data.
-
-= 7.5.0.2 [2026-08-07] =
-
-**Fixed:**
-
-* Uncanny Agent - Page Builder - Fixed a fatal error on some sites when themes did not provide a current post ID for singular page requests. #8348
-* Uncanny Agent - Fixed a Sodium compatibility fatal error on hosts without the native Sodium extension. #8348
+* Uncanny Agent - Page Builder - Improved editor reliability, including saving, Undo and Redo, canvas refreshes, and working across multiple browser tabs. #8370
+* Uncanny Agent - Page Builder - Fixed issues with publishing, downloads, reusable sections, dynamic content, and design style changes. #8370
+* Uncanny Agent - Page Builder - Improved compatibility with different database configurations, screen sizes, and third-party extensions. #8370
+* Uncanny Agent - Page Builder - Improved error handling and recovery to prevent unexpected failures from interrupting Page Builder operations. #8370
 
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)

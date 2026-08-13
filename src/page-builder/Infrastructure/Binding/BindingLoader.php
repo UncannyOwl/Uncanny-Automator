@@ -51,9 +51,30 @@ final class BindingLoader
      */
     private function applyFilter(array $bindings): array
     {
-        /** @var array<string, BindingDeclaration> $filtered */
-        $filtered = apply_filters('uncanny_page_builder_bindings', $bindings);
+        try {
+            /** @var array<string, BindingDeclaration> $filtered */
+            $filtered = apply_filters('uncanny_page_builder_bindings', $bindings);
+        } catch (\Throwable $failure) {
+            // Binding extensions run during plugin boot. Keep the valid
+            // built-in declarations when an external callback fails.
+            $this->reportFilterFailure($failure);
+
+            return $bindings;
+        }
+
         return is_array($filtered) ? $filtered : $bindings;
+    }
+
+    private function reportFilterFailure(\Throwable $failure): void
+    {
+        try {
+            error_log(sprintf(
+                '[Uncanny Page Builder] WordPress filter "uncanny_page_builder_bindings" failed (%s).',
+                $failure::class,
+            ));
+        } catch (\Throwable) {
+            // A log failure cannot stop plugin boot.
+        }
     }
 
     private function loadDeclaration(string $jsonPath): ?BindingDeclaration

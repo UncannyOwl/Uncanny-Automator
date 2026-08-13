@@ -34,6 +34,20 @@ final class AgentIconController
 
     public function findLucideIcons(\WP_REST_Request $request): \WP_REST_Response
     {
+        try {
+            return $this->findLucideIconsText($request);
+        } catch (\Throwable $failure) {
+            error_log(sprintf('[Uncanny Page Builder] find_lucide_icons failed (%s).', $failure::class));
+
+            return $this->textError(500, 'icon_search_failed', [
+                'NEXT STEP',
+                'Retry find_lucide_icons. If the error continues, review the WordPress error log.',
+            ]);
+        }
+    }
+
+    private function findLucideIconsText(\WP_REST_Request $request): \WP_REST_Response
+    {
         $rawQuery = trim((string) ($request->get_param('query') ?? ''));
         if ($rawQuery === '') {
             return $this->textError(400, 'missing_query', [

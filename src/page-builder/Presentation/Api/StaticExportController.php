@@ -34,6 +34,16 @@ final class StaticExportController
 
     public function read(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        try {
+            return $this->readExport($request);
+        } catch (\Throwable $failure) {
+            error_log('[Uncanny Page Builder] Static export request failed (' . $failure::class . ')');
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
+    }
+
+    private function readExport(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
         $pageId = RequestId::fromUrl($request, 'page_id');
         if ($pageId === null) {
             return ApiResponse::error(ErrorMessage::InvalidRouteId);

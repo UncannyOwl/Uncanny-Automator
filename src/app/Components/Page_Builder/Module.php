@@ -99,32 +99,32 @@ class Module {
 	 * @return void
 	 */
 	public function boot(): void {
-		if ( ! $this->can_load_page_builder->execute() ) {
-			return;
-		}
-
-		$compatibility = $this->compatibility->check( $this->environment() );
-		if ( 'ready' !== $compatibility['status'] ) {
-			$this->set_status( $compatibility['status'], $compatibility['detail'] );
-			return;
-		}
-
-		define( 'AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME', true );
-
-		if ( ! defined( 'AUTOMATOR_PAGE_BUILDER_MODULE_VERSION' ) ) {
-			define( 'AUTOMATOR_PAGE_BUILDER_MODULE_VERSION', self::MODULE_VERSION );
-		}
-		if ( ! defined( 'UNCANNY_PB_VERSION' ) ) {
-			define( 'UNCANNY_PB_VERSION', self::MODULE_VERSION );
-		}
-		if ( ! defined( 'UNCANNY_PB_PATH' ) ) {
-			define( 'UNCANNY_PB_PATH', UA_ABSPATH . 'src/page-builder/' );
-		}
-		if ( ! defined( 'UNCANNY_PB_URL' ) ) {
-			define( 'UNCANNY_PB_URL', plugin_dir_url( AUTOMATOR_BASE_FILE ) . 'src/page-builder/' );
-		}
-
 		try {
+			if ( ! $this->can_load_page_builder->execute() ) {
+				return;
+			}
+
+			$compatibility = $this->compatibility->check( $this->environment() );
+			if ( 'ready' !== $compatibility['status'] ) {
+				$this->set_status( $compatibility['status'], $compatibility['detail'] );
+				return;
+			}
+
+			define( 'AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME', true );
+
+			if ( ! defined( 'AUTOMATOR_PAGE_BUILDER_MODULE_VERSION' ) ) {
+				define( 'AUTOMATOR_PAGE_BUILDER_MODULE_VERSION', self::MODULE_VERSION );
+			}
+			if ( ! defined( 'UNCANNY_PB_VERSION' ) ) {
+				define( 'UNCANNY_PB_VERSION', self::MODULE_VERSION );
+			}
+			if ( ! defined( 'UNCANNY_PB_PATH' ) ) {
+				define( 'UNCANNY_PB_PATH', UA_ABSPATH . 'src/page-builder/' );
+			}
+			if ( ! defined( 'UNCANNY_PB_URL' ) ) {
+				define( 'UNCANNY_PB_URL', plugin_dir_url( AUTOMATOR_BASE_FILE ) . 'src/page-builder/' );
+			}
+
 			$this->boot_page_builder();
 			$this->set_status( 'active', 'Automator owns and booted the embedded Page Builder runtime.' );
 		} catch ( Module_Missing $throwable ) {
@@ -213,22 +213,26 @@ class Module {
 	 * @return void
 	 */
 	public function render_admin_notice(): void {
-		if (
-			! current_user_can( 'manage_options' )
-			|| ! in_array(
-				$this->status,
-				array( 'standalone_runtime_active', 'standalone_bridge_incompatible', 'module_class_missing', 'boot_failed', 'dom_extension_missing' ),
-				true
-			)
-		) {
+		try {
+			if (
+				! current_user_can( 'manage_options' )
+				|| ! in_array(
+					$this->status,
+					array( 'standalone_runtime_active', 'standalone_bridge_incompatible', 'module_class_missing', 'boot_failed', 'dom_extension_missing' ),
+					true
+				)
+			) {
+				return;
+			}
+
+			printf(
+				'<div class="notice notice-error"><p><strong>%1$s</strong> %2$s</p></div>',
+				esc_html_x( 'Uncanny Page Builder runtime unavailable.', 'Page Builder module admin notice', 'uncanny-automator' ),
+				esc_html( $this->detail )
+			);
+		} catch ( \Throwable $throwable ) {
 			return;
 		}
-
-		printf(
-			'<div class="notice notice-error"><p><strong>%1$s</strong> %2$s</p></div>',
-			esc_html_x( 'Uncanny Page Builder runtime unavailable.', 'Page Builder module admin notice', 'uncanny-automator' ),
-			esc_html( $this->detail )
-		);
 	}
 
 	/**

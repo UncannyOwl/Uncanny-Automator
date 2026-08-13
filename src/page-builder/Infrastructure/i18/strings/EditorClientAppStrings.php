@@ -21,7 +21,7 @@ final class EditorClientAppStrings
             'binding_owned_content' => _x('This is dynamic data and cannot be edited directly. Edit the dynamic source instead.', 'Page Builder', 'uncanny-automator'),
             'binding_owned_element' => _x('This element is dynamic data and cannot be edited directly. Style the dynamic wrapper or edit the dynamic source instead.', 'Page Builder', 'uncanny-automator'),
             'could_not_open_agent' => _x('Uncanny Agent didn\'t open. Try again, or refresh the editor if it keeps happening.', 'Page Builder', 'uncanny-automator'),
-            'could_not_send_selection' => _x('We couldn\'t send that element to Uncanny Agent. Reselect it and try again.', 'Page Builder', 'uncanny-automator'),
+            'could_not_send_selection' => _x('We couldn\'t send that element to Uncanny Agent. Try again, or refresh the editor if it keeps happening.', 'Page Builder', 'uncanny-automator'),
             'could_not_load_sections' => _x('We couldn\'t load your saved sections. Close the library and try again.', 'Page Builder', 'uncanny-automator'),
             'draft_saved' => _x('Draft saved', 'Page Builder', 'uncanny-automator'),
             'delete' => _x('Delete', 'Page Builder', 'uncanny-automator'),

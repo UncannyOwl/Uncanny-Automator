@@ -22,6 +22,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\WorkingCanvasMenuChangeListener;
 use UncannyPageBuilder\Infrastructure\WordPress\FontSettingsFingerprint;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressFontSettings;
 use UncannyPageBuilder\Infrastructure\WordPress\PageBuilderAccessCapability;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressCallbackBoundary;
 use UncannyPageBuilder\Infrastructure\WordPress\ThemeCompositionPageTemplateSynchronizer;
 use UncannyPageBuilder\Infrastructure\WordPress\WpCronWorkingCanvasRefreshQueue;
 use UncannyPageBuilder\Infrastructure\WordPress\WpCronWorkingCanvasRefreshRunner;
@@ -150,6 +151,7 @@ final class SystemEnvironmentProvider implements ServiceProviderInterface
         $pageBuilderAccessCapability = $container->typed(PageBuilderAccessCapability::class);
         $allowedCapabilities = $container->typed(GetPageBuilderAllowedCapabilities::class);
         $schemaProvisioner = $container->typed(MultisiteSchemaProvisioner::class);
+        $callbacks = new WordPressCallbackBoundary();
 
         // 1. Capabilities, schema lifecycle & CPT
         $pageBuilderAccessCapability->register();
@@ -162,7 +164,7 @@ final class SystemEnvironmentProvider implements ServiceProviderInterface
         add_action('wp', [$autopDisabler, 'maybeDisable']);
 
         // 3b. Allow font uploads (admin only, wp-admin only)
-        add_filter('upload_mimes', static function ($mimes = null) use ($allowedCapabilities): array {
+        add_filter('upload_mimes', $callbacks->filter('font_upload.mimes', static function ($mimes = null) use ($allowedCapabilities): array {
             $mimes = is_array($mimes) ? $mimes : [];
 
             if (!is_admin() || !$allowedCapabilities->currentUserHasAllowedCapability()) {
@@ -173,7 +175,7 @@ final class SystemEnvironmentProvider implements ServiceProviderInterface
             $mimes['ttf']   = 'font/sfnt';
             $mimes['otf']   = 'font/otf';
             return $mimes;
-        });
+        }));
 
         $publishedPageCleanup->register();
         $workingCanvasAdminActions->register();

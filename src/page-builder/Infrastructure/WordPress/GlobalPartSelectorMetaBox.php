@@ -61,16 +61,23 @@ final class GlobalPartSelectorMetaBox
             return;
         }
 
-        $pageId = $post->ID;
-        $headers = $this->gpDefaults->listByType(GlobalPartType::Header);
-        $footers = $this->gpDefaults->listByType(GlobalPartType::Footer);
+        try {
+            $pageId = $post->ID;
+            $headers = $this->gpDefaults->listByType(GlobalPartType::Header);
+            $footers = $this->gpDefaults->listByType(GlobalPartType::Footer);
 
-        $selection = $this->pageSelections->selectionForPage($pageId);
-        $currentHeader = $selection->headerOverrideId() ?? 0;
-        $currentFooter = $selection->footerOverrideId() ?? 0;
+            $selection = $this->pageSelections->selectionForPage($pageId);
+            $currentHeader = $selection->headerOverrideId() ?? 0;
+            $currentFooter = $selection->footerOverrideId() ?? 0;
 
-        $defaultHeaderId = $this->gpDefaults->getDefaultId(GlobalPartType::Header);
-        $defaultFooterId = $this->gpDefaults->getDefaultId(GlobalPartType::Footer);
+            $defaultHeaderId = $this->gpDefaults->getDefaultId(GlobalPartType::Header);
+            $defaultFooterId = $this->gpDefaults->getDefaultId(GlobalPartType::Footer);
+        } catch (\Throwable $failure) {
+            // Render nothing further; a metabox failure must not fail the
+            // complete WordPress edit screen.
+            error_log('[Uncanny Page Builder] Header and footer metabox render failed (' . $failure::class . ')');
+            return;
+        }
 
         wp_nonce_field(self::nonceActionForPage($pageId), self::nonceKey());
         ?>

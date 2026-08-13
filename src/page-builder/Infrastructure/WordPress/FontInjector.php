@@ -26,18 +26,24 @@ final class FontInjector
             return;
         }
 
-        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
-        if ($postId === null) {
-            return;
-        }
+        try {
+            $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+            if ($postId === null) {
+                return;
+            }
 
-        $publishedPage = $this->publicPageRenderPolicy->publishedPage($postId);
-        if ($publishedPage === null) {
-            return;
-        }
+            $publishedPage = $this->publicPageRenderPolicy->publishedPage($postId);
+            if ($publishedPage === null) {
+                return;
+            }
 
-        $this->injectGoogleFonts($publishedPage->assets()->googleFonts());
-        $this->injectCustomFonts($publishedPage->assets()->customFonts());
+            $this->injectGoogleFonts($publishedPage->assets()->googleFonts());
+            $this->injectCustomFonts($publishedPage->assets()->customFonts());
+        } catch (\Throwable $failure) {
+            // wp_head is a shared WordPress surface. A Page Builder failure
+            // must not terminate the visitor request.
+            error_log('[Uncanny Page Builder] Published font injection failed (' . $failure::class . ')');
+        }
     }
 
     /**
@@ -49,8 +55,14 @@ final class FontInjector
             return;
         }
 
-        $this->injectGoogleFonts($this->workingFonts->googleFonts());
-        $this->injectCustomFonts($this->workingFonts->renderableCustomFonts());
+        try {
+            $this->injectGoogleFonts($this->workingFonts->googleFonts());
+            $this->injectCustomFonts($this->workingFonts->renderableCustomFonts());
+        } catch (\Throwable $failure) {
+            // wp_head is a shared WordPress surface. A Page Builder failure
+            // must not terminate the editor request.
+            error_log('[Uncanny Page Builder] Working font injection failed (' . $failure::class . ')');
+        }
     }
 
     /** @param list<array{family: string, weights: string}> $families */

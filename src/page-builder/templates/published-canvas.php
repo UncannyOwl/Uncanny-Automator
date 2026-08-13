@@ -2,7 +2,8 @@
 /**
  * Standalone public document for one exact published Page Builder artifact.
  *
- * Inputs: $postId, $publishedPage.
+ * Inputs: $postId, $publishedPage, $publishedHtml,
+ * $publishedRuntimeEnabled.
  */
 
 use UncannyPageBuilder\Application\Rendering\PublishedPage;
@@ -12,7 +13,14 @@ use UncannyPageBuilder\Infrastructure\WordPress\CanvasEditorChromeGate;
 
 defined('ABSPATH') || exit;
 
-if (!isset($publishedPage) || !$publishedPage instanceof PublishedPage) {
+if (
+    !isset($publishedPage)
+    || !$publishedPage instanceof PublishedPage
+    || !isset($publishedHtml)
+    || !is_string($publishedHtml)
+    || !isset($publishedRuntimeEnabled)
+    || !is_bool($publishedRuntimeEnabled)
+) {
     return;
 }
 ?>
@@ -25,28 +33,32 @@ if (!isset($publishedPage) || !$publishedPage instanceof PublishedPage) {
 
     <?php wp_head(); ?>
 
-    <?php if ($publishedPage->css() !== '') : ?>
+    <?php if ($publishedRuntimeEnabled && $publishedPage->css() !== '') : ?>
     <style id="uncanny-page-builder-published-css"><?php echo StyleElementCss::escape($publishedPage->css()); ?></style>
     <?php endif; ?>
 </head>
 <body <?php body_class('uncanny-canvas'); ?>>
 
-<?php echo $publishedPage->html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- immutable statically validated artifact HTML. ?>
+<?php echo $publishedHtml; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- runtime projection of immutable validated artifact HTML. ?>
 
-<?php if (CanvasEditorChromeGate::currentUserHasAllowedCapability()) : ?>
+<?php if ($publishedRuntimeEnabled && CanvasEditorChromeGate::currentUserHasAllowedCapability()) : ?>
     <div id="uncanny-magic-bridge-root" data-page-id="<?php echo esc_attr((string) $postId); ?>"></div>
 <?php endif; ?>
 
 <?php
 $publishedJavaScript = $publishedPage->customJavaScript();
-if ($publishedJavaScript !== '') {
+if ($publishedRuntimeEnabled && $publishedJavaScript !== '') {
     echo $publishedJavaScript; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- immutable validated custom-JavaScript lane.
 }
 ?>
 
+<?php if ($publishedRuntimeEnabled) : ?>
 <script><?php echo LucideRuntimeInitializer::script(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed application-owned script. ?></script>
+<?php endif; ?>
 
-<?php do_action('uncanny_page_builder_canvas_footer', $postId); ?>
+<?php if ($publishedRuntimeEnabled) : ?>
+    <?php do_action('uncanny_page_builder_canvas_footer', $postId); ?>
+<?php endif; ?>
 <?php wp_footer(); ?>
 
 </body>

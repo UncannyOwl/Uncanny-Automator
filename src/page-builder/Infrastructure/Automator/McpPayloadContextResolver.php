@@ -12,6 +12,7 @@ use UncannyPageBuilder\Application\ShellModeService;
 use UncannyPageBuilder\Application\Settings\ToolSettingsAccess;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartRepositoryInterface;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
+use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
 use UncannyPageBuilder\Infrastructure\WordPress\AdminCanvasPage;
 
@@ -45,11 +46,28 @@ final class McpPayloadContextResolver
     {
         $payload = is_array($payload) ? $payload : [];
 
-        $trustedTargetId = $this->resolveTrustedTargetPostId($payload['page_url'] ?? null);
-        if ($trustedTargetId !== null) {
-            return $this->withPageBuilderContext($payload, $trustedTargetId);
+        try {
+            $trustedTargetId = $this->resolveTrustedTargetPostId($payload['page_url'] ?? null);
+            if ($trustedTargetId !== null) {
+                return $this->withPageBuilderContext($payload, $trustedTargetId);
+            }
+        } catch (StaleSourceGenerationException $error) {
+            $this->reportContextFailure($error);
+        } catch (\Throwable $error) {
+            // Automator owns this shared filter. A Page Builder read failure
+            // must remove trusted context instead of terminating its request.
+            $this->reportContextFailure($error);
         }
 
+        return $this->withoutPageBuilderContext($payload);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function withoutPageBuilderContext(array $payload): array
+    {
         unset($payload['page_id']);
         unset($payload['global_part_id']);
         unset($payload['page_builder_context']);
@@ -75,17 +93,30 @@ final class McpPayloadContextResolver
         unset($availability);
         $requestContext = is_array($requestContext) ? $requestContext : [];
 
-        if (! $this->allowedCapabilities->currentUserHasAllowedCapability()) {
-            return [
-                'status'       => 'disabled',
-                'available'    => true,
-                'enabled'      => false,
-                'reason'       => 'page_builder_user_cannot_edit',
-                'canvasActive' => false,
-            ];
+        try {
+            if (! $this->allowedCapabilities->currentUserHasAllowedCapability()) {
+                return [
+                    'status'       => 'disabled',
+                    'available'    => true,
+                    'enabled'      => false,
+                    'reason'       => 'page_builder_user_cannot_edit',
+                    'canvasActive' => false,
+                ];
+            }
+
+            $trustedTargetId = $this->resolveTrustedTargetPostId($requestContext['page_url'] ?? null);
+        } catch (StaleSourceGenerationException $error) {
+            $this->reportContextFailure($error);
+
+            return $this->unavailableContext();
+        } catch (\Throwable $error) {
+            // Availability is an external filter contract. Fail closed when
+            // Page Builder cannot prove that the canvas context is valid.
+            $this->reportContextFailure($error);
+
+            return $this->unavailableContext();
         }
 
-        $trustedTargetId = $this->resolveTrustedTargetPostId($requestContext['page_url'] ?? null);
         return [
             'status'       => 'available',
             'available'    => true,
@@ -93,6 +124,28 @@ final class McpPayloadContextResolver
             'reason'       => 'page_builder_registered',
             'canvasActive' => $trustedTargetId !== null,
         ];
+    }
+
+    /**
+     * @return array{status:string,available:bool,enabled:bool,reason:string,canvasActive:bool}
+     */
+    private function unavailableContext(): array
+    {
+        return [
+            'status'       => 'disabled',
+            'available'    => true,
+            'enabled'      => false,
+            'reason'       => 'page_builder_context_unavailable',
+            'canvasActive' => false,
+        ];
+    }
+
+    private function reportContextFailure(\Throwable $error): void
+    {
+        error_log(sprintf(
+            '[Uncanny Page Builder] MCP context unavailable (%s).',
+            $error::class,
+        ));
     }
 
     private function resolveTrustedTargetPostId(mixed $pageUrl): ?int

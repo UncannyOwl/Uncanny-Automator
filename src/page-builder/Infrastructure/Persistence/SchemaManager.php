@@ -10,6 +10,9 @@ final class SchemaManager
     // 2.4.1 verifies immutable editable-source JSON with a canonical hash.
     private const DB_VERSION = '2.4.1';
 
+    /** @var array<string, string> */
+    private static array $tableEngines = [];
+
     public static function tableName(): string
     {
         global $wpdb;
@@ -211,9 +214,44 @@ final class SchemaManager
 
     public static function ensureSchema(): void
     {
+        self::assertWordPressTablesAreTransactional();
+
         $installed = get_option(self::OPTION_KEY, '');
         if ($installed !== self::DB_VERSION) {
             self::install();
+        }
+    }
+
+    /**
+     * Page Builder must not boot when WordPress source tables cannot honor
+     * the row locks and rollbacks that protect source mutations.
+     */
+    private static function assertWordPressTablesAreTransactional(): void
+    {
+        global $wpdb;
+
+        /*
+         * Deliberate cost: these three engine reads run once per request. A
+         * persistent cache could miss an external engine change and let a
+         * write enter tables that no longer support the required rollback.
+         * tableEngine() still removes duplicate reads inside this request.
+         */
+        $tables = [
+            isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts',
+            isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta',
+            isset($wpdb->options) ? (string) $wpdb->options : (string) $wpdb->prefix . 'options',
+        ];
+
+        foreach (array_values(array_unique($tables)) as $table) {
+            $engine = self::tableEngine($table);
+            if (strcasecmp($engine, 'InnoDB') === 0) {
+                continue;
+            }
+
+            throw new SourceTransactionsUnavailableException(
+                $table,
+                $engine !== '' ? $engine : 'unknown',
+            );
         }
     }
 
@@ -315,6 +353,9 @@ final class SchemaManager
 
             $quotedTable = '`' . str_replace('`', '``', $table) . '`';
             $wpdb->query("ALTER TABLE {$quotedTable} ENGINE=InnoDB");
+            // The ALTER can fail without throwing. Force the verification
+            // read to observe the database instead of this request cache.
+            unset(self::$tableEngines[$table]);
         }
     }
 
@@ -364,8 +405,15 @@ final class SchemaManager
     {
         global $wpdb;
 
+        if (array_key_exists($table, self::$tableEngines)) {
+            return self::$tableEngines[$table];
+        }
+
         $status = $wpdb->get_row($wpdb->prepare('SHOW TABLE STATUS WHERE Name = %s', $table));
 
-        return is_object($status) && isset($status->Engine) ? (string) $status->Engine : '';
+        $engine = is_object($status) && isset($status->Engine) ? (string) $status->Engine : '';
+        self::$tableEngines[$table] = $engine;
+
+        return $engine;
     }
 }

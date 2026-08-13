@@ -44,16 +44,27 @@ final class WorkingCanvasAdminActions
     {
         $this->assertPostRequest();
 
-        if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+        $hasAccess = (bool) WordPressCallbackBoundary::valueOrDie(
+            'working_canvas.refresh_all.authorize',
+            fn (): bool => $this->allowedCapabilities->currentUserHasAllowedCapability(),
+        );
+        if (!$hasAccess) {
             wp_die(esc_html_x("You don't have permission to refresh Page Builder previews. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'));
         }
 
         check_admin_referer(self::REFRESH_ALL_ACTION);
 
-        $queued = $this->scheduler->enqueueAll();
-        $processed = $this->runInlineRefreshBatch()['processed'];
-        $pending = $this->refreshQueue?->pendingCount() ?? max(0, $queued - $processed);
-        $failed = count($this->refreshQueue?->terminalFailures() ?? []);
+        try {
+            $queued = $this->scheduler->enqueueAll();
+            $processed = $this->runInlineRefreshBatch()['processed'];
+            $pending = $this->refreshQueue?->pendingCount() ?? max(0, $queued - $processed);
+            $failed = count($this->refreshQueue?->terminalFailures() ?? []);
+        } catch (\Throwable $failure) {
+            // admin-post.php is a public WordPress boundary. Translate an
+            // infrastructure failure into a controlled response instead of a
+            // raw fatal page that can hide the maintenance result.
+            $this->maintenanceFailure('refresh_all', $failure);
+        }
 
         wp_safe_redirect(
             $this->refreshAllRedirectUrl($queued, $processed, $pending, $failed),
@@ -67,12 +78,20 @@ final class WorkingCanvasAdminActions
     {
         $this->assertPostRequest();
 
-        if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+        $hasAccess = (bool) WordPressCallbackBoundary::valueOrDie(
+            'working_canvas.clear_failures.authorize',
+            fn (): bool => $this->allowedCapabilities->currentUserHasAllowedCapability(),
+        );
+        if (!$hasAccess) {
             wp_die(esc_html_x("You don't have permission to clear Page Builder preview failures. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'));
         }
 
         check_admin_referer(self::CLEAR_FAILURES_ACTION);
-        $this->refreshQueue?->clearTerminalFailures();
+        try {
+            $this->refreshQueue?->clearTerminalFailures();
+        } catch (\Throwable $failure) {
+            $this->maintenanceFailure('clear_failures', $failure);
+        }
 
         $redirectUrl = wp_get_referer();
         if (!is_string($redirectUrl) || $redirectUrl === '') {
@@ -121,6 +140,21 @@ final class WorkingCanvasAdminActions
             esc_html_x('This maintenance action requires a POST request.', 'Page Builder', 'uncanny-automator'),
             esc_html_x('Invalid request', 'Page Builder', 'uncanny-automator'),
             ['response' => 405],
+        );
+    }
+
+    private function maintenanceFailure(string $operation, \Throwable $failure): never
+    {
+        error_log(sprintf(
+            '[Uncanny Page Builder] Working canvas maintenance operation "%s" failed (%s).',
+            $operation,
+            $failure::class,
+        ));
+
+        wp_die(
+            esc_html_x('Page Builder could not update working previews. Please try again.', 'Page Builder', 'uncanny-automator'),
+            esc_html_x('Preview maintenance failed', 'Page Builder', 'uncanny-automator'),
+            ['response' => 500],
         );
     }
 }

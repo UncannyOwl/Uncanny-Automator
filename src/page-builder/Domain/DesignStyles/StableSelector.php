@@ -17,12 +17,12 @@ use DOMNode;
  * `id="upb-el-..."` into the section HTML — onto the element the source path
  * locates, NOT blindly onto the section root.
  *
- * `sourcePath` is a SECTION-RELATIVE locator (dot path of tree-child indices from
- * the section root, mirroring the Design Lens SDK's `treeChildrenOf` counting of
- * element + non-empty text nodes). It is used only to find the element during
- * promotion — it is never persisted as identity. If the path cannot be resolved,
- * the result is unresolved and the caller rejects the commit rather than writing
- * CSS against the wrong node.
+ * `sourcePath` is a SECTION-RELATIVE locator. Its first segment selects a
+ * top-level fragment root. Each remaining segment is a tree-child index from
+ * that root. Existing single-root paths start with "0" and stay compatible.
+ * The path is used only to find the element during promotion. It is never
+ * persisted as identity. If the path cannot be resolved, the caller rejects
+ * the commit rather than writing CSS against the wrong node.
  */
 final class StableSelector
 {
@@ -66,7 +66,7 @@ final class StableSelector
         }
 
         // Locate the target element by section-relative path (root when absent).
-        $target = self::normalizeLocatedTarget(self::locate($root, $sourcePath));
+        $target = self::normalizeLocatedTarget(self::locate($dom, $sourcePath));
         if (!$target instanceof DOMElement) {
             return StableSelectorResult::unresolved($html);
         }
@@ -271,23 +271,29 @@ final class StableSelector
     }
 
     /**
-     * Walk a section-relative positional path. The path starts with "0" at the
-     * section root; each further segment indexes into tree children.
+     * Walk a section-relative positional path. The first segment selects one
+     * top-level fragment root. Each further segment indexes its tree children.
      */
-    private static function locate(DOMElement $root, ?string $sourcePath): ?DOMNode
+    private static function locate(DOMDocument $dom, ?string $sourcePath): ?DOMNode
     {
         $path = is_string($sourcePath) ? trim($sourcePath) : '';
+        $roots = self::elementChildren($dom);
         if ($path === '') {
-            return $root;
+            return $roots[0] ?? null;
         }
 
         $segments = explode('.', $path);
-        if (($segments[0] ?? '') !== '0') {
+        $rootSegment = array_shift($segments);
+        if ($rootSegment === null || $rootSegment === '' || ctype_digit($rootSegment) === false) {
             return null;
         }
 
-        $current = $root;
-        foreach (array_slice($segments, 1) as $segment) {
+        $current = $roots[(int) $rootSegment] ?? null;
+        if (!$current instanceof DOMElement) {
+            return null;
+        }
+
+        foreach ($segments as $segment) {
             if ($segment === '' || ctype_digit($segment) === false) {
                 return null;
             }
@@ -302,6 +308,19 @@ final class StableSelector
         }
 
         return $current;
+    }
+
+    /** @return array<int, DOMElement> */
+    private static function elementChildren(DOMNode $node): array
+    {
+        $elements = [];
+        foreach ($node->childNodes as $child) {
+            if ($child instanceof DOMElement) {
+                $elements[] = $child;
+            }
+        }
+
+        return $elements;
     }
 
     /**

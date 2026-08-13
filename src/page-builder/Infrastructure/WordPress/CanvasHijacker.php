@@ -35,39 +35,47 @@ final class CanvasHijacker
             return $template;
         }
 
-        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+        try {
+            $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
 
-        // Global parts: require edit capability (not publicly viewable).
-        if (is_singular('upb_global_part')) {
-            if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
-                return $this->denyGlobalPartAccess($template);
+            // Global parts: require edit capability (not publicly viewable).
+            if (is_singular('upb_global_part')) {
+                if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+                    return $this->denyGlobalPartAccess($template);
+                }
+
+                if ($postId === null) {
+                    return $template;
+                }
+
+                // Global parts are authenticated working documents. They do not
+                // have immutable page publication pointers.
+                return $this->returnWorkingCanvas($template, $postId);
             }
 
             if ($postId === null) {
                 return $template;
             }
 
-            // Global parts are authenticated working documents. They do not
-            // have immutable page publication pointers.
-            return $this->returnWorkingCanvas($template, $postId);
-        }
+            $publishedPage = $this->publicPageRenderPolicy->publishedPage($postId);
+            if ($publishedPage === null) {
+                return $template;
+            }
 
-        if ($postId === null) {
+            // In theme_composition mode, let the theme render normally.
+            // ContentRenderer handles the exact artifact through the_content.
+            if ($publishedPage->shellMode() === ShellMode::ThemeComposition) {
+                return $template;
+            }
+
+            return $this->returnPublishedCanvas($template);
+        } catch (\Throwable $failure) {
+            // template_include is WordPress-owned routing. A Page Builder
+            // failure must leave the resolved template unchanged.
+            error_log('[Uncanny Page Builder] Canvas template routing failed (' . $failure::class . ')');
+
             return $template;
         }
-
-        $publishedPage = $this->publicPageRenderPolicy->publishedPage($postId);
-        if ($publishedPage === null) {
-            return $template;
-        }
-
-        // In theme_composition mode, let the theme render normally.
-        // ContentRenderer handles the exact artifact through the_content.
-        if ($publishedPage->shellMode() === ShellMode::ThemeComposition) {
-            return $template;
-        }
-
-        return $this->returnPublishedCanvas($template);
     }
 
     private function returnWorkingCanvas(string $fallback, int $postId): string

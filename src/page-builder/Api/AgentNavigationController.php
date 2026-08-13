@@ -92,7 +92,40 @@ final class AgentNavigationController
                 'NEXT STEP',
                 'Fix the request fields and retry the navigation operation.',
             ]);
+        } catch (\Throwable $failure) {
+            return $this->unexpectedOperationFailure(
+                $operation,
+                absint($request->get_param('menu_id') ?? 0),
+                $failure,
+            );
         }
+    }
+
+    private function unexpectedOperationFailure(string $operation, int $menuId, \Throwable $failure): \WP_REST_Response
+    {
+        \error_log(sprintf(
+            '[Uncanny Page Builder] Navigation operation "%s" failed for menu %d (%s).',
+            $operation,
+            $menuId,
+            $failure::class,
+        ));
+
+        $lines = [
+            'OPERATION: ' . $operation,
+        ];
+
+        if (in_array($operation, ['', 'list_locations', 'list_menus', 'read_menu'], true)) {
+            $lines[] = 'NEXT STEP';
+            $lines[] = 'Retry the read operation. If the error continues, review the WordPress error log.';
+
+            return $this->textError(500, 'navigation_operation_failed', $lines);
+        }
+
+        $lines[] = 'RETRY_SAFETY: The write result is uncertain. Do not retry blindly.';
+        $lines[] = 'NEXT STEP';
+        $lines[] = 'Call list_menus. For an existing menu, call read_menu. Confirm the current state before another write.';
+
+        return $this->textError(500, 'navigation_operation_failed', $lines);
     }
 
     private function listLocations(): \WP_REST_Response

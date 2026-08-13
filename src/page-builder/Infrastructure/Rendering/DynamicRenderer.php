@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\Rendering;
 
+use UncannyPageBuilder\Domain\Binding\BindingStaticSafety;
+use UncannyPageBuilder\Domain\Binding\DynamicBindingRenderMode;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 use UncannyPageBuilder\Domain\Export\StaticExportPageIdentity;
 
@@ -61,8 +63,18 @@ final class DynamicRenderer
      * Parse data-ai-dynamic wrappers and replace with real content loops.
      * Uses DOMDocument (not regex) because card templates contain nested tags.
      */
-    public function render(string $html, ?StaticExportPageIdentity $pageIdentity = null): string
-    {
+    public function render(
+        string $html,
+        ?StaticExportPageIdentity $pageIdentity = null,
+        DynamicBindingRenderMode $mode = DynamicBindingRenderMode::ResolveAll,
+    ): string {
+        // Conditional wrappers use the same marker as content bindings. When
+        // it is absent, preserve the immutable artifact byte-for-byte and
+        // avoid a full DOM parse on the public request.
+        if (stripos($html, 'data-ai-dynamic') === false) {
+            return $html;
+        }
+
         $wrapped = '<div id="__upb_root">' . $html . '</div>';
 
         $doc = new \DOMDocument();
@@ -78,7 +90,7 @@ final class DynamicRenderer
 
         // Phase 1: Resolve conditional wrappers (show/hide based on auth state).
         // Must run before content bindings to prevent nesting destruction.
-        $this->resolveConditionals($xpath, $pageIdentity);
+        $this->resolveConditionals($xpath, $pageIdentity, $mode);
 
         // Phase 2: Process content bindings on the (possibly pruned) DOM.
         $nodes = $xpath->query('//*[@data-ai-dynamic]');
@@ -96,10 +108,16 @@ final class DynamicRenderer
         }
 
         $defaultRenderers = $this->buildRendererCallables($pageIdentity);
-        $filteredRenderers = apply_filters(
-            'uncanny_page_builder_dynamic_renderers',
-            $defaultRenderers
-        );
+        try {
+            $filteredRenderers = apply_filters(
+                'uncanny_page_builder_dynamic_renderers',
+                $defaultRenderers
+            );
+        } catch (\Throwable $failure) {
+            // Keep the declared renderer map when an extension filter fails.
+            $this->reportExternalCallbackFailure('dynamic renderer filter', $failure);
+            $filteredRenderers = $defaultRenderers;
+        }
         $renderers = is_array($filteredRenderers) ? $filteredRenderers : $defaultRenderers;
 
         // Collect into array — DOM mutations during iteration invalidate DOMNodeList.
@@ -115,12 +133,22 @@ final class DynamicRenderer
                 continue;
             }
             $source = trim($node->getAttribute('data-ai-dynamic'));
+            $declaration = $this->registry->get($source);
+            $safety = $declaration?->staticSafety ?? BindingStaticSafety::NotStatic;
+            if (!$mode->resolves($safety)) {
+                continue;
+            }
+            if (!$safety->canFreeze()) {
+                $this->markPageAsNonCacheable();
+            }
             if (!isset($renderers[$source]) || !is_callable($renderers[$source])) {
+                if ($safety === BindingStaticSafety::RequestSensitive) {
+                    $node->parentNode->removeChild($node);
+                }
                 continue;
             }
 
             $args = $this->extractQueryArgs($node, $source);
-            $declaration = $this->registry->get($source);
             $isSelfRendering = $declaration && $declaration->isSelfRendering();
             $outputShape = $declaration?->outputShape ?? 'html';
 
@@ -180,8 +208,11 @@ final class DynamicRenderer
                         throw new \UnexpectedValueException('Renderer output must be a string.');
                     }
                 }
-            } catch (\Throwable $e) {
-                error_log(sprintf('[DynamicRenderer] Renderer "%s" threw %s: %s', $source, get_class($e), $e->getMessage()));
+            } catch (\Throwable $failure) {
+                $this->reportExternalCallbackFailure('dynamic renderer', $failure);
+                if ($safety === BindingStaticSafety::RequestSensitive) {
+                    $node->parentNode->removeChild($node);
+                }
                 continue;
             }
 
@@ -258,6 +289,7 @@ final class DynamicRenderer
     private function resolveConditionals(
         \DOMXPath $xpath,
         ?StaticExportPageIdentity $pageIdentity = null,
+        DynamicBindingRenderMode $mode = DynamicBindingRenderMode::ResolveAll,
     ): void {
         $nodes = $xpath->query('//*[starts-with(@data-ai-dynamic, "if_")]');
 
@@ -265,7 +297,14 @@ final class DynamicRenderer
             return;
         }
 
-        $filteredEvaluators = apply_filters('uncanny_page_builder_conditional_evaluators', []);
+        try {
+            $filteredEvaluators = apply_filters('uncanny_page_builder_conditional_evaluators', []);
+        } catch (\Throwable $failure) {
+            // No custom evaluator is the safe value. Unknown conditionals then
+            // fail closed through the normal conditional policy.
+            $this->reportExternalCallbackFailure('conditional evaluator filter', $failure);
+            $filteredEvaluators = [];
+        }
         $customEvaluators = is_array($filteredEvaluators) ? $filteredEvaluators : [];
 
         // Collect — removal during iteration invalidates DOMNodeList.
@@ -280,6 +319,10 @@ final class DynamicRenderer
                 continue;
             }
             $type = $node->getAttribute('data-ai-dynamic');
+            $safety = $this->registry->get($type)?->staticSafety ?? BindingStaticSafety::NotStatic;
+            if (!$mode->resolves($safety)) {
+                continue;
+            }
 
             // Presence of an auth conditional makes the page request-sensitive,
             // regardless of whether this visitor keeps or drops the node. Custom
@@ -320,7 +363,7 @@ final class DynamicRenderer
 
                 // Custom evaluators registered via filter, then fail-closed for unknown.
                 default => isset($customEvaluators[$type]) && is_callable($customEvaluators[$type])
-                    ? $this->evaluateCustomConditional($customEvaluators[$type], $node, $type)
+                    ? $this->evaluateCustomConditional($customEvaluators[$type], $node)
                     : $this->rejectUnknownConditional($type),
             };
 
@@ -332,16 +375,12 @@ final class DynamicRenderer
         }
     }
 
-    private function evaluateCustomConditional(callable $evaluator, \DOMElement $node, string $type): bool
+    private function evaluateCustomConditional(callable $evaluator, \DOMElement $node): bool
     {
         try {
             return $evaluator($node) === true;
-        } catch (\Throwable $exception) {
-            error_log(sprintf(
-                '[DynamicRenderer] Conditional "%s" threw %s and failed closed',
-                $type,
-                get_class($exception),
-            ));
+        } catch (\Throwable $failure) {
+            $this->reportExternalCallbackFailure('conditional evaluator', $failure);
 
             return false;
         }
@@ -383,10 +422,16 @@ final class DynamicRenderer
         $allowedCapabilities = self::DEFAULT_ALLOWED_CAPABILITIES;
 
         if (function_exists(__NAMESPACE__ . '\\apply_filters') || function_exists('apply_filters')) {
-            $filtered = apply_filters(
-                'uncanny_page_builder_dynamic_allowed_capabilities',
-                $allowedCapabilities
-            );
+            try {
+                $filtered = apply_filters(
+                    'uncanny_page_builder_dynamic_allowed_capabilities',
+                    $allowedCapabilities
+                );
+            } catch (\Throwable $failure) {
+                // The fixed allowlist is the safe authorization fallback.
+                $this->reportExternalCallbackFailure('capability allowlist filter', $failure);
+                $filtered = $allowedCapabilities;
+            }
 
             if (is_array($filtered)) {
                 $allowedCapabilities = array_values(array_filter(
@@ -397,6 +442,19 @@ final class DynamicRenderer
         }
 
         return in_array($capability, $allowedCapabilities, true);
+    }
+
+    private function reportExternalCallbackFailure(string $boundary, \Throwable $failure): void
+    {
+        try {
+            error_log(sprintf(
+                '[Uncanny Page Builder] %s failed (%s).',
+                $boundary,
+                $failure::class,
+            ));
+        } catch (\Throwable) {
+            // A log failure cannot change the render fallback.
+        }
     }
 
     /**

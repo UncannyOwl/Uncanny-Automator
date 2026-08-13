@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Presentation\Api;
 
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\ShellImportService;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\ShellHtmlTooLargeException;
@@ -17,6 +18,7 @@ final class ShellController
     public function __construct(
         private readonly ShellImportService $shellImportService,
         private readonly PermissionChecker $permissions,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function registerRoutes(): void
@@ -61,6 +63,9 @@ final class ShellController
                 'size'     => $e->size(),
                 'max_size' => $e->maxSize(),
             ]);
+        } catch (\Throwable $failure) {
+            $this->recordUnexpectedFailure('analyze', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed);
         }
 
         return ApiResponse::ok([
@@ -89,6 +94,17 @@ final class ShellController
             $result = $this->shellImportService->import($header, $footer);
         } catch (\InvalidArgumentException) {
             return ApiResponse::error(ErrorMessage::ShellMissingAnalysis);
+        } catch (\Throwable $failure) {
+            $this->recordUnexpectedFailure('import', $failure);
+            return new \WP_Error(
+                'shell_import_failed',
+                _x(
+                    'Page Builder could not confirm the shell import. Inspect existing reusables before another import.',
+                    'Page Builder',
+                    'uncanny-automator',
+                ),
+                ['status' => 500, 'retryable' => false, 'requires_read' => true],
+            );
         }
 
         return ApiResponse::created([
@@ -96,5 +112,14 @@ final class ShellController
             'footer_id' => $result['footer_id'] ?? null,
             'warnings'  => $result['warnings'] ?? [],
         ])->toResponse();
+    }
+
+    private function recordUnexpectedFailure(string $operation, \Throwable $failure): void
+    {
+        try {
+            $this->failureReporter?->report('shell import', 0, $operation, $failure);
+        } catch (\Throwable) {
+            // A report failure cannot change the controlled REST response.
+        }
     }
 }

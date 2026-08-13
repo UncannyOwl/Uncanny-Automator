@@ -43,14 +43,20 @@ final class DesignTokenInjector
             return;
         }
 
-        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
-        if ($postId === null) {
-            return;
+        try {
+            $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+            if ($postId === null) {
+                return;
+            }
+
+            $css = $this->workingCss->render($postId, $isGlobalPart);
+
+            echo '<style id="uncanny-engine-bootstrap-theme">' . $css . "</style>\n";
+        } catch (\Throwable $failure) {
+            // wp_head is a shared WordPress surface. A Page Builder failure
+            // must not terminate the editor request.
+            error_log('[Uncanny Page Builder] Working design token injection failed (' . $failure::class . ')');
         }
-
-        $css = $this->workingCss->render($postId, $isGlobalPart);
-
-        echo '<style id="uncanny-engine-bootstrap-theme">' . $css . "</style>\n";
     }
 
     /**

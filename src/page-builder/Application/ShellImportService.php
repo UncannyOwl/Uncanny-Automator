@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Application;
 
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Domain\Exception\ShellHtmlTooLargeException;
 use UncannyPageBuilder\Domain\Shell\ShellImportAnalysis;
 use UncannyPageBuilder\Infrastructure\Shell\RenderedShellAnalyzer;
@@ -15,6 +16,7 @@ final class ShellImportService
     public function __construct(
         private readonly RenderedShellAnalyzer $analyzer,
         private readonly GlobalPartService $globalPartService,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     /**
@@ -97,21 +99,42 @@ final class ShellImportService
                 'header',
             );
             $headerId = $result['id'];
+            $warnings = array_merge($warnings, (array) ($result['warnings'] ?? []));
         }
 
         if ($footer !== null) {
-            $result = $this->globalPartService->createOrReplace(
-                'Imported Footer',
-                [
-                    'name'    => 'Imported Footer',
-                    'content' => [
-                        'html' => $this->buildFooterHtml($footer),
-                        'css'  => $this->buildFooterCss(),
+            try {
+                $result = $this->globalPartService->createOrReplace(
+                    'Imported Footer',
+                    [
+                        'name'    => 'Imported Footer',
+                        'content' => [
+                            'html' => $this->buildFooterHtml($footer),
+                            'css'  => $this->buildFooterCss(),
+                        ],
                     ],
-                ],
-                'footer',
-            );
-            $footerId = $result['id'];
+                    'footer',
+                );
+                $footerId = $result['id'];
+                $warnings = array_merge($warnings, (array) ($result['warnings'] ?? []));
+            } catch (\Throwable $failure) {
+                if ($headerId === null) {
+                    throw $failure;
+                }
+
+                // The header exists. Return its ID and do not retry the full import.
+                try {
+                    $this->failureReporter?->report(
+                        'shell import',
+                        $headerId,
+                        'footer.create',
+                        $failure,
+                    );
+                } catch (\Throwable) {
+                    // A report failure cannot change the completed header result.
+                }
+                $warnings[] = 'The header was saved, but Page Builder could not confirm the footer import. Inspect the reusables before another import.';
+            }
         }
 
         return [

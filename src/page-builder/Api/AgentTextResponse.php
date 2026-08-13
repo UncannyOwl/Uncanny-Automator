@@ -14,6 +14,17 @@ final class AgentTextResponse
         return self::withStatus($body, 200);
     }
 
+    /** @param list<string> $lines */
+    public static function error(string $toolName, int $status, string $code, array $lines): \WP_REST_Response
+    {
+        return self::withStatus(implode("\n", [
+            'TOOL: ' . $toolName,
+            'RESULT: error',
+            'ERROR_CODE: ' . $code,
+            ...$lines,
+        ]), $status);
+    }
+
     public static function withStatus(string $body, int $status): \WP_REST_Response
     {
         $response = new \WP_REST_Response($body, $status);

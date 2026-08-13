@@ -13,7 +13,10 @@ namespace UncannyPageBuilder\Application\History;
  */
 final class HistoryTransitionPreview
 {
-    /** @param array<string, mixed> $target */
+    /**
+     * @param array<string, mixed> $target
+     * @param array<string, mixed> $baseline
+     */
     public function __construct(
         private readonly int $operationId,
         private readonly string $direction,
@@ -22,6 +25,7 @@ final class HistoryTransitionPreview
         private readonly int $baseGeneration,
         private readonly string $kind,
         private readonly array $target,
+        private readonly array $baseline,
     ) {
         if ($operationId <= 0) {
             throw new \InvalidArgumentException('History preview requires a saved operation.');
@@ -52,5 +56,27 @@ final class HistoryTransitionPreview
             'kind' => $this->kind,
             'target' => $this->target,
         ];
+    }
+
+    public function kind(): string
+    {
+        return $this->kind;
+    }
+
+    public function operationId(): int
+    {
+        return $this->operationId;
+    }
+
+    /** @return array<string, mixed> */
+    public function target(): array
+    {
+        return $this->target;
+    }
+
+    /** @return array<string, mixed> */
+    public function baseline(): array
+    {
+        return $this->baseline;
     }
 }

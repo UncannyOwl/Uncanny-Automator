@@ -8,6 +8,7 @@ use UncannyPageBuilder\Api\AgentTextResponse;
 use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\Concurrency\PageSourceMutation;
 use UncannyPageBuilder\Application\Editor\SelectEditorPageSource;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\Publishing\PageLiveStateReaderInterface;
 use UncannyPageBuilder\Domain\Exception\CssRuleIntegrityException;
 use UncannyPageBuilder\Domain\Exception\ParkedDraftNotLoadedException;
@@ -26,6 +27,7 @@ final class AgentWriteGuard
         private readonly ?PageStateRepositoryInterface $pageStates = null,
         private readonly ?SelectEditorPageSource $editorPageSources = null,
         private readonly ?PageLiveStateReaderInterface $pageLiveState = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     /**
@@ -56,8 +58,6 @@ final class AgentWriteGuard
                             fn() => $this->assertAgentDraftIsVisible($pageId),
                         )
                         : $invoke();
-
-                return $this->describeDraftWriteBoundary($toolName, $request, $response);
             } catch (ParkedDraftNotLoadedException) {
                 return $this->parkedDraftAgentWriteResponse();
             } catch (CssRuleIntegrityException $exception) {
@@ -86,9 +86,51 @@ final class AgentWriteGuard
                     return $transactionError;
                 }
 
-                throw $exception;
+                // An unmapped failure must not escape the REST boundary as a
+                // fatal. The write state is uncertain, so the response demands
+                // a state read before any retry.
+                $this->recordBoundaryFailure($toolName, $exception);
+
+                return $this->uncertainWriteError($toolName, $contextLines);
+            } catch (\Throwable $failure) {
+                $this->recordBoundaryFailure($toolName, $failure);
+
+                return $this->uncertainWriteError($toolName, $this->errors->contextLines($request));
+            }
+
+            try {
+                return $this->describeDraftWriteBoundary($toolName, $request, $response);
+            } catch (\Throwable $failure) {
+                // The callback already returned success. Response decoration
+                // is informative and cannot reclassify or retry that write.
+                $this->recordBoundaryFailure($toolName . '.response', $failure);
+
+                return $response;
             }
         };
+    }
+
+    private function recordBoundaryFailure(string $toolName, \Throwable $failure): void
+    {
+        try {
+            $this->failureReporter?->report('agent write', 0, $toolName, $failure);
+        } catch (\Throwable) {
+            // A report failure cannot change the controlled Agent response.
+        }
+    }
+
+    /** @param list<string> $contextLines */
+    private function uncertainWriteError(string $toolName, array $contextLines): \WP_REST_Response
+    {
+        return AgentTextResponse::withStatus(implode("\n", [
+            'TOOL: ' . $toolName,
+            'RESULT: error',
+            'ERROR_CODE: write_failed',
+            ...$contextLines,
+            'RETRY_SAFETY: An earlier persistence step may already have completed. Do not retry blindly.',
+            'NEXT STEP',
+            'Call the matching read operation first: read_runtime for custom JavaScript, or read_part for page and global-part source. If the requested change is present, do not retry. If it is absent, read the current state again and retry once against it.',
+        ]), 500);
     }
 
     public function describeDraftWriteBoundary(

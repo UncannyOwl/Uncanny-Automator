@@ -82,42 +82,48 @@ final class MagicBridgeEnqueuer
 
     public function enqueue(): void
     {
-        if ($this->isPreviewRequest()) {
-            return;
-        }
+        try {
+            if ($this->isPreviewRequest()) {
+                return;
+            }
 
-        if (!is_singular()) {
-            return;
-        }
+            if (!is_singular()) {
+                return;
+            }
 
-        $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
-        if ($postId === null) {
-            return;
-        }
+            $postId = WordPressPostId::fromCurrentQuery(get_queried_object_id());
+            if ($postId === null) {
+                return;
+            }
 
-        // Global part canvas — bypass page ownership check.
-        $isGlobalPart = is_singular('upb_global_part');
+            // Global part canvas — bypass page ownership check.
+            $isGlobalPart = is_singular('upb_global_part');
 
-        if (!$isGlobalPart && !$this->repository->isOwnedPage($postId)) {
-            return;
-        }
+            if (!$isGlobalPart && !$this->repository->isOwnedPage($postId)) {
+                return;
+            }
 
-        if (!$this->canUsePageBuilder()) {
-            return;
-        }
+            if (!$this->canUsePageBuilder()) {
+                return;
+            }
 
-        $this->enqueueAssets();
+            $this->enqueueAssets();
 
-        // The canvas exits before admin-header.php, so the admin color scheme
-        // baseline (which @wordpress/components reads for its accent color) is
-        // never applied to <body>. Re-add the admin shell body classes so the
-        // body.admin-color-{scheme} rules in wp-base-styles resolve.
-        add_filter('body_class', [$this, 'addAdminBaselineBodyClasses']);
+            // The canvas exits before admin-header.php, so the admin color scheme
+            // baseline (which @wordpress/components reads for its accent color) is
+            // never applied to <body>. Re-add the admin shell body classes so the
+            // body.admin-color-{scheme} rules in wp-base-styles resolve.
+            add_filter('body_class', [$this, 'addAdminBaselineBodyClasses']);
 
-        if ($isGlobalPart) {
-            $this->localizeForGlobalPart($postId);
-        } else {
-            $this->localizeForPage($postId);
+            if ($isGlobalPart) {
+                $this->localizeForGlobalPart($postId);
+            } else {
+                $this->localizeForPage($postId);
+            }
+        } catch (\Throwable $failure) {
+            // wp_enqueue_scripts is a shared WordPress surface. A Page
+            // Builder failure must not terminate the request.
+            error_log('[Uncanny Page Builder] Magic Bridge enqueue failed (' . $failure::class . ')');
         }
     }
 

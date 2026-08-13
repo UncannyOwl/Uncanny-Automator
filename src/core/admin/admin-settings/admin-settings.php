@@ -2,6 +2,9 @@
 
 namespace Uncanny_Automator;
 
+use Uncanny_Automator\App\Uncanny_Agent\Application\Check_Uncanny_Agent_Settings_Access;
+use Uncanny_Automator\App\Uncanny_Agent\Infrastructure\Automator_License_Facts_Adapter;
+
 use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
 /**
@@ -13,10 +16,22 @@ use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
  * @author  Agustin B.
  */
 class Admin_Settings {
+
+	/**
+	 * Uncanny Agent settings access use case.
+	 *
+	 * @var Check_Uncanny_Agent_Settings_Access
+	 */
+	private $check_uncanny_agent_settings_access;
+
 	/**
 	 * Class constructor
 	 */
 	public function __construct() {
+
+		$this->check_uncanny_agent_settings_access = new Check_Uncanny_Agent_Settings_Access(
+			new Automator_License_Facts_Adapter( automator_license_manager() )
+		);
 
 		add_action( 'admin_menu', array( $this, 'submenu_page' ) );
 
@@ -51,8 +66,8 @@ class Admin_Settings {
 		$this->load_tab( 'general' );
 		$this->load_tab( 'premium-integrations' );
 
-		// Uncanny Agent: requires Pro active AND a valid Pro license.
-		if ( $this->is_uncanny_agent_eligible() ) {
+		// Uncanny Agent requires a connected Free or Pro license.
+		if ( $this->can_access_uncanny_agent_settings() ) {
 			$this->load_tab( 'uncanny-agent' );
 		}
 
@@ -62,34 +77,12 @@ class Admin_Settings {
 	}
 
 	/**
-	 * Whether the Uncanny Agent settings tab should load.
-	 *
-	 * Pro must be active and the cached license must report a valid Pro license.
-	 * License_Manager::get_license_data() reads the cached transient without
-	 * triggering a network hop, keeping the settings page render synchronous.
+	 * Determine if the Uncanny Agent settings tab is available.
 	 *
 	 * @return bool
 	 */
-	private function is_uncanny_agent_eligible() {
-
-		if ( ! defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' ) || ! AUTOMATOR_PRO_PLUGIN_VERSION ) {
-			return false;
-		}
-
-		if ( ! defined( 'AUTOMATOR_PRO_ITEM_ID' ) ) {
-			return false;
-		}
-
-		$license = automator_license_manager()->get_license_data();
-
-		if ( ! is_array( $license ) ) {
-			return false;
-		}
-
-		$license_status = isset( $license['license'] ) ? (string) $license['license'] : '';
-		$download_id    = isset( $license['download_id'] ) ? (int) $license['download_id'] : 0;
-
-		return 'valid' === $license_status && (int) AUTOMATOR_PRO_ITEM_ID === $download_id;
+	private function can_access_uncanny_agent_settings() {
+		return $this->check_uncanny_agent_settings_access->execute()->is_allowed();
 	}
 
 	/**

@@ -94,7 +94,12 @@ final class AdminCanvasPage
             wp_die(esc_html_x('This page could not be found. It may have been moved or deleted.', 'Page Builder', 'uncanny-automator'), 404);
         }
 
-        if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
+        try {
+            $hasAccess = $this->allowedCapabilities->currentUserHasAllowedCapability();
+        } catch (\Throwable $failure) {
+            $this->terminateLoadFailure($failure);
+        }
+        if (!$hasAccess) {
             wp_die(esc_html_x("You don't have permission to edit this page with Uncanny Page Builder. Ask a site administrator for access.", 'Page Builder', 'uncanny-automator'), 403);
         }
 
@@ -107,16 +112,25 @@ final class AdminCanvasPage
         nocache_headers();
 
         $isGlobalPart = $post->post_type === 'upb_global_part';
-        $isOwnedPage = $this->supportsPostType->isSupported($post->post_type)
-            && $this->repository->isOwnedPage($postId);
+        try {
+            $isOwnedPage = $this->supportsPostType->isSupported($post->post_type)
+                && $this->repository->isOwnedPage($postId);
+        } catch (\Throwable $failure) {
+            $this->terminateLoadFailure($failure);
+        }
         if (!$isGlobalPart && !$isOwnedPage) {
             wp_die(esc_html_x("This page isn't set up for Uncanny Page Builder. Return to Pages and choose a Page Builder page.", 'Page Builder', 'uncanny-automator'), 403);
         }
 
-        // The route that paints the canvas owns acquisition. Windowed hosts
-        // only inspect so a failed iframe load cannot leave an orphan lease.
-        $ownership = $this->enterOwnership?->execute($postId, (int) get_current_user_id())
-            ?? EditorOwnershipState::available();
+        try {
+            // The route that paints the canvas owns acquisition. Windowed hosts
+            // only inspect so a failed iframe load cannot leave an orphan lease.
+            $ownership = $this->enterOwnership?->execute($postId, (int) get_current_user_id())
+                ?? EditorOwnershipState::available();
+        } catch (\Throwable $failure) {
+            $this->terminateLoadFailure($failure);
+        }
+
         if (
             $ownership->status() === EditorOwnershipStatus::Blocked
             && $this->lockDialogRenderer instanceof EditorLockDialogRenderer
@@ -129,53 +143,86 @@ final class AdminCanvasPage
             );
         }
 
-        $this->addEditorLockBridgeData($ownership, $post, $isGlobalPart);
+        try {
+            $this->addEditorLockBridgeData($ownership, $post, $isGlobalPart);
 
-        // Fake the global query so wp_head/wp_footer and the canvas behave
-        // as if this were a singular frontend request for the canvas post.
-        global $wp_query;
-        $GLOBALS['post'] = $post;
-        $wp_query->queried_object    = $post;
-        $wp_query->queried_object_id = $postId;
-        $wp_query->is_singular       = true;
-        $wp_query->is_single         = !$isGlobalPart;
-        $wp_query->is_page           = !$isGlobalPart;
-        setup_postdata($post);
+            // Fake the global query so wp_head/wp_footer and the canvas behave
+            // as if this were a singular frontend request for the canvas post.
+            global $wp_query;
+            $GLOBALS['post'] = $post;
+            $wp_query->queried_object    = $post;
+            $wp_query->queried_object_id = $postId;
+            $wp_query->is_singular       = true;
+            $wp_query->is_single         = !$isGlobalPart;
+            $wp_query->is_page           = !$isGlobalPart;
+            setup_postdata($post);
 
-        // Enqueue Magic Bridge assets (bridge JS/CSS + localized config).
-        add_action('wp_enqueue_scripts', [$this->bridgeEnqueuer, 'enqueue']);
+            // Enqueue Magic Bridge assets (bridge JS/CSS + localized config).
+            add_action('wp_enqueue_scripts', [$this->bridgeEnqueuer, 'enqueue']);
 
-        /*
-         * Every mode renders the standalone canvas document — composition
-         * pages show theme-shell placeholder strips instead of the theme's
-         * header/footer (the faithful render lives at the permalink). So the
-         * asset boundary is unconditional: nothing theme- or plugin-owned
-         * prints into the editor.
-         */
-        $this->assetAllowlist->registerPrintGuards();
-        $this->canvasAdminBar->removeFromCanvas();
-        self::removeDeprecatedEmojiStyleCallbacks();
-        self::restrictFooterOutputToCoreScripts();
+            /*
+             * Every mode renders the standalone canvas document — composition
+             * pages show theme-shell placeholder strips instead of the theme's
+             * header/footer (the faithful render lives at the permalink). So the
+             * asset boundary is unconditional: nothing theme- or plugin-owned
+             * prints into the editor.
+             */
+            $this->assetAllowlist->registerPrintGuards();
+            $this->canvasAdminBar->removeFromCanvas();
+            self::removeDeprecatedEmojiStyleCallbacks();
+            self::restrictFooterOutputToCoreScripts();
 
-        // Tell the Automator MCP chat launcher that this admin page is a
-        // canvas context: use the frontend parent selector, not #wpbody.
-        add_filter('automator_mcp_launcher_parent_selector', static function (): string {
-            return '#uncanny-pb-editor-layout';
-        });
-        add_filter('automator_mcp_in_allowed_pages', function ($allowed = null): bool {
-            return $allowed === true || $this->allowedCapabilities->currentUserHasAllowedCapability();
-        });
+            // Tell the Automator MCP chat launcher that this admin page is a
+            // canvas context: use the frontend parent selector, not #wpbody.
+            add_filter('automator_mcp_launcher_parent_selector', static function (): string {
+                return '#uncanny-pb-editor-layout';
+            });
+            add_filter('automator_mcp_in_allowed_pages', function ($allowed = null): bool {
+                try {
+                    return $allowed === true || $this->allowedCapabilities->currentUserHasAllowedCapability();
+                } catch (\Throwable $failure) {
+                    error_log('[Uncanny Page Builder] Canvas Agent availability failed (' . $failure::class . ')');
+                    return false;
+                }
+            });
 
-        // The admin canvas exits before wp-admin reaches admin_footer, so it
-        // explicitly mounts Automator's MCP launcher in the canvas footer.
-        add_action('uncanny_page_builder_canvas_footer', [
-            McpAgentProvider::class,
-            'renderAutomatorLauncher',
-        ], 5);
+            // The admin canvas exits before wp-admin reaches admin_footer, so it
+            // explicitly mounts Automator's MCP launcher in the canvas footer.
+            add_action('uncanny_page_builder_canvas_footer', [
+                McpAgentProvider::class,
+                'renderAutomatorLauncher',
+            ], 5);
 
-        // Render the full canvas and exit — no admin chrome.
-        $this->canvasRenderer->render();
-        exit;
+            // Render the full canvas and exit — no admin chrome.
+            $this->canvasRenderer->render();
+            exit;
+        } catch (\Throwable $failure) {
+            // This request has changed global query and hook state. It cannot
+            // safely continue into the normal admin renderer after a failure.
+            $this->terminateLoadFailure($failure);
+        }
+    }
+
+    private function terminateLoadFailure(\Throwable $failure): never
+    {
+        error_log(sprintf(
+            '[Uncanny Page Builder] Admin canvas load failed (%s).',
+            $failure::class,
+        ));
+
+        $message = 'Uncanny Page Builder could not open this editor. Return to Pages and try again.';
+        try {
+            $message = _x(
+                'Uncanny Page Builder could not open this editor. Return to Pages and try again.',
+                'Page Builder',
+                'uncanny-automator',
+            );
+        } catch (\Throwable) {
+            // The controlled response must remain available when translation
+            // callbacks fail during error handling.
+        }
+
+        wp_die(esc_html($message), '', ['response' => 500]);
     }
 
     private function addEditorLockBridgeData(

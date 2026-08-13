@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Kernel\Providers\Controls;
 
 use UncannyPageBuilder\Api\PermissionChecker;
 use UncannyPageBuilder\Application\Access\PageBuilderAvailabilityInterface;
+use UncannyPageBuilder\Application\Canvas\CanvasRefreshRendererInterface;
 use UncannyPageBuilder\Application\Controls\ControlDefinition;
 use UncannyPageBuilder\Application\Controls\ControlDispatcher;
 use UncannyPageBuilder\Application\Controls\ControlRegistry;
@@ -77,6 +78,8 @@ use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
 
 final class ControlPlaneProvider implements ServiceProviderInterface
 {
+    private bool $controlsRegistered = false;
+
     public function register(Container $container): void
     {
         $container->factory(ControlRegistry::class, static fn (): ControlRegistry => new ControlRegistry());
@@ -96,11 +99,15 @@ final class ControlPlaneProvider implements ServiceProviderInterface
         $container->factory(HistoryUndoHandler::class, static function (Container $c): HistoryUndoHandler {
             return new HistoryUndoHandler(
                 $c->typed(OperationHistoryService::class),
+                $c->typed(CanvasRefreshRendererInterface::class),
+                $c->typed(HistoryOperationRestorer::class),
             );
         });
         $container->factory(HistoryRedoHandler::class, static function (Container $c): HistoryRedoHandler {
             return new HistoryRedoHandler(
                 $c->typed(OperationHistoryService::class),
+                $c->typed(CanvasRefreshRendererInterface::class),
+                $c->typed(HistoryOperationRestorer::class),
             );
         });
         $container->factory(HistoryOperationRestorer::class, static function (Container $c): HistoryOperationRestorer {
@@ -266,17 +273,47 @@ final class ControlPlaneProvider implements ServiceProviderInterface
         // The registry is only read during request handling (REST/canvas), which
         // runs well after `init`, so deferring registration is safe.
         add_action('init', function () use ($container): void {
-            $this->registerControls($container);
+            try {
+                $this->registerControls($container);
+            } catch (\JsonException | \InvalidArgumentException | \RuntimeException $error) {
+                $this->reportRegistrationFailure($error);
+            } catch (\Throwable $error) {
+                // Control extensions run in WordPress init. Their failure must
+                // not terminate requests that do not use the control plane.
+                $this->reportRegistrationFailure($error);
+            }
         });
+    }
+
+    private function reportRegistrationFailure(\Throwable $error): void
+    {
+        error_log(sprintf(
+            '[Uncanny Page Builder] Control registration unavailable (%s).',
+            $error::class,
+        ));
     }
 
     public function registerControls(Container $container): void
     {
+        if ($this->controlsRegistered) {
+            return;
+        }
+
         $registry = $container->typed(ControlRegistry::class);
 
         foreach ($this->coreControls() as $definition) {
+            // A previous init callback can stop after registering only part of
+            // the core set. Replay must continue past those valid entries.
+            if ($registry->has($definition->id())) {
+                continue;
+            }
             $registry->registerCore($definition);
         }
+
+        // WordPress owns the hook lifecycle, and third-party code can invoke
+        // `init` more than once. Core registration is complete at this point,
+        // so replaying this observer would only create duplicate controls.
+        $this->controlsRegistered = true;
 
         do_action('uncanny_page_builder_register_controls', $registry, $container);
     }

@@ -1,7 +1,10 @@
 <?php
 /**
  * Step 1 template file.
+ *
+ * @package Uncanny_Automator
  */
+
 ?>
 
 <div id="automator-setup-step-1">
@@ -18,8 +21,10 @@
 					<?php foreach ( $this->get_steps() as $step ) : ?>
 						<li class="<?php echo implode( ' ', $step['classes'] ); ?>"> <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							<span>
-								<?php // translators: The step ?>
-								<?php echo sprintf( esc_html__( 'Step %s', 'uncanny-automator' ), esc_html( $step['label'] ) ); ?>
+								<?php
+								// translators: %s: Step number.
+								printf( esc_html__( 'Step %s', 'uncanny-automator' ), esc_html( $step['label'] ) );
+								?>
 							</span>
 						</li>
 					<?php endforeach; ?>
@@ -32,8 +37,25 @@
 		</h2>
 
 		<p>
-			<?php esc_html_e( "You're just minutes away from building powerful automations that connect your plugins, sites and apps together. Connect a free account to try app integrations like Google Sheets, Facebook and Slack.", 'uncanny-automator' ); ?>
+			<?php esc_html_e( "You're just seconds away from building powerful automations that connect your plugins, sites and apps together. Connect a free Uncanny Automator account to unlock:", 'uncanny-automator' ); ?>
 		</p>
+
+		<ul class="automator-setup-wizard__benefits">
+			<li>
+				<uo-icon id="plug"></uo-icon>
+				<div>
+					<strong><?php esc_html_e( 'App integrations', 'uncanny-automator' ); ?></strong>
+					<p><?php esc_html_e( 'Use app integrations like CRMs, social media, Google apps and more with 250 free app credits.', 'uncanny-automator' ); ?></p>
+				</div>
+			</li>
+			<li>
+				<uo-icon-ai></uo-icon-ai>
+				<div>
+					<strong><?php esc_html_e( 'Uncanny Agent', 'uncanny-automator' ); ?></strong>
+					<p><?php esc_html_e( 'Free Uncanny Agent usage to get started with business analysis, site management, and building recipes and pages via conversation.', 'uncanny-automator' ); ?></p>
+				</div>
+			</li>
+		</ul>
 
 		<p>
 			<uo-button
@@ -44,53 +66,11 @@
 				<?php esc_html_e( 'Connect your free account!', 'uncanny-automator' ); ?>
 			</uo-button>
 		</p>
-		
+
 	</div>
 
 	<div class="row-2">
-		<h3>
-			<?php
-				esc_html_e(
-					'Automator includes a forever free license for WordPress integrations',
-					'uncanny-automator'
-				);
-				?>
-		</h3>
-		<p>
-			<?php
-				esc_html_e(
-					'All WordPress plugin integrations in the free version are free and unlimited forever.
-				Connecting a free account unlocks',
-					'uncanny-automator'
-				);
-				?>
-			<strong>
-				<?php esc_html_e( '250 app credits', 'uncanny-automator' ); ?>
-			</strong>
-			<?php
-				esc_html_e(
-					'for app integrations, but a Pro account gets you',
-					'uncanny-automator'
-				);
-				?>
-			<strong>
-				<?php esc_html_e( 'unlimited', 'uncanny-automator' ); ?>
-			</strong>
-			<?php
-				esc_html_e(
-					'credits plus hundreds of additional triggers and actions, as well as extra features
-					like scheduled actions.',
-					'uncanny-automator'
-				);
-				?>
-		</p>
-		<p class="footer-actions">
-
-			<uo-button
-				href="<?php echo esc_url( $this->get_checkout_uri() ); ?>"
-				>
-				<?php esc_html_e( 'Upgrade to Pro now and save up to $200', 'uncanny-automator' ); ?>
-			</uo-button>
+		<p class="footer-actions footer-actions--center">
 			<span>
 				<uap-setup-wizard-step-1-skip
 					url-next-step="<?php echo esc_url( $this->get_dashboard_uri( 2 ) ); ?>&skip=true"
@@ -100,4 +80,3 @@
 		</p>
 	</div>
 </div>
-
