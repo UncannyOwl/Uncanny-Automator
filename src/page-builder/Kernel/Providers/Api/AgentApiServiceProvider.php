@@ -58,6 +58,7 @@ use UncannyPageBuilder\Application\Reusable\DeleteReusableUseCase;
 use UncannyPageBuilder\Application\Reusable\ListReusableUseCase;
 use UncannyPageBuilder\Application\Reusable\UpdateReusableUseCase;
 use UncannyPageBuilder\Application\DesignStandardsService;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\DesignStyles\DesignStyleCommitService;
 use UncannyPageBuilder\Application\Editing\SectionNodeUpdateService;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
@@ -133,6 +134,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
                 $c->typed(CompactSourceDiffer::class),
                 $c->typed(PageJavaScriptRuntimeService::class),
                 $c->typed(\UncannyPageBuilder\Application\Settings\ToolSettingsAccess::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -401,6 +403,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
                 $c->typed(\UncannyPageBuilder\Domain\Publishing\PageStateRepositoryInterface::class),
                 $c->typed(\UncannyPageBuilder\Application\Editor\SelectEditorPageSource::class),
                 $c->typed(\UncannyPageBuilder\Application\Publishing\PageLiveStateReaderInterface::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 

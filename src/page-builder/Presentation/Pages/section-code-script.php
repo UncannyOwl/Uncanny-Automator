@@ -9,6 +9,29 @@
 defined('ABSPATH') || exit;
 ?>
 <script>
+(function() {
+    document.addEventListener('click', function(event) {
+        var target = event.target instanceof Element ? event.target : null;
+        var action = target ? target.closest('.upb-section-edit-link') : null;
+        if (!action) return;
+
+        var sectionId = parseInt(action.getAttribute('data-section-id') || '', 10);
+        var sectionData = window.upbSectionCodeData && window.upbSectionCodeData[sectionId];
+        if (typeof window.jQuery === 'function' && typeof window.tb_show === 'function' && sectionData) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        action.setAttribute('aria-disabled', 'true');
+        var notice = document.getElementById('upb-section-code-unavailable');
+        if (notice) {
+            notice.hidden = false;
+        }
+    }, true);
+})();
+
+if (typeof window.jQuery === 'function') {
 jQuery(function($) {
     var activeSectionId = 0;
     var cmHtml = null;
@@ -140,4 +163,5 @@ jQuery(function($) {
         });
     });
 });
+}
 </script>

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Application;
 
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefreshScheduler;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Domain\Compiler\CssContractWarningDetector;
 use UncannyPageBuilder\Domain\Compiler\ShadowCompiler;
 use UncannyPageBuilder\Domain\Exception\BindingTargetNotFoundException;
 use UncannyPageBuilder\Domain\Exception\CssRuleIntegrityException;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartCreationCleanupInterface;
+use UncannyPageBuilder\Domain\GlobalPart\GlobalPartCreationUncertainException;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartRepositoryInterface;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartSnapshotRepositoryInterface;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartSourceUpdateRepositoryInterface;
@@ -26,6 +28,8 @@ use UncannyPageBuilder\Infrastructure\WordPress\HtmlSanitizationGate;
 
 final class GlobalPartService
 {
+    public const WORKING_CANVAS_REFRESH_WARNING = 'The reusable was saved, but working canvases could not be queued for refresh.';
+
     public function __construct(
         private readonly GlobalPartRepositoryInterface $repository,
         private readonly ShadowCompiler $compiler,
@@ -33,6 +37,7 @@ final class GlobalPartService
         private readonly ?SectionRepositoryInterface $sectionRepository = null,
         private readonly ?WorkingCanvasRefreshScheduler $workingCanvasRefreshes = null,
         private readonly ?LucideIconValidator $lucideIconValidator = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     /**
@@ -396,7 +401,24 @@ final class GlobalPartService
             $this->repository->saveSections($postId, $collection);
             $this->repository->saveCompiled($postId, $compiled);
         }
-        $this->workingCanvasRefreshes?->enqueueAll();
+        if ($this->workingCanvasRefreshes instanceof WorkingCanvasRefreshScheduler) {
+            try {
+                $this->workingCanvasRefreshes->enqueueAll();
+            } catch (\Throwable $failure) {
+                // The reusable source is saved. Do not retry the source write.
+                try {
+                    $this->failureReporter?->report(
+                        'global part source',
+                        $postId,
+                        'working_canvas.enqueue',
+                        $failure,
+                    );
+                } catch (\Throwable) {
+                    // A report failure cannot change the completed source result.
+                }
+                $warnings[] = self::WORKING_CANVAS_REFRESH_WARNING;
+            }
+        }
 
         $result = [
             'id'       => $postId,
@@ -573,11 +595,7 @@ final class GlobalPartService
         try {
             $this->repository->removeCreatedGlobalPart($globalPartId);
         } catch (\Throwable $cleanupFailure) {
-            throw new \RuntimeException(
-                "Global part creation failed, and its incomplete post could not be removed: {$cleanupFailure->getMessage()}",
-                0,
-                $failure,
-            );
+            throw new GlobalPartCreationUncertainException($globalPartId, $failure, $cleanupFailure);
         }
 
         throw $failure;

@@ -17,6 +17,7 @@ use UncannyPageBuilder\Application\Editor\SelectEditorPageSource;
 use UncannyPageBuilder\Application\Export\StaticPageExportService;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
 use UncannyPageBuilder\Application\GlobalPartService;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Application\ShellImportService;
@@ -60,6 +61,9 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(EditorLockWriteGuard::class),
                 $c->typed(SelectEditorPageSource::class),
                 $c->typed(\UncannyPageBuilder\Domain\Compiler\ShadowCompiler::class),
+                $c->typed(FailureReporterInterface::class),
+                $c->typed(\UncannyPageBuilder\Application\Canvas\CanvasRefreshRendererInterface::class),
+                $c->typed(\UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface::class),
             );
         });
 
@@ -68,6 +72,7 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(SectionService::class),
                 $c->typed(PermissionChecker::class),
                 $c->typed(EditorLockWriteGuard::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -77,6 +82,7 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(PermissionChecker::class),
                 $c->typed(GlobalPartDefaultsService::class),
                 $c->typed(ReusableSourcePackageService::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -88,6 +94,7 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(WorkingCanvasRefresherInterface::class),
                 $c->typed(EditorLockWriteGuard::class),
                 $c->typed(\UncannyPageBuilder\Domain\Publishing\PageSourceSnapshotRepositoryInterface::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -99,6 +106,7 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(UpdatePageLayout::class),
                 $c->typed(WorkingCanvasRefresherInterface::class),
                 $c->typed(EditorLockWriteGuard::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -106,12 +114,14 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
             return new ShellController(
                 $c->typed(ShellImportService::class),
                 $c->typed(PermissionChecker::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
         $container->factory(MediaController::class, static function (Container $c): MediaController {
             return new MediaController(
                 $c->typed(PermissionChecker::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -120,6 +130,7 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(EditorStateService::class),
                 $c->typed(SectionService::class),
                 $c->typed(PermissionChecker::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -131,6 +142,7 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(PermissionChecker::class),
                 $c->typed(ControlRegistry::class),
                 $c->typed(EditorLockWriteGuard::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 

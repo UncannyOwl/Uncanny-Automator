@@ -72,7 +72,24 @@ final class WpDesignStandardsRepository implements DesignStandardsRepositoryInte
 
     public function applyFilter(string $filterName, mixed $value, mixed ...$args): mixed
     {
-        return apply_filters($filterName, $value, ...$args);
+        try {
+            return apply_filters($filterName, $value, ...$args);
+        } catch (\Throwable $failure) {
+            // Design filters run during API and canvas reads. Keep the stored
+            // design value when an external callback fails so one extension
+            // cannot replace those surfaces with a fatal response.
+            try {
+                error_log(sprintf(
+                    '[Uncanny Page Builder] WordPress design filter "%s" failed (%s).',
+                    $filterName,
+                    $failure::class,
+                ));
+            } catch (\Throwable) {
+                // A log failure cannot replace the stored design value.
+            }
+
+            return $value;
+        }
     }
 
     private function freshOverrides(int $pageId): array

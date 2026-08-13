@@ -43,13 +43,12 @@ class Internal_Token_Configuration_Monitor {
 	}
 
 	/**
-	 * Register operator-facing diagnostics.
+	 * Register the Site Health diagnostic.
 	 *
 	 * @return void
 	 */
 	public function init(): void {
 		add_filter( 'site_status_tests', array( $this, 'register_site_health_test' ) );
-		add_action( 'admin_notices', array( $this, 'render_admin_warning' ) );
 	}
 
 	/**
@@ -85,26 +84,6 @@ class Internal_Token_Configuration_Monitor {
 			'recommended',
 			esc_html_x( 'Uncanny Agent internal token encryption is not configured', 'Site Health result', 'uncanny-automator' ),
 			$this->cipher->get_configuration_error()->get_error_message()
-		);
-	}
-
-	/**
-	 * Render an actionable warning for administrators using the Agent.
-	 *
-	 * @return void
-	 */
-	public function render_admin_warning(): void {
-		if (
-			! current_user_can( 'manage_options' )
-			|| $this->cipher->is_ready()
-		) {
-			return;
-		}
-
-		printf(
-			'<div class="notice notice-warning"><p><strong>%1$s</strong> %2$s</p></div>',
-			esc_html_x( 'Uncanny Agent configuration required.', 'MCP internal token admin notice', 'uncanny-automator' ),
-			esc_html( $this->cipher->get_configuration_error()->get_error_message() )
 		);
 	}
 

@@ -28,6 +28,20 @@ final class WorkingCanvasRefreshCommand
      */
     public function __invoke(array $args, array $assocArgs): void
     {
+        try {
+            $this->run($args, $assocArgs);
+        } catch (\Throwable $failure) {
+            if (class_exists('\WP_CLI')) {
+                \WP_CLI::error(sprintf(
+                    'Working-canvas refresh stopped unexpectedly (%s).',
+                    $failure::class,
+                ));
+            }
+        }
+    }
+
+    private function run(array $args, array $assocArgs): void
+    {
         unset($args);
 
         $limit = isset($assocArgs['limit']) ? max(1, min(1000, (int) $assocArgs['limit'])) : 100;

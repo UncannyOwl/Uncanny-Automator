@@ -95,6 +95,15 @@ final class ElementStyleRule
         return new self($this->elementId, $this->kind, $this->viewport, $this->state, $declarations);
     }
 
+    public function withElementId(string $elementId): self
+    {
+        if (!self::isValidElementId($elementId)) {
+            throw new \InvalidArgumentException('Element style ID is invalid.');
+        }
+
+        return new self($elementId, $this->kind, $this->viewport, $this->state, $this->declarations);
+    }
+
     /**
      * @return array{element_id: string, kind: string, viewport: string, state: string, declarations: array<string, string>}
      */

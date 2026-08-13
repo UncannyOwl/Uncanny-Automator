@@ -99,29 +99,35 @@ final class BlockEditorButton
             return;
         }
 
-        /*
-         * Gutenberg fires edit_form_after_title while scraping hidden fields
-         * from Classic Editor integrations. Do not let that compatibility pass
-         * overwrite the already-localized block-editor runtime configuration.
-         */
-        if (!$this->availability->allowsNewPages() || use_block_editor_for_post($post)) {
-            return;
+        try {
+            /*
+             * Gutenberg fires edit_form_after_title while scraping hidden fields
+             * from Classic Editor integrations. Do not let that compatibility pass
+             * overwrite the already-localized block-editor runtime configuration.
+             */
+            if (!$this->availability->allowsNewPages() || use_block_editor_for_post($post)) {
+                return;
+            }
+
+            if (!$this->isEditablePage($post) || $this->sections->isOwnedPage((int) $post->ID)) {
+                return;
+            }
+
+            $openField = self::CLASSIC_OPEN_FIELD;
+            $nonceField = self::CLASSIC_NONCE_FIELD;
+
+            // Classic Editor does not load Gutenberg presentation assets itself.
+            // Enqueue both halves so ConfirmDialog retains WordPress behavior and
+            // appearance while the existing post form remains the save boundary.
+            wp_enqueue_style('wp-components');
+            $this->enqueueScript((int) $post->ID, 'classic');
+
+            include __DIR__ . '/../../Presentation/Pages/classic-editor-button.php';
+        } catch (\Throwable $failure) {
+            // Render nothing further; a failed button must not fail the
+            // complete WordPress edit screen.
+            error_log('[Uncanny Page Builder] Classic editor button render failed (' . $failure::class . ')');
         }
-
-        if (!$this->isEditablePage($post) || $this->sections->isOwnedPage((int) $post->ID)) {
-            return;
-        }
-
-        $openField = self::CLASSIC_OPEN_FIELD;
-        $nonceField = self::CLASSIC_NONCE_FIELD;
-
-        // Classic Editor does not load Gutenberg presentation assets itself.
-        // Enqueue both halves so ConfirmDialog retains WordPress behavior and
-        // appearance while the existing post form remains the save boundary.
-        wp_enqueue_style('wp-components');
-        $this->enqueueScript((int) $post->ID, 'classic');
-
-        include __DIR__ . '/../../Presentation/Pages/classic-editor-button.php';
     }
 
     /**
@@ -186,10 +192,12 @@ final class BlockEditorButton
             : 0;
         $post = $postId > 0 ? get_post($postId) : null;
 
-        if (
-            !$post instanceof \WP_Post
-            || !$this->supportsPostType->isSupported($post->post_type)
-        ) {
+        $isSupported = $post instanceof \WP_Post
+            && (bool) WordPressCallbackBoundary::valueOrDie(
+                'block_editor.post_type',
+                fn (): bool => $this->supportsPostType->isSupported($post->post_type),
+            );
+        if (!$isSupported) {
             wp_die(
                 esc_html_x('Select a valid page to open in Uncanny Page Builder.', 'Page Builder', 'uncanny-automator'),
                 esc_html_x('Page unavailable', 'Page Builder', 'uncanny-automator'),
@@ -223,7 +231,7 @@ final class BlockEditorButton
                 ['response' => 403],
             );
         } catch (\Throwable $error) {
-            do_action('uncanny_page_builder_page_adoption_failed', $postId, $error);
+            $this->notifyObservers('uncanny_page_builder_page_adoption_failed', $postId, $error);
             wp_die(
                 esc_html_x(
                     'Page Builder could not safely take over this page. Review the page before trying again.',
@@ -236,18 +244,36 @@ final class BlockEditorButton
         }
 
         if ($adopted) {
-            do_action('uncanny_page_builder_page_adopted', $postId);
+            $this->notifyObservers('uncanny_page_builder_page_adopted', $postId);
         }
 
         return AdminCanvasEditorWindowedPage::editorUrl($postId);
     }
 
+    private function notifyObservers(string $hook, mixed ...$args): void
+    {
+        try {
+            do_action($hook, ...$args);
+        } catch (\Throwable $error) {
+            // Adoption already succeeded or failed before this notification.
+            // An observer cannot change that result or replace its response.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Observer %s failed (%s).',
+                $hook,
+                $error::class,
+            ));
+        }
+    }
+
     private function isEditablePage(mixed $post): bool
     {
-        return $post instanceof \WP_Post
-            && $post->ID > 0
-            && $this->supportsPostType->isSupported($post->post_type)
-            && $this->allowedCapabilities->currentUserHasAllowedCapability()
-            && current_user_can('edit_post', $post->ID);
+        return (bool) WordPressCallbackBoundary::valueOrDie(
+            'block_editor.authorize',
+            fn (): bool => $post instanceof \WP_Post
+                && $post->ID > 0
+                && $this->supportsPostType->isSupported($post->post_type)
+                && $this->allowedCapabilities->currentUserHasAllowedCapability()
+                && current_user_can('edit_post', $post->ID),
+        );
     }
 }

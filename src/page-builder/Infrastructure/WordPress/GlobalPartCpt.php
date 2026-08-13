@@ -8,6 +8,17 @@ final class GlobalPartCpt
 {
     public function register(): void
     {
+        try {
+            $this->registerPostType();
+        } catch (\Throwable $failure) {
+            // init is a shared WordPress surface. A request without the CPT
+            // registered is acceptable degradation.
+            error_log('[Uncanny Page Builder] Reusable part post type registration failed (' . $failure::class . ')');
+        }
+    }
+
+    private function registerPostType(): void
+    {
         $defaultLabels = [
             'name'                  => _x('Reusable parts', 'Page Builder', 'uncanny-automator'),
             'singular_name'         => _x('Reusable part', 'Page Builder', 'uncanny-automator'),

@@ -21,6 +21,18 @@ final class RestNonceRefresher
 
     public function refresh(): void
     {
+        try {
+            $this->sendNonce();
+        } catch (\Throwable $failure) {
+            error_log('[Uncanny Page Builder] REST nonce refresh failed (' . $failure::class . ')');
+            wp_send_json_error([
+                'message' => 'Uncanny Page Builder could not refresh the REST nonce.',
+            ], 500);
+        }
+    }
+
+    private function sendNonce(): void
+    {
         if (!$this->allowedCapabilities->currentUserHasAllowedCapability()) {
             wp_send_json_error([
                 'message' => _x('You do not have permission to edit with Uncanny Page Builder.', 'Page Builder', 'uncanny-automator'),

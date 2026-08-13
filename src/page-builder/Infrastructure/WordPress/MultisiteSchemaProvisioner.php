@@ -45,17 +45,30 @@ final class MultisiteSchemaProvisioner
             ? (int) get_current_blog_id()
             : 0;
 
-        if ($currentSiteId === $siteId) {
-            $this->schemaInstaller->installCurrentSite();
-
-            return;
-        }
-
-        switch_to_blog($siteId);
         try {
-            $this->schemaInstaller->installCurrentSite();
-        } finally {
-            restore_current_blog();
+            if ($currentSiteId === $siteId) {
+                $this->schemaInstaller->ensureCurrentSite();
+
+                return;
+            }
+
+            switch_to_blog($siteId);
+            try {
+                $this->schemaInstaller->ensureCurrentSite();
+            } finally {
+                // The inner finally restores the blog context before the
+                // outer catch runs, so a failed install can never leave the
+                // request on the new site's table prefix.
+                restore_current_blog();
+            }
+        } catch (\Throwable $failure) {
+            // A provisioning failure must not break WordPress site creation.
+            // The schema installs on the site's first Page Builder use or the
+            // next network upgrade instead.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Multisite schema provisioning failed (%s).',
+                $failure::class,
+            ));
         }
     }
 

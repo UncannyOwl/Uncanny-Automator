@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Api\AgentPageController;
 use UncannyPageBuilder\Api\AgentTextResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
 use UncannyPageBuilder\Application\GlobalPartService;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\PageJavaScriptRuntimeService;
 use UncannyPageBuilder\Application\Settings\ToolSettingsAccess;
 use UncannyPageBuilder\Domain\Editing\CompactSourceDiff;
@@ -30,9 +31,23 @@ final class RuntimeController
         private readonly CompactSourceDiffer $sourceDiffer,
         private readonly ?PageJavaScriptRuntimeService $javaScript = null,
         private readonly ?ToolSettingsAccess $settings = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function read(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        try {
+            return $this->readRequest($request);
+        } catch (\Throwable $failure) {
+            $this->recordBoundaryFailure('read', $failure);
+            return $this->textToolError('read_runtime', 500, 'runtime_read_failed', [
+                'NEXT STEP',
+                'Retry read_runtime. If the error continues, review the WordPress error log.',
+            ]);
+        }
+    }
+
+    private function readRequest(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         if (!$this->javaScript instanceof PageJavaScriptRuntimeService) {
             return $this->textToolError('read_runtime', 501, 'runtime_lane_unavailable', [
@@ -148,15 +163,19 @@ final class RuntimeController
         }
 
         $ownerId = $resolved['owner_id'];
+        $warnings = [];
         if ($operation === 'clear') {
             try {
                 if ($scope === 'page') {
                     $this->javaScript->clearForPage($ownerId, $this->currentUserId());
                 } else {
-                    $this->javaScript->clearForGlobalPart($ownerId);
+                    $warnings = $this->javaScript->clearForGlobalPartWithWarnings($ownerId)['warnings'];
                 }
             } catch (StaleSourceGenerationException $exception) {
                 return $this->staleSourceToolError('edit_runtime', $exception);
+            } catch (\Throwable $failure) {
+                $this->recordUnexpectedWriteFailure($scope, $ownerId, $failure);
+                return $this->unexpectedWriteToolError('edit_runtime', $scope, $ownerId);
             }
 
             return AgentTextResponse::ok(implode("\n", $this->runtimeWriteLines(
@@ -164,6 +183,7 @@ final class RuntimeController
                 $ownerId,
                 'clear',
                 false,
+                $warnings,
             )));
         }
 
@@ -184,10 +204,13 @@ final class RuntimeController
                         $this->currentUserId(),
                     );
                 } else {
-                    $this->javaScript->replaceForGlobalPart($ownerId, $javascript);
+                    $warnings = $this->javaScript->replaceForGlobalPartWithWarnings($ownerId, $javascript)['warnings'];
                 }
             } catch (StaleSourceGenerationException $exception) {
                 return $this->staleSourceToolError('edit_runtime', $exception);
+            } catch (\Throwable $failure) {
+                $this->recordUnexpectedWriteFailure($scope, $ownerId, $failure);
+                return $this->unexpectedWriteToolError('edit_runtime', $scope, $ownerId);
             }
 
             return AgentTextResponse::ok(implode("\n", $this->runtimeWriteLines(
@@ -195,6 +218,7 @@ final class RuntimeController
                 $ownerId,
                 'replace',
                 true,
+                $warnings,
             )));
         }
 
@@ -209,6 +233,9 @@ final class RuntimeController
                 : $this->javaScript->applySourcePatchForGlobalPart($ownerId, $patches);
         } catch (StaleSourceGenerationException $exception) {
             return $this->staleSourceToolError('edit_runtime', $exception);
+        } catch (\Throwable $failure) {
+            $this->recordUnexpectedWriteFailure($scope, $ownerId, $failure);
+            return $this->unexpectedWriteToolError('edit_runtime', $scope, $ownerId);
         }
 
         if ($result['error'] !== null) {
@@ -224,10 +251,34 @@ final class RuntimeController
             $patches,
             $result['before'],
             $result['after'],
+            $result['warnings'] ?? [],
         )));
     }
 
+    private function recordUnexpectedWriteFailure(string $scope, int $ownerId, \Throwable $failure): void
+    {
+        try {
+            $this->failureReporter?->report($scope . ' runtime source', $ownerId, 'write.uncertain', $failure);
+        } catch (\Throwable) {
+            // A report failure cannot change the controlled error response.
+        }
+    }
+
     public function preview(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        try {
+            return $this->previewRequest($request);
+        } catch (\Throwable $failure) {
+            $this->recordBoundaryFailure('preview', $failure);
+            return $this->textToolError('preview_runtime_change', 500, 'runtime_preview_failed', [
+                'RETRY_SAFETY: No runtime source was changed.',
+                'NEXT STEP',
+                'Retry preview_runtime_change. If the error continues, review the WordPress error log.',
+            ]);
+        }
+    }
+
+    private function previewRequest(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         if (!$this->javaScript instanceof PageJavaScriptRuntimeService) {
             return $this->textToolError('preview_runtime_change', 501, 'runtime_lane_unavailable', [
@@ -273,6 +324,15 @@ final class RuntimeController
             $preview['before'],
             $preview['after'],
         )));
+    }
+
+    private function recordBoundaryFailure(string $step, \Throwable $failure): void
+    {
+        try {
+            $this->failureReporter?->report('runtime source', 0, $step, $failure);
+        } catch (\Throwable) {
+            // A report failure cannot change the controlled Agent response.
+        }
     }
 
     // ── Runtime target resolution ────────────────────────────
@@ -469,6 +529,17 @@ final class RuntimeController
         ]);
     }
 
+    private function unexpectedWriteToolError(string $toolName, string $scope, int $ownerId): \WP_REST_Response
+    {
+        return $this->textToolError($toolName, 500, 'runtime_write_failed', [
+            'RUNTIME SCOPE: ' . $scope,
+            strtoupper($scope) . '_ID: ' . $ownerId,
+            'RETRY_SAFETY: The write result is uncertain. Do not retry blindly.',
+            'NEXT STEP',
+            'Call read_runtime first. Retry only if the requested change is absent and the current source still permits it.',
+        ]);
+    }
+
     private function missingJavaScriptError(string $scope, int $ownerId): \WP_REST_Response
     {
         return $this->textToolError('edit_runtime', 400, 'missing_javascript', [
@@ -559,18 +630,21 @@ final class RuntimeController
         int $ownerId,
         string $operation,
         bool $hasJavaScript,
+        array $warnings = [],
     ): array {
-        return [
+        $lines = [
             'TOOL: edit_runtime',
             'RESULT: success',
             'OPERATION: ' . $operation,
             'RUNTIME SCOPE: ' . $scope,
             strtoupper($scope) . '_ID: ' . $ownerId,
             'HAS_JAVASCRIPT: ' . ($hasJavaScript ? 'yes' : 'no'),
-            '',
-            'NEXT STEP',
-            'Call read_runtime to verify the saved working source on this owner.',
         ];
+        $this->appendWarningLines($lines, $warnings);
+        $lines[] = 'NEXT STEP';
+        $lines[] = 'Call read_runtime to verify the saved working source on this owner.';
+
+        return $lines;
     }
 
     /**
@@ -583,6 +657,7 @@ final class RuntimeController
         array $patches,
         string $before,
         string $after,
+        array $warnings = [],
     ): array {
         $lines = [
             'TOOL: edit_runtime',
@@ -601,10 +676,25 @@ final class RuntimeController
             'JAVASCRIPT DIFF',
             $this->sourceDiffer->diff('JAVASCRIPT DIFF', $before, $after),
         );
+        $this->appendWarningLines($lines, $warnings);
         $lines[] = 'NEXT STEP';
         $lines[] = 'Call read_runtime to verify the saved working source on this owner.';
 
         return $lines;
+    }
+
+    /** @param list<string> $warnings */
+    private function appendWarningLines(array &$lines, array $warnings): void
+    {
+        if ($warnings === []) {
+            return;
+        }
+
+        $lines[] = 'WARNING';
+        foreach ($warnings as $warning) {
+            $lines[] = $warning;
+        }
+        $lines[] = '';
     }
 
     /**

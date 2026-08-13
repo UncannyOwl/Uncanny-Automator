@@ -424,7 +424,7 @@ class Admin_Menu {
 		$free_credits = $is_connected ? ( $usage_limit - $paid_usage_count ) : 250;
 
 		// Ledger payload from the API server (api/credits/ledger). The API may
-		// omit `llm_credits` entirely if the upstream call failed — treat as optional.
+		// omit `llm_credits` until the allocation is exposed or if the upstream call fails.
 		$ledger          = isset( $is_connected['llm_credits'] ) ? (array) $is_connected['llm_credits'] : array();
 		$ledger_has_data = ! empty( $ledger ) && ! empty( $ledger['success'] );
 
@@ -1024,8 +1024,24 @@ class Admin_Menu {
 				'allocation_name' => $llm_allocation_name,
 				'expires_on'      => $llm_expires_on,
 			),
-			'show_agent_usage'   => defined( 'AUTOMATOR_PRO_FILE' ),
+			'show_agent_usage'   => self::should_show_agent_usage( (bool) $is_connected, $ledger_has_data ),
 		);
+	}
+
+	/**
+	 * Determine whether the dashboard can show Uncanny Agent usage.
+	 *
+	 * The pane requires a connected account and a successful ledger response.
+	 * This gate applies to Free and Pro accounts.
+	 *
+	 * @param bool $is_connected    Whether the site has a connected account.
+	 * @param bool $ledger_has_data Whether the Agent ledger response succeeded.
+	 *
+	 * @return bool
+	 */
+	public static function should_show_agent_usage( bool $is_connected, bool $ledger_has_data ): bool {
+
+		return $is_connected && $ledger_has_data;
 	}
 
 	/**

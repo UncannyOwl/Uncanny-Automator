@@ -36,6 +36,16 @@ final class CanvasGlobalPartsService implements CanvasGlobalPartsProviderInterfa
         ];
     }
 
+    public function headerForPage(int $pageId): ?array
+    {
+        return $this->partForPage($pageId, GlobalPartType::Header);
+    }
+
+    public function footerForPage(int $pageId): ?array
+    {
+        return $this->partForPage($pageId, GlobalPartType::Footer);
+    }
+
     public function forPageSource(int $pageId, array $source): array
     {
         $shellMode = ShellMode::tryFrom((string) ($source['shell_mode'] ?? ''));
@@ -53,6 +63,45 @@ final class CanvasGlobalPartsService implements CanvasGlobalPartsProviderInterfa
                 $source['footer_override_id'] ?? null,
             ),
         ];
+    }
+
+    public function headerForPageSource(int $pageId, array $source): ?array
+    {
+        return $this->partForPageSource($source, GlobalPartType::Header);
+    }
+
+    public function footerForPageSource(int $pageId, array $source): ?array
+    {
+        return $this->partForPageSource($source, GlobalPartType::Footer);
+    }
+
+    /**
+     * @return array{post_id: int, type: string, html: string, css: string}|null
+     */
+    private function partForPage(int $pageId, GlobalPartType $type): ?array
+    {
+        if ($this->shellModes->resolveForPage($pageId)->mode !== ShellMode::UncannyNative) {
+            return null;
+        }
+
+        return $this->render($pageId, $type);
+    }
+
+    /**
+     * @param array<string, mixed> $source
+     * @return array{post_id: int, type: string, html: string, css: string}|null
+     */
+    private function partForPageSource(array $source, GlobalPartType $type): ?array
+    {
+        if (ShellMode::tryFrom((string) ($source['shell_mode'] ?? '')) !== ShellMode::UncannyNative) {
+            return null;
+        }
+
+        $overrideKey = $type === GlobalPartType::Header
+            ? 'header_override_id'
+            : 'footer_override_id';
+
+        return $this->renderSourcePart($type, $source[$overrideKey] ?? null);
     }
 
     /**

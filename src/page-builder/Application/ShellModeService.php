@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Application;
 
 use UncannyPageBuilder\Application\Concurrency\PageSourceMutation;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefreshScheduler;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartRepositoryInterface;
@@ -27,6 +28,7 @@ final class ShellModeService
         private readonly ?PageGlobalPartResolverInterface $pagePartResolver = null,
         private readonly ?SourceGenerationStoreInterface $sourceGenerations = null,
         private readonly ?PageSourceMutation $pageSource = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     /**
@@ -160,12 +162,16 @@ final class ShellModeService
         return $this->repository->getSiteDefault();
     }
 
-    public function setSiteDefault(ShellMode $mode): void
+    /**
+     * The return value reports only whether the derived canvas refresh was queued.
+     * A false value means that the site default was saved.
+     */
+    public function setSiteDefault(ShellMode $mode): bool
     {
         $generation = $this->sourceGenerations?->globalGeneration();
         $previous = $this->repository->getSiteDefault();
         if ($previous === $mode) {
-            return;
+            return true;
         }
 
         if ($this->sourceGenerations instanceof SourceGenerationStoreInterface) {
@@ -183,7 +189,27 @@ final class ShellModeService
 
         // Refresh after advancing the generation. The queue only rebuilds
         // editor-derived output and cannot change a published pointer.
-        $this->workingCanvasRefreshes?->enqueueAll();
+        if (!$this->workingCanvasRefreshes instanceof WorkingCanvasRefreshScheduler) {
+            return true;
+        }
+
+        try {
+            $this->workingCanvasRefreshes->enqueueAll();
+        } catch (\Throwable $failure) {
+            try {
+                $this->failureReporter?->report(
+                    'site shell mode',
+                    0,
+                    'working_canvas.enqueue',
+                    $failure,
+                );
+            } catch (\Throwable) {
+                // A report failure cannot change the completed setting result.
+            }
+            return false;
+        }
+
+        return true;
     }
 
     public function setForPage(int $pageId, ShellMode $mode): void

@@ -114,14 +114,20 @@ final class CanvasAssetAllowlist
             return;
         }
 
-        $allowed = $this->allowedStyles();
+        try {
+            $allowed = $this->allowedStyles();
 
-        foreach ($wp_styles->queue as $handle) {
-            if ($this->isAllowedAsset($handle, $wp_styles->registered[$handle] ?? null, $allowed)) {
-                continue;
+            foreach ($wp_styles->queue as $handle) {
+                if ($this->isAllowedAsset($handle, $wp_styles->registered[$handle] ?? null, $allowed)) {
+                    continue;
+                }
+
+                wp_dequeue_style($handle);
             }
-
-            wp_dequeue_style($handle);
+        } catch (\Throwable $failure) {
+            // A failed allowlist decision must not strip queued assets or
+            // terminate the shared request.
+            error_log('[Uncanny Page Builder] Canvas style allowlist enforcement failed (' . $failure::class . ')');
         }
     }
 
@@ -133,14 +139,20 @@ final class CanvasAssetAllowlist
             return;
         }
 
-        $allowed = $this->allowedScripts();
+        try {
+            $allowed = $this->allowedScripts();
 
-        foreach ($wp_scripts->queue as $handle) {
-            if ($this->isAllowedAsset($handle, $wp_scripts->registered[$handle] ?? null, $allowed)) {
-                continue;
+            foreach ($wp_scripts->queue as $handle) {
+                if ($this->isAllowedAsset($handle, $wp_scripts->registered[$handle] ?? null, $allowed)) {
+                    continue;
+                }
+
+                wp_dequeue_script($handle);
             }
-
-            wp_dequeue_script($handle);
+        } catch (\Throwable $failure) {
+            // A failed allowlist decision must not strip queued assets or
+            // terminate the shared request.
+            error_log('[Uncanny Page Builder] Canvas script allowlist enforcement failed (' . $failure::class . ')');
         }
     }
 

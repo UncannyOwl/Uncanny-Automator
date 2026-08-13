@@ -203,6 +203,9 @@ $recipes = Automator()->get->fetch_recipe_with_apps();
 						<?php
 						if ( ! $is_connected ) {
 							esc_html_e( 'Site not connected', 'uncanny-automator' );
+						} elseif ( 0 === strpos( $agent_expires_on, '9999-' ) ) {
+							// The ledger uses year 9999 as the "no expiry" sentinel.
+							esc_html_e( 'Never expires', 'uncanny-automator' );
 						} elseif ( '' !== $agent_expires_on ) {
 							$expires_ts = strtotime( $agent_expires_on );
 							if ( false !== $expires_ts ) {

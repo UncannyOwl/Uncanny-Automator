@@ -41,12 +41,14 @@ final class EditorLockTakeoverAction
         check_admin_referer(self::nonceAction($postId));
 
         $post = get_post($postId);
-        if (
-            !$post instanceof \WP_Post
-            || !$this->allowedCapabilities->currentUserHasAllowedCapability()
-            || !current_user_can('edit_post', $postId)
-            || !$this->isEditableTarget($post)
-        ) {
+        $isAuthorized = (bool) WordPressCallbackBoundary::valueOrDie(
+            'editor_lock.takeover.authorize',
+            fn (): bool => $post instanceof \WP_Post
+                && $this->allowedCapabilities->currentUserHasAllowedCapability()
+                && current_user_can('edit_post', $postId)
+                && $this->isEditableTarget($post),
+        );
+        if (!$isAuthorized) {
             wp_die(
                 esc_html_x("You don't have permission to take over this editor.", 'Page Builder', 'uncanny-automator'),
                 esc_html_x('Takeover denied', 'Page Builder', 'uncanny-automator'),
@@ -57,32 +59,51 @@ final class EditorLockTakeoverAction
         $targetKind = $post->post_type === 'upb_global_part' ? 'reusable' : 'page';
 
         try {
-            $lockingEnabled = $this->editorLockStore->isEnabled($postId);
-        } catch (\Throwable) {
-            $state = EditorOwnershipState::unavailable('feature check unavailable');
-            $this->logUnconfirmedTakeover($postId, $targetKind, 'feature_check_unavailable');
-            $this->dialogRenderer->takeoverFailure($postId, $targetKind, $editorMode, $state);
+            try {
+                $lockingEnabled = $this->editorLockStore->isEnabled($postId);
+            } catch (\Throwable) {
+                $state = EditorOwnershipState::unavailable('feature check unavailable');
+                $this->logUnconfirmedTakeover($postId, $targetKind, 'feature_check_unavailable');
+                $this->dialogRenderer->takeoverFailure($postId, $targetKind, $editorMode, $state);
+            }
+
+            /*
+             * The emergency filter is an intentional compatibility bypass. Keep
+             * the server-owned destination and authorization checks even when the
+             * ownership feature itself is disabled.
+             */
+            if (!$lockingEnabled) {
+                $this->redirectToEditorOrFail($postId, $targetKind, $editorMode);
+            }
+
+            $state = $this->takeOverOwnership->execute($postId, (int) get_current_user_id());
+
+            if ($state->status() === EditorOwnershipStatus::Owned) {
+                $this->redirectToEditorOrFail($postId, $targetKind, $editorMode);
+            }
+
+            $reason = $state->status() === EditorOwnershipStatus::Unavailable
+                ? 'ownership_unavailable'
+                : 'ownership_not_confirmed';
+            $this->logUnconfirmedTakeover($postId, $targetKind, $reason);
+        } catch (\Throwable $failure) {
+            // admin-post.php is a public WordPress boundary. When even the
+            // ownership dialog fails, the request must end in a controlled
+            // error page instead of a raw fatal.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Editor takeover failed (%s).',
+                $failure::class,
+            ));
+            wp_die(
+                esc_html_x('The editor takeover could not be completed. Please try again.', 'Page Builder', 'uncanny-automator'),
+                esc_html_x('Takeover failed', 'Page Builder', 'uncanny-automator'),
+                ['response' => 500],
+            );
         }
 
-        /*
-         * The emergency filter is an intentional compatibility bypass. Keep
-         * the server-owned destination and authorization checks even when the
-         * ownership feature itself is disabled.
-         */
-        if (!$lockingEnabled) {
-            $this->redirectToEditorOrFail($postId, $targetKind, $editorMode);
-        }
-
-        $state = $this->takeOverOwnership->execute($postId, (int) get_current_user_id());
-
-        if ($state->status() === EditorOwnershipStatus::Owned) {
-            $this->redirectToEditorOrFail($postId, $targetKind, $editorMode);
-        }
-
-        $reason = $state->status() === EditorOwnershipStatus::Unavailable
-            ? 'ownership_unavailable'
-            : 'ownership_not_confirmed';
-        $this->logUnconfirmedTakeover($postId, $targetKind, $reason);
+        // wp_die() is the successful terminal result of this dialog. Keep it
+        // outside the failure catch so a custom WordPress die handler is not
+        // mistaken for a second Page Builder failure.
         $this->dialogRenderer->takeoverFailure($postId, $targetKind, $editorMode, $state);
     }
 

@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Infrastructure\WordPress;
 
 use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
 use UncannyPageBuilder\Application\Concurrency\GlobalSourceMutation;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartRepositoryInterface;
 
@@ -14,6 +15,7 @@ final class GlobalPartMetaBox
     private const META_KEY     = '_upb_global_part_type';
     private const NONCE_KEY    = '_uncanny_gpt_nonce';
     private const NONCE_ACTION = 'upb_global_part_type_nonce';
+    private const NOTICE_TRANSIENT_PREFIX = 'upb_global_part_save_notice_';
 
     private bool $saving = false;
 
@@ -21,6 +23,7 @@ final class GlobalPartMetaBox
         private readonly ?GlobalPartRepositoryInterface $globalPartRepo,
         private readonly GetPageBuilderAllowedCapabilities $allowedCapabilities,
         private readonly GlobalSourceMutation $globalSource,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function register(): void
@@ -52,13 +55,19 @@ final class GlobalPartMetaBox
             return;
         }
 
-        $current = GlobalPartType::fromString(
-            (string) get_post_meta($post->ID, self::META_KEY, true)
-        );
-        $nonceAction = self::NONCE_ACTION;
-        $nonceKey = self::NONCE_KEY;
+        try {
+            $current = GlobalPartType::fromString(
+                (string) get_post_meta($post->ID, self::META_KEY, true)
+            );
+            $nonceAction = self::NONCE_ACTION;
+            $nonceKey = self::NONCE_KEY;
 
-        include __DIR__ . '/../../Presentation/GlobalParts/type-selector.php';
+            include __DIR__ . '/../../Presentation/GlobalParts/type-selector.php';
+        } catch (\Throwable $failure) {
+            // Render nothing further; a metabox failure must not fail the
+            // complete WordPress edit screen.
+            error_log('[Uncanny Page Builder] Reusable part type metabox render failed (' . $failure::class . ')');
+        }
     }
 
     public function renderPreview($post = null): void
@@ -71,38 +80,62 @@ final class GlobalPartMetaBox
             return;
         }
 
-        $part = $this->globalPartRepo->findById($post->ID);
-
-        if ($part === null || empty($part['sections'])) {
-            echo '<p style="color: #787c82; font-style: italic;">';
-            echo esc_html_x('No sections yet.', 'Page Builder', 'uncanny-automator');
-            echo '</p>';
-            return;
-        }
-
-        // Preview contract: use the real hidden canvas route in preview mode so
-        // the reusable part renders through the same document and asset path as
-        // production canvas rendering instead of a hand-built srcdoc clone.
-        $body = '';
-
-        foreach ($part['sections'] as $section) {
-            $html = $section['content']['html'] ?? '';
-            if ($html === '') {
-                continue;
+        try {
+            try {
+                $part = $this->globalPartRepo->findById($post->ID);
+            } catch (\Throwable $failure) {
+                // Meta-box rendering is part of the shared WordPress edit screen.
+                // A repository failure must not make the complete screen fatal.
+                error_log(sprintf(
+                    '[Uncanny Page Builder] Reusable part preview failed for post %d (%s).',
+                    $post->ID,
+                    $failure::class,
+                ));
+                echo '<p class="notice notice-error inline">';
+                echo esc_html_x(
+                    'Page Builder could not load the reusable part preview.',
+                    'Page Builder',
+                    'uncanny-automator',
+                );
+                echo '</p>';
+                return;
             }
-            $body .= $html;
-        }
 
-        if ($body === '') {
+            if ($part === null || empty($part['sections'])) {
+                echo '<p style="color: #787c82; font-style: italic;">';
+                echo esc_html_x('No sections yet.', 'Page Builder', 'uncanny-automator');
+                echo '</p>';
+                return;
+            }
+
+            // Preview contract: use the real hidden canvas route in preview mode so
+            // the reusable part renders through the same document and asset path as
+            // production canvas rendering instead of a hand-built srcdoc clone.
             $body = '';
-            $previewUrl = '';
+
+            foreach ($part['sections'] as $section) {
+                $html = $section['content']['html'] ?? '';
+                if ($html === '') {
+                    continue;
+                }
+                $body .= $html;
+            }
+
+            if ($body === '') {
+                $body = '';
+                $previewUrl = '';
+                include __DIR__ . '/../../Presentation/GlobalParts/preview.php';
+                return;
+            }
+
+            $previewUrl = add_query_arg('upb_preview', '1', AdminCanvasPage::editorUrl($post->ID));
+
             include __DIR__ . '/../../Presentation/GlobalParts/preview.php';
-            return;
+        } catch (\Throwable $failure) {
+            // Render nothing further; a metabox failure must not fail the
+            // complete WordPress edit screen.
+            error_log('[Uncanny Page Builder] Reusable part preview render failed (' . $failure::class . ')');
         }
-
-        $previewUrl = add_query_arg('upb_preview', '1', AdminCanvasPage::editorUrl($post->ID));
-
-        include __DIR__ . '/../../Presentation/GlobalParts/preview.php';
     }
 
     public function save($postId = null, $post = null): void
@@ -166,11 +199,59 @@ final class GlobalPartMetaBox
 
                 $this->updateMetaExact($postId, $type->value);
             });
+        } catch (\Throwable $failure) {
+            // save_post is a shared WordPress boundary. A failed Page Builder
+            // transaction must not terminate the remaining save callbacks or
+            // make WordPress return a fatal-error response.
+            $this->reportSaveFailure($postId, $failure);
+            $this->recordSaveNotice($postId);
+            return;
         } finally {
             $this->saving = false;
         }
 
+        delete_transient($this->noticeTransientKey($postId));
         clean_post_cache($postId);
+    }
+
+    private function reportSaveFailure(int $postId, \Throwable $failure): void
+    {
+        try {
+            if ($this->failureReporter instanceof FailureReporterInterface) {
+                $this->failureReporter->report('reusable part', $postId, 'global_part.settings.save', $failure);
+                return;
+            }
+        } catch (\Throwable) {
+            // A reporting failure cannot escape this WordPress hook boundary.
+        }
+
+        error_log(sprintf(
+            '[Uncanny Page Builder] Reusable part save failed for post %d (%s).',
+            $postId,
+            $failure::class,
+        ));
+    }
+
+    public function renderSaveNotice(): void
+    {
+        $postId = WordPressPostId::fromMixed($_GET['post'] ?? null);
+        if ($postId === null) {
+            return;
+        }
+
+        $key = $this->noticeTransientKey($postId);
+        if (get_transient($key) !== 'save_failed') {
+            return;
+        }
+
+        delete_transient($key);
+        echo '<div class="notice notice-error is-dismissible"><p>';
+        echo esc_html_x(
+            'Page Builder could not save the reusable part settings. Review the current title and part type before you try again.',
+            'Page Builder',
+            'uncanny-automator',
+        );
+        echo '</p></div>';
     }
 
     /**
@@ -226,5 +307,25 @@ final class GlobalPartMetaBox
         ));
 
         return is_string($stored) && hash_equals($value, $stored);
+    }
+
+    private function recordSaveNotice(int $postId): void
+    {
+        try {
+            set_transient($this->noticeTransientKey($postId), 'save_failed', 60);
+        } catch (\Throwable $failure) {
+            // A diagnostic failure must not replace the original save failure
+            // or terminate the shared save_post request.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Reusable part save notice failed for post %d (%s).',
+                $postId,
+                $failure::class,
+            ));
+        }
+    }
+
+    private function noticeTransientKey(int $postId): string
+    {
+        return self::NOTICE_TRANSIENT_PREFIX . $postId . '_' . get_current_user_id();
     }
 }

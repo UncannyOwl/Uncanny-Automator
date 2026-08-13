@@ -149,6 +149,25 @@ final class ElementStyleSheet
         ));
     }
 
+    /**
+     * Keep durable style targets aligned when copied HTML receives new IDs.
+     *
+     * @param array<string, string> $elementIds old ID => new ID
+     */
+    public function remapElementIds(array $elementIds): self
+    {
+        if ($elementIds === []) {
+            return new self($this->all());
+        }
+
+        return new self(array_map(
+            static fn (ElementStyleRule $rule): ElementStyleRule => isset($elementIds[$rule->elementId()])
+                ? $rule->withElementId($elementIds[$rule->elementId()])
+                : $rule,
+            $this->all(),
+        ));
+    }
+
     public function isEmpty(): bool
     {
         return $this->rules === [];

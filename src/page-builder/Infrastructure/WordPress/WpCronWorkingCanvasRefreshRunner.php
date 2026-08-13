@@ -16,6 +16,7 @@ use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 final class WpCronWorkingCanvasRefreshRunner
 {
     private const BATCH_SIZE = 25;
+    private const RECOVERY_DELAY_SECONDS = 60;
 
     public function __construct(
         private readonly WpCronWorkingCanvasRefreshQueue $queue,
@@ -45,7 +46,18 @@ final class WpCronWorkingCanvasRefreshRunner
             'terminal' => 0,
         ];
 
-        foreach ($this->queue->claimBatch($limit) as $job) {
+        try {
+            $jobs = $this->queue->claimBatch($limit);
+        } catch (\Throwable $failure) {
+            // WP-Cron is a public WordPress boundary. A queue backend failure
+            // must not terminate the cron request or block unrelated events.
+            $this->reportBoundaryFailure('queue_claim', $failure);
+            $this->scheduleRecovery();
+
+            return $result;
+        }
+
+        foreach ($jobs as $job) {
             $pageId = $job['page_id'];
             $attempts = $job['attempts'];
             $claimToken = $job['claim_token'];
@@ -57,13 +69,22 @@ final class WpCronWorkingCanvasRefreshRunner
                 $result['completed']++;
                 continue;
             } catch (\Throwable $e) {
-                $requeued = $this->retryOrGiveUp(
-                    $pageId,
-                    $attempts,
-                    $claimToken,
-                    'working_canvas_refresh_exception',
-                    $e->getMessage(),
-                );
+                try {
+                    $requeued = $this->retryOrGiveUp(
+                        $pageId,
+                        $attempts,
+                        $claimToken,
+                        'working_canvas_refresh_exception',
+                        'Working canvas refresh failed (' . $e::class . ').',
+                    );
+                } catch (\Throwable $queueFailure) {
+                    // Do not report a retry or terminal result when the queue
+                    // did not record either state. The claim lease expires and
+                    // a recovery event can claim the job again.
+                    $this->reportBoundaryFailure('queue_recovery', $queueFailure, $pageId);
+                    $this->scheduleRecovery();
+                    continue;
+                }
             }
 
             $result[$requeued ? 'requeued' : 'terminal']++;
@@ -113,5 +134,38 @@ final class WpCronWorkingCanvasRefreshRunner
         ));
 
         return false;
+    }
+
+    private function scheduleRecovery(): void
+    {
+        try {
+            if (!function_exists('wp_next_scheduled') || !function_exists('wp_schedule_single_event')) {
+                return;
+            }
+
+            $timestamp = time() + self::RECOVERY_DELAY_SECONDS;
+            $scheduled = wp_next_scheduled(WpCronWorkingCanvasRefreshQueue::HOOK);
+            if ($scheduled !== false && $scheduled <= $timestamp) {
+                return;
+            }
+
+            if (!wp_schedule_single_event($timestamp, WpCronWorkingCanvasRefreshQueue::HOOK)) {
+                throw new \RuntimeException('WordPress did not schedule the working canvas recovery event.');
+            }
+        } catch (\Throwable $failure) {
+            $this->reportBoundaryFailure('schedule_recovery', $failure);
+        }
+    }
+
+    private function reportBoundaryFailure(string $step, \Throwable $failure, int $pageId = 0): void
+    {
+        $pageContext = $pageId > 0 ? sprintf(' for page %d', $pageId) : '';
+
+        error_log(sprintf(
+            '[Uncanny Page Builder] Working canvas cron step "%s" failed%s (%s).',
+            $step,
+            $pageContext,
+            $failure::class,
+        ));
     }
 }

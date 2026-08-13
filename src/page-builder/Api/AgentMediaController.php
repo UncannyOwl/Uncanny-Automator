@@ -54,6 +54,21 @@ final class AgentMediaController
     {
         $operation = trim((string) ($request->get_param('operation') ?? ''));
 
+        try {
+            return $this->manageMediaOperation($request, $operation);
+        } catch (\Throwable $failure) {
+            error_log(sprintf('[Uncanny Page Builder] manage_media "%s" failed (%s).', $operation, $failure::class));
+
+            return $this->textError(500, 'media_operation_failed', [
+                'OPERATION: ' . $operation,
+                'NEXT STEP',
+                'For search or read, retry manage_media. For upload, call manage_media with operation search first: if the file is present, do not retry the upload.',
+            ]);
+        }
+    }
+
+    private function manageMediaOperation(\WP_REST_Request $request, string $operation): \WP_REST_Response|\WP_Error
+    {
         return match ($operation) {
             '', 'search' => $this->search(
                 search: (string) ($request->get_param('search') ?? ''),

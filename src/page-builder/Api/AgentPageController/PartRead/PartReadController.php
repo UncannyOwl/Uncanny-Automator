@@ -19,6 +19,20 @@ final class PartReadController
 
     public function read(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        try {
+            return $this->readRequest($request);
+        } catch (\Throwable $failure) {
+            error_log(sprintf('[Uncanny Page Builder] read_part failed (%s).', $failure::class));
+
+            return $this->textToolError('read_part', 500, 'read_failed', [
+                'NEXT STEP',
+                'Retry read_part. If the error continues, review the WordPress error log.',
+            ]);
+        }
+    }
+
+    private function readRequest(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
         $kind = trim((string) ($request->get_param('kind') ?? ''));
         if (!in_array($kind, ['section', 'global_part'], true)) {
             return $this->textToolError('read_part', 400, 'invalid_part_kind', [

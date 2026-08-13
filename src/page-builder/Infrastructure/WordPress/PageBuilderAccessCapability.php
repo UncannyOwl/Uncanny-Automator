@@ -24,7 +24,8 @@ final class PageBuilderAccessCapability
 
     public function register(): void
     {
-        add_filter('user_has_cap', [$this, 'grantCapability'], 10, 4);
+        $callbacks = new WordPressCallbackBoundary();
+        add_filter('user_has_cap', $callbacks->filter('capability.grant', [$this, 'grantCapability']), 10, 4);
     }
 
     /**

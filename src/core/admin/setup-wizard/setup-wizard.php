@@ -1,6 +1,16 @@
 <?php
+/**
+ * Setup wizard controller.
+ *
+ * @package Uncanny_Automator
+ */
 
 namespace Uncanny_Automator;
+
+use Exception;
+use Throwable;
+use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Availability;
+use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Settings;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -15,11 +25,26 @@ if ( ! defined( 'WPINC' ) ) {
  */
 class Setup_Wizard {
 
-	/** @var string The connect url. */
+	/**
+	 * The account connection URL.
+	 *
+	 * @var string
+	 */
 	public $connect_url = '';
 
-	/** @var string The connect page. */
+	/**
+	 * The account connection page.
+	 *
+	 * @var string
+	 */
 	public $connect_page = '';
+
+	/**
+	 * Request cache for the account connection state.
+	 *
+	 * @var bool|null
+	 */
+	private $is_user_connected_cache = null;
 
 	/**
 	 * Set-ups action hooks.
@@ -31,6 +56,12 @@ class Setup_Wizard {
 		$this->connect_url = AUTOMATOR_STORE_URL;
 
 		$this->connect_page = AUTOMATOR_FREE_STORE_CONNECT_URL;
+
+		if ( 'uncanny-automator-setup-wizard' === automator_filter_input( 'page' ) ) {
+			// Keep Uncanny Agent off the setup wizard. Agent actions redirect to a
+			// supported admin surface before opening the docked panel.
+			add_filter( 'automator_mcp_should_render_surface', '__return_false' );
+		}
 
 		add_action( 'admin_menu', array( $this, 'setup_menu_page' ) );
 
@@ -50,6 +81,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Record an account connection attempt.
+	 *
 	 * @return void
 	 */
 	public static function set_tried_connecting() {
@@ -65,6 +98,8 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Redirect account connections that start in the recipe builder.
+	 *
 	 * @return void
 	 */
 	public function redirect_if_from_recipe_builder() {
@@ -158,19 +193,107 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Retrieves the number of steps in the wizard.
+	 *
+	 * The usage tracking step is only shown when nothing else opts the user in:
+	 * connecting an account does, and so does activating a Pro license, which is
+	 * what Pro's own step 1 asks for. The tracking choice does not change the step
+	 * count during navigation.
+	 *
+	 * @return int
+	 */
+	public function get_total_steps() {
+
+		$needs_tracking_step = ! $this->is_user_connected()
+			&& ! $this->is_pro_active();
+
+		return (int) apply_filters( 'automator_setup_wizard_total_steps', $needs_tracking_step ? 4 : 3 );
+	}
+
+	/**
+	 * Retrieves the current step number.
+	 *
+	 * @return int
+	 */
+	public function get_step_number() {
+
+		$step = absint( automator_filter_input( 'step' ) );
+
+		if ( $step < 1 ) {
+			$step = 1;
+		}
+
+		$step = min( $step, $this->get_total_steps() );
+
+		return $step;
+	}
+
+	/**
 	 * Retrieves the current step.
 	 *
 	 * @return string
 	 */
 	public function get_step() {
+		return sprintf( 'step-%d', $this->get_step_number() );
+	}
 
-		$step = absint( automator_filter_input( 'step' ) );
+	/**
+	 * Retrieves the template path of the current step.
+	 *
+	 * Templates are named after the longest flow (step-4.php is the final screen).
+	 * Shorter flows skip the usage tracking step, so their last step still renders
+	 * the final screen.
+	 *
+	 * @return string
+	 */
+	public function get_step_view() {
 
-		if ( $step > 3 || $step < 1 ) {
-			$step = 1;
+		$step = $this->get_step_number();
+
+		if ( $step === $this->get_total_steps() ) {
+			$step = 4;
 		}
 
-		return sprintf( 'step-%d', $step );
+		$view = $this->get_view_path() . sprintf( 'step-%d.php', $step );
+
+		if ( ! is_file( $view ) ) {
+			$view = $this->get_view_path() . 'step-1.php';
+		}
+
+		return $view;
+	}
+
+	/**
+	 * Retrieves the URL of the previous step.
+	 *
+	 * @return string
+	 */
+	public function get_previous_step_uri() {
+
+		$previous = max( 1, $this->get_step_number() - 1 );
+
+		$uri = $this->get_dashboard_uri( $previous );
+
+		// skip=true suppresses the connection error notice — going back is not a connection attempt.
+		if ( 2 === $previous ) {
+			$uri = add_query_arg( 'skip', 'true', $uri );
+		}
+
+		return $uri;
+	}
+
+	/**
+	 * Retrieves the URL of the next step.
+	 *
+	 * @param array $args Optional query arguments to add to the URL.
+	 *
+	 * @return string
+	 */
+	public function get_next_step_uri( $args = array() ) {
+
+		$next = min( $this->get_total_steps(), $this->get_step_number() + 1 );
+
+		return add_query_arg( $args, $this->get_dashboard_uri( $next ) );
 	}
 
 	/**
@@ -205,8 +328,8 @@ class Setup_Wizard {
 	/**
 	 * Retrieves the dashboards url.
 	 *
-	 * @param $step
-	 * @param $is_method
+	 * @param int  $step      Wizard step number.
+	 * @param bool $is_method Whether the URL starts an account connection.
 	 *
 	 * @return string
 	 */
@@ -246,20 +369,161 @@ class Setup_Wizard {
 	 */
 	public function is_user_connected() {
 
+		if ( null !== $this->is_user_connected_cache ) {
+			return $this->is_user_connected_cache;
+		}
+
 		$page = automator_filter_input( 'page' );
 
 		$post_type = automator_filter_input( 'post_type' );
 
 		// Pull data from licensing server if user is from set-up wizard.
 		if ( AUTOMATOR_POST_TYPE_RECIPE === $post_type && 'uncanny-automator-setup-wizard' === $page ) {
-			return Api_Server::is_automator_connected( true ); // Pass force refresh to true.
+			$this->is_user_connected_cache = (bool) Api_Server::is_automator_connected( true ); // Pass force refresh to true.
+
+			return $this->is_user_connected_cache;
 		}
 
 		// Otherwise pull data from local db to avoid multiple calls.
-		return ! empty( Api_Server::get_license_key() );
+		$this->is_user_connected_cache = ! empty( Api_Server::get_license_key() );
+
+		return $this->is_user_connected_cache;
 	}
 
 	/**
+	 * Determines whether the user has done what step 1 asks of them.
+	 *
+	 * Lite asks for a free account; Pro asks for a license key, and a free
+	 * connection does not satisfy that. Pro is judged on the license *status*
+	 * rather than the key: deactivating a license clears the status but can leave
+	 * the key behind, which would otherwise read as still-licensed.
+	 *
+	 * @return bool
+	 */
+	public function is_step_1_complete() {
+
+		if ( $this->is_pro_active() ) {
+			return 'valid' === automator_get_option( 'uap_automator_pro_license_status' );
+		}
+
+		return $this->is_user_connected();
+	}
+
+	/**
+	 * Determine whether Automator Pro is active.
+	 *
+	 * @return bool
+	 */
+	public function is_pro_active() {
+		return defined( 'AUTOMATOR_PRO_PLUGIN_VERSION' );
+	}
+
+	/**
+	 * Determine whether the site can use Uncanny Agent.
+	 *
+	 * A connected Lite account includes Uncanny Agent access. Pro plans use the
+	 * credits ledger to confirm that the plan has an active allocation.
+	 *
+	 * @return bool
+	 */
+	public function has_agent_access() {
+
+		// Uncanny Agent requires a connected Automator account.
+		if ( ! $this->is_user_connected() ) {
+			return false;
+		}
+
+		// Connected Lite accounts include Agent usage and do not need a separate ledger gate.
+		if ( ! $this->is_pro_active() ) {
+			return true;
+		}
+
+		// An installed Pro plugin without a valid license keeps the connected Lite allocation.
+		if ( ! $this->is_step_1_complete() ) {
+			return true;
+		}
+
+		// Pro exposes Agent usage through its license payload. Fail closed when that request fails.
+		try {
+			$license = Api_Server::get_license();
+		} catch ( Exception $e ) {
+			return false;
+		}
+
+		// An unexpected payload cannot prove that the Pro plan includes Agent usage.
+		if ( ! is_array( $license ) ) {
+			return false;
+		}
+
+		// The ledger is optional because some Pro plans do not include Agent usage.
+		$ledger = isset( $license['llm_credits'] ) ? (array) $license['llm_credits'] : array();
+
+		// An unsuccessful ledger response does not provide a usable allocation.
+		if ( empty( $ledger['success'] ) ) {
+			return false;
+		}
+
+		// At least one active ledger entry confirms Agent usage for the Pro plan.
+		return ! empty( $ledger['active'] );
+	}
+
+	/**
+	 * Determine whether the current site can start a Page Builder page.
+	 *
+	 * The setup wizard must follow the Page Builder host gate. Agent usage alone
+	 * does not start the embedded Page Builder runtime.
+	 *
+	 * @return bool
+	 */
+	public function has_page_builder_access() {
+
+		if ( ! $this->has_agent_access() ) {
+			return false;
+		}
+
+		try {
+			return $this->page_builder_is_available();
+		} catch ( Throwable $error ) {
+			unset( $error );
+
+			return false;
+		}
+	}
+
+	/**
+	 * Read the Page Builder host availability boundary.
+	 *
+	 * @return bool
+	 */
+	protected function page_builder_is_available() {
+
+		$availability = new Page_Builder_Availability();
+		$settings     = new Page_Builder_Settings();
+
+		return $availability->is_available()
+			&& $settings->is_enabled( true )
+			&& false !== has_action( 'admin_post_uncanny_page_builder_create_page' );
+	}
+
+	/**
+	 * Get the signed Page Builder page creation URL.
+	 *
+	 * @return string
+	 */
+	public function get_page_builder_create_uri() {
+
+		return add_query_arg(
+			array(
+				'action'   => 'uncanny_page_builder_create_page',
+				'_wpnonce' => wp_create_nonce( 'uncanny_page_builder_create_page' ),
+			),
+			admin_url( 'admin-post.php' )
+		);
+	}
+
+	/**
+	 * Determine whether the Pro plugin has a stored license key.
+	 *
 	 * @return bool
 	 */
 	public function is_pro_connected() {
@@ -277,18 +541,9 @@ class Setup_Wizard {
 	public function get_steps() {
 
 		$steps           = array();
-		$default_step    = 1;
-		$number_of_steps = 3;
+		$number_of_steps = $this->get_total_steps();
 
-		$current_step = absint( automator_filter_input( 'step' ) );
-
-		if ( $current_step > 3 ) {
-			$current_step = 3;
-		}
-
-		if ( $current_step < 1 ) {
-			$current_step = 1;
-		}
+		$current_step = $this->get_step_number();
 
 		for ( $i = 1; $i <= $number_of_steps; $i++ ) {
 			$steps[ $i ] = array(
@@ -319,6 +574,16 @@ class Setup_Wizard {
 	}
 
 	/**
+	 * Retrieves the dashboard URL that opens Uncanny Agent.
+	 *
+	 * @return string
+	 */
+	public function get_automator_dashboard_agent_uri() {
+
+		return add_query_arg( 'automator_open_agent', '1', $this->get_automator_dashboard_uri() );
+	}
+
+	/**
 	 * Persists the usage tracking opt-in when the user accepts it from the wizard.
 	 *
 	 * The "Count me in!" button on step 2 links to step 3 with `automator_reporting=true`.
@@ -331,7 +596,7 @@ class Setup_Wizard {
 			return;
 		}
 
-		if ( ! automator_filter_input( 'automator_reporting', INPUT_GET, FILTER_VALIDATE_BOOLEAN ) ) {
+		if ( ! automator_filter_has_var( 'automator_reporting' ) ) {
 			return;
 		}
 
@@ -343,7 +608,29 @@ class Setup_Wizard {
 			return;
 		}
 
-		automator_update_option( 'automator_reporting', true );
+		$opted_in = automator_filter_input( 'automator_reporting', INPUT_GET, FILTER_VALIDATE_BOOLEAN );
+
+		if ( $opted_in ) {
+			// Opt-outs are represented by the option being absent (see the Improve
+			// Automator settings tab) — never store an explicit false here.
+			automator_update_option( 'automator_reporting', true );
+		}
+
+		automator_update_option( 'automator_setup_wizard_tracking_choice', $opted_in ? 'opted_in' : 'declined' );
+	}
+
+	/**
+	 * Determines whether the user already made a tracking choice in the wizard or is opted in.
+	 *
+	 * @return bool
+	 */
+	public function has_recorded_tracking_choice() {
+
+		if ( (bool) automator_get_option( 'automator_reporting', false ) ) {
+			return true;
+		}
+
+		return '' !== (string) automator_get_option( 'automator_setup_wizard_tracking_choice', '' );
 	}
 
 	/**
@@ -356,26 +643,63 @@ class Setup_Wizard {
 		$page = automator_filter_input( 'page', INPUT_GET );
 		$step = absint( automator_filter_input( 'step', INPUT_GET ) );
 
-		if ( 'uncanny-automator-setup-wizard' === $page ) {
-
-			$is_connected         = $this->is_user_connected();
-			$has_tried_connecting = $this->has_tried_connecting();
-			$is_pro_connected     = $this->is_pro_connected();
-
-			if ( $has_tried_connecting && ! $is_connected && 3 === $step ) {
-				return;
-			}
-
-			if ( $is_connected && 3 !== $step && false !== $is_pro_connected ) {
-				wp_safe_redirect( $this->get_dashboard_uri( 3 ) );
-				exit;
-			}
-
-			if ( $has_tried_connecting && ! $is_connected && 2 !== $step ) {
-				wp_safe_redirect( $this->get_dashboard_uri( 2 ) );
-				exit;
-			}
+		if ( 'uncanny-automator-setup-wizard' !== $page ) {
+			return;
 		}
+
+		$redirect_step = $this->get_redirect_step(
+			$step,
+			automator_filter_input( 'skip', INPUT_GET, FILTER_VALIDATE_BOOLEAN )
+		);
+
+		if ( null !== $redirect_step ) {
+			wp_safe_redirect( $this->get_dashboard_uri( $redirect_step ) );
+			exit;
+		}
+	}
+
+	/**
+	 * Get the destination step for the current wizard state.
+	 *
+	 * @param int  $step           Current step.
+	 * @param bool $skipped_step_1 Whether the user skipped step 1.
+	 *
+	 * @return int|null
+	 */
+	public function get_redirect_step( $step, $skipped_step_1 = false ) {
+
+		$step               = absint( $step );
+		$is_step_1_complete = $this->is_step_1_complete();
+
+		if ( $this->is_pro_active() ) {
+			// Skipping Pro license activation bypasses the licensed addons step.
+			if ( 2 === $step && $skipped_step_1 ) {
+				return $step < $this->get_total_steps() ? $this->get_total_steps() : null;
+			}
+
+			if ( $is_step_1_complete ) {
+				// Older Pro releases still replace step 2 with a license warning. Only
+				// route there when Pro explicitly declares support for the addons step.
+				$has_addons_step = (bool) apply_filters( 'automator_setup_wizard_pro_addons_step_enabled', false );
+
+				if ( ! $has_addons_step ) {
+					return $step < $this->get_total_steps() ? $this->get_total_steps() : null;
+				}
+
+				if ( $step < 2 ) {
+					return 2;
+				}
+			}
+
+			return null;
+		}
+
+		// Lite users see the Pro offer after they connect.
+		if ( $is_step_1_complete && $step < 2 ) {
+			return 2;
+		}
+
+		return null;
 	}
 
 	/**
@@ -391,12 +715,13 @@ class Setup_Wizard {
 	/**
 	 * Sets `uoa_setup_wiz_has_connected` option base on the given value.
 	 *
-	 * @param $bool
+	 * @param bool $value Connection attempt state.
 	 *
 	 * @return bool
 	 */
-	public static function set_has_tried_connecting( $bool = false ) {
-		automator_update_option( 'uoa_setup_wiz_has_connected', $bool );
+	public static function set_has_tried_connecting( $value = false ) {
+
+		automator_update_option( 'uoa_setup_wiz_has_connected', $value );
 
 		return true;
 	}

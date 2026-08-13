@@ -55,6 +55,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\PageSourceArchiveDownloadAction;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageSourceArchiveArtifactStore;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageSourceArchiveDownloadUrl;
 use UncannyPageBuilder\Infrastructure\WordPress\RestNonceRefresher;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressCallbackBoundary;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressFontFamilyCatalogSource;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressFontSettings;
 use UncannyPageBuilder\Kernel\Container;
@@ -258,8 +259,9 @@ final class AdminMenuProvider implements ServiceProviderInterface
         $lockHeartbeat     = $container->typed(EditorLockHeartbeat::class);
 
         $adminCanvas = $container->typed(AdminCanvasPage::class);
+        $callbacks = new WordPressCallbackBoundary();
 
-        add_action('admin_menu', [$adminMenu, 'register']);
+        add_action('admin_menu', $callbacks->action('admin_menu.register', [$adminMenu, 'register']));
         add_action('admin_menu', [$adminCanvas, 'register']);
         add_action('admin_enqueue_scripts', [$adminMenu, 'enqueueSettingsNewAssets']);
         add_action('admin_enqueue_scripts', [$adminMenu, 'enqueueCanvasEditorWindowedPageAssets']);
@@ -269,17 +271,17 @@ final class AdminMenuProvider implements ServiceProviderInterface
         // Run after editor plugins such as Elementor, SeedProd, and Classic
         // Editor. Their source may remain dormant, but their later filters must
         // not advertise a second active editor for a UPB-owned page.
-        add_filter('display_post_states', [$nativePageList, 'addOwnershipState'], PHP_INT_MAX, 2);
-        add_filter('page_row_actions', [$nativePageList, 'routeOwnedPageActions'], PHP_INT_MAX, 2);
-        add_filter('post_row_actions', [$nativePageList, 'routeOwnedPageActions'], PHP_INT_MAX, 2);
-        add_filter('get_edit_post_link', [$nativePageList, 'routeOwnedPageEditLink'], PHP_INT_MAX, 3);
+        add_filter('display_post_states', $callbacks->filter('page_list.states', [$nativePageList, 'addOwnershipState']), PHP_INT_MAX, 2);
+        add_filter('page_row_actions', $callbacks->filter('page_list.actions', [$nativePageList, 'routeOwnedPageActions']), PHP_INT_MAX, 2);
+        add_filter('post_row_actions', $callbacks->filter('post_list.actions', [$nativePageList, 'routeOwnedPageActions']), PHP_INT_MAX, 2);
+        add_filter('get_edit_post_link', $callbacks->filter('page_list.edit_link', [$nativePageList, 'routeOwnedPageEditLink']), PHP_INT_MAX, 3);
         add_action('admin_post_' . PageFactory::CREATE_ACTION, [$pageFactory, 'create']);
         add_action('admin_post_' . PageFactory::IMPORT_ACTION, [$pageFactory, 'importPage']);
         add_action('admin_post_' . PageSourceArchiveDownloadAction::ACTION, [$pageArchiveExport, 'handle']);
         $pageArchiveArtifacts->register();
         add_action('admin_post_' . EditorLockTakeoverAction::ACTION, [$lockTakeover, 'handle']);
-        add_filter('heartbeat_received', [$lockHeartbeat, 'refresh'], 20, 3);
-        add_action('admin_bar_menu', [$adminBarButton, 'register'], 80);
+        add_filter('heartbeat_received', $callbacks->filter('editor_lock.heartbeat', [$lockHeartbeat, 'refresh']), 20, 3);
+        add_action('admin_bar_menu', $callbacks->action('admin_bar.register', [$adminBarButton, 'register']), 80);
         $nonceRefresher->register();
     }
 }

@@ -34,7 +34,7 @@ defined('ABSPATH') || exit;
 
 <?php if (is_array($sections)) : ?>
     <?php foreach ($sections as $index => $section) : ?>
-        <?php do_action('uncanny_page_builder_before_section_render', $section, $postId); ?>
+        <?php $renderer->notifyBeforeSectionRender($section, $postId); ?>
         <?php
             echo $renderer->renderSectionHtml($section['content']['html'] ?? '', $section['id'] ?? null);
         ?>

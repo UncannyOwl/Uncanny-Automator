@@ -8,6 +8,7 @@ use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
 use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\DesignStandardsService;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Domain\DesignStandards\DesignStandardsProfile;
@@ -26,6 +27,11 @@ use UncannyPageBuilder\Domain\Publishing\PageSourceSnapshotRepositoryInterface;
  */
 final class DesignStandardsController
 {
+    private const READBACK_WARNING = [
+        'code' => 'design_readback_failed',
+        'message' => 'The design source was saved, but Page Builder could not confirm the saved values. Read the current design before another write.',
+    ];
+
     public function __construct(
         private readonly DesignStandardsService $service,
         private readonly SectionService $sectionService,
@@ -33,6 +39,7 @@ final class DesignStandardsController
         private readonly ?WorkingCanvasRefresherInterface $workingCanvas = null,
         private readonly ?EditorLockWriteGuard $editorLock = null,
         private readonly ?PageSourceSnapshotRepositoryInterface $sourceSnapshots = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function registerRoutes(): void
@@ -77,6 +84,16 @@ final class DesignStandardsController
 
     public function read(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        try {
+            return $this->readDesign($request);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('site design', 0, 'request.read', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
+    }
+
+    private function readDesign(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
         $pageId = absint($request->get_param('page_id'));
 
         if ($pageId > 0) {
@@ -86,8 +103,13 @@ final class DesignStandardsController
             if (!$this->sectionService->isPageOwned($pageId)) {
                 return ApiResponse::error(ErrorMessage::NotEnginePage);
             }
-            $overrides = $this->service->loadPageOverrides($pageId);
-            $result = $this->service->resolveForPageWithAudit($pageId, $overrides);
+            try {
+                $overrides = $this->service->loadPageOverrides($pageId);
+                $result = $this->service->resolveForPageWithAudit($pageId, $overrides);
+            } catch (\Throwable $failure) {
+                $this->recordFailure('page design overrides', $pageId, 'read', $failure);
+                return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+            }
             return ApiResponse::ok([
                 'overrides'     => $overrides->toArray(),
                 'resolved'      => $result->resolved()->toArray(),
@@ -97,7 +119,12 @@ final class DesignStandardsController
             ])->toResponse();
         }
 
-        $profile = $this->service->resolve()->toArray();
+        try {
+            $profile = $this->service->resolve()->toArray();
+        } catch (\Throwable $failure) {
+            $this->recordFailure('site design', 0, 'read', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
 
         return ApiResponse::ok($profile)->toResponse();
     }
@@ -111,6 +138,20 @@ final class DesignStandardsController
      */
     public function update(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        try {
+            return $this->updateSiteDesign($request);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('site design', 0, 'request.uncertain', $failure);
+            return ApiResponse::error(ErrorMessage::WriteResultUncertain, [
+                'retryable' => false,
+                'requires_read' => true,
+                'detail' => 'The request result is uncertain. Read the current design before another write.',
+            ]);
+        }
+    }
+
+    private function updateSiteDesign(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
         $body = $request->get_json_params();
 
         if (empty($body) || !is_array($body)) {
@@ -122,10 +163,15 @@ final class DesignStandardsController
             return ApiResponse::error(ErrorMessage::IncompleteProfile);
         }
 
-        $storedProfile = $this->service->loadProfile();
-        $body = $this->preserveTransitionalProfileBuckets($body, $storedProfile);
-        $storedLockedKeys = $storedProfile->lockedKeys();
-        $body['locked_keys'] = $storedLockedKeys;
+        try {
+            $storedProfile = $this->service->loadProfile();
+            $body = $this->preserveTransitionalProfileBuckets($body, $storedProfile);
+            $storedLockedKeys = $storedProfile->lockedKeys();
+            $body['locked_keys'] = $storedLockedKeys;
+        } catch (\Throwable $failure) {
+            $this->recordFailure('site design', 0, 'prepare', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed);
+        }
 
         try {
             $profile = DesignStandardsProfile::fromArray($body);
@@ -144,9 +190,22 @@ final class DesignStandardsController
             $artifactsQueued = $this->service->save($profile);
         } catch (StaleSourceGenerationException $e) {
             return ApiResponse::error(ErrorMessage::StaleSourceGeneration, ['scope' => $e->scope()]);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('site design', 0, 'write.uncertain', $failure);
+            return ApiResponse::error(ErrorMessage::WriteResultUncertain, [
+                'retryable' => false,
+                'requires_read' => true,
+                'detail' => 'The write result is uncertain. Read the current design before another write.',
+            ]);
         }
 
-        $response = $this->service->loadProfile()->toArray();
+        try {
+            $response = $this->service->loadProfile()->toArray();
+        } catch (\Throwable $failure) {
+            $this->recordFailure('site design', 0, 'readback', $failure);
+            $response = $profile->toArray();
+            $response['readback_warning'] = self::READBACK_WARNING;
+        }
         if (!$artifactsQueued) {
             $response['rebuild_warning'] = DesignStandardsService::workingCanvasRefreshWarning();
         }
@@ -160,6 +219,16 @@ final class DesignStandardsController
      * Returns raw page overrides plus the resolved profile with audit data.
      */
     public function readPageOverrides(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        try {
+            return $this->readPageDesign($request);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('page design overrides', 0, 'request.read', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
+    }
+
+    private function readPageDesign(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         $pageId = RequestId::fromUrl($request, 'page_id');
         if ($pageId === null) {
@@ -176,17 +245,22 @@ final class DesignStandardsController
 
         $source = trim((string) $request->get_param('source'));
         $snapshotId = absint($request->get_param('snapshot_id'));
-        $snapshot = $source === 'published' && $snapshotId > 0
-            ? $this->sourceSnapshots?->findForPage($pageId, $snapshotId)
-            : null;
-        $overrides = $snapshot !== null
-            ? PageDesignOverrides::fromArray(
-                is_array($snapshot->source()['page_design_overrides'] ?? null)
-                    ? $snapshot->source()['page_design_overrides']
-                    : [],
-            )
-            : $this->service->loadPageOverrides($pageId);
-        $result = $this->service->resolveForPageWithAudit($pageId, $overrides);
+        try {
+            $snapshot = $source === 'published' && $snapshotId > 0
+                ? $this->sourceSnapshots?->findForPage($pageId, $snapshotId)
+                : null;
+            $overrides = $snapshot !== null
+                ? PageDesignOverrides::fromArray(
+                    is_array($snapshot->source()['page_design_overrides'] ?? null)
+                        ? $snapshot->source()['page_design_overrides']
+                        : [],
+                )
+                : $this->service->loadPageOverrides($pageId);
+            $result = $this->service->resolveForPageWithAudit($pageId, $overrides);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('page design overrides', $pageId, 'read', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
 
         return ApiResponse::ok([
             'overrides'     => $overrides->toArray(),
@@ -203,6 +277,20 @@ final class DesignStandardsController
      * Saves page-level overrides. Returns resolved profile with audit data.
      */
     public function updatePageOverrides(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        try {
+            return $this->updatePageDesign($request);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('page design overrides', 0, 'request.uncertain', $failure);
+            return ApiResponse::error(ErrorMessage::WriteResultUncertain, [
+                'retryable' => false,
+                'requires_read' => true,
+                'detail' => 'The request result is uncertain. Read the current design before another write.',
+            ]);
+        }
+    }
+
+    private function updatePageDesign(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         $pageId = RequestId::fromUrl($request, 'page_id');
         if ($pageId === null) {
@@ -235,7 +323,12 @@ final class DesignStandardsController
             ]);
         }
 
-        $persistedBefore = $this->service->loadPageOverrides($pageId);
+        try {
+            $persistedBefore = $this->service->loadPageOverrides($pageId);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('page design overrides', $pageId, 'prepare', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed);
+        }
         $overridesBody = $this->preserveTransitionalOverrideBuckets($overridesBody, $persistedBefore);
 
         try {
@@ -246,19 +339,58 @@ final class DesignStandardsController
 
         try {
             $result = $this->service->savePageOverrides($pageId, $overrides);
-            $this->refreshWorkingCanvas($pageId);
         } catch (StaleSourceGenerationException $e) {
             return ApiResponse::error(ErrorMessage::StaleSourceGeneration, ['scope' => $e->scope()]);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('page design overrides', $pageId, 'write.uncertain', $failure);
+            return ApiResponse::error(ErrorMessage::WriteResultUncertain, [
+                'retryable' => false,
+                'requires_read' => true,
+                'detail' => 'The write result is uncertain. Read the current design before another write.',
+            ]);
         }
-        $persistedOverrides = $this->service->loadPageOverrides($pageId);
 
-        return ApiResponse::ok([
+        $refreshWarning = null;
+        try {
+            $this->refreshWorkingCanvas($pageId);
+        } catch (\Throwable $failure) {
+            // The page overrides are saved. Do not retry the source write.
+            try {
+                $this->failureReporter?->report(
+                    'page design overrides',
+                    $pageId,
+                    'working_canvas.refresh',
+                    $failure,
+                );
+            } catch (\Throwable) {
+                // A report failure cannot change the completed source result.
+            }
+            $refreshWarning = DesignStandardsService::workingCanvasRefreshWarning();
+        }
+        $readbackWarning = null;
+        try {
+            $persistedOverrides = $this->service->loadPageOverrides($pageId);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('page design overrides', $pageId, 'readback', $failure);
+            $persistedOverrides = $overrides;
+            $readbackWarning = self::READBACK_WARNING;
+        }
+
+        $response = [
             'overrides'     => $persistedOverrides->toArray(),
             'resolved'      => $result->resolved()->toArray(),
             'applied_keys'  => $result->appliedKeys(),
             'rejected_keys' => $result->rejectedKeys(),
             'locked_keys'   => $result->lockedKeys(),
-        ])->toResponse();
+        ];
+        if ($refreshWarning !== null) {
+            $response['rebuild_warning'] = $refreshWarning;
+        }
+        if ($readbackWarning !== null) {
+            $response['readback_warning'] = $readbackWarning;
+        }
+
+        return ApiResponse::ok($response)->toResponse();
     }
 
     /**
@@ -286,12 +418,31 @@ final class DesignStandardsController
         $this->workingCanvas->refresh($pageId);
     }
 
+    private function recordFailure(string $scope, int $ownerId, string $step, \Throwable $failure): void
+    {
+        try {
+            $this->failureReporter?->report($scope, $ownerId, $step, $failure);
+        } catch (\Throwable) {
+            // A report failure cannot change the controlled REST response.
+        }
+    }
+
     /**
      * GET /design-standards/section/{section_id}/consumed
      *
      * Inspects which design tokens a section's CSS consumes.
      */
     public function readSectionConsumed(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        try {
+            return $this->readConsumedDesign($request);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('section design consumption', 0, 'request.read', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
+    }
+
+    private function readConsumedDesign(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         $sectionId = RequestId::fromUrl($request, 'section_id');
         $pageId = absint($request->get_param('page_id'));
@@ -312,16 +463,21 @@ final class DesignStandardsController
             return ApiResponse::error(ErrorMessage::NotEnginePage);
         }
 
-        $section = $this->sectionService->findSection($pageId, $sectionId);
-        if ($section === null) {
-            return ApiResponse::error(ErrorMessage::SectionNotFoundOnPage);
-        }
+        try {
+            $section = $this->sectionService->findSection($pageId, $sectionId);
+            if ($section === null) {
+                return ApiResponse::error(ErrorMessage::SectionNotFoundOnPage);
+            }
 
-        $result = $this->service->getConsumedTokens(
-            $section->content()->css(),
-            $section->content()->html(),
-            $pageId,
-        );
+            $result = $this->service->getConsumedTokens(
+                $section->content()->css(),
+                $section->content()->html(),
+                $pageId,
+            );
+        } catch (\Throwable $failure) {
+            $this->recordFailure('section design', $sectionId, 'read_consumed', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
 
         return ApiResponse::ok([
             'section_id'       => $sectionId,

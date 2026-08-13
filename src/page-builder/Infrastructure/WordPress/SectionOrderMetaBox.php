@@ -61,15 +61,21 @@ final class SectionOrderMetaBox
             return;
         }
 
-        $pageId = $post->ID;
-        $sections = $this->repository->findByPageId($pageId);
-        $workingGeneration = $this->sourceGenerations?->pageGeneration($pageId)
-            ?? $sections->generation();
+        try {
+            $pageId = $post->ID;
+            $sections = $this->repository->findByPageId($pageId);
+            $workingGeneration = $this->sourceGenerations?->pageGeneration($pageId)
+                ?? $sections->generation();
 
-        include __DIR__ . '/../../Presentation/Pages/section-order.php';
+            include __DIR__ . '/../../Presentation/Pages/section-order.php';
 
-        if ($sections->count() > 1) {
-            include __DIR__ . '/../../Presentation/Pages/section-order-script.php';
+            if ($sections->count() > 1) {
+                include __DIR__ . '/../../Presentation/Pages/section-order-script.php';
+            }
+        } catch (\Throwable $failure) {
+            // Render nothing further; a metabox failure must not fail the
+            // complete WordPress edit screen.
+            error_log('[Uncanny Page Builder] Section order metabox render failed (' . $failure::class . ')');
         }
     }
 

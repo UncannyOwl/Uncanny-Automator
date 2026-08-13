@@ -28,6 +28,7 @@ final class ContentRenderer
         private readonly PublicPageRenderPolicy $publicPageRenderPolicy,
         private readonly GetPageBuilderAllowedCapabilities $allowedCapabilities,
         private readonly OriginalPageContentReaderInterface $originalContent,
+        private readonly DynamicRenderer $dynamicRenderer,
     ) {}
 
     /**
@@ -45,26 +46,45 @@ final class ContentRenderer
             return $content;
         }
 
-        $postId = $this->currentPostId();
-        if ($postId === null || !$this->isActivePost($postId)) {
-            return $content;
-        }
-
-        // Preserve the password form already prepared by WordPress. Falling
-        // back to raw original content here would disclose the protected body.
-        if ($this->publicPageRenderPolicy->isPasswordRequired($postId)) {
-            return $content;
-        }
-
-        $read = $this->publicPageRenderPolicy->read($postId);
-        if ($read->isReady() || $read->status() === PublishedPageStatus::NotManaged) {
-            return $content;
-        }
+        $postId = null;
 
         try {
-            return $this->originalContent->publicContent($postId);
-        } catch (\Throwable) {
-            return '';
+            $postId = $this->currentPostId();
+            if ($postId === null || !$this->isActivePost($postId)) {
+                return $content;
+            }
+
+            // Preserve the password form already prepared by WordPress. Falling
+            // back to raw original content here would disclose the protected body.
+            if ($this->publicPageRenderPolicy->isPasswordRequired($postId)) {
+                return $content;
+            }
+
+            $read = $this->publicPageRenderPolicy->read($postId);
+            if ($read->isReady() || $read->status() === PublishedPageStatus::NotManaged) {
+                return $content;
+            }
+
+            try {
+                return $this->originalContent->publicContent($postId);
+            } catch (\Throwable) {
+                return '';
+            }
+        } catch (\Throwable $failure) {
+            // An owned legacy page can still have a stale Page Builder
+            // projection in post_content. A failed public-pointer read must
+            // use the preserved WordPress body, not the filter input.
+            error_log('[Uncanny Page Builder] Published content selection failed (' . $failure::class . ')');
+
+            if ($postId === null) {
+                return $content;
+            }
+
+            try {
+                return $this->originalContent->publicContent($postId);
+            } catch (\Throwable) {
+                return '';
+            }
         }
     }
 
@@ -75,38 +95,45 @@ final class ContentRenderer
     {
         $content = is_string($content) ? $content : '';
 
-        // Theme composition frontend rendering never runs inside the admin canvas.
-        if (is_admin()) {
+        try {
+            // Theme composition frontend rendering never runs inside the admin canvas.
+            if (is_admin()) {
+                return $content;
+            }
+
+            if (!is_singular() || !is_main_query()) {
+                return $content;
+            }
+
+            $postId = $this->currentPostId();
+
+            if ($postId === null || !$this->isActivePost($postId)) {
+                return $content;
+            }
+
+            $page = $this->publicPageRenderPolicy->publishedPage($postId);
+            if (!$page instanceof PublishedPage) {
+                return $content;
+            }
+
+            /*
+             * Native artifacts belong to the standalone published template. If
+             * template routing ever falls back to the theme, do not inject native
+             * document HTML into the_content and create a malformed hybrid page.
+             */
+            if ($page->shellMode() !== ShellMode::ThemeComposition) {
+                return $content;
+            }
+
+            $rendered = $this->dynamicRenderer->render($page->html());
+            $this->didRender = true;
+
+            return $rendered;
+        } catch (\Throwable $failure) {
+            error_log('[Uncanny Page Builder] Published content render failed (' . $failure::class . ')');
+
             return $content;
         }
-
-        if (!is_singular() || !is_main_query()) {
-            return $content;
-        }
-
-        $postId = $this->currentPostId();
-
-        if ($postId === null || !$this->isActivePost($postId)) {
-            return $content;
-        }
-
-        $page = $this->publicPageRenderPolicy->publishedPage($postId);
-        if (!$page instanceof PublishedPage) {
-            return $content;
-        }
-
-        /*
-         * Native artifacts belong to the standalone published template. If
-         * template routing ever falls back to the theme, do not inject native
-         * document HTML into the_content and create a malformed hybrid page.
-         */
-        if ($page->shellMode() !== ShellMode::ThemeComposition) {
-            return $content;
-        }
-
-        $this->didRender = true;
-
-        return $page->html();
     }
 
     /**
@@ -122,24 +149,30 @@ final class ContentRenderer
             ? array_values(array_filter($classes, 'is_string'))
             : [];
 
-        if (is_admin() || !is_singular()) {
+        try {
+            if (is_admin() || !is_singular()) {
+                return $classes;
+            }
+
+            $postId = $this->currentPostId();
+            $page = $postId !== null ? $this->publicPageRenderPolicy->publishedPage($postId) : null;
+            if (!$page instanceof PublishedPage) {
+                return $classes;
+            }
+
+            $class = $page->shellMode() === ShellMode::ThemeComposition
+                ? 'upb-theme-composed'
+                : 'upb-uncanny-native';
+            if (!in_array($class, $classes, true)) {
+                $classes[] = $class;
+            }
+
+            return $classes;
+        } catch (\Throwable $failure) {
+            error_log('[Uncanny Page Builder] Published body class selection failed (' . $failure::class . ')');
+
             return $classes;
         }
-
-        $postId = $this->currentPostId();
-        $page = $postId !== null ? $this->publicPageRenderPolicy->publishedPage($postId) : null;
-        if (!$page instanceof PublishedPage) {
-            return $classes;
-        }
-
-        $class = $page->shellMode() === ShellMode::ThemeComposition
-            ? 'upb-theme-composed'
-            : 'upb-uncanny-native';
-        if (!in_array($class, $classes, true)) {
-            $classes[] = $class;
-        }
-
-        return $classes;
     }
 
     /**
@@ -148,26 +181,30 @@ final class ContentRenderer
      */
     public function injectCss(): void
     {
-        // Theme composition frontend rendering never runs inside the admin canvas.
-        if (is_admin()) {
-            return;
-        }
+        try {
+            // Theme composition frontend rendering never runs inside the admin canvas.
+            if (is_admin()) {
+                return;
+            }
 
-        if (!is_singular()) {
-            return;
-        }
+            if (!is_singular()) {
+                return;
+            }
 
-        $postId = $this->currentPostId();
+            $postId = $this->currentPostId();
 
-        $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
-        if (!$page instanceof PublishedPage) {
-            return;
-        }
+            $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
+            if (!$page instanceof PublishedPage) {
+                return;
+            }
 
-        if ($page->css() !== '') {
-            echo '<style id="uncanny-page-builder-published-css">'
-                . StyleElementCss::escape($page->css())
-                . '</style>';
+            if ($page->css() !== '') {
+                echo '<style id="uncanny-page-builder-published-css">'
+                    . StyleElementCss::escape($page->css())
+                    . '</style>';
+            }
+        } catch (\Throwable $failure) {
+            error_log('[Uncanny Page Builder] Published CSS output failed (' . $failure::class . ')');
         }
     }
 
@@ -177,24 +214,28 @@ final class ContentRenderer
      */
     public function renderBridgeRoot(): void
     {
-        // Theme composition frontend rendering never runs inside the admin canvas.
-        if (is_admin()) {
-            return;
-        }
+        try {
+            // Theme composition frontend rendering never runs inside the admin canvas.
+            if (is_admin()) {
+                return;
+            }
 
-        if (!is_singular()) {
-            return;
-        }
+            if (!is_singular()) {
+                return;
+            }
 
-        $postId = $this->currentPostId();
+            $postId = $this->currentPostId();
 
-        $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
-        if (!$page instanceof PublishedPage) {
-            return;
-        }
+            $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
+            if (!$page instanceof PublishedPage) {
+                return;
+            }
 
-        if ($this->allowedCapabilities->currentUserHasAllowedCapability()) {
-            echo '<div id="uncanny-magic-bridge-root" data-page-id="' . esc_attr((string) $postId) . '"></div>';
+            if ($this->allowedCapabilities->currentUserHasAllowedCapability()) {
+                echo '<div id="uncanny-magic-bridge-root" data-page-id="' . esc_attr((string) $postId) . '"></div>';
+            }
+        } catch (\Throwable $failure) {
+            error_log('[Uncanny Page Builder] Magic Bridge root output failed (' . $failure::class . ')');
         }
     }
 
@@ -213,15 +254,21 @@ final class ContentRenderer
             return;
         }
 
-        $postId = $this->currentPostId();
+        try {
+            $postId = $this->currentPostId();
 
-        $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
-        if (!$page instanceof PublishedPage) {
-            return;
+            $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
+            if (!$page instanceof PublishedPage) {
+                return;
+            }
+
+            echo '<script>' . LucideRuntimeInitializer::script() . '</script>';
+            echo $page->customJavaScript();
+        } catch (\Throwable $failure) {
+            // wp_footer is a shared WordPress surface. A Page Builder failure
+            // must not terminate the visitor request.
+            error_log('[Uncanny Page Builder] Published page JavaScript output failed (' . $failure::class . ')');
         }
-
-        echo '<script>' . LucideRuntimeInitializer::script() . '</script>';
-        echo $page->customJavaScript();
     }
 
     /**
@@ -230,28 +277,34 @@ final class ContentRenderer
      */
     public function checkRenderFallback(): void
     {
-        // Theme composition frontend rendering never runs inside the admin canvas.
-        if (is_admin()) {
-            return;
-        }
+        try {
+            // Theme composition frontend rendering never runs inside the admin canvas.
+            if (is_admin()) {
+                return;
+            }
 
-        if (!is_singular()) {
-            return;
-        }
+            if (!is_singular()) {
+                return;
+            }
 
-        $postId = $this->currentPostId();
+            $postId = $this->currentPostId();
 
-        $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
-        if (!$page instanceof PublishedPage) {
-            return;
-        }
+            $page = $postId !== null ? $this->themeCompositionPage($postId) : null;
+            if (!$page instanceof PublishedPage) {
+                return;
+            }
 
-        if ($this->didRender) {
-            return;
-        }
+            if ($this->didRender) {
+                return;
+            }
 
-        if ($this->allowedCapabilities->currentUserHasAllowedCapability()) {
-            include __DIR__ . '/../../Presentation/Frontend/fallback-warning.php';
+            if ($this->allowedCapabilities->currentUserHasAllowedCapability()) {
+                include __DIR__ . '/../../Presentation/Frontend/fallback-warning.php';
+            }
+        } catch (\Throwable $failure) {
+            // wp_footer is a shared WordPress surface. A Page Builder failure
+            // must not terminate the visitor request.
+            error_log('[Uncanny Page Builder] Render fallback check failed (' . $failure::class . ')');
         }
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Application;
 
 use UncannyPageBuilder\Application\Concurrency\GlobalSourceMutation;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefreshScheduler;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartRepositoryInterface;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
@@ -19,6 +20,7 @@ final class GlobalPartDefaultsService implements GlobalPartDefaultsResolverInter
         private readonly SettingsRepositoryInterface $settingsRepository,
         private readonly GlobalSourceMutation $globalSource,
         private readonly ?WorkingCanvasRefreshScheduler $workingCanvasRefreshes = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function getDefaultId(GlobalPartType $type): ?int
@@ -42,16 +44,22 @@ final class GlobalPartDefaultsService implements GlobalPartDefaultsResolverInter
      */
     public function setDefaultId(GlobalPartType $type, ?int $postId): bool
     {
+        return $this->setDefaultIdWithRefreshStatus($type, $postId)['accepted'];
+    }
+
+    /** @return array{accepted: bool, refresh_queued: bool} */
+    public function setDefaultIdWithRefreshStatus(GlobalPartType $type, ?int $postId): array
+    {
         if (!in_array($type, [GlobalPartType::Header, GlobalPartType::Footer], true)) {
-            return false;
+            return ['accepted' => false, 'refresh_queued' => true];
         }
 
         if ($postId !== null && !$this->isAssignablePartId($type, $postId)) {
-            return false;
+            return ['accepted' => false, 'refresh_queued' => true];
         }
 
         if ($this->getDefaultId($type) === $postId) {
-            return true;
+            return ['accepted' => true, 'refresh_queued' => true];
         }
 
         $changed = false;
@@ -70,11 +78,27 @@ final class GlobalPartDefaultsService implements GlobalPartDefaultsResolverInter
 
         $this->globalSource->run($write);
 
-        if ($changed) {
-            $this->workingCanvasRefreshes?->enqueueAll();
+        if (!$changed || !$this->workingCanvasRefreshes instanceof WorkingCanvasRefreshScheduler) {
+            return ['accepted' => true, 'refresh_queued' => true];
         }
 
-        return true;
+        try {
+            $this->workingCanvasRefreshes->enqueueAll();
+        } catch (\Throwable $failure) {
+            try {
+                $this->failureReporter?->report(
+                    'global part default',
+                    $postId ?? 0,
+                    'working_canvas.enqueue',
+                    $failure,
+                );
+            } catch (\Throwable) {
+                // A report failure cannot change the completed setting result.
+            }
+            return ['accepted' => true, 'refresh_queued' => false];
+        }
+
+        return ['accepted' => true, 'refresh_queued' => true];
     }
 
     /**

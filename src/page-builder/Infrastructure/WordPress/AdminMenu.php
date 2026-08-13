@@ -31,6 +31,7 @@ final class AdminMenu
     private string $canvasEditorWindowedPageHookSuffix = '';
     private ?AdminCanvasEditorWindowedGlobalPartPage $canvasEditorWindowedGlobalPartPage = null;
     private string $canvasEditorWindowedGlobalPartPageHookSuffix = '';
+    private bool $registered = false;
 
     public function __construct(
         SectionRepositoryInterface $repository,
@@ -83,6 +84,11 @@ final class AdminMenu
 
     public function register(): void
     {
+        if ($this->registered) {
+            return;
+        }
+
+        $this->registered = true;
         $this->registerHiddenEditorRoutes();
 
         if (!$this->availability->allowsNewPages()) {
@@ -192,35 +198,64 @@ final class AdminMenu
 
     public function renderNativePageImportForm(): void
     {
-        if (
-            !$this->availability->allowsNewPages()
-            || !$this->isNativePagesScreen()
-            || !$this->allowedCapabilities->currentUserHasAllowedCapability()
-        ) {
-            return;
+        try {
+            if (
+                !$this->availability->allowsNewPages()
+                || !$this->isNativePagesScreen()
+                || !$this->allowedCapabilities->currentUserHasAllowedCapability()
+            ) {
+                return;
+            }
+
+            $pageImportFormId = 'upb-import-page-source-form';
+            $pageImportFileInputId = 'upb-import-page-source-file';
+            $pageImportTarget = '';
+            $pageImportReturnContext = 'pages';
+            $pageImportReturnPageId = 0;
+            require dirname(__DIR__, 2) . '/templates/admin/page-source-import-form.php';
+
+            /*
+             * WordPress owns the Pages heading markup. Render the import action in
+             * the footer, then move it beside the native Add Page action after core
+             * has produced the title row.
+             */
+            echo '<button id="upb-import-page-source-trigger" type="button" class="page-title-action" hidden>'
+                . esc_html_x('Import Uncanny Page Builder page', 'Page Builder', 'uncanny-automator')
+                . '</button>';
+            echo '<script>(function(){var trigger=document.getElementById("upb-import-page-source-trigger");var target=document.querySelector(".wrap .page-title-action");var input=document.getElementById("'
+                . esc_js($pageImportFileInputId)
+                . '");if(!trigger||!target||!input){return;}target.insertAdjacentElement("afterend",trigger);trigger.hidden=false;trigger.addEventListener("click",function(){input.value="";input.click();});})();</script>';
+        } catch (\Throwable $failure) {
+            // The import affordance is an enhancement of the native Pages
+            // list; a failure must render nothing instead of breaking the
+            // admin footer.
+            error_log(sprintf(
+                '[Uncanny Page Builder] Native page import form failed (%s).',
+                $failure::class,
+            ));
         }
-
-        $pageImportFormId = 'upb-import-page-source-form';
-        $pageImportFileInputId = 'upb-import-page-source-file';
-        $pageImportTarget = '';
-        $pageImportReturnContext = 'pages';
-        $pageImportReturnPageId = 0;
-        require dirname(__DIR__, 2) . '/templates/admin/page-source-import-form.php';
-
-        /*
-         * WordPress owns the Pages heading markup. Render the import action in
-         * the footer, then move it beside the native Add Page action after core
-         * has produced the title row.
-         */
-        echo '<button id="upb-import-page-source-trigger" type="button" class="page-title-action" hidden>'
-            . esc_html_x('Import Uncanny Page Builder page', 'Page Builder', 'uncanny-automator')
-            . '</button>';
-        echo '<script>(function(){var trigger=document.getElementById("upb-import-page-source-trigger");var target=document.querySelector(".wrap .page-title-action");var input=document.getElementById("'
-            . esc_js($pageImportFileInputId)
-            . '");if(!trigger||!target||!input){return;}target.insertAdjacentElement("afterend",trigger);trigger.hidden=false;trigger.addEventListener("click",function(){input.value="";input.click();});})();</script>';
     }
 
     public function renderSettingsNewPage(): void
+    {
+        try {
+            $this->renderSettingsNewPageContent();
+        } catch (\Throwable $failure) {
+            // WordPress invokes menu renderers without a plugin exception
+            // boundary. A render failure must become a controlled admin page.
+            error_log('[Uncanny Page Builder] Settings page render failed (' . $failure::class . ').');
+            wp_die(
+                esc_html_x(
+                    'Uncanny Page Builder could not open these settings. Return to the previous page and try again.',
+                    'Page Builder',
+                    'uncanny-automator',
+                ),
+                500,
+            );
+        }
+    }
+
+    private function renderSettingsNewPageContent(): void
     {
         $tabs = $this->settingsTabs();
         $activeTab = $this->currentSettingsTab($tabs);
@@ -319,14 +354,29 @@ final class AdminMenu
 
     public function renderCanvasEditorWindowedPage(): void
     {
-        if ($this->canvasEditorWindowedPage === null) {
-            return;
-        }
+        try {
+            if ($this->canvasEditorWindowedPage === null) {
+                return;
+            }
 
-        $this->canvasEditorWindowedPage->render();
+            $this->canvasEditorWindowedPage->render();
+        } catch (\Throwable $failure) {
+            // WordPress invokes this menu callback after the load hook. Keep
+            // render failures inside the same controlled editor boundary.
+            $this->terminateWindowedCanvasFailure($failure);
+        }
     }
 
     public function prepareCanvasEditorWindowedPage(): void
+    {
+        try {
+            $this->prepareCanvasEditorWindowedPageHost();
+        } catch (\Throwable $failure) {
+            $this->terminateWindowedCanvasFailure($failure);
+        }
+    }
+
+    private function prepareCanvasEditorWindowedPageHost(): void
     {
         if ($this->canvasEditorWindowedPage === null) {
             return;
@@ -337,20 +387,47 @@ final class AdminMenu
 
     public function renderCanvasEditorWindowedGlobalPartPage(): void
     {
-        if ($this->canvasEditorWindowedGlobalPartPage === null) {
-            return;
-        }
+        try {
+            if ($this->canvasEditorWindowedGlobalPartPage === null) {
+                return;
+            }
 
-        $this->canvasEditorWindowedGlobalPartPage->render();
+            $this->canvasEditorWindowedGlobalPartPage->render();
+        } catch (\Throwable $failure) {
+            // Reusable editors use the same controlled menu-render boundary.
+            $this->terminateWindowedCanvasFailure($failure);
+        }
     }
 
     public function prepareCanvasEditorWindowedGlobalPartPage(): void
+    {
+        try {
+            $this->prepareCanvasEditorWindowedGlobalPartHost();
+        } catch (\Throwable $failure) {
+            $this->terminateWindowedCanvasFailure($failure);
+        }
+    }
+
+    private function prepareCanvasEditorWindowedGlobalPartHost(): void
     {
         if ($this->canvasEditorWindowedGlobalPartPage === null) {
             return;
         }
 
         $this->canvasEditorWindowedGlobalPartPage->prepareAdminHost();
+    }
+
+    private function terminateWindowedCanvasFailure(\Throwable $failure): never
+    {
+        error_log('[Uncanny Page Builder] Windowed canvas host failed (' . $failure::class . ')');
+        wp_die(
+            esc_html_x(
+                'Uncanny Page Builder could not open this editor. Return to the previous page and try again.',
+                'Page Builder',
+                'uncanny-automator',
+            ),
+            500,
+        );
     }
 
     public function filterCanvasEditorWindowedParentFile($parentFile = null): string
@@ -411,6 +488,17 @@ final class AdminMenu
 
     public function enqueueSettingsNewAssets($hookSuffix = null): void
     {
+        try {
+            $this->enqueueSettingsNewAssetsForHook($hookSuffix);
+        } catch (\Throwable $failure) {
+            // This stylesheet is an admin enhancement. An Automator asset
+            // failure must not terminate the WordPress admin request.
+            error_log('[Uncanny Page Builder] Settings assets failed (' . $failure::class . ')');
+        }
+    }
+
+    private function enqueueSettingsNewAssetsForHook($hookSuffix = null): void
+    {
         if (!is_string($hookSuffix)) {
             return;
         }
@@ -470,10 +558,18 @@ final class AdminMenu
             return;
         }
 
-        $isWindowedHost = $hookSuffix === $this->canvasEditorWindowedPageHookSuffix
+        $isPageWindowedHost = $hookSuffix === $this->canvasEditorWindowedPageHookSuffix;
+        $isWindowedHost = $isPageWindowedHost
             || $hookSuffix === $this->canvasEditorWindowedGlobalPartPageHookSuffix;
         if (!$isWindowedHost) {
             return;
+        }
+
+        if ($isPageWindowedHost) {
+            // The full-screen canvas does not use WordPress admin view
+            // transitions. Opt this source document out so Chromium does not
+            // reject the cross-document transition during that navigation.
+            wp_dequeue_style('wp-view-transitions-admin');
         }
 
         $stylePath = 'assets/css/admin-canvas-editor-windowed-page.css';

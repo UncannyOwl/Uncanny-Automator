@@ -11,6 +11,7 @@ use UncannyPageBuilder\Application\Controls\ControlDispatcher;
 use UncannyPageBuilder\Application\Controls\ControlInvokeRequest;
 use UncannyPageBuilder\Application\Controls\ControlRegistry;
 use UncannyPageBuilder\Application\Controls\ControlStateService;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 
@@ -36,6 +37,7 @@ final class ControlController
         private readonly PermissionChecker $permissions,
         private readonly ?ControlRegistry $registry = null,
         private readonly ?EditorLockWriteGuard $editorLock = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function registerRoutes(): void
@@ -68,15 +70,40 @@ final class ControlController
 
     public function read(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
-        $context = $this->contextFromRequest($request);
-        if ($context instanceof \WP_Error) {
-            return $context;
-        }
+        try {
+            $context = $this->contextFromRequest($request);
+            if ($context instanceof \WP_Error) {
+                return $context;
+            }
 
-        return ApiResponse::ok($this->stateService->build($context))->toResponse();
+            return ApiResponse::ok($this->stateService->build($context))->toResponse();
+        } catch (\Throwable $failure) {
+            $this->recordFailure('read', $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed);
+        }
     }
 
     public function invoke(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        try {
+            return $this->invokeRequest($request);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('invoke', $failure);
+            $controlId = trim((string) $request->get_param('control_id'));
+            if ($this->registry?->get($controlId)?->writesEditorState()) {
+                return ApiResponse::error(ErrorMessage::WriteResultUncertain, [
+                    'control_id' => $controlId,
+                    'retryable' => false,
+                    'requires_read' => true,
+                    'detail' => 'The write result is uncertain. Read the current editor source before another write.',
+                ]);
+            }
+
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
+    }
+
+    private function invokeRequest(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         if ($this->isBearerEditorWriteInvocation($request)) {
             return ApiResponse::error(ErrorMessage::ControlInvokeForbidden);
@@ -121,6 +148,15 @@ final class ControlController
         }
 
         return ApiResponse::ok($result->toArray())->toResponse();
+    }
+
+    private function recordFailure(string $step, \Throwable $failure): void
+    {
+        try {
+            $this->failureReporter?->report('editor controls', 0, $step, $failure);
+        } catch (\Throwable) {
+            // A report failure cannot change the controlled REST response.
+        }
     }
 
     private function isBearerEditorWriteInvocation(\WP_REST_Request $request): bool

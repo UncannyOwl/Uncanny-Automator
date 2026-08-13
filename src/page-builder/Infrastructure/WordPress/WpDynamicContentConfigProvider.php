@@ -15,16 +15,42 @@ final class WpDynamicContentConfigProvider
 {
     public function register(): void
     {
-        $extraBlockedKeys = apply_filters('uncanny_page_builder_blocked_meta_keys', []);
-        if (!is_array($extraBlockedKeys)) {
-            $extraBlockedKeys = [];
-        }
-
-        $metaValueTypes = apply_filters('uncanny_page_builder_meta_value_types', []);
-        if (!is_array($metaValueTypes)) {
-            $metaValueTypes = [];
-        }
+        $extraBlockedKeys = $this->applyArrayFilter('uncanny_page_builder_blocked_meta_keys', []);
+        $metaValueTypes = $this->applyArrayFilter('uncanny_page_builder_meta_value_types', []);
 
         DynamicContentConfig::configure($extraBlockedKeys, $metaValueTypes);
+    }
+
+    /**
+     * WordPress filters are external callbacks. A callback failure must not
+     * stop plugin boot. The empty value keeps the domain defaults in use.
+     *
+     * @param array<mixed> $default
+     * @return array<mixed>
+     */
+    private function applyArrayFilter(string $hook, array $default): array
+    {
+        try {
+            $filtered = apply_filters($hook, $default);
+        } catch (\Throwable $failure) {
+            $this->reportFilterFailure($hook, $failure);
+
+            return $default;
+        }
+
+        return is_array($filtered) ? $filtered : $default;
+    }
+
+    private function reportFilterFailure(string $hook, \Throwable $failure): void
+    {
+        try {
+            error_log(sprintf(
+                '[Uncanny Page Builder] WordPress filter "%s" failed (%s).',
+                $hook,
+                $failure::class,
+            ));
+        } catch (\Throwable) {
+            // A log failure cannot stop plugin boot.
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Application;
 use UncannyPageBuilder\Application\Concurrency\GlobalSourceMutation;
 use UncannyPageBuilder\Application\Concurrency\PageSourceMutation;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefreshScheduler;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\Editing\ExactSourcePatcher;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
@@ -22,6 +23,7 @@ use UncannyPageBuilder\Domain\JavaScriptRuntime\CustomJavaScriptRepositoryInterf
 final class PageJavaScriptRuntimeService
 {
     public const MAX_SOURCE_BYTES = 200000;
+    public const WORKING_CANVAS_REFRESH_WARNING = 'The custom JavaScript source was saved, but working canvases could not be queued for refresh.';
 
     public function __construct(
         private readonly CustomJavaScriptRepositoryInterface $repository,
@@ -30,6 +32,7 @@ final class PageJavaScriptRuntimeService
         private readonly ?SourceGenerationStoreInterface $sourceGenerations = null,
         private readonly ?GlobalSourceMutation $globalSource = null,
         private readonly ?PageSourceMutation $pageSource = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function readForPage(int $pageId): string
@@ -122,14 +125,28 @@ final class PageJavaScriptRuntimeService
 
     public function replaceForGlobalPart(int $globalPartId, string $javascript): string
     {
+        return $this->replaceForGlobalPartWithWarnings($globalPartId, $javascript)['javascript'];
+    }
+
+    /** @return array{javascript: string, warnings: list<string>} */
+    public function replaceForGlobalPartWithWarnings(int $globalPartId, string $javascript): array
+    {
         $generation = $this->sourceGenerations?->globalGeneration();
         $this->writeForGlobalPart($globalPartId, $javascript, $generation);
-        $this->workingCanvasRefreshes?->enqueueAll();
 
-        return $javascript;
+        return [
+            'javascript' => $javascript,
+            'warnings' => $this->workingCanvasRefreshWarnings($globalPartId),
+        ];
     }
 
     public function clearForGlobalPart(int $globalPartId): void
+    {
+        $this->clearForGlobalPartWithWarnings($globalPartId);
+    }
+
+    /** @return array{warnings: list<string>} */
+    public function clearForGlobalPartWithWarnings(int $globalPartId): array
     {
         if ($this->sourceGenerations instanceof SourceGenerationStoreInterface) {
             $generation = $this->sourceGenerations->globalGeneration();
@@ -140,7 +157,8 @@ final class PageJavaScriptRuntimeService
         } else {
             $this->repository->clearForPost($globalPartId);
         }
-        $this->workingCanvasRefreshes?->enqueueAll();
+
+        return ['warnings' => $this->workingCanvasRefreshWarnings($globalPartId)];
     }
 
     /**
@@ -156,7 +174,7 @@ final class PageJavaScriptRuntimeService
 
     /**
      * @param array<int, mixed> $patches
-     * @return array{before: string, after: string, error: ?string, too_large: bool}
+     * @return array{before: string, after: string, error: ?string, too_large: bool, warnings?: list<string>}
      */
     public function applySourcePatchForGlobalPart(int $globalPartId, array $patches): array
     {
@@ -173,9 +191,36 @@ final class PageJavaScriptRuntimeService
         }
 
         $this->writeForGlobalPart($globalPartId, $preview['after'], $generation);
-        $this->workingCanvasRefreshes?->enqueueAll();
+        $preview['warnings'] = $this->workingCanvasRefreshWarnings($globalPartId);
 
         return $preview;
+    }
+
+    /** @return list<string> */
+    private function workingCanvasRefreshWarnings(int $globalPartId): array
+    {
+        if (!$this->workingCanvasRefreshes instanceof WorkingCanvasRefreshScheduler) {
+            return [];
+        }
+
+        try {
+            $this->workingCanvasRefreshes->enqueueAll();
+        } catch (\Throwable $failure) {
+            // The source write is complete. Do not retry it because a derived refresh fails.
+            try {
+                $this->failureReporter?->report(
+                    'global-part JavaScript source',
+                    $globalPartId,
+                    'working_canvas.enqueue',
+                    $failure,
+                );
+            } catch (\Throwable) {
+                // A report failure cannot change the completed source result.
+            }
+            return [self::WORKING_CANVAS_REFRESH_WARNING];
+        }
+
+        return [];
     }
 
     private function writeForPage(int $pageId, string $javascript, ?int $expectedGeneration): void
