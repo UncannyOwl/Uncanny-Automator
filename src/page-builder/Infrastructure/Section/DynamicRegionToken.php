@@ -180,11 +180,11 @@ final class DynamicRegionToken
             return null;
         }
 
-        return base64_encode((string) json_encode([
+        return base64_encode(self::encodeJson([
             'tag' => $tag,
             'attrs' => $attributes,
             'inner' => $inner,
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
     private static function rebuildFromPayload(string $bindingId, string $payload): ?string
@@ -296,5 +296,15 @@ final class DynamicRegionToken
     private static function token(string $bindingId): string
     {
         return '<!-- upb:bindings:dynamic_data:' . $bindingId . ' -->';
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone section tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

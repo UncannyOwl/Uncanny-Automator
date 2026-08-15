@@ -58,6 +58,8 @@ use UncannyPageBuilder\Application\Reusable\DeleteReusableUseCase;
 use UncannyPageBuilder\Application\Reusable\ListReusableUseCase;
 use UncannyPageBuilder\Application\Reusable\UpdateReusableUseCase;
 use UncannyPageBuilder\Application\DesignStandardsService;
+use UncannyPageBuilder\Application\Filesystem\LocalFileReaderInterface;
+use UncannyPageBuilder\Application\Filesystem\LocalFilesystemPortInterface;
 use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\DesignStyles\DesignStyleCommitService;
 use UncannyPageBuilder\Application\Editing\SectionNodeUpdateService;
@@ -95,12 +97,14 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
                 $c->typed(PermissionChecker::class),
                 $c->typed(BindingRegistry::class),
                 $c->typed(DesignStandardsService::class),
+                $c->typed(LocalFilesystemPortInterface::class),
             );
         });
 
         $container->factory(AgentToolsController::class, static function (Container $c): AgentToolsController {
             return new AgentToolsController(
                 $c->typed(PermissionChecker::class),
+                $c->typed(LocalFileReaderInterface::class),
                 $c->typed(ControlRegistry::class),
             );
         });

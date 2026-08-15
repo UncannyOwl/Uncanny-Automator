@@ -2,9 +2,6 @@
 
 namespace Uncanny_Automator;
 
-use Uncanny_Automator\App\Application\Page_Builder\Can_Load_Page_Builder;
-use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Availability;
-
 /**
  * Class Admin_Settings_Uncanny_Page_Builder
  *
@@ -15,20 +12,9 @@ use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Availability;
 class Admin_Settings_Uncanny_Page_Builder {
 
 	/**
-	 * Page Builder availability use case.
-	 *
-	 * @var Can_Load_Page_Builder
-	 */
-	private $can_load_page_builder;
-
-	/**
 	 * Class constructor.
-	 *
-	 * @param Can_Load_Page_Builder $can_load_page_builder Availability use case.
 	 */
-	public function __construct( Can_Load_Page_Builder $can_load_page_builder ) {
-		$this->can_load_page_builder = $can_load_page_builder;
-
+	public function __construct() {
 		add_filter( 'automator_settings_sections', array( $this, 'register_tab' ), 21, 1 );
 
 		$this->load_tabs();
@@ -53,19 +39,11 @@ class Admin_Settings_Uncanny_Page_Builder {
 	public function register_tab( $tabs = null ) {
 		$tabs = is_array( $tabs ) ? $tabs : array();
 
-		try {
-			if ( ! $this->can_load_page_builder->execute() ) {
-				return $tabs;
-			}
-
-			$tabs['uncanny-page-builder'] = (object) array(
-				'name'     => esc_html__( 'Uncanny Page Builder', 'uncanny-automator' ),
-				'function' => array( $this, 'tab_output' ),
-				'preload'  => false,
-			);
-		} catch ( \Throwable $throwable ) {
-			error_log( sprintf( '[Uncanny Page Builder] Settings tab registration failed (%s).', get_class( $throwable ) ) );
-		}
+		$tabs['uncanny-page-builder'] = (object) array(
+			'name'     => esc_html__( 'Uncanny Page Builder', 'uncanny-automator' ),
+			'function' => array( $this, 'tab_output' ),
+			'preload'  => false,
+		);
 
 		return $tabs;
 	}
@@ -133,4 +111,4 @@ class Admin_Settings_Uncanny_Page_Builder {
 	}
 }
 
-new Admin_Settings_Uncanny_Page_Builder( new Can_Load_Page_Builder( new Page_Builder_Availability() ) );
+new Admin_Settings_Uncanny_Page_Builder();

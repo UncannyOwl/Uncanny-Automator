@@ -46,7 +46,7 @@ final class WordPressPageTrashUrlPort implements PageTrashUrlPortInterface
 
     private function isTrashAction(string $link): bool
     {
-        $query = parse_url($link, PHP_URL_QUERY);
+        $query = self::parseUrl($link, PHP_URL_QUERY);
         if (!is_string($query)) {
             return false;
         }
@@ -54,5 +54,15 @@ final class WordPressPageTrashUrlPort implements PageTrashUrlPortInterface
         parse_str($query, $params);
 
         return ($params['action'] ?? null) === 'trash';
+    }
+
+    private static function parseUrl(string $url, int $component = -1): array|string|int|false|null
+    {
+        if (function_exists('wp_parse_url')) {
+            return wp_parse_url($url, $component);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Standalone port tests run without WordPress functions.
+        return parse_url($url, $component);
     }
 }

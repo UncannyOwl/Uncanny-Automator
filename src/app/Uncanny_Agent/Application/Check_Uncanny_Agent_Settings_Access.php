@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Uncanny_Agent\Application;
 
-use Uncanny_Automator\App\Uncanny_Agent\Domain\Uncanny_Agent_Settings_Access;
-use Uncanny_Automator\App\Uncanny_Agent\Ports\License_Facts_Port;
+use Uncanny_Automator\App\Feature_State\Application\Get_Feature_State;
+use Uncanny_Automator\App\Feature_State\Domain\Feature_State;
 
 /**
  * Checks access to the Uncanny Agent settings page.
@@ -19,27 +19,27 @@ use Uncanny_Automator\App\Uncanny_Agent\Ports\License_Facts_Port;
 final class Check_Uncanny_Agent_Settings_Access {
 
 	/**
-	 * License facts source.
+	 * Request-scoped feature-state query.
 	 *
-	 * @var License_Facts_Port
+	 * @var Get_Feature_State
 	 */
-	private License_Facts_Port $licenses;
+	private Get_Feature_State $feature_state;
 
 	/**
 	 * Create the use case.
 	 *
-	 * @param License_Facts_Port $licenses License facts source.
+	 * @param Get_Feature_State $feature_state Request-scoped feature-state query.
 	 */
-	public function __construct( License_Facts_Port $licenses ) {
-		$this->licenses = $licenses;
+	public function __construct( Get_Feature_State $feature_state ) {
+		$this->feature_state = $feature_state;
 	}
 
 	/**
 	 * Check the current settings access.
 	 *
-	 * @return Uncanny_Agent_Settings_Access
+	 * @return bool
 	 */
-	public function execute(): Uncanny_Agent_Settings_Access {
-		return Uncanny_Agent_Settings_Access::evaluate( $this->licenses->get_facts() );
+	public function execute(): bool {
+		return $this->feature_state->execute()->is_visible( Feature_State::AGENT_SETTINGS_TAB );
 	}
 }

@@ -52,6 +52,8 @@ use UncannyPageBuilder\Infrastructure\WordPress\MagicBridgeEnqueuer;
 use UncannyPageBuilder\Infrastructure\WordPress\NativePageListPresenter;
 use UncannyPageBuilder\Infrastructure\WordPress\PageFactory;
 use UncannyPageBuilder\Infrastructure\WordPress\PageSourceArchiveDownloadAction;
+use UncannyPageBuilder\Infrastructure\WordPress\SourcePackageUploadReader;
+use UncannyPageBuilder\Application\Filesystem\LocalFilesystemPortInterface;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageSourceArchiveArtifactStore;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageSourceArchiveDownloadUrl;
 use UncannyPageBuilder\Infrastructure\WordPress\RestNonceRefresher;
@@ -65,7 +67,9 @@ final class AdminMenuProvider implements ServiceProviderInterface
 {
     public function register(Container $container): void
     {
-        $container->factory(WordPressPageSourceArchiveArtifactStore::class, static fn (): WordPressPageSourceArchiveArtifactStore => new WordPressPageSourceArchiveArtifactStore());
+        $container->factory(WordPressPageSourceArchiveArtifactStore::class, static fn (Container $c): WordPressPageSourceArchiveArtifactStore => new WordPressPageSourceArchiveArtifactStore(
+            filesystem: $c->typed(LocalFilesystemPortInterface::class),
+        ));
         $container->factory(PageSourceArchiveArtifactStoreInterface::class, static fn (Container $c): PageSourceArchiveArtifactStoreInterface => $c->typed(WordPressPageSourceArchiveArtifactStore::class));
         $container->factory(WordPressPageSourceArchiveDownloadUrl::class, static fn (): WordPressPageSourceArchiveDownloadUrl => new WordPressPageSourceArchiveDownloadUrl());
         $container->factory(PageSourceArchiveDownloadUrlInterface::class, static fn (Container $c): PageSourceArchiveDownloadUrlInterface => $c->typed(WordPressPageSourceArchiveDownloadUrl::class));
@@ -220,6 +224,7 @@ final class AdminMenuProvider implements ServiceProviderInterface
                 $c->typed(PageBuilderAvailabilityInterface::class),
                 $c->typed(PageSourcePackageService::class),
                 $c->typed(PageSourceArchiveService::class),
+                new SourcePackageUploadReader($c->typed(LocalFilesystemPortInterface::class)),
             );
         });
 

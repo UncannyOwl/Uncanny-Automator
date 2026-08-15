@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Application\Export;
 use UncannyPageBuilder\Application\DesignStandardsService;
 use UncannyPageBuilder\Application\Rendering\LucideRuntimeInitializer;
 use UncannyPageBuilder\Application\Rendering\PublicRuntimeAssetCatalog;
+use UncannyPageBuilder\Domain\Binding\DynamicBindingRenderMode;
 use UncannyPageBuilder\Domain\Compiler\ShadowCompiler;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationSnapshot;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
@@ -14,6 +15,7 @@ use UncannyPageBuilder\Domain\Canvas\AlpineVisibilityGuard;
 use UncannyPageBuilder\Domain\Canvas\CanvasResetCss;
 use UncannyPageBuilder\Domain\DesignStandards\DesignTokenCssRenderer;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
+use UncannyPageBuilder\Domain\Exception\DeactivationFallbackCompilationFailed;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
 use UncannyPageBuilder\Domain\Export\StaticExportArtifact;
 use UncannyPageBuilder\Domain\Export\StaticExportPurpose;
@@ -21,6 +23,7 @@ use UncannyPageBuilder\Domain\Export\StaticExportContextProviderInterface;
 use UncannyPageBuilder\Domain\Export\StaticExportAssetSourceInterface;
 use UncannyPageBuilder\Domain\Export\StaticExportGlobalPartResolverInterface;
 use UncannyPageBuilder\Domain\Export\StaticExportHtmlCleaner;
+use UncannyPageBuilder\Domain\Export\StaticExportFallbackHtmlRendererInterface;
 use UncannyPageBuilder\Domain\Export\StaticExportHtmlRendererInterface;
 use UncannyPageBuilder\Domain\Export\StaticExportPageIdentity;
 use UncannyPageBuilder\Domain\Export\StaticPageExport;
@@ -28,6 +31,7 @@ use UncannyPageBuilder\Domain\Export\StaticRenderingPolicy;
 use UncannyPageBuilder\Domain\Export\StaticRenderingReport;
 use UncannyPageBuilder\Domain\Export\StaticRenderingResult;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
+use UncannyPageBuilder\Domain\Publishing\PageDeactivationFallback;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 
 /**
@@ -118,21 +122,73 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
         $profile = $this->designStandards->resolveForPage($pageId);
         $header = $this->globalParts->resolveForPage($pageId, GlobalPartType::Header);
         $footer = $this->globalParts->resolveForPage($pageId, GlobalPartType::Footer);
+        $sections = $collection->toArray();
         $report = new StaticRenderingReport();
         $pageIdentity = $this->pageIdentity($pageId, $documentTitle, $documentPermalink);
 
-        [$headerHtml, $headerReport] = $this->renderGlobalPart($header, $pageId, 'header', $pageIdentity, $purpose);
+        [$headerHtml, $headerReport] = $this->renderGlobalPart(
+            $header,
+            $pageId,
+            'header',
+            $pageIdentity,
+            $purpose,
+            DynamicBindingRenderMode::FreezeOnly,
+        );
         [$sectionsHtml, $sectionsReport] = $this->renderSections(
-            $collection->toArray(),
+            $sections,
             $pageId,
             'page',
             $pageIdentity,
             $purpose,
+            DynamicBindingRenderMode::FreezeOnly,
         );
-        [$footerHtml, $footerReport] = $this->renderGlobalPart($footer, $pageId, 'footer', $pageIdentity, $purpose);
+        [$footerHtml, $footerReport] = $this->renderGlobalPart(
+            $footer,
+            $pageId,
+            'footer',
+            $pageIdentity,
+            $purpose,
+            DynamicBindingRenderMode::FreezeOnly,
+        );
 
         $report = $report->merge($headerReport)->merge($sectionsReport)->merge($footerReport);
         $bodyHtml = $headerHtml . $sectionsHtml . $footerHtml;
+
+        $fallbackBodyHtml = '';
+        $omissions = [];
+        if ($purpose === StaticExportPurpose::Publication) {
+            [$fallbackHeaderHtml] = $this->renderGlobalPart(
+                $header,
+                $pageId,
+                'header',
+                $pageIdentity,
+                $purpose,
+                DynamicBindingRenderMode::RemoveAll,
+                false,
+                $omissions,
+            );
+            [$fallbackSectionsHtml] = $this->renderSections(
+                $sections,
+                $pageId,
+                'page',
+                $pageIdentity,
+                $purpose,
+                DynamicBindingRenderMode::RemoveAll,
+                false,
+                $omissions,
+            );
+            [$fallbackFooterHtml] = $this->renderGlobalPart(
+                $footer,
+                $pageId,
+                'footer',
+                $pageIdentity,
+                $purpose,
+                DynamicBindingRenderMode::RemoveAll,
+                false,
+                $omissions,
+            );
+            $fallbackBodyHtml = $fallbackHeaderHtml . $fallbackSectionsHtml . $fallbackFooterHtml;
+        }
 
         $pageCss = DesignTokenCssRenderer::renderProfile($profile)
             . $this->canvasResetCss()
@@ -166,24 +222,38 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
             $artifacts[] = $artifact;
         }
 
+        $dependencies = $this->dependencies(
+            $pageId,
+            $sections,
+            $profile->toArray(),
+            $header,
+            $footer,
+            $artifacts,
+            $customJavaScript,
+            $globalGeneration !== null
+                ? new SourceGenerationSnapshot($pageId, $collection->generation(), $globalGeneration)
+                : null,
+        );
+        $deactivationFallback = null;
+        if ($purpose === StaticExportPurpose::Publication) {
+            $deactivationFallback = new PageDeactivationFallback(
+                html: $this->renderCanvas($fallbackBodyHtml),
+                css: $pageCss,
+                customJavaScript: $customJavaScript,
+                assetsManifest: $this->assetsManifest($dependencies),
+                omissions: $omissions,
+            );
+            $dependencies[PageDeactivationFallback::DEPENDENCY_HASH_KEY] = $deactivationFallback->contentHash();
+        }
+
         return new StaticPageExport(
             pageId: $pageId,
             entryPath: 'index.html',
             artifacts: $artifacts,
             staticRenderingReport: $report,
-            dependencies: $this->dependencies(
-                $pageId,
-                $collection->toArray(),
-                $profile->toArray(),
-                $header,
-                $footer,
-                $artifacts,
-                $customJavaScript,
-                $globalGeneration !== null
-                    ? new SourceGenerationSnapshot($pageId, $collection->generation(), $globalGeneration)
-                    : null,
-            ),
+            dependencies: $dependencies,
             customJavaScript: $customJavaScript,
+            deactivationFallback: $deactivationFallback,
         );
     }
 
@@ -208,18 +278,58 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
         string $source,
         ?StaticExportPageIdentity $pageIdentity,
         StaticExportPurpose $purpose,
+        DynamicBindingRenderMode $bindingMode,
+        bool $prepareForPurpose = true,
+        ?array &$omissions = null,
     ): array {
         $html = '';
         $report = new StaticRenderingReport();
 
         foreach ($sections as $section) {
-            $prepared = $this->prepareSection($section, $source, $purpose);
-            $section['content']['html'] = $prepared->html();
-            $report = $report->merge($prepared->report());
+            if ($prepareForPurpose) {
+                $prepared = $this->prepareSection($section, $source, $purpose);
+                $section['content']['html'] = $prepared->html();
+                $report = $report->merge($prepared->report());
+            }
 
-            $html .= StaticExportHtmlCleaner::clean(
-                $this->htmlRenderer->renderSection($section, $pageId, $pageIdentity),
-            );
+            $omittedBindingIds = null;
+            if ($bindingMode === DynamicBindingRenderMode::RemoveAll) {
+                if (!$this->htmlRenderer instanceof StaticExportFallbackHtmlRendererInterface) {
+                    throw new DeactivationFallbackCompilationFailed(
+                        'Deactivation fallback rendering is unavailable.',
+                    );
+                }
+                $rendered = $this->htmlRenderer->renderFallbackSection(
+                    $section,
+                    $pageId,
+                    $pageIdentity,
+                    $omittedBindingIds,
+                );
+            } else {
+                $rendered = $this->htmlRenderer->renderSection($section, $pageId, $pageIdentity);
+            }
+            $rendered = StaticExportHtmlCleaner::clean($rendered);
+            if (
+                $bindingMode === DynamicBindingRenderMode::RemoveAll
+                && stripos($rendered, 'data-ai-dynamic') !== false
+            ) {
+                throw new DeactivationFallbackCompilationFailed('Deactivation fallback contains a residual dynamic binding marker.');
+            }
+
+            if ($bindingMode === DynamicBindingRenderMode::RemoveAll) {
+                if (!is_array($omittedBindingIds) || !array_is_list($omittedBindingIds)) {
+                    throw new DeactivationFallbackCompilationFailed('Deactivation fallback omission evidence is missing.');
+                }
+                foreach ($omittedBindingIds as $bindingId) {
+                    $omissions[] = [
+                        'source' => $source,
+                        'section_id' => isset($section['id']) ? (int) $section['id'] : 0,
+                        'binding_id' => (string) $bindingId,
+                    ];
+                }
+            }
+
+            $html .= $rendered;
         }
 
         return [$html, $report];
@@ -237,6 +347,9 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
         string $source,
         ?StaticExportPageIdentity $pageIdentity,
         StaticExportPurpose $purpose,
+        DynamicBindingRenderMode $bindingMode,
+        bool $prepareForPurpose = true,
+        ?array &$omissions = null,
     ): array {
         $sections = $part['sections'] ?? null;
         if (!is_array($sections)) {
@@ -249,6 +362,9 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
             $source,
             $pageIdentity,
             $purpose,
+            $bindingMode,
+            $prepareForPurpose,
+            $omissions,
         );
     }
 
@@ -303,13 +419,20 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
             . '<link rel="stylesheet" href="assets/page.css">' . "\n"
             . '</head>' . "\n"
             . '<body>' . "\n"
-            . '<div id="uncanny-pb-canvas-root"><div id="uncanny-pb-canvas">' . $bodyHtml . '</div></div>' . "\n"
+            . $this->renderCanvas($bodyHtml) . "\n"
             . '<script src="assets/lucide.min.js"></script>' . "\n"
             . '<script>' . LucideRuntimeInitializer::script() . '</script>' . "\n"
             . '<script defer src="assets/alpine.min.js"></script>' . "\n"
             . ($customJavaScript !== '' ? $customJavaScript . "\n" : '')
             . '</body>' . "\n"
             . '</html>';
+    }
+
+    private function renderCanvas(string $bodyHtml): string
+    {
+        return '<div id="uncanny-pb-canvas-root"><div id="uncanny-pb-canvas">'
+            . $bodyHtml
+            . '</div></div>';
     }
 
     /**
@@ -430,6 +553,34 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
     }
 
     /**
+     * Use the same public asset contract for the live artifact and fallback.
+     *
+     * @param array<string, mixed> $dependencies
+     * @return array<string, mixed>
+     */
+    private function assetsManifest(array $dependencies): array
+    {
+        $runtime = $dependencies['public_runtime_manifest'] ?? null;
+        $assets = is_array($runtime) ? ($runtime['assets'] ?? null) : null;
+        if (!is_array($assets) || $assets === [] || array_is_list($assets)) {
+            throw new DeactivationFallbackCompilationFailed('Static export is missing its public runtime manifest.');
+        }
+
+        $fonts = $dependencies['font_assets'] ?? [];
+        if (!is_array($fonts) || ($fonts !== [] && array_is_list($fonts))) {
+            throw new DeactivationFallbackCompilationFailed('Static export contains an invalid font manifest.');
+        }
+
+        return [
+            'assets' => $assets,
+            'fonts' => [
+                'google' => is_array($fonts['google'] ?? null) ? array_values($fonts['google']) : [],
+                'custom' => is_array($fonts['custom'] ?? null) ? array_values($fonts['custom']) : [],
+            ],
+        ];
+    }
+
+    /**
      * @param array<int, array<string, mixed>> $sections
      * @return array<int, array{id: int, fingerprint: string, position: int}>
      */
@@ -487,7 +638,7 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
     {
         $this->sortRecursively($data);
 
-        return hash('sha256', json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        return hash('sha256', self::encodeJson($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
     /**
@@ -532,5 +683,12 @@ final class StaticPageExportService implements StaticPageExportBuilderInterface
     private function canvasResetCss(): string
     {
         return CanvasResetCss::render();
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        // Exact JSON bytes are part of the export hash; wp_json_encode() may repair invalid UTF-8 and change the digest.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- This deterministic language operation is not an external capability.
+        return json_encode($value, $flags);
     }
 }

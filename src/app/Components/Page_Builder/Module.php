@@ -64,21 +64,25 @@ class Module {
 	private $compatibility;
 
 	/**
-	 * Page Builder availability use case.
-	 *
-	 * @var Can_Load_Page_Builder
-	 */
-	private $can_load_page_builder;
-
-	/**
 	 * Constructor.
 	 *
-	 * @param Can_Load_Page_Builder $can_load_page_builder Availability use case.
-	 * @param Compatibility|null    $compatibility         Compatibility policy.
+	 * The former Can_Load_Page_Builder argument remains accepted for binary
+	 * compatibility, but presentation policy no longer controls runtime boot.
+	 *
+	 * @param Can_Load_Page_Builder|Compatibility|null $legacy_gate_or_compatibility Deprecated gate or compatibility policy.
+	 * @param Compatibility|null                       $compatibility               Compatibility policy.
 	 */
-	public function __construct( Can_Load_Page_Builder $can_load_page_builder, ?Compatibility $compatibility = null ) {
-		$this->can_load_page_builder = $can_load_page_builder;
-		$this->compatibility         = $compatibility ?? new Compatibility();
+	public function __construct( $legacy_gate_or_compatibility = null, ?Compatibility $compatibility = null ) {
+		if ( $legacy_gate_or_compatibility instanceof Compatibility ) {
+			$this->compatibility = $legacy_gate_or_compatibility;
+			return;
+		}
+
+		if ( null !== $legacy_gate_or_compatibility && ! $legacy_gate_or_compatibility instanceof Can_Load_Page_Builder ) {
+			throw new \InvalidArgumentException( 'The Page Builder host received an unsupported dependency.' );
+		}
+
+		$this->compatibility = $compatibility ?? new Compatibility();
 	}
 
 	/**
@@ -100,17 +104,17 @@ class Module {
 	 */
 	public function boot(): void {
 		try {
-			if ( ! $this->can_load_page_builder->execute() ) {
-				return;
-			}
-
+			// Feature policy controls new-page affordances, never runtime ownership.
+			// Existing editors and published pages must survive a policy transition.
 			$compatibility = $this->compatibility->check( $this->environment() );
 			if ( 'ready' !== $compatibility['status'] ) {
 				$this->set_status( $compatibility['status'], $compatibility['detail'] );
 				return;
 			}
 
-			define( 'AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME', true );
+			if ( ! defined( 'AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME' ) ) {
+				define( 'AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME', true );
+			}
 
 			if ( ! defined( 'AUTOMATOR_PAGE_BUILDER_MODULE_VERSION' ) ) {
 				define( 'AUTOMATOR_PAGE_BUILDER_MODULE_VERSION', self::MODULE_VERSION );

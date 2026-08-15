@@ -71,10 +71,24 @@ final class FontSettingsFingerprint
             ];
         }
 
-        $normalized = static fn(array $a, array $b): int => json_encode($a) <=> json_encode($b);
+        $normalized = static fn(array $a, array $b): int =>
+            self::encodeJson($a, JSON_THROW_ON_ERROR) <=> self::encodeJson($b, JSON_THROW_ON_ERROR);
         usort($google, $normalized);
         usort($custom, $normalized);
 
-        return 'fonts-' . md5((string) json_encode(['google' => $google, 'custom' => $custom]));
+        return 'fonts-' . md5(self::encodeJson(
+            ['google' => $google, 'custom' => $custom],
+            JSON_THROW_ON_ERROR,
+        ));
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone font tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

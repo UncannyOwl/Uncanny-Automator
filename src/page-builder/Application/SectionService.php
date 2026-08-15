@@ -506,8 +506,8 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
             if (
                 (int) ($current['id'] ?? 0) !== (int) ($expected['id'] ?? 0)
                 || (string) ($current['name'] ?? '') !== (string) ($expected['name'] ?? '')
-                || (string) json_encode($current['content'] ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
-                    !== (string) json_encode($expected['content'] ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+                || (string) self::encodeJson($current['content'] ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+                    !== (string) self::encodeJson($expected['content'] ?? [], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
             ) {
                 throw new HistorySnapshotConflictException();
             }
@@ -1160,5 +1160,12 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
             // The canonical source write has already committed; there is no
             // safe rollback or caller retry at this point.
         }
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        // Exact JSON bytes define equality here; wp_json_encode() may repair invalid UTF-8 and change the comparison.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- This deterministic language operation is not an external capability.
+        return json_encode($value, $flags);
     }
 }

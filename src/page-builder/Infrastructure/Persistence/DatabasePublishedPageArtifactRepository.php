@@ -274,13 +274,13 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
             return '{}';
         }
 
-        return json_encode($records, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return self::encodeJson($records, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     /** @param array<int, array<string, mixed>> $records */
     private function encodeList(array $records): string
     {
-        return json_encode($records, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return self::encodeJson($records, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     /** @return array<string, mixed> */
@@ -363,5 +363,15 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
         if (function_exists('get_option') && defined('ABSPATH')) {
             SchemaManager::ensureSchema();
         }
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone persistence tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

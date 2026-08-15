@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\WordPress;
 
+use UncannyPageBuilder\Application\Filesystem\LocalFilesystemPortInterface;
 use UncannyPageBuilder\Domain\SourcePackage\SourcePackageValidationException;
 use UncannyPageBuilder\Application\SourcePackage\PageSourceImage;
 use UncannyPageBuilder\Application\SourcePackage\UploadedPageSource;
@@ -39,14 +40,18 @@ final class SourcePackageUploadReader
         'image/avif' => 'avif',
     ];
 
-    public static function readPageSource(string $fieldName): UploadedPageSource
+    public function __construct(
+        private readonly LocalFilesystemPortInterface $filesystem,
+    ) {}
+
+    public function readPageSource(string $fieldName): UploadedPageSource
     {
         $file = self::uploadedFile($fieldName);
         $extension = strtolower(pathinfo((string) $file['name'], PATHINFO_EXTENSION));
 
         if ($extension === 'json') {
             return new UploadedPageSource(
-                self::readJsonFile((string) $file['tmp_name'], (int) $file['size']),
+                $this->readJsonFile((string) $file['tmp_name'], (int) $file['size']),
             );
         }
 
@@ -78,7 +83,7 @@ final class SourcePackageUploadReader
         }
 
         try {
-            return self::readZipArchive((string) $file['tmp_name']);
+            return $this->readZipArchive((string) $file['tmp_name']);
         } catch (SourcePackageValidationException $e) {
             throw $e->withUserMessage(self::INVALID_ARCHIVE_MESSAGE);
         }
@@ -87,7 +92,7 @@ final class SourcePackageUploadReader
     /**
      * @return array<string, mixed>
      */
-    public static function readJson(string $fieldName): array
+    public function readJson(string $fieldName): array
     {
         $file = self::uploadedFile($fieldName);
         $name = (string) $file['name'];
@@ -95,7 +100,7 @@ final class SourcePackageUploadReader
             throw new SourcePackageValidationException('Upload a .json file.');
         }
 
-        return self::readJsonFile((string) $file['tmp_name'], (int) $file['size']);
+        return $this->readJsonFile((string) $file['tmp_name'], (int) $file['size']);
     }
 
     /**
@@ -134,7 +139,7 @@ final class SourcePackageUploadReader
     /**
      * @return array<string, mixed>
      */
-    private static function readJsonFile(string $path, int $declaredSize): array
+    private function readJsonFile(string $path, int $declaredSize): array
     {
         if ($declaredSize > self::MAX_JSON_BYTES || filesize($path) > self::MAX_JSON_BYTES) {
             throw new SourcePackageValidationException(
@@ -142,7 +147,7 @@ final class SourcePackageUploadReader
             );
         }
 
-        $raw = file_get_contents($path);
+        $raw = $this->filesystem->read($path);
         if (!is_string($raw)) {
             throw new SourcePackageValidationException('The uploaded file could not be read.');
         }
@@ -153,7 +158,7 @@ final class SourcePackageUploadReader
         );
     }
 
-    private static function readZipArchive(string $path): UploadedPageSource
+    private function readZipArchive(string $path): UploadedPageSource
     {
         if (!class_exists(\ZipArchive::class)) {
             throw new SourcePackageValidationException('ZIP support is not available on this server.');
@@ -209,7 +214,7 @@ final class SourcePackageUploadReader
             foreach ($validated['images'] as $record) {
                 $archivePath = $record['archive_path'];
                 $declaredPaths[$archivePath] = true;
-                $imagePath = self::extractEntryToTemporaryFile($zip, $entries, $archivePath, self::MAX_IMAGE_BYTES);
+                $imagePath = $this->extractEntryToTemporaryFile($zip, $entries, $archivePath, self::MAX_IMAGE_BYTES);
                 $temporaryFiles[] = $imagePath;
                 $actualBytes = filesize($imagePath);
                 if (!is_int($actualBytes)) {
@@ -252,10 +257,10 @@ final class SourcePackageUploadReader
                 }
             }
 
-            $serializedPayload = json_encode($payload, JSON_UNESCAPED_SLASHES);
-            if (!is_string($serializedPayload)) {
-                throw new SourcePackageValidationException('The archived page source could not be inspected.');
-            }
+            $serializedPayload = self::encodeJson(
+                $payload,
+                JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES,
+            );
             foreach ($images as $image) {
                 foreach ($image->sourceUrls() as $sourceUrl) {
                     if (!str_contains($serializedPayload, $sourceUrl)) {
@@ -265,7 +270,7 @@ final class SourcePackageUploadReader
             }
 
             foreach ($temporaryFiles as $temporaryFile) {
-                self::deleteAtShutdown($temporaryFile);
+                $this->deleteAtShutdown($temporaryFile);
             }
             $completed = true;
 
@@ -275,7 +280,7 @@ final class SourcePackageUploadReader
             if (!$completed) {
                 foreach ($temporaryFiles as $temporaryFile) {
                     if (is_file($temporaryFile)) {
-                        @unlink($temporaryFile);
+                        $this->filesystem->delete($temporaryFile);
                     }
                 }
             }
@@ -406,7 +411,7 @@ final class SourcePackageUploadReader
     /**
      * @param array<string, array{index: int, size: int, compressed_size: int}> $entries
      */
-    private static function extractEntryToTemporaryFile(
+    private function extractEntryToTemporaryFile(
         \ZipArchive $zip,
         array $entries,
         string $path,
@@ -418,76 +423,21 @@ final class SourcePackageUploadReader
         }
 
         $temporaryPath = self::temporaryPath('uncanny-page-builder-source-image-');
-        $output = fopen($temporaryPath, 'wb');
-        if ($output === false) {
-            @unlink($temporaryPath);
-            throw new SourcePackageValidationException('The uploaded image could not be prepared for import.');
+        $source = method_exists($zip, 'getStreamIndex')
+            ? $zip->getStreamIndex($entry['index'])
+            : $zip->getFromIndex($entry['index'], $maxBytes + 1);
+        if (!is_resource($source) && !is_string($source)) {
+            $this->filesystem->delete($temporaryPath);
+            throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
         }
 
-        $stream = null;
-        $written = 0;
-        try {
-            if (method_exists($zip, 'getStreamIndex')) {
-                $stream = $zip->getStreamIndex($entry['index']);
-                if (!is_resource($stream)) {
-                    throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
-                }
-
-                while (!feof($stream)) {
-                    $chunk = fread($stream, 1048576);
-                    if ($chunk === false) {
-                        throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
-                    }
-                    if ($chunk === '') {
-                        continue;
-                    }
-                    if ($written + strlen($chunk) > $maxBytes) {
-                        throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
-                    }
-                    self::writeChunk($output, $chunk);
-                    $written += strlen($chunk);
-                }
-            } else {
-                $bytes = $zip->getFromIndex($entry['index'], $maxBytes + 1);
-                if (!is_string($bytes) || strlen($bytes) > $maxBytes) {
-                    throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
-                }
-                self::writeChunk($output, $bytes);
-                $written = strlen($bytes);
-            }
-        } catch (\Throwable $e) {
-            if (is_resource($stream)) {
-                fclose($stream);
-            }
-            fclose($output);
-            @unlink($temporaryPath);
-            throw $e;
-        }
-
-        if (is_resource($stream)) {
-            fclose($stream);
-        }
-        fclose($output);
+        $written = $this->filesystem->writeBounded($temporaryPath, $source, $maxBytes);
         if ($written !== $entry['size']) {
-            @unlink($temporaryPath);
+            $this->filesystem->delete($temporaryPath);
             throw new SourcePackageValidationException("The archived {$path} file could not be read completely.");
         }
 
         return $temporaryPath;
-    }
-
-    /** @param resource $output */
-    private static function writeChunk($output, string $chunk): void
-    {
-        $offset = 0;
-        $length = strlen($chunk);
-        while ($offset < $length) {
-            $written = fwrite($output, substr($chunk, $offset));
-            if ($written === false || $written === 0) {
-                throw new SourcePackageValidationException('The uploaded image could not be prepared for import.');
-            }
-            $offset += $written;
-        }
     }
 
     private static function temporaryPath(string $prefix): string
@@ -502,11 +452,12 @@ final class SourcePackageUploadReader
         return $path;
     }
 
-    private static function deleteAtShutdown(string $path): void
+    private function deleteAtShutdown(string $path): void
     {
-        register_shutdown_function(static function () use ($path): void {
+        $filesystem = $this->filesystem;
+        register_shutdown_function(static function () use ($path, $filesystem): void {
             if (is_file($path)) {
-                @unlink($path);
+                $filesystem->delete($path);
             }
         });
     }
@@ -657,5 +608,15 @@ final class SourcePackageUploadReader
         $mime = $finfo->file($path);
 
         return is_string($mime) ? strtolower($mime) : '';
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone upload-reader tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

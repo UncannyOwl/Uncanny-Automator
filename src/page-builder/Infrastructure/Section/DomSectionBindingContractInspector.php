@@ -51,14 +51,14 @@ final class DomSectionBindingContractInspector implements SectionBindingContract
             ksort($queryAttributes);
 
             $bindingId = $source . ':' . $path;
-            $contractHash = sha1((string) json_encode([
+            $contractHash = sha1(self::encodeJson([
                 'source' => $source,
                 'path' => $path,
                 'query_attributes' => $queryAttributes,
                 'bind_keys' => $bindKeys,
                 'bindings' => $bindings,
                 'template_html' => $templateHtml,
-            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
             $contracts[] = new SectionBindingContract(
                 bindingId: $bindingId,
@@ -101,5 +101,15 @@ final class DomSectionBindingContractInspector implements SectionBindingContract
         }
 
         return $queryAttributes;
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone section tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

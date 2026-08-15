@@ -132,12 +132,20 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
         array $attributes = [],
         ?StaticExportPageIdentity $pageIdentity = null,
         DynamicBindingRenderMode $bindingMode = DynamicBindingRenderMode::ResolveAll,
+        ?array &$removedBindingIds = null,
     ): string {
         $html = $this->sanitizeRenderHtml($html);
         $html = ($this->shortcodeBindingNormalizer ?? new ShortcodeBindingNormalizer())->normalize($html);
 
         if (strpos($html, 'data-ai-dynamic') !== false) {
-            $html = $this->dynamicRenderer->render($html, $pageIdentity, $bindingMode);
+            $html = $this->dynamicRenderer->render(
+                $html,
+                $pageIdentity,
+                $bindingMode,
+                $removedBindingIds,
+            );
+        } elseif ($bindingMode === DynamicBindingRenderMode::RemoveAll) {
+            $removedBindingIds = [];
         }
 
         // Lazy-load images that don't already have a loading attribute.
@@ -176,6 +184,16 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
                 $html,
                 1
             ) ?? $html;
+        }
+
+        /*
+         * A deactivation fallback is a closed publication product. External
+         * section filters run in the publisher's request and could reinsert
+         * dynamic or privileged output after the omission proof. Keep this
+         * path entirely inside the compiler boundary.
+         */
+        if ($bindingMode === DynamicBindingRenderMode::RemoveAll) {
+            return AlpineVisibilityGuard::addCloakToXShow($html);
         }
 
         try {

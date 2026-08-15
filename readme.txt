@@ -1,10 +1,10 @@
-=== Uncanny Automator - AI + Automation for WordPress | AI Agent, AI Page Builder, Free AI Usage Included ===
+=== Uncanny Automator – AI + Automation for WordPress | AI Agent, AI Page Builder, Free AI Usage Included ===
 Contributors: uncannyautomator, uncannyowl, smub
 Tags: ai, automation, ai agent, ai assistant, workflow automation
 Requires at least: 5.8
-Tested up to: 7.0.3
+Tested up to: 7.0.4
 Requires PHP: 7.4
-Stable tag: 7.5.1
+Stable tag: 7.5.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,7 +12,7 @@ The AI + Automation platform for WordPress. Automate workflows across all your p
 
 == Description ==
 
-**Uncanny Automator is a truly unique AI + Automation platform for WordPress.** It combines the most powerful no-code automation engine in the WordPress ecosystem with the most capable AI assistant for WordPress and the first true WordPress AI page builder. In other words, everything you need to grow your WordPress business in one plugin.
+**Uncanny Automator is a truly unique AI + Automation platform for WordPress.** It combines the most powerful no-code automation engine in the WordPress ecosystem with the most capable AI assistant for WordPress and the first true WordPress AI page builder. In other words, everything you need to grow your WordPress business.
 
 Whether you want to connect your favorite plugins and apps, put an **AI agent** to work managing your WordPress site, or **build beautiful pages with AI** (instead of learning how to use complicated page builders), Uncanny Automator does it all natively inside WordPress in one easy-to-use package.
 
@@ -20,19 +20,13 @@ Trusted by 40,000+ active sites with a 4.9/5 star rating and 2,000,000+ download
 
 = Free AI included — no AI subscription, no API keys, no setup =
 
-Most WordPress AI plugins make you bring your own API key, pay for a separate AI subscription, or wire up an MCP server before you can do anything. **Uncanny Automator is different — enough free Uncanny Agent usage is included to get you started, and the Pro version includes more than enough AI usage for everyday use.** No separate AI subscription. No API keys to copy and paste. No MCP servers to wire up.
+Most WordPress AI plugins make you bring your own API key, pay for a separate AI subscription, or wire up an MCP server before you can do anything. **Uncanny Automator is different — no separate AI subscription. No API keys to copy and paste. No MCP servers to wire up.** Lite includes enough free Uncanny Agent usage to get you started, and the Pro version includes more than enough AI usage for everyday use. 
 
 Just install the plugin, create your free account, and start chatting with Uncanny Agent right inside your WordPress site.
 
 = Three core capabilities, one platform =
 
-**1. Uncanny Recipe Builder — no-code WordPress automation.** Build automated workflows ("recipes") that connect your WordPress plugins and apps using triggers and actions. When something happens on your site, Automator makes other things happen — automatically.
-
-**2. Uncanny Agent — your AI assistant for WordPress.** A conversational AI assistant built right into your WordPress admin, with some free AI usage included. Ask it about your site. Ask it about your business. Ask it to get things done. It works alongside your automations to help you manage your WordPress site.
-
-**3. Uncanny Page Builder — build pages with conversation.** The page builder for WordPress designed from the ground up to be AI-first. Describe the page you want and Uncanny Agent designs AND builds it, outputting professional-looking designs built from clean HTML and CSS. That means no shortcodes, no block markup, and **no page builder lock-in.**
-
-= Uncanny Recipe Builder: integrate anything, automate everything =
+= 1. Uncanny Recipe Builder: integrate anything, automate everything =
 
 Connect the plugins and apps you already use and let them work together. With triggers and actions, you can automate virtually any task — from a simple email notification to complex multi-step business processes.
 
@@ -44,21 +38,21 @@ Connect the plugins and apps you already use and let them work together. With tr
 
 It's the WordPress-native way to do what Zapier and Make do — with deeper integration and no per-task fees.
 
-= Uncanny Agent: an AI agent for WordPress that gets things done =
+= 2. Uncanny Agent: an AI agent for WordPress that gets things done =
 
 Uncanny Agent is a conversational **AI assistant for WordPress** that understands your site and completes tasks on your behalf. Ask it. It does it — using the free starter AI usage included with the plugin, with no separate subscription required.
 
-- **Ask about your site:** "How are my sales trending this month?" "What quizzes are users struggling with, and what questions are they having the most difficulty with?" "Review my site and suggest SEO improvements."
-- **Ask it anything about WordPress:** no question is too basic and none too advanced — "What's a permalink?" "How do I duplicate a page?" Uncanny Agent can also walk you through setting up WordPress, your theme, and your plugins — or often just do it for you. And unlike a generic chatbot, its answers fit *your* site — your theme, your plugins, your settings.
-- **Ask it to do things:** "Create a blog post draft about our spring sale." "Add a contact form to the About page." "Update the site tagline."
-- **Put it to work across your integrations:** Uncanny Agent can run actions from your connected integrations directly, without building a recipe first. "Add this customer to my Mailchimp list." "Post this announcement to Slack." "Add today's orders to my Google Sheet."
+- **Ask about your site:** "How are my sales trending this month?" "Which quiz questions are users struggling with?" "Review my site and suggest SEO improvements."
+- **Ask it anything about WordPress:** no question is too basic and none too advanced — "What's a permalink?" "How do I duplicate a page?" Uncanny Agent can walk you through setting up WordPress, your theme, and your plugins — or just do it for you. Unlike a generic chatbot, its answers fit *your* site.
+- **Ask it to do things:** "Create a blog post draft about our spring sale." "Add a contact form to the About page."
+- **Put it to work across your integrations:** Uncanny Agent runs actions from your connected integrations directly — no recipe needed. "Add this customer to my Mailchimp list." "Add today's orders to my Google Sheet."
 - **It does more than answer:** Uncanny Agent builds pages, updates settings, and generates code snippets you can review before using.
-- **Works alongside your automations:** Uncanny Agent handles the conversational, ad-hoc work while your recipes handle the systematic, recurring workflows.
-- **Powered by leading AI models:** Uncanny Agent runs on leading AI models selected and managed for you — nothing to configure. (In your recipes, you can also connect your own AI providers including OpenAI (ChatGPT), Anthropic (Claude), Google Gemini, Perplexity, Mistral AI, Cohere, and xAI.)
+- **Works alongside your automations:** Uncanny Agent handles the ad-hoc work; your recipes handle the recurring workflows.
+- **Powered by leading AI models:** Uncanny Agent runs on leading models selected and managed for you — nothing to configure. (In your recipes, you can also connect your own AI providers — OpenAI, Anthropic, Google Gemini, and more.)
 
 Uncanny Agent is the most powerful, most capable conversational AI assistant for WordPress. Try it and see for yourself!
 
-= Uncanny Page Builder: build WordPress pages with AI =
+= 3. Uncanny Page Builder: build WordPress pages with AI =
 
 Uncanny Page Builder is the first WordPress page builder with AI at its foundation.
 
@@ -68,19 +62,79 @@ Builders like Elementor, Kadence, and Spectra still expect *you* to supply the d
 
 Uncanny Agent brings the design intelligence — describe what you want and Agent designs *and* builds it. It's less like swapping page builders and more like having a designer and developer on call.
 
-- **Describe it, Uncanny Agent designs and builds it:** "Create a landing page with a hero section, three feature cards, a testimonial slider, and a call-to-action." Agent makes the design decisions — layout, hierarchy, spacing, and style — then builds the page. Refine it through conversation.
-- **Build from any example:** upload a screenshot of a page or design you admire and Uncanny Agent builds something in that style — no design brief required.
-- **Images and icons, handled for you:** Uncanny Agent searches your media library and includes images as part of a build, and draws on thousands of built-in icons — no hunting down assets before you start.
-- **Pages that keep themselves current:** add live content from 90+ built-in live elements — latest-posts sections that update themselves, content that welcomes logged-in members by name, login and registration forms, menus that stay in sync, and live site stats — all rendered server-side into clean HTML.
-- **Your brand, locked in:** set your logo, colors, and fonts once, lock the choices that matter, and give Uncanny Agent standing design direction it applies to every page it builds. On-brand by default.
-- **Works with the site you already have:** keep your theme's header and footer or go full-page design. Redesign an existing page and the original is saved automatically — restore it anytime, exactly as it was.
-- **Menus too, not just pages:** ask Uncanny Agent to create a navigation menu, add or reorder items, or assign it to a location — all by conversation.
-- **You stay in control:** significant Uncanny Agent changes wait for your approval, edits land on an unsaved draft — your live page doesn't change until you save — and edits can be undone.
-- **No lock-in, ever:** unlike traditional page builders that embed proprietary shortcodes and block markup, Uncanny Page Builder outputs clean, portable HTML and CSS. Deactivate the plugin and your content and design stay intact (live elements simply pause) — you can even download any page as a standalone web page and host it anywhere.
-- **AI-first, not AI-assisted:** other builders bolt AI onto a drag-and-drop interface. Uncanny Page Builder was designed from day one to be an AI page builder.
-- **Still fully editable:** fine-tune text and swap images directly with click-to-edit capabilities whenever you want — and styles can differ by device and by state, so "make the buttons bigger on mobile" and "darken the button on hover" are things you can simply ask for.
+- **Describe it, Uncanny Agent designs and builds it:** "Create a landing page with a hero, three feature cards, a testimonial slider, and a call-to-action." Agent makes the design decisions — layout, hierarchy, spacing, style — then builds the page. Refine it through conversation.
+- **Build from any example:** upload a screenshot of a design you admire and Uncanny Agent builds in that style — no design brief required.
+- **Images and icons, handled for you:** Uncanny Agent pulls images from your media library and draws on thousands of built-in icons — no hunting down assets first.
+- **Pages that keep themselves current:** add live content from 90+ built-in live elements — latest posts, content that greets members by name, login forms, menus, live site stats — all rendered server-side into clean HTML.
+- **Your brand, locked in:** set your logo, colors, and fonts once, lock the choices that matter, and every page Uncanny Agent builds is on-brand by default.
+- **Works with the site you already have:** keep your theme's header and footer or go full-page. Redesign an existing page and the original is saved automatically — restore it anytime.
+- **You stay in control:** edits land on an unsaved draft — your live page doesn't change until you save — and edits can be undone.
+- **No lock-in, ever:** no proprietary shortcodes or block markup — Uncanny Page Builder outputs clean, portable HTML and CSS. Deactivate the plugin and your design stays intact; you can even download any page and host it anywhere.
+- **AI-first, not AI-assisted:** other builders bolt AI onto drag-and-drop. Uncanny Page Builder was designed from day one for AI.
+- **Still fully editable:** fine-tune text and swap images with click-to-edit — and styles can differ by device and state, so "make the buttons bigger on mobile" is something you can simply ask for.
 
 It's AI website building for WordPress — but really, it's like having a designer and developer build your pages for you. The lean, portable alternative to Elementor, Divi, Kadence, and the block editor — faster to build with than any of them, without the design skills, the learning curve, or a designer's budget.
+
+= Who it's for =
+
+- **WordPress beginners** who need a guide as much as a tool — ask Uncanny Agent any WordPress question, get step-by-step help setting up your site, and build your first pages by describing them. Free to start.
+- **Solopreneurs & small business owners** who want to save 5–10 hours a week, get an AI assistant for their site, and build pages without learning a builder.
+- **Marketing managers** connecting WordPress to their marketing stack and automating campaigns — a WordPress-native alternative to Zapier with AI included.
+- **eCommerce, eLearning & membership site operators** automating the full user lifecycle across WooCommerce, LearnDash, MemberPress, and more.
+- **Developers** replacing fragile custom integration code with maintainable recipes, and using AI to explore data structures and generate snippets.
+- **Agencies** standardizing automation, AI, and page building across every client site — with no page builder lock-in.
+
+= Praise for Uncanny Automator =
+
+- "With this plugin, WordPress sites become **intelligent**. It is an exceptionally useful product and the customer service I experienced was fast and thorough." — *Stephen P*
+- "Uncanny Automator stands out in its ease of use, configurability and **flexibility**. With Uncanny Automator, we pretty much stopped using Zapier." — *Jing*
+- "I've been testing and building automation **solutions for clients** over the past 10 years. Once I found Uncanny Automator, I stopped looking for other software." — *Adam C*
+- "I tried 3 or 4 automator plugins before I decided on Uncanny. Boy did I make the right choice, as the **support** I've received has been exceptional." — *Noel A*
+- "Really impressed by Uncanny Automator—a **gamechanger**. The plugin is clearly built very well and performs cleanly and consistently." — *Richard F*
+- "I love it so much that I'm looking for more ways to streamline and **automate** our processes now. Such a great product!" — *Steph W*
+
+= What you get free with Uncanny Automator =
+
+Uncanny Automator is free to install and use, and includes:
+
+- **Uncanny Recipe Builder** with unlimited plugin-to-plugin automations — connect the plugins on your site with no limits.
+- **Hundreds of free triggers and actions** across your favorite WordPress plugins.
+- **Free Uncanny Agent usage to get you started** — enough to experience it firsthand, with no separate subscription required and no API keys to manage.
+- **Free access to try Uncanny Page Builder** — build a few pages with AI and see it for yourself. Because Uncanny Agent does the building, page building draws on Uncanny Agent usage.
+- **250 free app credits** to use 250 free triggers/actions with external apps like Google Sheets, Slack, and Mailchimp.
+
+Create a free account and start automating and chatting in minutes — no credit card required.
+
+= Upgrade to Uncanny Automator Pro =
+
+Uncanny Automator Pro unlocks the full platform:
+
+- **Generous Uncanny Agent usage** — Monthly usage that refreshes automatically, plus Anytime usage you can spend whenever you need it, for business analysis, content creation, page building, and everyday site management.
+- **Pro triggers, actions, and tokens** — the complete library, including premium WordPress plugins and external apps, plus advanced data tokens for dynamic, personalized recipes.
+- **Advanced workflow logic** — delays and scheduling to control the timing of your workflows, conditions to build sophisticated multi-step automations and loops that process users and posts in bulk.
+- **Unlimited app automations** — no per-task fees.
+- **Higher plans add even more** — Multisite support, addons including Custom User Fields, User Lists, Restrict Content, and Dynamic Content, and Elite Integrations like Salesforce and QuickBooks Online. See the pricing page for what each plan includes.
+
+= One subscription replaces many =
+
+A single Uncanny Automator Pro subscription can replace an entire stack of subscriptions — and do the work you'd otherwise hire specialists for:
+
+- **Your automation subscription** — Zapier, Make, or Pabbly Connect
+- **Your AI subscription** — ChatGPT, Claude, or Gemini, now built into WordPress
+- **Your page builder subscription** — Elementor, Kadence, or Spectra
+- **A graphic designer** — design landing pages and layouts with AI
+- **A WordPress developer** — let Uncanny Agent explore your data, generate code snippets, and complete admin tasks
+- **A virtual WordPress assistant** — Uncanny Agent completes routine site-management tasks for you
+- **A content writer** — draft posts, pages, and product descriptions with AI
+- **An SEO specialist** — generate meta titles, descriptions, and optimized content
+
+Every plan includes all three capabilities — Uncanny Recipe Builder, Uncanny Agent, and Uncanny Page Builder. With plans starting at only $25/month (billed annually), Uncanny Automator is the smartest decision you can make for your organization running on WordPress. See [https://automatorplugin.com/pricing/](https://automatorplugin.com/pricing/) for details.
+
+= Learn more =
+
+- Website: [https://automatorplugin.com/](https://automatorplugin.com/)
+- All integrations: [https://automatorplugin.com/integrations/](https://automatorplugin.com/integrations/)
+- Knowledge base: [https://automatorplugin.com/knowledge-base/](https://automatorplugin.com/knowledge-base/)
 
 = Connect everything on your WordPress site =
 
@@ -337,67 +391,6 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 
 Don't see what you need? Connect to virtually any plugin with custom triggers and actions, or any app with robust webhook support.
 
-= Who it's for =
-
-- **WordPress beginners** who need a guide as much as a tool — ask Uncanny Agent any WordPress question, get step-by-step help setting up your site, and build your first pages by describing them. Free to start.
-- **Solopreneurs & small business owners** who want to save 5–10 hours a week, get an AI assistant for their site, and build pages without learning a builder.
-- **Marketing managers** connecting WordPress to their marketing stack and automating campaigns — a WordPress-native alternative to Zapier with AI included.
-- **eCommerce, eLearning & membership site operators** automating the full user lifecycle across WooCommerce, LearnDash, MemberPress, and more.
-- **Developers** replacing fragile custom integration code with maintainable recipes, and using AI to explore data structures and generate snippets.
-- **Agencies** standardizing automation, AI, and page building across every client site — with no page builder lock-in.
-
-= Praise for Uncanny Automator =
-
-- "With this plugin, WordPress sites become **intelligent**. It is an exceptionally useful product and the customer service I experienced was fast and thorough." — *Stephen P*
-- "Uncanny Automator stands out in its ease of use, configurability and **flexibility**. With Uncanny Automator, we pretty much stopped using Zapier." — *Jing*
-- "I've been testing and building automation **solutions for clients** over the past 10 years. Once I found Uncanny Automator, I stopped looking for other software." — *Adam C*
-- "I tried 3 or 4 automator plugins before I decided on Uncanny. Boy did I make the right choice, as the **support** I've received has been exceptional." — *Noel A*
-- "Really impressed by Uncanny Automator—a **gamechanger**. The plugin is clearly built very well and performs cleanly and consistently." — *Richard F*
-- "I love it so much that I'm looking for more ways to streamline and **automate** our processes now. Such a great product!" — *Steph W*
-
-= What you get free with Uncanny Automator =
-
-Uncanny Automator is free to install and use, and includes:
-
-- **Uncanny Recipe Builder** with unlimited plugin-to-plugin automations — connect the plugins on your site with no limits.
-- **Hundreds of free triggers and actions** across your favorite WordPress plugins.
-- **Free Uncanny Agent usage to get you started** — enough to experience it firsthand, with no separate subscription required and no API keys to manage.
-- **Free access to try Uncanny Page Builder** — build a few pages with AI and see it for yourself. Because Uncanny Agent does the building, page building draws on Uncanny Agent usage.
-- **250 free app credits** to use 250 free triggers/actions with external apps like Google Sheets, Slack, and Mailchimp.
-
-Create a free account and start automating and chatting in minutes — no credit card required.
-
-= Upgrade to Uncanny Automator Pro =
-
-Uncanny Automator Pro unlocks the full platform:
-
-- **Generous Uncanny Agent usage** — Monthly usage that refreshes automatically, plus Anytime usage you can spend whenever you need it, for business analysis, content creation, page building, and everyday site management.
-- **Pro triggers, actions, and tokens** — the complete library, including premium WordPress plugins and external apps, plus advanced data tokens for dynamic, personalized recipes.
-- **Advanced workflow logic** — delays and scheduling to control the timing of your workflows, conditions to build sophisticated multi-step automations and loops that process users and posts in bulk.
-- **Unlimited app automations** — no per-task fees.
-- **Higher plans add even more** — Multisite support, addons including Custom User Fields, User Lists, Restrict Content, and Dynamic Content, and Elite Integrations like Salesforce and QuickBooks Online. See the pricing page for what each plan includes.
-
-= One subscription replaces many =
-
-A single Uncanny Automator Pro subscription can replace an entire stack of subscriptions — and do the work you'd otherwise hire specialists for:
-
-- **Your automation subscription** — Zapier, Make, or Pabbly Connect
-- **Your AI subscription** — ChatGPT, Claude, or Gemini, now built into WordPress
-- **Your page builder subscription** — Elementor, Kadence, or Spectra
-- **A graphic designer** — design landing pages and layouts with AI
-- **A WordPress developer** — let Uncanny Agent explore your data, generate code snippets, and complete admin tasks
-- **A virtual WordPress assistant** — Uncanny Agent completes routine site-management tasks for you
-- **A content writer** — draft posts, pages, and product descriptions with AI
-- **An SEO specialist** — generate meta titles, descriptions, and optimized content
-
-Every plan includes all three capabilities — Uncanny Recipe Builder, Uncanny Agent, and Uncanny Page Builder. With plans starting at only $25/month (billed annually), Uncanny Automator is the smartest decision you can make for your organization running on WordPress. See [https://automatorplugin.com/pricing/](https://automatorplugin.com/pricing/) for details.
-
-= Learn more =
-
-- Website: [https://automatorplugin.com/](https://automatorplugin.com/)
-- All integrations: [https://automatorplugin.com/integrations/](https://automatorplugin.com/integrations/)
-- Knowledge base: [https://automatorplugin.com/knowledge-base/](https://automatorplugin.com/knowledge-base/)
-
 == Frequently Asked Questions ==
 
 = What is Uncanny Automator? =
@@ -473,6 +466,14 @@ Yes — Uncanny Automator is free to install and use. It includes Uncanny Recipe
 7. Uncanny Recipe Builder — set up your first no-code automation in 5 minutes, connecting hundreds of plugins and apps.
 
 == Changelog ==
+
+= 7.5.1.1 [2026-08-15] =
+
+**Fixed:**
+
+* Page Builder - Preserved the last published page content when Automator is deactivated or deleted, and improved file system safety checks. #8385
+* Recipe UI - Condition field values lost on save, reverting to the first dropdown option. #8366
+* Setup wizard - Fixed an issue with the "Build my first page" button failing to create a page. #8379
 
 = 7.5.1 [2026-08-13] =
 

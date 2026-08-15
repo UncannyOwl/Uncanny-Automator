@@ -81,12 +81,12 @@ final class PagePublicationFailed extends \RuntimeException
         );
     }
 
-    public static function publicStateCommitFailed(\Throwable $previous): self
+    public static function publicStateCommitFailed(\Throwable $previous, string $reasonCode = ''): self
     {
         return new self(
             PagePublicationOutcome::PublicStateCommitFailed,
             'The public page state could not be committed. Nothing was published.',
-            [],
+            $reasonCode !== '' ? ['reason_code' => $reasonCode] : [],
             $previous,
         );
     }

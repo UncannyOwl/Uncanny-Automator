@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Infrastructure\Rendering;
 
 use UncannyPageBuilder\Application\Rendering\PublicRuntimeAssetCatalog;
+use UncannyPageBuilder\Application\Publishing\PageDeactivationFallbackAssetResolverInterface;
 use UncannyPageBuilder\Application\Rendering\PublishedPageAssetResolverInterface;
 use UncannyPageBuilder\Application\Rendering\PublishedPageAssets;
 use UncannyPageBuilder\Application\Rendering\PublishedPageRuntimeUnavailable;
+use UncannyPageBuilder\Domain\Publishing\PageDeactivationFallback;
 use UncannyPageBuilder\Domain\Publishing\PublishedPageArtifact;
 
 /**
@@ -16,7 +18,7 @@ use UncannyPageBuilder\Domain\Publishing\PublishedPageArtifact;
  * Page artifacts preserve published content. Runtime CSS and JavaScript follow
  * the installed plugin release so an asset update is deployed once, in place.
  */
-final class PublishedPageAssetResolver implements PublishedPageAssetResolverInterface
+final class PublishedPageAssetResolver implements PublishedPageAssetResolverInterface, PageDeactivationFallbackAssetResolverInterface
 {
     public function __construct(
         private readonly string $pluginPath,
@@ -25,7 +27,17 @@ final class PublishedPageAssetResolver implements PublishedPageAssetResolverInte
 
     public function resolve(PublishedPageArtifact $artifact): PublishedPageAssets
     {
-        $manifest = $artifact->assetsManifest();
+        return $this->resolveManifest($artifact->assetsManifest());
+    }
+
+    public function resolveFallback(PageDeactivationFallback $fallback): PublishedPageAssets
+    {
+        return $this->resolveManifest($fallback->assetsManifest());
+    }
+
+    /** @param array<string, mixed> $manifest */
+    private function resolveManifest(array $manifest): PublishedPageAssets
+    {
         $records = $manifest['assets'] ?? null;
 
         if (!is_array($records) || $records === [] || array_is_list($records)) {
@@ -140,9 +152,16 @@ final class PublishedPageAssetResolver implements PublishedPageAssetResolverInte
             return false;
         }
 
-        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        $scheme = strtolower((string) self::parseUrl($url, PHP_URL_SCHEME));
 
         return in_array($scheme, ['http', 'https'], true);
+    }
+
+    private static function parseUrl(string $url, int $component = -1): array|string|int|false|null
+    {
+        // This parser is a deterministic rendering rule, not a WordPress capability.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Rendering remains usable without a WordPress bootstrap.
+        return parse_url($url, $component);
     }
 
     private function unavailable(string $reasonCode, string $message): PublishedPageRuntimeUnavailable

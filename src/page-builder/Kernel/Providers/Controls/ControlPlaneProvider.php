@@ -1334,6 +1334,7 @@ final class ControlPlaneProvider implements ServiceProviderInterface
     private function agentTool(string $toolName, string $exposure, bool $requiresReadBeforeWrite = false): array
     {
         $path = UNCANNY_PB_PATH . 'tools/' . $toolName . '.json';
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Tool manifests are plugin-local JSON files, not remote URLs.
         $json = is_readable($path) ? file_get_contents($path) : false;
         if ($json === false) {
             if ($exposure === 'hidden') {

@@ -30,7 +30,7 @@ final class DatabasePageSourceSnapshotRepository implements PageSourceSnapshotRe
                 'source_revision_hash' => $snapshot->sourceRevisionHash(),
                 'source_content_hash' => $snapshot->sourceContentHash(),
                 'page_generation' => $snapshot->pageGeneration(),
-                'source_json' => json_encode(
+                'source_json' => self::encodeJson(
                     $snapshot->source(),
                     JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
                 ),
@@ -164,5 +164,15 @@ final class DatabasePageSourceSnapshotRepository implements PageSourceSnapshotRe
         if (function_exists('get_option') && defined('ABSPATH')) {
             SchemaManager::ensureSchema();
         }
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone persistence tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

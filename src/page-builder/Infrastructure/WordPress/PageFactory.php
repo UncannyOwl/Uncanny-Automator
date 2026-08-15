@@ -33,6 +33,7 @@ final class PageFactory
         private readonly PageBuilderAvailabilityInterface $availability,
         private readonly ?PageSourcePackageService $sourcePackages = null,
         private readonly ?PageSourceArchiveService $sourceArchives = null,
+        private readonly ?SourcePackageUploadReader $uploadReader = null,
     ) {
         $this->repository = $repository;
         $this->shellModeService = $shellModeService;
@@ -114,7 +115,7 @@ final class PageFactory
 
         $requiresUnfilteredHtml = false;
         try {
-            $upload = SourcePackageUploadReader::readPageSource(self::SOURCE_PACKAGE_FILE_FIELD);
+            $upload = $this->sourcePackageUploadReader()->readPageSource(self::SOURCE_PACKAGE_FILE_FIELD);
             $payload = $upload->payload();
             // Validate before creating the draft so a bad file never leaves an
             // orphan Page Builder page in the Pages list.
@@ -259,6 +260,12 @@ final class PageFactory
             'Uncanny Page Builder'
         );
         exit;
+    }
+
+    private function sourcePackageUploadReader(): SourcePackageUploadReader
+    {
+        return $this->uploadReader
+            ?? new SourcePackageUploadReader(new WordPressLocalFilesystem());
     }
 
     private function createDraftPage(

@@ -7,10 +7,11 @@
 
 namespace Uncanny_Automator;
 
-use Exception;
 use Throwable;
-use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Availability;
+use Uncanny_Automator\App\Feature_State\Domain\Feature_State;
 use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Settings;
+
+use function Uncanny_Automator\App\Infrastructure\automator_feature_state_query;
 
 if ( ! defined( 'WPINC' ) ) {
 	die;
@@ -134,12 +135,14 @@ class Setup_Wizard {
 	 */
 	public function setup_menu_page() {
 
-		$is_setup_wizard_page = 'uncanny-automator-setup-wizard' === automator_filter_input( 'page' );
-		$is_pro_connected     = $this->is_pro_connected();
-		// Only add the page if site is not connected OR the user is on the setup wizard page (confirmations etc).
-		if ( $is_setup_wizard_page || ! $this->is_user_connected() || ! $is_pro_connected ) {
+		$is_setup_wizard_page = $this->is_setup_wizard_page();
+		$is_visible           = $this->feature_is_visible( Feature_State::SETUP_WIZARD );
+
+		if ( $is_visible || $is_setup_wizard_page ) {
+			// Preserve an in-progress direct route without advertising a hidden
+			// wizard in the Recipes menu. WordPress requires a string parent slug.
 			add_submenu_page(
-				'edit.php?post_type=uo-recipe',
+				$is_visible ? 'edit.php?post_type=uo-recipe' : '',
 				esc_attr__( 'Uncanny Automator Setup Wizard', 'uncanny-automator' ),
 				esc_attr__( 'Setup wizard', 'uncanny-automator' ),
 				automator_get_capability(),
@@ -419,65 +422,27 @@ class Setup_Wizard {
 	}
 
 	/**
-	 * Determine whether the site can use Uncanny Agent.
-	 *
-	 * A connected Lite account includes Uncanny Agent access. Pro plans use the
-	 * credits ledger to confirm that the plan has an active allocation.
+	 * Determine whether the wizard can show the Uncanny Agent option.
 	 *
 	 * @return bool
 	 */
 	public function has_agent_access() {
-
-		// Uncanny Agent requires a connected Automator account.
-		if ( ! $this->is_user_connected() ) {
-			return false;
-		}
-
-		// Connected Lite accounts include Agent usage and do not need a separate ledger gate.
-		if ( ! $this->is_pro_active() ) {
-			return true;
-		}
-
-		// An installed Pro plugin without a valid license keeps the connected Lite allocation.
-		if ( ! $this->is_step_1_complete() ) {
-			return true;
-		}
-
-		// Pro exposes Agent usage through its license payload. Fail closed when that request fails.
-		try {
-			$license = Api_Server::get_license();
-		} catch ( Exception $e ) {
-			return false;
-		}
-
-		// An unexpected payload cannot prove that the Pro plan includes Agent usage.
-		if ( ! is_array( $license ) ) {
-			return false;
-		}
-
-		// The ledger is optional because some Pro plans do not include Agent usage.
-		$ledger = isset( $license['llm_credits'] ) ? (array) $license['llm_credits'] : array();
-
-		// An unsuccessful ledger response does not provide a usable allocation.
-		if ( empty( $ledger['success'] ) ) {
-			return false;
-		}
-
-		// At least one active ledger entry confirms Agent usage for the Pro plan.
-		return ! empty( $ledger['active'] );
+		// The wizard button follows the launcher column, not settings-tab access.
+		return $this->feature_is_visible( Feature_State::AGENT_LAUNCHER_TAB );
 	}
 
 	/**
 	 * Determine whether the current site can start a Page Builder page.
 	 *
-	 * The setup wizard must follow the Page Builder host gate. Agent usage alone
-	 * does not start the embedded Page Builder runtime.
+	 * The policy and the runtime must both permit new Page Builder pages.
 	 *
 	 * @return bool
 	 */
 	public function has_page_builder_access() {
 
-		if ( ! $this->has_agent_access() ) {
+		// The wizard button is a new-page affordance and therefore follows the
+		// Page Builder menu column before applying runtime readiness checks.
+		if ( ! $this->feature_is_visible( Feature_State::PAGE_BUILDER_MENU ) ) {
 			return false;
 		}
 
@@ -491,18 +456,42 @@ class Setup_Wizard {
 	}
 
 	/**
-	 * Read the Page Builder host availability boundary.
+	 * Read Page Builder readiness for new-page creation.
 	 *
 	 * @return bool
 	 */
 	protected function page_builder_is_available() {
 
-		$availability = new Page_Builder_Availability();
-		$settings     = new Page_Builder_Settings();
+		$settings = new Page_Builder_Settings();
 
-		return $availability->is_available()
-			&& $settings->is_enabled( true )
+		return $settings->is_enabled( true )
 			&& false !== has_action( 'admin_post_uncanny_page_builder_create_page' );
+	}
+
+	/**
+	 * Check if the current request is for the setup wizard.
+	 *
+	 * @return bool
+	 */
+	protected function is_setup_wizard_page() {
+		return 'uncanny-automator-setup-wizard' === automator_filter_input( 'page' );
+	}
+
+	/**
+	 * Get the visibility of one feature.
+	 *
+	 * @param string $feature Feature-state key.
+	 *
+	 * @return bool
+	 */
+	protected function feature_is_visible( $feature ) {
+		try {
+			return automator_feature_state_query()->execute()->is_visible( $feature );
+		} catch ( Throwable $error ) {
+			unset( $error );
+
+			return false;
+		}
 	}
 
 	/**

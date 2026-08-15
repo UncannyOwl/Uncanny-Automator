@@ -34,6 +34,7 @@ final class PageArtifactCandidate
         private readonly array $dependencies,
         private readonly array $staticSafetyReport,
         private readonly int $createdBy,
+        private readonly PageDeactivationFallback $deactivationFallback,
         private readonly ?PageSourceSnapshot $sourceSnapshot = null,
     ) {
         if ($pageId <= 0) {
@@ -75,6 +76,14 @@ final class PageArtifactCandidate
         $snapshot = SourceGenerationSnapshot::fromDependencies($dependencies);
         if (!$snapshot instanceof SourceGenerationSnapshot || $snapshot->pageId() !== $pageId) {
             throw new \InvalidArgumentException('Page artifact candidate source generations are missing or invalid.');
+        }
+        if (
+            $deactivationFallback->css() !== $css
+            || $deactivationFallback->customJavaScript() !== $customJavaScript
+            || $deactivationFallback->assetsManifest() !== $assetsManifest
+            || ($dependencies[PageDeactivationFallback::DEPENDENCY_HASH_KEY] ?? null) !== $deactivationFallback->contentHash()
+        ) {
+            throw new \InvalidArgumentException('Page artifact candidate deactivation fallback does not match its output.');
         }
         if ($sourceSnapshot instanceof PageSourceSnapshot) {
             if (
@@ -162,6 +171,11 @@ final class PageArtifactCandidate
     public function sourceSnapshot(): ?PageSourceSnapshot
     {
         return $this->sourceSnapshot;
+    }
+
+    public function deactivationFallback(): PageDeactivationFallback
+    {
+        return $this->deactivationFallback;
     }
 
     public function sourceGenerations(): SourceGenerationSnapshot

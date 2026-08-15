@@ -190,12 +190,19 @@ final class ElementStyleSheet
             return '';
         }
 
-        return (string) json_encode($this->toArray(), JSON_UNESCAPED_SLASHES);
+        return (string) self::encodeJson($this->toArray(), JSON_UNESCAPED_SLASHES);
     }
 
     private static function htmlContainsElementId(string $html, string $elementId): bool
     {
         return str_contains($html, 'id="' . $elementId . '"')
             || str_contains($html, "id='" . $elementId . "'");
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        // Exact JSON bytes are part of the domain contract; wp_json_encode() may repair invalid UTF-8 and change that output.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- This deterministic language operation is not a WordPress capability.
+        return json_encode($value, $flags);
     }
 }

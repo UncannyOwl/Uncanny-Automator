@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Api;
 
 use UncannyPageBuilder\Application\DesignStandardsService;
+use UncannyPageBuilder\Application\Filesystem\LocalFilesystemPortInterface;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 use UncannyPageBuilder\Infrastructure\WordPress\AdminBrandingPage;
 
@@ -20,6 +21,7 @@ final class AgentGuideController
         private readonly PermissionChecker $permissions,
         private readonly BindingRegistry $registry,
         private readonly DesignStandardsService $designStandards,
+        private readonly LocalFilesystemPortInterface $filesystem,
     ) {}
 
     public function registerRoutes(): void
@@ -165,7 +167,7 @@ final class AgentGuideController
             return new \WP_Error('guide_read_failed', 'Could not read guide file.', ['status' => 500]);
         }
 
-        $content = file_get_contents($realPath);
+        $content = $this->filesystem->read($realPath);
 
         if ($content === false) {
             return new \WP_Error('guide_read_failed', 'Could not read guide file.', ['status' => 500]);

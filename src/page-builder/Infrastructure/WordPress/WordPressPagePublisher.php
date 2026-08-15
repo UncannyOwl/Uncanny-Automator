@@ -6,12 +6,16 @@ namespace UncannyPageBuilder\Infrastructure\WordPress;
 
 use UncannyPageBuilder\Application\ContentType\SupportsPostTypeUseCase;
 use UncannyPageBuilder\Application\Publishing\PagePublicationFailed;
+use UncannyPageBuilder\Application\Publishing\PageDeactivationFallbackAssetResolverInterface;
 use UncannyPageBuilder\Application\Publishing\PagePublisherInterface;
 use UncannyPageBuilder\Application\Publishing\PublishPageResult;
+use UncannyPageBuilder\Application\Rendering\PublishedPageAssets;
+use UncannyPageBuilder\Application\Rendering\PublishedPageRuntimeUnavailable;
 use UncannyPageBuilder\Application\ThemeCompositionPageTemplateSynchronizerInterface;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
 use UncannyPageBuilder\Domain\Publishing\PageArtifactCandidate;
+use UncannyPageBuilder\Domain\Publishing\PageDeactivationFallback;
 use UncannyPageBuilder\Domain\Publishing\PageSourceSnapshot;
 use UncannyPageBuilder\Domain\Publishing\PageSourceSnapshotRepositoryInterface;
 use UncannyPageBuilder\Domain\Publishing\PublishedPageArtifact;
@@ -27,7 +31,6 @@ final class WordPressPagePublisher implements PagePublisherInterface
 {
     private const PUBLIC_SLUG_STATUS = 'publish';
 
-
     /** @var \Closure(string, int, string, string, int): string */
     private readonly \Closure $slugResolver;
 
@@ -39,6 +42,14 @@ final class WordPressPagePublisher implements PagePublisherInterface
 
     /** @var \Closure(int): void */
     private readonly \Closure $cacheCleaner;
+
+    private readonly ?PageDeactivationFallbackAssetResolverInterface $fallbackAssets;
+
+    private readonly WordPressPublishedFallbackComposer $fallbackComposer;
+
+    private readonly WpOriginalPageContentStore $originalContent;
+
+    private readonly WordPressPublishedFallbackParser $fallbackParser;
 
     /**
      * @param (\Closure(string, int, string, string, int): string)|null $slugResolver
@@ -56,6 +67,10 @@ final class WordPressPagePublisher implements PagePublisherInterface
         private readonly ?ThemeCompositionPageTemplateSynchronizerInterface $themeTemplates = null,
         private readonly SupportsPostTypeUseCase $supportsPostType = new SupportsPostTypeUseCase(),
         private readonly ?PageSourceSnapshotRepositoryInterface $sourceSnapshots = null,
+        ?PageDeactivationFallbackAssetResolverInterface $fallbackAssets = null,
+        ?WordPressPublishedFallbackComposer $fallbackComposer = null,
+        ?WpOriginalPageContentStore $originalContent = null,
+        ?WordPressPublishedFallbackParser $fallbackParser = null,
     ) {
         $this->slugResolver = $slugResolver ?? fn (
             string $slug,
@@ -69,16 +84,41 @@ final class WordPressPagePublisher implements PagePublisherInterface
         $this->cacheCleaner = $cacheCleaner ?? function (int $pageId): void {
             $this->cleanWordPressPageCache($pageId);
         };
+        $this->fallbackAssets = $fallbackAssets;
+        $this->fallbackComposer = $fallbackComposer ?? new WordPressPublishedFallbackComposer();
+        $this->originalContent = $originalContent ?? new WpOriginalPageContentStore();
+        $this->fallbackParser = $fallbackParser ?? new WordPressPublishedFallbackParser();
     }
 
     public function publish(PageArtifactCandidate $candidate): PublishPageResult
     {
         $this->ensureSchema();
 
+        /*
+         * Asset resolution reads and hashes release files. Complete it before
+         * publication acquires database locks so an unavailable release asset
+         * cannot prolong or partially enter the public-state transaction.
+         */
+        try {
+            if (!$this->fallbackAssets instanceof PageDeactivationFallbackAssetResolverInterface) {
+                throw new \RuntimeException('Page deactivation fallback asset resolution is unavailable.');
+            }
+            $resolvedFallbackAssets = $this->fallbackAssets->resolveFallback($candidate->deactivationFallback());
+        } catch (PagePublicationFailed $exception) {
+            throw $exception;
+        } catch (PublishedPageRuntimeUnavailable $exception) {
+            throw PagePublicationFailed::publicStateCommitFailed(
+                $exception,
+                $exception->reasonCode(),
+            );
+        } catch (\Throwable $exception) {
+            throw PagePublicationFailed::publicStateCommitFailed($exception);
+        }
+
         try {
             $result = $this->sourceGenerations->publishIfCurrent(
                 $candidate->sourceGenerations(),
-                fn (): PublishPageResult => $this->commit($candidate),
+                fn (): PublishPageResult => $this->commit($candidate, $resolvedFallbackAssets),
             );
         } catch (StaleSourceGenerationException | PagePublicationFailed $exception) {
             throw $exception;
@@ -130,7 +170,7 @@ final class WordPressPagePublisher implements PagePublisherInterface
 
     // Section: Atomic publication transaction
 
-    private function commit(PageArtifactCandidate $candidate): PublishPageResult
+    private function commit(PageArtifactCandidate $candidate, PublishedPageAssets $resolvedFallbackAssets): PublishPageResult
     {
         $state = $this->pageState($candidate->pageId());
         if (
@@ -156,6 +196,12 @@ final class WordPressPagePublisher implements PagePublisherInterface
         if (!$this->pageBuilderOwnsPage($candidate->pageId())) {
             throw PagePublicationFailed::notAuthorized();
         }
+        $originalContent = $this->originalContent->originalContentForPublication($candidate->pageId());
+        $this->validateExistingFallback(
+            (string) ($page->post_content ?? ''),
+            $candidate->pageId(),
+            isset($state->published_artifact_id) ? (int) $state->published_artifact_id : 0,
+        );
 
         $resolvedSlug = $this->resolveUniqueSlug(
             $candidate->slug(),
@@ -191,7 +237,16 @@ final class WordPressPagePublisher implements PagePublisherInterface
             );
         }
 
-        $this->updatePublicPage($candidate, $publishedAt);
+        $composedContent = $this->fallbackComposer->compose(
+            (string) ($page->post_content ?? ''),
+            $originalContent,
+            $storedArtifact,
+            $candidate->deactivationFallback(),
+            $resolvedFallbackAssets,
+        );
+
+        $this->updatePublicPage($candidate, $publishedAt, $composedContent);
+        $this->verifyPublicContent($candidate->pageId(), $composedContent);
         $this->movePointer($candidate, $storedArtifact, $sourceSnapshotId, $publishedAt);
 
         $publishedArtifactId = $state->published_artifact_id ?? null;
@@ -227,7 +282,7 @@ final class WordPressPagePublisher implements PagePublisherInterface
 
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
         $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT ID, post_type, post_status, post_parent FROM {$postsTable} WHERE ID = %d LIMIT 1",
+            "SELECT ID, post_type, post_status, post_parent, post_content FROM {$postsTable} WHERE ID = %d LIMIT 1",
             $pageId,
         ));
         if (!is_object($row)) {
@@ -270,10 +325,50 @@ final class WordPressPagePublisher implements PagePublisherInterface
         return $resolved;
     }
 
+    private function validateExistingFallback(
+        string $postContent,
+        int $pageId,
+        int $publishedArtifactId,
+    ): void {
+        if ($this->fallbackParser->isLegacyArtifact($postContent)) {
+            return;
+        }
+
+        $fallback = $this->fallbackParser->parse($postContent);
+        if (!$fallback instanceof WordPressPublishedFallbackContent) {
+            return;
+        }
+        if ($publishedArtifactId <= 0) {
+            throw new InvalidPublishedFallbackContent(
+                'The Page Builder fallback has no matching public artifact pointer.',
+            );
+        }
+
+        $artifact = $this->artifacts->findForPage($pageId, $publishedArtifactId);
+        $fallbackHash = $artifact instanceof PublishedPageArtifact
+            ? ($artifact->dependencies()[PageDeactivationFallback::DEPENDENCY_HASH_KEY] ?? null)
+            : null;
+        if (
+            !$artifact instanceof PublishedPageArtifact
+            || $fallback->artifactId() !== $publishedArtifactId
+            || !hash_equals($artifact->contentHash(), $fallback->artifactHash())
+            || !is_string($fallbackHash)
+            || !hash_equals($fallbackHash, $fallback->fallbackHash())
+            || $artifact->shellMode() !== $fallback->shellMode()
+        ) {
+            throw new InvalidPublishedFallbackContent(
+                'The Page Builder fallback does not match the exact public artifact pointer.',
+            );
+        }
+    }
+
     // Section: Public field and pointer writes
 
-    private function updatePublicPage(PageArtifactCandidate $candidate, \DateTimeImmutable $publishedAt): void
-    {
+    private function updatePublicPage(
+        PageArtifactCandidate $candidate,
+        \DateTimeImmutable $publishedAt,
+        string $postContent,
+    ): void {
         global $wpdb;
 
         $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
@@ -283,15 +378,31 @@ final class WordPressPagePublisher implements PagePublisherInterface
                 'post_title' => $candidate->title(),
                 'post_name' => $candidate->slug(),
                 'post_status' => self::PUBLIC_SLUG_STATUS,
+                'post_content' => $postContent,
                 'post_modified' => $publishedAt->format('Y-m-d H:i:s'),
                 'post_modified_gmt' => $this->currentGmtTime(),
             ],
             ['ID' => $candidate->pageId()],
-            ['%s', '%s', '%s', '%s', '%s'],
+            ['%s', '%s', '%s', '%s', '%s', '%s'],
             ['%d'],
         );
         if ($updated === false) {
             throw new \RuntimeException('Failed to update WordPress public page fields.');
+        }
+    }
+
+    private function verifyPublicContent(int $pageId, string $expectedContent): void
+    {
+        global $wpdb;
+
+        $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        $actualContent = $wpdb->get_var($wpdb->prepare(
+            "SELECT post_content FROM {$postsTable} WHERE ID = %d LIMIT 1",
+            $pageId,
+        ));
+
+        if (!is_string($actualContent) || $actualContent !== $expectedContent) {
+            throw new \RuntimeException('The WordPress page body update could not be verified byte-for-byte.');
         }
     }
 

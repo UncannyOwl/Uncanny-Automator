@@ -8,6 +8,7 @@ use UncannyPageBuilder\Domain\Binding\BindingStaticSafety;
 use UncannyPageBuilder\Domain\Binding\DynamicBindingRenderMode;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 use UncannyPageBuilder\Domain\Export\StaticExportPageIdentity;
+use UncannyPageBuilder\Domain\Exception\DeactivationFallbackCompilationFailed;
 
 /**
  * Parse data-ai-dynamic wrappers and replace with real content.
@@ -67,11 +68,16 @@ final class DynamicRenderer
         string $html,
         ?StaticExportPageIdentity $pageIdentity = null,
         DynamicBindingRenderMode $mode = DynamicBindingRenderMode::ResolveAll,
+        ?array &$removedBindingIds = null,
     ): string {
         // Conditional wrappers use the same marker as content bindings. When
         // it is absent, preserve the immutable artifact byte-for-byte and
         // avoid a full DOM parse on the public request.
         if (stripos($html, 'data-ai-dynamic') === false) {
+            if ($mode === DynamicBindingRenderMode::RemoveAll) {
+                $removedBindingIds = [];
+            }
+
             return $html;
         }
 
@@ -79,7 +85,7 @@ final class DynamicRenderer
 
         $doc = new \DOMDocument();
         $previousErrors = libxml_use_internal_errors(true);
-        $doc->loadHTML(
+        $loaded = $doc->loadHTML(
             '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $wrapped,
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
@@ -87,6 +93,14 @@ final class DynamicRenderer
         libxml_use_internal_errors($previousErrors);
 
         $xpath = new \DOMXPath($doc);
+
+        if ($mode === DynamicBindingRenderMode::RemoveAll) {
+            if (!$loaded) {
+                throw new DeactivationFallbackCompilationFailed('Dynamic binding removal could not parse the section HTML.');
+            }
+
+            return $this->removeAllDynamicRegions($doc, $xpath, $removedBindingIds);
+        }
 
         // Phase 1: Resolve conditional wrappers (show/hide based on auth state).
         // Must run before content bindings to prevent nesting destruction.
@@ -241,6 +255,56 @@ final class DynamicRenderer
         $root = $doc->getElementById('__upb_root');
         if (!$root) {
             return $html;
+        }
+
+        $output = '';
+        foreach ($root->childNodes as $child) {
+            $output .= $doc->saveHTML($child);
+        }
+
+        return $output;
+    }
+
+    /**
+     * Remove every marked region without consulting declarations or callbacks.
+     *
+     * This path is used for the deactivation fallback. It must run before
+     * conditional evaluators, renderer discovery, or renderer invocation so
+     * publication cannot capture request-specific output.
+     */
+    private function removeAllDynamicRegions(
+        \DOMDocument $doc,
+        \DOMXPath $xpath,
+        ?array &$removedBindingIds,
+    ): string {
+        $nodes = $xpath->query('//*[@data-ai-dynamic]');
+        if ($nodes === false) {
+            throw new DeactivationFallbackCompilationFailed('Dynamic binding removal could not inspect the section HTML.');
+        }
+
+        $nodeList = [];
+        foreach ($nodes as $node) {
+            $nodeList[] = $node;
+        }
+
+        $removedBindingIds = [];
+        foreach ($nodeList as $node) {
+            if ($node->parentNode !== null) {
+                $removedBindingIds[] = $node instanceof \DOMElement
+                    ? trim($node->getAttribute('data-ai-dynamic'))
+                    : '';
+                $node->parentNode->removeChild($node);
+            }
+        }
+
+        $remaining = $xpath->query('//*[@data-ai-dynamic]');
+        if ($remaining === false || $remaining->length !== 0) {
+            throw new DeactivationFallbackCompilationFailed('Dynamic binding removal left a residual marked region.');
+        }
+
+        $root = $doc->getElementById('__upb_root');
+        if (!$root instanceof \DOMElement) {
+            throw new DeactivationFallbackCompilationFailed('Dynamic binding removal lost the section root.');
         }
 
         $output = '';

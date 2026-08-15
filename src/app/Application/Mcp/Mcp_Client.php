@@ -1368,7 +1368,10 @@ class Mcp_Client {
 	public function get_launcher_html( WP_REST_Request $request ) {
 		unset( $request );
 
-		if ( ! $this->get_uncanny_agent_setting( Admin_Settings_Uncanny_Agent_General::ENABLED_KEY ) ) {
+		if (
+			! $this->get_uncanny_agent_setting( Admin_Settings_Uncanny_Agent_General::ENABLED_KEY )
+			|| ! $this->should_render_surface( 'admin_launcher' )
+		) {
 			return rest_ensure_response(
 				array(
 					'html' => '',

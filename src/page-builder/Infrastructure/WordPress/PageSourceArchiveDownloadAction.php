@@ -96,6 +96,7 @@ final class PageSourceArchiveDownloadAction
             header('Content-Encoding: identity');
             header('X-Content-Type-Options: nosniff');
             $responseStarted = true;
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- Stream the prepared local ZIP without loading it into PHP memory.
             $read = @readfile($path);
             if ($read !== $size) {
                 throw new \RuntimeException('The page archive response ended before all bytes were sent.');

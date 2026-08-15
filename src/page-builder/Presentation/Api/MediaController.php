@@ -345,6 +345,7 @@ final class MediaController
         }
 
         try {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- wp_check_filetype_and_ext() requires a local temporary file.
             if (file_put_contents($tmpFile, $bytes) === false) {
                 return null;
             }
@@ -363,6 +364,7 @@ final class MediaController
             ];
         } finally {
             if (file_exists($tmpFile)) {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- This private validation temp file must be removed without exposing cleanup to filters.
                 unlink($tmpFile);
             }
         }

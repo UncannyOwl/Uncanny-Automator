@@ -12,6 +12,7 @@ use UncannyPageBuilder\Application\Rendering\PublishedPageStatus;
 use UncannyPageBuilder\Application\Rendering\LucideRuntimeInitializer;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPublishedFallbackParser;
 
 /**
  * Renders one exact published artifact through the_content filter.
@@ -22,6 +23,8 @@ use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
  */
 final class ContentRenderer
 {
+    private const DEACTIVATION_FALLBACK_MARKER = 'data-uncanny-page-builder-artifact="1"';
+
     private bool $didRender = false;
 
     public function __construct(
@@ -29,6 +32,7 @@ final class ContentRenderer
         private readonly GetPageBuilderAllowedCapabilities $allowedCapabilities,
         private readonly OriginalPageContentReaderInterface $originalContent,
         private readonly DynamicRenderer $dynamicRenderer,
+        private readonly WordPressPublishedFallbackParser $fallbackParser = new WordPressPublishedFallbackParser(),
     ) {}
 
     /**
@@ -42,8 +46,12 @@ final class ContentRenderer
     {
         $content = is_string($content) ? $content : '';
 
-        if (is_admin() || !is_singular() || !is_main_query()) {
+        if (is_admin()) {
             return $content;
+        }
+
+        if (!is_singular() || !is_main_query()) {
+            return $this->withoutDeactivationFallback($content);
         }
 
         $postId = null;
@@ -51,7 +59,7 @@ final class ContentRenderer
         try {
             $postId = $this->currentPostId();
             if ($postId === null || !$this->isActivePost($postId)) {
-                return $content;
+                return $this->withoutDeactivationFallback($content);
             }
 
             // Preserve the password form already prepared by WordPress. Falling
@@ -102,13 +110,13 @@ final class ContentRenderer
             }
 
             if (!is_singular() || !is_main_query()) {
-                return $content;
+                return $this->withoutDeactivationFallback($content);
             }
 
             $postId = $this->currentPostId();
 
             if ($postId === null || !$this->isActivePost($postId)) {
-                return $content;
+                return $this->withoutDeactivationFallback($content);
             }
 
             $page = $this->publicPageRenderPolicy->publishedPage($postId);
@@ -325,5 +333,37 @@ final class ContentRenderer
     private function isActivePost(int $queriedPostId): bool
     {
         return WordPressPostId::fromMixed(get_the_ID()) === $queriedPostId;
+    }
+
+    /**
+     * The stored fallback is active only when Page Builder does not run.
+     * Shared queries must use the preserved WordPress body while Page Builder runs.
+     */
+    private function withoutDeactivationFallback(string $content): string
+    {
+        if (!str_contains($content, self::DEACTIVATION_FALLBACK_MARKER)) {
+            return $content;
+        }
+
+        try {
+            $fallback = $this->fallbackParser->parse($content);
+            if ($fallback !== null) {
+                return $fallback->originalContent();
+            }
+        } catch (\Throwable) {
+            // A filter can change the stored block before this callback runs.
+            // Use the preserved body below when the fallback marker remains.
+        }
+
+        $postId = WordPressPostId::fromMixed(get_the_ID());
+        if ($postId === null) {
+            return '';
+        }
+
+        try {
+            return $this->originalContent->publicContent($postId);
+        } catch (\Throwable) {
+            return '';
+        }
     }
 }

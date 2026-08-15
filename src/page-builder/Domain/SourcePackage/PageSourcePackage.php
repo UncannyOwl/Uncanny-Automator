@@ -277,7 +277,7 @@ final class PageSourcePackage
     private function assertSerializedSize(): void
     {
         try {
-            $serialized = json_encode($this->toArray(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+            $serialized = self::encodeJson($this->toArray(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
         } catch (\JsonException $e) {
             throw new SourcePackageValidationException('The page source could not be encoded.', 0, $e);
         }
@@ -287,5 +287,12 @@ final class PageSourcePackage
                 'The page source must be 5 MB or smaller. Remove some source content and export again.',
             );
         }
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        // Exact JSON bytes are part of the domain contract; wp_json_encode() may repair invalid UTF-8 and change that output.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- This deterministic language operation is not a WordPress capability.
+        return json_encode($value, $flags);
     }
 }
