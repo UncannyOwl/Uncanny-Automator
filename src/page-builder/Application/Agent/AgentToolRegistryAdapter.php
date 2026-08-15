@@ -6,12 +6,14 @@ namespace UncannyPageBuilder\Application\Agent;
 
 use UncannyPageBuilder\Application\Controls\ControlDefinition;
 use UncannyPageBuilder\Application\Controls\ControlRegistry;
+use UncannyPageBuilder\Application\Filesystem\LocalFileReaderInterface;
 
 final class AgentToolRegistryAdapter
 {
     public function __construct(
         private readonly ControlRegistry $registry,
         private readonly string $toolsDir,
+        private readonly LocalFileReaderInterface $filesystem,
     ) {}
 
     /**
@@ -98,7 +100,7 @@ final class AgentToolRegistryAdapter
         $tools = [];
 
         foreach (glob(rtrim($this->toolsDir, '/') . '/*.json') ?: [] as $file) {
-            $json = file_get_contents($file);
+            $json = $this->filesystem->read($file);
             if ($json === false) {
                 continue;
             }

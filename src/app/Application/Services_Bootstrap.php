@@ -12,9 +12,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Application;
 
-use Uncanny_Automator\App\Application\Page_Builder\Can_Load_Page_Builder;
 use Uncanny_Automator\App\Components\Page_Builder\Module;
-use Uncanny_Automator\App\Infrastructure\Page_Builder\Page_Builder_Availability;
 use Uncanny_Automator\App\Recipe_Builder\Field\Services\Field_Sanitizer_Legacy_Hooks;
 
 /**
@@ -38,7 +36,7 @@ class Services_Bootstrap {
 	 */
 	public function init(): void {
 		$this->register_field_hooks();
-		( new Module( new Can_Load_Page_Builder( new Page_Builder_Availability() ) ) )->register();
+		( new Module() )->register();
 	}
 
 	/**

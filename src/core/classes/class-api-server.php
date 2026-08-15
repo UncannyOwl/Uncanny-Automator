@@ -640,9 +640,6 @@ class Api_Server {
 	 * @return mixed false||array
 	 */
 	public function charge_usage( $trigger_data = null ) {
-
-		$license = array();
-
 		self::has_credits();
 
 		$params = array(
@@ -652,11 +649,19 @@ class Api_Server {
 			),
 		);
 
-		$license = self::api_call( $params );
+		$response = self::api_call( $params );
 
-		set_transient( 'automator_api_license', $license['data'], self::$transient_api_license_expires );
+		/*
+		 * DO NOT RE-ENABLE:
+		 * set_transient( 'automator_api_license', $response['data'], self::$transient_api_license_expires );
+		 *
+		 * reduce_credits returns only a command acknowledgement. Caching it here
+		 * destroys the complete get_credits snapshot, while already-loaded request
+		 * state can hide that damage until the next request. It also renews the bad
+		 * value for 12 hours. Only the get_credits read path may replace this transient.
+		 */
 
-		return $license;
+		return $response;
 	}
 
 	/**

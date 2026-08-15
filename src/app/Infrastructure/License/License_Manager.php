@@ -391,6 +391,30 @@ class License_Manager implements License_Provider_Interface, Mcp_License_Provide
 	}
 
 	/**
+	 * Get only license data that is already cached locally.
+	 *
+	 * Unlike get_license_data(), this method never refreshes from Automator
+	 * Platform and never mutates a malformed shared transient.
+	 *
+	 * @return array|null Cached license data, or null when unavailable.
+	 */
+	public function get_cached_license_data(): ?array {
+		if ( null !== $this->license_cache ) {
+			return $this->license_cache;
+		}
+
+		$cached = get_transient( self::TRANSIENT_LICENSE );
+
+		if ( ! is_array( $cached ) ) {
+			return null;
+		}
+
+		$this->license_cache = $cached;
+
+		return $cached;
+	}
+
+	/**
 	 * Check if the site is connected to the Automator API.
 	 *
 	 * @param bool $force_refresh Whether to force a fresh license check.

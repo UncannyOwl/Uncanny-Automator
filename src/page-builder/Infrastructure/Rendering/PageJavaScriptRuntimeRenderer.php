@@ -210,7 +210,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
      */
     private function libraryBootstrapSource(array $libraries): string
     {
-        $config = json_encode($libraries, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $config = self::encodeJson($libraries, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if (!is_string($config)) {
             return '';
         }
@@ -594,5 +594,15 @@ JS;
     private static function escapeAttribute(string $value): string
     {
         return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone rendering tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

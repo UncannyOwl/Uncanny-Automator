@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Api;
 use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Application\Agent\AgentToolRegistryAdapter;
 use UncannyPageBuilder\Application\Controls\ControlRegistry;
+use UncannyPageBuilder\Application\Filesystem\LocalFileReaderInterface;
 
 /**
  * Serves the page-building tool contract for agent discovery.
@@ -20,6 +21,7 @@ final class AgentToolsController
 
     public function __construct(
         private readonly PermissionChecker $permissions,
+        private readonly LocalFileReaderInterface $filesystem,
         private readonly ?ControlRegistry $registry = null,
     ) {}
 
@@ -34,7 +36,7 @@ final class AgentToolsController
 
     public function index(\WP_REST_Request $request): \WP_REST_Response
     {
-        return ApiResponse::ok(self::contract($this->registry))->toResponse();
+        return ApiResponse::ok(self::contract($this->filesystem, $this->registry))->toResponse();
     }
 
     /**
@@ -43,25 +45,27 @@ final class AgentToolsController
      *
      * @return array{schema_version: string, tools: list<array<string, mixed>>}
      */
-    public static function contract(?ControlRegistry $registry = null): array
-    {
+    public static function contract(
+        LocalFileReaderInterface $filesystem,
+        ?ControlRegistry $registry = null,
+    ): array {
         if ($registry instanceof ControlRegistry) {
-            return (new AgentToolRegistryAdapter($registry, UNCANNY_PB_PATH . 'tools'))->contract(self::SCHEMA_VERSION);
+            return (new AgentToolRegistryAdapter($registry, UNCANNY_PB_PATH . 'tools', $filesystem))->contract(self::SCHEMA_VERSION);
         }
 
-        return self::manifestContract();
+        return self::manifestContract($filesystem);
     }
 
     /**
      * @return array{schema_version: string, tools: list<array<string, mixed>>}
      */
-    public static function manifestContract(): array
+    public static function manifestContract(LocalFileReaderInterface $filesystem): array
     {
         $toolsDir = UNCANNY_PB_PATH . 'tools';
         $tools = [];
 
         foreach (glob($toolsDir . '/*.json') as $file) {
-            $json = file_get_contents($file);
+            $json = $filesystem->read($file);
             if ($json === false) {
                 continue;
             }

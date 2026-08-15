@@ -25,6 +25,7 @@ final class ReusableFactory
         private readonly GetPageBuilderAllowedCapabilities $allowedCapabilities,
         private readonly ?ReusableSourcePackageService $sourcePackages = null,
         private readonly ?FailureReporterInterface $failureReporter = null,
+        private readonly ?SourcePackageUploadReader $uploadReader = null,
     ) {}
 
     public function redirectPostNewForReusable(): void
@@ -126,7 +127,7 @@ final class ReusableFactory
         }
 
         try {
-            $payload = SourcePackageUploadReader::readJson(self::SOURCE_PACKAGE_FILE_FIELD);
+            $payload = $this->sourcePackageUploadReader()->readJson(self::SOURCE_PACKAGE_FILE_FIELD);
             // Reusable JavaScript executes on every page that renders this
             // part, so enforce WordPress' executable-code capability before
             // the create-only import mutates global-part state.
@@ -196,6 +197,12 @@ final class ReusableFactory
             'Uncanny Page Builder',
         );
         exit;
+    }
+
+    private function sourcePackageUploadReader(): SourcePackageUploadReader
+    {
+        return $this->uploadReader
+            ?? new SourcePackageUploadReader(new WordPressLocalFilesystem());
     }
 
     /**

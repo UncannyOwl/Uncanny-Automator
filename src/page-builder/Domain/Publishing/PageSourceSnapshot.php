@@ -201,7 +201,7 @@ final class PageSourceSnapshot
     /** @param array<string, mixed> $source */
     private static function hashSource(array $source): string
     {
-        return hash('sha256', json_encode(
+        return hash('sha256', self::encodeJson(
             self::canonicalize($source),
             JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
         ));
@@ -222,5 +222,12 @@ final class PageSourceSnapshot
         }
 
         return $value;
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        // Exact JSON bytes are part of the domain hash; wp_json_encode() may repair invalid UTF-8 and change the digest.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- This deterministic language operation is not a WordPress capability.
+        return json_encode($value, $flags);
     }
 }

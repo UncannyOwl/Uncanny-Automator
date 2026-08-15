@@ -226,6 +226,10 @@ uap-setup-wizard-step-1-skip {
     align-items: center;
 }
 
+.automator-setup-wizard__create-page-form {
+    width: 100%;
+}
+
 .automator-setup-wizard__option uo-button {
     --uap-button-host-style-width: 100%;
     --uap-button-style-padding-left: var(--automator-setup-wizard-option-inline-padding);

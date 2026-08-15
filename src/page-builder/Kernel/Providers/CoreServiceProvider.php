@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Kernel\Providers;
 
+use UncannyPageBuilder\Application\Filesystem\LocalFileReaderInterface;
+use UncannyPageBuilder\Application\Filesystem\LocalFilesystemPortInterface;
 use UncannyPageBuilder\Application\Canvas\PublicPageRenderPolicy;
 use UncannyPageBuilder\Application\Canvas\PagePasswordProtectionInterface;
 use UncannyPageBuilder\Application\Rendering\PublishedPageAssetResolverInterface;
 use UncannyPageBuilder\Application\Rendering\PublishedPageReaderInterface;
 use UncannyPageBuilder\Application\Rendering\PublicPageIdentityReaderInterface;
 use UncannyPageBuilder\Application\Rendering\ReadPublishedPage;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressLocalFilesystem;
 use UncannyPageBuilder\Application\Canvas\CanvasGlobalPartRendererInterface;
 use UncannyPageBuilder\Application\Canvas\CanvasRefreshRendererInterface;
 use UncannyPageBuilder\Application\Canvas\CanvasGlobalPartsProviderInterface;
@@ -98,6 +101,7 @@ use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefreshScheduler;
 use UncannyPageBuilder\Application\Publishing\ReadPageLiveState;
 use UncannyPageBuilder\Application\Publishing\PageLiveStateReaderInterface;
 use UncannyPageBuilder\Application\Publishing\PagePublisherInterface;
+use UncannyPageBuilder\Application\Publishing\PageDeactivationFallbackAssetResolverInterface;
 use UncannyPageBuilder\Application\Publishing\PublishPage;
 use UncannyPageBuilder\Application\Publishing\SwitchPageToDraft;
 use UncannyPageBuilder\Application\Publishing\SwitchPageToDraftInterface;
@@ -203,6 +207,8 @@ use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageDetailsProjection;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPagePasswordProtection;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPagePublicationAuthorizer;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPagePublisher;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressUploadedFallbackAssetResolver;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressPublishedFallbackComposer;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageDraftStatusPort;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageHandover;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressFontSettings;
@@ -456,12 +462,31 @@ final class CoreServiceProvider implements ServiceProviderInterface
             );
         });
 
+        $container->factory(WordPressLocalFilesystem::class, static fn (): WordPressLocalFilesystem => new WordPressLocalFilesystem());
+        $container->factory(LocalFileReaderInterface::class, static fn (Container $c): LocalFileReaderInterface => $c->typed(WordPressLocalFilesystem::class));
+        $container->factory(LocalFilesystemPortInterface::class, static fn (Container $c): LocalFilesystemPortInterface => $c->typed(WordPressLocalFilesystem::class));
+
         $container->factory(PublishedPageAssetResolver::class, static function (): PublishedPageAssetResolver {
             return new PublishedPageAssetResolver(UNCANNY_PB_PATH, UNCANNY_PB_URL);
         });
 
         $container->factory(PublishedPageAssetResolverInterface::class, static function (Container $c): PublishedPageAssetResolverInterface {
             return $c->typed(PublishedPageAssetResolver::class);
+        });
+
+        $container->factory(WordPressUploadedFallbackAssetResolver::class, static function (Container $c): WordPressUploadedFallbackAssetResolver {
+            return new WordPressUploadedFallbackAssetResolver(
+                $c->typed(PublishedPageAssetResolver::class),
+                UNCANNY_PB_PATH,
+            );
+        });
+
+        $container->factory(PageDeactivationFallbackAssetResolverInterface::class, static function (Container $c): PageDeactivationFallbackAssetResolverInterface {
+            return $c->typed(WordPressUploadedFallbackAssetResolver::class);
+        });
+
+        $container->factory(WordPressPublishedFallbackComposer::class, static function (): WordPressPublishedFallbackComposer {
+            return new WordPressPublishedFallbackComposer();
         });
 
         $container->factory(WordPressPublicPageIdentityReader::class, static function (): WordPressPublicPageIdentityReader {
@@ -780,6 +805,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->factory(StaticExportHtmlRendererInterface::class, static function (Container $c): StaticExportHtmlRendererInterface {
             return new CanvasStaticExportHtmlRenderer(
                 $c->typed(CanvasRenderer::class),
+                $c->typed(ShortcodeBindingNormalizer::class),
             );
         });
 
@@ -1318,6 +1344,9 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 sourceSnapshots: $c->typed(PageSourceSnapshotRepositoryInterface::class),
                 themeTemplates: $c->typed(ThemeCompositionPageTemplateSynchronizerInterface::class),
                 supportsPostType: $c->typed(SupportsPostTypeUseCase::class),
+                fallbackAssets: $c->typed(PageDeactivationFallbackAssetResolverInterface::class),
+                fallbackComposer: $c->typed(WordPressPublishedFallbackComposer::class),
+                originalContent: $c->typed(WpOriginalPageContentStore::class),
             );
         });
 

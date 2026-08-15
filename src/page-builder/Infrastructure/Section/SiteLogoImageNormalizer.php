@@ -181,7 +181,7 @@ final class SiteLogoImageNormalizer
             return [];
         }
 
-        $fullPath = parse_url($fullUrl, PHP_URL_PATH);
+        $fullPath = self::parseUrl($fullUrl, PHP_URL_PATH);
         if (!is_string($fullPath) || $fullPath === '') {
             return [];
         }
@@ -238,13 +238,20 @@ final class SiteLogoImageNormalizer
      */
     private static function matchesLogoPath(string $src, array $logoPaths): bool
     {
-        $path = parse_url(trim($src), PHP_URL_PATH);
+        $path = self::parseUrl(trim($src), PHP_URL_PATH);
         if (!is_string($path) || $path === '') {
             return false;
         }
 
         return in_array($path, $logoPaths, true)
             || in_array(rawurldecode($path), $logoPaths, true);
+    }
+
+    private static function parseUrl(string $url, int $component = -1): array|string|int|false|null
+    {
+        // Logo normalization is a deterministic section rule, not a WordPress capability.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Section normalization remains usable without a WordPress bootstrap.
+        return parse_url($url, $component);
     }
 
     /**

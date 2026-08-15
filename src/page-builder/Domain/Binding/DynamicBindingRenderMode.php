@@ -11,9 +11,14 @@ enum DynamicBindingRenderMode
 {
     case ResolveAll;
     case FreezeOnly;
+    case RemoveAll;
 
     public function resolves(BindingStaticSafety $safety): bool
     {
-        return $this === self::ResolveAll || $safety->canFreeze();
+        return match ($this) {
+            self::ResolveAll => true,
+            self::FreezeOnly => $safety->canFreeze(),
+            self::RemoveAll => false,
+        };
     }
 }

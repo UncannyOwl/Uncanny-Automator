@@ -43,6 +43,7 @@ final class AgentToolResponse
         if (self::$contract === null) {
             self::$contract = [];
             foreach (glob(UNCANNY_PB_PATH . 'tools/*.json') as $file) {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Tool contracts are plugin-local JSON files, not remote URLs.
                 $tool = json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
                 self::$contract[$tool['name']] = $tool;
             }

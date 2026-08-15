@@ -12,7 +12,8 @@
 $is_pro_active      = $this->is_pro_active();
 $is_step_1_complete = $this->is_step_1_complete();
 
-// Page Builder needs Agent access and permission from its host availability gate.
+// These are independent Axis decisions. Agent follows AGENT_LAUNCHER_TAB;
+// Page Builder follows PAGE_BUILDER_MENU plus saved-setting/create-hook readiness.
 $has_agent_access        = $this->has_agent_access();
 $has_page_builder_access = $this->has_page_builder_access();
 $build_page_url          = $this->get_page_builder_create_uri();
@@ -80,12 +81,15 @@ $upgrade_plan_url = $is_pro_active
 
 		<div class="automator-setup-wizard__option <?php echo $has_page_builder_access ? '' : 'automator-setup-wizard__option--unavailable'; ?>">
 			<?php if ( $has_page_builder_access ) : ?>
-				<uo-button
-					href="<?php echo esc_url( $build_page_url ); ?>"
-					color="secondary"
-				>
-					<?php esc_html_e( 'Build my first page', 'uncanny-automator' ); ?>
-				</uo-button>
+				<form class="automator-setup-wizard__create-page-form" action="<?php echo esc_url( $build_page_url ); ?>" method="post">
+					<input type="hidden" name="uo_button_form_marker" value="1" /><!-- uo-button's submit handler requires a native form control. -->
+					<uo-button
+						type="submit"
+						color="secondary"
+					>
+						<?php esc_html_e( 'Build my first page', 'uncanny-automator' ); ?>
+					</uo-button>
+				</form>
 			<?php else : ?>
 				<uo-button disabled>
 					<?php esc_html_e( 'Build my first page', 'uncanny-automator' ); ?>

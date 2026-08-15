@@ -13,10 +13,12 @@ use UncannyPageBuilder\Application\ShellModeService;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationSnapshot;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
+use UncannyPageBuilder\Domain\Exception\DeactivationFallbackCompilationFailed;
 use UncannyPageBuilder\Domain\Export\StaticExportArtifact;
 use UncannyPageBuilder\Domain\Export\StaticPageExport;
 use UncannyPageBuilder\Domain\Export\StaticExportPurpose;
 use UncannyPageBuilder\Domain\Publishing\PageArtifactCandidate;
+use UncannyPageBuilder\Domain\Publishing\PageDeactivationFallback;
 use UncannyPageBuilder\Domain\Publishing\PagePublicationState;
 use UncannyPageBuilder\Domain\Publishing\PageSourceSnapshot;
 use UncannyPageBuilder\Domain\Publishing\PageStateRepositoryInterface;
@@ -97,12 +99,24 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
                 throw new \RuntimeException('The draft page identity could not be projected for publication.');
             }
 
-            $export = $this->exports->buildForPage(
-                $pageId,
-                $details->title(),
-                $details->permalink(),
-                StaticExportPurpose::Publication,
-            );
+            try {
+                $export = $this->exports->buildForPage(
+                    $pageId,
+                    $details->title(),
+                    $details->permalink(),
+                    StaticExportPurpose::Publication,
+                );
+            } catch (DeactivationFallbackCompilationFailed $failure) {
+                throw PagePublicationFailed::staticSafetyFailed(
+                    [[
+                        'status' => 'failed',
+                        'code' => 'deactivation_fallback_compile_failed',
+                        'source' => 'deactivation_fallback',
+                        'message' => 'Dynamic content could not be safely omitted from the deactivation fallback.',
+                    ]],
+                    'The deactivation fallback could not safely omit dynamic content.',
+                );
+            }
             $lastSnapshot = SourceGenerationSnapshot::fromDependencies($export->dependencies());
             if (!$lastSnapshot instanceof SourceGenerationSnapshot || $lastSnapshot->pageId() !== $pageId) {
                 throw new \RuntimeException('Page artifact output is missing its source generation snapshot.');
@@ -176,8 +190,28 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
 
         $entry = $this->requiredArtifact($export, $export->entryPath());
         $pageCss = $this->requiredArtifact($export, self::PAGE_CSS_PATH);
+        $assetsManifest = $this->assetsManifest($export);
+        $deactivationFallback = $export->deactivationFallback();
+        if (!$deactivationFallback instanceof PageDeactivationFallback) {
+            throw PagePublicationFailed::staticSafetyFailed(
+                [[
+                    'status' => 'failed',
+                    'code' => 'deactivation_fallback_missing',
+                    'source' => 'deactivation_fallback',
+                    'message' => 'The publication export did not include a deactivation fallback.',
+                ]],
+                'The publication export did not include a deactivation fallback.',
+            );
+        }
+        $this->assertFallbackMatchesExport(
+            $deactivationFallback,
+            $pageCss->content(),
+            $export->customJavaScript(),
+            $assetsManifest,
+        );
         $dependencies = array_merge($export->dependencies(), [
             'shell_mode' => $shellMode->value,
+            PageDeactivationFallback::DEPENDENCY_HASH_KEY => $deactivationFallback->contentHash(),
         ]);
 
         $sourceRevisionHash = $this->sourceRevisionHash($export, $state, $shellMode);
@@ -192,10 +226,11 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
             html: $this->pageHtml($entry->content()),
             css: $pageCss->content(),
             customJavaScript: $export->customJavaScript(),
-            assetsManifest: $this->assetsManifest($export),
+            assetsManifest: $assetsManifest,
             dependencies: $dependencies,
             staticSafetyReport: $safety->records(),
             createdBy: $createdBy,
+            deactivationFallback: $deactivationFallback,
             sourceSnapshot: $this->sourceSnapshot(
                 pageId: $export->pageId(),
                 sourceRevisionHash: $sourceRevisionHash,
@@ -317,6 +352,38 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
         ];
     }
 
+    /** @param array<string, mixed> $assetsManifest */
+    private function assertFallbackMatchesExport(
+        PageDeactivationFallback $fallback,
+        string $css,
+        string $customJavaScript,
+        array $assetsManifest,
+    ): void {
+        if ($fallback->css() !== $css) {
+            $this->fallbackContractFailed('CSS');
+        }
+        if ($fallback->customJavaScript() !== $customJavaScript) {
+            $this->fallbackContractFailed('JavaScript');
+        }
+        if ($fallback->assetsManifest() !== $assetsManifest) {
+            $this->fallbackContractFailed('asset manifest');
+        }
+    }
+
+    private function fallbackContractFailed(string $field): never
+    {
+        throw PagePublicationFailed::staticSafetyFailed(
+            [[
+                'status' => 'failed',
+                'code' => 'deactivation_fallback_contract_mismatch',
+                'source' => 'deactivation_fallback',
+                'field' => $field,
+                'message' => 'The deactivation fallback does not match the coherent publication export.',
+            ]],
+            'The deactivation fallback does not match the publication output.',
+        );
+    }
+
     private function sourceRevisionHash(
         StaticPageExport $export,
         PagePublicationState $state,
@@ -338,11 +405,19 @@ final class BuildPageArtifact implements PageArtifactBuilderInterface
             'slug' => $state->draftSlug(),
             'shell_mode' => $shellMode->value,
             'artifacts' => $artifacts,
+            PageDeactivationFallback::DEPENDENCY_HASH_KEY => $export->deactivationFallback()?->contentHash(),
         ];
 
-        return hash('sha256', json_encode(
+        return hash('sha256', self::encodeJson(
             $payload,
             JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
         ));
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        // Exact JSON bytes are part of the artifact hash; wp_json_encode() may repair invalid UTF-8 and change the digest.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- This deterministic language operation is not an external capability.
+        return json_encode($value, $flags);
     }
 }

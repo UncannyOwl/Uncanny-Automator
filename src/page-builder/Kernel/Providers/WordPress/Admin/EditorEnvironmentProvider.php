@@ -128,9 +128,58 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
         add_filter('redirect_post_location', $callbacks->filter('block_editor.redirect', [$blockEditorButton, 'redirectClassicEditorSave']), 10, 2);
         add_filter('redirect_post_location', $callbacks->filter('page_ownership.redirect', [$pageOwnershipActions, 'redirectAfterSave']), 20, 2);
 
-        // A stale WordPress editor can submit after Page Builder takes active
-        // ownership. Protect public fields only while administrator intent
-        // keeps Page Builder active for this post type.
+        add_action('load-post.php', static function () use ($sectionRepo, $allowedCapabilities, $supportsPostType): void {
+            // WordPress applies its nonce and delete_post checks after this hook.
+            if (self::isNativeTrashLifecycleRequest()) {
+                return;
+            }
+
+            $postId = WordPressPostId::fromMixed($_POST['post_ID'] ?? null)
+                ?? WordPressPostId::fromMixed($_GET['post'] ?? null);
+            if ($postId === null) {
+                return;
+            }
+
+            try {
+                $postType = get_post_type($postId);
+                if (!is_string($postType)) {
+                    return;
+                }
+
+                $canAccess = self::canAccessOwnedPageEditor(
+                    $postId,
+                    $postType,
+                    $sectionRepo,
+                    $allowedCapabilities,
+                    $supportsPostType,
+                );
+                if ($canAccess) {
+                    return;
+                }
+            } catch (\Throwable $failure) {
+                try {
+                    error_log(sprintf(
+                        '[Uncanny Page Builder] Owned page editor access check failed (%s).',
+                        $failure::class,
+                    ));
+                } catch (\Throwable) {
+                    // Authorization still fails closed when reporting fails.
+                }
+            }
+
+            wp_die(
+                esc_html_x(
+                    'This page is managed by Uncanny Page Builder. Ask a site administrator with Page Builder access to edit it.',
+                    'Page Builder',
+                    'uncanny-automator',
+                ),
+                esc_html_x('You need a higher level of permission.', 'Page Builder', 'uncanny-automator'),
+                ['response' => 403],
+            );
+        });
+
+        // The edit-screen gate above is the primary access control. Preserve
+        // public fields as defense in depth for stale tabs and other writers.
         add_filter('wp_insert_post_data', static function ($data = null, $postarr = null) use ($sectionRepo, $supportsPostType): array {
             $data = is_array($data) ? $data : [];
             $postarr = is_array($postarr) ? $postarr : [];
@@ -591,6 +640,38 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             $step,
             $failure::class,
         ));
+    }
+
+    /**
+     * Keep WordPress-managed pages on their normal role-based edit path.
+     */
+    private static function canAccessOwnedPageEditor(
+        int $postId,
+        string $postType,
+        DatabaseSectionRepository $sectionRepo,
+        GetPageBuilderAllowedCapabilities $allowedCapabilities,
+        ?SupportsPostTypeUseCase $supportsPostType = null,
+    ): bool {
+        $supportsPostType ??= new SupportsPostTypeUseCase();
+        if (
+            !$supportsPostType->isEnabledByAdministrator($postType)
+            || !$sectionRepo->isOwnedPage($postId)
+        ) {
+            return true;
+        }
+
+        return $allowedCapabilities->currentUserHasAllowedCapability();
+    }
+
+    private static function isNativeTrashLifecycleRequest(): bool
+    {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') {
+            return false;
+        }
+
+        $action = $_GET['action'] ?? null;
+
+        return is_string($action) && in_array($action, ['trash', 'untrash'], true);
     }
 
     /**

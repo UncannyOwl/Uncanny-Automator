@@ -112,8 +112,11 @@ class Credit_Manager {
 	 * Charge one credit for an API usage.
 	 *
 	 * Validates that credits are available, then sends a reduce_credits
-	 * request to the API. Updates the license transient cache with the
-	 * fresh data from the response.
+	 * request to the API.
+	 *
+	 * The reduction response is only a command acknowledgement. It is not the
+	 * complete license and allocation document returned by get_credits, so it
+	 * must never replace the shared license transient.
 	 *
 	 * @param array|null $trigger_data Optional trigger data for context.
 	 *
@@ -130,9 +133,16 @@ class Credit_Manager {
 		);
 
 		$response = $this->api_client->send( $request );
-		$data     = $response->data();
 
-		set_transient( License_Manager::TRANSIENT_LICENSE, $data, License_Manager::CACHE_DURATION );
+		/*
+		 * DO NOT RE-ENABLE:
+		 * set_transient( License_Manager::TRANSIENT_LICENSE, $response->data(), License_Manager::CACHE_DURATION );
+		 *
+		 * reduce_credits returns only a command acknowledgement. Caching it here
+		 * destroys the complete get_credits snapshot, while already-loaded request
+		 * state can hide that damage until the next request. It also renews the bad
+		 * value for 12 hours. Only the get_credits read path may replace this transient.
+		 */
 
 		return $response->to_legacy_array();
 	}

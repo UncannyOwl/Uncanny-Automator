@@ -123,7 +123,7 @@ final class BindingController
             $lines[] = '  SOURCE: ' . (string) ($binding['source'] ?? '');
             $lines[] = '  PATH: ' . (string) ($binding['path'] ?? '');
             $lines[] = '  CONTRACT_HASH: ' . (string) ($binding['contract_hash'] ?? '');
-            $lines[] = '  QUERY_ATTRIBUTES: ' . (\json_encode($binding['query_attributes'] ?? [], JSON_UNESCAPED_SLASHES) ?: '{}');
+            $lines[] = '  QUERY_ATTRIBUTES: ' . (self::encodeJson($binding['query_attributes'] ?? [], JSON_UNESCAPED_SLASHES) ?: '{}');
             $lines[] = '  BIND_KEYS: ' . \implode(', ', \array_map('strval', (array) ($binding['bind_keys'] ?? [])));
             $lines[] = '  TEMPLATE_HTML:';
             $lines[] = (string) ($binding['template_html'] ?? '');
@@ -696,5 +696,15 @@ final class BindingController
     private function workingPageDetails(int $pageId): ?PageDetails
     {
         return $this->pageDetails?->find($pageId);
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone API contract tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

@@ -3,13 +3,19 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol;
 
 use Uncanny_Automator\App\Application\Mcp\Mcp_Client;
+use Uncanny_Automator\App\Feature_State\Infrastructure\Mcp_Allocation_Facts_Refresh;
+use Uncanny_Automator\App\Infrastructure\License\License_Manager;
 use Uncanny_Automator\App\Plan\Services\License\License_Service;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication\Key_Binding_Challenge_Controller;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication\Site_Signing_Key_Monitor;
+use Uncanny_Automator\App\Transports\Model_Context_Protocol\Client\Feature_State_Presentation_Gate;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Rest_Bearer_Authenticator;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Rest_Bearer_Route_Authorizer;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\OAuth\Internal_Token_Configuration_Monitor;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Tools\Standalone\Dropdown_Controller;
+
+use function Uncanny_Automator\App\Infrastructure\automator_feature_state_query;
+use function Uncanny_Automator\App\Infrastructure\automator_license_manager;
 
 // Include tool framework classes
 require_once __DIR__ . '/Tools/MCP_Tool_Interface.php';
@@ -88,6 +94,20 @@ class Mcp_Bootstrap {
 	private $key_binding_challenge_controller;
 
 	/**
+	 * MCP presentation policy gate.
+	 *
+	 * @var Feature_State_Presentation_Gate
+	 */
+	private $feature_state_presentation_gate;
+
+	/**
+	 * MCP allocation cache refresh.
+	 *
+	 * @var Mcp_Allocation_Facts_Refresh|null
+	 */
+	private $allocation_facts_refresh;
+
+	/**
 	 * Initialize MCP transport layer.
 	 *
 	 * @since 7.0.0
@@ -95,6 +115,35 @@ class Mcp_Bootstrap {
 	 * @return void
 	 */
 	public function init() {
+		$this->allocation_facts_refresh = null;
+
+		// Allocation warming is optional presentation infrastructure. A malformed
+		// third-party URL filter or any setup failure must not disable MCP routes,
+		// authentication, bearer tokens, or the client itself.
+		try {
+			$licenses = automator_license_manager();
+
+			if ( $licenses instanceof License_Manager ) {
+				$this->allocation_facts_refresh = new Mcp_Allocation_Facts_Refresh(
+					$licenses,
+					Mcp_Client::get_inference_url()
+				);
+				$this->allocation_facts_refresh->register();
+			}
+		} catch ( \Throwable $error ) {
+			unset( $error );
+		}
+
+		$feature_state = null;
+
+		try {
+			$feature_state = automator_feature_state_query();
+		} catch ( \Throwable $error ) {
+			unset( $error );
+		}
+
+		$this->feature_state_presentation_gate = new Feature_State_Presentation_Gate( $feature_state );
+		$this->feature_state_presentation_gate->register();
 
 		// Initialize REST controller.
 		$this->rest_controller = new Mcp_Rest_Controller();

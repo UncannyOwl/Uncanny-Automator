@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Domain\Export;
 
+use UncannyPageBuilder\Domain\Publishing\PageDeactivationFallback;
+
 /**
  * Portable HTML/CSS export for one Page Builder page.
  */
@@ -23,6 +25,7 @@ final class StaticPageExport
         private readonly StaticRenderingReport $staticRenderingReport = new StaticRenderingReport(),
         private readonly array $dependencies = [],
         private readonly string $customJavaScript = '',
+        private readonly ?PageDeactivationFallback $deactivationFallback = null,
     ) {
         if ($pageId <= 0) {
             throw new \InvalidArgumentException('Static export page id is required.');
@@ -82,6 +85,11 @@ final class StaticPageExport
     public function customJavaScript(): string
     {
         return $this->customJavaScript;
+    }
+
+    public function deactivationFallback(): ?PageDeactivationFallback
+    {
+        return $this->deactivationFallback;
     }
 
     /**

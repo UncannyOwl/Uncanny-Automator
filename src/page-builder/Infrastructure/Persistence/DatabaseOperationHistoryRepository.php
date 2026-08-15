@@ -216,7 +216,7 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
     /** @param array<int, array<string, mixed>> $payload */
     private function encodePayload(array $payload): string
     {
-        return json_encode($payload, JSON_THROW_ON_ERROR);
+        return self::encodeJson($payload, JSON_THROW_ON_ERROR);
     }
 
     /** @return array<int, array<string, mixed>> */
@@ -244,5 +244,15 @@ final class DatabaseOperationHistoryRepository implements OperationHistoryReposi
         if ((string) ($wpdb->last_error ?? '') !== '') {
             throw new \RuntimeException(sprintf('Failed to %s.', $operation));
         }
+    }
+
+    private static function encodeJson(mixed $value, int $flags = 0): string|false
+    {
+        if (function_exists('wp_json_encode')) {
+            return wp_json_encode($value, $flags);
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone persistence tests run without WordPress functions.
+        return json_encode($value, $flags);
     }
 }

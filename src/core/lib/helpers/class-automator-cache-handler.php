@@ -4,6 +4,7 @@ namespace Uncanny_Automator;
 
 use Uncanny_Automator\App\Transient\Application\Delete_Core_Transients;
 use Uncanny_Automator\App\Transient\Domain\Core_Transient_Keys;
+use Uncanny_Automator\App\Transient\Domain\License_Transient_Keys;
 use Uncanny_Automator\App\Transient\Infrastructure\WP_Transient_Adapter;
 
 /**
@@ -12,6 +13,22 @@ use Uncanny_Automator\App\Transient\Infrastructure\WP_Transient_Adapter;
  * @package Uncanny_Automator
  */
 class Automator_Cache_Handler {
+
+	/**
+	 * Options whose value identifies the active Automator license/account.
+	 *
+	 * Pro also writes these options through Automator's option layer. Listening
+	 * here covers normal, Setup Wizard, background, and multisite activation
+	 * without making Pro depend on a new Free-plugin class.
+	 *
+	 * @var string[]
+	 */
+	private const LICENSE_IDENTITY_OPTIONS = array(
+		'uap_automator_pro_license_key',
+		'uap_automator_pro_license_status',
+		'uap_automator_free_license_key',
+		'uap_automator_free_license_status',
+	);
 
 	/**
 	 *
@@ -58,14 +75,30 @@ class Automator_Cache_Handler {
 	private $delete_core_transients;
 
 	/**
+	 * License evidence cleanup use case.
+	 *
+	 * @var Delete_Core_Transients
+	 */
+	private $delete_license_transients_use_case;
+
+	/**
 	 * Cache_Handler constructor.
 	 */
 	public function __construct() {
 		// Load the cleanup classes before a plugin update can replace their files.
+		$transients = new WP_Transient_Adapter();
+
 		$this->delete_core_transients = new Delete_Core_Transients(
-			new WP_Transient_Adapter(),
+			$transients,
 			Core_Transient_Keys::get_all()
 		);
+
+		$this->delete_license_transients_use_case = new Delete_Core_Transients(
+			$transients,
+			License_Transient_Keys::get_all()
+		);
+
+		$this->register_license_transient_invalidation();
 
 		add_action( 'admin_init', array( $this, 'register_setting' ) );
 		add_action(
@@ -205,6 +238,60 @@ class Automator_Cache_Handler {
 		);
 
 		add_action( 'admin_init', array( $this, 'remove_all_cache' ) );
+	}
+
+	/**
+	 * Register invalidation for persisted license identity transitions.
+	 *
+	 * This listener is intentional. Pro can activate through its settings form,
+	 * Setup Wizard, background activation, or multisite activation. Duplicating
+	 * delete_transient() calls in those controllers would leave several paths to
+	 * drift. Every supported path converges on these custom option writes, so one
+	 * listener deletes one canonical license-evidence group for both Free and Pro.
+	 *
+	 * Automator licenses live in the custom uap_options table, so WordPress's
+	 * update_option_* hooks never fire. The generic Automator option events are
+	 * used instead of per-option events so another listener cannot remove this
+	 * callback while managing its own license-status callback. The handler then
+	 * accepts only the four identity options above.
+	 *
+	 * Free disconnect is the one exception: automator_delete_option() emits no
+	 * equivalent hook, so Admin_Menu calls delete_license_transients() explicitly
+	 * after a successful disconnect.
+	 *
+	 * @return void
+	 */
+	private function register_license_transient_invalidation() {
+		add_action( 'automator_option_added', array( $this, 'maybe_delete_license_transients' ), 10, 2 );
+		add_action( 'automator_updated_option', array( $this, 'maybe_delete_license_transients' ), 10, 2 );
+	}
+
+	/**
+	 * Delete license evidence only when an identity option changed.
+	 *
+	 * @param mixed $option Option name supplied by the Automator option event.
+	 *
+	 * @return void
+	 */
+	public function maybe_delete_license_transients( $option ) {
+		if ( ! is_string( $option ) || ! in_array( $option, self::LICENSE_IDENTITY_OPTIONS, true ) ) {
+			return;
+		}
+
+		$this->delete_license_transients();
+	}
+
+	/**
+	 * Delete evidence tied to the previous license/account identity.
+	 *
+	 * This intentionally uses the narrow license group. A license transition
+	 * must not evict unrelated recipe, integration, dashboard, or diagnostic
+	 * transients.
+	 *
+	 * @return void
+	 */
+	public function delete_license_transients() {
+		$this->delete_license_transients_use_case->execute();
 	}
 
 	/**

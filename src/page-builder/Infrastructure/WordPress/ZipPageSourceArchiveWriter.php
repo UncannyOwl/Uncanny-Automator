@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\WordPress;
 
+// phpcs:disable WordPress.WP.AlternativeFunctions.unlink_unlink -- Cleanup targets only the temporary archive owned by the failed export.
+// Archive verification hashes native ZIP streams without loading images into memory.
+// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fread
+// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+
 use UncannyPageBuilder\Application\SourcePackage\PageSourceArchiveArtifact;
 use UncannyPageBuilder\Application\SourcePackage\PageSourceArchiveWriterInterface;
 use UncannyPageBuilder\Application\SourcePackage\PageSourceImage;
@@ -152,6 +157,11 @@ final class ZipPageSourceArchiveWriter implements PageSourceArchiveWriterInterfa
     private function encodeJson(array $value, string $errorMessage): string
     {
         try {
+            if (function_exists('wp_json_encode')) {
+                return wp_json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
+            }
+
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone archive tests run without WordPress functions.
             return json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
         } catch (\JsonException $e) {
             throw new \RuntimeException($errorMessage, 0, $e);

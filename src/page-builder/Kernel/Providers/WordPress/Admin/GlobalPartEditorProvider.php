@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Kernel\Providers\WordPress\Admin;
 
 use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
 use UncannyPageBuilder\Application\Concurrency\GlobalSourceMutation;
+use UncannyPageBuilder\Application\Filesystem\LocalFilesystemPortInterface;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
 use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
@@ -20,6 +21,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\CssSanitizationGate;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartDeletionCleanup;
 use UncannyPageBuilder\Infrastructure\WordPress\GlobalPartMetaBox;
 use UncannyPageBuilder\Infrastructure\WordPress\ReusableFactory;
+use UncannyPageBuilder\Infrastructure\WordPress\SourcePackageUploadReader;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressCallbackBoundary;
 use UncannyPageBuilder\Infrastructure\Persistence\DatabaseGlobalPartRepository;
@@ -53,6 +55,7 @@ final class GlobalPartEditorProvider implements ServiceProviderInterface
                 $c->typed(GetPageBuilderAllowedCapabilities::class),
                 $c->typed(ReusableSourcePackageService::class),
                 $c->typed(FailureReporterInterface::class),
+                new SourcePackageUploadReader($c->typed(LocalFilesystemPortInterface::class)),
             );
         });
     }

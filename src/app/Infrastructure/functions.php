@@ -1,6 +1,4 @@
 <?php
-declare( strict_types=1 );
-
 /**
  * API Infrastructure - Global Service Functions
  *
@@ -11,6 +9,8 @@ declare( strict_types=1 );
  * @package Uncanny_Automator\App\Infrastructure
  */
 
+declare( strict_types=1 );
+
 namespace Uncanny_Automator\App\Infrastructure;
 
 use Uncanny_Automator\App\Infrastructure\Database\Database;
@@ -19,6 +19,9 @@ use Uncanny_Automator\App\Infrastructure\Api_Client\Api_Client;
 use Uncanny_Automator\App\Infrastructure\Api_Client\License_Header_Injector;
 use Uncanny_Automator\App\Infrastructure\License\Credit_Manager;
 use Uncanny_Automator\App\Infrastructure\License\License_Manager;
+use Uncanny_Automator\App\Feature_State\Application\Get_Feature_State;
+use Uncanny_Automator\App\Feature_State\Infrastructure\Automator_Policy_State_Adapter;
+use Uncanny_Automator\App\Feature_State\Infrastructure\Mcp_Allocation_Facts_Reader;
 
 /**
  * Get the License Manager instance.
@@ -39,6 +42,49 @@ function automator_license_manager( ?License_Manager $override = null, bool $res
 	if ( null === $instance ) {
 		$instance = new License_Manager();
 	}
+	return $instance;
+}
+
+/**
+ * Get the request-wide Automator feature-state query.
+ *
+ * Construction is lazy and the result lives only for this PHP request. The
+ * query itself memoizes success or failure so every UI consumer sees one
+ * coherent Axis snapshot without another transient or remote request.
+ *
+ * @param Get_Feature_State|null $override Optional override for testing.
+ * @param bool                   $reset    Whether to reset the cached query.
+ *
+ * @return Get_Feature_State|null
+ */
+function automator_feature_state_query( ?Get_Feature_State $override = null, bool $reset = false ): ?Get_Feature_State {
+	static $instance = null;
+
+	if ( $reset ) {
+		$instance = null;
+		return null;
+	}
+
+	if ( null !== $override ) {
+		$instance = $override;
+		return $instance;
+	}
+
+	if ( null === $instance ) {
+		$licenses = automator_license_manager();
+
+		if ( ! $licenses instanceof License_Manager ) {
+			throw new \LogicException( 'The Automator license manager is unavailable.' );
+		}
+
+		$instance = new Get_Feature_State(
+			new Automator_Policy_State_Adapter(
+				$licenses,
+				new Mcp_Allocation_Facts_Reader( $licenses )
+			)
+		);
+	}
+
 	return $instance;
 }
 

@@ -31,9 +31,12 @@ final class WordPressPageSourceImageImporter implements PageSourceImageImporterI
                 }
 
                 $filename = 'upb-import-' . substr($image->sha256(), 0, 16) . '.' . $image->extension();
-                $bytes = $image->filePath() !== null
-                    ? @file_get_contents($image->filePath())
-                    : $image->bytes();
+                if ($image->filePath() !== null) {
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- This is a verified local import file, not a remote URL.
+                    $bytes = @file_get_contents($image->filePath());
+                } else {
+                    $bytes = $image->bytes();
+                }
                 if (!is_string($bytes) || strlen($bytes) !== $image->byteCount()) {
                     throw new \RuntimeException('WordPress could not read an imported image.');
                 }

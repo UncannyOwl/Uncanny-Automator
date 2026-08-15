@@ -79,6 +79,7 @@ final class BindingLoader
 
     private function loadDeclaration(string $jsonPath): ?BindingDeclaration
     {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Binding declarations are plugin-local JSON files, not remote URLs.
         $json = file_get_contents($jsonPath);
         if ($json === false) {
             return null;
