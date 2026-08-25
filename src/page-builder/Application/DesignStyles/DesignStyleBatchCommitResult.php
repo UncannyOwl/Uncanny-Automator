@@ -13,7 +13,7 @@ final class DesignStyleBatchCommitResult
      * @param array<int, array<string, mixed>> $groups
      * @param array<int, array<string, mixed>> $applied
      * @param array<int, array<string, mixed>> $rejected
-     * @param array<int, array{section_id?: int}> $globalPartSources
+     * @param array<int, array{section_id?: int, compiled_css?: string}> $globalPartSources
      * @param array<string, mixed> $refreshed
      */
     private function __construct(
@@ -118,6 +118,9 @@ final class DesignStyleBatchCommitResult
                 $globalPartSources[$partId] = [
                     'section_id' => (int) ($globalPart['section_id'] ?? 0),
                 ];
+                if (is_string($globalPart['compiled_css'] ?? null)) {
+                    $globalPartSources[$partId]['compiled_css'] = $globalPart['compiled_css'];
+                }
             }
         }
 
@@ -145,6 +148,25 @@ final class DesignStyleBatchCommitResult
     public function message(): string
     {
         return $this->message;
+    }
+
+    /**
+     * Attach the exact design-token stylesheet for an in-place editor update.
+     */
+    public function withDesignTokenCss(string $compiledCss): self
+    {
+        return new self(
+            status: $this->status,
+            message: $this->message,
+            groups: $this->groups,
+            applied: $this->applied,
+            rejected: $this->rejected,
+            globalPartSources: $this->globalPartSources,
+            refreshed: array_replace_recursive(
+                $this->refreshed,
+                ['design_tokens' => ['compiled_css' => $compiledCss]],
+            ),
+        );
     }
 
     /** @return array<string, mixed> */

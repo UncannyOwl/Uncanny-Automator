@@ -5,26 +5,32 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Kernel\Providers\Api;
 
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Application\Canvas\CanvasGlobalPartsProviderInterface;
+use UncannyPageBuilder\Application\Canvas\CanvasRefreshRendererInterface;
 use UncannyPageBuilder\Application\Controls\ControlDispatcher;
 use UncannyPageBuilder\Application\Controls\ControlRegistry;
-use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
-use UncannyPageBuilder\Application\EditorLock\CheckHumanWriteOwnership;
-use UncannyPageBuilder\Application\Canvas\CanvasGlobalPartsProviderInterface;
 use UncannyPageBuilder\Application\Controls\ControlStateService;
+use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\DesignStandardsService;
+use UncannyPageBuilder\Application\DesignStyles\WorkingDesignTokenCssRendererInterface;
 use UncannyPageBuilder\Application\Editor\EditorStateService;
 use UncannyPageBuilder\Application\Editor\SelectEditorPageSource;
+use UncannyPageBuilder\Application\EditorLock\CheckHumanWriteOwnership;
 use UncannyPageBuilder\Application\Export\StaticPageExportService;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
 use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
+use UncannyPageBuilder\Application\Reusable\PreviewReusableSection;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Application\ShellImportService;
 use UncannyPageBuilder\Application\ShellModeService;
 use UncannyPageBuilder\Application\SourcePackage\ReusableSourcePackageService;
 use UncannyPageBuilder\Application\UpdatePageLayout;
+use UncannyPageBuilder\Domain\Compiler\ShadowCompiler;
+use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\EditorLock\EditorLockStoreInterface;
+use UncannyPageBuilder\Domain\Publishing\PageSourceSnapshotRepositoryInterface;
 use UncannyPageBuilder\Infrastructure\Persistence\DatabaseSectionRepository;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
@@ -60,10 +66,11 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(CanvasGlobalPartsProviderInterface::class),
                 $c->typed(EditorLockWriteGuard::class),
                 $c->typed(SelectEditorPageSource::class),
-                $c->typed(\UncannyPageBuilder\Domain\Compiler\ShadowCompiler::class),
+                $c->typed(ShadowCompiler::class),
                 $c->typed(FailureReporterInterface::class),
-                $c->typed(\UncannyPageBuilder\Application\Canvas\CanvasRefreshRendererInterface::class),
-                $c->typed(\UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface::class),
+                $c->typed(CanvasRefreshRendererInterface::class),
+                $c->typed(SourceGenerationStoreInterface::class),
+                $c->typed(WorkingDesignTokenCssRendererInterface::class),
             );
         });
 
@@ -82,6 +89,11 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(PermissionChecker::class),
                 $c->typed(GlobalPartDefaultsService::class),
                 $c->typed(ReusableSourcePackageService::class),
+                new PreviewReusableSection(
+                    $c->typed(GlobalPartService::class),
+                    $c->typed(CanvasRefreshRendererInterface::class),
+                    $c->typed(ShadowCompiler::class),
+                ),
                 $c->typed(FailureReporterInterface::class),
             );
         });
@@ -93,7 +105,7 @@ final class PresentationApiServiceProvider implements ServiceProviderInterface
                 $c->typed(PermissionChecker::class),
                 $c->typed(WorkingCanvasRefresherInterface::class),
                 $c->typed(EditorLockWriteGuard::class),
-                $c->typed(\UncannyPageBuilder\Domain\Publishing\PageSourceSnapshotRepositoryInterface::class),
+                $c->typed(PageSourceSnapshotRepositoryInterface::class),
                 $c->typed(FailureReporterInterface::class),
             );
         });

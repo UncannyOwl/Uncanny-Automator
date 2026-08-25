@@ -10,6 +10,7 @@ use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\Canvas\CanvasGlobalPartsProviderInterface;
 use UncannyPageBuilder\Application\Canvas\CanvasRefreshRendererInterface;
+use UncannyPageBuilder\Application\DesignStyles\WorkingDesignTokenCssRendererInterface;
 use UncannyPageBuilder\Application\Editor\SelectEditorPageSource;
 use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\SectionService;
@@ -35,6 +36,7 @@ final class LayoutController
         private readonly ?FailureReporterInterface $failureReporter = null,
         private readonly ?CanvasRefreshRendererInterface $refreshRenderer = null,
         private readonly ?SourceGenerationStoreInterface $sourceGenerations = null,
+        private readonly ?WorkingDesignTokenCssRendererInterface $designTokenCss = null,
     ) {}
 
     public function registerRoutes(): void
@@ -64,6 +66,7 @@ final class LayoutController
             $sectionName = sanitize_text_field($request->get_param('section_name') ?? '');
             $action      = sanitize_text_field($request->get_param('action') ?? '');
             $sectionId   = $request->get_param('section_id');
+            $sourceRootId = null;
 
             // Support adding a section from a global part (reusable).
             $globalPartId = $request->get_param('global_part_id');
@@ -77,6 +80,10 @@ final class LayoutController
                     return ApiResponse::error(ErrorMessage::SectionNotFound);
                 }
                 $content = $resolved['content'];
+                $sourceRootId = RequestId::positive($resolved['section_id'] ?? null);
+                if ($sourceRootId === null) {
+                    return ApiResponse::error(ErrorMessage::SectionNotFound);
+                }
                 if ($sectionName === '') {
                     $sectionName = sanitize_text_field($resolved['title']);
                 }
@@ -107,6 +114,7 @@ final class LayoutController
                     $content,
                     $action ?: null,
                     $sectionId !== null ? absint($sectionId) : null,
+                    sourceRootId: $sourceRootId,
                 );
                 return ApiResponse::ok($result)->toResponse();
             } catch (SectionValidationException $e) {
@@ -234,6 +242,11 @@ final class LayoutController
             $layout['has_runtime_javascript'] = $this->refreshRenderer->hasCurrentJavaScript($globalPartId);
         }
 
+        $designTokenCss = $this->designTokenCss?->renderForEditor($globalPartId);
+        if (is_string($designTokenCss)) {
+            $layout['design_token_css'] = $designTokenCss;
+        }
+
         return $layout;
     }
 
@@ -323,6 +336,11 @@ final class LayoutController
             $layout['source']['loaded_source'] = 'working';
             $layout['source']['loaded_working_generation'] = $sourceSelection?->workingGeneration();
             $layout['source']['loaded_snapshot_id'] = null;
+        }
+
+        $designTokenCss = $this->designTokenCss?->renderForEditor($pageId);
+        if (is_string($designTokenCss)) {
+            $layout['design_token_css'] = $designTokenCss;
         }
 
         return $layout;

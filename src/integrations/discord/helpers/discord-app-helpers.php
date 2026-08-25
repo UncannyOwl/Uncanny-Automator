@@ -189,6 +189,11 @@ class Discord_App_Helpers extends App_Helpers {
 		} catch ( Exception $e ) {
 			// Do nothing
 		}
+
+		// Clear the locally stored connected stamp for server disconnects.
+		if ( ! empty( $server_id ) ) {
+			$this->update_server_connected_status( $server_id, 0 );
+		}
 	}
 
 	/**

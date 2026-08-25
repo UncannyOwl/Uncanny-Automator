@@ -231,6 +231,10 @@ class Gravity_Forms_Possible_Tokens {
 	 */
 	protected function register_checkbox_tokens( $tokens, $form_id, $field ) {
 
+		// Consolidated field-level pair: all checked options, comma-separated.
+		$tokens[] = $this->main_field_token( $form_id, $field );
+		$tokens[] = $this->label_token( $form_id, $field, $field );
+
 		$tokens = $this->inputs_as_tokens( $tokens, $form_id, $field );
 		$tokens = $this->labels_as_tokens( $tokens, $form_id, $field );
 

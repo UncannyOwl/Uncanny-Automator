@@ -107,7 +107,7 @@ final class NativePageSave
                     }
                 },
             );
-            delete_transient($this->noticeTransientKey($pageId));
+            PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $pageId);
 
             return true;
         } catch (ParkedDraftNotLoadedException) {
@@ -154,22 +154,18 @@ final class NativePageSave
             return;
         }
 
-        $message = get_transient($this->noticeTransientKey($postId));
+        $message = PostEditNotice::read(self::NOTICE_TRANSIENT_PREFIX, $postId);
         if (!is_string($message) || $message === '') {
             return;
         }
 
-        delete_transient($this->noticeTransientKey($postId));
-        echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($message) . '</p></div>';
+        PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
+
+        PostEditNotice::render($message);
     }
 
     private function recordNotice(int $pageId, string $message): void
     {
-        set_transient($this->noticeTransientKey($pageId), $message, 60);
-    }
-
-    private function noticeTransientKey(int $pageId): string
-    {
-        return self::NOTICE_TRANSIENT_PREFIX . $pageId . '_' . (int) get_current_user_id();
+        PostEditNotice::remember(self::NOTICE_TRANSIENT_PREFIX, $pageId, $message);
     }
 }

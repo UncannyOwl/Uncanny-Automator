@@ -770,10 +770,6 @@ class Admin_Menu {
 						'title' => esc_html__( 'Zoho Campaigns', 'uncanny-automator' ),
 						'url' => 'https://automatorplugin.com/knowledge-base/zoho-campaigns/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
 					),
-					array(
-						'title' => esc_html__( 'Facebook Groups (Deprecated)', 'uncanny-automator' ),
-						'url' => 'https://automatorplugin.com/knowledge-base/facebook-groups/?utm_source=uncanny-automator&utm_medium=in-plugin&utm_content=dashboard-kb-special-actions',
-					),
 				),
 			),
 			array(

@@ -210,7 +210,7 @@ final class GlobalPartMetaBox
             $this->saving = false;
         }
 
-        delete_transient($this->noticeTransientKey($postId));
+        PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
         clean_post_cache($postId);
     }
 
@@ -239,19 +239,19 @@ final class GlobalPartMetaBox
             return;
         }
 
-        $key = $this->noticeTransientKey($postId);
-        if (get_transient($key) !== 'save_failed') {
+        if (PostEditNotice::read(self::NOTICE_TRANSIENT_PREFIX, $postId) !== 'save_failed') {
             return;
         }
 
-        delete_transient($key);
-        echo '<div class="notice notice-error is-dismissible"><p>';
-        echo esc_html_x(
-            'Page Builder could not save the reusable part settings. Review the current title and part type before you try again.',
-            'Page Builder',
-            'uncanny-automator',
+        PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
+
+        PostEditNotice::render(
+            _x(
+                'Page Builder could not save the reusable part settings. Review the current title and part type before you try again.',
+                'Page Builder',
+                'uncanny-automator',
+            ),
         );
-        echo '</p></div>';
     }
 
     /**
@@ -312,7 +312,7 @@ final class GlobalPartMetaBox
     private function recordSaveNotice(int $postId): void
     {
         try {
-            set_transient($this->noticeTransientKey($postId), 'save_failed', 60);
+            PostEditNotice::remember(self::NOTICE_TRANSIENT_PREFIX, $postId, 'save_failed');
         } catch (\Throwable $failure) {
             // A diagnostic failure must not replace the original save failure
             // or terminate the shared save_post request.
@@ -322,10 +322,5 @@ final class GlobalPartMetaBox
                 $failure::class,
             ));
         }
-    }
-
-    private function noticeTransientKey(int $postId): string
-    {
-        return self::NOTICE_TRANSIENT_PREFIX . $postId . '_' . get_current_user_id();
     }
 }

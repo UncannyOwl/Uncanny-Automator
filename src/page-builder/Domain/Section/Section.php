@@ -11,6 +11,7 @@ final class Section
     private int $position;
     private string $name;
     private SectionContent $content;
+    private ?int $sourceRootId;
     private ?\DateTimeImmutable $createdAt;
     private ?\DateTimeImmutable $updatedAt;
 
@@ -20,6 +21,7 @@ final class Section
         int $position,
         string $name,
         SectionContent $content,
+        ?int $sourceRootId = null,
         ?\DateTimeImmutable $createdAt = null,
         ?\DateTimeImmutable $updatedAt = null,
     ) {
@@ -28,6 +30,7 @@ final class Section
         $this->position  = $position;
         $this->name      = $name;
         $this->content   = $content;
+        $this->sourceRootId = $sourceRootId;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -37,8 +40,9 @@ final class Section
         int $position,
         string $name,
         SectionContent $content,
+        ?int $sourceRootId = null,
     ): self {
-        return new self(null, $pageId, $position, $name, $content);
+        return new self(null, $pageId, $position, $name, $content, $sourceRootId);
     }
 
     /**
@@ -70,6 +74,7 @@ final class Section
             position: $position,
             name:     $data['name'] ?? 'Untitled',
             content:  SectionContent::fromArray($data['content'] ?? []),
+            sourceRootId: self::sourceRootIdFromArray($data),
         );
     }
 
@@ -84,6 +89,7 @@ final class Section
             position: $position,
             name:     $data['name'] ?? 'Untitled',
             content:  SectionContent::fromArray($data['content'] ?? []),
+            sourceRootId: self::sourceRootIdFromArray($data),
         );
     }
 
@@ -94,6 +100,7 @@ final class Section
     public function position(): int                  { return $this->position; }
     public function name(): string                   { return $this->name; }
     public function content(): SectionContent        { return $this->content; }
+    public function sourceRootId(): ?int             { return $this->sourceRootId; }
     public function isNew(): bool { return $this->id === null; }
 
     // ── Mutators ───────────────────────────────
@@ -123,5 +130,13 @@ final class Section
             'name'     => $this->name,
             'content'  => $this->content->toArray(),
         ];
+    }
+
+    /** @param array<string, mixed> $data */
+    private static function sourceRootIdFromArray(array $data): ?int
+    {
+        $sourceRootId = $data['source_root_id'] ?? null;
+
+        return is_int($sourceRootId) && $sourceRootId !== 0 ? $sourceRootId : null;
     }
 }

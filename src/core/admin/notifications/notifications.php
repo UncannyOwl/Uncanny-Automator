@@ -14,7 +14,7 @@ class Automator_Notifications {
 	/**
 	 * Source of notifications content.
 	 *
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 *
 	 * @var string
 	 */
@@ -23,7 +23,7 @@ class Automator_Notifications {
 	/**
 	 * Option value.
 	 *
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 *
 	 * @var bool|array
 	 */
@@ -53,7 +53,7 @@ class Automator_Notifications {
 	/**
 	 * Initialize class.
 	 *
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function init() {
 
@@ -63,7 +63,7 @@ class Automator_Notifications {
 	/**
 	 * Register hooks.
 	 *
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function hooks() {
 
@@ -81,7 +81,7 @@ class Automator_Notifications {
 				function () {
 					$screen = get_current_screen();
 					if ( 'edit-uo-recipe' === $screen->id ) {
-						add_action( 'automator_show_internal_admin_notice', array( $this, 'show_notifications' ) );
+						add_action( 'automator_show_internal_admin_notice', array( $this, 'show_notifications_as_admin_notice' ) );
 					}
 				},
 				10
@@ -94,7 +94,7 @@ class Automator_Notifications {
 	 * Check if user has access and is enabled.
 	 *
 	 * @return bool
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function has_access() {
 
@@ -113,7 +113,7 @@ class Automator_Notifications {
 	 * @param bool $cache Reference property cache if available.
 	 *
 	 * @return array
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function get_option( $cache = true ) {
 
@@ -137,7 +137,7 @@ class Automator_Notifications {
 	 * Fetch notifications from feed.
 	 *
 	 * @return array
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function fetch_feed() {
 
@@ -163,7 +163,7 @@ class Automator_Notifications {
 	 * @param array $notifications Array of notifications items to verify.
 	 *
 	 * @return array
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function verify( $notifications ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
@@ -182,12 +182,11 @@ class Automator_Notifications {
 				continue;
 			}
 
-			// Ignore if license type does not match.
-			$license_type = $this->get_license_type();
-
-			if ( ! in_array( $license_type, $notification['type'], true ) ) {
-				continue;
-			}
+			// Audience (license cohort) is intentionally NOT filtered at fetch time.
+			// The stored feed is cohort-agnostic so a change in account state
+			// (connect/disconnect, expiry, tier change) is reflected on the next
+			// page load without a re-fetch. verify_active() applies the current
+			// audience at display time.
 
 			// Ignore if notification is not ready to display(based on start time).
 			if ( ! empty( $notification['start'] ) && time() < strtotime( $notification['start'] ) ) {
@@ -238,7 +237,7 @@ class Automator_Notifications {
 	 * @param array $notifications Array of notifications items to verify.
 	 *
 	 * @return array
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function verify_active( $notifications ) {
 
@@ -246,15 +245,15 @@ class Automator_Notifications {
 			return array();
 		}
 
-		$license_type = $this->get_license_type();
+		$audience = $this->get_notification_audience();
 
-		// Remove notifications that are not active, or if the license type not exists
+		// Remove notifications that are not active, or whose targets don't overlap the audience.
 		foreach ( $notifications as $key => $notification ) {
 
 			if (
 				( ! empty( $notification['start'] ) && time() < strtotime( $notification['start'] ) ) ||
 				( ! empty( $notification['end'] ) && time() > strtotime( $notification['end'] ) ) ||
-				( ! empty( $notification['type'] ) && ! in_array( $license_type, $notification['type'], true ) )
+				( ! empty( $notification['type'] ) && ! array_intersect( $audience, (array) $notification['type'] ) )
 			) {
 				unset( $notifications[ $key ] );
 			}
@@ -267,7 +266,7 @@ class Automator_Notifications {
 	 * Get notification data.
 	 *
 	 * @return array
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function get() {
 
@@ -277,8 +276,13 @@ class Automator_Notifications {
 
 		$option = $this->get_option();
 
-		// Update notifications using async task.
-		if ( empty( $option['update'] ) || time() > $option['update'] - DAY_IN_SECONDS ) {
+		// Refresh the feed on the daily cadence, or immediately when the site's
+		// audience changes (account connect/disconnect, expiry, tier change) so a
+		// freshly-relevant notice is not left unseen for up to a day.
+		$refresh_due      = empty( $option['update'] ) || time() > $option['update'] + DAY_IN_SECONDS;
+		$audience_changed = $this->current_audience_fingerprint() !== automator_get_option( 'automator_notifications_audience', '' );
+
+		if ( $refresh_due || $audience_changed ) {
 			if ( false === wp_next_scheduled( 'automator_admin_notifications_update' ) ) {
 				wp_schedule_single_event( time(), 'automator_admin_notifications_update' );
 			}
@@ -329,7 +333,7 @@ class Automator_Notifications {
 	 */
 	public function get_notifications_with_human_readeable_start_time( $notifications ) {
 		if ( ! is_array( $notifications ) || empty( $notifications ) ) {
-			return;
+			return $notifications;
 		}
 
 		foreach ( $notifications as $key => $notification ) {
@@ -377,7 +381,7 @@ class Automator_Notifications {
 	 * Get notification count.
 	 *
 	 * @return int
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function get_count() {
 
@@ -389,7 +393,7 @@ class Automator_Notifications {
 	 *
 	 * @param array $notification Notification data.
 	 *
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function add( $notification ) {
 
@@ -430,7 +434,7 @@ class Automator_Notifications {
 	 *
 	 * @param array $option (Optional) Added @since 7.13.2
 	 *
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function update() {
 
@@ -447,12 +451,16 @@ class Automator_Notifications {
 			),
 			true
 		);
+
+		// Record the audience this feed was fetched under, so get() can force an
+		// immediate refresh when the site's audience later changes.
+		automator_update_option( 'automator_notifications_audience', $this->current_audience_fingerprint() );
 	}
 
 	/**
 	 * Dismiss notification via AJAX.
 	 *
-	 * @since {VERSION}
+	 * @since 3.9.1.2
 	 */
 	public function dismiss() {
 
@@ -575,16 +583,27 @@ class Automator_Notifications {
 	}
 
 	/**
-	 * Delete the notification options.
+	 * Render the notifications carousel inside a WP admin-notice wrapper.
+	 *
+	 * The carousel (banner.php) is a dashboard/settings-panel component. On the
+	 * All Recipes list table it is echoed into the raw admin-notices slot, where
+	 * — without the `notice` class — WP never gives it proper in-content
+	 * placement (it renders flush-left, clipped behind the admin menu). Wrapping
+	 * it in `uap notice` (same pattern as the sibling permalink notice) restores
+	 * correct placement and applies the `.uap` design-system scope, while the
+	 * outer chrome is zeroed so only the card's own styling shows.
+	 *
+	 * @return void
 	 */
-	public function delete_notifications_data() {
+	public function show_notifications_as_admin_notice() {
 
-		automator_delete_option( $this->option_name );
+		if ( empty( $this->get_active_notifications() ) ) {
+			return;
+		}
 
-		// Delete old notices option.
-		automator_delete_option( 'automator_notices' );
-
-		automator_notification_event_runner()->delete_data();
+		echo '<div class="uap notice" style="padding:0;border:0;background:transparent;box-shadow:none;">';
+		$this->show_notifications();
+		echo '</div>';
 	}
 
 	/**
@@ -614,6 +633,142 @@ class Automator_Notifications {
 	public function get_license_type() {
 
 		return automator_license_manager()->get_type();
+	}
+
+	/**
+	 * Fingerprint the site's current notification audience.
+	 *
+	 * Used to detect account-state changes (connect/disconnect, expiry, tier
+	 * change) between feed fetches so get() can force an immediate refresh.
+	 *
+	 * @return string
+	 */
+	public function current_audience_fingerprint() {
+		return implode( ',', $this->get_notification_audience() );
+	}
+
+	/**
+	 * Resolve the current site into the notification audience slugs it belongs to.
+	 *
+	 * Mirrors the `mi_license` taxonomy on the notifications CDN. Returns the
+	 * broad→specific chain (e.g. an active AI+Automation Plus site returns
+	 * array( 'pro', 'pro-aa', 'pro-aa-plus' )). A notification is targeted when
+	 * ANY slug overlaps its `type[]`, so tagging a notice `pro` reaches every Pro
+	 * site while `pro-aa-plus` reaches only that tier.
+	 *
+	 * @return string[]
+	 */
+	public function get_notification_audience() {
+
+		$license = automator_license_manager();
+
+		// Lite — Pro plugin not active.
+		if ( ! $license->is_pro_active() ) {
+			return $this->lite_audience( (array) $license->get_license_data() );
+		}
+
+		// Active Pro — the locally stored EDD status is authoritative for terminal
+		// states ( get_type() collapses anything non-valid to '' ).
+		return $this->pro_audience(
+			(string) automator_get_option( 'uap_automator_pro_license_status' ),
+			(array) $license->get_license_data()
+		);
+	}
+
+	/**
+	 * Resolve the Lite audience chain.
+	 *
+	 * Splits on whether the Free Account ( download 23718 ) is connected, and —
+	 * for connected accounts — whether an Agent (LLM) usage allocation exists.
+	 * v2/credits omits the `llm_credits` key entirely when there is no allocation,
+	 * so its absence marks the `lite-connected-no-agent` sub-cohort (targetable
+	 * for "get Agent usage" messaging).
+	 *
+	 * @param array $license_data The cached v2/credits payload ( may be empty ).
+	 *
+	 * @return string[]
+	 */
+	protected function lite_audience( array $license_data ) {
+
+		$download_id = (int) ( $license_data['download_id'] ?? $license_data['item_id'] ?? 0 );
+
+		if ( 23718 !== $download_id ) {
+			return array( 'free', 'lite-disconnected' );
+		}
+
+		$chain = array( 'free', 'lite-connected' );
+
+		if ( empty( $license_data['llm_credits'] ) ) {
+			$chain[] = 'lite-connected-no-agent';
+		}
+
+		return $chain;
+	}
+
+	/**
+	 * Resolve the active-Pro audience chain — terminal states first, then the
+	 * exact plan resolved from the license product.
+	 *
+	 * @param string $status       The stored EDD license status.
+	 * @param array  $license_data The cached v2/credits payload.
+	 *
+	 * @return string[]
+	 */
+	protected function pro_audience( $status, array $license_data ) {
+
+		// Terminal states are intentionally NOT merged with the generic `pro`
+		// chain: a lapsed site sees only notices authored for its state, never
+		// access-assuming `pro` notices (e.g. "Uncanny Agent — it's already
+		// yours"). Win-back reach is per-notice — a notice can be tagged
+		// pro-expired / pro-invalid alongside `pro` to include lapsed sites.
+		if ( 'expired' === $status ) {
+			return array( 'pro-expired' );
+		}
+
+		if ( 'valid' !== $status ) {
+			return array( 'pro-invalid' );
+		}
+
+		$download_id = (int) ( $license_data['download_id'] ?? $license_data['item_id'] ?? 0 );
+		$price_id    = (int) ( $license_data['price_id'] ?? 0 );
+
+		return array_merge( array( 'pro' ), $this->pro_plan_slugs( $download_id, $price_id ) );
+	}
+
+	/**
+	 * Map an EDD ( download_id, price_id ) pair to its notification plan slugs.
+	 *
+	 * Deterministic — mirrors the storefront product catalogue. Unknown pairs
+	 * ( new/renamed variations, addon-only downloads ) return an empty array so
+	 * the site still receives generic `pro` notices until the map is extended.
+	 *
+	 * @param int $download_id EDD product id.
+	 * @param int $price_id    EDD variable-price id.
+	 *
+	 * @return string[]
+	 */
+	protected function pro_plan_slugs( $download_id, $price_id ) {
+
+		$map = array(
+			// Uncanny Automator Pro (506) — Legacy + AI+Automation subscription tiers.
+			'506:1'  => array( 'pro-legacy', 'pro-legacy-basic' ),
+			'506:2'  => array( 'pro-legacy', 'pro-legacy-plus' ),
+			'506:3'  => array( 'pro-legacy', 'pro-legacy-elite' ),  // "Unlimited (Legacy)" — API reports license_plan: elite (PRO_ELITE_PRICE_IDS).
+			'506:4'  => array( 'pro-legacy', 'pro-legacy-elite' ),
+			'506:5'  => array( 'pro-aa', 'pro-aa-basic' ),
+			'506:6'  => array( 'pro-aa', 'pro-aa-plus' ),
+			'506:7'  => array( 'pro-aa', 'pro-aa-elite' ),
+			'506:8'  => array( 'pro-aa', 'pro-aa-basic' ),   // Monthly.
+			'506:9'  => array( 'pro-aa', 'pro-aa-plus' ),    // Monthly.
+			'506:10' => array( 'pro-aa', 'pro-aa-elite' ),   // Monthly.
+
+			// Uncanny Automator Lifetime (11067).
+			'11067:1' => array( 'pro-lifetime', 'pro-lifetime-pro' ),
+			'11067:2' => array( 'pro-lifetime', 'pro-lifetime-agency' ),
+			'11067:3' => array( 'pro-lifetime', 'pro-lifetime-unlimited' ),
+		);
+
+		return $map[ $download_id . ':' . $price_id ] ?? array();
 	}
 
 

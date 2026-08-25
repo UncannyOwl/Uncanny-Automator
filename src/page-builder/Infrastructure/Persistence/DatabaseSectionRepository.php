@@ -6,21 +6,29 @@ namespace UncannyPageBuilder\Infrastructure\Persistence;
 
 use UncannyPageBuilder\Application\Concurrency\PageSourceMutation;
 use UncannyPageBuilder\Domain\Compiler\CompiledOutput;
+use UncannyPageBuilder\Domain\Compiler\ShadowCompiler;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
 use UncannyPageBuilder\Domain\Exception\SectionNotFoundException;
 use UncannyPageBuilder\Domain\Section\Section;
 use UncannyPageBuilder\Domain\Section\SectionCollection;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
+use UncannyPageBuilder\Domain\Section\SectionRootIdentityRemapper;
+use UncannyPageBuilder\Infrastructure\Compiler\CssMinifier;
 
 final class DatabaseSectionRepository implements SectionRepositoryInterface
 {
     private const META_COMPILED = '_uncanny_page_builder_compiled_css';
 
+    private readonly ShadowCompiler $compiler;
+
     public function __construct(
         private readonly ?SourceGenerationStoreInterface $sourceGenerations = null,
         private readonly ?PageSourceMutation $pageSource = null,
-    ) {}
+        ?ShadowCompiler $compiler = null,
+    ) {
+        $this->compiler = $compiler ?? new ShadowCompiler(new CssMinifier());
+    }
 
     private function table(): string
     {
@@ -108,10 +116,11 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
     public function replaceAll(int $pageId, SectionCollection $sections, CompiledOutput $compiled): void
     {
         $nextGeneration = $sections->generation() + 1;
+        $hasNewSections = $this->hasNewSections($sections);
         $this->commitPage(
             $pageId,
             $sections->generation(),
-            function () use ($pageId, $sections, $compiled): void {
+            function () use ($pageId, $sections, $compiled, $hasNewSections): void {
                 global $wpdb;
                 $table = $this->table();
 
@@ -141,11 +150,14 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                     }
 
                     if ($section->id() === null) {
-                        $section->assignId((int) $wpdb->insert_id);
+                        $this->assignDurableIdentity($section, (int) $wpdb->insert_id, $table);
                     }
                 }
 
-                $this->saveCompiled($pageId, $compiled);
+                $this->saveCompiled(
+                    $pageId,
+                    $this->compiledAfterIdentityAssignment($sections, $compiled, $hasNewSections),
+                );
             },
         );
         $sections->markPersistedAtGeneration($nextGeneration);
@@ -235,10 +247,11 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
     ): void {
         $sections->reindex();
         $nextGeneration = $sections->generation() + 1;
+        $hasNewSections = $this->hasNewSections($sections);
         $this->commitPage(
             $pageId,
             $sections->generation(),
-            function () use ($pageId, $sections, $compiled): void {
+            function () use ($pageId, $sections, $compiled, $hasNewSections): void {
                 global $wpdb;
                 $table = $this->table();
 
@@ -258,7 +271,7 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                             throw new \RuntimeException("Failed to insert section '{$section->name()}'.");
                         }
 
-                        $section->assignId((int) $wpdb->insert_id);
+                        $this->assignDurableIdentity($section, (int) $wpdb->insert_id, $table);
                     } else {
                         $updated = $wpdb->update(
                             $table,
@@ -284,10 +297,67 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
                 // not silently resurrect on the next read.
                 $this->deleteMissingSections($pageId, $sections);
 
-                $this->saveCompiled($pageId, $compiled);
+                $this->saveCompiled(
+                    $pageId,
+                    $this->compiledAfterIdentityAssignment($sections, $compiled, $hasNewSections),
+                );
             },
         );
         $sections->markPersistedAtGeneration($nextGeneration);
+    }
+
+    private function hasNewSections(SectionCollection $sections): bool
+    {
+        foreach ($sections->all() as $section) {
+            if ($section->isNew()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function assignDurableIdentity(Section $section, int $sectionId, string $table): void
+    {
+        global $wpdb;
+
+        $sourceSectionId = $section->sourceRootId();
+        $section->assignId($sectionId);
+        if ($sourceSectionId === null || $sourceSectionId === $sectionId) {
+            return;
+        }
+
+        $section->replaceContent(SectionRootIdentityRemapper::remap(
+            $section->content(),
+            $sourceSectionId,
+            $sectionId,
+        ));
+        $updated = $wpdb->update(
+            $table,
+            [
+                'html' => $section->content()->html(),
+                'css' => $section->content()->css(),
+                'element_styles' => $section->content()->elementStyles()->toJson(),
+            ],
+            ['id' => $sectionId],
+            ['%s', '%s', '%s'],
+            ['%d'],
+        );
+        if ($updated === false) {
+            throw new \RuntimeException("Failed to persist section {$sectionId} root identity.");
+        }
+    }
+
+    private function compiledAfterIdentityAssignment(
+        SectionCollection $sections,
+        CompiledOutput $compiled,
+        bool $hasNewSections,
+    ): CompiledOutput {
+        if (!$hasNewSections) {
+            return $compiled;
+        }
+
+        return $this->compiler->compile($sections);
     }
 
     private function deleteMissingSections(int $pageId, SectionCollection $sections): void

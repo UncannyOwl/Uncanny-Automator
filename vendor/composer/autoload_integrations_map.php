@@ -109,6 +109,20 @@ return array(
 			$baseDir . '/src/integrations/airtable/actions/airtable-sendwebhook.php',
 		),
 	),
+	'all-in-one-wp-migration' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php',
+			$baseDir . '/src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-created.php',
+			$baseDir . '/src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-deleted.php',
+			$baseDir . '/src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-failed.php',
+		),
+	),
 	'ameliabooking' => array(
 		'main' => $baseDir . '/src/integrations/ameliabooking/add-ameliabooking-integration.php',
 		'helpers' => array(
@@ -681,17 +695,6 @@ return array(
 			$baseDir . '/src/integrations/facebook/helpers/facebook-bridge.php',
 		),
 	),
-	'facebook-groups' => array(
-		'main' => $baseDir . '/src/integrations/facebook-groups/add-facebook-groups-integration.php',
-		'actions' => array(
-			$baseDir . '/src/integrations/facebook-groups/actions/facebook-group-publish-link.php',
-			$baseDir . '/src/integrations/facebook-groups/actions/facebook-group-publish-photo.php',
-			$baseDir . '/src/integrations/facebook-groups/actions/facebook-group-publish-post.php',
-		),
-		'helpers' => array(
-			$baseDir . '/src/integrations/facebook-groups/helpers/facebook-groups-helpers.php',
-		),
-	),
 	'facebook-lead-ads' => array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php',
@@ -700,6 +703,29 @@ return array(
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/facebook-lead-ads/triggers/lead-created.php',
+		),
+	),
+	'fluent-boards' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-add-comment.php',
+			$baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php',
+			$baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php',
+			$baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-create-board.php',
+			$baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-create-task.php',
+			$baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-update-task.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/fluent-boards/helpers/fluent-boards-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-board-created.php',
+			$baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-comment-added.php',
+			$baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-added.php',
+			$baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-removed.php',
+			$baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-completed-reopened.php',
+			$baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-created.php',
+			$baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-due-date-changed.php',
+			$baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-label-changed.php',
 		),
 	),
 	'fluent-booking' => array(
@@ -714,6 +740,29 @@ return array(
 			$baseDir . '/src/integrations/fluent-booking/triggers/fluent-booking-group-meeting-scheduled.php',
 			$baseDir . '/src/integrations/fluent-booking/triggers/fluent-booking-one-to-one-meeting-cancelled.php',
 			$baseDir . '/src/integrations/fluent-booking/triggers/fluent-booking-one-to-one-meeting-scheduled.php',
+		),
+	),
+	'fluent-cart' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php',
+			$baseDir . '/src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php',
+			$baseDir . '/src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/fluent-cart/helpers/fluent-cart-helpers.php',
+			$baseDir . '/src/integrations/fluent-cart/helpers/trait-reads-entity-props.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/fluent-cart/tokens/fluent-cart-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-order-paid.php',
+			$baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-order-refunded.php',
+			$baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-order-status-changed.php',
+			$baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-subscription-activated.php',
+			$baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-subscription-cancelled.php',
+			$baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-subscription-renewed.php',
+			$baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-subscription-status-changed.php',
 		),
 	),
 	'fluent-community' => array(
@@ -1625,6 +1674,11 @@ return array(
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php',
+		),
+	),
+	'really-simple-ssl' => array(
+		'triggers' => array(
+			$baseDir . '/src/integrations/really-simple-ssl/triggers/rsssl-vulnerability-scan-completed.php',
 		),
 	),
 	'redirection' => array(

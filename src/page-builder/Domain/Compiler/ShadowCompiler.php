@@ -31,6 +31,23 @@ final class ShadowCompiler
      */
     public function compile(SectionCollection $sections): CompiledOutput
     {
+        return $this->compileCollection($sections, false);
+    }
+
+    /**
+     * Compile the rendered output for unsaved browser sections.
+     *
+     * Unsaved sections use negative IDs until persistence assigns durable
+     * positive IDs. Preview compilation keeps those temporary IDs so the
+     * generated selectors match the section identities painted in the editor.
+     */
+    public function compilePreview(SectionCollection $sections): CompiledOutput
+    {
+        return $this->compileCollection($sections, true);
+    }
+
+    private function compileCollection(SectionCollection $sections, bool $preview): CompiledOutput
+    {
         $htmlParts = [];
         $cssParts  = [];
 
@@ -38,7 +55,9 @@ final class ShadowCompiler
             $sectionId = $section->id() ?? 0;
             $html = $section->content()->html();
             $css  = $section->content()->css();
-            $elementCss = ElementStyleCssRenderer::renderForSection($sectionId, $section->content()->elementStyles());
+            $elementCss = $preview
+                ? ElementStyleCssRenderer::renderForPreviewSection($sectionId, $section->content()->elementStyles())
+                : ElementStyleCssRenderer::renderForSection($sectionId, $section->content()->elementStyles());
 
             if ($html !== '') {
                 $htmlParts[] = $this->compileSeoHtml($html, $sectionId);

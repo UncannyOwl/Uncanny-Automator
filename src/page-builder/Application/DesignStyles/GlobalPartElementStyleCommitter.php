@@ -227,6 +227,7 @@ final class GlobalPartElementStyleCommitter implements GlobalPartElementStyleCom
                     'part_id'    => $plan->partId(),
                     'part_type'  => $plan->type()->value,
                     'section_id' => (int) ($saved['section_id'] ?? 0),
+                    'compiled_css' => (string) ($saved['compiled_css'] ?? ''),
                     'element_id' => $plan->targets()[0]['element_id'] ?? '',
                     'targets'    => $plan->targets(),
                     'promoted'   => $plan->promoted(),

@@ -653,6 +653,7 @@ class Automator_Load {
 		$classes['Pro_Upsell']                     = UA_ABSPATH . 'src/core/admin/pro-upgrade/class-pro-upsell.php';
 		$classes['Addons']                         = UA_ABSPATH . 'src/core/admin/addons/class-addons.php';
 		$classes['Automator_Review']               = UA_ABSPATH . 'src/core/admin/class-automator-review.php';
+		$classes['Agent_Claim_Notice']             = UA_ABSPATH . 'src/core/admin/class-agent-claim-notice.php';
 		$classes['Automator_Notifications']        = UA_ABSPATH . 'src/core/admin/notifications/notifications.php';
 		$classes['Automator_Tooltip_Notification'] = UA_ABSPATH . 'src/core/admin/tooltip-notification/class-tooltip-notification.php';
 		$classes['Automator_Tooltip_48hr']         = UA_ABSPATH . 'src/core/admin/tooltip-notification/tooltips/class-create-recipe-reminder.php';
@@ -861,6 +862,15 @@ class Automator_Load {
 	 */
 	public function load_migrations() {
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-error-log.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-orphan-readable-meta.php';
+
+		// The orphaned-label repair can only tell a maintained readable from a
+		// stale one by reading each item's field definitions, and integrations
+		// are otherwise loaded on demand. Force a full load for the admin
+		// requests the migration runs on, and only until it has finished.
+		if ( is_admin() && Migrations\Migrate_Orphan_Readable_Meta::is_pending() ) {
+			add_filter( 'automator_should_load_all_integrations', '__return_true' );
+		}
 	}
 
 	/**
@@ -897,6 +907,15 @@ class Automator_Load {
 		// src/core/lib/settings/ are covered by the "classmap": ["src/"] entry in
 		// composer.json. Composer loads each file on first use — no require_once needed.
 		do_action( 'automator_before_traits' );
+
+		// Exception to the note above: global-custom-name-field.php is a side-effect
+		// file. It ends in `new Global_Custom_Name_Field();`, so the classmap only
+		// includes it once something references the class by name, and nothing does
+		// that before `automator_options_callback_response` fires on the editor
+		// request. Without this require the per-item custom label field is never
+		// injected into any trigger or action.
+		require_once UA_ABSPATH . 'src/core/lib/recipe-parts/global-custom-name-field.php';
+
 		do_action( 'automator_after_traits' );
 	}
 

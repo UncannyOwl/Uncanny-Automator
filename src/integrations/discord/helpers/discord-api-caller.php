@@ -14,6 +14,17 @@ use Exception;
  */
 class Discord_Api_Caller extends Api_Caller {
 
+	/**
+	 * Actions that may run against the connected account instead of a server's bot grant.
+	 *
+	 * Every other action is server-scoped, so an action added without a server id fails
+	 * closed rather than silently sending the account credential in the bot's place.
+	 * 'disconnect' is dual-mode — it targets the account when called with a null server.
+	 *
+	 * @var string[]
+	 */
+	const ACCOUNT_SCOPED_ACTIONS = array( 'get_servers', 'get_user_info', 'disconnect' );
+
 	////////////////////////////////////////////////////////////
 	// Abstract override methods
 	////////////////////////////////////////////////////////////
@@ -53,6 +64,34 @@ class Discord_Api_Caller extends Api_Caller {
 
 		// Return the prepared credentials.
 		return wp_json_encode( $credentials );
+	}
+
+	/**
+	 * Recover the server scope of a resent request from its stored body.
+	 *
+	 * Discord picks its credential per request — server-scoped actions carry a
+	 * specific server's bot grant, the rest carry the connected account — and the
+	 * server id travels in $args, which a replayed body does not record. A
+	 * server-scoped action's stored credential names the server it went to, so
+	 * take the scope from there; an unresolvable server throws in
+	 * prepare_request_credentials(), which leaves the original credential in place.
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 */
+	protected function resend_credential_args( $body ) {
+
+		$action = $body['action'] ?? '';
+
+		// Account-scoped actions re-resolve unscoped, as they were sent.
+		if ( in_array( $action, self::ACCOUNT_SCOPED_ACTIONS, true ) ) {
+			return array();
+		}
+
+		$stored = json_decode( (string) $body[ $this->get_credential_request_key() ], true );
+
+		return array( 'server_id' => $stored['discord_id'] ?? '' );
 	}
 
 	/**
@@ -130,8 +169,17 @@ class Discord_Api_Caller extends Api_Caller {
 	 * @param string|null $server_id The Discord server ID to include in the request
 	 *
 	 * @return array The API response
+	 * @throws Exception If a server-scoped action was called without a server
 	 */
 	public function discord_request( $body, $action_data = null, $server_id = null ) {
+
+		$action = is_string( $body ) ? $body : ( $body['action'] ?? '' );
+
+		// Without a server the account credential would go out in the bot's place.
+		if ( is_null( $server_id ) && ! in_array( $action, self::ACCOUNT_SCOPED_ACTIONS, true ) ) {
+			throw new Exception( esc_html( 'A Discord server is required for the ' . $action . ' request' ) );
+		}
+
 		$args = array(
 			'server_id' => $server_id,
 		);

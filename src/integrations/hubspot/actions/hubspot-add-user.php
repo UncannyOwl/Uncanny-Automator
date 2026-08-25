@@ -68,6 +68,8 @@ class HUBSPOT_ADD_USER extends App_Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
+		$this->reset_field_errors();
+
 		$user = get_userdata( $user_id );
 		if ( ! $user ) {
 			throw new Exception( esc_html_x( 'User not found.', 'HubSpot', 'uncanny-automator' ) );

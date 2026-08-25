@@ -106,14 +106,14 @@ final class ElementStyleSheet
     /**
      * @param array<string, true> $elementIds
      */
-    public function pruneMissingElementIds(array $elementIds, string $html): self
+    public function pruneMissingElementIds(array $elementIds, string $html, ?string $ownedSectionRootId = null): self
     {
         /*
          * Empty inventories are ambiguous: the section may truly have no ids, or
          * the repair pass may have failed to prove which ids still exist. Keep
          * harmless orphan selectors rather than deleting user-owned style source.
          */
-        if ($elementIds === []) {
+        if ($elementIds === [] && $ownedSectionRootId === null) {
             return new self($this->all());
         }
 
@@ -121,6 +121,8 @@ final class ElementStyleSheet
         foreach ($this->rules as $rule) {
             if (
                 isset($elementIds[$rule->elementId()])
+                || $rule->elementId() === $ownedSectionRootId
+                || ($elementIds === [] && !self::isSectionRootElementId($rule->elementId()))
                 || self::htmlContainsElementId($html, $rule->elementId())
             ) {
                 $rules[] = $rule;
@@ -197,6 +199,11 @@ final class ElementStyleSheet
     {
         return str_contains($html, 'id="' . $elementId . '"')
             || str_contains($html, "id='" . $elementId . "'");
+    }
+
+    private static function isSectionRootElementId(string $elementId): bool
+    {
+        return preg_match('/^upb-section--?[1-9][0-9]*$/', $elementId) === 1;
     }
 
     private static function encodeJson(mixed $value, int $flags = 0): string|false

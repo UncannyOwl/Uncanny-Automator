@@ -78,9 +78,15 @@ class Facebook_Bridge {
 			)
 			: '';
 
+		// Derive the avatar from the Graph picture redirector; it re-signs on
+		// every load, while the CDN URL stored at connect time expires.
+		$avatar = ! empty( $user['user_id'] )
+			? sprintf( 'https://graph.facebook.com/%s/picture?type=square', rawurlencode( $user['user_id'] ) )
+			: '';
+
 		return array(
 			'avatar_type'  => 'image',
-			'avatar_value' => $user['picture'] ?? '',
+			'avatar_value' => $avatar,
 			'main_info'    => $main_info,
 			'additional'   => $additional_info,
 		);

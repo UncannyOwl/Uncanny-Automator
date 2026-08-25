@@ -37,6 +37,7 @@ use UncannyPageBuilder\Application\DesignStyles\DesignStyleCommitService;
 use UncannyPageBuilder\Application\DesignStyles\ElementStyleCommitter;
 use UncannyPageBuilder\Application\DesignStyles\GlobalPartElementStyleCommitter;
 use UncannyPageBuilder\Application\DesignStyles\InlineTypographyMigrator;
+use UncannyPageBuilder\Application\DesignStyles\WorkingDesignTokenCssRendererInterface;
 use UncannyPageBuilder\Application\Concurrency\PageSourceMutation;
 use UncannyPageBuilder\Application\Editor\RestorePublishedSourceToWorkingDraft;
 use UncannyPageBuilder\Application\Editing\EditableUpdateService;
@@ -226,6 +227,7 @@ final class ControlPlaneProvider implements ServiceProviderInterface
         $container->factory(DesignStyleCommitHandler::class, static function (Container $c): DesignStyleCommitHandler {
             return new DesignStyleCommitHandler(
                 $c->typed(DesignStyleCommitService::class),
+                $c->typed(WorkingDesignTokenCssRendererInterface::class),
             );
         });
         $container->factory(ManualChangeSetHandler::class, static function (Container $c): ManualChangeSetHandler {

@@ -221,6 +221,8 @@ class GF_SUBFORM_GROUPS extends \Uncanny_Automator\Recipe\Trigger {
 		$group_id = $this->get_group_id( $form, $entry );
 
 		$tokens = array(
+			'FORM_TITLE'                              => $form['title'],
+			'FORM_ID'                                 => $form['id'],
 			$this->trigger_meta . '_ID'               => $form['id'],
 			$this->trigger_meta . '_GROUPS'           => get_the_title( $group_id ),
 			$this->trigger_meta . '_GROUPS_ID'        => $group_id,

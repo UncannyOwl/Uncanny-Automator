@@ -370,6 +370,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
                 pageId: $canvasId,
                 sectionName: sanitize_text_field((string) ($resolved['title'] ?? '')),
                 content: $resolved['content'],
+                sourceRootId: $resolved['section_id'],
             );
         } catch (PageNotFoundException | SectionValidationException $e) {
             throw $e;

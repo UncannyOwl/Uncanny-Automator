@@ -304,6 +304,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return new DatabaseSectionRepository(
                 $c->typed(SourceGenerationStoreInterface::class),
                 $c->typed(PageSourceMutation::class),
+                $c->typed(ShadowCompiler::class),
             );
         });
 

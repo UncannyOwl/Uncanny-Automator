@@ -164,7 +164,6 @@ trait HubSpot_Contact_Fields {
 	 * @return array Array of properties formatted for HubSpot API.
 	 */
 	protected function process_custom_fields( $json_string ) {
-		$this->custom_field_errors = array();
 		return $this->process_transposed_repeater( $json_string );
 	}
 
@@ -403,8 +402,11 @@ trait HubSpot_Contact_Fields {
 	/**
 	 * Validate a single enum value against options.
 	 *
+	 * Accepts either the internal value or the human-readable label
+	 * (case-insensitive) and returns the canonical internal value.
+	 *
 	 * @param string $value The value to validate.
-	 * @param array  $options The available options.
+	 * @param array  $options The available options in repeater format (value/text pairs).
 	 *
 	 * @return string|false The valid value or false.
 	 */
@@ -417,7 +419,13 @@ trait HubSpot_Contact_Fields {
 
 		foreach ( $options as $option ) {
 			$option_value = $option['value'] ?? '';
-			$option_label = $option['label'] ?? '';
+
+			// Skip the empty placeholder option so its text can't match and clear the field.
+			if ( '' === $option_value ) {
+				continue;
+			}
+
+			$option_label = $option['text'] ?? '';
 
 			if ( strtolower( $option_value ) === $value_lower || strtolower( $option_label ) === $value_lower ) {
 				return $option_value;
@@ -543,7 +551,7 @@ trait HubSpot_Contact_Fields {
 		$value_str = is_array( $value ) ? implode( ', ', $value ) : (string) $value;
 
 		// translators: %1$s: field type, %2$s: field value, %3$s: field name.
-		$this->custom_field_errors[] = sprintf(
+		$this->field_errors[] = sprintf(
 			esc_html_x( 'Invalid %1$s value "%2$s" for field "%3$s"', 'HubSpot', 'uncanny-automator' ),
 			$field_type,
 			$value_str,
@@ -557,10 +565,10 @@ trait HubSpot_Contact_Fields {
 	 * @return string
 	 */
 	protected function get_field_errors() {
-		if ( empty( $this->custom_field_errors ) ) {
+		if ( empty( $this->field_errors ) ) {
 			return '';
 		}
-		return implode( ', ', $this->custom_field_errors );
+		return implode( ', ', $this->field_errors );
 	}
 
 	/**
@@ -569,6 +577,15 @@ trait HubSpot_Contact_Fields {
 	 * @return bool
 	 */
 	protected function has_field_errors() {
-		return ! empty( $this->custom_field_errors );
+		return ! empty( $this->field_errors );
+	}
+
+	/**
+	 * Reset the field error accumulator at the start of an action run.
+	 *
+	 * @return void
+	 */
+	protected function reset_field_errors() {
+		$this->field_errors = array();
 	}
 }

@@ -36,6 +36,57 @@ return array (
       ),
     ),
   ),
+  'AI1WM_BACKUP_CREATED' => 
+  array (
+    'code' => 'AI1WM_BACKUP_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\All_In_One_Wp_Migration\\Ai1wm_Backup_Created',
+    'integration' => 'ALL_IN_ONE_WP_MIGRATION',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'AI1WM_BACKUP',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'ai1wm_status_export_done',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'AI1WM_BACKUP_DELETED' => 
+  array (
+    'code' => 'AI1WM_BACKUP_DELETED',
+    'class' => 'Uncanny_Automator\\Integrations\\All_In_One_Wp_Migration\\Ai1wm_Backup_Deleted',
+    'integration' => 'ALL_IN_ONE_WP_MIGRATION',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'AI1WM_DELETED_BACKUP',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'ai1wm_status_backup_deleted',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'AI1WM_BACKUP_FAILED' => 
+  array (
+    'code' => 'AI1WM_BACKUP_FAILED',
+    'class' => 'Uncanny_Automator\\Integrations\\All_In_One_Wp_Migration\\Ai1wm_Backup_Failed',
+    'integration' => 'ALL_IN_ONE_WP_MIGRATION',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'AI1WM_BACKUP_FAILURE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'ai1wm_status_export_error',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
   'BB_CONTACT_FORM_SUBMITTED' => 
   array (
     'code' => 'BB_CONTACT_FORM_SUBMITTED',
@@ -288,6 +339,261 @@ return array (
         0 => 'edd_sl_post_set_status',
         1 => 20,
         2 => 2,
+      ),
+    ),
+  ),
+  'FLUENT_BOARDS_BOARD_CREATED' => 
+  array (
+    'code' => 'FLUENT_BOARDS_BOARD_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Board_Created',
+    'integration' => 'FLUENT_BOARDS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FLUENT_BOARDS_BOARD_CREATED',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_boards/board_created',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_BOARDS_COMMENT_ADDED' => 
+  array (
+    'code' => 'FLUENT_BOARDS_COMMENT_ADDED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Comment_Added',
+    'integration' => 'FLUENT_BOARDS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FLUENT_BOARDS_BOARD',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_boards/comment_created',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_BOARDS_TASK_ASSIGNEE_ADDED' => 
+  array (
+    'code' => 'FLUENT_BOARDS_TASK_ASSIGNEE_ADDED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Assignee_Added',
+    'integration' => 'FLUENT_BOARDS',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_BOARDS_BOARD',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_boards/task_assignee_added',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'FLUENT_BOARDS_TASK_ASSIGNEE_REMOVED' => 
+  array (
+    'code' => 'FLUENT_BOARDS_TASK_ASSIGNEE_REMOVED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Assignee_Removed',
+    'integration' => 'FLUENT_BOARDS',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_BOARDS_BOARD',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_boards/task_assignee_removed',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'FLUENT_BOARDS_TASK_COMPLETED_REOPENED' => 
+  array (
+    'code' => 'FLUENT_BOARDS_TASK_COMPLETED_REOPENED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Completed_Reopened',
+    'integration' => 'FLUENT_BOARDS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FLUENT_BOARDS_BOARD',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_fluent_boards_task_status_changed',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'FLUENT_BOARDS_TASK_CREATED' => 
+  array (
+    'code' => 'FLUENT_BOARDS_TASK_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Created',
+    'integration' => 'FLUENT_BOARDS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FLUENT_BOARDS_BOARD',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_boards/task_created',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_BOARDS_TASK_DUE_DATE_CHANGED' => 
+  array (
+    'code' => 'FLUENT_BOARDS_TASK_DUE_DATE_CHANGED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Due_Date_Changed',
+    'integration' => 'FLUENT_BOARDS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FLUENT_BOARDS_BOARD',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_boards/task_due_date_changed',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'FLUENT_BOARDS_TASK_LABEL_CHANGED' => 
+  array (
+    'code' => 'FLUENT_BOARDS_TASK_LABEL_CHANGED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Label_Changed',
+    'integration' => 'FLUENT_BOARDS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'FLUENT_BOARDS_LABEL',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_boards/task_label',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'FLUENT_CART_ORDER_PAID' => 
+  array (
+    'code' => 'FLUENT_CART_ORDER_PAID',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Order_Paid',
+    'integration' => 'FLUENT_CART',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_CART_PRODUCT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_cart/order_paid_done',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_CART_ORDER_REFUNDED' => 
+  array (
+    'code' => 'FLUENT_CART_ORDER_REFUNDED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Order_Refunded',
+    'integration' => 'FLUENT_CART',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_CART_REFUND_TYPE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_cart/order_refunded',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_CART_ORDER_STATUS_CHANGED' => 
+  array (
+    'code' => 'FLUENT_CART_ORDER_STATUS_CHANGED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Order_Status_Changed',
+    'integration' => 'FLUENT_CART',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_CART_ORDER_STATUS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_cart/order_status_changed',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_CART_SUBSCRIPTION_ACTIVATED' => 
+  array (
+    'code' => 'FLUENT_CART_SUBSCRIPTION_ACTIVATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Subscription_Activated',
+    'integration' => 'FLUENT_CART',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_CART_PRODUCT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_cart/subscription_activated',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_CART_SUBSCRIPTION_CANCELLED' => 
+  array (
+    'code' => 'FLUENT_CART_SUBSCRIPTION_CANCELLED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Subscription_Cancelled',
+    'integration' => 'FLUENT_CART',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_CART_PRODUCT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_cart/subscription_canceled',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_CART_SUBSCRIPTION_RENEWED' => 
+  array (
+    'code' => 'FLUENT_CART_SUBSCRIPTION_RENEWED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Subscription_Renewed',
+    'integration' => 'FLUENT_CART',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_CART_PRODUCT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_cart/subscription_renewed',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'FLUENT_CART_SUBSCRIPTION_STATUS_CHANGED' => 
+  array (
+    'code' => 'FLUENT_CART_SUBSCRIPTION_STATUS_CHANGED',
+    'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Subscription_Status_Changed',
+    'integration' => 'FLUENT_CART',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FLUENT_CART_SUBSCRIPTION_STATUS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'fluent_cart/payments/subscription_status_changed',
+        1 => 10,
+        2 => 1,
       ),
     ),
   ),
@@ -823,6 +1129,23 @@ return array (
         0 => 'prli_record_click',
         1 => 10,
         2 => 1,
+      ),
+    ),
+  ),
+  'RSSSL_VULNERABILITY_SCAN_COMPLETED' => 
+  array (
+    'code' => 'RSSSL_VULNERABILITY_SCAN_COMPLETED',
+    'class' => 'Uncanny_Automator\\Integrations\\Really_Simple_Ssl\\Rsssl_Vulnerability_Scan_Completed',
+    'integration' => 'REALLY_SIMPLE_SECURITY',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'RSSSL_VULNERABILITY_SCAN',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'rsssl_vulnerability_sync_completed',
+        1 => 10,
+        2 => 0,
       ),
     ),
   ),

@@ -49,6 +49,26 @@ final class ElementStyleCssRenderer
             return '';
         }
 
+        return self::render($sectionId, $sheet);
+    }
+
+    /**
+     * Compile styles for a browser-owned section identity.
+     *
+     * Pending sections use negative IDs so they cannot be confused with a
+     * persisted section. CSS IDs can contain that negative integer.
+     */
+    public static function renderForPreviewSection(int $sectionId, ElementStyleSheet $sheet): string
+    {
+        if ($sectionId === 0 || $sheet->isEmpty()) {
+            return '';
+        }
+
+        return self::render($sectionId, $sheet);
+    }
+
+    private static function render(int $sectionId, ElementStyleSheet $sheet): string
+    {
         $blockRules = [];
         $inlineRules = [];
         foreach ($sheet->all() as $rule) {

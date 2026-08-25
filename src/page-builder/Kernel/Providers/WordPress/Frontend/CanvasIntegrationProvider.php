@@ -8,6 +8,7 @@ use UncannyPageBuilder\Application\Access\GetPageBuilderAllowedCapabilities;
 use UncannyPageBuilder\Application\Canvas\PublicPageRenderPolicy;
 use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\DesignStandardsService;
+use UncannyPageBuilder\Application\DesignStyles\WorkingDesignTokenCssRendererInterface;
 use UncannyPageBuilder\Application\GetAvailableFontFamilies;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
 use UncannyPageBuilder\Application\ShellModeService;
@@ -68,6 +69,10 @@ final class CanvasIntegrationProvider implements ServiceProviderInterface
                 $c->typed(\UncannyPageBuilder\Application\Editor\SelectEditorPageSource::class),
             );
         });
+        $container->factory(
+            WorkingDesignTokenCssRendererInterface::class,
+            static fn (Container $c): WorkingDesignTokenCssRendererInterface => $c->typed(WorkingDesignTokenCss::class),
+        );
 
         $container->factory(DesignTokenInjector::class, static function (Container $c): DesignTokenInjector {
             return new DesignTokenInjector(

@@ -126,9 +126,14 @@ class Item_Sentence_Composer {
 		foreach ( $matches[1] as $match ) {
 			$inner  = $match[0];
 			$offset = $match[1] - 2; // adjust for opening braces
-			$parts  = explode( ':', $inner, 2 );
+			// A token is `{{decorator:CODE}}` or `{{decorator:CODE:GROUP}}`, where
+			// GROUP names the options group the pill opens. Splitting on the first
+			// colon only would fold GROUP into the code ("CODE:GROUP"), match no
+			// field, and drop the value from the sentence -- Pro's Schedule
+			// triggers are written in the three-part form.
+			$parts = explode( ':', $inner );
 
-			if ( 2 !== count( $parts ) ) {
+			if ( count( $parts ) < 2 ) {
 				continue;
 			}
 
@@ -136,27 +141,34 @@ class Item_Sentence_Composer {
 			$code      = trim( $parts[1] );
 			$raw       = '{{' . $inner . '}}';
 
+			// Clicking a pill opens the options group named by the third part.
+			// Without it the group defaults to the field's own code, matching
+			// the builder's own `optionsID = parts[2] ?? code`.
+			$options_id = isset( $parts[2] ) ? trim( $parts[2] ) : $code;
+
 			if ( ! isset( $fields[ $code ], $label_map[ $code ] ) ) {
 				$tokens[] = array(
-					'raw'       => $raw,
-					'offset'    => $offset,
-					'decorator' => $decorator,
-					'code'      => $code,
-					'label'     => null,
-					'value'     => null,
-					'is_filled' => false,
+					'raw'        => $raw,
+					'offset'     => $offset,
+					'decorator'  => $decorator,
+					'code'       => $code,
+					'options_id' => $options_id,
+					'label'      => null,
+					'value'      => null,
+					'is_filled'  => false,
 				);
 				continue;
 			}
 
 			$tokens[] = array(
-				'raw'       => $raw,
-				'offset'    => $offset,
-				'decorator' => $decorator,
-				'code'      => $code,
-				'label'     => $label_map[ $code ],
-				'value'     => $fields[ $code ]['text'],
-				'is_filled' => $fields[ $code ]['is_filled'],
+				'raw'        => $raw,
+				'offset'     => $offset,
+				'decorator'  => $decorator,
+				'code'       => $code,
+				'options_id' => $options_id,
+				'label'      => $label_map[ $code ],
+				'value'      => $fields[ $code ]['text'],
+				'is_filled'  => $fields[ $code ]['is_filled'],
 			);
 		}
 
@@ -231,13 +243,14 @@ class Item_Sentence_Composer {
 	 * @return string
 	 */
 	private function render_token_span( array $token ): string {
-		$code = esc_attr( $token['code'] );
+		$code       = esc_attr( $token['code'] );
+		$options_id = esc_attr( $token['options_id'] ?? $token['code'] );
 
 		if ( null === $token['value'] ) {
 			return sprintf(
 				'<span class="item-title__token" data-token-id="%s" data-options-id="%s">%s</span>',
 				$code,
-				$code,
+				$options_id,
 				esc_html( $token['decorator'] )
 			);
 		}
@@ -246,7 +259,7 @@ class Item_Sentence_Composer {
 			return sprintf(
 				'<span class="item-title__token item-title__token--filled" data-token-id="%s" data-options-id="%s">%s</span>',
 				$code,
-				$code,
+				$options_id,
 				esc_html( $token['value'] )
 			);
 		}
@@ -257,7 +270,7 @@ class Item_Sentence_Composer {
 			'<span class="item-title__token%s" data-token-id="%s" data-options-id="%s"><span class="item-title__token-label">%s:</span> %s</span>',
 			$filled_class,
 			$code,
-			$code,
+			$options_id,
 			esc_html( $token['label'] ),
 			esc_html( $token['value'] )
 		);

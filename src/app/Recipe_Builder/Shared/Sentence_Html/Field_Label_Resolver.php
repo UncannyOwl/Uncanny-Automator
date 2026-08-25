@@ -154,32 +154,83 @@ class Field_Label_Resolver {
 
 			$readable_key = $key . '_readable';
 
+			// Only scalars can carry a readable label. Repeater rows arrive as
+			// arrays and have no single value to describe.
+			$raw_value = is_scalar( $value ) ? (string) $value : null;
+
 			// If the caller already provided a _readable value, preserve it.
 			// This allows AI agents to pass human-readable labels directly.
 			if ( ! empty( $configuration[ $readable_key ] ) ) {
-				$enriched[ $readable_key ] = $configuration[ $readable_key ];
+				$label = $configuration[ $readable_key ];
+			} else {
+				// Try static options first.
+				$label = $this->get_option_label( $configuration_fields, $key, $value );
+
+				// If no label found and we have entity info, dispatch the field's
+				// dynamic option source (remote_data REST or legacy ajax).
+				if ( empty( $label ) && ! empty( $entity_code ) ) {
+					$label = $this->resolve_ajax_option_label( $configuration_fields, $key, $value, $configuration, $entity_code, $entity_type );
+				}
+
+				// If the value is a token ({{...}}), try to resolve its human-readable name.
+				if ( empty( $label ) && null !== $raw_value ) {
+					$label = $this->resolve_token_name( $raw_value, $configuration );
+				}
+			}
+
+			$label = is_scalar( $label ) ? (string) $label : '';
+
+			// Drop a readable that only echoes the value it describes.
+			//
+			// Option-less fields (time, date, text, int, ...) resolve to their own
+			// value here, and the recipe builder maintains `{CODE}_readable` for
+			// select/radio/file only -- see getOptionValue() in item/options.js. A
+			// readable persisted for any other type is therefore never refreshed
+			// again, and since the sentence renderer prefers `_readable` over the
+			// raw value, it outranks every later edit. Omitting it is lossless:
+			// both renderers fall back to the value, which is what it held anyway.
+			if ( '' === $label || $label === $raw_value ) {
+				unset( $enriched[ $readable_key ] );
 				continue;
-			}
-
-			// Try static options first.
-			$label = $this->get_option_label( $configuration_fields, $key, $value );
-
-			// If no label found and we have entity info, dispatch the field's
-			// dynamic option source (remote_data REST or legacy ajax).
-			if ( empty( $label ) && ! empty( $entity_code ) ) {
-				$label = $this->resolve_ajax_option_label( $configuration_fields, $key, $value, $configuration, $entity_code, $entity_type );
-			}
-
-			// For text input fields (no options), use the raw value as the readable label.
-			// If the value is a token ({{...}}), try to resolve its human-readable name.
-			if ( empty( $label ) && ! empty( $value ) ) {
-				$label = $this->resolve_token_name( (string) $value, $configuration );
 			}
 
 			$enriched[ $readable_key ] = $label;
 		}
 
 		return $enriched;
+	}
+
+	/**
+	 * Drop readable labels left behind by fields whose value just changed.
+	 *
+	 * An update merges the enriched submission over the stored configuration.
+	 * When enrich_with_readable_labels() produces no readable for a submitted
+	 * field -- an option-less field, or a select whose label could not be
+	 * resolved -- the merge leaves the previous readable in place, still
+	 * describing the value that was just replaced. Both sentence renderers
+	 * prefer `_readable` over the raw value, so that leftover would be shown
+	 * instead of the new one.
+	 *
+	 * @param array $merged    Stored configuration merged with the enriched update.
+	 * @param array $submitted The fields the caller actually sent.
+	 * @param array $enriched  Output of enrich_with_readable_labels() for $submitted.
+	 *
+	 * @return array $merged without readables orphaned by this update.
+	 */
+	public function prune_stale_readables( array $merged, array $submitted, array $enriched ): array {
+		foreach ( array_keys( $submitted ) as $field_code ) {
+			if ( Str::ends_with( $field_code, '_readable' ) || Str::ends_with( $field_code, '_custom' ) ) {
+				continue;
+			}
+
+			$readable_key = $field_code . '_readable';
+
+			if ( ! isset( $enriched[ $readable_key ] ) ) {
+				unset( $merged[ $readable_key ] );
+			}
+		}
+
+		return $merged;
 	}
 
 	/**

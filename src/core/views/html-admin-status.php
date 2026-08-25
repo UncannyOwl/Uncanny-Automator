@@ -510,7 +510,7 @@ $automator_stats    = $report['automator_stats'];
 			<td>
 				<?php
 				if ( version_compare( $environment['mysql_version'], '5.6', '<' ) && ! strstr( $environment['mysql_version_string'], 'MariaDB' ) ) {
-					/* Translators: %1$s: MySQL version, %2$s: Recommended MySQL version. */
+					/* translators: %1$s: current MySQL version, %2$s: recommended MySQL version. */
 					echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( '%1$s - We recommend a minimum MySQL version of 5.6. See: %2$s', 'uncanny-automator' ), esc_html( $environment['mysql_version_string'] ), '<a href="https://wordpress.org/about/requirements/" target="_blank">' . esc_html__( 'WordPress requirements', 'uncanny-automator' ) . '</a>' ) . '</mark>';
 				} else {
 					echo '<mark class="yes">' . esc_html( $environment['mysql_version_string'] ) . '</mark>';
@@ -527,7 +527,7 @@ $automator_stats    = $report['automator_stats'];
 		<td>
 			<?php
 			if ( 'UTC' !== $environment['default_timezone'] ) {
-				/* Translators: %s: default timezone.. */
+				/* translators: %s: the default timezone configured for the site. */
 				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( 'Default timezone is %s - it should be UTC', 'uncanny-automator' ), esc_html( $environment['default_timezone'] ) ) . '</mark>';
 			} else {
 				echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark>';
@@ -543,7 +543,7 @@ $automator_stats    = $report['automator_stats'];
 			if ( $environment['remote_post_successful'] ) {
 				echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark>';
 			} else {
-				/* Translators: %s: function name. */
+				/* translators: %s: name of the WordPress HTTP function that failed. */
 				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( '%s failed. Contact your hosting provider.', 'uncanny-automator' ), 'wp_remote_post()' ) . ' ' . esc_html( $environment['remote_post_response'] ) . '</mark>';
 			}
 			?>
@@ -557,7 +557,7 @@ $automator_stats    = $report['automator_stats'];
 			if ( $environment['remote_get_successful'] ) {
 				echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark>';
 			} else {
-				/* Translators: %s: function name. */
+				/* translators: %s: name of the WordPress HTTP function that failed. */
 				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( '%s failed. Contact your hosting provider.', 'uncanny-automator' ), 'wp_remote_get()' ) . ' ' . esc_html( $environment['remote_get_response'] ) . '</mark>';
 			}
 			?>
@@ -616,6 +616,137 @@ $automator_stats    = $report['automator_stats'];
 	</tbody>
 </table>
 <?php
+// ─── Uncanny Page Builder ─────────────────────────────────────────────────
+$page_builder = isset( $report['page_builder_module'] ) && is_array( $report['page_builder_module'] )
+	? $report['page_builder_module']
+	: array();
+
+if ( ! empty( $page_builder ) ) :
+	$pb_healthy    = ! empty( $page_builder['healthy'] );
+	$pb_engines    = isset( $page_builder['table_engines'] ) && is_array( $page_builder['table_engines'] ) ? $page_builder['table_engines'] : array();
+	$pb_tables     = isset( $page_builder['tables'] ) && is_array( $page_builder['tables'] ) ? $page_builder['tables'] : array();
+	$pb_queue      = isset( $page_builder['refresh_queue'] ) && is_array( $page_builder['refresh_queue'] ) ? $page_builder['refresh_queue'] : array();
+	$pb_missing    = array_keys(
+		array_filter(
+			$pb_tables,
+			static function ( $exists ) {
+				return ! $exists;
+			}
+		)
+	);
+	$pb_engines_ok = array() !== $pb_engines;
+	foreach ( $pb_engines as $pb_engine ) {
+		if ( 0 !== strcasecmp( (string) $pb_engine, 'InnoDB' ) ) {
+			$pb_engines_ok = false;
+		}
+	}
+	$pb_mark = static function ( $ok ) {
+		echo $ok
+			? '<mark class="yes"><uo-icon id="check"></uo-icon></mark> '
+			: '<mark class="error"><span class="dashicons dashicons-warning"></span></mark> ';
+	};
+	?>
+<table class="automator_status_table widefat" cellspacing="0">
+	<thead>
+	<tr>
+		<th colspan="3" data-export-label="Uncanny Page Builder">
+			<h2><?php esc_html_e( 'Uncanny Page Builder', 'uncanny-automator' ); ?></h2></th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td data-export-label="Status"><?php esc_html_e( 'Status', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'Whether the Page Builder that ships with Automator is running on this site.', 'uncanny-automator' ); ?></td>
+		<td>
+			<?php $pb_mark( $pb_healthy ); ?>
+			<?php echo esc_html( isset( $page_builder['message'] ) ? $page_builder['message'] : '' ); ?>
+		</td>
+	</tr>
+	<?php if ( ! $pb_healthy ) : ?>
+	<tr>
+		<td data-export-label="Technical detail"><?php esc_html_e( 'Technical detail', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'The exact reason Page Builder reported. Include this when contacting support.', 'uncanny-automator' ); ?></td>
+		<td><code><?php echo esc_html( isset( $page_builder['detail'] ) ? $page_builder['detail'] : '' ); ?></code></td>
+	</tr>
+	<?php endif; ?>
+	<tr>
+		<td data-export-label="Page Builder version"><?php esc_html_e( 'Page Builder version', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'The version of the built-in Page Builder module.', 'uncanny-automator' ); ?></td>
+		<td><?php echo esc_html( isset( $page_builder['module_version'] ) ? $page_builder['module_version'] : '' ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="PHP DOM extension"><?php esc_html_e( 'PHP DOM extension', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'Page Builder needs the PHP DOM extension to read and write page markup.', 'uncanny-automator' ); ?></td>
+		<td><?php $pb_mark( ! empty( $page_builder['dom_available'] ) ); ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Database engine (InnoDB)"><?php esc_html_e( 'Database engine (InnoDB)', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'The WordPress posts, postmeta and options tables must use InnoDB so Page Builder can save changes safely.', 'uncanny-automator' ); ?></td>
+		<td>
+			<?php $pb_mark( $pb_engines_ok ); ?>
+			<?php
+			$pb_engine_bits = array();
+			foreach ( $pb_engines as $pb_table => $pb_engine ) {
+				$pb_engine_bits[] = $pb_table . ': ' . ( '' !== $pb_engine ? $pb_engine : '?' );
+			}
+			echo esc_html( implode( ', ', $pb_engine_bits ) );
+			?>
+		</td>
+	</tr>
+	<tr>
+		<td data-export-label="Page Builder tables"><?php esc_html_e( 'Page Builder tables', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'The database tables Page Builder creates for sections, page state and published artifacts.', 'uncanny-automator' ); ?></td>
+		<td>
+			<?php $pb_mark( array() !== $pb_tables && array() === $pb_missing ); ?>
+			<?php
+			if ( array() === $pb_tables ) {
+				echo '&ndash;';
+			} elseif ( array() === $pb_missing ) {
+				/* translators: %d: number of tables */
+				echo esc_html( sprintf( _n( '%d table present', '%d tables present', count( $pb_tables ), 'uncanny-automator' ), count( $pb_tables ) ) );
+			} else {
+				echo esc_html(
+					sprintf(
+						/* translators: %s: comma-separated table names */
+						esc_html_x( 'Missing: %s', 'Automator status page, Page Builder tables', 'uncanny-automator' ),
+						implode( ', ', $pb_missing )
+					)
+				);
+			}
+			?>
+		</td>
+	</tr>
+	<tr>
+		<td data-export-label="Page Builder schema version"><?php esc_html_e( 'Page Builder schema version', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'The database schema version Page Builder last installed.', 'uncanny-automator' ); ?></td>
+		<td><?php echo ! empty( $page_builder['schema_version'] ) ? esc_html( $page_builder['schema_version'] ) : '&ndash;'; ?></td>
+	</tr>
+	<tr>
+		<td data-export-label="Preview refresh queue"><?php esc_html_e( 'Preview refresh queue', 'uncanny-automator' ); ?>:</td>
+		<td class="help"><?php esc_html_e( 'Background jobs that rebuild page previews. Failed jobs mean some previews may be out of date; published pages are not affected.', 'uncanny-automator' ); ?></td>
+		<td>
+			<?php
+			if ( empty( $pb_queue['available'] ) ) {
+				echo '&ndash;';
+			} else {
+				$pb_failed = (int) ( isset( $pb_queue['failed'] ) ? $pb_queue['failed'] : 0 );
+				$pb_mark( 0 === $pb_failed );
+				echo esc_html(
+					sprintf(
+						/* translators: 1: pending job count, 2: failed job count */
+						esc_html_x( '%1$d pending, %2$d failed', 'Automator status page, Page Builder refresh queue', 'uncanny-automator' ),
+						(int) ( isset( $pb_queue['pending'] ) ? $pb_queue['pending'] : 0 ),
+						$pb_failed
+					)
+				);
+			}
+			?>
+		</td>
+	</tr>
+	</tbody>
+</table>
+<?php endif; ?>
+<?php
 // ─── Automator Loading Report ───────────────────────────────────────────────
 $loading_manifest      = \Uncanny_Automator\Recipe_Manifest::get_instance();
 $loading_manifest_data = $loading_manifest->get();
@@ -637,9 +768,9 @@ foreach ( $loading_manifest_data as $composite_key => $integration_code ) {
 
 	// Determine the type from the item map.
 	if ( ! empty( $loading_item_map[ $integration_code ] ) ) {
-		foreach ( array( 'triggers', 'actions', 'closures', 'conditions', 'loop_filters' ) as $type ) {
-			if ( isset( $loading_item_map[ $integration_code ][ $type ][ $composite_key ] ) ) {
-				switch ( $type ) {
+		foreach ( array( 'triggers', 'actions', 'closures', 'conditions', 'loop_filters' ) as $item_type ) {
+			if ( isset( $loading_item_map[ $integration_code ][ $item_type ][ $composite_key ] ) ) {
+				switch ( $item_type ) {
 					case 'triggers':
 						++$manifest_triggers;
 						break;
@@ -997,7 +1128,7 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 			if ( file_exists( $item_map_file ) ) {
 				$item_map_modified = gmdate( 'Y-m-d H:i:s', filemtime( $item_map_file ) );
 				echo '<mark class="yes"><uo-icon id="check"></uo-icon></mark> ';
-				/* translators: %s: date */
+				/* translators: %s: date and time the item map file was generated. */
 				printf( esc_html__( 'Generated %s', 'uncanny-automator' ), esc_html( $item_map_modified ) );
 			} else {
 				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . esc_html__( 'Missing — demand-driven loading disabled', 'uncanny-automator' ) . '</mark>';
@@ -1043,7 +1174,7 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 		<td>
 			<?php
 			if ( strlen( $database['database_prefix'] ) > 20 ) {
-				/* Translators: %1$s: Database prefix, %2$s: Docs link. */
+				/* translators: %1$s: database table prefix, %2$s: documentation link. */
 				echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( esc_html__( '%1$s - We recommend using a prefix with less than 20 characters. See: %2$s', 'uncanny-automator' ), esc_html( $database['database_prefix'] ), '<a href="#" target="_blank">' . esc_html__( 'How to update your database table prefix', 'uncanny-automator' ) . '</a>' ) . '</mark>';
 			} else {
 				echo '<mark class="yes">' . esc_html( $database['database_prefix'] ) . '</mark>';
@@ -1088,7 +1219,7 @@ $peak_memory = size_format( memory_get_peak_usage( true ), 1 );
 
 						echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . esc_html( $view_or_table_missing_message ) . '</mark>';
 					} else {
-						/* Translators: %1$f: Table size, %2$f: Index size, %3$s Engine. */
+						/* translators: %1$s: data size in MB, %2$s: index size in MB, %3$s: storage engine name. */
 						printf( esc_html__( 'Data: %1$.2fMB + Index: %2$.2fMB + Engine %3$s', 'uncanny-automator' ), esc_html( $table_data['data'] ), esc_html( $table_data['index'] ), esc_html( $table_data['engine'] ) );
 					}
 					?>

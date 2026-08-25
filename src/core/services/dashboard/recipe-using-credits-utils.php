@@ -31,7 +31,6 @@ class Recipe_Using_Credits_Utils {
 		'CONVERTKIT',
 		'DRIP',
 		'FACEBOOK',
-		'FACEBOOK_GROUPS',
 		'FACEBOOK_LEAD_ADS',
 		'GETRESPONSE',
 		'GOOGLE_CALENDAR',
