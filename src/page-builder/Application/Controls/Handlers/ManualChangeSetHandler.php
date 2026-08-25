@@ -9,6 +9,7 @@ use UncannyPageBuilder\Application\Controls\ControlHandlerInterface;
 use UncannyPageBuilder\Application\Controls\ControlInvokeRequest;
 use UncannyPageBuilder\Application\Controls\ControlInvokeResult;
 use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
+use UncannyPageBuilder\Application\DesignStandardsService;
 use UncannyPageBuilder\Application\Editor\RestorePublishedSourceToWorkingDraft;
 use UncannyPageBuilder\Application\History\HistoryOperationRestorer;
 use UncannyPageBuilder\Application\History\HistoryRestoreResult;
@@ -28,7 +29,8 @@ use UncannyPageBuilder\Domain\Shell\ShellMode;
  *
  * The handler deliberately composes the existing typed design/content handlers.
  * Their nested writes join PageSourceMutation, so validation failure rolls back
- * the whole set and advances the page generation exactly once on success.
+ * the whole set and advances the page generation exactly once on success. The
+ * derived working canvas refresh runs after that source transaction commits.
  */
 final class ManualChangeSetHandler implements ControlHandlerInterface
 {
@@ -192,6 +194,11 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
             throw new \InvalidArgumentException('At least one Manual change is required.');
         }
         $this->assertPageOwnedChanges($designChanges, $contentChanges);
+        $refreshWorkingCanvas = $loadedSource === 'published'
+            || $designChanges !== []
+            || $contentChanges !== []
+            || $hasSectionLayout
+            || $hasHistoryTransition;
 
         $commit = function () use (
             $request,
@@ -321,7 +328,7 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
 
                 $designResult = null;
             if ($appliedDesignChanges !== []) {
-                $designResult = $this->designStyles->__invoke(new ControlInvokeRequest(
+                $designResult = $this->designStyles->invokeWithinPageMutation(new ControlInvokeRequest(
                     controlId: 'design.style.commit',
                     context: $request->context(),
                     value: ['changes' => $appliedDesignChanges],
@@ -366,17 +373,24 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
                     'content' => $contentResults,
                 ];
         };
+        $deferredCommit = fn(): array => $this->sections->deferWorkingCanvasRefresh(
+            $request->pageId(),
+            $commit,
+        );
         $result = $hasHistoryTransition
             ? $this->pageSource->runHistoryExpected(
                 $request->pageId(),
                 $expectedGeneration,
-                $commit,
+                $deferredCommit,
             )
             : $this->pageSource->runExpected(
                 $request->pageId(),
                 $expectedGeneration,
-                $commit,
+                $deferredCommit,
             );
+        if ($refreshWorkingCanvas) {
+            $result = $this->refreshWorkingCanvasAfterCommit($request->pageId(), $result);
+        }
 
         // PageSourceMutation owns the compare-and-swap and advances exactly
         // once. Do not perform an unlocked read after commit: an Agent may
@@ -416,6 +430,37 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
                 throw new \InvalidArgumentException('Save reusable content changes separately.');
             }
         }
+    }
+
+    /**
+     * Rebuild derived canvas state only after the page-source transaction has
+     * committed. A rebuild failure does not reverse the durable source write.
+     *
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
+    private function refreshWorkingCanvasAfterCommit(int $pageId, array $result): array
+    {
+        if ($this->sections->refreshWorkingCanvasAfterCommit($pageId)) {
+            return $result;
+        }
+
+        $warning = DesignStandardsService::workingCanvasRefreshWarning();
+        $warnings = is_array($result['warnings'] ?? null) ? $result['warnings'] : [];
+        $warnings[] = $warning;
+        $result['warnings'] = $warnings;
+
+        if (is_array($result['design'] ?? null)) {
+            $design = is_array($result['design'] ?? null) ? $result['design'] : [];
+            $data = is_array($design['data'] ?? null) ? $design['data'] : [];
+            $refreshed = is_array($data['refreshed'] ?? null) ? $data['refreshed'] : [];
+            $refreshed['rebuild_warning'] = $warning;
+            $data['refreshed'] = $refreshed;
+            $design['data'] = $data;
+            $result['design'] = $design;
+        }
+
+        return $result;
     }
 
     /**
@@ -620,7 +665,11 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
                     throw new \InvalidArgumentException('Manual section layout contains duplicate section IDs.');
                 }
                 $durableIds[$id] = true;
+                unset($section['source_root_id']);
             } else {
+                if ($id !== null && $id < 0) {
+                    $section['source_root_id'] = $id;
+                }
                 $section['id'] = null;
             }
             $section['position'] = $index;

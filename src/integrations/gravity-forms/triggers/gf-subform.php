@@ -151,6 +151,13 @@ class GF_SUBFORM extends \Uncanny_Automator\Recipe\Trigger {
 		$fields_tokens = $this->gf->tokens->parser->parsed_fields_tokens( $form, $entry );
 		$this->save_tokens( 'GFFORMS', $fields_tokens );
 
-		return array();
+		// Returned values land in the trigger-code bucket, where the manually
+		// defined GFFORMS/GFFORMS_ID tokens resolve. Leaving them unsaved sent
+		// parsing into the legacy fallback, which treats the GF form id as a
+		// WP post id (get_the_title).
+		return array(
+			'GFFORMS'    => $form['title'],
+			'GFFORMS_ID' => $form['id'],
+		);
 	}
 }

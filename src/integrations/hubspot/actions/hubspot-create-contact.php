@@ -69,6 +69,8 @@ class HUBSPOT_CREATE_CONTACT extends App_Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
+		$this->reset_field_errors();
+
 		$email = trim( $this->get_parsed_meta_value( 'HUBSPOTEMAIL', '' ) );
 
 		if ( empty( $email ) ) {

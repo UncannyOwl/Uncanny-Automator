@@ -12,20 +12,14 @@ namespace Uncanny_Automator\Settings;
 trait Premium_Integration_Webhook_Settings {
 
 	/**
-	 * Register webhook options.
-	 *
-	 * @param bool $enabled Whether to register the enabled option.
-	 * @param bool $key Whether to register the key option.
+	 * Register the webhooks enabled toggle as a form option.
+	 * - The webhook key is stored by App_Webhooks and never posted from the form;
+	 *   registering it here would overwrite it with the default on every save.
 	 *
 	 * @return void
 	 */
-	public function register_webhook_options( $enabled = true, $key = true ) {
-		if ( $enabled ) {
-			$this->register_option( $this->webhooks->get_webhooks_enabled_option_name() );
-		}
-		if ( $key ) {
-			$this->register_option( $this->webhooks->get_webhook_key_option_name() );
-		}
+	public function register_webhook_options() {
+		$this->register_option( $this->webhooks->get_webhooks_enabled_option_name() );
 	}
 
 	/**
@@ -256,10 +250,10 @@ trait Premium_Integration_Webhook_Settings {
 	 * @return void
 	 */
 	public function register_webhook_hooks() {
-		// Hook into after disconnect
+		// Register webhook options for deletion before handle_disconnect() deletes registered options.
 		add_filter(
-			'automator_after_disconnect_' . $this->get_id(),
-			array( $this, 'after_disconnect_webhook_cleanup' ),
+			'automator_before_disconnect_' . $this->get_id(),
+			array( $this, 'before_disconnect_webhook_cleanup' ),
 			10,
 			3
 		);
@@ -338,15 +332,16 @@ trait Premium_Integration_Webhook_Settings {
 	}
 
 	/**
-	 * Register webhook options for automatic cleanup on disconnection
+	 * Register the webhook options for deletion during disconnect.
+	 * - Runs on automator_before_disconnect_{id}, ahead of delete_all_registered_options().
 	 *
 	 * @param array $response The current response array
 	 * @param array $data The posted data
 	 * @param object $base_settings_object The base settings object
 	 *
-	 * @return array Modified response array
+	 * @return array Unmodified response array
 	 */
-	public function after_disconnect_webhook_cleanup( $response, $data, $base_settings_object ) {
+	public function before_disconnect_webhook_cleanup( $response, $data, $base_settings_object ) {
 		// Collect all webhook options using webhook abstract getters.
 		$webhook_options = array_filter(
 			array(

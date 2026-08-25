@@ -203,36 +203,35 @@ final class DatabasePublishedPageArtifactRepository implements PublishedPageArti
         }
 
         $this->ensureSchema();
-        $this->assertTransactionalTables([
-            SchemaManager::pageStateTableName(),
-            SchemaManager::pageArtifactsTableName(),
-        ]);
+        if ($this->publishedArtifactId($pageId) !== null) {
+            throw new \RuntimeException('Page artifacts cannot be deleted while page state points to one of them.');
+        }
 
-        return $this->transaction(function () use ($pageId): int {
-            if ($this->lockedPublishedArtifactId($pageId) !== null) {
-                throw new \RuntimeException('Page artifacts cannot be deleted while page state points to one of them.');
-            }
+        global $wpdb;
+        $deleted = $wpdb->delete(SchemaManager::pageArtifactsTableName(), ['page_id' => $pageId], ['%d']);
+        if ($deleted === false) {
+            throw new \RuntimeException('Failed to delete immutable page artifacts.');
+        }
 
-            global $wpdb;
-            $deleted = $wpdb->delete(SchemaManager::pageArtifactsTableName(), ['page_id' => $pageId], ['%d']);
-            if ($deleted === false) {
-                throw new \RuntimeException('Failed to delete immutable page artifacts.');
-            }
-
-            return (int) $deleted;
-        });
+        return (int) $deleted;
     }
 
     // Section: Hydration and row locks
 
     private function lockedPublishedArtifactId(int $pageId): ?int
     {
+        return $this->publishedArtifactId($pageId, true);
+    }
+
+    private function publishedArtifactId(int $pageId, bool $forUpdate = false): ?int
+    {
         global $wpdb;
 
+        $lock = $forUpdate ? ' FOR UPDATE' : '';
         $artifactId = $wpdb->get_var($wpdb->prepare(
             'SELECT published_artifact_id FROM ' . SchemaManager::pageStateTableName() . '
              WHERE page_id = %d
-             LIMIT 1 FOR UPDATE',
+             LIMIT 1' . $lock,
             $pageId,
         ));
 

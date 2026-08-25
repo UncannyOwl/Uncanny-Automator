@@ -1518,7 +1518,6 @@ WHERE t.automator_trigger_id = %d
 		$integration_codes = array(
 			'ACTIVE_CAMPAIGN',
 			'FACEBOOK',
-			'FACEBOOK_GROUPS',
 			'GOOGLESHEET',
 			'GOOGLE_CALENDAR',
 			'GTT',

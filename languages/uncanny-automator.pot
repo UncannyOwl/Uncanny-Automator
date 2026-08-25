@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.5.1.1\n"
+"Project-Id-Version: Uncanny Automator 7.6.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-15T09:07:05+00:00\n"
+"POT-Creation-Date: 2026-08-25T22:42:49+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -1652,7 +1652,7 @@ msgstr ""
 
 #. translators: Noun
 #: src/assets/build/main.js:1
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:755
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:751
 #: src/integrations/advanced-coupons/triggers/advanced-coupons-user-receives-credit.php:67
 #: src/integrations/advanced-coupons/triggers/advanced-coupons-user-spends-credit.php:64
 msgid "Condition"
@@ -2054,7 +2054,7 @@ msgstr ""
 
 #: src/assets/build/main.js:1
 #: src/core/lib/webhooks/class-automator-send-webhook-fields.php:186
-#: src/core/views/html-admin-status.php:1229
+#: src/core/views/html-admin-status.php:1360
 #: src/integrations/rafflepress/helpers/rafflepress-helpers.php:46
 #: src/integrations/wp-discuz/actions/wp-discuz-add-reply-to-comment.php:58
 msgid "Name"
@@ -2939,31 +2939,96 @@ msgctxt "URL validation error"
 msgid "Invalid URL format: %s"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:157
+#: src/app/Components/Page_Builder/Module.php:261
 msgctxt "Site Health test label"
 msgid "Uncanny Page Builder runtime"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:179
+#: src/app/Components/Page_Builder/Module.php:287
 msgctxt "Site Health result"
-msgid "Uncanny Page Builder is active"
+msgid "Uncanny Page Builder is ready to use"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:180
+#: src/app/Components/Page_Builder/Module.php:289
 msgctxt "Site Health result"
 msgid "Uncanny Page Builder is not using the embedded runtime"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:183
+#: src/app/Components/Page_Builder/Module.php:290
+msgctxt "Site Health result"
+msgid "Uncanny Page Builder is not available on this site"
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:293
 #: src/app/Transports/Model_Context_Protocol/Authentication/Site_Signing_Key_Monitor.php:130
 #: src/app/Transports/Model_Context_Protocol/OAuth/Internal_Token_Configuration_Monitor.php:103
 msgctxt "Site Health badge"
 msgid "Uncanny Automator"
 msgstr ""
 
-#: src/app/Components/Page_Builder/Module.php:234
+#: src/app/Components/Page_Builder/Module.php:494
 msgctxt "Page Builder module admin notice"
-msgid "Uncanny Page Builder runtime unavailable."
+msgid "Uncanny Page Builder is not available right now."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:592
+msgctxt "Page Builder module status"
+msgid "Page Builder needs your WordPress database tables to use the InnoDB storage engine, but at least one of them uses a different engine. Ask your host to convert the posts, postmeta and options tables to InnoDB, then reload this page."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:602
+msgctxt "Page Builder module status"
+msgid "Page Builder is running and ready to use."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:605
+msgctxt "Page Builder module status"
+msgid "Page Builder is disabled and has no draft or published pages that need its runtime."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:608
+msgctxt "Page Builder module status"
+msgid "Page Builder has been turned off on this site by a setting or a filter."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:611
+msgctxt "Page Builder module status"
+msgid "Page Builder needs PHP 8.1 or newer. Ask your host to update PHP, then reload this page."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:614
+msgctxt "Page Builder module status"
+msgid "Page Builder needs WordPress 6.3 or newer. Update WordPress, then reload this page."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:617
+msgctxt "Page Builder module status"
+msgid "Page Builder needs the PHP DOM extension, which is not installed on this server. Ask your host to enable it, then reload this page."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:620
+msgctxt "Page Builder module status"
+msgid "Page Builder was told not to run before Uncanny Automator loaded, usually by an AUTOMATOR_PAGE_BUILDER_OWNS_RUNTIME constant in wp-config.php or a must-use plugin. Remove that override to let Automator run Page Builder."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:624
+msgctxt "Page Builder module status"
+msgid "An older standalone Uncanny Page Builder plugin is still active. Update or deactivate it so Uncanny Automator can run the built-in Page Builder instead."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:627
+msgctxt "Page Builder module status"
+msgid "Some Page Builder files are missing from this Uncanny Automator installation. Reinstalling Uncanny Automator usually fixes this."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:630
+msgctxt "Page Builder module status"
+msgid "Page Builder could not start because of an unexpected error. If this keeps happening, please share the technical details below with our support team."
+msgstr ""
+
+#: src/app/Components/Page_Builder/Module.php:633
+msgctxt "Page Builder module status"
+msgid "Page Builder has not finished loading yet."
 msgstr ""
 
 #: src/app/functions/action.php:54
@@ -4625,98 +4690,98 @@ msgid "Failed to update trigger: %s"
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:767
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:768
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Remove trigger failed: Recipe not found with ID: %d"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:790
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:791
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Failed to remove trigger: %s"
 msgstr ""
 
 #. translators: %s Invalid logic.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:812
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:813
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Trigger logic must be either \"all\" or \"any\", got: %s"
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:837
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:838
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Set trigger logic failed: Recipe not found with ID: %d"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:865
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:866
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Failed to update trigger logic: %s"
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:887
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:888
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Get trigger logic failed: Recipe not found with ID: %d"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:908
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:909
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Failed to get trigger logic: %s"
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:930
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:931
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Recipe has triggers failed: Recipe not found with ID: %d"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:953
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:954
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Failed to check recipe triggers: %s"
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:975
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:976
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Delete recipe triggers failed: Recipe not found with ID: %d"
 msgstr ""
 
 #. translators: %s Error message.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:996
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:997
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Failed to delete recipe triggers: %s"
 msgstr ""
 
 #. translators: %1$d Trigger ID, %2$d Recipe ID.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:1149
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:1150
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Trigger %1$d does not belong to recipe %2$d."
 msgstr ""
 
 #. translators: %1$s Current code, %2$s Requested code.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:1180
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:1181
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Cannot change trigger_code from \"%1$s\" to \"%2$s\" on an existing trigger. Delete and recreate instead."
 msgstr ""
 
 #. translators: %d Recipe ID.
-#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:1201
+#: src/app/Recipe_Builder/Trigger/Services/Trigger_CRUD_Service.php:1202
 #, php-format
 msgctxt "Trigger CRUD error"
 msgid "Recipe %d is trashed. Restore it to draft status before making changes."
@@ -5209,6 +5274,7 @@ msgid "Uncanny Agent"
 msgstr ""
 
 #: src/core/admin/admin-settings/tabs/uncanny-page-builder.php:43
+#: src/core/views/html-admin-status.php:653
 msgid "Uncanny Page Builder"
 msgstr ""
 
@@ -5226,6 +5292,7 @@ msgstr ""
 #: src/core/views/admin-logs/component/logs.php:33
 #: src/core/views/admin-logs/component/logs.php:181
 #: src/core/views/admin-tools-header.php:5
+#: src/core/views/html-admin-status.php:658
 #: src/integrations/advanced-ads/helpers/advanced-ads-helpers.php:89
 #: src/integrations/buddyboss/actions/bdb-setuserstatus.php:64
 #: src/integrations/duplicator/triggers/backup-completes-with-status.php:93
@@ -5253,7 +5320,7 @@ msgid "Resend App actions"
 msgstr ""
 
 #: src/core/admin/admin-tools/tabs/tools/tools.php:143
-#: src/core/views/html-admin-status.php:1016
+#: src/core/views/html-admin-status.php:1147
 msgid "Database"
 msgstr ""
 
@@ -5281,7 +5348,7 @@ msgid "API log"
 msgstr ""
 
 #: src/core/admin/api-log/class-api-log.php:67
-#: src/core/views/html-admin-status.php:972
+#: src/core/views/html-admin-status.php:1103
 #: src/integrations/uncanny-codes/tokens/uc-tokens.php:120
 msgid "Type"
 msgstr ""
@@ -5352,7 +5419,7 @@ msgstr ""
 
 #: src/core/admin/class-admin-menu.php:292
 #: src/core/admin/class-admin-menu.php:293
-#: src/core/admin/class-admin-menu.php:1844
+#: src/core/admin/class-admin-menu.php:1840
 #: src/core/views/admin-integrations/archive/search.php:20
 msgid "All integrations"
 msgstr ""
@@ -5533,7 +5600,7 @@ msgid "Telegram"
 msgstr ""
 
 #: src/core/admin/class-admin-menu.php:625
-#: src/core/admin/class-admin-menu.php:945
+#: src/core/admin/class-admin-menu.php:941
 msgid "WooCommerce"
 msgstr ""
 
@@ -5641,260 +5708,264 @@ msgstr ""
 msgid "Zoho Campaigns"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:774
-msgid "Facebook Groups (Deprecated)"
-msgstr ""
-
-#: src/core/admin/class-admin-menu.php:780
+#: src/core/admin/class-admin-menu.php:776
 msgid "Special tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:783
+#: src/core/admin/class-admin-menu.php:779
 msgid "User meta tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:787
+#: src/core/admin/class-admin-menu.php:783
 msgid "Post meta tokens"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:791
+#: src/core/admin/class-admin-menu.php:787
 msgid "Calculations (math equations)"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:797
+#: src/core/admin/class-admin-menu.php:793
 msgid "Custom User Fields Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:800
+#: src/core/admin/class-admin-menu.php:796
 msgid "Installing the Custom User Fields Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:804
+#: src/core/admin/class-admin-menu.php:800
 msgid "Managing Custom User Fields"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:808
+#: src/core/admin/class-admin-menu.php:804
 msgid "Updating Custom User Field Data"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:812
+#: src/core/admin/class-admin-menu.php:808
 msgid "Displaying Custom User Fields"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:816
+#: src/core/admin/class-admin-menu.php:812
 msgid "Uncanny Automator Custom User Fields Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:822
+#: src/core/admin/class-admin-menu.php:818
 msgid "Restrict Content Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:825
+#: src/core/admin/class-admin-menu.php:821
 msgid "Installing the Restrict Content Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:829
+#: src/core/admin/class-admin-menu.php:825
 msgid "Managing Access Levels"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:833
+#: src/core/admin/class-admin-menu.php:829
 msgid "Restrict Content Shortcodes"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:837
+#: src/core/admin/class-admin-menu.php:833
 msgid "Restrict Content for Blocks"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:841
+#: src/core/admin/class-admin-menu.php:837
 msgid "Restrict WordPress Pages & Posts"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:845
+#: src/core/admin/class-admin-menu.php:841
 msgid "Restrict Content Integration with Automator"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:849
+#: src/core/admin/class-admin-menu.php:845
 msgid "Uncanny Automator Restrict Content Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:855
+#: src/core/admin/class-admin-menu.php:851
 msgid "User Lists Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:858
+#: src/core/admin/class-admin-menu.php:854
 msgid "Installing the User Lists Addon"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:862
+#: src/core/admin/class-admin-menu.php:858
 msgid "Managing user lists"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:866
+#: src/core/admin/class-admin-menu.php:862
 msgid "Managing user list subscriptions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:870
+#: src/core/admin/class-admin-menu.php:866
 msgid "User Lists Integration with Automator"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:874
+#: src/core/admin/class-admin-menu.php:870
 msgid "Sending bulk emails with user lists"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:878
+#: src/core/admin/class-admin-menu.php:874
 msgid "The Unsubscribed list and managing subscriptions"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:882
+#: src/core/admin/class-admin-menu.php:878
 msgid "Uncanny Automator User Lists Addon Changelog"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:888
+#: src/core/admin/class-admin-menu.php:884
 msgid "Advanced Topics"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:891
+#: src/core/admin/class-admin-menu.php:887
 msgid "User Loops"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:895
+#: src/core/admin/class-admin-menu.php:891
 msgid "Post Loops"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:899
+#: src/core/admin/class-admin-menu.php:895
 msgid "Custom Scheduling"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:905
+#: src/core/admin/class-admin-menu.php:901
 msgid "Registering users"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:908
+#: src/core/admin/class-admin-menu.php:904
 msgid "Registration form with Contact Form 7"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:912
+#: src/core/admin/class-admin-menu.php:908
 msgid "Registration form with Caldera Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:916
+#: src/core/admin/class-admin-menu.php:912
 msgid "Registration form with Ninja Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:920
+#: src/core/admin/class-admin-menu.php:916
 msgid "Registration form with Gravity Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:924
+#: src/core/admin/class-admin-menu.php:920
 msgid "Registration form with Formidable Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:928
+#: src/core/admin/class-admin-menu.php:924
 msgid "Registration form with WPForms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:934
+#: src/core/admin/class-admin-menu.php:930
 msgid "Integrations FAQ"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:937
+#: src/core/admin/class-admin-menu.php:933
 msgid "Contact Form 7"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:941
+#: src/core/admin/class-admin-menu.php:937
 msgid "Gravity Forms"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:954
+#: src/core/admin/class-admin-menu.php:950
 msgctxt "Dashboard FAQ"
 msgid "What are app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:955
+#: src/core/admin/class-admin-menu.php:951
 msgctxt "Dashboard FAQ"
 msgid "Some app integrations connect to other services using an API. Automator's app credit system allows free plugin users to try this out. Passing a record to one of these integrations uses one app credit."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:958
+#: src/core/admin/class-admin-menu.php:954
 msgctxt "Dashboard FAQ"
 msgid "Do I need app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:959
+#: src/core/admin/class-admin-menu.php:955
 msgctxt "Dashboard FAQ"
 msgid "App credits are only needed for app integrations that pass through an API. Everything else is unrestricted (and Pro users get unlimited app credits)."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:962
+#: src/core/admin/class-admin-menu.php:958
 msgctxt "Dashboard FAQ"
 msgid "Can I get more app credits?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:963
+#: src/core/admin/class-admin-menu.php:959
 msgctxt "Dashboard FAQ"
 msgid "If you use more than 250 app credits, you must either purchase the Pro version or disable your actions that use credits."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:966
+#: src/core/admin/class-admin-menu.php:962
 msgctxt "Dashboard FAQ"
 msgid "What is Uncanny Agent?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:967
+#: src/core/admin/class-admin-menu.php:963
 msgctxt "Dashboard FAQ"
 msgid "Uncanny Agent is a highly capable AI agent for your WordPress site. It can build, update and troubleshoot recipes, provide business insights, and complete tasks for you."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:970
+#: src/core/admin/class-admin-menu.php:966
 msgctxt "Dashboard FAQ"
 msgid "What is Uncanny Agent usage?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:971
+#: src/core/admin/class-admin-menu.php:967
 msgctxt "Dashboard FAQ"
 msgid "Capable AI tools like Uncanny Agent require significant resources to operate. (Resources are consumed in a datacenter; Uncanny Agent does not use your server resources.) Uncanny Agent usage is a measurement of how much you can use Uncanny Agent on your AI + Automation plan and via other purchases or allocations of Uncanny Agent usage."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:974
+#: src/core/admin/class-admin-menu.php:970
 msgctxt "Dashboard FAQ"
 msgid "How can I get more Uncanny Agent usage?"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:975
+#: src/core/admin/class-admin-menu.php:971
 msgctxt "Dashboard FAQ"
 msgid "The most cost-effective method of getting additional usage of Uncanny Agent is by upgrading your plan. Higher plan tiers offer discounts on Uncanny Agent additional usage packs. Visit the usage page in your dashboard for details."
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1076
+#: src/core/admin/class-admin-menu.php:1072
 #: src/core/includes/recipe-logs-view.php:13
 msgid "Recipe log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1079
+#: src/core/admin/class-admin-menu.php:1075
 #: src/core/includes/recipe-logs-view.php:14
 msgid "Trigger log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1082
+#: src/core/admin/class-admin-menu.php:1078
 #: src/core/includes/recipe-logs-view.php:15
 msgid "Action log"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1726
+#: src/core/admin/class-admin-menu.php:1722
 msgid "Installed integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1727
+#: src/core/admin/class-admin-menu.php:1723
 msgid "Ready-to-use integrations"
 msgstr ""
 
-#: src/core/admin/class-admin-menu.php:1845
+#: src/core/admin/class-admin-menu.php:1841
 msgid "Put your WordPress site on autopilot"
 msgstr ""
 
 #: src/core/admin/class-admin-template-library.php:57
 #: src/core/views/admin-recipe-template-library.php:17
 msgid "Recipe templates"
+msgstr ""
+
+#: src/core/admin/class-agent-claim-notice.php:516
+msgid "You do not have permission to dismiss this notice."
+msgstr ""
+
+#: src/core/admin/class-agent-claim-notice.php:526
+msgid "Unknown notice."
 msgstr ""
 
 #: src/core/admin/class-automator-review.php:341
@@ -6248,7 +6319,7 @@ msgid "Skip %s Deactivate"
 msgstr ""
 
 #. translators: %1$s: Human-readable time difference
-#: src/core/admin/notifications/notifications.php:342
+#: src/core/admin/notifications/notifications.php:346
 #, php-format
 msgctxt "Notification time display"
 msgid "%1$s ago"
@@ -6624,7 +6695,7 @@ msgid "ID: %1$s (no title)"
 msgstr ""
 
 #: src/core/classes/class-automator-wp-query.php:163
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:860
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:856
 msgctxt "Uncanny Automator"
 msgid "All"
 msgstr ""
@@ -6981,7 +7052,7 @@ msgctxt "API error message"
 msgid "Your connection has expired or is invalid. [reconnect your account](%s)"
 msgstr ""
 
-#: src/core/lib/app-integrations/abstract-api-caller.php:602
+#: src/core/lib/app-integrations/abstract-api-caller.php:621
 msgctxt "API error message"
 msgid "This action may only be used in an Automator action context."
 msgstr ""
@@ -7025,7 +7096,7 @@ msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:28
 #: src/core/lib/helpers/class-automator-recipe-helpers-field.php:82
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:728
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:724
 #: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:78
 #: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:71
 #: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:77
@@ -7048,7 +7119,7 @@ msgstr ""
 msgid "Option"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:720
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:716
 #: src/integrations/uncanny-automator/triggers/uoa-recipecompleted.php:77
 #: src/integrations/uncanny-automator/triggers/uoa-recipecompletedtimes.php:70
 #: src/integrations/uncanny-automator/triggers/uoa-recipeerrorstimes.php:76
@@ -7056,74 +7127,74 @@ msgstr ""
 msgid "Number of times"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:759
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:755
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:122
 #: src/integrations/woocommerce/tokens/wc-tokens.php:448
 msgid "equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:760
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:756
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:123
 #: src/integrations/woocommerce/tokens/wc-tokens.php:451
 msgid "not equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:761
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:757
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:124
 #: src/integrations/woocommerce/tokens/wc-tokens.php:442
 msgid "less than"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:762
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:758
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:125
 #: src/integrations/woocommerce/tokens/wc-tokens.php:445
 msgid "greater than"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:763
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:759
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:126
 #: src/integrations/woocommerce/tokens/wc-tokens.php:454
 msgid "greater or equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:764
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:760
 #: src/integrations/advanced-coupons/helpers/advanced-coupons-helpers.php:127
 #: src/integrations/woocommerce/tokens/wc-tokens.php:457
 msgid "less or equal to"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:782
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:778
 #: src/core/services/rest/endpoint/log-endpoint/resources/action-logs-resources.php:852
 msgid "Redirect URL"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:861
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:857
 msgctxt "Uncanny Automator"
 msgid "Any page"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:886
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:882
 msgid "All pages"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:888
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:884
 msgid "Any page"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:894
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:890
 msgid "All posts"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:896
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:892
 #: src/integrations/wp-discuz/helpers/wp-discuz-helpers.php:71
 msgid "Any post"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:902
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:898
 msgid "All courses"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:904
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:900
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:72
 #: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:68
 #: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:68
@@ -7137,44 +7208,44 @@ msgstr ""
 msgid "Any course"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:910
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:906
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:273
 msgid "All lessons"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:912
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:908
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:114
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:90
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:269
 msgid "Any lesson"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:918
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:914
 msgid "All topics"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:920
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:916
 #: src/integrations/buddypress/helpers/buddypress-helpers.php:171
 msgid "Any topic"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:926
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:922
 msgid "All quizzes"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:928
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:924
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:246
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:180
 #: src/integrations/wplms/helpers/wplms-helpers.php:70
 msgid "Any quiz"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:934
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:930
 #: src/integrations/armember/helpers/armember-helpers.php:68
 msgid "All memberships"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:936
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:932
 #: src/integrations/armember/helpers/armember-helpers.php:64
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:201
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:203
@@ -7185,37 +7256,37 @@ msgstr ""
 msgid "Any membership"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:942
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:938
 msgid "All downloads"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:944
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:940
 msgid "Any download"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:950
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:946
 msgid "All units"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:952
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:948
 #: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:154
 #: src/integrations/wplms/helpers/wplms-helpers.php:157
 msgid "Any unit"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:958
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:954
 msgid "All popups"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:960
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:956
 msgid "Any popup"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:966
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:962
 msgid "All products"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:968
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:964
 #: src/integrations/formidable/helpers/formidable-helpers.php:74
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:68
 #: src/integrations/studiocart/helpers/studiocart-helpers.php:66
@@ -7226,11 +7297,11 @@ msgstr ""
 msgid "Any product"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:974
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:970
 msgid "All awards"
 msgstr ""
 
-#: src/core/lib/helpers/class-automator-recipe-helpers.php:976
+#: src/core/lib/helpers/class-automator-recipe-helpers.php:972
 #: src/integrations/gamipress/helpers/gamipress-helpers.php:251
 msgid "Any award"
 msgstr ""
@@ -7599,7 +7670,7 @@ msgid "Save settings"
 msgstr ""
 
 #: src/core/lib/settings/trait-premium-integration-templating-helpers.php:419
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:66
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:60
 msgctxt "Integration settings"
 msgid "Setup instructions"
 msgstr ""
@@ -7628,57 +7699,57 @@ msgctxt "Integration settings"
 msgid "Trigger"
 msgstr ""
 
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:37
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:31
 msgctxt "Integration settings"
 msgid "Enable triggers"
 msgstr ""
 
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:140
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:141
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:134
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:135
 msgctxt "Integration settings"
 msgid "Regenerate webhook URL"
 msgstr ""
 
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:142
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:136
 msgctxt "Integration settings"
 msgid "Regenerating the URL will prevent triggers from working until the new webhook URL is set in your external configuration."
 msgstr ""
 
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:143
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:137
 msgctxt "Integration settings"
 msgid "Continue"
 msgstr ""
 
 #. translators: %s is the integration name
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:244
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:238
 #, php-format
 msgctxt "Integration settings"
 msgid "To enable %s triggers, please configure webhooks in your external account."
 msgstr ""
 
 #. translators: %s is the integration name
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:282
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:276
 #, php-format
 msgctxt "Integration settings"
 msgid "Webhook URL regenerated successfully for %s."
 msgstr ""
 
 #. translators: %s is the integration name
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:309
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:303
 #, php-format
 msgctxt "Integration settings"
 msgid "%s triggers are now enabled."
 msgstr ""
 
 #. translators: %s is the integration name
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:320
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:314
 #, php-format
 msgctxt "Integration settings"
 msgid "%s triggers are now disabled."
 msgstr ""
 
 #. translators: %s is the integration name
-#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:331
+#: src/core/lib/settings/trait-premium-integration-webhook-settings.php:325
 #, php-format
 msgctxt "Integration settings"
 msgid "No changes were made to the %s triggers settings."
@@ -7696,8 +7767,8 @@ msgstr ""
 #. translators: 1: Referral type ID
 #. translators: 1: Poll ID
 #. translators: 1: Form ID
-#: src/core/lib/utilities/class-automator-get-data.php:1562
-#: src/core/services/dashboard/recipe-using-credits-utils.php:199
+#: src/core/lib/utilities/class-automator-get-data.php:1561
+#: src/core/services/dashboard/recipe-using-credits-utils.php:198
 #: src/integrations/affiliate-wp/helpers/affwp-helpers.php:77
 #: src/integrations/wp-polls/triggers/wpp-pollsubmit.php:79
 #: src/integrations/ws-form-lite/helpers/ws-form-lite-helpers.php:52
@@ -7716,13 +7787,13 @@ msgid "Missing base tables: %s. Some Automator functionality may not work as exp
 msgstr ""
 
 #: src/core/lib/utilities/class-automator-system-report.php:653
-#: src/core/views/html-admin-status.php:1195
+#: src/core/views/html-admin-status.php:1326
 msgid "Visit plugin homepage"
 msgstr ""
 
 #. translators: %s: plugin author
 #: src/core/lib/utilities/class-automator-system-report.php:665
-#: src/core/views/html-admin-status.php:1209
+#: src/core/views/html-admin-status.php:1340
 #, php-format
 msgid "by %s"
 msgstr ""
@@ -9322,6 +9393,34 @@ msgstr ""
 msgid "This is a best-effort tool, not a guarantee. Resend replays the API request that was originally sent for a failed App action — it does not re-run the recipe or re-resolve tokens. Some actions can’t be resent: the original request may not have been logged, or the integration may have been disconnected or its credentials changed since the action ran. A resend fires now, against the current connection — later than the action originally ran — and re-firing can repeat the action’s effect on the connected app (for example, a second email or contact). Review the list and try a single resend before resending in bulk."
 msgstr ""
 
+#: src/core/views/agent-claim-notice.php:37
+msgid "Account update: free Uncanny Agent usage added"
+msgstr ""
+
+#: src/core/views/agent-claim-notice.php:39
+msgid "Uncanny Agent is included with Uncanny Automator Lite"
+msgstr ""
+
+#: src/core/views/agent-claim-notice.php:45
+msgid "Uncanny Automator now includes Uncanny Agent — a capable AI assistant that helps you manage your site. There's no payment required and no setup! Just click to activate and start chatting."
+msgstr ""
+
+#: src/core/views/agent-claim-notice.php:47
+msgid "Uncanny Automator now includes Uncanny Agent — a capable AI assistant that helps you manage your site. There's no payment required and no setup! Just click to create your account and start chatting."
+msgstr ""
+
+#: src/core/views/agent-claim-notice.php:60
+msgid "Claim my free Agent usage"
+msgstr ""
+
+#: src/core/views/agent-claim-notice.php:62
+msgid "Connect my free account"
+msgstr ""
+
+#: src/core/views/agent-claim-notice.php:70
+msgid "Dismiss forever"
+msgstr ""
+
 #: src/core/views/credits-remaining-0.php:9
 msgctxt "Reviews banner"
 msgid "Critical issue: There are no credits left in your account!"
@@ -9618,13 +9717,13 @@ msgstr ""
 msgid "The version of MySQL installed on your hosting server."
 msgstr ""
 
-#. Translators: %1$s: MySQL version, %2$s: Recommended MySQL version.
+#. translators: %1$s: current MySQL version, %2$s: recommended MySQL version.
 #: src/core/views/html-admin-status.php:514
 #, php-format
 msgid "%1$s - We recommend a minimum MySQL version of 5.6. See: %2$s"
 msgstr ""
 
-#. Translators: %1$s: MySQL version, %2$s: Recommended MySQL version.
+#. translators: %1$s: current MySQL version, %2$s: recommended MySQL version.
 #: src/core/views/html-admin-status.php:514
 msgid "WordPress requirements"
 msgstr ""
@@ -9637,7 +9736,7 @@ msgstr ""
 msgid "The default timezone for your server."
 msgstr ""
 
-#. Translators: %s: default timezone..
+#. translators: %s: the default timezone configured for the site.
 #: src/core/views/html-admin-status.php:531
 #, php-format
 msgid "Default timezone is %s - it should be UTC"
@@ -9651,7 +9750,7 @@ msgstr ""
 msgid "Automator uses this method of communication when sending webhook information to another site."
 msgstr ""
 
-#. Translators: %s: function name.
+#. translators: %s: name of the WordPress HTTP function that failed.
 #: src/core/views/html-admin-status.php:547
 #: src/core/views/html-admin-status.php:561
 #, php-format
@@ -9726,318 +9825,401 @@ msgstr ""
 msgid "Total number of recipes using app credits on your site."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:754
+#: src/core/views/html-admin-status.php:659
+msgid "Whether the Page Builder that ships with Automator is running on this site."
+msgstr ""
+
+#: src/core/views/html-admin-status.php:667
+msgid "Technical detail"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:668
+msgid "The exact reason Page Builder reported. Include this when contacting support."
+msgstr ""
+
+#: src/core/views/html-admin-status.php:673
+msgid "Page Builder version"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:674
+msgid "The version of the built-in Page Builder module."
+msgstr ""
+
+#: src/core/views/html-admin-status.php:678
+msgid "PHP DOM extension"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:679
+msgid "Page Builder needs the PHP DOM extension to read and write page markup."
+msgstr ""
+
+#: src/core/views/html-admin-status.php:683
+msgid "Database engine (InnoDB)"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:684
+msgid "The WordPress posts, postmeta and options tables must use InnoDB so Page Builder can save changes safely."
+msgstr ""
+
+#: src/core/views/html-admin-status.php:697
+msgid "Page Builder tables"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:698
+msgid "The database tables Page Builder creates for sections, page state and published artifacts."
+msgstr ""
+
+#. translators: %d: number of tables
+#: src/core/views/html-admin-status.php:706
+#, php-format
+msgid "%d table present"
+msgid_plural "%d tables present"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: comma-separated table names
+#: src/core/views/html-admin-status.php:711
+#, php-format
+msgctxt "Automator status page, Page Builder tables"
+msgid "Missing: %s"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:720
+msgid "Page Builder schema version"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:721
+msgid "The database schema version Page Builder last installed."
+msgstr ""
+
+#: src/core/views/html-admin-status.php:725
+msgid "Preview refresh queue"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:726
+msgid "Background jobs that rebuild page previews. Failed jobs mean some previews may be out of date; published pages are not affected."
+msgstr ""
+
+#. translators: 1: pending job count, 2: failed job count
+#: src/core/views/html-admin-status.php:737
+#, php-format
+msgctxt "Automator status page, Page Builder refresh queue"
+msgid "%1$d pending, %2$d failed"
+msgstr ""
+
+#: src/core/views/html-admin-status.php:885
 msgid "Automator loading"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:760
+#: src/core/views/html-admin-status.php:891
 msgid "Load mode"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:761
+#: src/core/views/html-admin-status.php:892
 msgid "Whether Automator is loading all integrations or only those needed by published recipes."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:765
+#: src/core/views/html-admin-status.php:896
 msgid "Peak memory"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:766
+#: src/core/views/html-admin-status.php:897
 msgid "Peak PHP memory usage for this page load."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:770
+#: src/core/views/html-admin-status.php:901
 msgid "Class instances"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:771
+#: src/core/views/html-admin-status.php:902
 msgid "Total Automator class instances tracked by Utilities."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:775
+#: src/core/views/html-admin-status.php:906
 msgid "Active integrations"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:776
+#: src/core/views/html-admin-status.php:907
 msgid "Number of integrations whose plugins are active on this site."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:780
+#: src/core/views/html-admin-status.php:911
 msgid "Loaded triggers"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:781
+#: src/core/views/html-admin-status.php:912
 msgid "Triggers instantiated this request vs total available in the item map."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:788
+#: src/core/views/html-admin-status.php:919
 msgid "Loaded actions"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:789
+#: src/core/views/html-admin-status.php:920
 msgid "Actions instantiated this request vs total available in the item map."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:796
+#: src/core/views/html-admin-status.php:927
 msgid "Loaded closures"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:797
+#: src/core/views/html-admin-status.php:928
 msgid "Closures instantiated this request vs total available in the item map."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:804
+#: src/core/views/html-admin-status.php:935
 msgid "Loaded conditions"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:805
+#: src/core/views/html-admin-status.php:936
 msgid "Conditions instantiated this request vs total available in the item map."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:812
+#: src/core/views/html-admin-status.php:943
 msgid "Loaded loop filters"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:813
+#: src/core/views/html-admin-status.php:944
 msgid "Loop filters instantiated this request vs total available in the item map."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:826
+#: src/core/views/html-admin-status.php:957
 msgid "Recipe manifest"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:834
+#: src/core/views/html-admin-status.php:965
 msgid "Integrations needed"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:835
+#: src/core/views/html-admin-status.php:966
 msgid "Number of distinct integrations referenced by published recipes."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:842
+#: src/core/views/html-admin-status.php:973
 msgid "Triggers in manifest"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:843
+#: src/core/views/html-admin-status.php:974
 msgid "Trigger codes active in published recipes."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:850
+#: src/core/views/html-admin-status.php:981
 msgid "Actions in manifest"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:851
+#: src/core/views/html-admin-status.php:982
 msgid "Action codes active in published recipes."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:859
+#: src/core/views/html-admin-status.php:990
 msgid "Closures in manifest"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:860
+#: src/core/views/html-admin-status.php:991
 msgid "Closure codes active in published recipes."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:869
+#: src/core/views/html-admin-status.php:1000
 msgid "Conditions in manifest"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:870
+#: src/core/views/html-admin-status.php:1001
 msgid "Condition codes active in published recipes."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:879
+#: src/core/views/html-admin-status.php:1010
 msgid "Loop filters in manifest"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:880
+#: src/core/views/html-admin-status.php:1011
 msgid "Loop filter codes active in published recipes."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:888
+#: src/core/views/html-admin-status.php:1019
 msgid "Active codes"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:889
+#: src/core/views/html-admin-status.php:1020
 msgid "All composite keys in the manifest (INTEGRATION_CODE format)."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:970
+#: src/core/views/html-admin-status.php:1101
 msgid "Composite Key"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:971
+#: src/core/views/html-admin-status.php:1102
 msgid "Integration"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:987
+#: src/core/views/html-admin-status.php:1118
 msgid "No published recipes with active codes."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:992
+#: src/core/views/html-admin-status.php:1123
 msgid "Item map"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:993
+#: src/core/views/html-admin-status.php:1124
 msgid "Whether the build-time item map file exists."
 msgstr ""
 
-#. translators: %s: date
-#: src/core/views/html-admin-status.php:1001
+#. translators: %s: date and time the item map file was generated.
+#: src/core/views/html-admin-status.php:1132
 #, php-format
 msgid "Generated %s"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1003
+#: src/core/views/html-admin-status.php:1134
 msgid "Missing — demand-driven loading disabled"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1025
+#: src/core/views/html-admin-status.php:1156
 msgid "Automator database version"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1028
+#: src/core/views/html-admin-status.php:1159
 msgid "The database version of Automator."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1033
+#: src/core/views/html-admin-status.php:1164
 msgid "Automator database VIEWS version"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1036
+#: src/core/views/html-admin-status.php:1167
 msgid "The database VIEWS version of Automator."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1041
+#: src/core/views/html-admin-status.php:1172
 msgid "Database prefix"
 msgstr ""
 
-#. Translators: %1$s: Database prefix, %2$s: Docs link.
-#: src/core/views/html-admin-status.php:1047
+#. translators: %1$s: database table prefix, %2$s: documentation link.
+#: src/core/views/html-admin-status.php:1178
 #, php-format
 msgid "%1$s - We recommend using a prefix with less than 20 characters. See: %2$s"
 msgstr ""
 
-#. Translators: %1$s: Database prefix, %2$s: Docs link.
-#: src/core/views/html-admin-status.php:1047
+#. translators: %1$s: database table prefix, %2$s: documentation link.
+#: src/core/views/html-admin-status.php:1178
 msgid "How to update your database table prefix"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1057
+#: src/core/views/html-admin-status.php:1188
 msgid "Total Database Size"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1063
+#: src/core/views/html-admin-status.php:1194
 msgid "Database Data Size"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1069
+#: src/core/views/html-admin-status.php:1200
 msgid "Database Index Size"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1085
+#: src/core/views/html-admin-status.php:1216
 #: src/core/views/html-database-tools.php:105
 msgid "View does not exist"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1086
+#: src/core/views/html-admin-status.php:1217
 #: src/core/views/html-database-tools.php:106
 msgid "DB view is disabled by site administrator"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1087
+#: src/core/views/html-admin-status.php:1218
 #: src/core/views/html-database-tools.php:107
 msgid "Table does not exist"
 msgstr ""
 
+#. translators: %1$s: data size in MB, %2$s: index size in MB, %3$s: storage engine name.
 #. Translators: %1$f: Table size, %2$f: Index size, %3$s Engine.
-#: src/core/views/html-admin-status.php:1092
+#: src/core/views/html-admin-status.php:1223
 #: src/core/views/html-database-tools.php:122
 #, php-format
 msgid "Data: %1$.2fMB + Index: %2$.2fMB + Engine %3$s"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1101
+#: src/core/views/html-admin-status.php:1232
 msgid "Database information:"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1105
+#: src/core/views/html-admin-status.php:1236
 msgid "Unable to retrieve database information. Usually, this is not a problem, and it only means that your install is using a class that replaces the WordPress database class (e.g., HyperDB) and Automator is unable to get database information."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1121
+#: src/core/views/html-admin-status.php:1252
 msgid "Active plugins"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1135
+#: src/core/views/html-admin-status.php:1266
 msgid "Inactive plugins"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1150
+#: src/core/views/html-admin-status.php:1281
 msgid "Dropin Plugins"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1181
+#: src/core/views/html-admin-status.php:1312
 msgid "Must Use Plugins"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1224
+#: src/core/views/html-admin-status.php:1355
 msgid "Theme"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1230
+#: src/core/views/html-admin-status.php:1361
 msgid "The name of the current active theme."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1234
+#: src/core/views/html-admin-status.php:1365
 msgid "Version"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1235
+#: src/core/views/html-admin-status.php:1366
 msgid "The installed version of the current active theme."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1243
+#: src/core/views/html-admin-status.php:1374
 msgid "Author URL"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1244
+#: src/core/views/html-admin-status.php:1375
 msgid "The theme developers URL."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1251
+#: src/core/views/html-admin-status.php:1382
 msgid "Child theme"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1252
+#: src/core/views/html-admin-status.php:1383
 msgid "Displays whether or not the current theme is a child theme."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1262
+#: src/core/views/html-admin-status.php:1393
 msgid "Parent theme name"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1265
+#: src/core/views/html-admin-status.php:1396
 msgid "The name of the parent theme."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1269
+#: src/core/views/html-admin-status.php:1400
 msgid "Parent theme author URL"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1272
+#: src/core/views/html-admin-status.php:1403
 msgid "The parent theme developers URL."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1283
+#: src/core/views/html-admin-status.php:1414
 msgid "Status report information"
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1290
+#: src/core/views/html-admin-status.php:1421
 msgid "This section shows information about this status report."
 msgstr ""
 
-#: src/core/views/html-admin-status.php:1302
+#: src/core/views/html-admin-status.php:1433
 msgid "Generated at"
 msgstr ""
 
@@ -11538,6 +11720,153 @@ msgstr ""
 #: src/integrations/airtable/actions/airtable-sendwebhook.php:59
 msgctxt "Airtable"
 msgid "Send data to Airtable {{webhook}}"
+msgstr ""
+
+#. translators: %1$s: Backup file selector token placeholder
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:37
+#, php-format
+msgctxt "All-in-One WP Migration"
+msgid "Delete {{a backup file:%1$s}}"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:41
+msgctxt "All-in-One WP Migration"
+msgid "Delete {{a backup file}}"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:51
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:56
+msgctxt "All-in-One WP Migration"
+msgid "Backup file"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:67
+#: src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-deleted.php:66
+msgctxt "All-in-One WP Migration"
+msgid "Deleted backup filename"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:85
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:100
+msgctxt "All-in-One WP Migration"
+msgid "All-in-One WP Migration is not available."
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:92
+msgctxt "All-in-One WP Migration"
+msgid "A backup file is required."
+msgstr ""
+
+#. translators: %s: the backup filename
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:104
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:119
+#, php-format
+msgctxt "All-in-One WP Migration"
+msgid "%s is not a valid backup filename."
+msgstr ""
+
+#. translators: %s: the backup filename
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:117
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:130
+#, php-format
+msgctxt "All-in-One WP Migration"
+msgid "%s is not a supported backup file."
+msgstr ""
+
+#. translators: %s: the backup filename
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php:137
+#, php-format
+msgctxt "All-in-One WP Migration"
+msgid "%s could not be deleted. It may be missing or not writable."
+msgstr ""
+
+#. translators: %1$s: Backup file selector, %2$s: the label to store
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:41
+#, php-format
+msgctxt "All-in-One WP Migration"
+msgid "Set {{a backup file's:%1$s}} label to {{a specific value:%2$s}}"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:46
+msgctxt "All-in-One WP Migration"
+msgid "Set {{a backup file's}} label to {{a specific value}}"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:65
+msgctxt "All-in-One WP Migration"
+msgid "Label"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:78
+#: src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php:206
+#: src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php:264
+msgctxt "All-in-One WP Migration"
+msgid "Backup filename"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:82
+msgctxt "All-in-One WP Migration"
+msgid "Backup label"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:108
+msgctxt "All-in-One WP Migration"
+msgid "A backup file and a label are required."
+msgstr ""
+
+#. translators: %s: the backup filename
+#: src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php:157
+#, php-format
+msgctxt "All-in-One WP Migration"
+msgid "The label for %s could not be saved."
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php:207
+msgctxt "All-in-One WP Migration"
+msgid "Backup size"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php:208
+msgctxt "All-in-One WP Migration"
+msgid "Backup size in bytes"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php:209
+msgctxt "All-in-One WP Migration"
+msgid "Backup download URL"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php:210
+msgctxt "All-in-One WP Migration"
+msgid "Backup file path"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php:265
+msgctxt "All-in-One WP Migration"
+msgid "Error message"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/helpers/all-in-one-wp-migration-helpers.php:266
+msgctxt "All-in-One WP Migration"
+msgid "Error code"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-created.php:39
+#: src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-created.php:40
+msgctxt "All-in-One WP Migration"
+msgid "A site backup is created"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-deleted.php:40
+#: src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-deleted.php:41
+msgctxt "All-in-One WP Migration"
+msgid "A site backup is deleted"
+msgstr ""
+
+#: src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-failed.php:40
+#: src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-failed.php:41
+msgctxt "All-in-One WP Migration"
+msgid "A site backup fails"
 msgstr ""
 
 #: src/integrations/ameliabooking/helpers/ameliabooking-helpers.php:72
@@ -17970,124 +18299,124 @@ msgid "Error updating member."
 msgstr ""
 
 #. translators: Missing Permissions error message %s is the link to the knowledge base article.
-#: src/integrations/discord/helpers/discord-api-caller.php:109
+#: src/integrations/discord/helpers/discord-api-caller.php:148
 #, php-format
 msgctxt "Discord"
 msgid "Missing permissions: It looks like your bot doesn't have the required permissions to complete this action. To resolve please follow the steps outlined in [this guide](%s) and try again."
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:202
+#: src/integrations/discord/helpers/discord-app-helpers.php:207
 #: src/integrations/discord/settings/discord-settings.php:325
 msgctxt "Discord"
 msgid "Server"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:230
+#: src/integrations/discord/helpers/discord-app-helpers.php:235
 msgctxt "Discord"
 msgid "Select a server"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:250
+#: src/integrations/discord/helpers/discord-app-helpers.php:255
 msgctxt "Discord"
 msgid "Server ID is required"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:266
+#: src/integrations/discord/helpers/discord-app-helpers.php:271
 msgctxt "Discord"
 msgid "Channel"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:271
+#: src/integrations/discord/helpers/discord-app-helpers.php:276
 msgctxt "Discord"
 msgid "Enter a channel ID ( eg: 1317134385290947584 )"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:295
+#: src/integrations/discord/helpers/discord-app-helpers.php:300
 msgctxt "Discord"
 msgid "Select a channel"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:318
+#: src/integrations/discord/helpers/discord-app-helpers.php:323
 msgctxt "Discord"
 msgid "Channel is required"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:323
+#: src/integrations/discord/helpers/discord-app-helpers.php:328
 msgctxt "Discord"
 msgid "Channel not found in the selected server"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:373
+#: src/integrations/discord/helpers/discord-app-helpers.php:378
 msgctxt "Discord"
 msgid "Member"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:378
+#: src/integrations/discord/helpers/discord-app-helpers.php:383
 msgctxt "Discord"
 msgid "Enter a member ID ( snowflake eg: 1423695857943239309 )"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:381
+#: src/integrations/discord/helpers/discord-app-helpers.php:386
 msgctxt "Discord"
 msgid "Members that authenticated their WP Account are listed here"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:399
+#: src/integrations/discord/helpers/discord-app-helpers.php:404
 msgctxt "Discord"
 msgid "Member is required"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:480
+#: src/integrations/discord/helpers/discord-app-helpers.php:485
 msgctxt "Discord"
 msgid "Role"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:485
+#: src/integrations/discord/helpers/discord-app-helpers.php:490
 msgctxt "Discord"
 msgid "Enter a role ID ( eg: 1317134385290947584 )"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:523
+#: src/integrations/discord/helpers/discord-app-helpers.php:528
 msgctxt "Discord"
 msgid "Role is required"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:583
+#: src/integrations/discord/helpers/discord-app-helpers.php:588
 msgctxt "Discord"
 msgid "Text"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:587
+#: src/integrations/discord/helpers/discord-app-helpers.php:592
 msgctxt "Discord"
 msgid "Voice"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:591
+#: src/integrations/discord/helpers/discord-app-helpers.php:596
 msgctxt "Discord"
 msgid "Category"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:595
+#: src/integrations/discord/helpers/discord-app-helpers.php:600
 msgctxt "Discord"
 msgid "Announcement"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:599
+#: src/integrations/discord/helpers/discord-app-helpers.php:604
 msgctxt "Discord"
 msgid "Stage"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:603
+#: src/integrations/discord/helpers/discord-app-helpers.php:608
 msgctxt "Discord"
 msgid "Forum"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:607
+#: src/integrations/discord/helpers/discord-app-helpers.php:612
 msgctxt "Discord"
 msgid "Media"
 msgstr ""
 
-#: src/integrations/discord/helpers/discord-app-helpers.php:623
+#: src/integrations/discord/helpers/discord-app-helpers.php:628
 msgctxt "Discord"
 msgid "Message is required"
 msgstr ""
@@ -20141,250 +20470,6 @@ msgctxt "Everest Forms"
 msgid "A user submits {{a form}}"
 msgstr ""
 
-#. translators:The action sentence
-#: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:50
-#, php-format
-msgid "Share a link with a message to {{a Facebook group:%1$s}}"
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:55
-msgid "Share a link with a message to {{a Facebook group}}"
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:77
-#: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:75
-#: src/integrations/facebook-groups/actions/facebook-group-publish-post.php:72
-msgid "Link to Facebook post"
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:153
-msgid "External link URL"
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:154
-msgid "https://"
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:155
-msgid "Enter the URL of the site you want to share to your Facebook Group. Start with 'https://' to share an external link."
-msgstr ""
-
-#. translators: Email field
-#: src/integrations/facebook-groups/actions/facebook-group-publish-link.php:162
-#: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:110
-#: src/integrations/facebook-groups/actions/facebook-group-publish-post.php:95
-msgid "Message"
-msgstr ""
-
-#. translators:The action sentence
-#: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:51
-#, php-format
-msgid "Publish a post with an image to {{a Facebook group:%1$s}}"
-msgstr ""
-
-#. translators: Action - WordPress
-#: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:57
-msgid "Publish a post with an image to {{a Facebook group}}"
-msgstr ""
-
-#. translators: Email field
-#: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:101
-msgid "Image URL"
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:102
-msgid "https://examplewebsite.com/path/to/image.jpg"
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:105
-msgid "Enter the URL of the image you wish to share. The URL must be publicly accessible."
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-photo.php:111
-msgid "The context of the image or description."
-msgstr ""
-
-#. translators: The action sentence
-#: src/integrations/facebook-groups/actions/facebook-group-publish-post.php:50
-#, php-format
-msgid "Publish a post to {{a Facebook group:%1$s}}"
-msgstr ""
-
-#. translators: Action - WordPress
-#: src/integrations/facebook-groups/actions/facebook-group-publish-post.php:54
-msgid "Publish a post to {{a Facebook group}}"
-msgstr ""
-
-#: src/integrations/facebook-groups/actions/facebook-group-publish-post.php:96
-msgid "Enter the message that you want to post on Facebook. Please take note that this action might fail when posting the same messages within short intervals."
-msgstr ""
-
-#. Translators: Admin notice
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:162
-#, php-format
-msgid "Warning: Due to limitations in the Facebook Group API, your Facebook authorization will need to be refreshed within the next %s day or your Facebook Groups action will stop working.  To hide this message, set all Facebook Groups actions to draft or"
-msgid_plural "Warning: Due to limitations in the Facebook Group API, your Facebook authorization will need to be refreshed within the next %s days or your Facebook Groups action will stop working.  To hide this message, set all Facebook Groups actions to draft or"
-msgstr[0] ""
-msgstr[1] ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:172
-msgctxt "Facebook Groups"
-msgid "refresh your authorization."
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:206
-msgctxt "Facebook Groups"
-msgid "Nonce authentication error"
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:263
-msgctxt "Facebook Groups"
-msgid "Groups has been successfully fetched."
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:386
-msgctxt "Facebook Groups"
-msgid "Nonce Verification Failed"
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:390
-msgctxt "Facebook Groups"
-msgid "Unauthorized"
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:633
-msgctxt "Facebook Groups"
-msgid "Help"
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:639
-msgctxt "Facebook Groups"
-msgid "Verify app installation"
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:656
-msgctxt "Facebook Groups"
-msgid "Facebook Group"
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:657
-msgctxt "Facebook Groups"
-msgid "The group you select must have the \"Uncanny Automator\" app installed. Click on the Verify app installation button below to confirm."
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:661
-msgctxt "Facebook Groups"
-msgid "Group ID"
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:709
-msgctxt "Facebook Groups"
-msgid "Successfully validated the group."
-msgstr ""
-
-#: src/integrations/facebook-groups/helpers/facebook-groups-helpers.php:713
-msgctxt "Facebook Groups"
-msgid "The Uncanny Automator Facebook Group app is not installed on the selected group."
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:35
-msgid "Facebook Groups"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:44
-msgid "Connect Uncanny Automator to Facebook Groups"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:48
-msgid "Use Uncanny Automator to automatically share updates, news and blog posts from your WordPress site to your Facebook Group(s) in the form of posts, images and links."
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:52
-msgid "Activating this integration will enable the following for use in your recipes:"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:57
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:60
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:63
-msgid "Action:"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:57
-msgid "Publish a post with an image to a Facebook group"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:60
-msgid "Publish a post to a Facebook group"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:63
-msgid "Share a link with a message to a Facebook group"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:70
-msgid "Your Facebook groups have been connected successfully."
-msgstr ""
-
-#. translators: Error code
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:78
-#, php-format
-msgid "Error %s"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:84
-msgid "An error has occured"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:86
-msgid "Permission was denied, or an unexpected error was encountered while authenticating. Please try again later."
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:96
-msgid "Warning: Your Facebook authentication has expired!"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:98
-msgid "Due to limitations in the Facebook Groups API, your authentication must be renewed every 60 days. To reauthenticate, click \"Reconnect account\" below."
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:106
-msgid "Uncanny Automator only supports connecting to one Facebook account at a time."
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:107
-msgid "The group you select in the Facebook group action must have the \"Uncanny Automator\" app installed."
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:111
-msgid "Linked groups"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:116
-msgid "Fetching groups..."
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:120
-msgid "An unexpected error has occurred"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:136
-msgid "Connect Facebook account"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:150
-msgid "Reconnect account"
-msgstr ""
-
-#. translators: 1. ID
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:183
-#, php-format
-msgid "ID: %1$d"
-msgstr ""
-
-#: src/integrations/facebook-groups/settings/view-facebook-groups.php:205
-msgid "Disconnect"
-msgstr ""
-
 #. translators: %s: Settings page URL.
 #: src/integrations/facebook-lead-ads/helpers/facebook-lead-ads-api-caller.php:37
 #, php-format
@@ -20706,7 +20791,7 @@ msgid "Enter the message that you want to post on Facebook. Please take note tha
 msgstr ""
 
 #: src/integrations/facebook/helpers/facebook-app-helpers.php:54
-#: src/integrations/facebook/helpers/facebook-bridge.php:414
+#: src/integrations/facebook/helpers/facebook-bridge.php:420
 msgctxt "Facebook"
 msgid "Facebook is not connected. Please connect your account in Automator settings."
 msgstr ""
@@ -20738,22 +20823,22 @@ msgctxt "Facebook"
 msgid "ID: %1$d"
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-bridge.php:257
+#: src/integrations/facebook/helpers/facebook-bridge.php:263
 msgctxt "Facebook"
 msgid "Invalid status code."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-bridge.php:268
+#: src/integrations/facebook/helpers/facebook-bridge.php:274
 msgctxt "Facebook"
 msgid "No Facebook Pages were found linked to this account. Please click the button below to re-authenticate and ensure the correct pages and permissions are selected."
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-bridge.php:343
+#: src/integrations/facebook/helpers/facebook-bridge.php:349
 msgctxt "Facebook"
 msgid "Missing credentials"
 msgstr ""
 
-#: src/integrations/facebook/helpers/facebook-bridge.php:349
+#: src/integrations/facebook/helpers/facebook-bridge.php:355
 msgctxt "Facebook"
 msgid "Missing Facebook user ID in OAuth response."
 msgstr ""
@@ -20786,6 +20871,636 @@ msgstr ""
 #: src/integrations/facebook/settings/settings-facebook.php:212
 msgctxt "Facebook"
 msgid "Error retrieving linked pages"
+msgstr ""
+
+#. translators: %1$s - task
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:33
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Add a comment to {{a task:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:37
+msgctxt "Fluent Boards"
+msgid "Add a comment to {{a task}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:49
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:58
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:49
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:47
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:56
+#: src/integrations/fluent-boards/triggers/fluent-boards-comment-added.php:55
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-added.php:54
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-removed.php:54
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-completed-reopened.php:59
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-created.php:55
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-due-date-changed.php:55
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-label-changed.php:57
+msgctxt "Fluent Boards"
+msgid "Board"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:58
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:67
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:65
+msgctxt "Fluent Boards"
+msgid "Task"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:67
+msgctxt "Fluent Boards"
+msgid "Comment"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:83
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:697
+msgctxt "Fluent Boards"
+msgid "Comment ID"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:87
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:698
+msgctxt "Fluent Boards"
+msgid "Comment text"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:91
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:85
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:136
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:104
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:586
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:739
+msgctxt "Fluent Boards"
+msgid "Task title"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:95
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:86
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:87
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:140
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:592
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:633
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:702
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:741
+msgctxt "Fluent Boards"
+msgid "Board title"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:115
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:114
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:109
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:107
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:164
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:136
+msgctxt "Fluent Boards"
+msgid "Fluent Boards is not active."
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:124
+msgctxt "Fluent Boards"
+msgid "A valid task and comment text are required."
+msgstr ""
+
+#. translators: %d - the task ID
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:133
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:138
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:166
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Task %d was not found."
+msgstr ""
+
+#. translators: %s - the error message
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:159
+#, php-format
+msgctxt "Fluent Boards"
+msgid "The comment could not be added: %s"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-comment.php:167
+msgctxt "Fluent Boards"
+msgid "The comment could not be added."
+msgstr ""
+
+#. translators: %1$s - user, %2$s - board
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:32
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Add {{a user:%1$s}} to {{a board:%2$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:37
+msgctxt "Fluent Boards"
+msgid "Add {{a user}} to {{a board}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:49
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:58
+msgctxt "Fluent Boards"
+msgid "User"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:67
+msgctxt "Fluent Boards"
+msgid "Role"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:90
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:89
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:668
+msgctxt "Fluent Boards"
+msgid "User display name"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:94
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:669
+msgctxt "Fluent Boards"
+msgid "User email"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:123
+msgctxt "Fluent Boards"
+msgid "A valid board and user are required."
+msgstr ""
+
+#. translators: %d - the user ID
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:131
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:126
+#, php-format
+msgctxt "Fluent Boards"
+msgid "A valid user is required. Got user ID %d."
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php:143
+msgctxt "Fluent Boards"
+msgid "The user could not be added (they may already be a member or the board is invalid)."
+msgstr ""
+
+#. translators: %1$s - user, %2$s - task
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:32
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Assign {{a user:%1$s}} to {{a task:%2$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:37
+msgctxt "Fluent Boards"
+msgid "Assign {{a user}} to {{a task}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:118
+msgctxt "Fluent Boards"
+msgid "A valid task and user are required."
+msgstr ""
+
+#. translators: 1: Task ID, 2: Board ID
+#: src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php:149
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:177
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Task %1$d does not belong to board %2$d."
+msgstr ""
+
+#. translators: %1$s - board
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:31
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Create {{a board:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:35
+msgctxt "Fluent Boards"
+msgid "Create {{a board}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:47
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:65
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:278
+msgctxt "Fluent Boards"
+msgid "Title"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:53
+msgctxt "Fluent Boards"
+msgid "Type"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:57
+msgctxt "Fluent Boards"
+msgid "Typically to-do or roadmap."
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:61
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:71
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:282
+msgctxt "Fluent Boards"
+msgid "Description"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:67
+msgctxt "Fluent Boards"
+msgid "Currency"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:83
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:591
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:632
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:701
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:740
+msgctxt "Fluent Boards"
+msgid "Board ID"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:113
+msgctxt "Fluent Boards"
+msgid "A board title is required."
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-board.php:135
+msgctxt "Fluent Boards"
+msgid "The board could not be created."
+msgstr ""
+
+#. translators: %1$s - board
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:31
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Create a task on {{a board:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:35
+msgctxt "Fluent Boards"
+msgid "Create a task on {{a board}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:56
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-created.php:64
+msgctxt "Fluent Boards"
+msgid "Stage"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:77
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:286
+msgctxt "Fluent Boards"
+msgid "Priority"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:86
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:290
+msgctxt "Fluent Boards"
+msgid "Status"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:95
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:294
+msgctxt "Fluent Boards"
+msgid "Due date"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:99
+msgctxt "Fluent Boards"
+msgid "Accepts a date (Y-m-d H:i:s) or a token."
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:103
+msgctxt "Fluent Boards"
+msgid "Assignees"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:113
+msgctxt "Fluent Boards"
+msgid "Labels"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:132
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:100
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:585
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:700
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:738
+msgctxt "Fluent Boards"
+msgid "Task ID"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:144
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:593
+msgctxt "Fluent Boards"
+msgid "Stage title"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:173
+msgctxt "Fluent Boards"
+msgid "Board, stage and title are required."
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-create-task.php:206
+msgctxt "Fluent Boards"
+msgid "The task could not be created."
+msgstr ""
+
+#. translators: %1$s - task
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:40
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Update {{a task's:%1$s}} properties"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:44
+msgctxt "Fluent Boards"
+msgid "Update {{a task's}} properties"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:74
+msgctxt "Fluent Boards"
+msgid "Property to update"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:83
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:116
+msgctxt "Fluent Boards"
+msgid "New value"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:87
+msgctxt "Fluent Boards"
+msgid "Priority: low, medium or high. Status: open or closed. Due date: Y-m-d H:i:s."
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:108
+msgctxt "Fluent Boards"
+msgid "Updated property"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:112
+msgctxt "Fluent Boards"
+msgid "Old value"
+msgstr ""
+
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:146
+msgctxt "Fluent Boards"
+msgid "A valid task and property are required."
+msgstr ""
+
+#. translators: %s - the unsupported property name
+#: src/integrations/fluent-boards/actions/fluent-boards-update-task.php:154
+#, php-format
+msgctxt "Fluent Boards"
+msgid "Unsupported property: %s."
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:205
+msgctxt "Fluent Boards"
+msgid "completed"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:209
+msgctxt "Fluent Boards"
+msgid "reopened"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:228
+msgctxt "Fluent Boards"
+msgid "added to or removed from"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:232
+msgctxt "Fluent Boards"
+msgid "added to"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:236
+msgctxt "Fluent Boards"
+msgid "removed from"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:255
+msgctxt "Fluent Boards"
+msgid "Member"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:259
+msgctxt "Fluent Boards"
+msgid "Viewer"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:316
+msgctxt "Fluent Boards"
+msgid "Any board"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:344
+msgctxt "Fluent Boards"
+msgid "Any stage"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:378
+msgctxt "Fluent Boards"
+msgid "Any label"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:467
+msgctxt "Fluent Boards"
+msgid "Any priority"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:472
+msgctxt "Fluent Boards"
+msgid "Low"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:476
+msgctxt "Fluent Boards"
+msgid "Medium"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:480
+msgctxt "Fluent Boards"
+msgid "High"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:494
+msgctxt "Fluent Boards"
+msgid "Open"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:498
+msgctxt "Fluent Boards"
+msgid "Closed"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:587
+msgctxt "Fluent Boards"
+msgid "Task description"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:588
+msgctxt "Fluent Boards"
+msgid "Task status"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:589
+msgctxt "Fluent Boards"
+msgid "Task priority"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:590
+msgctxt "Fluent Boards"
+msgid "Task due date"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:594
+msgctxt "Fluent Boards"
+msgid "Task created by (user ID)"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:634
+msgctxt "Fluent Boards"
+msgid "Board description"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:635
+msgctxt "Fluent Boards"
+msgid "Board type"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:636
+msgctxt "Fluent Boards"
+msgid "Board created by (user ID)"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:667
+msgctxt "Fluent Boards"
+msgid "User ID"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:699
+msgctxt "Fluent Boards"
+msgid "Comment author (user ID)"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:735
+msgctxt "Fluent Boards"
+msgid "Label ID"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:736
+msgctxt "Fluent Boards"
+msgid "Label title"
+msgstr ""
+
+#: src/integrations/fluent-boards/helpers/fluent-boards-helpers.php:737
+msgctxt "Fluent Boards"
+msgid "Action (added/removed)"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-board-created.php:36
+#: src/integrations/fluent-boards/triggers/fluent-boards-board-created.php:37
+msgctxt "Fluent Boards"
+msgid "A board is created"
+msgstr ""
+
+#. translators: %1$s - board
+#: src/integrations/fluent-boards/triggers/fluent-boards-comment-added.php:39
+#, php-format
+msgctxt "Fluent Boards"
+msgid "A comment is added to a task on {{a board:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-comment-added.php:43
+msgctxt "Fluent Boards"
+msgid "A comment is added to a task on {{a board}}"
+msgstr ""
+
+#. translators: %1$s - board
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-added.php:38
+#, php-format
+msgctxt "Fluent Boards"
+msgid "A user is assigned to a task on {{a board:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-added.php:42
+msgctxt "Fluent Boards"
+msgid "A user is assigned to a task on {{a board}}"
+msgstr ""
+
+#. translators: %1$s - board
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-removed.php:38
+#, php-format
+msgctxt "Fluent Boards"
+msgid "A user is unassigned from a task on {{a board:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-removed.php:42
+msgctxt "Fluent Boards"
+msgid "A user is unassigned from a task on {{a board}}"
+msgstr ""
+
+#. translators: %1$s - board, %2$s - completed/reopened
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-completed-reopened.php:42
+#, php-format
+msgctxt "Fluent Boards"
+msgid "A task on {{a board:%1$s}} is {{completed/reopened:%2$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-completed-reopened.php:47
+msgctxt "Fluent Boards"
+msgid "A task on {{a board}} is {{completed/reopened}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-completed-reopened.php:68
+msgctxt "Fluent Boards"
+msgid "Completed or reopened"
+msgstr ""
+
+#. translators: %1$s - board
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-created.php:39
+#, php-format
+msgctxt "Fluent Boards"
+msgid "A task is created on {{a board:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-created.php:43
+msgctxt "Fluent Boards"
+msgid "A task is created on {{a board}}"
+msgstr ""
+
+#. translators: %1$s - board
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-due-date-changed.php:39
+#, php-format
+msgctxt "Fluent Boards"
+msgid "A task's due date is set or changed on {{a board:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-due-date-changed.php:43
+msgctxt "Fluent Boards"
+msgid "A task's due date is set or changed on {{a board}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-due-date-changed.php:80
+msgctxt "Fluent Boards"
+msgid "Old due date"
+msgstr ""
+
+#. translators: %1$s - label, %2$s - added to/removed from, %3$s - board
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-label-changed.php:39
+#, php-format
+msgctxt "Fluent Boards"
+msgid "{{A label:%1$s}} is {{added to/removed from:%2$s}} a task on {{a board:%3$s}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-label-changed.php:45
+msgctxt "Fluent Boards"
+msgid "{{A label}} is {{added to/removed from}} a task on {{a board}}"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-label-changed.php:66
+msgctxt "Fluent Boards"
+msgid "Label"
+msgstr ""
+
+#: src/integrations/fluent-boards/triggers/fluent-boards-task-label-changed.php:75
+msgctxt "Fluent Boards"
+msgid "Action"
 msgstr ""
 
 #. translators: 1: Event name
@@ -20963,6 +21678,350 @@ msgstr ""
 #: src/integrations/fluent-booking/triggers/fluent-booking-one-to-one-meeting-scheduled.php:27
 msgctxt "FluentBooking"
 msgid "A one-to-one meeting is scheduled"
+msgstr ""
+
+#. translators: %1$s: Order ID
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:28
+#, php-format
+msgctxt "FluentCart"
+msgid "Add a note to {{an order:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:32
+msgctxt "FluentCart"
+msgid "Add a note to {{an order}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:42
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:63
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:43
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:58
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:75
+msgctxt "FluentCart"
+msgid "Order ID"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:49
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:67
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:111
+msgctxt "FluentCart"
+msgid "Note"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:88
+msgctxt "FluentCart"
+msgid "Missing order ID or note."
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:93
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:93
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:92
+msgctxt "FluentCart"
+msgid "FluentCart is not available."
+msgstr ""
+
+#. translators: %d: Order ID
+#: src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php:103
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:120
+#, php-format
+msgctxt "FluentCart"
+msgid "Order #%d was not found."
+msgstr ""
+
+#. translators: %1$s: Subscription ID
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:28
+#, php-format
+msgctxt "FluentCart"
+msgid "Cancel {{a subscription:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:32
+msgctxt "FluentCart"
+msgid "Cancel {{a subscription}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:42
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:63
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:140
+msgctxt "FluentCart"
+msgid "Subscription ID"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:49
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-cancelled.php:65
+msgctxt "FluentCart"
+msgid "Cancellation reason"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:67
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:165
+msgctxt "FluentCart"
+msgid "Subscription status"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:88
+msgctxt "FluentCart"
+msgid "Missing subscription ID."
+msgstr ""
+
+#. translators: %d: Subscription ID
+#: src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php:103
+#, php-format
+msgctxt "FluentCart"
+msgid "Subscription #%d was not found."
+msgstr ""
+
+#. translators: %1$s: Order ID, %2$s: Status
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:28
+#, php-format
+msgctxt "FluentCart"
+msgid "Set {{an order:%1$s}} to {{a status:%2$s}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:33
+msgctxt "FluentCart"
+msgid "Set {{an order}} to {{a status}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:62
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-status-changed.php:68
+msgctxt "FluentCart"
+msgid "Old order status"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:66
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-status-changed.php:73
+msgctxt "FluentCart"
+msgid "New order status"
+msgstr ""
+
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:87
+msgctxt "FluentCart"
+msgid "Missing order ID or status."
+msgstr ""
+
+#. translators: %s: Order status
+#: src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php:107
+#, php-format
+msgctxt "FluentCart"
+msgid "\"%s\" is not a valid FluentCart order status."
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:57
+msgctxt "FluentCart"
+msgid "Product category"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:65
+msgctxt "FluentCart"
+msgid "Product"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:85
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:103
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:139
+msgctxt "FluentCart"
+msgid "Status"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:121
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-refunded.php:72
+msgctxt "FluentCart"
+msgid "Refund type"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:162
+msgctxt "FluentCart"
+msgid "Any category"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:232
+msgctxt "FluentCart"
+msgid "Any product"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:314
+msgctxt "FluentCart"
+msgid "fully"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:315
+msgctxt "FluentCart"
+msgid "partially"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:319
+msgctxt "FluentCart"
+msgid "any"
+msgstr ""
+
+#: src/integrations/fluent-cart/helpers/fluent-cart-helpers.php:367
+msgctxt "FluentCart"
+msgid "Any status"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:28
+msgctxt "FluentCart"
+msgid "Customer ID"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:33
+msgctxt "FluentCart"
+msgid "Customer email"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:38
+msgctxt "FluentCart"
+msgid "Customer name"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:80
+msgctxt "FluentCart"
+msgid "Order status"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:85
+msgctxt "FluentCart"
+msgid "Order total"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:90
+msgctxt "FluentCart"
+msgid "Order currency"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:95
+msgctxt "FluentCart"
+msgid "Payment method"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:100
+msgctxt "FluentCart"
+msgid "Receipt number"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:145
+msgctxt "FluentCart"
+msgid "Subscription product"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:150
+msgctxt "FluentCart"
+msgid "Recurring amount"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:155
+msgctxt "FluentCart"
+msgid "Billing interval"
+msgstr ""
+
+#: src/integrations/fluent-cart/tokens/fluent-cart-tokens.php:160
+msgctxt "FluentCart"
+msgid "Next billing date"
+msgstr ""
+
+#. translators: %1$s: Product
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-paid.php:37
+#, php-format
+msgctxt "FluentCart"
+msgid "A user's order for {{a product:%1$s}} is paid"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-paid.php:41
+msgctxt "FluentCart"
+msgid "A user's order for {{a product}} is paid"
+msgstr ""
+
+#. translators: %1$s: Refund type
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-refunded.php:37
+#, php-format
+msgctxt "FluentCart"
+msgid "A user's order is {{fully or partially:%1$s}} refunded"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-refunded.php:41
+msgctxt "FluentCart"
+msgid "A user's order is {{fully or partially}} refunded"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-refunded.php:67
+msgctxt "FluentCart"
+msgid "Refund amount"
+msgstr ""
+
+#. translators: %1$s: Order status
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-status-changed.php:38
+#, php-format
+msgctxt "FluentCart"
+msgid "A user's order changes to {{a status:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-order-status-changed.php:42
+msgctxt "FluentCart"
+msgid "A user's order changes to {{a status}}"
+msgstr ""
+
+#. translators: %1$s: Product
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-activated.php:37
+#, php-format
+msgctxt "FluentCart"
+msgid "A user's subscription to {{a product:%1$s}} is activated"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-activated.php:41
+msgctxt "FluentCart"
+msgid "A user's subscription to {{a product}} is activated"
+msgstr ""
+
+#. translators: %1$s: Product
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-cancelled.php:37
+#, php-format
+msgctxt "FluentCart"
+msgid "A user's subscription to {{a product:%1$s}} is cancelled"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-cancelled.php:41
+msgctxt "FluentCart"
+msgid "A user's subscription to {{a product}} is cancelled"
+msgstr ""
+
+#. translators: %1$s: Product
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-renewed.php:37
+#, php-format
+msgctxt "FluentCart"
+msgid "A user's subscription to {{a product:%1$s}} is renewed"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-renewed.php:41
+msgctxt "FluentCart"
+msgid "A user's subscription to {{a product}} is renewed"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-renewed.php:65
+msgctxt "FluentCart"
+msgid "Renewal order ID"
+msgstr ""
+
+#. translators: %1$s: Subscription status
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-status-changed.php:38
+#, php-format
+msgctxt "FluentCart"
+msgid "A user's subscription changes to {{a status:%1$s}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-status-changed.php:42
+msgctxt "FluentCart"
+msgid "A user's subscription changes to {{a status}}"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-status-changed.php:68
+msgctxt "FluentCart"
+msgid "Old subscription status"
+msgstr ""
+
+#: src/integrations/fluent-cart/triggers/fluent-cart-subscription-status-changed.php:73
+msgctxt "FluentCart"
+msgid "New subscription status"
 msgstr ""
 
 #. translators: %1$s - Course
@@ -25288,8 +26347,8 @@ msgstr ""
 
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:78
 #: src/integrations/gravity-forms/helpers/gravity-forms-helpers.php:131
-#: src/integrations/gravity-forms/triggers/gf-subform-codes.php:279
-#: src/integrations/gravity-forms/triggers/gf-subform-groups.php:309
+#: src/integrations/gravity-forms/triggers/gf-subform-codes.php:281
+#: src/integrations/gravity-forms/triggers/gf-subform-groups.php:311
 msgctxt "Gravity Forms"
 msgid "Any form"
 msgstr ""
@@ -26505,7 +27564,7 @@ msgctxt "HubSpot"
 msgid "Add/Update {{the user}} in HubSpot"
 msgstr ""
 
-#: src/integrations/hubspot/actions/hubspot-add-user.php:73
+#: src/integrations/hubspot/actions/hubspot-add-user.php:75
 #: src/integrations/hubspot/actions/hubspot-adduser.php:72
 #: src/integrations/hubspot/actions/hubspot-addusertolist.php:67
 #: src/integrations/hubspot/actions/hubspot-removeuserfromlist.php:67
@@ -26604,7 +27663,7 @@ msgctxt "HubSpot"
 msgid "Create/Update {{a contact}} in HubSpot"
 msgstr ""
 
-#: src/integrations/hubspot/actions/hubspot-create-contact.php:75
+#: src/integrations/hubspot/actions/hubspot-create-contact.php:77
 msgctxt "HubSpot"
 msgid "Email address is required."
 msgstr ""
@@ -26735,7 +27794,7 @@ msgctxt "HubSpot"
 msgid "Enter [delete] to clear the field value."
 msgstr ""
 
-#: src/integrations/hubspot/helpers/trait-hubspot-contact-fields.php:547
+#: src/integrations/hubspot/helpers/trait-hubspot-contact-fields.php:555
 #, php-format
 msgctxt "HubSpot"
 msgid "Invalid %1$s value \"%2$s\" for field \"%3$s\""
@@ -34993,6 +36052,12 @@ msgstr ""
 #: src/integrations/rafflepress/triggers/rafflepress-anon-registers-giveaway.php:45
 msgctxt "RafflePress"
 msgid "Giveaway"
+msgstr ""
+
+#: src/integrations/really-simple-ssl/triggers/rsssl-vulnerability-scan-completed.php:45
+#: src/integrations/really-simple-ssl/triggers/rsssl-vulnerability-scan-completed.php:46
+msgctxt "Really Simple Security"
+msgid "A vulnerability scan is completed"
 msgstr ""
 
 #: src/integrations/redirection/helpers/redirection-helpers.php:28
@@ -51741,7 +52806,7 @@ msgstr ""
 #: src/page-builder/Infrastructure/WordPress/MagicBridgeEnqueuer.php:369
 #: src/page-builder/Infrastructure/WordPress/PageFactory.php:65
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:184
-#: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:565
+#: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:566
 #: src/page-builder/Infrastructure/WordPress/WordPressPageDetailsProjection.php:73
 #, php-format
 msgctxt "Page Builder"
@@ -56590,8 +57655,8 @@ msgstr ""
 #: src/page-builder/Infrastructure/WordPress/AdminCanvasEditorWindowedGlobalPartPage.php:247
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:220
 #: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:291
-#: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:386
-#: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:581
+#: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:387
+#: src/page-builder/Infrastructure/WordPress/WordPressCanvasPort.php:582
 #: src/page-builder/Infrastructure/WordPress/WordPressReusablePort.php:104
 #: src/page-builder/Infrastructure/WordPress/WordPressReusablePort.php:246
 #: src/page-builder/Infrastructure/WordPress/WordPressReusablePort.php:292
@@ -57024,13 +58089,13 @@ msgid "load the newer saved draft in the Page Builder editor before changing pag
 msgstr ""
 
 #. translators: %s: validation error message.
-#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:352
+#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:340
 #, php-format
 msgctxt "Page Builder"
 msgid "Page style overrides were not saved: %s"
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:374
+#: src/page-builder/Infrastructure/WordPress/DesignStandardsMetaBox.php:362
 msgctxt "Page Builder"
 msgid "Some page style changes were not saved. Protected site settings keep their default values, and unknown settings were ignored."
 msgstr ""
@@ -57278,7 +58343,7 @@ msgctxt "Page Builder"
 msgid "Header and footer selections were not saved because this page changed in another request. Reload the page and choose again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:288
+#: src/page-builder/Infrastructure/WordPress/GlobalPartSelectorMetaBox.php:284
 msgctxt "Page Builder"
 msgid "Header and footer selections were not saved because one submitted selection is invalid or no longer available. Reload the page and choose again."
 msgstr ""
@@ -57561,7 +58626,7 @@ msgid "Could not import the reusable. Check the file and try again."
 msgstr ""
 
 #: src/page-builder/Infrastructure/WordPress/ReusableFactory.php:164
-#: src/page-builder/Presentation/Api/GlobalPartController.php:242
+#: src/page-builder/Presentation/Api/GlobalPartController.php:271
 msgctxt "Page Builder"
 msgid "This reusable source contains custom JavaScript. Use an account that can publish unfiltered code to import it."
 msgstr ""
@@ -57721,7 +58786,7 @@ msgctxt "Page Builder"
 msgid "Editing ownership could not be verified. Try saving again."
 msgstr ""
 
-#: src/page-builder/Presentation/Api/GlobalPartController.php:230
+#: src/page-builder/Presentation/Api/GlobalPartController.php:259
 msgctxt "Page Builder"
 msgid "Upload a valid Page Builder reusable JSON export."
 msgstr ""

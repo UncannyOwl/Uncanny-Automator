@@ -165,7 +165,7 @@ final class SectionOrderMetaBox
                 $expectedGeneration,
                 function () use ($postId, $save): void {
                     $save();
-                    delete_transient($this->noticeTransientKey($postId));
+                    PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
                 },
             );
             return;
@@ -173,7 +173,7 @@ final class SectionOrderMetaBox
 
         try {
             $save();
-            delete_transient($this->noticeTransientKey($postId));
+            PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
         } catch (\Throwable) {
             $this->recordSaveNotice(
                 $postId,
@@ -193,13 +193,14 @@ final class SectionOrderMetaBox
             return;
         }
 
-        $message = get_transient($this->noticeTransientKey($postId));
+        $message = PostEditNotice::read(self::NOTICE_TRANSIENT_PREFIX, $postId);
         if (!is_string($message) || $message === '') {
             return;
         }
 
-        delete_transient($this->noticeTransientKey($postId));
-        echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($message) . '</p></div>';
+        PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
+
+        PostEditNotice::render($message);
     }
 
     /** @return int[] */
@@ -227,12 +228,7 @@ final class SectionOrderMetaBox
 
     private function recordSaveNotice(int $postId, string $message): void
     {
-        set_transient($this->noticeTransientKey($postId), $message, 60);
-    }
-
-    private function noticeTransientKey(int $postId): string
-    {
-        return self::NOTICE_TRANSIENT_PREFIX . $postId . '_' . (int) get_current_user_id();
+        PostEditNotice::remember(self::NOTICE_TRANSIENT_PREFIX, $postId, $message);
     }
 
     public static function nonceKey(): string

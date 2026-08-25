@@ -248,6 +248,8 @@ class GF_SUBFORM_CODES extends \Uncanny_Automator\Recipe\Trigger {
 		$batch = $this->get_batch( $form, $entry );
 
 		$tokens = array(
+			'FORM_TITLE'                      => $form['title'],
+			'FORM_ID'                         => $form['id'],
 			'GF_SUBFORM_CODES_METADATA_CODES' => $batch,
 			'UNCANNYCODESBATCHEXPIRY'         => $this->get_batch_expiration( $batch ),
 			'CODE_BATCH_ID'                   => $batch,

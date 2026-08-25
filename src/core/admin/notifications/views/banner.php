@@ -34,8 +34,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 									array(
 										'p'      => array(),
 										'br'     => array(),
-										'strong' => '',
-										'em'     => '',
+										'strong' => array(),
+										'em'     => array(),
 										'a'      => array(
 											'href'  => array(),
 											'title' => array(),

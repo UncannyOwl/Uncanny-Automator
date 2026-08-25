@@ -241,7 +241,7 @@ final class DesignStandardsMetaBox
         }
 
         if ($this->designStandardsService->loadPageOverrides($postId)->toArray() === $overrides->toArray()) {
-            delete_transient($this->noticeTransientKey($postId));
+            PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
             return;
         }
 
@@ -303,32 +303,20 @@ final class DesignStandardsMetaBox
             return;
         }
 
-        $transientKey = $this->noticeTransientKey($postId);
-        $notice = get_transient($transientKey);
+        $notice = PostEditNotice::read(self::NOTICE_TRANSIENT_PREFIX, $postId);
         if (!is_array($notice)) {
             return;
         }
 
-        delete_transient($transientKey);
+        PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
 
         $message = is_string($notice['message'] ?? null) ? $notice['message'] : '';
-        if ($message === '') {
-            return;
-        }
 
         // A stale rejection is a lost write, not advice — render it as an
         // error so it is not read as a side note to core's "Page updated."
-        $noticeClass = ($notice['type'] ?? '') === 'error' ? 'notice-error' : 'notice-warning';
+        $level = ($notice['type'] ?? '') === 'error' ? 'error' : 'warning';
 
-        echo '<div class="notice ' . $noticeClass . ' is-dismissible">';
-        echo '<p>' . esc_html($message) . '</p>';
-
-        $keys = $this->noticeKeys($notice);
-        if ($keys !== []) {
-            echo '<p><code>' . esc_html(implode(', ', $keys)) . '</code></p>';
-        }
-
-        echo '</div>';
+        PostEditNotice::render($message, $level, $this->noticeKeys($notice));
     }
 
     // ── Form contract helpers ───────────────────────────
@@ -345,14 +333,14 @@ final class DesignStandardsMetaBox
 
     private function recordInvalidOverrideNotice(int $postId, string $reason): void
     {
-        set_transient($this->noticeTransientKey($postId), [
+        PostEditNotice::remember(self::NOTICE_TRANSIENT_PREFIX, $postId, [
             'type' => 'error',
             'message' => sprintf(
                 /* translators: %s: validation error message. */
                 _x('Page style overrides were not saved: %s', 'Page Builder', 'uncanny-automator'),
                 $reason,
             ),
-        ], 60);
+        ]);
     }
 
     /**
@@ -366,11 +354,11 @@ final class DesignStandardsMetaBox
     private function recordSaveAuditNotice(int $postId, array $rejectedKeys, array $lockedKeys): void
     {
         if ($this->allAuditBucketsEmpty($rejectedKeys) && $this->allAuditBucketsEmpty($lockedKeys)) {
-            delete_transient($this->noticeTransientKey($postId));
+            PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
             return;
         }
 
-        set_transient($this->noticeTransientKey($postId), [
+        PostEditNotice::remember(self::NOTICE_TRANSIENT_PREFIX, $postId, [
             'message' => _x(
                 'Some page style changes were not saved. Protected site settings keep their default values, and unknown settings were ignored.',
                 'Page Builder',
@@ -378,7 +366,7 @@ final class DesignStandardsMetaBox
             ),
             'rejected_keys' => $rejectedKeys,
             'locked_keys' => $lockedKeys,
-        ], 60);
+        ]);
     }
 
     /** @param array<string, string[]> $audit */
@@ -391,11 +379,6 @@ final class DesignStandardsMetaBox
         }
 
         return true;
-    }
-
-    private function noticeTransientKey(int $postId): string
-    {
-        return self::NOTICE_TRANSIENT_PREFIX . $postId . '_' . (int) get_current_user_id();
     }
 
     private function assertVisibleSourceCanBeSaved(int $postId): void

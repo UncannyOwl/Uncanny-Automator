@@ -17,7 +17,7 @@ interface SectionSourceWriter
 {
     /**
      * @param array{html: string, css: string, element_styles?: array<string, mixed>} $content
-     * @return array{section_id: int, warnings?: string[]}
+     * @return array{section_id: int, compiled_css?: string, warnings?: string[]}
      */
     public function replaceLoadedSectionSource(
         int $pageId,
@@ -33,7 +33,7 @@ interface SectionSourceWriter
      *     section_name: string,
      *     content: array{html: string, css: string, element_styles?: array<string, mixed>}
      * }> $updates
-     * @return array{warnings?: string[]}
+     * @return array{compiled_css?: string, warnings?: string[]}
      */
     public function replaceLoadedSectionSources(
         int $pageId,

@@ -36,6 +36,28 @@ final class RequestId
     }
 
     /**
+     * Read a browser-only temporary section ID.
+     *
+     * Unsaved sections use negative IDs until persistence assigns positive
+     * database IDs. Reject zero, positive IDs, and malformed strings so a
+     * preview request cannot claim the identity of a persisted section.
+     */
+    public static function negative(mixed $value): ?int
+    {
+        if (is_int($value)) {
+            return $value < 0 ? $value : null;
+        }
+
+        if (!is_string($value) || preg_match('/^-[1-9][0-9]*$/', $value) !== 1) {
+            return null;
+        }
+
+        $integer = filter_var($value, FILTER_VALIDATE_INT);
+
+        return is_int($integer) && $integer < 0 ? $integer : null;
+    }
+
+    /**
      * @return null|list<int>
      */
     public static function positiveList(mixed $values): ?array
@@ -124,6 +146,18 @@ final class RequestId
             'required' => true,
             'validate_callback' => static fn (mixed $value): bool => self::nonNegative($value) !== null,
             'sanitize_callback' => static fn (mixed $value): ?int => self::nonNegative($value),
+        ];
+    }
+
+    /**
+     * @return array{required: true, validate_callback: callable, sanitize_callback: callable}
+     */
+    public static function negativeRouteArgument(): array
+    {
+        return [
+            'required' => true,
+            'validate_callback' => static fn (mixed $value): bool => self::negative($value) !== null,
+            'sanitize_callback' => static fn (mixed $value): ?int => self::negative($value),
         ];
     }
 }

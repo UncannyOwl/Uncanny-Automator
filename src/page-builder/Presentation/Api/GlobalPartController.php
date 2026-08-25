@@ -10,6 +10,7 @@ use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\GlobalPartDefaultsService;
 use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
+use UncannyPageBuilder\Application\Reusable\PreviewReusableSection;
 use UncannyPageBuilder\Application\SourcePackage\ReusableSourcePackageService;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\SectionValidationException;
@@ -35,6 +36,7 @@ final class GlobalPartController
         private readonly PermissionChecker $permissions,
         private readonly GlobalPartDefaultsService $defaultsService,
         private readonly ReusableSourcePackageService $sourcePackages,
+        private readonly PreviewReusableSection $previewReusableSection,
         private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
@@ -71,6 +73,33 @@ final class GlobalPartController
             'permission_callback' => [$this->permissions, 'canManage'],
             'args'                => ['global_part_id' => RequestId::routeArgument()],
         ]);
+
+        register_rest_route('uncanny-page-builder/v1', '/global-parts/(?P<global_part_id>\d+)/section-preview', [
+            'methods'             => 'GET',
+            'callback'            => [$this, 'previewSectionSource'],
+            'permission_callback' => [$this, 'canPreviewSectionSource'],
+            'args'                => [
+                'global_part_id' => RequestId::routeArgument(),
+                'page_id' => RequestId::routeArgument(),
+                'preview_section_id' => RequestId::negativeRouteArgument(),
+            ],
+        ]);
+    }
+
+    /**
+     * Authorize a reusable preview against its target page.
+     *
+     * The target page supplies the WordPress context for dynamic bindings.
+     * Require both Page Builder management access and permission to edit that
+     * page before the preview reads or renders reusable source.
+     */
+    public function canPreviewSectionSource(\WP_REST_Request $request): bool
+    {
+        $pageId = RequestId::positive($request->get_param('page_id'));
+
+        return $pageId !== null
+            && $this->permissions->canManage($request)
+            && $this->permissions->canEditPage($pageId);
     }
 
     public function create(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
@@ -310,14 +339,54 @@ final class GlobalPartController
             return ApiResponse::error(ErrorMessage::SectionNotFound);
         }
 
+        return ApiResponse::ok(['global_part' => $this->sourceResponse($globalPartId, $source)])->toResponse();
+    }
+
+    /**
+     * Render reusable source for insertion into a target page canvas.
+     *
+     * The preview uses the target page's WordPress context and a negative
+     * browser-only section ID. This resolves dynamic bindings and compiles
+     * matching CSS without changing the stored reusable source.
+     */
+    public function previewSectionSource(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $globalPartId = RequestId::fromUrl($request, 'global_part_id');
+        $pageId = RequestId::positive($request->get_param('page_id'));
+        $previewSectionId = RequestId::negative($request->get_param('preview_section_id'));
+        if ($globalPartId === null || $pageId === null || $previewSectionId === null) {
+            return ApiResponse::error(ErrorMessage::InvalidRouteId);
+        }
+
+        try {
+            $preview = $this->previewReusableSection->render($globalPartId, $pageId, $previewSectionId);
+        } catch (\OutOfBoundsException) {
+            return ApiResponse::error(ErrorMessage::SectionNotFound);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('preview_source.render', $globalPartId, $failure);
+            return ApiResponse::error(ErrorMessage::ControlInvokeFailed, ['retryable' => true]);
+        }
+
         return ApiResponse::ok([
-            'global_part' => [
-                'id' => $globalPartId,
-                'title' => (string) ($source['title'] ?? ''),
-                'type' => GlobalPartType::Section->value,
-                'content' => $source['content'],
+            'global_part' => $this->sourceResponse($globalPartId, $preview['source'], $preview['content']) + [
+                'rendered_html' => $preview['rendered_html'],
+                'compiled_css' => $preview['compiled_css'],
             ],
         ])->toResponse();
+    }
+
+    /**
+     * @param array<string, mixed> $source
+     * @return array<string, mixed>
+     */
+    private function sourceResponse(int $globalPartId, array $source, ?array $content = null): array
+    {
+        return [
+            'id' => $globalPartId,
+            'title' => (string) ($source['title'] ?? ''),
+            'type' => GlobalPartType::Section->value,
+            'content' => $content ?? $source['content'],
+        ];
     }
 
     private function recordFailure(string $step, int $globalPartId, \Throwable $failure): void

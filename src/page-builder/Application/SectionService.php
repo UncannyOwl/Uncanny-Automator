@@ -34,6 +34,8 @@ use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 
 final class SectionService implements SectionSourceWriter, SectionHistoryRestorerInterface
 {
+    private ?int $workingCanvasRefreshDeferredForPage = null;
+
     public function __construct(
         private readonly SectionRepositoryInterface $repository,
         private readonly ShadowCompiler $compiler,
@@ -57,6 +59,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
      * @param array       $content  ['html' => string, 'css' => string]
      * @param string|null $action   'edit_section' or null (append)
      * @param int|null    $sectionId  Required when action is 'edit_section'
+     * @param int|null    $sourceRootId  Root identity owned by copied source
      *
      * @return array{page_id: int, sections: int, preview: string, warnings: string[]}
      *
@@ -69,6 +72,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         array $content,
         ?string $action = null,
         ?int $sectionId = null,
+        ?int $sourceRootId = null,
     ): array {
         if (!$this->repository->pageExists($pageId)) {
             throw new PageNotFoundException($pageId);
@@ -85,6 +89,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
                 SectionContent::fromSourceUpdate($content, $existing->content()),
                 $existing->content(),
                 $warnings,
+                ownedSectionId: $sectionId,
             );
             $newSection = Section::create(
                 $pageId,
@@ -101,12 +106,17 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
                 $sections,
                 $pageId . ':' . $sections->count(),
             );
-            $sectionContent = $this->sanitizeContent($sectionContent, $warnings);
+            $sectionContent = $this->sanitizeContent(
+                $sectionContent,
+                $warnings,
+                ownedSectionId: $sourceRootId,
+            );
             $newSection = Section::create(
                 $pageId,
                 $sections->count(),
                 $sectionName ?: 'Section ' . ($sections->count() + 1),
                 $sectionContent,
+                $sourceRootId,
             );
 
             $sections->append($newSection);
@@ -144,7 +154,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
      * a different page load.
      *
      * @param array{html: string, css: string, element_styles?: array<string, mixed>} $content
-     * @return array{section_id: int, warnings: string[]}
+     * @return array{section_id: int, compiled_css: string, warnings: string[]}
      */
     public function replaceLoadedSectionSource(
         int $pageId,
@@ -166,8 +176,9 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         ]], $requireExactCss);
 
         return [
-            'section_id' => $sectionId,
-            'warnings'   => $result['warnings'] ?? [],
+            'section_id'   => $sectionId,
+            'compiled_css' => (string) ($result['compiled_css'] ?? ''),
+            'warnings'     => $result['warnings'] ?? [],
         ];
     }
 
@@ -182,7 +193,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
      *     section_name: string,
      *     content: array{html: string, css: string, element_styles?: array<string, mixed>}
      * }> $updates
-     * @return array{warnings: string[]}
+     * @return array{compiled_css: string, warnings: string[]}
      */
     public function replaceLoadedSectionSources(
         int $pageId,
@@ -214,6 +225,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
                 $existing->content(),
                 $warnings,
                 $requireExactCss,
+                $sectionId,
             );
             $newSection = Section::create(
                 $pageId,
@@ -244,7 +256,8 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         }
 
         return [
-            'warnings' => $warnings,
+            'compiled_css' => $compiled->minifiedCss(),
+            'warnings'     => $warnings,
         ];
     }
 
@@ -279,6 +292,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
             $existing->content(),
             $warnings,
             $requireExactCss,
+            $sectionId,
         );
         $newSection = Section::create(
             $pageId,
@@ -328,6 +342,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
             $section->content()->withHtml($this->htmlCssProcessor->normalizePatchedHtml($html)),
             $section->content(),
             $warnings,
+            ownedSectionId: $sectionId,
         );
         $normalizedHtml = $content->html();
         $section->replaceContent($content);
@@ -374,6 +389,48 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
     public function saveManualLayout(int $pageId, array $rawSections): array
     {
         return $this->restoreInternal($pageId, $rawSections, true, null, false);
+    }
+
+    /**
+     * Run page-source writes without rebuilding derived canvas state.
+     *
+     * The caller must rebuild the working canvas after its outer page-source
+     * transaction commits. This prevents a nested refresh transaction from
+     * committing only part of the caller's source mutation.
+     *
+     * @param callable(): mixed $operation
+     */
+    public function deferWorkingCanvasRefresh(int $pageId, callable $operation): mixed
+    {
+        if ($pageId <= 0) {
+            throw new \InvalidArgumentException('A deferred canvas refresh requires a positive page ID.');
+        }
+        if (
+            $this->workingCanvasRefreshDeferredForPage !== null
+            && $this->workingCanvasRefreshDeferredForPage !== $pageId
+        ) {
+            throw new \LogicException('A canvas refresh cannot be deferred for a different page.');
+        }
+
+        $previousPageId = $this->workingCanvasRefreshDeferredForPage;
+        $this->workingCanvasRefreshDeferredForPage = $pageId;
+
+        try {
+            return $operation();
+        } finally {
+            $this->workingCanvasRefreshDeferredForPage = $previousPageId;
+        }
+    }
+
+    /**
+     * Rebuild derived canvas state after the caller's source transaction ends.
+     *
+     * A failed rebuild is reported and queued for retry. The durable source
+     * remains committed, so callers must not report the source write as failed.
+     */
+    public function refreshWorkingCanvasAfterCommit(int $pageId): bool
+    {
+        return $this->refreshWorkingCanvas($pageId);
     }
 
     /**
@@ -431,7 +488,11 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         );
         $warnings = [];
         foreach ($sections->all() as $s) {
-            $s->replaceContent($this->sanitizeContent($s->content(), $warnings));
+            $s->replaceContent($this->sanitizeContent(
+                $s->content(),
+                $warnings,
+                $s->sourceRootId() ?? $s->id(),
+            ));
         }
         $compiled = $this->compiler->compile($sections);
         if ($recordHistory) {
@@ -446,6 +507,10 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         } else {
             $this->repository->replaceAll($pageId, $sections, $compiled);
         }
+
+        // New sections receive their durable IDs inside the repository write.
+        // Rebuild the response projection against those assigned identities.
+        $compiled = $this->compiler->compile($sections);
 
         if ($completeAfterCommit) {
             $this->completeHistoryRestore($pageId, $sections->toArray());
@@ -708,14 +773,21 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
     /**
      * @param string[] $warnings
      */
-    private function sanitizeContent(SectionContent $content, array &$warnings = []): SectionContent
-    {
+    private function sanitizeContent(
+        SectionContent $content,
+        array &$warnings = [],
+        ?int $ownedSectionId = null,
+    ): SectionContent {
         $source = $this->sourceSanitizer->sanitize($content->html(), $content->css());
         $html = $source->html();
         $sanitized = new SectionContent(
             $html,
             $source->css(),
-            $content->elementStyles()->pruneMissingElementIds($this->elementIdsInHtml($html), $html),
+            $content->elementStyles()->pruneMissingElementIds(
+                $this->elementIdsInHtml($html),
+                $html,
+                $ownedSectionId === null ? null : 'upb-section-' . $ownedSectionId,
+            ),
         );
 
         $warnings = array_values(array_unique([
@@ -739,8 +811,9 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         SectionContent $existing,
         array &$warnings = [],
         bool $requireExactCss = false,
+        ?int $ownedSectionId = null,
     ): SectionContent {
-        $sanitized = $this->sanitizeContent($requested, $warnings);
+        $sanitized = $this->sanitizeContent($requested, $warnings, $ownedSectionId);
         if (
             ($requireExactCss && $sanitized->toArray() !== $requested->toArray())
             || ($requested->css() === $existing->css() && $sanitized->css() !== $requested->css())
@@ -776,6 +849,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
             $existing->content(),
             $warnings,
             $requireExactCss,
+            $existing->id(),
         );
         $newSection = Section::create($existing->pageId(), $existing->position(), $name, $content);
         $newSection->assignId($existing->id());
@@ -881,6 +955,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
                 new SectionContent($patchedHtml, $current->content()->css(), $current->content()->elementStyles()),
                 $current->content(),
                 $bindingWriteWarnings,
+                ownedSectionId: $sectionId,
             ),
         );
         $updatedSection->assignId($sectionId);
@@ -1070,10 +1145,13 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         return max(0, (int) \get_current_user_id());
     }
 
-    private function refreshWorkingCanvas(int $pageId): void
+    private function refreshWorkingCanvas(int $pageId): bool
     {
+        if ($this->workingCanvasRefreshDeferredForPage === $pageId) {
+            return true;
+        }
         if (!$this->workingCanvas instanceof WorkingCanvasRefresherInterface) {
-            return;
+            return true;
         }
 
         try {
@@ -1081,7 +1159,11 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         } catch (\Throwable $failure) {
             $this->reportPostCommitFailure($pageId, 'working_canvas.refresh', $failure);
             $this->enqueueWorkingCanvasRefresh($pageId);
+
+            return false;
         }
+
+        return true;
     }
 
     /**

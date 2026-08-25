@@ -330,19 +330,12 @@ class Automator_Functions {
 		require_once __DIR__ . '/utilities/class-automator-system-report.php';
 		$this->system_report = Automator_System_Report::get_instance();
 
-		// Load Webhook files
+		// Load the outgoing-webhook helper at boot: modern integrations construct their
+		// items at init:1 and send-webhook actions read $this->send_webhook there.
 		require_once __DIR__ . '/webhooks/class-automator-send-webhook.php';
-
-		add_action( 'init', array( $this, 'register_webhook_from_init' ), AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE - 10 );
-		add_action( 'init', array( $this, 'filter_recipe_parts' ), AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE + 10 );
-	}
-
-	/**
-	 * From init callback.
-	 */
-	public function register_webhook_from_init() {
-		// Load Webhook files.
 		$this->send_webhook = Automator_Send_Webhook::get_instance();
+
+		add_action( 'init', array( $this, 'filter_recipe_parts' ), AUTOMATOR_RECIPE_PARTS_PRIORITY_TRIGGER_ENGINE + 10 );
 	}
 
 	/**

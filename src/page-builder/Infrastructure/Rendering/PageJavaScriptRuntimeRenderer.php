@@ -15,6 +15,8 @@ use UncannyPageBuilder\Domain\Settings\ToolSettings;
  *
  * The renderer only emits scripts saved through the dedicated JavaScript lane.
  * It never inspects section HTML for executable content.
+ * Runtime tags opt out of aggregation because their parser order establishes
+ * library ownership before the external assets execute.
  */
 final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendererInterface
 {
@@ -163,7 +165,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
         }
 
         return sprintf(
-            '<script data-uncanny-page-builder-custom-javascript="1" data-upb-runtime-scope="%s" data-upb-runtime-owner-id="%d">%s</script>',
+            '<script data-noptimize="1" data-uncanny-page-builder-custom-javascript="1" data-upb-runtime-scope="%s" data-upb-runtime-owner-id="%d">%s</script>',
             self::escapeAttribute($scope),
             $ownerId,
             $this->escapeInlineScript($javascript),
@@ -184,25 +186,97 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
             return '';
         }
 
-        $libraryBootstrap = $this->libraryBootstrapTag($libraryPublicPaths, implode("\n", $scripts));
-        if ($libraryBootstrap !== '') {
-            array_unshift($scripts, $libraryBootstrap);
+        $javascript = implode("\n", $scripts);
+        $libraries = $this->enabledLibraryConfigs(
+            $libraryPublicPaths,
+            $this->requestedEnabledLibrarySlugs($javascript),
+        );
+        if ($libraries === []) {
+            return $javascript;
         }
 
-        return implode("\n", $scripts);
+        $libraryBootstrap = $this->libraryBootstrapTag($libraries);
+        $libraryRegistration = $this->libraryRegistrationTag(array_keys($libraries));
+        if ($libraryBootstrap === '' || $libraryRegistration === '') {
+            return $javascript;
+        }
+
+        return implode("\n", [
+            $libraryBootstrap,
+            ...$this->libraryAssetTags($libraries),
+            $libraryRegistration,
+            ...$scripts,
+        ]);
     }
 
-    private function libraryBootstrapTag(array $libraryPublicPaths, string $javascript): string
+    /**
+     * @param array<string, array<string, string>> $libraries
+     */
+    private function libraryBootstrapTag(array $libraries): string
     {
-        $libraries = $this->enabledLibraryConfigs($libraryPublicPaths, $this->requestedEnabledLibrarySlugs($javascript));
-        if ($libraries === []) {
+        $source = $this->libraryBootstrapSource($libraries);
+        if ($source === '') {
             return '';
         }
 
         return sprintf(
-            '<script data-uncanny-page-builder-custom-javascript="1" data-upb-runtime-libraries="1">%s</script>',
-            $this->escapeInlineScript($this->libraryBootstrapSource($libraries)),
+            '<script data-noptimize="1" data-uncanny-page-builder-custom-javascript="1" data-upb-runtime-libraries="1">%s</script>',
+            $this->escapeInlineScript($source),
         );
+    }
+
+    /**
+     * @param list<string> $librarySlugs
+     */
+    private function libraryRegistrationTag(array $librarySlugs): string
+    {
+        $labels = self::encodeJson($librarySlugs, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if (!is_string($labels)) {
+            return '';
+        }
+
+        $source = sprintf(
+            '(function(runtime){if(runtime&&typeof runtime.registerPreloaded==="function"){runtime.registerPreloaded(%s);}})(window.UPBJavaScriptLibraries);',
+            $labels,
+        );
+
+        return sprintf(
+            '<script data-noptimize="1" data-uncanny-page-builder-custom-javascript="1" data-upb-runtime-library-registration="1">%s</script>',
+            $this->escapeInlineScript($source),
+        );
+    }
+
+    /**
+     * @param array<string, array<string, string>> $libraries
+     * @return list<string>
+     */
+    private function libraryAssetTags(array $libraries): array
+    {
+        $tags = [];
+
+        foreach ($libraries as $slug => $library) {
+            $styleUrl = trim((string) ($library['styleUrl'] ?? ''));
+            if ($styleUrl !== '') {
+                $tags[] = sprintf(
+                    '<link rel="stylesheet" href="%s" media="print" data-noptimize="1" data-upb-runtime-library-style="%s" data-upb-runtime-library-style-preloaded="1">',
+                    self::escapeAttribute($styleUrl),
+                    self::escapeAttribute($slug),
+                );
+            }
+
+            $scriptUrl = trim((string) ($library['url'] ?? ''));
+            if ($scriptUrl === '') {
+                continue;
+            }
+
+            $tags[] = sprintf(
+                '<script defer src="%s" data-noptimize="1" data-uncanny-page-builder-custom-javascript="1" data-upb-runtime-library="%s" data-upb-runtime-library-preloaded="1"></script>',
+                self::escapeAttribute($scriptUrl),
+                self::escapeAttribute($slug),
+            );
+        }
+
+        return $tags;
     }
 
     /**
@@ -220,13 +294,20 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
   var config = {$config};
   var runtime = window.UPBJavaScriptLibraries = window.UPBJavaScriptLibraries || {};
 
-  if (runtime.__upbLibraryLoaderVersion >= 2) {
+  if (runtime.__upbLibraryLoaderVersion >= 5) {
     return;
   }
 
-  runtime.__upbLibraryLoaderVersion = 2;
+  runtime.__upbLibraryLoaderVersion = 5;
   runtime.enabled = Object.keys(config);
-  runtime.promises = runtime.promises || {};
+  var libraryPromises = {};
+  var scriptPromises = {};
+  var scriptNodes = {};
+  var stylePromises = {};
+  var styleNodes = {};
+  var providedExports = {};
+  var readyExports = {};
+  var earlyAssetFailures = {};
 
   function logFailure(label, error) {
     if (window.console && typeof window.console.error === 'function') {
@@ -234,59 +315,189 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
     }
   }
 
-  function loadStyle(label, url) {
-    if (!url) {
+  function assetFailureKey(type, label) {
+    return type + ':' + label;
+  }
+
+  function captureEarlyAssetFailure(event) {
+    var target = event.target;
+    if (!target || typeof target.getAttribute !== 'function') {
       return;
     }
 
-    if (document.querySelector('[data-upb-runtime-library-style="' + label + '"]')) {
-      return;
+    var label = target.getAttribute('data-upb-runtime-library-style');
+    var type = 'style';
+    if (!label) {
+      label = target.getAttribute('data-upb-runtime-library');
+      type = 'script';
+    }
+    if (label) {
+      earlyAssetFailures[assetFailureKey(type, label)] = event;
+    }
+  }
+
+  window.addEventListener('error', captureEarlyAssetFailure, true);
+
+  function stopEarlyAssetFailureCapture() {
+    window.removeEventListener('error', captureEarlyAssetFailure, true);
+  }
+
+  function stylePromise(label, link) {
+    return new Promise(function (resolve) {
+      var settled = false;
+
+      function finish(ready, error) {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+        if (!ready) {
+          logFailure(label + ' styles', error);
+          resolve(false);
+          return;
+        }
+
+        resolve(true);
+      }
+
+      link.addEventListener('load', function () {
+        finish(true);
+      }, { once: true });
+      link.addEventListener('error', function (event) {
+        finish(false, event);
+      }, { once: true });
+
+      var earlyFailure = earlyAssetFailures[assetFailureKey('style', label)];
+      if (earlyFailure) {
+        finish(false, earlyFailure);
+        return;
+      }
+
+      if (link.sheet) {
+        finish(true);
+      }
+    });
+  }
+
+  function registerPreloadedStyle(label) {
+    if (stylePromises[label]) {
+      return stylePromises[label];
+    }
+
+    var link = document.querySelector('[data-upb-runtime-library-style="' + label + '"][data-upb-runtime-library-style-preloaded]');
+    if (!link) {
+      return null;
+    }
+
+    styleNodes[label] = link;
+    stylePromises[label] = stylePromise(label, link);
+    return stylePromises[label];
+  }
+
+  function loadStyle(label, url) {
+    if (stylePromises[label]) {
+      return stylePromises[label];
+    }
+
+    var existing = document.querySelector('[data-upb-runtime-library-style="' + label + '"]');
+    if (existing) {
+      styleNodes[label] = existing;
+      stylePromises[label] = stylePromise(label, existing);
+      return stylePromises[label];
+    }
+
+    if (!url) {
+      logFailure(label + ' styles', new Error('The Page Builder stylesheet URL is unavailable.'));
+      return Promise.resolve(false);
     }
 
     var link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = url;
+    link.media = 'print';
+    link.setAttribute('data-noptimize', '1');
     link.setAttribute('data-upb-runtime-library-style', label);
+    styleNodes[label] = link;
+    stylePromises[label] = stylePromise(label, link);
     (document.head || document.body || document.documentElement).appendChild(link);
+    return stylePromises[label];
   }
 
-  function loadScript(label, url, globalName) {
-    if (runtime.promises[label]) {
-      return runtime.promises[label];
-    }
+  function scriptPromise(label, script) {
+    return new Promise(function (resolve) {
+      var settled = false;
 
-    if (globalName && window[globalName]) {
-      runtime.promises[label] = Promise.resolve(window[globalName]);
-      return runtime.promises[label];
-    }
+      function finish(library, error) {
+        if (settled) {
+          return;
+        }
 
-    runtime.promises[label] = new Promise(function (resolve) {
-      var existing = document.querySelector('script[data-upb-runtime-library="' + label + '"]');
-      if (existing) {
-        existing.addEventListener('load', function () { resolve(globalName ? window[globalName] || null : null); }, { once: true });
-        existing.addEventListener('error', function (event) {
-          logFailure(label, event);
-          resolve(null);
-        }, { once: true });
-        return;
+        settled = true;
+        if (!library) {
+          logFailure(label, error);
+        }
+        resolve(library);
       }
 
-      var script = document.createElement('script');
-      script.src = url;
-      script.async = false;
-      script.setAttribute('data-uncanny-page-builder-custom-javascript', '1');
-      script.setAttribute('data-upb-runtime-library', label);
-      script.onload = function () {
-        resolve(globalName ? window[globalName] || null : null);
-      };
-      script.onerror = function (event) {
-        logFailure(label, event);
-        resolve(null);
-      };
-      (document.body || document.documentElement).appendChild(script);
-    });
+      script.addEventListener('load', function () {
+        var library = providedExports[label] || null;
+        finish(library, new Error('The loaded script did not register its Page Builder export.'));
+      }, { once: true });
+      script.addEventListener('error', function (event) {
+        finish(null, event);
+      }, { once: true });
 
-    return runtime.promises[label];
+      var earlyFailure = earlyAssetFailures[assetFailureKey('script', label)];
+      if (earlyFailure) {
+        finish(null, earlyFailure);
+      }
+    });
+  }
+
+  function registerPreloadedScript(label) {
+    if (scriptPromises[label]) {
+      return scriptPromises[label];
+    }
+
+    var script = document.querySelector('script[data-upb-runtime-library="' + label + '"][data-upb-runtime-library-preloaded]');
+    if (!config[label] || !script) {
+      return null;
+    }
+
+    scriptNodes[label] = script;
+    scriptPromises[label] = scriptPromise(label, script);
+    return scriptPromises[label];
+  }
+
+  function loadScript(label, url) {
+    if (scriptPromises[label]) {
+      return scriptPromises[label];
+    }
+
+    if (!url) {
+      logFailure(label, new Error('The Page Builder script URL is unavailable.'));
+      return Promise.resolve(null);
+    }
+
+    var existing = document.querySelector('script[data-upb-runtime-library="' + label + '"]');
+    if (existing) {
+      scriptNodes[label] = existing;
+      scriptPromises[label] = scriptPromise(label, existing);
+      return scriptPromises[label];
+    }
+
+    var script = document.createElement('script');
+    script.src = url;
+    script.async = true;
+    script.setAttribute('data-noptimize', '1');
+    script.setAttribute('data-uncanny-page-builder-custom-javascript', '1');
+    script.setAttribute('data-upb-runtime-library', label);
+    scriptNodes[label] = script;
+    scriptPromises[label] = scriptPromise(label, script);
+    (document.body || document.documentElement).appendChild(script);
+
+    return scriptPromises[label];
   }
 
   function loadLibrary(label) {
@@ -295,11 +506,71 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
       return Promise.resolve(null);
     }
 
-    if (entry.styleUrl) {
-      loadStyle(label, entry.styleUrl);
+    if (libraryPromises[label]) {
+      return libraryPromises[label];
     }
 
-    return loadScript(label, entry.url, entry.globalName);
+    var stylesReady = Object.prototype.hasOwnProperty.call(entry, 'styleUrl')
+      ? loadStyle(label, entry.styleUrl)
+      : Promise.resolve(true);
+    var scriptReady = loadScript(label, entry.url);
+
+    stopEarlyAssetFailureCapture();
+
+    libraryPromises[label] = new Promise(function (resolve) {
+      var settled = false;
+      var scriptResult;
+      var stylesLoaded = false;
+
+      function fail() {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        delete readyExports[label];
+        resolve(null);
+      }
+
+      function complete() {
+        if (settled || !stylesLoaded || !scriptResult) {
+          return;
+        }
+
+        settled = true;
+        var style = styleNodes[label];
+        if (style) {
+          style.media = 'all';
+        }
+        readyExports[label] = scriptResult;
+        resolve(scriptResult);
+      }
+
+      stylesReady.then(function (ready) {
+        if (!ready) {
+          fail();
+          return;
+        }
+        stylesLoaded = true;
+        complete();
+      }, function (error) {
+        logFailure(label + ' styles', error);
+        fail();
+      });
+
+      scriptReady.then(function (library) {
+        if (!library) {
+          fail();
+          return;
+        }
+        scriptResult = library;
+        complete();
+      }, function (error) {
+        logFailure(label, error);
+        fail();
+      });
+    });
+
+    return libraryPromises[label];
   }
 
   function normalizeLabels(labels) {
@@ -315,6 +586,32 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
       return config[label] && labels.indexOf(label) === index;
     });
   }
+
+  runtime.registerPreloaded = function (labels) {
+    normalizeLabels(labels).forEach(function (label) {
+      registerPreloadedStyle(label);
+      registerPreloadedScript(label);
+      loadLibrary(label);
+    });
+  };
+
+  runtime.provide = function (label, library) {
+    var script = scriptNodes[label];
+    var validOwner = script
+      && document.currentScript === script
+      && script.getAttribute('data-upb-runtime-library') === label;
+    var validExport = label === 'anime'
+      ? library && typeof library.animate === 'function'
+      : label === 'swiper' && typeof library === 'function';
+
+    if (!config[label] || !validOwner || !validExport) {
+      logFailure(label || 'unknown library', new Error('The asset provided an invalid Page Builder export.'));
+      return false;
+    }
+
+    providedExports[label] = library;
+    return true;
+  };
 
   function resolveRoot(root) {
     if (!root) {
@@ -359,7 +656,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
     var readyRoot = resolveRoot(settings.readyRoot) || root;
     var targets = root ? resolveTargets(root, settings.targets) : [];
     var readyClass = typeof settings.readyClass === 'string' ? settings.readyClass : '';
-    var animeLibrary = window.anime;
+    var animeLibrary = readyExports.anime;
 
     if (!root || !readyRoot || !targets.length || !animeLibrary || typeof animeLibrary.animate !== 'function') {
       logFailure('Anime.js reveal', new Error('A valid root, targets, and Anime.js are required.'));
@@ -393,7 +690,7 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
     var next = root ? resolveElement(root, settings.next) : null;
     var pagination = root ? resolveElement(root, settings.pagination) : null;
     var readyClass = typeof settings.readyClass === 'string' ? settings.readyClass : '';
-    var SwiperLibrary = window.Swiper;
+    var SwiperLibrary = readyExports.swiper;
 
     if (!root || !track || !previous || !next || !pagination || typeof SwiperLibrary !== 'function') {
       logFailure('Swiper', new Error('A shared root containing the track, controls, and pagination is required.'));
@@ -434,11 +731,14 @@ final class PageJavaScriptRuntimeRenderer implements PageJavaScriptExportRendere
 
     var requested = normalizeLabels(labels);
 
-    return Promise.allSettled(requested.map(loadLibrary)).then(function () {
+    return Promise.allSettled(requested.map(loadLibrary)).then(function (results) {
       var libraries = {};
-      requested.forEach(function (label) {
-        var entry = config[label];
-        libraries[label] = entry && entry.globalName ? window[entry.globalName] || null : null;
+      requested.forEach(function (label, index) {
+        var result = results[index];
+        libraries[label] = result.status === 'fulfilled' ? result.value : null;
+        if (result.status === 'rejected') {
+          logFailure(label, result.reason);
+        }
       });
 
       if (typeof callback === 'function') {
@@ -478,16 +778,15 @@ JS;
     private function enabledLibraryConfigs(array $libraryPublicPaths, array $librarySlugs): array
     {
         $libraries = [];
-        $anime = PublicRuntimeAssetCatalog::get('anime');
-        $swiper = PublicRuntimeAssetCatalog::get('swiper');
-        $swiperStyles = PublicRuntimeAssetCatalog::get('swiper_styles');
+        $anime = PublicRuntimeAssetCatalog::get('anime_page_builder');
+        $swiper = PublicRuntimeAssetCatalog::get('swiper_page_builder');
+        $swiperStyles = PublicRuntimeAssetCatalog::get('swiper_styles_page_builder');
 
         foreach ($librarySlugs as $slug) {
             if ($slug === ToolSettings::LIBRARY_ANIME && $anime !== null) {
                 $libraries[$slug] = [
                     'kind' => 'script',
                     'url' => (string) ($libraryPublicPaths[$anime['reference']] ?? ''),
-                    'globalName' => 'anime',
                 ];
                 continue;
             }
@@ -497,7 +796,6 @@ JS;
                     'kind' => 'script',
                     'url' => (string) ($libraryPublicPaths[$swiper['reference']] ?? ''),
                     'styleUrl' => (string) ($libraryPublicPaths[$swiperStyles['reference']] ?? ''),
-                    'globalName' => 'Swiper',
                 ];
                 continue;
             }

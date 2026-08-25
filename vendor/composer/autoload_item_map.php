@@ -204,6 +204,37 @@ return array(
 			),
 		),
 	),
+	'ALL_IN_ONE_WP_MIGRATION' => array(
+		'triggers' => array(
+			'ALL_IN_ONE_WP_MIGRATION_AI1WM_BACKUP_CREATED' => array(
+				'code'  => 'AI1WM_BACKUP_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\All_In_One_Wp_Migration\\Ai1wm_Backup_Created',
+				'file'  => $baseDir . '/src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-created.php',
+			),
+			'ALL_IN_ONE_WP_MIGRATION_AI1WM_BACKUP_DELETED' => array(
+				'code'  => 'AI1WM_BACKUP_DELETED',
+				'class' => 'Uncanny_Automator\\Integrations\\All_In_One_Wp_Migration\\Ai1wm_Backup_Deleted',
+				'file'  => $baseDir . '/src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-deleted.php',
+			),
+			'ALL_IN_ONE_WP_MIGRATION_AI1WM_BACKUP_FAILED' => array(
+				'code'  => 'AI1WM_BACKUP_FAILED',
+				'class' => 'Uncanny_Automator\\Integrations\\All_In_One_Wp_Migration\\Ai1wm_Backup_Failed',
+				'file'  => $baseDir . '/src/integrations/all-in-one-wp-migration/triggers/ai1wm-backup-failed.php',
+			),
+		),
+		'actions' => array(
+			'ALL_IN_ONE_WP_MIGRATION_AI1WM_DELETE_BACKUP_FILE' => array(
+				'code'  => 'AI1WM_DELETE_BACKUP_FILE',
+				'class' => 'Uncanny_Automator\\Integrations\\All_In_One_Wp_Migration\\Ai1wm_Delete_Backup_File',
+				'file'  => $baseDir . '/src/integrations/all-in-one-wp-migration/actions/ai1wm-delete-backup-file.php',
+			),
+			'ALL_IN_ONE_WP_MIGRATION_AI1WM_SET_BACKUP_LABEL' => array(
+				'code'  => 'AI1WM_SET_BACKUP_LABEL',
+				'class' => 'Uncanny_Automator\\Integrations\\All_In_One_Wp_Migration\\Ai1wm_Set_Backup_Label',
+				'file'  => $baseDir . '/src/integrations/all-in-one-wp-migration/actions/ai1wm-set-backup-label.php',
+			),
+		),
+	),
 	'AMELIABOOKING' => array(
 		'triggers' => array(
 			'AMELIABOOKING_AMELIA_APPOINTMENT_BOOKED' => array(
@@ -1302,25 +1333,6 @@ return array(
 			),
 		),
 	),
-	'FACEBOOK_GROUPS' => array(
-		'actions' => array(
-			'FACEBOOK_GROUPS_FACEBOOK_GROUPS_PUBLISH_LINK' => array(
-				'code'  => 'FACEBOOK_GROUPS_PUBLISH_LINK',
-				'class' => 'Uncanny_Automator\\FACEBOOK_GROUP_PUBLISH_LINK',
-				'file'  => $baseDir . '/src/integrations/facebook-groups/actions/facebook-group-publish-link.php',
-			),
-			'FACEBOOK_GROUPS_FACEBOOK_GROUPS_PUBLISH_PHOTO' => array(
-				'code'  => 'FACEBOOK_GROUPS_PUBLISH_PHOTO',
-				'class' => 'Uncanny_Automator\\FACEBOOK_GROUP_PUBLISH_PHOTO',
-				'file'  => $baseDir . '/src/integrations/facebook-groups/actions/facebook-group-publish-photo.php',
-			),
-			'FACEBOOK_GROUPS_FACEBOOK_GROUPS_PUBLISH_POST' => array(
-				'code'  => 'FACEBOOK_GROUPS_PUBLISH_POST',
-				'class' => 'Uncanny_Automator\\FACEBOOK_GROUP_PUBLISH_POST',
-				'file'  => $baseDir . '/src/integrations/facebook-groups/actions/facebook-group-publish-post.php',
-			),
-		),
-	),
 	'FACEBOOK_LEAD_ADS' => array(
 		'triggers' => array(
 			'FACEBOOK_LEAD_ADS_FB_LEAD_ADS_CODE' => array(
@@ -1434,6 +1446,82 @@ return array(
 			),
 		),
 	),
+	'FLUENT_BOARDS' => array(
+		'triggers' => array(
+			'FLUENT_BOARDS_FLUENT_BOARDS_BOARD_CREATED' => array(
+				'code'  => 'FLUENT_BOARDS_BOARD_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Board_Created',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-board-created.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_COMMENT_ADDED' => array(
+				'code'  => 'FLUENT_BOARDS_COMMENT_ADDED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Comment_Added',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-comment-added.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_TASK_ASSIGNEE_ADDED' => array(
+				'code'  => 'FLUENT_BOARDS_TASK_ASSIGNEE_ADDED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Assignee_Added',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-added.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_TASK_ASSIGNEE_REMOVED' => array(
+				'code'  => 'FLUENT_BOARDS_TASK_ASSIGNEE_REMOVED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Assignee_Removed',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-assignee-removed.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_TASK_COMPLETED_REOPENED' => array(
+				'code'  => 'FLUENT_BOARDS_TASK_COMPLETED_REOPENED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Completed_Reopened',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-completed-reopened.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_TASK_CREATED' => array(
+				'code'  => 'FLUENT_BOARDS_TASK_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Created',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-created.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_TASK_DUE_DATE_CHANGED' => array(
+				'code'  => 'FLUENT_BOARDS_TASK_DUE_DATE_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Due_Date_Changed',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-due-date-changed.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_TASK_LABEL_CHANGED' => array(
+				'code'  => 'FLUENT_BOARDS_TASK_LABEL_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Task_Label_Changed',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/triggers/fluent-boards-task-label-changed.php',
+			),
+		),
+		'actions' => array(
+			'FLUENT_BOARDS_FLUENT_BOARDS_ADD_COMMENT' => array(
+				'code'  => 'FLUENT_BOARDS_ADD_COMMENT',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Add_Comment',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-add-comment.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_ADD_USER_TO_BOARD' => array(
+				'code'  => 'FLUENT_BOARDS_ADD_USER_TO_BOARD',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Add_User_To_Board',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-add-user-to-board.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_ASSIGN_USER_TO_TASK' => array(
+				'code'  => 'FLUENT_BOARDS_ASSIGN_USER_TO_TASK',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Assign_User_To_Task',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-assign-user-to-task.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_CREATE_BOARD' => array(
+				'code'  => 'FLUENT_BOARDS_CREATE_BOARD',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Create_Board',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-create-board.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_CREATE_TASK' => array(
+				'code'  => 'FLUENT_BOARDS_CREATE_TASK',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Create_Task',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-create-task.php',
+			),
+			'FLUENT_BOARDS_FLUENT_BOARDS_UPDATE_TASK' => array(
+				'code'  => 'FLUENT_BOARDS_UPDATE_TASK',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Boards\\Fluent_Boards_Update_Task',
+				'file'  => $baseDir . '/src/integrations/fluent-boards/actions/fluent-boards-update-task.php',
+			),
+		),
+	),
 	'FLUENT_BOOKING' => array(
 		'triggers' => array(
 			'FLUENT_BOOKING_FB_GROUP_MEETING_CANCELLED' => array(
@@ -1462,6 +1550,62 @@ return array(
 				'code'  => 'FB_NEW_BOOKING',
 				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Booking\\FLUENT_BOOKING_NEW_BOOKING',
 				'file'  => $baseDir . '/src/integrations/fluent-booking/actions/fluent-booking-new-booking.php',
+			),
+		),
+	),
+	'FLUENT_CART' => array(
+		'triggers' => array(
+			'FLUENT_CART_FLUENT_CART_ORDER_PAID' => array(
+				'code'  => 'FLUENT_CART_ORDER_PAID',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Order_Paid',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-order-paid.php',
+			),
+			'FLUENT_CART_FLUENT_CART_ORDER_REFUNDED' => array(
+				'code'  => 'FLUENT_CART_ORDER_REFUNDED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Order_Refunded',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-order-refunded.php',
+			),
+			'FLUENT_CART_FLUENT_CART_ORDER_STATUS_CHANGED' => array(
+				'code'  => 'FLUENT_CART_ORDER_STATUS_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Order_Status_Changed',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-order-status-changed.php',
+			),
+			'FLUENT_CART_FLUENT_CART_SUBSCRIPTION_ACTIVATED' => array(
+				'code'  => 'FLUENT_CART_SUBSCRIPTION_ACTIVATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Subscription_Activated',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-subscription-activated.php',
+			),
+			'FLUENT_CART_FLUENT_CART_SUBSCRIPTION_CANCELLED' => array(
+				'code'  => 'FLUENT_CART_SUBSCRIPTION_CANCELLED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Subscription_Cancelled',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-subscription-cancelled.php',
+			),
+			'FLUENT_CART_FLUENT_CART_SUBSCRIPTION_RENEWED' => array(
+				'code'  => 'FLUENT_CART_SUBSCRIPTION_RENEWED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Subscription_Renewed',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-subscription-renewed.php',
+			),
+			'FLUENT_CART_FLUENT_CART_SUBSCRIPTION_STATUS_CHANGED' => array(
+				'code'  => 'FLUENT_CART_SUBSCRIPTION_STATUS_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Subscription_Status_Changed',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/triggers/fluent-cart-subscription-status-changed.php',
+			),
+		),
+		'actions' => array(
+			'FLUENT_CART_FLUENT_CART_ADD_ORDER_NOTE' => array(
+				'code'  => 'FLUENT_CART_ADD_ORDER_NOTE',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Add_Order_Note',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/actions/fluent-cart-add-order-note.php',
+			),
+			'FLUENT_CART_FLUENT_CART_CANCEL_SUBSCRIPTION' => array(
+				'code'  => 'FLUENT_CART_CANCEL_SUBSCRIPTION',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Cancel_Subscription',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/actions/fluent-cart-cancel-subscription.php',
+			),
+			'FLUENT_CART_FLUENT_CART_SET_ORDER_STATUS' => array(
+				'code'  => 'FLUENT_CART_SET_ORDER_STATUS',
+				'class' => 'Uncanny_Automator\\Integrations\\Fluent_Cart\\Fluent_Cart_Set_Order_Status',
+				'file'  => $baseDir . '/src/integrations/fluent-cart/actions/fluent-cart-set-order-status.php',
 			),
 		),
 	),
@@ -3119,6 +3263,15 @@ return array(
 				'code'  => 'RCADDMEMBERSHIPLEVEL',
 				'class' => 'Uncanny_Automator\\RESTRICT_CONTENT_ADD_MEMBERSHIP_LEVEL',
 				'file'  => $baseDir . '/src/integrations/restrict-content/actions/restrict-content-add-membership-level.php',
+			),
+		),
+	),
+	'REALLY_SIMPLE_SECURITY' => array(
+		'triggers' => array(
+			'REALLY_SIMPLE_SECURITY_RSSSL_VULNERABILITY_SCAN_COMPLETED' => array(
+				'code'  => 'RSSSL_VULNERABILITY_SCAN_COMPLETED',
+				'class' => 'Uncanny_Automator\\Integrations\\Really_Simple_Ssl\\Rsssl_Vulnerability_Scan_Completed',
+				'file'  => $baseDir . '/src/integrations/really-simple-ssl/triggers/rsssl-vulnerability-scan-completed.php',
 			),
 		),
 	),

@@ -152,7 +152,7 @@ final class GlobalPartSelectorMetaBox
 
         $selection = new PageGlobalPartSelection($header['value'], $footer['value']);
         if ($this->pageSelections->selectionForPage($postId)->equals($selection)) {
-            delete_transient($this->noticeTransientKey($postId));
+            PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
             return;
         }
 
@@ -175,13 +175,13 @@ final class GlobalPartSelectorMetaBox
                     $expectedGeneration,
                     function () use ($postId, $save): void {
                         $save();
-                        delete_transient($this->noticeTransientKey($postId));
+                        PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
                     },
                 );
                 return;
             }
 
-            delete_transient($this->noticeTransientKey($postId));
+            PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
             if (
                 $this->pageSource instanceof PageSourceMutation
                 && $this->pageStates instanceof PageStateRepositoryInterface
@@ -224,19 +224,15 @@ final class GlobalPartSelectorMetaBox
             return;
         }
 
-        $notice = get_transient($this->noticeTransientKey($postId));
+        $notice = PostEditNotice::read(self::NOTICE_TRANSIENT_PREFIX, $postId);
         if (!is_array($notice)) {
             return;
         }
 
-        delete_transient($this->noticeTransientKey($postId));
+        PostEditNotice::forget(self::NOTICE_TRANSIENT_PREFIX, $postId);
 
         $message = is_string($notice['message'] ?? null) ? $notice['message'] : '';
-        if ($message === '') {
-            return;
-        }
-
-        echo '<div class="notice notice-error is-dismissible"><p>' . esc_html($message) . '</p></div>';
+        PostEditNotice::render($message);
     }
 
     public static function nonceKey(): string
@@ -295,12 +291,7 @@ final class GlobalPartSelectorMetaBox
 
     private function recordSaveNotice(int $postId, string $message): void
     {
-        set_transient($this->noticeTransientKey($postId), ['message' => $message], 60);
-    }
-
-    private function noticeTransientKey(int $postId): string
-    {
-        return self::NOTICE_TRANSIENT_PREFIX . $postId . '_' . (int) get_current_user_id();
+        PostEditNotice::remember(self::NOTICE_TRANSIENT_PREFIX, $postId, ['message' => $message]);
     }
 
     private function assertVisibleSourceCanBeSaved(int $postId): void

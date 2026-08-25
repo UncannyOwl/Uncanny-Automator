@@ -133,6 +133,24 @@ class Gravity_Forms_Tokens_Parser {
 	}
 
 	/**
+	 * Parse checkbox tokens.
+	 *
+	 * @param mixed $tokens The destination.
+	 * @param mixed $field The field.
+	 * @return mixed
+	 */
+	public function parse_checkbox_tokens( $tokens, $field ) {
+
+		$tokens = $this->parse_parent_input_token( $tokens, $field );
+
+		$tokens = $this->parse_label_token( $tokens, $field );
+
+		$tokens = $this->parse_child_input_tokens( $tokens, $field );
+
+		return $tokens;
+	}
+
+	/**
 	 * Parse radio tokens.
 	 *
 	 * @param mixed $tokens The destination.
@@ -237,8 +255,9 @@ class Gravity_Forms_Tokens_Parser {
 				}
 			}
 		} else {
-			// Multi selection mode - use default parsing
+			// Multi selection mode - checkbox-style parsing, including the field-level label token
 			$tokens = $this->parse_parent_input_token( $tokens, $field );
+			$tokens = $this->parse_label_token( $tokens, $field );
 			$tokens = $this->parse_child_input_tokens( $tokens, $field );
 		}
 
@@ -300,8 +319,9 @@ class Gravity_Forms_Tokens_Parser {
 				}
 			}
 		} else {
-			// Multi selection mode - use default parsing
+			// Multi selection mode - checkbox-style parsing, including the field-level label token
 			$tokens = $this->parse_parent_input_token( $tokens, $field );
+			$tokens = $this->parse_label_token( $tokens, $field );
 			$tokens = $this->parse_child_input_tokens( $tokens, $field );
 		}
 
@@ -407,7 +427,7 @@ class Gravity_Forms_Tokens_Parser {
 
 		$raw_value = $this->entry[ $field['id'] ] ?? '';
 		// Submitted list-field value: decode without instantiating objects (prevents PHP Object Injection).
-		$data      = automator_safe_unserialize( $raw_value );
+		$data = automator_safe_unserialize( $raw_value );
 
 		$parts = array();
 

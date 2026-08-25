@@ -178,7 +178,7 @@ final class ElementStyleCommitter implements ElementStyleCommitterInterface
 
     public function apply(ElementStyleCommitPlan $plan): DesignStyleCommitResult
     {
-        $this->sections->replaceLoadedSectionSources(
+        $saved = $this->sections->replaceLoadedSectionSources(
             pageId: $plan->pageId(),
             sections: $plan->sections(),
             updates: $plan->sectionUpdates(),
@@ -192,11 +192,12 @@ final class ElementStyleCommitter implements ElementStyleCommitterInterface
             $plan->applied(),
             [
                 'section' => [
-                    'section_id' => $firstSectionId,
-                    'page_id'    => $plan->pageId(),
-                    'element_id' => $plan->targets()[0]['element_id'] ?? '',
-                    'targets'    => $plan->targets(),
-                    'promoted'   => $plan->promoted(),
+                    'section_id'   => $firstSectionId,
+                    'page_id'      => $plan->pageId(),
+                    'compiled_css' => (string) ($saved['compiled_css'] ?? ''),
+                    'element_id'   => $plan->targets()[0]['element_id'] ?? '',
+                    'targets'      => $plan->targets(),
+                    'promoted'     => $plan->promoted(),
                 ],
             ],
         );

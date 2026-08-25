@@ -228,6 +228,32 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'ALL_IN_ONE_WP_MIGRATION' => array(
+			'name'       => 'All-in-One WP Migration',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'A site restore is completed', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A site restore fails', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( 'Remove the label from {{a backup file}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+		),
 		'AMELIABOOKING' => array(
 			'name'       => 'Amelia',
 			'pro_only'   => 'no',
@@ -1910,6 +1936,37 @@ function automator_pro_items_list() {
 				),
 			),
 		),
+		'FLUENT_BOARDS' => array(
+			'name'       => 'FluentBoards',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( "{{A board's}} title or description is updated", 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'A subtask is added to a task on {{a board}}', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(
+				array(
+					'name'     => esc_html_x( 'Delete {{a task}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( 'Remove {{a user}} from {{a task}}', 'Automator Pro item', 'uncanny-automator' ),
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+		),
 		'FLUENT_BOOKING' => array(
 			'name'       => 'FluentBooking',
 			'pro_only'   => 'no',
@@ -1924,6 +1981,38 @@ function automator_pro_items_list() {
 				array(
 					'name'     => esc_html_x( 'A one-to-one meeting is scheduled with {{a specific host}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type'     => 'anonymous',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(),
+		),
+		'FLUENT_CART' => array(
+			'name'       => 'FluentCart',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( "A user's license for {{a product}} is disabled", 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( "A user's license for {{a product}} expires", 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( "A user's license for {{a product}} is renewed", 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+				array(
+					'name'     => esc_html_x( "A user's license for {{a product}} is upgraded", 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
 					'is_pro'   => true,
 					'is_elite' => false,
 				),
@@ -3782,6 +3871,20 @@ function automator_pro_items_list() {
 					'is_elite' => false,
 				),
 			),
+		),
+		'REALLY_SIMPLE_SECURITY' => array(
+			'name'       => 'Really Simple Security',
+			'pro_only'   => 'no',
+			'elite_only' => 'no',
+			'triggers'   => array(
+				array(
+					'name'     => esc_html_x( 'A user completes two-factor authentication', 'Automator Pro item', 'uncanny-automator' ),
+					'type'     => 'logged-in',
+					'is_pro'   => true,
+					'is_elite' => false,
+				),
+			),
+			'actions'    => array(),
 		),
 		'REDIRECTION' => array(
 			'name'       => 'Redirection',

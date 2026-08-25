@@ -218,6 +218,7 @@ class Action_Builder {
 		// Enrich new config values with readable labels.
 		$enriched_config = $this->label_resolver->enrich_with_readable_labels( $new_config, $configuration_fields, $action_code, 'actions' );
 		$updated_meta    = array_merge( $updated_meta, $enriched_config );
+		$updated_meta    = $this->label_resolver->prune_stale_readables( $updated_meta, $new_config, $enriched_config );
 
 		// Use the original sentence template (with field codes like {{a course:LDCOURSE}})
 		// to regenerate the filled sentence_human_readable and HTML.

@@ -90,7 +90,7 @@ final class GlobalPartService
     /**
      * Resolve the canonical source content and title from a global part.
      *
-     * @return array{content: string, title: string}|null
+     * @return array{content: array<string, mixed>, section_id: int, title: string}|null
      */
     public function resolveSourceContent(int $globalPartId): ?array
     {
@@ -100,11 +100,13 @@ final class GlobalPartService
         }
         $source = $part['sections'][0];
         $content = $source['content'] ?? null;
-        if ($content === null) {
+        $sourceSectionId = (int) ($source['id'] ?? 0);
+        if ($content === null || $sourceSectionId <= 0) {
             return null;
         }
         return [
             'content' => $content,
+            'section_id' => $sourceSectionId,
             'title'   => $part['title'] ?? '',
         ];
     }
@@ -188,7 +190,7 @@ final class GlobalPartService
     /**
      * Replace one known global-part source and return the refreshed source row.
      *
-     * @return array{id: int, title: string, type: string, section_id: int, html: string, css: string}
+     * @return array{id: int, title: string, type: string, section_id: int, html: string, css: string, compiled_css: string}
      */
     public function replaceExistingSource(
         int $globalPartId,
@@ -218,7 +220,7 @@ final class GlobalPartService
      * concurrent human write cannot be accepted and then overwritten.
      *
      * @param array<string, mixed> $existing
-     * @return array{id: int, title: string, type: string, section_id: int, html: string, css: string}
+     * @return array{id: int, title: string, type: string, section_id: int, html: string, css: string, compiled_css: string}
      */
     public function replaceLoadedSource(
         int $globalPartId,
@@ -302,7 +304,7 @@ final class GlobalPartService
     }
 
     /**
-     * @return array{id: int, title: string, type: string, warnings: string[], section_id?: int, html?: string, css?: string}
+     * @return array{id: int, title: string, type: string, warnings: string[], section_id?: int, html?: string, css?: string, compiled_css?: string}
      */
     private function persistSectionData(
         int $postId,
@@ -361,7 +363,7 @@ final class GlobalPartService
     ): array {
         $warnings = [];
         $requestedContent = $source->content();
-        $sanitizedContent = $this->sanitizeContent($requestedContent, $warnings);
+        $sanitizedContent = $this->sanitizeContent($requestedContent, $warnings, $source->id());
         if (
             ($requireExactCss && $sanitizedContent->toArray() !== $requestedContent->toArray())
             || ($preserveExistingCss && $sanitizedContent->css() !== $requestedContent->css())
@@ -430,6 +432,7 @@ final class GlobalPartService
             $result['section_id'] = $section->id() ?? 0;
             $result['html'] = $section->content()->html();
             $result['css'] = $section->content()->css();
+            $result['compiled_css'] = $compiled->minifiedCss();
         }
 
         return $result;
@@ -495,14 +498,21 @@ final class GlobalPartService
     /**
      * @param string[] $warnings
      */
-    private function sanitizeContent(SectionContent $content, array &$warnings = []): SectionContent
-    {
+    private function sanitizeContent(
+        SectionContent $content,
+        array &$warnings = [],
+        ?int $ownedSectionId = null,
+    ): SectionContent {
         $logoRewrites = 0;
         $html = HtmlSanitizationGate::filter(SiteLogoImageNormalizer::normalize($content->html(), $logoRewrites));
         $sanitized = new SectionContent(
             $html,
             CssSanitizationGate::filter($content->css()),
-            $content->elementStyles()->pruneMissingElementIds($this->elementIdsInHtml($html), $html),
+            $content->elementStyles()->pruneMissingElementIds(
+                $this->elementIdsInHtml($html),
+                $html,
+                $ownedSectionId === null ? null : 'upb-section-' . $ownedSectionId,
+            ),
         );
 
         $warnings = array_values(array_unique([

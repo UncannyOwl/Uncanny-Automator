@@ -174,9 +174,10 @@ abstract class Api_Caller {
 	 * freshly-resolved current ones, and return the body.
 	 *
 	 * Default behaviour refreshes the value under credential_request_key when the
-	 * original request carried it (so a credential-less request is left alone).
-	 * Integrations that bake credentials under custom keys — e.g. a bare token
-	 * plus a whole credentials object — override this to refresh those keys.
+	 * original request carried it (so a credential-less request is left alone),
+	 * re-resolving with the args resend_credential_args() derives from the stored
+	 * body. Integrations that bake credentials under custom keys — e.g. a bare
+	 * token plus a whole credentials object — override this to refresh those keys.
 	 *
 	 * @param array $body The stored request body being replayed.
 	 *
@@ -188,10 +189,28 @@ abstract class Api_Caller {
 		$key = $this->get_credential_request_key();
 
 		if ( array_key_exists( $key, $body ) ) {
-			$body[ $key ] = $this->get_api_request_credentials( array() );
+			$body[ $key ] = $this->get_api_request_credentials( $this->resend_credential_args( $body ) );
 		}
 
 		return $body;
+	}
+
+	/**
+	 * Request args to re-resolve credentials with on a resend.
+	 *
+	 * The live path can scope a credential per request: api_request() hands its
+	 * $args to prepare_request_credentials(), so a caller may pick a different
+	 * credential per call. Those args are not part of the logged body, so a replay
+	 * cannot see them — a caller that scopes its credentials recovers the scope
+	 * from the stored body here. The default is unscoped, which is correct for
+	 * every caller that resolves one credential per connection.
+	 *
+	 * @param array $body The stored request body being replayed.
+	 *
+	 * @return array
+	 */
+	protected function resend_credential_args( $body ) {
+		return array();
 	}
 
 	/**

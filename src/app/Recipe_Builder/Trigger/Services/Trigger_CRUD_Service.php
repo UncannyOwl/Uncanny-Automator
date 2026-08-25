@@ -711,6 +711,7 @@ class Trigger_CRUD_Service {
 		// Enrich new config values with readable labels.
 		$enriched_config = $this->label_resolver->enrich_with_readable_labels( $new_config, $configuration_fields, $trigger_code, 'triggers' );
 		$updated_config  = array_merge( $updated_config, $enriched_config );
+		$updated_config  = $this->label_resolver->prune_stale_readables( $updated_config, $new_config, $enriched_config );
 
 		// Use the original sentence template (with field codes like {{a form:WPFFORMS}})
 		// to regenerate the filled sentence_human_readable and HTML.

@@ -233,10 +233,6 @@ class Automator_Helpers_Recipe extends Automator_Helpers {
 	 */
 	public $facebook;
 	/**
-	 * @var Facebook_Groups_Helpers;
-	 */
-	public $facebook_groups;
-	/**
 	 * @var Instagram_Helpers;
 	 */
 	public $instagram;

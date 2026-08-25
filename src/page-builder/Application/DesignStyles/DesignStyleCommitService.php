@@ -21,7 +21,7 @@ use UncannyPageBuilder\Domain\DesignStyles\DesignWriteScope;
  *
  * Page Builder owns persistence here. Design Lens never reaches this service.
  */
-final class DesignStyleCommitService implements CommitsDesignStyles
+final class DesignStyleCommitService implements CommitsDesignStyles, CommitsDesignStylesWithinPageMutation
 {
     public function __construct(
         private readonly DesignStandardsService $designStandards,
@@ -41,6 +41,25 @@ final class DesignStyleCommitService implements CommitsDesignStyles
 
     public function commitBatch(DesignStyleBatchCommitRequest $request): DesignStyleBatchCommitResult
     {
+        return $this->commitPreparedBatch($request, true);
+    }
+
+    public function commitBatchWithinPageMutation(
+        DesignStyleBatchCommitRequest $request,
+    ): DesignStyleBatchCommitResult {
+        $this->assertPageOwnedBatch($request);
+
+        return $this->commitPreparedBatch($request, false);
+    }
+
+    /**
+     * @param bool $refreshWorkingCanvas Whether page overrides can rebuild the
+     *                                   working canvas before this method returns.
+     */
+    private function commitPreparedBatch(
+        DesignStyleBatchCommitRequest $request,
+        bool $refreshWorkingCanvas,
+    ): DesignStyleBatchCommitResult {
         $preparedItems = [];
         $preparedGlobalProfile = null;
 
@@ -107,7 +126,7 @@ final class DesignStyleCommitService implements CommitsDesignStyles
 
             $result = $prepared instanceof DesignStyleCommitResult
                 ? $prepared
-                : $this->applyPreparedBatchGroup($prepared);
+                : $this->applyPreparedBatchGroup($prepared, $refreshWorkingCanvas);
 
             $results[] = ['result' => $result, 'change_ids' => $item['change_ids'] ?? []];
             if (!$result->isSuccess()) {
@@ -209,6 +228,25 @@ final class DesignStyleCommitService implements CommitsDesignStyles
         return 'element:sections';
     }
 
+    /**
+     * A page-source transaction cannot contain sitewide or reusable source.
+     * Those sources use an independent generation and transaction boundary.
+     */
+    private function assertPageOwnedBatch(DesignStyleBatchCommitRequest $request): void
+    {
+        foreach ($request->changes() as $change) {
+            $owner = $change->owner();
+            if (
+                $change->scope() === DesignWriteScope::Global
+                || ($owner instanceof DesignStyleSourceOwner && $owner->isGlobalPart())
+            ) {
+                throw new \InvalidArgumentException(
+                    'Save reusable and sitewide design changes separately.',
+                );
+            }
+        }
+    }
+
     /** @param array<string, mixed> $group */
     private function isGlobalPartElementGroup(array $group): bool
     {
@@ -280,8 +318,10 @@ final class DesignStyleCommitService implements CommitsDesignStyles
         return $this->elementCommitter->prepare($request);
     }
 
-    private function applyPreparedBatchGroup(array|ElementStyleCommitPlan|GlobalPartElementStyleCommitPlan $plan): DesignStyleCommitResult
-    {
+    private function applyPreparedBatchGroup(
+        array|ElementStyleCommitPlan|GlobalPartElementStyleCommitPlan $plan,
+        bool $refreshWorkingCanvas,
+    ): DesignStyleCommitResult {
         if ($plan instanceof ElementStyleCommitPlan) {
             return $this->elementCommitter->apply($plan);
         }
@@ -291,7 +331,7 @@ final class DesignStyleCommitService implements CommitsDesignStyles
 
         return match ($plan['scope']) {
             DesignWriteScope::Global => $this->applyGlobal($plan),
-            DesignWriteScope::Page => $this->applyPage($plan),
+            DesignWriteScope::Page => $this->applyPage($plan, $refreshWorkingCanvas),
             default => DesignStyleCommitResult::error(DesignWriteScope::Element, 'Unable to apply this design change.'),
         };
     }
@@ -613,7 +653,7 @@ final class DesignStyleCommitService implements CommitsDesignStyles
      *     cleared: array{tokens: array<string, bool>, typography: array<string, bool>}
      * } $plan
      */
-    private function applyPage(array $plan): DesignStyleCommitResult
+    private function applyPage(array $plan, bool $refreshWorkingCanvas = true): DesignStyleCommitResult
     {
         $result = $this->designStandards->savePageOverrides(
             $plan['page_id'],
@@ -621,7 +661,7 @@ final class DesignStyleCommitService implements CommitsDesignStyles
             $plan['generation'],
         );
 
-        $canvasRefreshed = $this->refreshWorkingCanvas($plan['page_id']);
+        $canvasRefreshed = !$refreshWorkingCanvas || $this->refreshWorkingCanvas($plan['page_id']);
         $appliedKeys = $result->appliedKeys();
         $applied = $this->appliedPairs(
             $appliedKeys,
