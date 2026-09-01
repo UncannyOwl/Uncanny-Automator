@@ -280,18 +280,32 @@ class Wp_Helpers extends Abstract_Helpers {
 	}
 
 	/**
-	 * Helper method to get posts by post type.
+	 * Remote-data handler: parent-post options for the create-post PARENT_POST field.
 	 *
-	 * @param string $post_type The post type.
-	 * @param string $group_id  The group ID.
+	 * Pivots on the create-post post-type field (option code `CREATEPOST`), the
+	 * only field this endpoint listens to. Emits a "No parent" sentinel followed
+	 * by the published posts of that type.
 	 *
-	 * @return array The options array.
+	 * @param Remote_Data_Request $request The remote-data request.
+	 *
+	 * @return array
 	 */
-	private function get_posts_by_post_type_options( $post_type, $group_id = '' ) {
+	protected function remote_data_get_posts_by_post_type( $request ): array {
 
-		$fields = array();
+		$post_type = $request->get_field_value( 'CREATEPOST' );
 
-		$args       = array(
+		if ( '' === $post_type ) {
+			return $this->remote_data_success( array() );
+		}
+
+		$options = array(
+			array(
+				'value' => '0',
+				'text'  => esc_html_x( 'No parent', 'WordPress post parent', 'uncanny-automator' ),
+			),
+		);
+
+		$args = array(
 			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			'posts_per_page'   => apply_filters( 'automator_select_posts_by_post_type_limit', 999, $post_type ),
 			'orderby'          => 'title',
@@ -301,76 +315,16 @@ class Wp_Helpers extends Abstract_Helpers {
 			'suppress_filters' => true,
 			'fields'           => array( 'ids', 'titles' ),
 		);
-		$posts_list = \Automator()->helpers->recipe->options->wp_query( $args, false, esc_html_x( 'Any post', 'WordPress', 'uncanny-automator' ) );
 
-		if ( 'CREATEPOST' === $group_id ) {
-			$fields[] = array(
-				'value' => '0',
-				'text'  => esc_html_x( 'No parent', 'WordPress post parent', 'uncanny-automator' ),
+		foreach ( \Automator()->helpers->recipe->options->wp_query( $args ) as $post_id => $post_title ) {
+			$options[] = array(
+				'value' => $post_id,
+				// translators: 1: Post ID.
+				'text'  => ! empty( $post_title ) ? $post_title : sprintf( esc_html_x( 'ID: %1$s (no title)', 'WordPress', 'uncanny-automator' ), $post_id ),
 			);
 		}
 
-		if ( ! empty( $posts_list ) ) {
-			$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
-
-			if ( 'CREATEPOST' !== $group_id ) {
-				$fields[] = array(
-					'value' => '-1',
-					// translators: 1: Post type label.
-					'text'  => sprintf( esc_html_x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
-				);
-			}
-
-			foreach ( $posts_list as $post_id => $post_title ) {
-				// translators: 1: Post ID.
-				$post_title = ! empty( $post_title ) ? $post_title : sprintf( esc_html_x( 'ID: %1$s (no title)', 'WordPress', 'uncanny-automator' ), $post_id );
-
-				$fields[] = array(
-					'value' => $post_id,
-					'text'  => $post_title,
-				);
-			}
-		} else {
-			if ( 'CREATEPOST' !== $group_id ) {
-				$post_type_label = 'post';
-
-				if ( intval( $post_type ) !== intval( '-1' ) ) {
-					$post_type_label = get_post_type_object( $post_type )->labels->singular_name;
-				}
-
-				$fields[] = array(
-					'value' => '-1',
-					// translators: 1: Post type label.
-					'text'  => sprintf( esc_html_x( 'Any %s', 'WordPress post type', 'uncanny-automator' ), strtolower( $post_type_label ) ),
-				);
-			}
-		}
-
-		return $fields;
-	}
-
-	/**
-	 * Remote-data handler: posts by post type for the create-post PARENT_POST cascade.
-	 *
-	 * Listens to CREATEPOST. When the cascade pivot is the create-post action's
-	 * post-type field, prepends a "No parent" sentinel; otherwise behaves like a
-	 * generic posts-by-type cascade.
-	 *
-	 * @param Remote_Data_Request $request The remote-data request.
-	 *
-	 * @return array
-	 */
-	protected function remote_data_get_posts_by_post_type( $request ): array {
-
-		$values    = $request->get_values();
-		$group_id  = $request->get_group_id();
-		$post_type = ( 'CREATEPOST' === $group_id ) ? ( $values[ $group_id ] ?? '' ) : '';
-
-		if ( '' === $post_type ) {
-			return $this->remote_data_success( array() );
-		}
-
-		return $this->remote_data_success( $this->get_posts_by_post_type_options( $post_type, $group_id ) );
+		return $this->remote_data_success( $options );
 	}
 
 	// =========================================================================
@@ -1507,9 +1461,9 @@ class Wp_Helpers extends Abstract_Helpers {
 
 		switch ( $criteria ) {
 			case 'is':
-				return $actual == $expected; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+				return $actual === $expected;
 			case 'is_not':
-				return $actual != $expected; // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+				return $actual !== $expected;
 			case 'contains':
 				return false !== mb_strpos( $actual, $expected );
 			case 'does_not_contain':
@@ -1580,22 +1534,33 @@ class Wp_Helpers extends Abstract_Helpers {
 
 		$q = $request->get_search_query();
 
+		// esc_like() + %s is how WordPress passes a LIKE pattern: prepare() escapes
+		// the backslashes esc_like() adds, so MySQL reads `\_` as a literal underscore.
+		$transient      = $wpdb->esc_like( '_transient_' ) . '%';
+		$site_transient = $wpdb->esc_like( '_site_transient_' ) . '%';
+
 		if ( '' === $q ) {
 			$results = $wpdb->get_col(
-				"SELECT option_name FROM {$wpdb->options}
-				WHERE option_name NOT LIKE '\_transient\_%'
-				AND option_name NOT LIKE '\_site\_transient\_%'
-				ORDER BY option_name ASC LIMIT 100"
+				$wpdb->prepare(
+					"SELECT option_name FROM {$wpdb->options}
+					WHERE option_name NOT LIKE %s
+					AND option_name NOT LIKE %s
+					ORDER BY option_name ASC LIMIT 100",
+					$transient,
+					$site_transient
+				)
 			);
 		} else {
 			$results = $wpdb->get_col(
 				$wpdb->prepare(
 					"SELECT option_name FROM {$wpdb->options}
 					WHERE option_name LIKE %s
-					AND option_name NOT LIKE '\_transient\_%'
-					AND option_name NOT LIKE '\_site\_transient\_%'
+					AND option_name NOT LIKE %s
+					AND option_name NOT LIKE %s
 					ORDER BY option_name ASC LIMIT 100",
-					'%' . $wpdb->esc_like( $q ) . '%'
+					'%' . $wpdb->esc_like( $q ) . '%',
+					$transient,
+					$site_transient
 				)
 			);
 		}

@@ -136,7 +136,7 @@ class WP_DUPLICATE_PAGE extends \Uncanny_Automator\Recipe\Action {
 		$page_meta = get_post_meta( $page_id );
 		foreach ( $page_meta as $meta_key => $meta_values ) {
 			foreach ( $meta_values as $meta_value ) {
-				add_post_meta( $new_page_id, $meta_key, maybe_unserialize( $meta_value ) );
+				add_post_meta( $new_page_id, $meta_key, automator_safe_unserialize( $meta_value ) );
 			}
 		}
 

@@ -832,7 +832,7 @@ class Wp_Post_Tokens {
 				global $wpdb;
 				$trigger_id = absint( $pieces[0] );
 				$entry      = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$to_replace", $trigger_id ) );
-				$value      = maybe_unserialize( $entry );
+				$value      = automator_safe_unserialize( $entry );
 				break;
 		}
 

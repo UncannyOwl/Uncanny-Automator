@@ -3,6 +3,7 @@
 
 namespace Uncanny_Automator;
 
+use FrmDb;
 use FrmEntryMeta;
 use FrmForm;
 use Uncanny_Automator_Pro\Formidable_Pro_Helpers;
@@ -159,6 +160,30 @@ class Formidable_Helpers {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Determine whether an entry is a completed submission.
+	 *
+	 * Formidable stores 0 for a submitted entry and 1 for a save-and-continue draft, and
+	 * reserves 2 and 3 for the Form Abandonment add-on's "In progress" and "Abandoned"
+	 * entries. All of them fire frm_after_create_entry. The hook fires again once the entry
+	 * is completed - from Formidable Pro for status 1, and from the abandonment add-on for
+	 * 2 and 3 - so skipping the incomplete ones still leaves one trigger run per entry.
+	 *
+	 * Not FrmEntry::getOne(): the add-on creates the entry as submitted and only then
+	 * flips it to "In progress" with a raw query, on this same hook at priority 1. That
+	 * leaves getOne() serving a cached is_draft of 0 by the time our triggers run.
+	 * FrmDb::get_var() caches under its own key, which nothing has populated by then.
+	 *
+	 * @param int $entry_id
+	 *
+	 * @return bool
+	 */
+	public function is_completed_entry( $entry_id ) {
+		$is_draft = FrmDb::get_var( 'frm_items', array( 'id' => $entry_id ), 'is_draft' );
+
+		return null !== $is_draft && 0 === (int) $is_draft;
 	}
 
 }

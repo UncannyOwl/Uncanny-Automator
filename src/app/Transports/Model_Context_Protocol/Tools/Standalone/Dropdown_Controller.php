@@ -573,14 +573,14 @@ class Dropdown_Controller extends WP_REST_Controller {
 			);
 		}
 
-		// Generate cookies and nonce for authenticated user context.
-		// Nonce must be generated after setting current user for it to be valid.
-		$auth = $this->generate_auth_cookies_and_nonce( $user_id );
+		$ajax_url = $this->resolve_ajax_destination();
+		if ( is_wp_error( $ajax_url ) ) {
+			return $ajax_url;
+		}
 
 		// Build POST body.
 		$body = array(
 			'action' => $ajax_endpoint,
-			'nonce'  => $auth['nonce'],
 		);
 
 		// Build the values array from all parent values.
@@ -615,19 +615,55 @@ class Dropdown_Controller extends WP_REST_Controller {
 			}
 		}
 
-		// Make HTTP request to admin-ajax.php.
-		$ajax_url = admin_url( 'admin-ajax.php' );
-		$response = wp_remote_post(
-			$ajax_url,
-			array(
-				'timeout'   => 30,
-				'cookies'   => $auth['cookies'],
-				'body'      => $body,
-				'sslverify' => false, // Disable SSL verification for same-server requests.
-			)
-		);
+		$auth = null;
+
+		try {
+			// Generate cookies and nonce only after the destination and request body
+			// are complete. The nonce must be generated after setting the execution
+			// user so WordPress binds it to the temporary session token.
+			$auth          = $this->generate_auth_cookies_and_nonce( $user_id );
+			$body['nonce'] = $auth['nonce'];
+
+			$response = wp_remote_post(
+				$ajax_url,
+				array(
+					'timeout'    => 30,
+					'redirection' => 0,
+					'cookies'    => $auth['cookies'],
+					'body'       => $body,
+					// Certificate verification is secure by default. Sites whose
+					// servers cannot validate their own certificate may explicitly
+					// opt out in wp-config.php. The exact destination check and
+					// redirect ban remain enforced when they do.
+					'sslverify'  => $this->should_verify_ajax_ssl(),
+				)
+			);
+		} catch ( \Throwable $throwable ) {
+			return new WP_Error(
+				'ajax_request_failed',
+				'AJAX request failed before WordPress returned a response.',
+				array( 'status' => 500 )
+			);
+		} finally {
+			if ( is_array( $auth ) ) {
+				$this->destroy_temporary_ajax_auth_context( $auth );
+			}
+		}
 
 		if ( is_wp_error( $response ) ) {
+			if ( $this->is_ajax_ssl_verification_error( $response ) ) {
+				return new WP_Error(
+					'ajax_ssl_verification_failed',
+					'Advisory: The user\'s WordPress website has an invalid SSL certificate or cannot complete a verified HTTPS loopback request. Automator cannot load these field options until WordPress can securely call its own admin-ajax.php endpoint. Ensure the website has a valid SSL certificate that its own server can verify. It is advisable to contact the hosting provider to correct the certificate chain or server trust configuration, then review Tools > Site Health in WordPress for HTTPS or loopback errors. This is a website or hosting configuration issue, not an Automator service failure. Do not retry until the site\'s SSL or loopback configuration has been corrected. For legacy hosting compatibility, the site administrator can instead add define( \'AUTOMATOR_MCP_ALLOW_INSECURE_ADMIN_AJAX_TLS\', true ); to wp-config.php to disable certificate verification for this same-site request.',
+					array(
+						'status'                 => 500,
+						'reason'                 => 'site_tls_verification_failed',
+						'configuration_constant' => 'AUTOMATOR_MCP_ALLOW_INSECURE_ADMIN_AJAX_TLS',
+						'retryable'              => false,
+					)
+				);
+			}
+
 			return new WP_Error(
 				'ajax_request_failed',
 				'AJAX request failed: ' . $response->get_error_message(),
@@ -1125,7 +1161,7 @@ class Dropdown_Controller extends WP_REST_Controller {
 	 */
 	private function resolve_ajax_execution_user_id(): int {
 		$user_id = (int) $this->authenticated_user_id;
-		if ( $user_id > 0 ) {
+		if ( $user_id > 0 && user_can( $user_id, 'manage_options' ) ) {
 			return $user_id;
 		}
 
@@ -1138,65 +1174,288 @@ class Dropdown_Controller extends WP_REST_Controller {
 	}
 
 	/**
+	 * Resolve the only destination that may receive temporary administrator cookies.
+	 *
+	 * WordPress can legitimately live in a subdirectory, on a non-standard port,
+	 * or behind a domain-mapping layer. Build the expected endpoint from site_url()
+	 * instead of assuming a root-level /wp-admin path.
+	 *
+	 * @return string|WP_Error Validated admin-ajax.php URL or an error.
+	 */
+	private function resolve_ajax_destination() {
+		$candidate = admin_url( 'admin-ajax.php' );
+		$parts     = wp_parse_url( $candidate );
+
+		if ( ! $this->has_safe_ajax_url_shape( $parts ) ) {
+			return $this->unsafe_ajax_destination_error();
+		}
+
+		$scheme = strtolower( (string) $parts['scheme'] );
+		if ( 'https' !== $scheme ) {
+			return $this->ajax_https_required_error();
+		}
+
+		// Mirror get_admin_url(): resolve the wp-admin/ base first, then append
+		// admin-ajax.php. Domain-mapping plugins may intentionally branch on the
+		// exact path passed through the site_url filter.
+		$expected       = trailingslashit( site_url( 'wp-admin/', 'admin' ) ) . 'admin-ajax.php';
+		$expected_parts = wp_parse_url( $expected );
+
+		if ( ! $this->has_safe_ajax_url_shape( $expected_parts ) ) {
+			return $this->unsafe_ajax_destination_error();
+		}
+
+		if (
+			strtolower( (string) $expected_parts['scheme'] ) !== $scheme
+			|| strtolower( (string) $parts['host'] ) !== strtolower( (string) $expected_parts['host'] )
+			|| $this->get_effective_url_port( $parts ) !== $this->get_effective_url_port( $expected_parts )
+			|| (string) $parts['path'] !== (string) $expected_parts['path']
+		) {
+			return $this->unsafe_ajax_destination_error();
+		}
+
+		return $candidate;
+	}
+
+	/**
+	 * Explain why administrator credentials cannot be sent over plain HTTP.
+	 *
+	 * The TLS compatibility constant only controls certificate verification. It
+	 * never permits temporary administrator credentials to travel without TLS.
+	 *
+	 * @return WP_Error
+	 */
+	private function ajax_https_required_error(): WP_Error {
+		return new WP_Error(
+			'ajax_https_required',
+			'Automator cannot load these field options because this site\'s WordPress AJAX address is not using HTTPS. The site administrator must configure the WordPress Address and proxy or SSL settings so admin-ajax.php uses HTTPS. AUTOMATOR_MCP_ALLOW_INSECURE_ADMIN_AJAX_TLS does not permit HTTP.',
+			array(
+				'status'    => 500,
+				'reason'    => 'site_https_required',
+				'retryable' => false,
+			)
+		);
+	}
+
+	/**
+	 * Check the structural requirements for a credential-bearing AJAX URL.
+	 *
+	 * @param array|false $parts Parsed URL parts.
+	 * @return bool
+	 */
+	private function has_safe_ajax_url_shape( $parts ): bool {
+		if ( ! is_array( $parts ) ) {
+			return false;
+		}
+
+		$scheme = strtolower( (string) ( $parts['scheme'] ?? '' ) );
+		if ( ! in_array( $scheme, array( 'http', 'https' ), true ) || empty( $parts['host'] ) || empty( $parts['path'] ) ) {
+			return false;
+		}
+
+		foreach ( array( 'user', 'pass', 'query', 'fragment' ) as $forbidden_part ) {
+			if ( array_key_exists( $forbidden_part, $parts ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Return the explicit or default port for a parsed HTTP URL.
+	 *
+	 * @param array $parts Parsed URL parts.
+	 * @return int
+	 */
+	private function get_effective_url_port( array $parts ): int {
+		if ( isset( $parts['port'] ) ) {
+			return (int) $parts['port'];
+		}
+
+		return 'https' === strtolower( (string) ( $parts['scheme'] ?? '' ) ) ? 443 : 80;
+	}
+
+	/**
+	 * Build a stable error without reflecting an unsafe URL to the caller.
+	 *
+	 * @return WP_Error
+	 */
+	private function unsafe_ajax_destination_error(): WP_Error {
+		return new WP_Error(
+			'unsafe_ajax_destination',
+			'Automator refused to send administrator credentials because the WordPress AJAX address does not match this site.',
+			array( 'status' => 500 )
+		);
+	}
+
+	/**
+	 * Determine whether the legacy same-site request must verify TLS.
+	 *
+	 * Verification is disabled only by the literal boolean true so strings or
+	 * numeric values cannot accidentally weaken the request.
+	 *
+	 * @return bool
+	 */
+	private function should_verify_ajax_ssl(): bool {
+		$allow_insecure = defined( 'AUTOMATOR_MCP_ALLOW_INSECURE_ADMIN_AJAX_TLS' )
+			? constant( 'AUTOMATOR_MCP_ALLOW_INSECURE_ADMIN_AJAX_TLS' )
+			: false;
+
+		return true !== $allow_insecure;
+	}
+
+	/**
+	 * Identify certificate-validation failures across WordPress HTTP transports.
+	 *
+	 * @param WP_Error $error HTTP transport error.
+	 * @return bool
+	 */
+	private function is_ajax_ssl_verification_error( WP_Error $error ): bool {
+		// phpcs:ignore WordPress.WP.I18n.TextDomainMismatch -- Match WordPress core's localized HTTP transport error.
+		$localized_verification_message = translate( 'The SSL certificate for the host could not be verified.', 'default' );
+		if ( in_array( $localized_verification_message, $error->get_error_messages(), true ) ) {
+			return true;
+		}
+
+		$message = strtolower( implode( ' ', $error->get_error_messages() ) );
+		$markers = array(
+			'curl error 51',
+			'curl error 60',
+			'curl error 83',
+			'certificate verify failed',
+			'certificate verification failed',
+			'ssl certificate problem',
+			'ssl certificate for the host could not be verified',
+			'ssl certificate did not match the requested domain name',
+			'unable to get local issuer certificate',
+			'unable to verify the first certificate',
+			'self-signed certificate',
+			'certificate has expired',
+			'certificate is not yet valid',
+			'does not match target host name',
+			'no alternative certificate subject name matches',
+		);
+
+		foreach ( $markers as $marker ) {
+			if ( false !== strpos( $message, $marker ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Generate authentication cookies and nonce for a user.
 	 *
 	 * Creates WordPress auth cookies that can be passed to wp_remote_post,
 	 * and generates a nonce that will be valid for those cookies.
 	 *
 	 * @param int $user_id The user ID.
-	 * @return array{cookies: array, nonce: string} Array with cookies and nonce.
+	 * @return array{cookies: array, nonce: string, user_id: int, session_token: string, previous_user_id: int, had_logged_in_cookie: bool, previous_logged_in_cookie: mixed} Temporary authentication context.
 	 */
 	private function generate_auth_cookies_and_nonce( int $user_id ): array {
-		// Set the current user.
-		wp_set_current_user( $user_id );
+		$previous_user_id     = get_current_user_id();
+		$had_logged_in_cookie = array_key_exists( LOGGED_IN_COOKIE, $_COOKIE );
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Preserve and restore the caller's exact opaque WordPress cookie value.
+		$previous_logged_in_cookie = $had_logged_in_cookie ? $_COOKIE[ LOGGED_IN_COOKIE ] : null;
+		$manager                   = \WP_Session_Tokens::get_instance( $user_id );
+		$token                     = '';
 
-		// Create a session token - this is stored in the database.
-		$expiration = time() + 60; // 1 minute expiration is enough.
-		$manager    = \WP_Session_Tokens::get_instance( $user_id );
-		$token      = $manager->create( $expiration );
+		try {
+			wp_set_current_user( $user_id );
 
-		// Generate auth cookies WITH the same token and each cookie's expected scheme.
-		$auth_cookie        = wp_generate_auth_cookie( $user_id, $expiration, 'auth', $token );
-		$secure_auth_cookie = wp_generate_auth_cookie( $user_id, $expiration, 'secure_auth', $token );
-		$logged_in_cookie   = wp_generate_auth_cookie( $user_id, $expiration, 'logged_in', $token );
+			// The expiry is crash protection. Normal completion destroys this exact
+			// token as soon as the synchronous loopback request returns.
+			$expiration = time() + 60;
+			$token      = $manager->create( $expiration );
 
-		// Fake the logged_in cookie in $_COOKIE so wp_get_session_token() works.
-		// This is needed for wp_create_nonce() to use the correct token.
-		$_COOKIE[ LOGGED_IN_COOKIE ] = $logged_in_cookie;
+			$auth_cookie        = wp_generate_auth_cookie( $user_id, $expiration, 'auth', $token );
+			$secure_auth_cookie = wp_generate_auth_cookie( $user_id, $expiration, 'secure_auth', $token );
+			$logged_in_cookie   = wp_generate_auth_cookie( $user_id, $expiration, 'logged_in', $token );
 
-		// Generate nonce - now it will use the correct session token.
-		$nonce = wp_create_nonce( 'wp_rest' );
+			// wp_create_nonce() reads the active logged-in session from $_COOKIE.
+			$_COOKIE[ LOGGED_IN_COOKIE ] = $logged_in_cookie;
+			$nonce                       = wp_create_nonce( 'wp_rest' );
 
-		$cookies = array();
+			$cookies = array(
+				new \WP_Http_Cookie(
+					array(
+						'name'  => AUTH_COOKIE,
+						'value' => $auth_cookie,
+					)
+				),
+				new \WP_Http_Cookie(
+					array(
+						'name'  => SECURE_AUTH_COOKIE,
+						'value' => $secure_auth_cookie,
+					)
+				),
+				new \WP_Http_Cookie(
+					array(
+						'name'  => LOGGED_IN_COOKIE,
+						'value' => $logged_in_cookie,
+					)
+				),
+			);
 
-		// Auth cookie.
-		$cookies[] = new \WP_Http_Cookie(
-			array(
-				'name'  => AUTH_COOKIE,
-				'value' => $auth_cookie,
-			)
-		);
+			return array(
+				'cookies'                  => $cookies,
+				'nonce'                    => $nonce,
+				'user_id'                  => $user_id,
+				'session_token'            => $token,
+				'previous_user_id'         => $previous_user_id,
+				'had_logged_in_cookie'     => $had_logged_in_cookie,
+				'previous_logged_in_cookie' => $previous_logged_in_cookie,
+			);
+		} catch ( \Throwable $throwable ) {
+			try {
+				if ( '' !== $token ) {
+					$manager->destroy( $token );
+				}
+			} finally {
+				$this->restore_ajax_auth_globals( $previous_user_id, $had_logged_in_cookie, $previous_logged_in_cookie );
+			}
 
-		// Secure auth cookie (for HTTPS).
-		$cookies[] = new \WP_Http_Cookie(
-			array(
-				'name'  => SECURE_AUTH_COOKIE,
-				'value' => $secure_auth_cookie,
-			)
-		);
+			throw $throwable;
+		}
+	}
 
-		// Logged in cookie.
-		$cookies[] = new \WP_Http_Cookie(
-			array(
-				'name'  => LOGGED_IN_COOKIE,
-				'value' => $logged_in_cookie,
-			)
-		);
+	/**
+	 * Destroy one generated AJAX session and restore the caller's global state.
+	 *
+	 * @param array $auth Temporary authentication context.
+	 * @return void
+	 */
+	private function destroy_temporary_ajax_auth_context( array $auth ): void {
+		try {
+			\WP_Session_Tokens::get_instance( (int) $auth['user_id'] )->destroy( (string) $auth['session_token'] );
+		} finally {
+			$this->restore_ajax_auth_globals(
+				(int) $auth['previous_user_id'],
+				(bool) $auth['had_logged_in_cookie'],
+				$auth['previous_logged_in_cookie']
+			);
+		}
+	}
 
-		return array(
-			'cookies' => $cookies,
-			'nonce'   => $nonce,
-		);
+	/**
+	 * Restore WordPress globals changed while generating the temporary nonce.
+	 *
+	 * @param int   $previous_user_id          Previous WordPress user ID.
+	 * @param bool  $had_logged_in_cookie      Whether the cookie previously existed.
+	 * @param mixed $previous_logged_in_cookie Previous cookie value.
+	 * @return void
+	 */
+	private function restore_ajax_auth_globals( int $previous_user_id, bool $had_logged_in_cookie, $previous_logged_in_cookie ): void {
+		if ( $had_logged_in_cookie ) {
+			$_COOKIE[ LOGGED_IN_COOKIE ] = $previous_logged_in_cookie;
+		} else {
+			unset( $_COOKIE[ LOGGED_IN_COOKIE ] );
+		}
+
+		wp_set_current_user( $previous_user_id );
 	}
 
 	/**

@@ -289,22 +289,12 @@ class Wp_Fluent_Forms_Helpers extends \Uncanny_Automator\Recipe\Abstract_Helpers
 			return array();
 		}
 
-		$tokens = $this->tokens()->form_field_tokens( $form_id );
-		$out    = array();
-
-		foreach ( $tokens as $token ) {
-			$id = $token['tokenId'] ?? '';
-			// `tokenId` is `{form_id}|{name}` or `{form_id}|{group}|{sub}`.
-			// The FORMFIELD selector stores the field NAME — for grouped
-			// inputs that's the sub-field name (the leaf).
-			$parts = explode( '|', $id );
-			$name  = end( $parts );
-			if ( '' === $name ) {
-				continue;
-			}
+		$out = array();
+		// FORMFIELD stores the field NAME — for grouped inputs that's the sub-field name (the leaf).
+		foreach ( $this->tokens()->form_fields( $form_id ) as $field ) {
 			$out[] = array(
-				'value' => (string) $name,
-				'text'  => (string) ( $token['tokenName'] ?? $name ),
+				'value' => $field['name'],
+				'text'  => $field['label'],
 			);
 		}
 

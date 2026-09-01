@@ -297,7 +297,7 @@ class Automator_DB_Handler_Triggers {
 		);
 
 		if ( ! empty( $meta_value ) ) {
-			return maybe_unserialize( $meta_value );
+			return automator_safe_unserialize( $meta_value );
 		}
 
 		return '';
@@ -338,9 +338,9 @@ class Automator_DB_Handler_Triggers {
 
 		foreach ( $results as $result ) {
 			if ( isset( $result['meta_value'] ) && is_string( $result['meta_value'] ) ) {
-				$property = maybe_unserialize( $result['meta_value'] );
+				$property = automator_safe_unserialize( $result['meta_value'] );
 				if ( is_array( $property ) ) {
-					$items[] = maybe_unserialize( $result['meta_value'] );
+					$items[] = $property;
 				}
 			}
 		}

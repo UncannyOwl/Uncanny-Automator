@@ -420,7 +420,7 @@ class Wpjm_Token_Manager {
 		$attachment  = get_post_meta( $application_id, '_attachment', true );
 		$attachments = '';
 		if ( ! empty( $attachment ) ) {
-			$attachment  = maybe_unserialize( $attachment );
+			$attachment  = automator_safe_unserialize( $attachment );
 			$attachments = is_array( $attachment ) ? join( ', ', $attachment ) : $attachment;
 		}
 

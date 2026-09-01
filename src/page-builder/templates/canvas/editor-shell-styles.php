@@ -268,13 +268,6 @@ defined('ABSPATH') || exit;
         color: #50575e;
     }
 
-    .upb-agent-editing-shield__reload {
-        flex: 0 0 auto;
-        align-self: center;
-        margin-left: 30px;
-        white-space: nowrap;
-    }
-
     @keyframes upb-agent-editing-spin {
         to {
             transform: rotate(360deg);

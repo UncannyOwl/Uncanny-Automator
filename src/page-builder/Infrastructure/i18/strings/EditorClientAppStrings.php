@@ -13,7 +13,6 @@ final class EditorClientAppStrings
     {
         return [
             'agent_editing_body' => _x('Wait for it to finish before making Manual editor changes.', 'Page Builder', 'uncanny-automator'),
-            'agent_editing_reload' => _x('Reload editor', 'Page Builder', 'uncanny-automator'),
             'agent_editing_title' => _x('Uncanny Agent is editing this page.', 'Page Builder', 'uncanny-automator'),
             'attribute_not_saveable' => _x('This attribute cannot be saved yet. Select editable Page Builder content and try again.', 'Page Builder', 'uncanny-automator'),
             'attribute_preview_failed' => _x('We couldn\'t preview that change. Reselect the element and try again.', 'Page Builder', 'uncanny-automator'),
