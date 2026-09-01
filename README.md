@@ -5,7 +5,7 @@
 **Requires at least:** 5.8 \
 **Tested up to:** 7.1 \
 **Requires PHP:** 7.4 \
-**Stable tag:** 7.6.0 \
+**Stable tag:** 7.6.1 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -458,69 +458,25 @@ Yes — Uncanny Automator is free to install and use. It includes Uncanny Recipe
 
 ## Changelog
 
-### 7.6.0 [2026-08-25]
+### 7.6.1 [2026-09-01]
 
-**New Plugin Integrations:**
+**Updated:**
 
-* [All-in-One WP Migration](https://automatorplugin.com/integration/all-in-one-wp-migration/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7539
-* [FluentBoards](https://automatorplugin.com/integration/fluentboards/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7479
-* [FluentCart](https://automatorplugin.com/integration/fluentcart/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7494
-* [Really Simple Security](https://automatorplugin.com/integration/really-simple-security/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7555
-
-**New Triggers:**
-
-* All-in-One WP Migration - A backup file is deleted #7580
-* All-in-One WP Migration - A site backup fails #7581
-* All-in-One WP Migration - A site backup is created #7563
-* FluentBoards - A board is created #7486
-* FluentBoards - A comment is added to a task on a board #7483
-* FluentBoards - A label is added to or removed from a task on a board #7485
-* FluentBoards - A task is created on a board #7480
-* FluentBoards - A task on a board is completed or reopened #7481
-* FluentBoards - A task on a board's due date is set or changed #7484
-* FluentBoards - A user is assigned to a task on a board #7482
-* FluentBoards - A user is unassigned from a task on a board #7487
-* FluentCart - A user's order changes to a status #7497
-* FluentCart - A user's order for a product is paid #7495
-* FluentCart - A user's subscription changes to a status #7501
-* FluentCart - A user's subscription to a product is activated #7496
-* FluentCart - A user's subscription to a product is cancelled #7498
-* FluentCart - A user's subscription to a product is renewed #7499
-* Really Simple Security - A vulnerability scan is completed #7639
-
-**New Actions:**
-
-* All-in-One WP Migration - Delete a backup file #7579
-* All-in-One WP Migration - Set a backup file's label to a specific value #7578
-* FluentBoards - Add a comment to a task #7493
-* FluentBoards - Add a user to a board #7490
-* FluentBoards - Assign a user to a task #7491
-* FluentBoards - Create a board #7489
-* FluentBoards - Create a task on a board #7488
-* FluentBoards - Update a task's properties #7492
-* FluentCart - Add a note to an order #7505
-* FluentCart - Cancel a subscription #7504
-* FluentCart - Set an order to a status #7503
+* Fluent Forms - Added value and label tokens for choice fields, making selections more flexible. #8455
 
 **Fixed:**
 
-* App Integrations - Fixed webhook keys being reset when integration settings were saved. #8438
-* Core - Custom trigger and action label fields not loading. #8416
-* Core - Log action resend drops per-request credential scope. #8413
-* Discord - Settings - Server disconnect leaves stale connected status. #8422
-* Facebook - Settings - Connected account avatar 403s after the stored CDN URL expires. #8424
-* Gravity Forms - Added consolidated checkbox field tokens and fixed Form title and ID tokens in submission triggers. #8397
-* HubSpot - Create/Update a contact - Enumeration fields drop token values matching option labels. #8418
-* Page Builder - Fixed styling issues with reusable sections added by users or Agents. #8434
-* Page Builder - Improved Save Draft reliability and canvas consistency. #8433
-* Page Builder - Improved reusable section previews, copying, and style persistence. #8432
-* Recipe Builder - Fixed sentence pills displaying outdated values after fields were updated. #8435
-* Recipe Builder - Fixed the editor failing to load or save recipes with actions using custom values. #8391
+* Formidable - Restored the shared helpers instance to keep things running smoothly. #8518
+* Formidable Forms - Submission triggers now ignore incomplete and abandoned entries. #8509
+* Hardened PeepSo and related token processing against unsafe serialized data - Added safer handling of serialized data during token processing. #8505
+* LearnDash - A user has completed X% of a course - Fixed "0f" to correctly display "% of". #8516
+* Page Builder - Removed the unnecessary "Reload editor" option from the Uncanny Agent notice. #8506
+* Uncanny Agent - Strengthened security for legacy admin-AJAX requests. #8499
+* WordPress - Create a post - Parent posts now appear in the dropdown instead of playing hide-and-seek. #8491
 
 **Under the hood:**
 
-* Improved in-plugin notifications. #8177
-
+* Core - Removed unnecessary license API response logging for cleaner logs. #8495
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)
 
