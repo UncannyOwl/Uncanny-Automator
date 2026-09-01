@@ -80,18 +80,22 @@ class Wp_Fluent_Forms_Tokens {
 	}
 
 	// -------------------------------------------------------------------------
-	// Per-field tokens (discovery)
+	// Field index
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Generate token definitions for every visible input on the given form.
+	 * Flatten the form's field tree into one entry per leaf input, in form order.
 	 *
-	 * @param int    $form_id
-	 * @param string $trigger_meta
+	 * Each entry carries `token_id`, `group`, `name`, `label`, `type`, `options`
+	 * (the field's label/value choice list, or an empty array) and `stores` — which
+	 * side of an option Fluent Forms writes to the submission (`value` for standard
+	 * choice fields, `label` for Payment Items).
+	 *
+	 * @param int $form_id
 	 *
 	 * @return array
 	 */
-	public function form_field_tokens( $form_id, $trigger_meta = '' ) {
+	public function form_fields( $form_id ) {
 		if ( empty( $form_id ) ) {
 			return array();
 		}
@@ -101,9 +105,9 @@ class Wp_Fluent_Forms_Tokens {
 			return array();
 		}
 
-		$tokens = array();
-		$this->walk_fields( $decoded['fields'], $form_id, '', $trigger_meta, $tokens );
-		return $tokens;
+		$fields = array();
+		$this->walk_fields( $decoded['fields'], $form_id, '', $fields );
+		return $fields;
 	}
 
 	/**
@@ -112,12 +116,11 @@ class Wp_Fluent_Forms_Tokens {
 	 * @param array  $fields
 	 * @param int    $form_id
 	 * @param string $group
-	 * @param string $trigger_meta
-	 * @param array  $tokens
+	 * @param array  $out
 	 *
 	 * @return void
 	 */
-	private function walk_fields( array $fields, $form_id, $group, $trigger_meta, array &$tokens ) {
+	private function walk_fields( array $fields, $form_id, $group, array &$out ) {
 		foreach ( $fields as $field ) {
 			if ( ! is_array( $field ) ) {
 				continue;
@@ -127,7 +130,7 @@ class Wp_Fluent_Forms_Tokens {
 			if ( isset( $field['columns'] ) && is_array( $field['columns'] ) ) {
 				foreach ( $field['columns'] as $column ) {
 					if ( isset( $column['fields'] ) && is_array( $column['fields'] ) ) {
-						$this->walk_fields( $column['fields'], $form_id, $group, $trigger_meta, $tokens );
+						$this->walk_fields( $column['fields'], $form_id, $group, $out );
 					}
 				}
 				continue;
@@ -144,43 +147,81 @@ class Wp_Fluent_Forms_Tokens {
 			// 2. Input group — recurse with group name.
 			if ( isset( $field['fields'] ) && is_array( $field['fields'] ) ) {
 				$group_name = $field['attributes']['name'] ?? $group;
-				$this->walk_fields( $field['fields'], $form_id, (string) $group_name, $trigger_meta, $tokens );
+				$this->walk_fields( $field['fields'], $form_id, (string) $group_name, $out );
 				continue;
 			}
 
-			// 3. Flat field — emit token.
-			if ( ! isset( $field['attributes']['name'] ) ) {
+			// 3. Flat field — index it.
+			$name = (string) ( $field['attributes']['name'] ?? '' );
+			if ( '' === $name ) {
 				continue;
 			}
 
-			$tokens[] = $this->build_field_token( $form_id, $field, $group, $trigger_meta );
+			$settings = $field['settings'] ?? array();
+			// Choice fields carry `advanced_options`; Payment Items carry `pricing_options`.
+			$options = $settings['advanced_options'] ?? ( $settings['pricing_options'] ?? array() );
+			// A Single-display Payment Item stores the amount itself; the editor still leaves the stock option list on it.
+			if ( 'single' === ( $field['attributes']['type'] ?? '' ) && 'multi_payment_component' === ( $field['element'] ?? '' ) ) {
+				$options = array();
+			}
+
+			$out[] = array(
+				'token_id' => '' === $group ? $form_id . '|' . $name : $form_id . '|' . $group . '|' . $name,
+				'group'    => (string) $group,
+				'name'     => $name,
+				'label'    => (string) ( $settings['label'] ?? ( $settings['admin_field_label'] ?? $name ) ),
+				'type'     => (string) ( $field['attributes']['type'] ?? ( $field['element'] ?? 'text' ) ),
+				'options'  => is_array( $options ) ? $options : array(),
+				'stores'   => 'multi_payment_component' === ( $field['element'] ?? '' ) ? 'label' : 'value',
+			);
 		}
 	}
 
+	// -------------------------------------------------------------------------
+	// Per-field tokens (discovery)
+	// -------------------------------------------------------------------------
+
 	/**
-	 * Build a single token definition for a flat field.
+	 * Generate token definitions for every visible input on the given form.
+	 *
+	 * Choice fields get a value token (plain name) and a label token (`(label)`).
+	 * The side Fluent Forms stores keeps the legacy `{form}|{name}` id so existing
+	 * recipes resolve unchanged; the other side gets a `|label` / `|value` id.
 	 *
 	 * @param int    $form_id
-	 * @param array  $field
-	 * @param string $group
 	 * @param string $trigger_meta
 	 *
 	 * @return array
 	 */
-	private function build_field_token( $form_id, array $field, $group, $trigger_meta ) {
-		$name  = (string) $field['attributes']['name'];
-		$label = $field['settings']['label']
-			?? ( $field['settings']['admin_field_label'] ?? $name );
+	public function form_field_tokens( $form_id, $trigger_meta = '' ) {
+		$tokens = array();
 
-		$type     = $field['attributes']['type'] ?? ( $field['element'] ?? 'text' );
-		$token_id = '' === $group ? $form_id . '|' . $name : $form_id . '|' . $group . '|' . $name;
+		foreach ( $this->form_fields( $form_id ) as $field ) {
+			if ( empty( $field['options'] ) ) {
+				$tokens[] = array(
+					'tokenId'         => $field['token_id'],
+					'tokenName'       => $field['label'],
+					'tokenType'       => $this->normalize_token_type( $field['type'] ),
+					'tokenIdentifier' => $trigger_meta,
+				);
+				continue;
+			}
 
-		return array(
-			'tokenId'         => $token_id,
-			'tokenName'       => (string) $label,
-			'tokenType'       => $this->normalize_token_type( $type ),
-			'tokenIdentifier' => $trigger_meta,
-		);
+			$tokens[] = array(
+				'tokenId'         => 'value' === $field['stores'] ? $field['token_id'] : $field['token_id'] . '|value',
+				'tokenName'       => $field['label'],
+				'tokenType'       => $this->normalize_token_type( $field['type'] ),
+				'tokenIdentifier' => $trigger_meta,
+			);
+			$tokens[] = array(
+				'tokenId'         => 'label' === $field['stores'] ? $field['token_id'] : $field['token_id'] . '|label',
+				'tokenName'       => $field['label'] . ' ' . esc_html_x( '(label)', 'Fluent Forms', 'uncanny-automator' ),
+				'tokenType'       => 'text',
+				'tokenIdentifier' => $trigger_meta,
+			);
+		}
+
+		return $tokens;
 	}
 
 	/**
@@ -237,7 +278,72 @@ class Wp_Fluent_Forms_Tokens {
 			$out[ $form_id . '|' . $field_name ] = is_scalar( $value ) ? (string) $value : '';
 		}
 
+		// Choice fields: the legacy id already holds the stored side; derive the other side from the options.
+		foreach ( $this->form_fields( $form_id ) as $field ) {
+			if ( empty( $field['options'] ) ) {
+				continue;
+			}
+
+			$stored = '' === $field['group']
+				? ( $entry_data[ $field['name'] ] ?? array() )
+				: ( $entry_data[ $field['group'] ][ $field['name'] ] ?? array() );
+
+			$derived  = 'value' === $field['stores'] ? 'label' : 'value';
+			$resolved = $this->resolve_selected_options( $field['options'], (array) $stored );
+
+			$out[ $field['token_id'] . '|' . $derived ] = $resolved[ $derived ];
+		}
+
 		return $out;
+	}
+
+	/**
+	 * Map stored selections to their option label and value, each joined with ', '.
+	 *
+	 * Fluent Forms stores the option value for standard choice fields but the label
+	 * for Payment Items, so a selection matches on either. Unmatched selections
+	 * (e.g. "Other" free text) fall back to the stored string.
+	 *
+	 * @param array $options    Field options as `[ [ 'label' => …, 'value' => … ], … ]`.
+	 * @param array $selections Stored selection(s).
+	 *
+	 * @return array{label:string,value:string}
+	 */
+	private function resolve_selected_options( array $options, array $selections ) {
+		$labels = array();
+		$values = array();
+
+		foreach ( $selections as $selected ) {
+			if ( ! is_scalar( $selected ) || '' === (string) $selected ) {
+				continue;
+			}
+
+			$selected = (string) $selected;
+			$match    = array(
+				'label' => $selected,
+				'value' => $selected,
+			);
+
+			foreach ( $options as $option ) {
+				$label = (string) ( $option['label'] ?? '' );
+				$value = (string) ( $option['value'] ?? '' );
+				if ( $selected === $value || $selected === $label ) {
+					$match = array(
+						'label' => $label,
+						'value' => $value,
+					);
+					break;
+				}
+			}
+
+			$labels[] = $match['label'];
+			$values[] = $match['value'];
+		}
+
+		return array(
+			'label' => implode( ', ', $labels ),
+			'value' => implode( ', ', $values ),
+		);
 	}
 
 	// -------------------------------------------------------------------------

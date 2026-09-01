@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.6.0\n"
+"Project-Id-Version: Uncanny Automator 7.6.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-25T22:42:49+00:00\n"
+"POT-Creation-Date: 2026-09-01T22:12:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -7287,7 +7287,7 @@ msgid "All products"
 msgstr ""
 
 #: src/core/lib/helpers/class-automator-recipe-helpers.php:964
-#: src/integrations/formidable/helpers/formidable-helpers.php:74
+#: src/integrations/formidable/helpers/formidable-helpers.php:75
 #: src/integrations/memberpress/helpers/memberpress-helpers.php:68
 #: src/integrations/studiocart/helpers/studiocart-helpers.php:66
 #: src/integrations/studiocart/helpers/studiocart-helpers.php:99
@@ -15013,7 +15013,7 @@ msgstr ""
 #: src/integrations/caldera-forms/helpers/caldera-helpers.php:60
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:59
 #: src/integrations/elementor/helpers/elementor-helpers.php:56
-#: src/integrations/formidable/helpers/formidable-helpers.php:67
+#: src/integrations/formidable/helpers/formidable-helpers.php:68
 #: src/integrations/forminator/helpers/forminator-helpers.php:61
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:61
 #: src/integrations/jetformbuilder/helpers/jetfb-helpers.php:29
@@ -15041,13 +15041,12 @@ msgstr ""
 
 #. translators: Anonymous trigger - Caldera Forms
 #. translators: Anonymous trigger - Contact Form 7
-#. translators: Anonymous trigger - Formidable
 #. translators: Logged-in trigger - Forminator
+#. translators: Anonymous trigger - Formidable
 #. Translators: Trigger sentence
 #. translators: Anonymous triggers - Ninja Forms
 #: src/integrations/caldera-forms/triggers/anon-cf-subform.php:52
 #: src/integrations/contact-form7/triggers/anon-cf7-subform.php:50
-#: src/integrations/formidable/triggers/anon-fi-submitform.php:48
 #: src/integrations/forminator/triggers/anon-fr-submitform.php:48
 #: src/integrations/happyforms/triggers/anon-hf-submitform.php:48
 #: src/integrations/jetformbuilder/triggers/jetfb-everyone-form-submit.php:65
@@ -15060,12 +15059,11 @@ msgstr ""
 
 #. translators: Anonymous trigger - Caldera Forms
 #. translators: Anonymous trigger - Contact Form 7
-#. translators: Anonymous trigger - Formidable
 #. translators: Logged-in trigger - Forminator
+#. translators: Anonymous trigger - Formidable
 #. translators: Anonymous triggers - Ninja Forms
 #: src/integrations/caldera-forms/triggers/anon-cf-subform.php:54
 #: src/integrations/contact-form7/triggers/anon-cf7-subform.php:52
-#: src/integrations/formidable/triggers/anon-fi-submitform.php:50
 #: src/integrations/forminator/triggers/anon-fr-submitform.php:50
 #: src/integrations/happyforms/triggers/anon-hf-submitform.php:50
 #: src/integrations/jetformbuilder/triggers/jetfb-everyone-form-submit.php:71
@@ -15089,14 +15087,12 @@ msgstr ""
 
 #. translators: Logged-in trigger - Caldera Forms
 #. translators: Logged-in trigger - Contact Form 7
-#. translators: Logged-in trigger - Formidable
 #. translators: Logged-in trigger - Forminator
 #. translators: Anonymous trigger - HappyForms
 #. translators: Logged-in trigger - Mailpoet
 #. translators: Logged-in trigger - Ninja Forms
 #: src/integrations/caldera-forms/triggers/cf-subform.php:49
 #: src/integrations/contact-form7/triggers/cf7-subform.php:53
-#: src/integrations/formidable/triggers/fi-submitform.php:43
 #: src/integrations/forminator/triggers/fr-submitform.php:44
 #: src/integrations/happyforms/triggers/hf-formsubmit.php:50
 #: src/integrations/jetformbuilder/triggers/jetfb-user-form-submit.php:67
@@ -17268,7 +17264,7 @@ msgstr ""
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:89
 #: src/integrations/elementor/helpers/elementor-helpers.php:122
 #: src/integrations/everest-froms/helpers/everest-forms-helpers.php:66
-#: src/integrations/formidable/helpers/formidable-helpers.php:116
+#: src/integrations/formidable/helpers/formidable-helpers.php:117
 #: src/integrations/forminator/helpers/forminator-helpers.php:100
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:103
 #: src/integrations/jetformbuilder/tokens/jetfb-tokens.php:97
@@ -17283,7 +17279,7 @@ msgstr ""
 #: src/integrations/contact-form7/helpers/contact-form7-helpers.php:90
 #: src/integrations/elementor/helpers/elementor-helpers.php:123
 #: src/integrations/everest-froms/helpers/everest-forms-helpers.php:61
-#: src/integrations/formidable/helpers/formidable-helpers.php:117
+#: src/integrations/formidable/helpers/formidable-helpers.php:118
 #: src/integrations/forminator/helpers/forminator-helpers.php:101
 #: src/integrations/happyforms/helpers/happyforms-helpers.php:104
 #: src/integrations/jetformbuilder/tokens/jetfb-tokens.php:94
@@ -23116,11 +23112,35 @@ msgctxt "Formidable"
 msgid "Entry source URL"
 msgstr ""
 
+#. translators: Anonymous trigger - Formidable
+#: src/integrations/formidable/triggers/anon-fi-submitform.php:54
+#, php-format
+msgctxt "Formidable"
+msgid "{{A form:%1$s}} is submitted"
+msgstr ""
+
+#. translators: Anonymous trigger - Formidable
+#: src/integrations/formidable/triggers/anon-fi-submitform.php:56
+msgctxt "Formidable"
+msgid "{{A form}} is submitted"
+msgstr ""
+
 #. translators: Logged-in trigger - Formidable
+#: src/integrations/formidable/triggers/fi-submitform.php:47
+#, php-format
+msgctxt "Formidable"
+msgid "A user submits {{a form:%1$s}}"
+msgstr ""
+
+#. translators: Logged-in trigger - Formidable
+#: src/integrations/formidable/triggers/fi-submitform.php:49
+msgctxt "Formidable"
+msgid "A user submits {{a form}}"
+msgstr ""
+
 #. translators: Logged-in trigger - Forminator
 #. translators: Anonymous trigger - HappyForms
 #. Translators: Trigger sentence
-#: src/integrations/formidable/triggers/fi-submitform.php:41
 #: src/integrations/forminator/triggers/fr-submitform.php:42
 #: src/integrations/happyforms/triggers/hf-formsubmit.php:48
 #: src/integrations/jetformbuilder/triggers/jetfb-user-form-submit.php:61
@@ -30219,12 +30239,12 @@ msgstr ""
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:33
 #, php-format
 msgctxt "LearnDash"
-msgid "A user has completed {{percentage:%1$s}}% of {{a course:%2$s}}"
+msgid "A user has completed {{percentage:%1$s}}%% of {{a course:%2$s}}"
 msgstr ""
 
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:39
 msgctxt "LearnDash"
-msgid "A user has completed {{X%}} of {{a course}}"
+msgid "A user has completed {{a percentage}} of {{a course}}"
 msgstr ""
 
 #: src/integrations/learndash/triggers/learndash-course-progress-percentage.php:51
@@ -47820,22 +47840,27 @@ msgctxt "Fluent Forms"
 msgid "Any form"
 msgstr ""
 
-#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:256
+#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:218
+msgctxt "Fluent Forms"
+msgid "(label)"
+msgstr ""
+
+#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:362
 msgctxt "Fluent Forms"
 msgid "Entry ID"
 msgstr ""
 
-#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:262
+#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:368
 msgctxt "Fluent Forms"
 msgid "User IP"
 msgstr ""
 
-#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:268
+#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:374
 msgctxt "Fluent Forms"
 msgid "Entry source URL"
 msgstr ""
 
-#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:274
+#: src/integrations/wp-fluent-forms/tokens/wp-fluent-forms-tokens.php:380
 msgctxt "Fluent Forms"
 msgid "Entry submission date"
 msgstr ""
@@ -48829,8 +48854,8 @@ msgstr ""
 #: src/integrations/wp/actions/wordpress-restore-post-from-trash.php:64
 #: src/integrations/wp/actions/wordpress-set-post-password.php:39
 #: src/integrations/wp/actions/wordpress-set-post-password.php:59
-#: src/integrations/wp/helpers/wp-helpers-new.php:415
-#: src/integrations/wp/helpers/wp-helpers-new.php:595
+#: src/integrations/wp/helpers/wp-helpers-new.php:369
+#: src/integrations/wp/helpers/wp-helpers-new.php:549
 #: src/integrations/wp/helpers/wp-helpers.php:193
 #: src/integrations/wp/helpers/wp-helpers.php:704
 #: src/integrations/wp/tokens/wp-shared-tokens.php:33
@@ -48901,7 +48926,7 @@ msgstr ""
 #. translators: WordPress role
 #: src/integrations/wp/actions/wordpress-add-role.php:52
 #: src/integrations/wp/actions/wordpress-set-user-role.php:52
-#: src/integrations/wp/helpers/wp-helpers-new.php:501
+#: src/integrations/wp/helpers/wp-helpers-new.php:455
 #: src/integrations/wp/helpers/wp-helpers.php:274
 #: src/integrations/wp/tokens/wp-shared-tokens.php:706
 #: src/integrations/wp/tokens/wp-shared-tokens.php:745
@@ -48964,7 +48989,7 @@ msgstr ""
 #: src/integrations/wp/actions/wordpress-change-post-type.php:43
 #: src/integrations/wp/actions/wordpress-duplicate-post.php:44
 #: src/integrations/wp/actions/wordpress-update-post-excerpt.php:35
-#: src/integrations/wp/helpers/wp-helpers-new.php:393
+#: src/integrations/wp/helpers/wp-helpers-new.php:347
 #: src/integrations/wp/helpers/wp-helpers.php:171
 #: src/integrations/wp/triggers/wordpress-post-receives-comment.php:66
 #: src/integrations/wp/triggers/wordpress-user-submits-comment.php:67
@@ -49012,8 +49037,8 @@ msgstr ""
 
 #: src/integrations/wp/actions/wordpress-create-post.php:42
 #: src/integrations/wp/actions/wordpress-restore-post-from-trash.php:45
-#: src/integrations/wp/helpers/wp-helpers-new.php:416
-#: src/integrations/wp/helpers/wp-helpers-new.php:596
+#: src/integrations/wp/helpers/wp-helpers-new.php:370
+#: src/integrations/wp/helpers/wp-helpers-new.php:550
 #: src/integrations/wp/helpers/wp-helpers.php:194
 #: src/integrations/wp/helpers/wp-helpers.php:705
 #: src/integrations/wp/tokens/wp-shared-tokens.php:43
@@ -49198,7 +49223,7 @@ msgid "Role name"
 msgstr ""
 
 #: src/integrations/wp/actions/wordpress-create-role.php:52
-#: src/integrations/wp/helpers/wp-helpers-new.php:525
+#: src/integrations/wp/helpers/wp-helpers-new.php:479
 #: src/integrations/wp/helpers/wp-helpers.php:297
 msgctxt "WordPress"
 msgid "Role slug"
@@ -49285,8 +49310,8 @@ msgstr ""
 #: src/integrations/wp/actions/wordpress-create-taxonomy-term.php:64
 #: src/integrations/wp/actions/wordpress-delete-taxonomy-term.php:54
 #: src/integrations/wp/actions/wordpress-update-taxonomy-term.php:64
-#: src/integrations/wp/helpers/wp-helpers-new.php:421
-#: src/integrations/wp/helpers/wp-helpers-new.php:637
+#: src/integrations/wp/helpers/wp-helpers-new.php:375
+#: src/integrations/wp/helpers/wp-helpers-new.php:591
 #: src/integrations/wp/helpers/wp-helpers.php:199
 #: src/integrations/wp/helpers/wp-helpers.php:759
 #: src/integrations/wp/tokens/wp-shared-tokens.php:68
@@ -49647,7 +49672,7 @@ msgid "Duplicate {{a page}}"
 msgstr ""
 
 #: src/integrations/wp/actions/wordpress-duplicate-page.php:42
-#: src/integrations/wp/helpers/wp-helpers-new.php:447
+#: src/integrations/wp/helpers/wp-helpers-new.php:401
 #: src/integrations/wp/helpers/wp-helpers.php:223
 #: src/integrations/wp/triggers/wordpress-user-views-page.php:52
 msgctxt "WordPress"
@@ -49996,8 +50021,8 @@ msgstr ""
 
 #: src/integrations/wp/actions/wordpress-restore-post-from-trash.php:40
 #: src/integrations/wp/actions/wordpress-set-post-password.php:44
-#: src/integrations/wp/helpers/wp-helpers-new.php:414
-#: src/integrations/wp/helpers/wp-helpers-new.php:594
+#: src/integrations/wp/helpers/wp-helpers-new.php:368
+#: src/integrations/wp/helpers/wp-helpers-new.php:548
 #: src/integrations/wp/helpers/wp-helpers.php:192
 #: src/integrations/wp/helpers/wp-helpers.php:703
 #: src/integrations/wp/tokens/wp-shared-tokens.php:38
@@ -50200,13 +50225,10 @@ msgid "No fields provided to update."
 msgstr ""
 
 #. translators: %s: Post type label.
-#. translators: 1: Post type label.
 #. translators: %s: Post type singular name.
 #. translators: 1: Post type label
 #: src/integrations/wp/helpers/wp-helpers-new.php:168
-#: src/integrations/wp/helpers/wp-helpers-new.php:320
-#: src/integrations/wp/helpers/wp-helpers-new.php:344
-#: src/integrations/wp/helpers/wp-helpers-new.php:1032
+#: src/integrations/wp/helpers/wp-helpers-new.php:986
 #: src/integrations/wp/helpers/wp-helpers.php:123
 #: src/integrations/wp/helpers/wp-helpers.php:151
 #: src/integrations/wp/helpers/wp-helpers.php:560
@@ -50223,12 +50245,12 @@ msgstr ""
 #. translators: 1: Post ID
 #. translators: %1$s The ID of the post.
 #: src/integrations/wp/helpers/wp-helpers-new.php:176
-#: src/integrations/wp/helpers/wp-helpers-new.php:326
-#: src/integrations/wp/helpers/wp-helpers-new.php:1206
-#: src/integrations/wp/helpers/wp-helpers-new.php:1281
-#: src/integrations/wp/helpers/wp-helpers-new.php:1865
-#: src/integrations/wp/helpers/wp-helpers-new.php:1928
-#: src/integrations/wp/helpers/wp-helpers-new.php:2072
+#: src/integrations/wp/helpers/wp-helpers-new.php:323
+#: src/integrations/wp/helpers/wp-helpers-new.php:1160
+#: src/integrations/wp/helpers/wp-helpers-new.php:1235
+#: src/integrations/wp/helpers/wp-helpers-new.php:1830
+#: src/integrations/wp/helpers/wp-helpers-new.php:1893
+#: src/integrations/wp/helpers/wp-helpers-new.php:2037
 #: src/integrations/wp/helpers/wp-helpers.php:131
 #: src/integrations/wp/helpers/wp-helpers.php:507
 #: src/integrations/wp/helpers/wp-helpers.php:566
@@ -50238,23 +50260,22 @@ msgid "ID: %1$s (no title)"
 msgstr ""
 
 #: src/integrations/wp/helpers/wp-helpers-new.php:304
-#: src/integrations/wp/helpers/wp-helpers-new.php:405
-#: src/integrations/wp/helpers/wp-helpers-new.php:1021
-#: src/integrations/wp/helpers/wp-helpers-new.php:1087
+#: src/integrations/wp/helpers/wp-helpers.php:548
+msgctxt "WordPress post parent"
+msgid "No parent"
+msgstr ""
+
+#: src/integrations/wp/helpers/wp-helpers-new.php:359
+#: src/integrations/wp/helpers/wp-helpers-new.php:975
+#: src/integrations/wp/helpers/wp-helpers-new.php:1041
 #: src/integrations/wp/helpers/wp-helpers.php:183
 #: src/integrations/wp/helpers/wp-helpers.php:543
 msgctxt "WordPress"
 msgid "Any post"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:309
-#: src/integrations/wp/helpers/wp-helpers.php:548
-msgctxt "WordPress post parent"
-msgid "No parent"
-msgstr ""
-
-#: src/integrations/wp/helpers/wp-helpers-new.php:417
-#: src/integrations/wp/helpers/wp-helpers-new.php:597
+#: src/integrations/wp/helpers/wp-helpers-new.php:371
+#: src/integrations/wp/helpers/wp-helpers-new.php:551
 #: src/integrations/wp/helpers/wp-helpers.php:195
 #: src/integrations/wp/helpers/wp-helpers.php:706
 #: src/integrations/wp/tokens/wp-shared-tokens.php:48
@@ -50262,29 +50283,29 @@ msgctxt "WordPress"
 msgid "Post slug"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:418
+#: src/integrations/wp/helpers/wp-helpers-new.php:372
 #: src/integrations/wp/helpers/wp-helpers.php:196
 #: src/integrations/wp/tokens/wp-shared-tokens.php:53
 msgctxt "WordPress"
 msgid "Post content (raw)"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:419
+#: src/integrations/wp/helpers/wp-helpers-new.php:373
 #: src/integrations/wp/helpers/wp-helpers.php:197
 #: src/integrations/wp/tokens/wp-shared-tokens.php:58
 msgctxt "WordPress"
 msgid "Post content (formatted)"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:420
+#: src/integrations/wp/helpers/wp-helpers-new.php:374
 #: src/integrations/wp/helpers/wp-helpers.php:198
 #: src/integrations/wp/tokens/wp-shared-tokens.php:63
 msgctxt "WordPress"
 msgid "Post excerpt"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:422
-#: src/integrations/wp/helpers/wp-helpers-new.php:598
+#: src/integrations/wp/helpers/wp-helpers-new.php:376
+#: src/integrations/wp/helpers/wp-helpers-new.php:552
 #: src/integrations/wp/helpers/wp-helpers.php:200
 #: src/integrations/wp/helpers/wp-helpers.php:707
 #: src/integrations/wp/tokens/wp-shared-tokens.php:358
@@ -50292,8 +50313,8 @@ msgctxt "WordPress"
 msgid "Post featured image ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:423
-#: src/integrations/wp/helpers/wp-helpers-new.php:599
+#: src/integrations/wp/helpers/wp-helpers-new.php:377
+#: src/integrations/wp/helpers/wp-helpers-new.php:553
 #: src/integrations/wp/helpers/wp-helpers.php:201
 #: src/integrations/wp/helpers/wp-helpers.php:708
 #: src/integrations/wp/tokens/wp-shared-tokens.php:363
@@ -50301,189 +50322,189 @@ msgctxt "WordPress"
 msgid "Post featured image URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:424
+#: src/integrations/wp/helpers/wp-helpers-new.php:378
 #: src/integrations/wp/helpers/wp-helpers.php:202
 #: src/integrations/wp/tokens/wp-shared-tokens.php:151
 msgctxt "WordPress"
 msgid "Post author first name"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:425
+#: src/integrations/wp/helpers/wp-helpers-new.php:379
 #: src/integrations/wp/helpers/wp-helpers.php:203
 #: src/integrations/wp/tokens/wp-shared-tokens.php:156
 msgctxt "WordPress"
 msgid "Post author last name"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:426
+#: src/integrations/wp/helpers/wp-helpers-new.php:380
 #: src/integrations/wp/helpers/wp-helpers.php:204
 #: src/integrations/wp/tokens/wp-shared-tokens.php:161
 msgctxt "WordPress"
 msgid "Post author display name"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:427
+#: src/integrations/wp/helpers/wp-helpers-new.php:381
 #: src/integrations/wp/helpers/wp-helpers.php:205
 #: src/integrations/wp/tokens/wp-shared-tokens.php:166
 msgctxt "WordPress"
 msgid "Post author email"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:428
+#: src/integrations/wp/helpers/wp-helpers-new.php:382
 #: src/integrations/wp/helpers/wp-helpers.php:206
 #: src/integrations/wp/tokens/wp-shared-tokens.php:171
 msgctxt "WordPress"
 msgid "Post author URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:459
-#: src/integrations/wp/helpers/wp-helpers-new.php:1051
+#: src/integrations/wp/helpers/wp-helpers-new.php:413
+#: src/integrations/wp/helpers/wp-helpers-new.php:1005
 #: src/integrations/wp/helpers/wp-helpers.php:235
 msgctxt "WordPress"
 msgid "Any page"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:468
+#: src/integrations/wp/helpers/wp-helpers-new.php:422
 #: src/integrations/wp/helpers/wp-helpers.php:244
 msgctxt "WordPress"
 msgid "Page title"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:469
+#: src/integrations/wp/helpers/wp-helpers-new.php:423
 #: src/integrations/wp/helpers/wp-helpers.php:245
 msgctxt "WordPress"
 msgid "Page ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:470
+#: src/integrations/wp/helpers/wp-helpers-new.php:424
 #: src/integrations/wp/helpers/wp-helpers.php:246
 msgctxt "WordPress"
 msgid "Page URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:471
+#: src/integrations/wp/helpers/wp-helpers-new.php:425
 #: src/integrations/wp/helpers/wp-helpers.php:247
 msgctxt "WordPress"
 msgid "Page slug"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:472
+#: src/integrations/wp/helpers/wp-helpers-new.php:426
 #: src/integrations/wp/helpers/wp-helpers.php:248
 msgctxt "WordPress"
 msgid "Page excerpt"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:473
+#: src/integrations/wp/helpers/wp-helpers-new.php:427
 #: src/integrations/wp/helpers/wp-helpers.php:249
 msgctxt "WordPress"
 msgid "Page content (raw)"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:474
+#: src/integrations/wp/helpers/wp-helpers-new.php:428
 #: src/integrations/wp/helpers/wp-helpers.php:250
 msgctxt "WordPress"
 msgid "Page content (formatted)"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:475
+#: src/integrations/wp/helpers/wp-helpers-new.php:429
 #: src/integrations/wp/helpers/wp-helpers.php:251
 msgctxt "WordPress"
 msgid "Page featured image ID"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:476
+#: src/integrations/wp/helpers/wp-helpers-new.php:430
 #: src/integrations/wp/helpers/wp-helpers.php:252
 msgctxt "WordPress"
 msgid "Page featured image URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:477
+#: src/integrations/wp/helpers/wp-helpers-new.php:431
 #: src/integrations/wp/helpers/wp-helpers.php:253
 msgctxt "WordPress"
 msgid "Page author first name"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:478
+#: src/integrations/wp/helpers/wp-helpers-new.php:432
 #: src/integrations/wp/helpers/wp-helpers.php:254
 msgctxt "WordPress"
 msgid "Page author last name"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:479
+#: src/integrations/wp/helpers/wp-helpers-new.php:433
 #: src/integrations/wp/helpers/wp-helpers.php:255
 msgctxt "WordPress"
 msgid "Page author display name"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:480
+#: src/integrations/wp/helpers/wp-helpers-new.php:434
 #: src/integrations/wp/helpers/wp-helpers.php:256
 msgctxt "WordPress"
 msgid "Page author email"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:481
+#: src/integrations/wp/helpers/wp-helpers-new.php:435
 #: src/integrations/wp/helpers/wp-helpers.php:257
 msgctxt "WordPress"
 msgid "Page author URL"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:507
-#: src/integrations/wp/helpers/wp-helpers-new.php:1307
+#: src/integrations/wp/helpers/wp-helpers-new.php:461
+#: src/integrations/wp/helpers/wp-helpers-new.php:1261
 #: src/integrations/wp/helpers/wp-helpers.php:279
 msgctxt "WordPress"
 msgid "Any role"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:610
-#: src/integrations/wp/helpers/wp-helpers-new.php:913
-#: src/integrations/wp/helpers/wp-helpers-new.php:976
+#: src/integrations/wp/helpers/wp-helpers-new.php:564
+#: src/integrations/wp/helpers/wp-helpers-new.php:867
+#: src/integrations/wp/helpers/wp-helpers-new.php:930
 #: src/integrations/wp/helpers/wp-helpers.php:722
 msgctxt "WordPress"
 msgid "Any post type"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:723
+#: src/integrations/wp/helpers/wp-helpers-new.php:677
 #: src/integrations/wp/helpers/wp-helpers.php:848
 msgctxt "WordPress"
 msgid "Also include child categories"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:1127
-#: src/integrations/wp/helpers/wp-helpers-new.php:1139
-#: src/integrations/wp/helpers/wp-helpers-new.php:1969
+#: src/integrations/wp/helpers/wp-helpers-new.php:1081
+#: src/integrations/wp/helpers/wp-helpers-new.php:1093
+#: src/integrations/wp/helpers/wp-helpers-new.php:1934
 #: src/integrations/wp/helpers/wp-helpers.php:336
 msgctxt "WordPress"
 msgid "Any taxonomy"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:1178
-#: src/integrations/wp/helpers/wp-helpers-new.php:1190
-#: src/integrations/wp/helpers/wp-helpers-new.php:1253
-#: src/integrations/wp/helpers/wp-helpers-new.php:1265
-#: src/integrations/wp/helpers/wp-helpers-new.php:1833
+#: src/integrations/wp/helpers/wp-helpers-new.php:1132
+#: src/integrations/wp/helpers/wp-helpers-new.php:1144
+#: src/integrations/wp/helpers/wp-helpers-new.php:1207
+#: src/integrations/wp/helpers/wp-helpers-new.php:1219
+#: src/integrations/wp/helpers/wp-helpers-new.php:1798
 msgctxt "WordPress"
 msgid "Any term"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:1828
+#: src/integrations/wp/helpers/wp-helpers-new.php:1793
 msgctxt "WordPress"
 msgid "All terms"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:1909
-#: src/integrations/wp/helpers/wp-helpers-new.php:2064
+#: src/integrations/wp/helpers/wp-helpers-new.php:1874
+#: src/integrations/wp/helpers/wp-helpers-new.php:2029
 msgctxt "WordPress"
 msgid "Any Post"
 msgstr ""
 
 #. translators: 1: Post type label (plural).
-#: src/integrations/wp/helpers/wp-helpers-new.php:1919
+#: src/integrations/wp/helpers/wp-helpers-new.php:1884
 #, php-format
 msgctxt "WordPress post type"
 msgid "All %s"
 msgstr ""
 
-#: src/integrations/wp/helpers/wp-helpers-new.php:2017
+#: src/integrations/wp/helpers/wp-helpers-new.php:1982
 msgctxt "WordPress"
 msgid "Any field"
 msgstr ""
@@ -53010,7 +53031,7 @@ msgid "Draft"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/CanvasCommandBarStrings.php:25
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:28
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:27
 #: src/page-builder/Infrastructure/i18/strings/ErrorToastStrings.php:15
 msgctxt "Page Builder"
 msgid "Dismiss"
@@ -53151,7 +53172,7 @@ msgid "Quick links"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/CanvasCommandBarStrings.php:52
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:51
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:50
 #: src/page-builder/Infrastructure/i18/strings/GlobalPartModalPresentationStrings.php:22
 #: src/page-builder/Infrastructure/i18/strings/InlineEditingPresentationStrings.php:15
 #: src/page-builder/Infrastructure/i18/strings/InlineEditingToolbarStrings.php:52
@@ -53166,7 +53187,7 @@ msgid "Saved"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/CanvasCommandBarStrings.php:54
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:60
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:59
 #: src/page-builder/Infrastructure/i18/strings/GlobalPartModalPresentationStrings.php:23
 #: src/page-builder/Infrastructure/i18/strings/SaveIndicatorStrings.php:17
 msgctxt "Page Builder"
@@ -53458,7 +53479,7 @@ msgstr ""
 #: src/page-builder/Infrastructure/i18/strings/CanvasSectionActionControlStrings.php:26
 #: src/page-builder/Infrastructure/i18/strings/DeleteConfirmationModalPresentationStrings.php:21
 #: src/page-builder/Infrastructure/i18/strings/DesignTargetDeleteDialogStrings.php:16
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:27
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:26
 msgctxt "Page Builder"
 msgid "Delete"
 msgstr ""
@@ -53578,7 +53599,7 @@ msgstr ""
 #: src/page-builder/Infrastructure/i18/strings/CanvasVisibleControlStrings.php:138
 #: src/page-builder/Infrastructure/i18/strings/CanvasVisibleControlStrings.php:144
 #: src/page-builder/Infrastructure/i18/strings/CanvasVisibleControlStrings.php:145
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:52
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:51
 #: src/page-builder/Presentation/Pages/page-runtime-modal.php:19
 #: src/page-builder/Presentation/Pages/section-code-modal.php:17
 msgctxt "Page Builder"
@@ -53591,13 +53612,13 @@ msgid "Save this page as a draft."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/CanvasVisibleControlStrings.php:141
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:61
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:60
 msgctxt "Page Builder"
 msgid "Saving draft…"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/CanvasVisibleControlStrings.php:142
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:26
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:25
 #: src/page-builder/Presentation/Pages/page-runtime-script.php:88
 #: src/page-builder/Presentation/Pages/section-code-script.php:155
 msgctxt "Page Builder"
@@ -53605,7 +53626,7 @@ msgid "Draft saved"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/CanvasVisibleControlStrings.php:143
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:49
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:48
 msgctxt "Page Builder"
 msgid "Retry save"
 msgstr ""
@@ -53976,19 +53997,19 @@ msgid "%1$s (#%2$d)"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/DeleteConfirmationModalPresentationStrings.php:22
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:33
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:32
 msgctxt "Page Builder"
 msgid "Deleting…"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/DeleteConfirmationModalPresentationStrings.php:23
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:29
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:28
 msgctxt "Page Builder"
 msgid "Deleting section…"
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/DeleteConfirmationModalPresentationStrings.php:24
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:55
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:54
 msgctxt "Page Builder"
 msgid "Section deleted"
 msgstr ""
@@ -54005,209 +54026,204 @@ msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:16
 msgctxt "Page Builder"
-msgid "Reload editor"
+msgid "Uncanny Agent is editing this page."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:17
 msgctxt "Page Builder"
-msgid "Uncanny Agent is editing this page."
+msgid "This attribute cannot be saved yet. Select editable Page Builder content and try again."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:18
 msgctxt "Page Builder"
-msgid "This attribute cannot be saved yet. Select editable Page Builder content and try again."
+msgid "We couldn't preview that change. Reselect the element and try again."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:19
 msgctxt "Page Builder"
-msgid "We couldn't preview that change. Reselect the element and try again."
+msgid "We couldn't save that change. Your previous value is still in place; try again."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:20
 msgctxt "Page Builder"
-msgid "We couldn't save that change. Your previous value is still in place; try again."
+msgid "This is dynamic data and cannot be edited directly. Edit the dynamic source instead."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:21
 msgctxt "Page Builder"
-msgid "This is dynamic data and cannot be edited directly. Edit the dynamic source instead."
+msgid "This element is dynamic data and cannot be edited directly. Style the dynamic wrapper or edit the dynamic source instead."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:22
 msgctxt "Page Builder"
-msgid "This element is dynamic data and cannot be edited directly. Style the dynamic wrapper or edit the dynamic source instead."
+msgid "Uncanny Agent didn't open. Try again, or refresh the editor if it keeps happening."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:23
 msgctxt "Page Builder"
-msgid "Uncanny Agent didn't open. Try again, or refresh the editor if it keeps happening."
+msgid "We couldn't send that element to Uncanny Agent. Try again, or refresh the editor if it keeps happening."
 msgstr ""
 
 #: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:24
 msgctxt "Page Builder"
-msgid "We couldn't send that element to Uncanny Agent. Try again, or refresh the editor if it keeps happening."
-msgstr ""
-
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:25
-msgctxt "Page Builder"
 msgid "We couldn't load your saved sections. Close the library and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:30
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:29
 msgctxt "Page Builder"
 msgid "Design preview could not be applied. Reselect the element and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:31
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:30
 msgctxt "Page Builder"
 msgid "We couldn't open the design tools. Refresh the editor and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:32
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:31
 msgctxt "Page Builder"
 msgid "That design view is no longer available. Reselect the element and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:34
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:33
 msgctxt "Page Builder"
 msgid "This element cannot be deleted yet. Select a generated Page Builder element and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:35
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:34
 msgctxt "Page Builder"
 msgid "This element could not be matched to a section. Refresh the Manual editor and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:36
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:35
 msgctxt "Page Builder"
 msgid "We couldn't add that section. Close the library and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:37
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:36
 msgctxt "Page Builder"
 msgid "We couldn't import that section. Check the file and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:38
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:37
 msgctxt "Page Builder"
 msgid "This image cannot be saved yet. Select an editable Page Builder image and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:39
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:38
 msgctxt "Page Builder"
 msgid "We couldn't preview that image. Choose it again and retry."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:40
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:39
 msgctxt "Page Builder"
 msgid "We couldn't save that image change. Your previous image is still in place; try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:41
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:40
 msgctxt "Page Builder"
 msgid "This layer could not be inspected. Select the element again and retry."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:42
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:41
 msgctxt "Page Builder"
 msgid "We couldn't refresh the Manual editor. Your saved draft is unchanged; refresh the page and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:43
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:42
 msgctxt "Page Builder"
 msgid "The media library didn't open. Refresh the editor and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:44
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:43
 msgctxt "Page Builder"
 msgid "Choose background image"
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:45
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:44
 #: src/page-builder/Infrastructure/i18/strings/InlineEditingToolbarStrings.php:51
 msgctxt "Page Builder"
 msgid "Replace image"
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:46
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:45
 msgctxt "Page Builder"
 msgid "No"
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:47
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:46
 msgctxt "Page Builder"
 msgid "There is a draft newer than the currently published page. Do you want to load it?"
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:48
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:47
 msgctxt "Page Builder"
 msgid "Publish after the pending Manual changes are saved to the working draft."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:50
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:49
 msgctxt "Page Builder"
 msgid "We couldn't save this reusable. Your section is unchanged; try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:53
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:52
 #: src/page-builder/Infrastructure/i18/strings/GlobalPartModalPresentationStrings.php:25
 msgctxt "Page Builder"
 msgid "Saved!"
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:54
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:53
 msgctxt "Page Builder"
 msgid "This is dynamic data rendered by a shortcode, so it cannot be edited directly. Edit the shortcode instead."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:56
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:55
 msgctxt "Page Builder"
 msgid "We couldn't delete that section. It is still on the page; try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:57
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:56
 msgctxt "Page Builder"
 msgid "Use the section delete action to delete a section."
 msgstr ""
 
 #. translators: %s: The 1-based section number.
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:59
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:58
 #, php-format
 msgctxt "Page Builder"
 msgid "Section %s"
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:62
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:61
 msgctxt "Page Builder"
 msgid "Uncanny Agent finished. Review the current draft, then update the live page when ready."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:63
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:62
 msgctxt "Page Builder"
 msgid "This text cannot be saved yet. Select editable Page Builder text and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:64
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:63
 msgctxt "Page Builder"
 msgid "We couldn't preview that text change. Reselect the text and try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:65
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:64
 msgctxt "Page Builder"
 msgid "We couldn't save that text change. Your previous text is still in place; try again."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:66
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:65
 msgctxt "Page Builder"
 msgid "This type of content can't be edited here yet. Select another element or ask Uncanny Agent to change it."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:67
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:66
 msgctxt "Page Builder"
 msgid "Something went wrong. Try again, or refresh the editor if it keeps happening."
 msgstr ""
 
-#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:68
+#: src/page-builder/Infrastructure/i18/strings/EditorClientAppStrings.php:67
 msgctxt "Page Builder"
 msgid "Yes"
 msgstr ""

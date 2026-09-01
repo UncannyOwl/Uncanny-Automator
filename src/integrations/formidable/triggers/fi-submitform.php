@@ -20,11 +20,17 @@ class FI_SUBMITFORM {
 	private $trigger_meta;
 
 	/**
+	 * @var Formidable_Helpers
+	 */
+	private $fi_helper;
+
+	/**
 	 * Set up Automator trigger constructor.
 	 */
 	public function __construct() {
 		$this->trigger_code = 'FISUBMITFORM';
 		$this->trigger_meta = 'FIFORM';
+		$this->fi_helper    = new Formidable_Helpers();
 		$this->define_trigger();
 	}
 
@@ -38,9 +44,9 @@ class FI_SUBMITFORM {
 			'integration'         => self::$integration,
 			'code'                => $this->trigger_code,
 			/* translators: Logged-in trigger - Formidable */
-			'sentence'            => sprintf( esc_attr__( 'A user submits {{a form:%1$s}}', 'uncanny-automator' ), $this->trigger_meta ),
+			'sentence'            => sprintf( esc_attr_x( 'A user submits {{a form:%1$s}}', 'Formidable', 'uncanny-automator' ), $this->trigger_meta ),
 			/* translators: Logged-in trigger - Formidable */
-			'select_option_name'  => esc_attr__( 'A user submits {{a form}}', 'uncanny-automator' ),
+			'select_option_name'  => esc_attr_x( 'A user submits {{a form}}', 'Formidable', 'uncanny-automator' ),
 			'action'              => 'frm_after_create_entry',
 			'priority'            => 10,
 			'accepted_args'       => 2,
@@ -55,11 +61,10 @@ class FI_SUBMITFORM {
 	 * @return array[]
 	 */
 	public function load_options() {
-		$helper = new Formidable_Helpers();
 		return Automator()->utilities->keep_order_of_options(
 			array(
 				'options' => array(
-					$helper->all_formidable_forms( null, $this->trigger_meta ),
+					$this->fi_helper->all_formidable_forms( null, $this->trigger_meta ),
 				),
 			)
 		);
@@ -74,6 +79,11 @@ class FI_SUBMITFORM {
 	public function fi_submit_form( $entry_id, $form_id ) {
 		$user_id = get_current_user_id();
 		if ( empty( $user_id ) ) {
+			return;
+		}
+
+		// Drafts and Form Abandonment "In progress" entries fire this hook too.
+		if ( ! $this->fi_helper->is_completed_entry( $entry_id ) ) {
 			return;
 		}
 
@@ -99,8 +109,7 @@ class FI_SUBMITFORM {
 						);
 
 						$fi_args['meta_key'] = $this->trigger_meta;
-						$helper = new Formidable_Helpers();
-						$helper->extract_save_fi_fields( $entry_id, $form_id, $fi_args );
+						$this->fi_helper->extract_save_fi_fields( $entry_id, $form_id, $fi_args );
 
 						$fi_args['meta_key']   = 'FIENTRYID';
 						$fi_args['meta_value'] = $entry_id;
@@ -114,7 +123,7 @@ class FI_SUBMITFORM {
 						$fi_args['meta_value'] = maybe_serialize( $entries->ip );
 						Automator()->insert_trigger_meta( $fi_args );
 
-						$date_format           = __( 'M j, Y @ G:i', 'formidable' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+						$date_format           = __( 'M j, Y @ G:i', 'formidable' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, Uncanny_Automator.Strings -- reuses Formidable's own translation.
 						$fi_args['meta_key']   = 'FIENTRYDATE';
 						$fi_args['meta_value'] = maybe_serialize( \FrmAppHelper::get_localized_date( $date_format, $entries->created_at ) );
 						Automator()->insert_trigger_meta( $fi_args );
@@ -128,7 +137,5 @@ class FI_SUBMITFORM {
 				}
 			}
 		}
-
 	}
-
 }

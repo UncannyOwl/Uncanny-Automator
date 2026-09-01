@@ -1972,7 +1972,6 @@ class Admin_Menu {
 				'sslverify' => true,
 			)
 		);
-		error_log( var_export( wp_remote_retrieve_body( $response ), true ) );
 
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
 

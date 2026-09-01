@@ -310,7 +310,7 @@ class Uoa_Tokens {
 					$trigger_id = $trigger['ID'];
 					$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$meta_field%%", $trigger_id ) );
 					if ( ! empty( $meta_value ) ) {
-						$value = maybe_unserialize( $meta_value );
+						$value = automator_safe_unserialize( $meta_value );
 
 						if ( 'UOAERRORS_recipe_log_url' === $meta_field || 'UOARECIPES_recipe_log_url' === $meta_field ) {
 							$value = admin_url( 'edit.php' ) . '?post_type=uo-recipe&page=uncanny-automator-admin-logs&' . $value;
@@ -537,7 +537,7 @@ class Uoa_Tokens {
 			)
 		);
 
-		return ( null === $value ) ? '' : maybe_unserialize( $value );
+		return ( null === $value ) ? '' : automator_safe_unserialize( $value );
 	}
 
 	/**

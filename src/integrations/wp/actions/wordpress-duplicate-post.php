@@ -138,7 +138,7 @@ class WP_DUPLICATE_POST extends \Uncanny_Automator\Recipe\Action {
 		$post_meta = get_post_meta( $post_id );
 		foreach ( $post_meta as $meta_key => $meta_values ) {
 			foreach ( $meta_values as $meta_value ) {
-				add_post_meta( $new_post_id, $meta_key, maybe_unserialize( $meta_value ) );
+				add_post_meta( $new_post_id, $meta_key, automator_safe_unserialize( $meta_value ) );
 			}
 		}
 
