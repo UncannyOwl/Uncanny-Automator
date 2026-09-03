@@ -1021,6 +1021,8 @@ return array(
     'Uncanny_Automator\\App\\Feature_State\\Infrastructure\\Mcp_Allocation_Facts_Reader' => $baseDir . '/src/app/Feature_State/Infrastructure/Mcp_Allocation_Facts_Reader.php',
     'Uncanny_Automator\\App\\Feature_State\\Infrastructure\\Mcp_Allocation_Facts_Refresh' => $baseDir . '/src/app/Feature_State/Infrastructure/Mcp_Allocation_Facts_Refresh.php',
     'Uncanny_Automator\\App\\Feature_State\\Infrastructure\\Mcp_Allocation_Facts_Response' => $baseDir . '/src/app/Feature_State/Infrastructure/Mcp_Allocation_Facts_Response.php',
+    'Uncanny_Automator\\App\\Feature_State\\Infrastructure\\WP_Last_Known_Feature_State_Store' => $baseDir . '/src/app/Feature_State/Infrastructure/WP_Last_Known_Feature_State_Store.php',
+    'Uncanny_Automator\\App\\Feature_State\\Ports\\Last_Known_Feature_State_Store' => $baseDir . '/src/app/Feature_State/Ports/Last_Known_Feature_State_Store.php',
     'Uncanny_Automator\\App\\Feature_State\\Ports\\Policy_State_Port' => $baseDir . '/src/app/Feature_State/Ports/Policy_State_Port.php',
     'Uncanny_Automator\\App\\Infrastructure\\Api_Client\\Api_Client' => $baseDir . '/src/app/Infrastructure/Api_Client/Api_Client.php',
     'Uncanny_Automator\\App\\Infrastructure\\Api_Client\\Api_Client_Interface' => $baseDir . '/src/app/Infrastructure/Api_Client/Api_Client_Interface.php',

@@ -4,7 +4,7 @@ Tags: ai, automation, ai agent, ai assistant, workflow automation
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.6.1
+Stable tag: 7.6.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -362,7 +362,6 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [WP Activity Log](https://automatorplugin.com/integration/wp-activity-log/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Admin](https://automatorplugin.com/integration/wp-admin/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
-[WP Bitly](https://automatorplugin.com/integration/wp-bitly/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Fastest Cache](https://automatorplugin.com/integration/wp-fastest-cache/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -467,6 +466,14 @@ Yes — Uncanny Automator is free to install and use. It includes Uncanny Recipe
 
 == Changelog ==
 
+= 7.6.1.1 [2026-09-03] =
+
+**Fixed:**
+
+* LearnDash - Restored "Any" option handling across multiple triggers and dropdowns. #8514
+* Memberium for Keap and SureCart - Fixed triggers and actions failing to run on frontend requests. #8523
+* Uncanny Agent and Page Builder - Improved feature availability during temporary connection issues. #8501
+
 = 7.6.1 [2026-09-01] =
 
 **Updated:**
@@ -477,7 +484,7 @@ Yes — Uncanny Automator is free to install and use. It includes Uncanny Recipe
 
 * Formidable - Restored the shared helpers instance to keep things running smoothly. #8518
 * Formidable Forms - Submission triggers now ignore incomplete and abandoned entries. #8509
-* Hardened PeepSo and related token processing against unsafe serialized data - Added safer handling of serialized data during token processing. #8505
+* Hardened PeepSo and related token processing against unsafe serialized data. #8505
 * LearnDash - A user has completed X% of a course - Fixed "0f" to correctly display "% of". #8516
 * Page Builder - Removed the unnecessary "Reload editor" option from the Uncanny Agent notice. #8506
 * Uncanny Agent - Strengthened security for legacy admin-AJAX requests. #8499

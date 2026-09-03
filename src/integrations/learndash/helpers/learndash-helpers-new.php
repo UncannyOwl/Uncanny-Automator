@@ -544,6 +544,29 @@ class Ld_Helpers extends Abstract_Helpers {
 	}
 
 	/**
+	 * Resolve a parent select field to an int, preserving -1 ("Any").
+	 *
+	 * `automator_custom_value` routes to the paired `{$key}_custom` value.
+	 * absint() must not touch the selected value directly — it flattens the
+	 * "Any" sentinel (-1) into post ID 1.
+	 *
+	 * @param Remote_Data_Request $request The remote-data request.
+	 * @param string              $key     Option code to read.
+	 *
+	 * @return int Post ID, -1 for "Any", or 0 when unset.
+	 */
+	private function select_field_int( $request, $key ) {
+
+		$raw = $request->get_field_value( $key );
+
+		if ( 'automator_custom_value' === $raw ) {
+			return absint( $request->get_field_value( $key . '_custom' ) );
+		}
+
+		return (int) $raw;
+	}
+
+	/**
 	 * Build the "lessons in a course" option list.
 	 *
 	 * @param Remote_Data_Request $request     The remote-data request.
@@ -553,11 +576,7 @@ class Ld_Helpers extends Abstract_Helpers {
 	 */
 	private function build_lessons_from_course( $request, $include_any ) {
 
-		$values       = $request->get_values();
-		$selected     = $request->get_field_value( 'LDCOURSE' );
-		$ld_course_id = ( 'automator_custom_value' === $selected )
-			? absint( $values['LDCOURSE_custom'] ?? 0 )
-			: absint( $selected );
+		$ld_course_id = $this->select_field_int( $request, 'LDCOURSE' );
 
 		$options = array();
 
@@ -592,12 +611,8 @@ class Ld_Helpers extends Abstract_Helpers {
 	 */
 	private function build_topics_from_lesson( $request, $include_any ) {
 
-		$values    = $request->get_values();
-		$selected  = $request->get_field_value( 'LDLESSON' );
-		$lesson_id = ( 'automator_custom_value' === $selected )
-			? absint( $values['LDLESSON_custom'] ?? 0 )
-			: absint( $selected );
-		$course_id = absint( $values['LDCOURSE'] ?? 0 );
+		$lesson_id = $this->select_field_int( $request, 'LDLESSON' );
+		$course_id = $this->select_field_int( $request, 'LDCOURSE' );
 
 		// "Any course" or "Any lesson" picked — no concrete topics to list.
 		if ( -1 === $course_id || -1 === $lesson_id ) {
@@ -932,11 +947,7 @@ class Ld_Helpers extends Abstract_Helpers {
 	 */
 	private function build_lessontopics_from_course( $request, $include_any = true ) {
 
-		$values    = $request->get_values();
-		$selected  = $request->get_field_value( 'LDCOURSE' );
-		$course_id = ( 'automator_custom_value' === $selected )
-			? absint( $values['LDCOURSE_custom'] ?? 0 )
-			: absint( $selected );
+		$course_id = $this->select_field_int( $request, 'LDCOURSE' );
 
 		$options = array();
 
@@ -1021,17 +1032,9 @@ class Ld_Helpers extends Abstract_Helpers {
 	 */
 	private function build_assignments_from_lessontopic( $request ) {
 
-		$values   = $request->get_values();
-		$selected = $request->get_field_value( 'LDSTEP' );
-
-		$lesson_id = ( 'automator_custom_value' === $selected )
-			? absint( $values['LDSTEP_custom'] ?? 0 )
-			: absint( $selected );
-
-		$course_raw = $values['LDCOURSE'] ?? '';
-		$course_id  = ( 'automator_custom_value' === $course_raw )
-			? absint( $values['LDCOURSE_custom'] ?? 0 )
-			: absint( $course_raw );
+		// -1 ("Any") falls through the > 0 guards below — unscoped query.
+		$lesson_id = $this->select_field_int( $request, 'LDSTEP' );
+		$course_id = $this->select_field_int( $request, 'LDCOURSE' );
 
 		$options = array(
 			array(
@@ -1179,17 +1182,8 @@ class Ld_Helpers extends Abstract_Helpers {
 	 */
 	private function build_quizzes_from_course_lessontopic( $request, $include_any ) {
 
-		$values     = $request->get_values();
-		$step_raw   = $values['LDSTEP'] ?? '';
-		$course_raw = $values['LDCOURSE'] ?? '';
-
-		$step_id = ( 'automator_custom_value' === $step_raw )
-			? absint( $values['LDSTEP_custom'] ?? 0 )
-			: absint( $step_raw );
-
-		$course_id = ( 'automator_custom_value' === $course_raw )
-			? absint( $values['LDCOURSE_custom'] ?? 0 )
-			: absint( $course_raw );
+		$step_id   = $this->select_field_int( $request, 'LDSTEP' );
+		$course_id = $this->select_field_int( $request, 'LDCOURSE' );
 
 		$options = array();
 		if ( $include_any ) {
@@ -1199,8 +1193,8 @@ class Ld_Helpers extends Abstract_Helpers {
 			);
 		}
 
-		// Nothing chosen yet — list every published quiz.
-		if ( 0 === $course_id && 0 === $step_id ) {
+		// Nothing chosen yet, or "Any" all the way down — list every published quiz.
+		if ( $course_id <= 0 && $step_id <= 0 ) {
 			foreach ( $this->build_post_type_options( 'sfwd-quiz', false ) as $option ) {
 				$options[] = $option;
 			}
@@ -1210,7 +1204,7 @@ class Ld_Helpers extends Abstract_Helpers {
 		$quizzes = array();
 
 		if ( $step_id > 0 ) {
-			$quizzes = learndash_get_lesson_quiz_list( $step_id, null, $course_id );
+			$quizzes = learndash_get_lesson_quiz_list( $step_id, null, max( 0, $course_id ) );
 		} elseif ( $course_id > 0 ) {
 			$quizzes  = learndash_get_course_quiz_list( $course_id );
 			$step_ids = learndash_get_course_steps( $course_id );
@@ -1243,25 +1237,14 @@ class Ld_Helpers extends Abstract_Helpers {
 	 */
 	private function build_essay_questions_from_course_lessontopic_quiz( $request ) {
 
-		$values     = $request->get_values();
-		$course_raw = $values['LDCOURSE'] ?? '';
-		$step_raw   = $values['LDSTEP'] ?? '';
-		$quiz_raw   = $values['LDQUIZ'] ?? '';
-
-		$course_id = ( 'automator_custom_value' === $course_raw )
-			? absint( $values['LDCOURSE_custom'] ?? 0 )
-			: absint( $course_raw );
-		$step_id   = ( 'automator_custom_value' === $step_raw )
-			? absint( $values['LDSTEP_custom'] ?? 0 )
-			: absint( $step_raw );
-		$quiz_id   = ( 'automator_custom_value' === $quiz_raw )
-			? absint( $values['LDQUIZ_custom'] ?? 0 )
-			: absint( $quiz_raw );
+		$course_id = $this->select_field_int( $request, 'LDCOURSE' );
+		$step_id   = $this->select_field_int( $request, 'LDSTEP' );
+		$quiz_id   = $this->select_field_int( $request, 'LDQUIZ' );
 
 		$any_label = esc_attr_x( 'Any question', 'LearnDash', 'uncanny-automator' );
 
-		// Nothing scoped — return every essay question across the site.
-		if ( 0 === $course_id && 0 === $step_id && 0 === $quiz_id ) {
+		// Nothing scoped, or "Any" everywhere — return every essay question across the site.
+		if ( $course_id <= 0 && $step_id <= 0 && $quiz_id <= 0 ) {
 			return $this->essay_question_options( $any_label );
 		}
 

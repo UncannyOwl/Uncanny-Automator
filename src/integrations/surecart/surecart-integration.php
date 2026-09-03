@@ -13,6 +13,7 @@ class SureCart_Integration extends \Uncanny_Automator\Integration {
 	 * Integration Set-up.
 	 */
 	protected function setup() {
+		$this->helpers = new SureCart_Helpers();
 		$this->set_integration( 'SURECART' );
 		$this->set_name( 'SureCart' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/surecart-icon.svg' );
@@ -24,14 +25,22 @@ class SureCart_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function load() {
-		$helpers = new SureCart_Helpers();
-		// Triggers with dependencies - the Trigger abstract class DOES accept constructor parameters
-		// The dependencies are passed to the parent constructor and used by get_item_helpers()
-		new SURECART_ORDER_CONFIRMED( $helpers );
-		new SURECART_ORDER_SHIPPED( $helpers );
-		new SURECART_PURCHASE_PRODUCT( $helpers );
+		$this->load_shared_hooks();
 
-		// Add webhook events for order shipped and fulfilled
+		new SURECART_ORDER_CONFIRMED( $this->helpers );
+		new SURECART_ORDER_SHIPPED( $this->helpers );
+		new SURECART_PURCHASE_PRODUCT( $this->helpers );
+	}
+
+	/**
+	 * Hooks that must run whenever the integration is needed, in both load modes.
+	 *
+	 * Targeted loading skips load(); binding the webhook-events filter here keeps
+	 * SureCart's endpoint sync including order.shipped and order.fulfilled.
+	 *
+	 * @return void
+	 */
+	protected function load_shared_hooks() {
 		add_filter( 'surecart/webhook_endpoint/set_attribute', array( $this, 'add_surecart_webhook_events' ), 10, 3 );
 	}
 
@@ -59,7 +68,7 @@ class SureCart_Integration extends \Uncanny_Automator\Integration {
 	}
 
 	/**
-	 * Explicitly return true because it doesn't depend on any 3rd-party plugin.
+	 * Check if SureCart is active.
 	 *
 	 * @return bool
 	 */

@@ -82,6 +82,10 @@ class Code_Snippets_Helpers {
 	}
 
 	/**
+	 * Legacy wp_ajax handler for the scope dropdown.
+	 *
+	 * @deprecated Only services Pro's create-snippet action, which now owns this in Code_Snippets_Pro_Helpers.
+	 *
 	 * @return void
 	 */
 	public function get_all_scopes_by_code_types() {
@@ -100,7 +104,11 @@ class Code_Snippets_Helpers {
 	}
 
 	/**
-	 * @param $type
+	 * Scope options for a code type.
+	 *
+	 * @deprecated Only services Pro's create-snippet action, which now owns this in Code_Snippets_Pro_Helpers.
+	 *
+	 * @param string $type Code type.
 	 *
 	 * @return array|array[]
 	 */

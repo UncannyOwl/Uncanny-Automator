@@ -55,7 +55,7 @@ final class Mcp_Allocation_Facts_Refresh {
 	public function register(): void {
 		// WordPress fires admin_menu before admin_init. Warm at priority 1 so Setup
 		// Wizard and Page Builder policy checks at the default priority see the new
-		// observation instead of memoizing one all-hidden request first.
+		// observation instead of memoizing the pre-existing fallback for the request.
 		add_action( 'admin_menu', array( $this, 'refresh_if_needed' ), 1 );
 
 		// Front-end admin-bar surfaces and the launcher REST callback do not pass
@@ -140,9 +140,9 @@ final class Mcp_Allocation_Facts_Refresh {
 			return false;
 		}
 
-		// add_option() gives all PHP workers one atomic lease. If another request
-		// is already warming the cache, this request keeps the fail-closed snapshot
-		// and lets that worker finish instead of adding another remote call.
+		// add_option() gives all PHP workers one atomic lease. If another request is
+		// already warming the cache, this request keeps its pre-established feature
+		// state fallback and lets that worker finish instead of adding another call.
 		if ( ! $this->acquire_lock() ) {
 			return false;
 		}

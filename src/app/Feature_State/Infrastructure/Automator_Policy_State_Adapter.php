@@ -122,7 +122,7 @@ final class Automator_Policy_State_Adapter implements Policy_State_Port {
 	 * empty value as null even when this caller supplied an empty-string default.
 	 * Accepting null here preserves the legitimate Pro "no license entered" row.
 	 * We still accept only null and strings, so collections and objects remain
-	 * malformed evidence and follow the normal fail-closed path.
+	 * malformed evidence and cannot produce a fresh policy state.
 	 *
 	 * @see \Uncanny_Automator\Automator_Option_Formatter::format_value()
 	 *

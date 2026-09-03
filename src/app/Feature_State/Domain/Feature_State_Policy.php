@@ -17,9 +17,18 @@ namespace Uncanny_Automator\App\Feature_State\Domain;
  * inspect allocations, or infer entitlement. Those facts have already been
  * translated into Policy_State by Policy_State_Resolver. That separation keeps
  * the Release 7.5.1.1 table easy to review as a state-to-visibility mapping.
- * The approved table lives in feature-state-policy.md beside this class.
+ * The approved table lives in POLICY.md beside this class.
  */
 final class Feature_State_Policy {
+
+	/**
+	 * Snapshot compatibility revision.
+	 *
+	 * Bump this value whenever evaluate() changes the policy-to-visibility mapping.
+	 * Stored snapshots from another revision are rejected instead of carrying an old
+	 * policy decision across the change.
+	 */
+	public const REVISION = '7.5.1.1';
 
 	/**
 	 * Resolve the Release 7.5.1.1 feature state.

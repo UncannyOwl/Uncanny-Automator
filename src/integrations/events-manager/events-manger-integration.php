@@ -6,12 +6,23 @@ use EM_Event;
 use Uncanny_Automator\Integration;
 
 /**
- * Class Add_Em_Integration
+ * Class Events_Manager_Integration
  *
  * @package Uncanny_Automator
  */
 class Events_Manager_Integration extends Integration {
 
+	/**
+	 * Setup Automator integration.
+	 *
+	 * @return void
+	 */
+	protected function setup() {
+		$this->helpers = new \Uncanny_Automator\Events_Manager_Helpers();
+		$this->set_integration( 'EVENTSMANAGER' );
+		$this->set_name( 'Events Manager' );
+		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/events-manager-icon.svg' );
+	}
 
 	/**
 	 * Load Integration Classes.
@@ -29,15 +40,8 @@ class Events_Manager_Integration extends Integration {
 	}
 
 	/**
+	 * Check if Events Manager is active.
 	 *
-	 */
-	protected function setup() {
-		$this->set_integration( 'EVENTSMANAGER' );
-		$this->set_name( 'Events Manager' );
-		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/events-manager-icon.svg' );
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function plugin_active() {

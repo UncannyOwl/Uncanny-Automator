@@ -1051,6 +1051,8 @@ class ComposerStaticInitd592c9f57d4140b291187fa214a5f6e2
         'Uncanny_Automator\\App\\Feature_State\\Infrastructure\\Mcp_Allocation_Facts_Reader' => __DIR__ . '/../..' . '/src/app/Feature_State/Infrastructure/Mcp_Allocation_Facts_Reader.php',
         'Uncanny_Automator\\App\\Feature_State\\Infrastructure\\Mcp_Allocation_Facts_Refresh' => __DIR__ . '/../..' . '/src/app/Feature_State/Infrastructure/Mcp_Allocation_Facts_Refresh.php',
         'Uncanny_Automator\\App\\Feature_State\\Infrastructure\\Mcp_Allocation_Facts_Response' => __DIR__ . '/../..' . '/src/app/Feature_State/Infrastructure/Mcp_Allocation_Facts_Response.php',
+        'Uncanny_Automator\\App\\Feature_State\\Infrastructure\\WP_Last_Known_Feature_State_Store' => __DIR__ . '/../..' . '/src/app/Feature_State/Infrastructure/WP_Last_Known_Feature_State_Store.php',
+        'Uncanny_Automator\\App\\Feature_State\\Ports\\Last_Known_Feature_State_Store' => __DIR__ . '/../..' . '/src/app/Feature_State/Ports/Last_Known_Feature_State_Store.php',
         'Uncanny_Automator\\App\\Feature_State\\Ports\\Policy_State_Port' => __DIR__ . '/../..' . '/src/app/Feature_State/Ports/Policy_State_Port.php',
         'Uncanny_Automator\\App\\Infrastructure\\Api_Client\\Api_Client' => __DIR__ . '/../..' . '/src/app/Infrastructure/Api_Client/Api_Client.php',
         'Uncanny_Automator\\App\\Infrastructure\\Api_Client\\Api_Client_Interface' => __DIR__ . '/../..' . '/src/app/Infrastructure/Api_Client/Api_Client_Interface.php',

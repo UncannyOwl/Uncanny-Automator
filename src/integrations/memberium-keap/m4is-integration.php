@@ -15,6 +15,7 @@ class M4IS_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	protected function setup() {
+		$this->helpers = new M4IS_HELPERS();
 		$this->set_integration( 'M4IS' );
 		$this->set_name( 'Memberium for Keap' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/memberium-icon.svg' );
@@ -26,12 +27,7 @@ class M4IS_Integration extends \Uncanny_Automator\Integration {
 	 * @return void
 	 */
 	public function load() {
-
-		$helper = new M4IS_HELPERS();
-
-		// Load actions.
-		new M4IS_UPDATE_CONTACT_FIELD( $helper );
-
+		new M4IS_UPDATE_CONTACT_FIELD( $this->helpers );
 	}
 
 	/**

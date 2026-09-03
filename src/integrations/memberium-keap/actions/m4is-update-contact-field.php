@@ -5,6 +5,8 @@ namespace Uncanny_Automator\Integrations\M4IS;
 /**
  * Class M4IS_UPDATE_CONTACT_FIELD
  *
+ * @property M4IS_HELPERS $item_helpers
+ *
  * @package Uncanny_Automator
  */
 class M4IS_UPDATE_CONTACT_FIELD extends \Uncanny_Automator\Recipe\Action {
@@ -17,8 +19,6 @@ class M4IS_UPDATE_CONTACT_FIELD extends \Uncanny_Automator\Recipe\Action {
 	 * @return void
 	 */
 	public function setup_action() {
-
-		$this->helpers = array_shift( $this->dependencies );
 
 		$this->set_integration( 'M4IS' );
 		$this->set_action_code( $this->prefix . '_CODE' );
@@ -67,7 +67,7 @@ class M4IS_UPDATE_CONTACT_FIELD extends \Uncanny_Automator\Recipe\Action {
 					'supports_custom_value' => false,
 					'required'              => true,
 					'read_only'             => false,
-					'options'               => $this->helpers->get_contact_fields(),
+					'options'               => $this->item_helpers->get_contact_fields(),
 				),
 				Automator()->helpers->recipe->field->text_field( 'CONTACT_FIELD_VALUE', _x( 'Contact field value', 'M4IS - update contact field action', 'uncanny-automator' ), true, 'text', '', true ),
 			),
@@ -92,7 +92,7 @@ class M4IS_UPDATE_CONTACT_FIELD extends \Uncanny_Automator\Recipe\Action {
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
 
-		$email          = $this->helpers->get_email_from_parsed( $parsed, $this->prefix . '_EMAIL' );
+		$email          = $this->item_helpers->get_email_from_parsed( $parsed, $this->prefix . '_EMAIL' );
 		$contact_fields = json_decode( Automator()->parse->text( $action_data['meta']['CONTACT_FIELDS'], $recipe_id, $user_id, $args ), true );
 		$fields         = array();
 
@@ -111,7 +111,7 @@ class M4IS_UPDATE_CONTACT_FIELD extends \Uncanny_Automator\Recipe\Action {
 			}
 		}
 
-		$response = $this->helpers->update_contact( $email, $fields );
+		$response = $this->item_helpers->update_contact( $email, $fields );
 
 		if ( is_wp_error( $response ) ) {
 			throw new \Exception(

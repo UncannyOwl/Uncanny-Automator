@@ -68,7 +68,6 @@ class Ld_Tokens {
 		add_filter( 'automator_maybe_parse_token', array( $this, 'ld_course_status_token' ), 9999, 6 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'ld_course_access_expiry_token' ), 9999, 6 );
 		add_filter( 'automator_maybe_parse_token', array( $this, 'ld_quiz_parse_q_and_a_tokens' ), 20, 6 );
-
 	}
 
 	/**
@@ -98,14 +97,14 @@ class Ld_Tokens {
 		if ( 'LD_QUIZPERCENT' === $trigger_code ) {
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_achieved_percent',
-				'tokenName'       => esc_html__( "User's quiz percentage", 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( "User's quiz percentage", 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'float',
 				'tokenIdentifier' => $trigger_meta,
 			);
 
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_quiz_passing_percentage',
-				'tokenName'       => esc_html__( 'Passing score %', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Passing score %', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -115,7 +114,7 @@ class Ld_Tokens {
 		if ( 'LD_QUIZSCORE' === $trigger_code ) {
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_achieved_score',
-				'tokenName'       => esc_html__( "User's quiz score", 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( "User's quiz score", 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -125,7 +124,7 @@ class Ld_Tokens {
 		if ( 'LD_QUIZPOINT' === $trigger_code ) {
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_achieved_points',
-				'tokenName'       => esc_html__( "User's quiz points", 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( "User's quiz points", 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'int',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -162,55 +161,55 @@ class Ld_Tokens {
 
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Course title', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Course title', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Course ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Course ID', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Course URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Course URL', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_course_url',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Lesson title', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Lesson title', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Lesson ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Lesson ID', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Lesson URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Lesson URL', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_lesson_url',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Topic title', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Topic title', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Topic ID', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Topic ID', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_id',
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $tc_module_id,
-				'tokenName'       => esc_html__( 'Topic URL', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Topic URL', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta . '_maybe_topic_url',
 			);
@@ -281,7 +280,7 @@ class Ld_Tokens {
 				$maybe_trigger_log_id = Automator()->get->mayabe_get_real_trigger_log_id( $trigger_id, $run_number, $recipe_id, $user_id, $recipe_log_id );
 
 				// Verb can be found from trigger meta
-				if ( in_array( 'TCVERB', $pieces ) ) {
+				if ( in_array( 'TCVERB', $pieces, true ) ) {
 					$value = Automator()->get->maybe_get_meta_value_from_trigger_log( 'TCVERB', $trigger_id, $trigger_log_id, $run_number, $user_id );
 
 					return $value;
@@ -417,7 +416,7 @@ class Ld_Tokens {
 
 				if ( class_exists( '\UCTINCAN\Database' ) ) {
 					// In case just module name required.
-					if ( in_array( 'TCMODULEINTERACTION', $pieces ) ) {
+					if ( in_array( 'TCMODULEINTERACTION', $pieces, true ) ) {
 						$module_info = \TINCANNYSNC\Database::get_item( $module_id );
 						$value       = isset( $module_info['file_name'] ) ? $module_info['file_name'] : '';
 
@@ -462,7 +461,7 @@ class Ld_Tokens {
 								$value = get_the_permalink( $tin_can_data->lesson_id );
 							}
 							if ( in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces, true ) || in_array( 'TCMODULEINTERACTION_maybe_lesson_id', $pieces, true ) || in_array( 'TCMODULEINTERACTION_maybe_lesson_url', $pieces, true ) ) {
-								if ( ( ! empty( $tin_can_data->course_id ) ) && ( \LearnDash_Settings_Section::get_section_setting( 'LearnDash_Settings_Courses_Builder', 'shared_steps' ) == 'yes' ) ) {
+								if ( ( ! empty( $tin_can_data->course_id ) ) && ( 'yes' === (string) \LearnDash_Settings_Section::get_section_setting( 'LearnDash_Settings_Courses_Builder', 'shared_steps' ) ) ) {
 									$lesson_id = learndash_course_get_single_parent_step( $tin_can_data->course_id, $tin_can_data->lesson_id );
 									if ( in_array( 'TCMODULEINTERACTION_maybe_lesson', $pieces, true ) && ! empty( $lesson_id ) ) {
 										$value = get_the_title( $lesson_id );
@@ -619,13 +618,13 @@ class Ld_Tokens {
 		if ( 'COURSEDONE' === $trigger_code ) {
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_course_completed_on',
-				'tokenName'       => esc_html__( 'Course completion date', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Course completion date', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
 			$new_tokens[] = array(
 				'tokenId'         => $trigger_meta . '_course_points',
-				'tokenName'       => esc_html__( 'Course points', 'uncanny-automator' ),
+				'tokenName'       => esc_html_x( 'Course points', 'Learndash', 'uncanny-automator' ),
 				'tokenType'       => 'text',
 				'tokenIdentifier' => $trigger_meta,
 			);
@@ -684,17 +683,17 @@ class Ld_Tokens {
 			$questions_ids                   = learndash_get_quiz_questions( $quiz_id );
 			if ( ! empty( $questions_ids ) ) {
 				foreach ( $questions_ids as $question_post_id => $question_pro_id ) {
-					$question_title = get_the_title( $question_post_id );
-					$length         = strlen( $question_title );
-					$max            = 42;
-					$question_title = substr( $question_title, 0, $max );
+					$question_title  = get_the_title( $question_post_id );
+					$length          = strlen( $question_title );
+					$max             = 42;
+					$question_title  = substr( $question_title, 0, $max );
 					$question_title .= ( $length > $max ) ? '...' : '';
 					// Question Token.
 					$quiz_q_and_a_tokens[ $quiz_id ][] = array(
 						'tokenId'         => 'LDQUIZ_QUESTION_ID_' . $question_post_id,
 						'tokenName'       => sprintf(
 						/* translators: %d, Question Post ID %s: Question Token title */
-							_x( 'Question (%1$d) - %2$s', 'LearnDash Question Token', 'uncanny-automator' ),
+							esc_html_x( 'Question (%1$d) - %2$s', 'LearnDash Question Token', 'uncanny-automator' ),
 							$question_post_id,
 							$question_title
 						),
@@ -706,7 +705,7 @@ class Ld_Tokens {
 						'tokenId'         => 'LDQUIZ_ANSWER_ID_' . $question_post_id,
 						'tokenName'       => sprintf(
 						/* translators: %d, Question Post ID %s: Question Token title */
-							_x( 'Answer (%1$d) - %2$s', 'LearnDash Answer Token', 'uncanny-automator' ),
+							esc_html_x( 'Answer (%1$d) - %2$s', 'LearnDash Answer Token', 'uncanny-automator' ),
 							$question_post_id,
 							$question_title
 						),
@@ -868,17 +867,17 @@ class Ld_Tokens {
 	 * @param string $key
 	 * @param int $user_id
 	 * @param int $quiz_id
-	 * @param mixed $default
+	 * @param mixed $default_value
 	 *
 	 * @return mixed
 	 */
-	private function get_quiz_data( $key, $user_id, $quiz_id, $default ) {
+	private function get_quiz_data( $key, $user_id, $quiz_id, $default_value ) {
 
 		$user_quiz_meta = get_user_meta( $user_id, '_sfwd-quizzes', true );
 		if ( ! empty( $user_quiz_meta ) ) {
 			$user_quiz_meta = array_reverse( $user_quiz_meta );
 			foreach ( $user_quiz_meta as $quiz_meta ) {
-				if ( $quiz_meta['quiz'] == $quiz_id ) {
+				if ( absint( $quiz_meta['quiz'] ) === absint( $quiz_id ) ) {
 					// Full Data.
 					if ( 'data' === $key ) {
 						return $quiz_meta;
@@ -889,7 +888,7 @@ class Ld_Tokens {
 			}
 		}
 
-		return $default;
+		return $default_value;
 	}
 
 	/**
@@ -921,7 +920,7 @@ class Ld_Tokens {
 			if ( ! isset( $scores[ $category_id ] ) ) {
 				$scores[ $category_id ] = array(
 					'id'           => $category_id,
-					'name'         => $category_id ? $statistic->getCategoryName() : esc_html__( 'No category', 'learndash' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					'name'         => $category_id ? $statistic->getCategoryName() : esc_html_x( 'No category', 'Learndash', 'learndash' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, Uncanny_Automator.Strings -- reuses LearnDash's own translation.
 					'points'       => 0,
 					'total_points' => 0,
 					'score'        => 0,
@@ -1004,9 +1003,9 @@ class Ld_Tokens {
 			);
 
 			// REVIEW - Test if this is required adapted from WpProQuiz_View_StatisticsAjax for LD V 2.0.6.8 -> 2.1.x. support.
-			if ( ( 'sort_answer' == $answer_type ) || ( 'matrix_sort_answer' == $answer_type ) ) {
+			if ( ( 'sort_answer' === $answer_type ) || ( 'matrix_sort_answer' === $answer_type ) ) {
 				if ( ! empty( $question_data ) && ! empty( $answer_data ) ) {
-					if ( ( - 1 == $answer_data[0] ) || ( 0 !== strcmp( $answer_data[0], (int) $answer_data[0] ) ) ) {
+					if ( ( - 1 === (int) $answer_data[0] ) || ( 0 !== strcmp( $answer_data[0], (int) $answer_data[0] ) ) ) {
 						foreach ( $question_data as $q_k => $q_v ) {
 							$q_k     = (int) $q_k;
 							$datapos = md5( $user_id . $question_id . $q_k );
@@ -1027,10 +1026,10 @@ class Ld_Tokens {
 					foreach ( $question_data as $k => $v ) {
 						$matrix[ $k ][] = $k;
 						foreach ( $question_data as $k2 => $v2 ) {
-							if ( $k != $k2 ) {
-								if ( $v->getAnswer() == $v2->getAnswer() ) {
+							if ( $k !== $k2 ) {
+								if ( (string) $v->getAnswer() === (string) $v2->getAnswer() ) {
 									$matrix[ $k ][] = $k2;
-								} elseif ( $v->getSortString() == $v2->getSortString() ) {
+								} elseif ( (string) $v->getSortString() === (string) $v2->getSortString() ) {
 									$matrix[ $k ][] = $k2;
 								}
 							}
@@ -1039,7 +1038,7 @@ class Ld_Tokens {
 				}
 
 				$question_count = count( $question_data );
-				for ( $i = 0; $i < $question_count; $i ++ ) {
+				for ( $i = 0; $i < $question_count; $i++ ) {
 
 					$answer_text = $question_data[ $i ]->isHtml() ? $question_data[ $i ]->getAnswer() : esc_html( $question_data[ $i ]->getAnswer() );
 					$answer_text = do_shortcode( $answer_text );
@@ -1085,7 +1084,7 @@ class Ld_Tokens {
 								// Output.
 								$data[ $question_post_id ]['answer'][] = sprintf(
 								// translators: placeholder: Answer, Sort Text.
-									esc_html_x( '%1$s { %2$s }', 'placeholder: Answer, Sort Text', 'learndash' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+									esc_html_x( '%1$s { %2$s }', 'placeholder: Answer, Sort Text', 'learndash' ), // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, Uncanny_Automator.Strings -- reuses LearnDash's own translation.
 									do_shortcode( $answer_text ),
 									do_shortcode( $sort_text )
 								);
@@ -1124,7 +1123,7 @@ class Ld_Tokens {
 		$c          = 0;
 		$data_count = count( $data );
 		foreach ( $data as $question_post_id => $question ) {
-			$c ++;
+			++$c;
 			$answer = '';
 			if ( ! empty( $question['answer'] ) ) {
 				if ( count( $question['answer'] ) > 1 ) {
@@ -1212,6 +1211,11 @@ class Ld_Tokens {
 	 * @return array
 	 */
 	public function get_user_quiz_statistics( $reference_id, $quiz_post_id, $quiz_pro_id ) {
+
+		// No statistics reference recorded (statistics disabled on the quiz).
+		if ( empty( $reference_id ) ) {
+			return '';
+		}
 
 		$statistic_mapper = new \WpProQuiz_Model_StatisticUserMapper();
 		$statistics       = $statistic_mapper->fetchUserStatistic( $reference_id, $quiz_pro_id, false );
@@ -1375,9 +1379,9 @@ class Ld_Tokens {
 			$essay_post = get_post( $graded_id );
 			if ( $essay_post instanceof \WP_Post ) {
 				if ( 'graded' === $essay_post->post_status ) {
-					$answer = __( 'Status: Graded', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$answer = __( 'Status: Graded', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, Uncanny_Automator.Strings -- reuses LearnDash's own translation.
 				} else {
-					$answer = __( 'Status: Not Graded', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+					$answer = __( 'Status: Not Graded', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, Uncanny_Automator.Strings -- reuses LearnDash's own translation.
 				}
 				if ( 'text' === $graded_type ) {
 					$answer .= '<br>' . do_shortcode( nl2br( $essay_post->post_content ) );
@@ -1390,10 +1394,9 @@ class Ld_Tokens {
 			}
 			// Not Submitted.
 		} else {
-			$answer = __( 'Essay not submitted', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			$answer = __( 'Essay not submitted', 'learndash' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, Uncanny_Automator.Strings -- reuses LearnDash's own translation.
 		}
 
 		return $answer;
 	}
-
 }

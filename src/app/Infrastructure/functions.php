@@ -22,6 +22,7 @@ use Uncanny_Automator\App\Infrastructure\License\License_Manager;
 use Uncanny_Automator\App\Feature_State\Application\Get_Feature_State;
 use Uncanny_Automator\App\Feature_State\Infrastructure\Automator_Policy_State_Adapter;
 use Uncanny_Automator\App\Feature_State\Infrastructure\Mcp_Allocation_Facts_Reader;
+use Uncanny_Automator\App\Feature_State\Infrastructure\WP_Last_Known_Feature_State_Store;
 
 /**
  * Get the License Manager instance.
@@ -50,7 +51,8 @@ function automator_license_manager( ?License_Manager $override = null, bool $res
  *
  * Construction is lazy and the result lives only for this PHP request. The
  * query itself memoizes success or failure so every UI consumer sees one
- * coherent Axis snapshot without another transient or remote request.
+ * coherent Axis snapshot. Production also supplies the license-bound store used
+ * to preserve the most recent successful snapshot across requests.
  *
  * @param Get_Feature_State|null $override Optional override for testing.
  * @param bool                   $reset    Whether to reset the cached query.
@@ -81,7 +83,8 @@ function automator_feature_state_query( ?Get_Feature_State $override = null, boo
 			new Automator_Policy_State_Adapter(
 				$licenses,
 				new Mcp_Allocation_Facts_Reader( $licenses )
-			)
+			),
+			new WP_Last_Known_Feature_State_Store()
 		);
 	}
 

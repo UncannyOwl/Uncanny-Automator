@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Uncanny Automator 7.6.1\n"
+"Project-Id-Version: Uncanny Automator 7.6.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/uncanny-automator\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-01T22:12:23+00:00\n"
+"POT-Creation-Date: 2026-09-03T19:06:30+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: uncanny-automator\n"
@@ -13665,7 +13665,6 @@ msgstr ""
 #: src/integrations/bbpress/tokens/bbpress-tokens.php:82
 #: src/integrations/buddyboss/tokens/bdb-tokens.php:423
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:77
-#: src/integrations/learndash/tokens/ld-tokens.php:207
 #: src/integrations/wpforo/triggers/wpf-addedtopic.php:73
 msgid "Topic ID"
 msgstr ""
@@ -13673,7 +13672,6 @@ msgstr ""
 #: src/integrations/bbpress/tokens/bbpress-tokens.php:88
 #: src/integrations/buddyboss/tokens/bdb-tokens.php:435
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:78
-#: src/integrations/learndash/tokens/ld-tokens.php:213
 #: src/integrations/wpforo/triggers/wpf-addedtopic.php:74
 msgid "Topic URL"
 msgstr ""
@@ -13681,7 +13679,6 @@ msgstr ""
 #: src/integrations/bbpress/tokens/bbpress-tokens.php:94
 #: src/integrations/buddyboss/tokens/bdb-tokens.php:429
 #: src/integrations/buddyboss/triggers/bdb-userpostreplyforum.php:76
-#: src/integrations/learndash/tokens/ld-tokens.php:201
 #: src/integrations/wpforo/triggers/wpf-addedtopic.php:72
 msgid "Topic title"
 msgstr ""
@@ -16560,74 +16557,74 @@ msgid "Enter the full URL to purge from Cloudflare cache. The URL must map to a 
 msgstr ""
 
 #. translators: 1: Snippet name
-#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:30
+#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:29
 #, php-format
 msgctxt "Code Snippets"
 msgid "Activate  {{a snippet:%1$s}}"
 msgstr ""
 
-#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:31
+#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:30
 msgctxt "Code Snippets"
 msgid "Activate  {{a snippet}}"
 msgstr ""
 
-#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:42
-#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:42
+#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:41
+#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:41
 msgctxt "Code Snippets"
 msgid "Snippet"
 msgstr ""
 
-#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:71
-#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:71
+#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:70
+#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:70
 msgctxt "Code Snippets"
 msgid "The function \"Code_Snippets\\get_snippet\" dose not exist."
 msgstr ""
 
 #. translators: 1: Snippet ID
-#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:80
-#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:80
+#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:79
+#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:79
 #, php-format
 msgctxt "Code Snippets"
 msgid "Invalid snippet id: %d."
 msgstr ""
 
 #. translators: 1: Snippet name
-#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:87
+#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:86
 #, php-format
 msgctxt "Code Snippets"
 msgid "The selected snippet (%s) is already active."
 msgstr ""
 
-#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:93
+#: src/integrations/code-snippets/actions/code-snippets-activate-snippet.php:92
 msgctxt "Code Snippets"
 msgid "The function \"Code_Snippets\\activate_snippet\" dose not exist."
 msgstr ""
 
 #. translators: 1: Snippet name
-#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:30
+#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:29
 #, php-format
 msgctxt "Code Snippets"
 msgid "Deactivate  {{a snippet:%1$s}}"
 msgstr ""
 
-#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:31
+#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:30
 msgctxt "Code Snippets"
 msgid "Deactivate  {{a snippet}}"
 msgstr ""
 
 #. translators: 1: Snippet name
-#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:87
+#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:86
 #, php-format
 msgctxt "Code Snippets"
 msgid "The selected snippet (%s) is already inactive."
 msgstr ""
 
-#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:93
+#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:92
 msgctxt "Code Snippets"
 msgid "The function \"Code_Snippets\\deactivate_snippet\" dose not exist."
 msgstr ""
 
-#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:101
+#: src/integrations/code-snippets/actions/code-snippets-deactivate-snippet.php:100
 msgctxt "Code Snippets"
 msgid "The snippet could not be deactivated."
 msgstr ""
@@ -16662,87 +16659,87 @@ msgctxt "Code Snippets"
 msgid "Scripts (JS)"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:113
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:121
 msgctxt "Code Snippets"
 msgid "Run snippet everywhere"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:117
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:125
 msgctxt "Code Snippets"
 msgid "Only run in administration area"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:121
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:129
 msgctxt "Code Snippets"
 msgid "Only run on site front-end"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:125
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:133
 msgctxt "Code Snippets"
 msgid "Only run once"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:133
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:141
 msgctxt "Code Snippets"
 msgid "Only display when inserted into a post or page."
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:137
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:145
 msgctxt "Code Snippets"
 msgid "Display in site <head> section."
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:141
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:149
 msgctxt "Code Snippets"
 msgid "Display at the end of the <body> section, in the footer."
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:149
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:157
 msgctxt "Code Snippets"
 msgid "Site front-end styles"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:153
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:161
 msgctxt "Code Snippets"
 msgid "Administration area styles"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:161
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:169
 msgctxt "Code Snippets"
 msgid "Load JS at the end of the <body> section"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:165
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:173
 msgctxt "Code Snippets"
 msgid "Load JS in the <head> section"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:201
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:209
 msgctxt "Code Snippets"
 msgid "Title"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:205
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:213
 msgctxt "Code Snippets"
 msgid "Code"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:209
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:217
 msgctxt "Code Snippets"
 msgid "Type"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:213
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:221
 msgctxt "Code Snippets"
 msgid "Description"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:217
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:225
 msgctxt "Code Snippets"
 msgid "Tags"
 msgstr ""
 
-#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:221
+#: src/integrations/code-snippets/helpers/code-snippets-helpers.php:229
 msgctxt "Code Snippets"
 msgid "Priority"
 msgstr ""
@@ -29571,45 +29568,45 @@ msgid "Any course"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers-new.php:403
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1198
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1192
 msgctxt "LearnDash"
 msgid "Any quiz"
 msgstr ""
 
 #: src/integrations/learndash/helpers/learndash-helpers-new.php:455
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:804
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:819
 msgctxt "LearnDash"
 msgid "Any group"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:567
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:586
 msgctxt "LearnDash"
 msgid "Any lesson"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:608
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:619
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:623
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:634
 msgctxt "LearnDash"
 msgid "Any topic"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:946
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:957
 msgctxt "LearnDash"
 msgid "Any lesson or topic"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1039
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1042
 msgctxt "LearnDash"
 msgid "Any assignment"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1099
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1102
 msgctxt "LearnDash"
 msgid "Any essay"
 msgstr ""
 
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1145
-#: src/integrations/learndash/helpers/learndash-helpers-new.php:1261
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1148
+#: src/integrations/learndash/helpers/learndash-helpers-new.php:1244
 msgctxt "LearnDash"
 msgid "Any question"
 msgstr ""
@@ -30083,115 +30080,90 @@ msgctxt "LearnDash"
 msgid "Example: 1"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:101
+#: src/integrations/learndash/tokens/ld-tokens.php:100
+msgctxt "Learndash"
 msgid "User's quiz percentage"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:108
+#: src/integrations/learndash/tokens/ld-tokens.php:107
+msgctxt "Learndash"
 msgid "Passing score %"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:118
+#: src/integrations/learndash/tokens/ld-tokens.php:117
+msgctxt "Learndash"
 msgid "User's quiz score"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:128
+#: src/integrations/learndash/tokens/ld-tokens.php:127
+msgctxt "Learndash"
 msgid "User's quiz points"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:165
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:83
-#: src/integrations/masterstudy-lms/actions/masterstudy-enroll-user-in-course.php:66
-#: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:80
-#: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:80
-#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:72
-#: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:72
-#: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:72
-#: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:158
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:70
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:147
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:82
-#: src/integrations/wplms/helpers/wplms-helpers.php:126
+#: src/integrations/learndash/tokens/ld-tokens.php:164
+msgctxt "Learndash"
 msgid "Course title"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:171
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:84
-#: src/integrations/masterstudy-lms/actions/masterstudy-enroll-user-in-course.php:62
-#: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:81
-#: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:81
-#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:73
-#: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:73
-#: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:73
-#: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:159
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:71
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:148
-#: src/integrations/uncanny-toolkit/tokens/ut-tokens.php:154
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:83
-#: src/integrations/wplms/helpers/wplms-helpers.php:127
+#: src/integrations/learndash/tokens/ld-tokens.php:170
+msgctxt "Learndash"
 msgid "Course ID"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:177
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:85
-#: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:82
-#: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:82
-#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:74
-#: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:74
-#: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:74
-#: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:160
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:72
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:149
-#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:84
-#: src/integrations/wplms/helpers/wplms-helpers.php:128
+#: src/integrations/learndash/tokens/ld-tokens.php:176
+msgctxt "Learndash"
 msgid "Course URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:183
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:126
-#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:79
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:78
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:102
-#: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:75
+#: src/integrations/learndash/tokens/ld-tokens.php:182
+msgctxt "Learndash"
 msgid "Lesson title"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:189
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:127
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:132
-#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:80
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:79
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:103
-#: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:76
+#: src/integrations/learndash/tokens/ld-tokens.php:188
+msgctxt "Learndash"
 msgid "Lesson ID"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:195
-#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:128
-#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:81
-#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:80
-#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:104
-#: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:77
+#: src/integrations/learndash/tokens/ld-tokens.php:194
+msgctxt "Learndash"
 msgid "Lesson URL"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:622
+#: src/integrations/learndash/tokens/ld-tokens.php:200
+msgctxt "Learndash"
+msgid "Topic title"
+msgstr ""
+
+#: src/integrations/learndash/tokens/ld-tokens.php:206
+msgctxt "Learndash"
+msgid "Topic ID"
+msgstr ""
+
+#: src/integrations/learndash/tokens/ld-tokens.php:212
+msgctxt "Learndash"
+msgid "Topic URL"
+msgstr ""
+
+#: src/integrations/learndash/tokens/ld-tokens.php:621
+msgctxt "Learndash"
 msgid "Course completion date"
 msgstr ""
 
-#: src/integrations/learndash/tokens/ld-tokens.php:628
+#: src/integrations/learndash/tokens/ld-tokens.php:627
+msgctxt "Learndash"
 msgid "Course points"
 msgstr ""
 
 #. translators: %d, Question Post ID %s: Question Token title
-#: src/integrations/learndash/tokens/ld-tokens.php:697
+#: src/integrations/learndash/tokens/ld-tokens.php:696
 #, php-format
 msgctxt "LearnDash Question Token"
 msgid "Question (%1$d) - %2$s"
 msgstr ""
 
 #. translators: %d, Question Post ID %s: Question Token title
-#: src/integrations/learndash/tokens/ld-tokens.php:709
+#: src/integrations/learndash/tokens/ld-tokens.php:708
 #, php-format
 msgctxt "LearnDash Answer Token"
 msgid "Answer (%1$d) - %2$s"
@@ -30644,6 +30616,51 @@ msgstr ""
 msgid "Section"
 msgstr ""
 
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:83
+#: src/integrations/masterstudy-lms/actions/masterstudy-enroll-user-in-course.php:66
+#: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:80
+#: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:80
+#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:72
+#: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:72
+#: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:72
+#: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:158
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:70
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:147
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:82
+#: src/integrations/wplms/helpers/wplms-helpers.php:126
+msgid "Course title"
+msgstr ""
+
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:84
+#: src/integrations/masterstudy-lms/actions/masterstudy-enroll-user-in-course.php:62
+#: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:81
+#: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:81
+#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:73
+#: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:73
+#: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:73
+#: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:159
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:71
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:148
+#: src/integrations/uncanny-toolkit/tokens/ut-tokens.php:154
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:83
+#: src/integrations/wplms/helpers/wplms-helpers.php:127
+msgid "Course ID"
+msgstr ""
+
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:85
+#: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:82
+#: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:82
+#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:74
+#: src/integrations/masterstudy-lms/triggers/masterstudy-quizfailed.php:74
+#: src/integrations/masterstudy-lms/triggers/masterstudy-quizpassed.php:74
+#: src/integrations/memberpress-courses/helpers/memberpress-courses-helpers.php:160
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:72
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:149
+#: src/integrations/wp-courseware/helpers/wp-courseware-helpers.php:84
+#: src/integrations/wplms/helpers/wplms-helpers.php:128
+msgid "Course URL"
+msgstr ""
+
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:86
 #: src/integrations/masterstudy-lms/triggers/masterstudy-coursedone.php:83
 #: src/integrations/masterstudy-lms/triggers/masterstudy-courseenrolled.php:83
@@ -30668,6 +30685,31 @@ msgstr ""
 #: src/integrations/tutorlms/helpers/tutorlms-helpers.php:151
 #: src/integrations/wplms/helpers/wplms-helpers.php:130
 msgid "Course featured image URL"
+msgstr ""
+
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:126
+#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:79
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:78
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:102
+#: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:75
+msgid "Lesson title"
+msgstr ""
+
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:127
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:132
+#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:80
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:79
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:103
+#: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:76
+msgid "Lesson ID"
+msgstr ""
+
+#: src/integrations/lifterlms/helpers/lifterlms-helpers.php:128
+#: src/integrations/masterstudy-lms/triggers/masterstudy-lessondone.php:81
+#: src/integrations/memberpress-courses/triggers/mpc-lessondone.php:80
+#: src/integrations/tutorlms/helpers/tutorlms-helpers.php:104
+#: src/integrations/tutorlms/triggers/tutorlms-lessoncompleted.php:77
+msgid "Lesson URL"
 msgstr ""
 
 #: src/integrations/lifterlms/helpers/lifterlms-helpers.php:129

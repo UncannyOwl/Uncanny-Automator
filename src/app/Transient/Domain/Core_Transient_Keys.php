@@ -40,6 +40,7 @@ class Core_Transient_Keys {
 		License_Transient_Keys::CREDITS,
 		License_Transient_Keys::LLM_ALLOCATION_FACTS,
 		License_Transient_Keys::LLM_ALLOCATION_FAILED,
+		License_Transient_Keys::FEATURE_STATE_LAST_KNOWN_GOOD,
 		'automator_transient_users',
 		'uap_complete_json',
 	);

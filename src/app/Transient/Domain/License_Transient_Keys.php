@@ -26,6 +26,8 @@ class License_Transient_Keys {
 	public const LLM_ALLOCATION_FACTS  = 'automator_llm_allocation_facts';
 	public const LLM_ALLOCATION_FAILED = 'automator_llm_allocation_facts_failed';
 
+	public const FEATURE_STATE_LAST_KNOWN_GOOD = 'automator_feature_state_last_known_good';
+
 	/**
 	 * Get all license-derived transient keys.
 	 *
@@ -43,6 +45,7 @@ class License_Transient_Keys {
 			self::CREDITS,
 			self::LLM_ALLOCATION_FACTS,
 			self::LLM_ALLOCATION_FAILED,
+			self::FEATURE_STATE_LAST_KNOWN_GOOD,
 		);
 	}
 }

@@ -9,19 +9,18 @@ use function Code_Snippets\get_snippet;
 /**
  * Class CODE_SNIPPETS_DEACTIVATE_SNIPPET
  *
- * @pacakge Uncanny_Automator
+ * @property Code_Snippets_Helpers $item_helpers
+ *
+ * @package Uncanny_Automator
  */
 class CODE_SNIPPETS_DEACTIVATE_SNIPPET extends Action {
 
-	protected $helpers;
-
 	/**
-	 * @return mixed
+	 * Define and register the action.
+	 *
+	 * @return void
 	 */
 	protected function setup_action() {
-		/** @var \Uncanny_Automator\Integrations\Code_Snippets\Code_Snippets_Helpers $helpers */
-		$helpers       = array_shift( $this->dependencies );
-		$this->helpers = $helpers;
 		$this->set_integration( 'CODE_SNIPPETS' );
 		$this->set_action_code( 'CS_DEACTIVATE_SNIPPET' );
 		$this->set_action_meta( 'CS_SNIPPETS' );
@@ -41,7 +40,7 @@ class CODE_SNIPPETS_DEACTIVATE_SNIPPET extends Action {
 				'option_code'     => $this->get_action_meta(),
 				'label'           => _x( 'Snippet', 'Code Snippets', 'uncanny-automator' ),
 				'required'        => true,
-				'options'         => $this->helpers->get_all_code_snippets_by_status(),
+				'options'         => $this->item_helpers->get_all_code_snippets_by_status(),
 				'relevant_tokens' => array(),
 			),
 		);
@@ -51,7 +50,7 @@ class CODE_SNIPPETS_DEACTIVATE_SNIPPET extends Action {
 	 * @return array
 	 */
 	public function define_tokens() {
-		return $this->helpers->get_action_common_tokens();
+		return $this->item_helpers->get_action_common_tokens();
 
 	}
 
@@ -103,7 +102,7 @@ class CODE_SNIPPETS_DEACTIVATE_SNIPPET extends Action {
 			return false;
 		}
 
-		$this->hydrate_tokens( $this->helpers->parse_action_tokens( $snippet_deactivated ) );
+		$this->hydrate_tokens( $this->item_helpers->parse_action_tokens( $snippet_deactivated ) );
 
 		return true;
 	}

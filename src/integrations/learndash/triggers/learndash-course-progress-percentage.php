@@ -46,19 +46,19 @@ class LD_COURSE_PROGRESS_PERCENTAGE extends \Uncanny_Automator\Recipe\Trigger {
 
 		return array(
 			array(
-				'input_type'            => 'int',
-				'option_code'           => 'PERCENTAGE',
-				'label'                 => esc_html_x( 'Percentage', 'LearnDash', 'uncanny-automator' ),
-				'required'              => true,
-				'default_value'         => 50,
+				'input_type'    => 'int',
+				'option_code'   => 'PERCENTAGE',
+				'label'         => esc_html_x( 'Percentage', 'LearnDash', 'uncanny-automator' ),
+				'required'      => true,
+				'default_value' => 50,
 			),
 			array(
-				'input_type'            => 'select',
-				'option_code'           => 'COURSE',
-				'label'                 => esc_html_x( 'Course', 'LearnDash', 'uncanny-automator' ),
-				'required'              => true,
-				'options'               => array(),
-				'remote_data'           => $this->item_helpers->remote_data_load_config( 'courses_strict' ),
+				'input_type'  => 'select',
+				'option_code' => 'COURSE',
+				'label'       => esc_html_x( 'Course', 'LearnDash', 'uncanny-automator' ),
+				'required'    => true,
+				'options'     => array(),
+				'remote_data' => $this->item_helpers->remote_data_load_config( 'courses' ),
 			),
 		);
 	}
