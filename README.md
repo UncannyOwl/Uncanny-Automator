@@ -5,7 +5,7 @@
 **Requires at least:** 5.8 \
 **Tested up to:** 7.1 \
 **Requires PHP:** 7.4 \
-**Stable tag:** 7.6.1 \
+**Stable tag:** 7.7.0 \
 **License:** GPLv3 \
 **License URI:** https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -221,6 +221,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [BuddyBoss](https://automatorplugin.com/integration/buddyboss/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [BuddyPress](https://automatorplugin.com/integration/buddypress/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Caldera Forms](https://automatorplugin.com/integration/caldera-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[CartFlows](https://automatorplugin.com/integration/cartflows/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [CSV](https://automatorplugin.com/integration/csv/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Custom User Fields](https://automatorplugin.com/integration/custom-user-fields-addon/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Charitable](https://automatorplugin.com/integration/charitable/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -240,6 +241,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [Easy WP SMTP](https://automatorplugin.com/integration/easy-wp-smtp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Elementor Pro](https://automatorplugin.com/integration/elementor/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Emails](https://automatorplugin.com/integration/emails/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Eventin](https://automatorplugin.com/integration/eventin/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Events Manager](https://automatorplugin.com/integration/events-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Everest Forms](https://automatorplugin.com/integration/everest-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [ExactMetrics](https://automatorplugin.com/integration/exactmetrics/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -278,6 +280,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [LiteSpeed Cache](https://automatorplugin.com/integration/litespeed-cache/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Loop](https://automatorplugin.com/integration/loop/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Logging](https://automatorplugin.com/integration/logging/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Loginizer](https://automatorplugin.com/integration/loginizer/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Magic Button](https://automatorplugin.com/integration/magic-button/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [MailPoet](https://automatorplugin.com/integration/mailpoet/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Mailster](https://automatorplugin.com/integration/mailster/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -299,6 +302,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [PeepSo](https://automatorplugin.com/integration/peepso/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Plugin Actions](https://automatorplugin.com/integration/plugin-actions/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Popup Maker](https://automatorplugin.com/integration/popup-maker/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Post SMTP](https://automatorplugin.com/integration/post-smtp/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [PressPrimer Assignment](https://automatorplugin.com/integration/pressprimer-assignment/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [PressPrimer Quiz](https://automatorplugin.com/integration/pressprimer-quiz/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Presto Player](https://automatorplugin.com/integration/presto-player/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -321,7 +325,9 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [SeedProd](https://automatorplugin.com/integration/seedprod/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Speed Optimizer](https://automatorplugin.com/integration/sg-optimizer/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Security Optimizer](https://automatorplugin.com/integration/sg-security/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Smush](https://automatorplugin.com/integration/smush/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Studiocart](https://automatorplugin.com/integration/studiocart/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[Sucuri Security](https://automatorplugin.com/integration/sucuri-security/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [Sugar Calendar](https://automatorplugin.com/integration/sugar-calendar/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [SureCart](https://automatorplugin.com/integration/surecart/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [SureForms](https://automatorplugin.com/integration/sureforms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -363,7 +369,6 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [WP Activity Log](https://automatorplugin.com/integration/wp-activity-log/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Admin](https://automatorplugin.com/integration/wp-admin/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP All Import](https://automatorplugin.com/integration/wp-all-import/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
-[WP Bitly](https://automatorplugin.com/integration/wp-bitly/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Courseware](https://automatorplugin.com/integration/wp-courseware/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Event Manager](https://automatorplugin.com/integration/wp-event-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Fastest Cache](https://automatorplugin.com/integration/wp-fastest-cache/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -378,6 +383,7 @@ Uncanny Automator connects the most popular WordPress plugins and apps. Mix and 
 [WP User Manager](https://automatorplugin.com/integration/wp-user-manager/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP Webhooks](https://automatorplugin.com/integration/wp-webhooks/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WP-Polls](https://automatorplugin.com/integration/wp-polls/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
+[WPCafe](https://automatorplugin.com/integration/wpcafe/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WPCode](https://automatorplugin.com/integration/wpcode/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WPForms](https://automatorplugin.com/integration/wp-forms/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
 [WS Form](https://automatorplugin.com/integration/ws-form/?utm_source=wp-repo&utm_medium=readme&utm_content=free-integrations-list),
@@ -458,25 +464,80 @@ Yes — Uncanny Automator is free to install and use. It includes Uncanny Recipe
 
 ## Changelog
 
-### 7.6.1 [2026-09-01]
+### 7.7.0 [2026-09-29]
+
+**New Integration:**
+
+* [CartFlows](https://automatorplugin.com/integration/cartflows/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7542
+* [Eventin](https://automatorplugin.com/integration/eventin/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #8446
+* [Loginizer](https://automatorplugin.com/integration/loginizer/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7548
+* [Post SMTP](https://automatorplugin.com/integration/post-smtp/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7552
+* [Smush](https://automatorplugin.com/integration/smush/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7559
+* [Sucuri Security](https://automatorplugin.com/integration/sucuri-security/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7561
+* [WPCafe](https://automatorplugin.com/integration/wpcafe/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #8449
+
+**New Triggers:**
+
+* CartFlows - A checkout is completed in a flow #7582
+* CartFlows - A product is purchased in a flow #7583
+* Eventin - A user purchases a ticket for an event #8445
+* Eventin - An attendee is checked in to an event #8443
+* Eventin - An attendee is registered for an event #8444
+* Eventin - An event is created #8441
+* Eventin - An event is updated #8442
+* Loginizer - A login attempt fails #7630
+* Loginizer - A user logs in #7629
+* Loginizer - A user registers via social login #7628
+* Loginizer - A login is blocked #7631
+* Post SMTP - An email fails to send via a transport #7648
+* Post SMTP - An email is sent via a transport #7649
+* Smush - An image is optimized #7676
+* Smush - An image optimization is skipped #7675
+* WPCafe - A reservation is cancelled #8452
+* WPCafe - A reservation is made #8454
+* WPCafe - A reservation's status is changed to a status #8453
+
+**New Actions:**
+
+* CartFlows - Create a flow #7584
+* CartFlows - Create a step in a flow #7585
+* Eventin - Add the user as an attendee to an event #8440
+* Eventin - Check in an attendee #8448
+* Eventin - Update the status of an order #8447
+* Loginizer - Add an IP range to the blacklist #7627
+* Loginizer - Add an IP range to the whitelist #7626
+* Loginizer - Clear the failed login logs for an IP #7623
+* Loginizer - Remove an IP address from the blacklist #7625
+* Loginizer - Remove an IP from the whitelist #7624
+* Smush - Optimize an image #7674
+* Smush - Restore an image #7673
+* Sucuri Security - Apply hardening to a directory #7666
+* Sucuri Security - Log a security event #7664
+* Sucuri Security - Remove hardening from a directory #7665
+* Sucuri Security - Reset the user's password #7663
+* Sucuri Security - Run a malware scan #7667
+* WPCafe - Create a reservation #8451
+* WPCafe - Update the status of a reservation #8450
 
 **Updated:**
 
-* Fluent Forms - Added value and label tokens for choice fields, making selections more flexible. #8455
+* Zoom Meetings & Webinar - Allow tokens in the meeting creation actions - date & time fields. #8548
 
 **Fixed:**
 
-* Formidable - Restored the shared helpers instance to keep things running smoothly. #8518
-* Formidable Forms - Submission triggers now ignore incomplete and abandoned entries. #8509
-* Hardened PeepSo and related token processing against unsafe serialized data - Added safer handling of serialized data during token processing. #8505
-* LearnDash - A user has completed X% of a course - Fixed "0f" to correctly display "% of". #8516
-* Page Builder - Removed the unnecessary "Reload editor" option from the Uncanny Agent notice. #8506
-* Uncanny Agent - Strengthened security for legacy admin-AJAX requests. #8499
-* WordPress - Create a post - Parent posts now appear in the dropdown instead of playing hide-and-seek. #8491
+* Google Sheets - Improved error messages to provide more details when requests fail. #8550
+* Mailchimp - Create and send a campaign - Preserved HTML formatting in campaign email content. #8534
+* Uncanny Codes - Fixed code redemption triggers recording an incorrect user ID for logged-out redemptions. #8558
+* Uncanny Groups - Group key triggers now record the correct user ID for logged-out redemptions. #8560
+* Uncanny Tin Can - Module triggers now record the correct user when the learner is not the current user. #8562
+* Uncanny Tin Can - Prevented unnecessary reporting queries when a module is not selected. #8552
+* Uncanny Toolkit - User import triggers now attribute runs to the imported user instead of the importing administrator. #8564
 
 **Under the hood:**
 
-* Core - Removed unnecessary license API response logging for cleaner logs. #8495
+* Core - Improved plugin installation checks on Windows. #8623
+* Trigger Object - Added support for safely processing supported WordPress and WooCommerce objects in trigger loopbacks without object deserialization. #8667
+* ARMember & Formidable Forms - Updated to the latest framework. #8578 #8556
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)
 
