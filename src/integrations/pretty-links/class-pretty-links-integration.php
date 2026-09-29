@@ -19,6 +19,11 @@ class Pretty_Links_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'PRETTY_LINKS' );
 		$this->set_name( 'PrettyLinks' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/pretty-links-icon.svg' );
+
+		$this->set_plugin_file_path( 'pretty-link/pretty-link.php' );
+		$this->set_developer_name( 'Pretty Links' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

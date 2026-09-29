@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Uncanny_Automator\App\Feature_State\Infrastructure;
 
+use Uncanny_Automator\App\Feature_State\Application\Can_Refresh_Frontend_Allocation;
 use Uncanny_Automator\App\Infrastructure\License\License_Manager;
 
 /**
@@ -25,13 +26,35 @@ final class Mcp_Allocation_Facts_Refresh {
 
 	private License_Manager $licenses;
 	private string $endpoint;
+	private Can_Refresh_Frontend_Allocation $frontend_eligibility;
 	private bool $attempted = false;
 
 	/**
-	 * @param License_Manager $licenses Automator license manager.
-	 * @param string          $base_url MCP service base URL.
+	 * @param License_Manager                    $licenses             Automator license manager.
+	 * @param string                             $base_url             MCP service base URL.
+	 * @param Can_Refresh_Frontend_Allocation|null $frontend_eligibility Frontend request eligibility query.
 	 */
-	public function __construct( License_Manager $licenses, string $base_url ) {
+	public function __construct(
+		License_Manager $licenses,
+		string $base_url,
+		?Can_Refresh_Frontend_Allocation $frontend_eligibility = null
+	) {
+		$this->licenses = $licenses;
+		$this->endpoint = self::endpoint_url( $base_url );
+		// Keep existing two-argument callers working. Construction reads no request
+		// state; the query runs on `wp`, after WordPress has resolved the page.
+		$this->frontend_eligibility = $frontend_eligibility ?? new Can_Refresh_Frontend_Allocation(
+			new WP_Frontend_Feature_Request_Adapter()
+		);
+	}
+
+	/**
+	 * Build the request endpoint using the same rules as the diagnostic report.
+	 *
+	 * @param string $base_url MCP service base URL.
+	 * @return string
+	 */
+	public static function endpoint_url( string $base_url ): string {
 		$parts = wp_parse_url( $base_url );
 
 		if (
@@ -43,8 +66,7 @@ final class Mcp_Allocation_Facts_Refresh {
 			throw new \InvalidArgumentException( 'The MCP allocation service URL is invalid.' );
 		}
 
-		$this->licenses = $licenses;
-		$this->endpoint = untrailingslashit( $base_url ) . '/api/credits/allocation-facts';
+		return untrailingslashit( $base_url ) . '/api/credits/allocation-facts';
 	}
 
 	/**
@@ -68,12 +90,14 @@ final class Mcp_Allocation_Facts_Refresh {
 	}
 
 	/**
-	 * Warm allocation facts for logged-in front-end presentation surfaces.
+	 * Warm allocation facts only when this frontend request can use a control.
 	 *
 	 * @return void
 	 */
 	public function refresh_frontend_if_needed(): void {
-		if ( ! is_user_logged_in() ) {
+		// Login alone does not justify remote work. Refuse unrelated visits before
+		// refresh() consumes its attempt, while keeping all cache and retry checks.
+		if ( ! $this->frontend_eligibility->execute() ) {
 			return;
 		}
 

@@ -29,7 +29,7 @@ class Module {
 	 *
 	 * @var string
 	 */
-	const MODULE_VERSION = '1.0.1';
+	const MODULE_VERSION = '1.0.3';
 
 	/**
 	 * Oldest standalone bridge that can safely hand over runtime ownership.

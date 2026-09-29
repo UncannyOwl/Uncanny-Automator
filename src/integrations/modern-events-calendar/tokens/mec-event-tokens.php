@@ -192,7 +192,7 @@ class Mec_Event_Tokens {
 		);
 
 		if ( ! empty( $meta_value ) ) {
-			return maybe_unserialize( $meta_value );
+			return automator_safe_unserialize( $meta_value );
 		}
 
 		return '';

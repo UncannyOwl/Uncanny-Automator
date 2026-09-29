@@ -45,6 +45,16 @@ final class PermissionChecker
     }
 
     /**
+     * Object-aware destructive check for page/global-part post objects.
+     */
+    public function canDeletePost(int $postId): bool
+    {
+        return $this->failClosed('delete_post', fn(): bool => $postId > 0
+            && $this->canAuthorPageBuilderContent()
+            && current_user_can('delete_post', $postId));
+    }
+
+    /**
      * Page Builder currently uses one authoring permission for edit/manage.
      */
     public function canManagePost(int $postId): bool
@@ -111,6 +121,63 @@ final class PermissionChecker
         return $this->failClosed('capability', static fn(): bool => current_user_can($capability));
     }
 
+    /**
+     * @param int[] $treeItemIds
+     */
+    public function canManageNavigation(string $operation, int $itemId = 0, array $treeItemIds = []): bool
+    {
+        return $this->failClosed('navigation_' . $operation, function () use ($operation, $itemId, $treeItemIds): bool {
+            $postType = $this->postTypeObject('nav_menu_item');
+            $taxonomy = $this->taxonomyObject('nav_menu');
+            if (!is_object($postType) || !is_object($taxonomy)) {
+                return false;
+            }
+
+            $postCapabilities = is_object($postType->cap ?? null) ? $postType->cap : null;
+            $taxonomyCapabilities = is_object($taxonomy->cap ?? null) ? $taxonomy->cap : null;
+            if ($postCapabilities === null || $taxonomyCapabilities === null) {
+                return false;
+            }
+
+            $assignTerms = $this->mappedCapability($taxonomyCapabilities, 'assign_terms');
+
+            return match ($operation) {
+                'create_menu' => $this->canMappedCapability(
+                    $this->mappedCapability($taxonomyCapabilities, 'manage_terms'),
+                ),
+                'add_item' => $this->canMappedCapability(
+                    $this->mappedCapability($postCapabilities, 'create_posts')
+                        ?? $this->mappedCapability($postCapabilities, 'edit_posts'),
+                ) && $this->canMappedCapability($assignTerms),
+                'update_item' => $itemId > 0
+                    && $this->canMappedCapability(
+                        $this->mappedCapability($postCapabilities, 'edit_post'),
+                        $itemId,
+                    )
+                    && $this->canMappedCapability($assignTerms),
+                'move_item' => $itemId > 0
+                    && in_array($itemId, $treeItemIds, true)
+                    && $this->canReplaceNavigationTree(
+                        $postCapabilities,
+                        $assignTerms,
+                        $treeItemIds,
+                    ),
+                'delete_item' => $itemId > 0
+                    && $this->canMappedCapability(
+                        $this->mappedCapability($postCapabilities, 'delete_post'),
+                        $itemId,
+                    ),
+                'replace_tree' => $this->canReplaceNavigationTree(
+                    $postCapabilities,
+                    $assignTerms,
+                    $treeItemIds,
+                ),
+                'assign_location' => $this->canMappedCapability('edit_theme_options'),
+                default => false,
+            };
+        });
+    }
+
     public function isBearerRequest(\WP_REST_Request $request): bool
     {
         return $this->failClosed(
@@ -174,5 +241,72 @@ final class PermissionChecker
             : (function_exists($function) ? $function($postType) : null);
 
         return is_object($postTypeObject) ? $postTypeObject : null;
+    }
+
+    private function taxonomyObject(string $taxonomy): ?object
+    {
+        $function = __NAMESPACE__ . '\\get_taxonomy';
+        $taxonomyObject = function_exists('get_taxonomy')
+            ? \get_taxonomy($taxonomy)
+            : (function_exists($function) ? $function($taxonomy) : null);
+
+        return is_object($taxonomyObject) ? $taxonomyObject : null;
+    }
+
+    private function mappedCapability(object $capabilities, string $property): ?string
+    {
+        $capability = $capabilities->{$property} ?? null;
+
+        return is_string($capability) && $capability !== '' ? $capability : null;
+    }
+
+    private function canMappedCapability(?string $capability, int $objectId = 0): bool
+    {
+        if ($capability === null) {
+            return false;
+        }
+
+        return $objectId > 0
+            ? current_user_can($capability, $objectId)
+            : current_user_can($capability);
+    }
+
+    /**
+     * @param int[] $itemIds
+     */
+    private function canReplaceNavigationTree(object $postCapabilities, ?string $assignTerms, array $itemIds): bool
+    {
+        if (!$this->canMappedCapability($assignTerms)) {
+            return false;
+        }
+
+        if ($itemIds === []) {
+            return $this->canMappedCapability($this->mappedCapability($postCapabilities, 'edit_posts'));
+        }
+
+        foreach ($itemIds as $itemId) {
+            if ($itemId > 0) {
+                if (
+                    !$this->canMappedCapability(
+                        $this->mappedCapability($postCapabilities, 'edit_post'),
+                        $itemId,
+                    )
+                ) {
+                    return false;
+                }
+                continue;
+            }
+
+            if (
+                !$this->canMappedCapability(
+                    $this->mappedCapability($postCapabilities, 'create_posts')
+                        ?? $this->mappedCapability($postCapabilities, 'edit_posts'),
+                )
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

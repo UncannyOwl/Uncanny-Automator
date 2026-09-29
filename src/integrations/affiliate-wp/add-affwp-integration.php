@@ -27,6 +27,10 @@ class Add_Affwp_Integration {
 		$this->set_icon( 'affiliatewp-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'affiliate-wp/affiliate-wp.php' );
+
+		$this->set_developer_name( 'AffiliateWP' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

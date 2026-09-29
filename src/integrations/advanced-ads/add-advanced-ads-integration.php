@@ -26,6 +26,10 @@ class Add_Advanced_Ads_Integration {
 		$this->set_icon( 'advanced-a-d-s-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'advanced-ads/advanced-ads.php' );
+
+		$this->set_developer_name( 'Thomas Maier' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

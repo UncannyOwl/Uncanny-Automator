@@ -29,6 +29,11 @@ class Really_Simple_Ssl_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'REALLY_SIMPLE_SECURITY' );
 		$this->set_name( 'Really Simple Security' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/really-simple-security-icon.svg' );
+
+		$this->set_plugin_file_path( 'really-simple-ssl/rlrsssl-really-simple-ssl.php' );
+		$this->set_developer_name( 'Really Simple Security' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

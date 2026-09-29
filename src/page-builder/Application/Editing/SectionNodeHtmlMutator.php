@@ -10,6 +10,9 @@ use DOMNode;
 use DOMXPath;
 use UncannyPageBuilder\Domain\DesignStyles\StableSelector;
 use UncannyPageBuilder\Domain\DesignStyles\StableSelectorResult;
+use UncannyPageBuilder\Domain\Editing\RichTextBlockTag;
+use UncannyPageBuilder\Domain\Editing\SourceTreeChildren;
+use UncannyPageBuilder\Domain\Exception\NodeEditRejectedException;
 use UncannyPageBuilder\Domain\Section\Section;
 
 /**
@@ -70,6 +73,7 @@ final class SectionNodeHtmlMutator
 
     /** @var string[] */
     private const UNSAFE_FRAGMENT_TAGS = ['script', 'style', 'template', 'iframe', 'object', 'embed'];
+    private const SAFE_URL_SCHEMES = ['http', 'https', 'mailto', 'tel'];
 
     private readonly RichTextBlockNormalizer $richTextBlocks;
 
@@ -104,7 +108,7 @@ final class SectionNodeHtmlMutator
 
         // Resolver.
         if (!$selectorResult->isResolved() || $selectorResult->selector() === null) {
-            throw new \InvalidArgumentException('Could not resolve a stable target for this node.');
+            throw NodeEditRejectedException::targetChanged('Could not resolve a stable target for this node.');
         }
 
         $doc = $this->loadDom($selectorResult->html());
@@ -115,11 +119,35 @@ final class SectionNodeHtmlMutator
 
         $targetElement = $this->findByStableSelector($doc, $selectorResult->selector());
         if (!$targetElement instanceof DOMElement) {
-            throw new \InvalidArgumentException('Selected node no longer exists. Select it again.');
+            throw NodeEditRejectedException::targetChanged('Selected node no longer exists. Select it again.');
         }
 
+        // Apply the host kind before its content, regardless of merged edit order.
+        $changes = array_merge(
+            array_filter($changes, static fn (array $change): bool => ($change['name'] ?? '') === 'block_tag'),
+            array_filter($changes, static fn (array $change): bool => ($change['name'] ?? '') !== 'block_tag'),
+        );
+        $changedBlock = false;
+        $removedNode = false;
+
         foreach ($changes as $change) {
+            $changedBlock = $changedBlock || ($change['name'] ?? '') === 'block_tag';
             $this->applyChange($doc, $root, $targetElement, $change);
+
+            if (($change['kind'] ?? '') === 'remove' && ($change['name'] ?? '') === 'node') {
+                $removedNode = true;
+            }
+        }
+
+        // A successful explicit deletion leaves no block to validate.
+        if ($changedBlock && !$removedNode) {
+            if ($targetElement->parentNode === null) {
+                throw NodeEditRejectedException::invalidBlock('This text block cannot contain other blocks.');
+            }
+            $tag = RichTextBlockTag::from(strtolower($targetElement->tagName));
+            if (!$tag->allowsBlockChildren() && $this->richTextBlocks->containsBlockHtml($this->serializeChildren($targetElement))) {
+                throw NodeEditRejectedException::invalidBlock('This text block cannot contain other blocks.');
+            }
         }
 
         return [
@@ -132,17 +160,38 @@ final class SectionNodeHtmlMutator
     /**
      * @param array<string, mixed> $change
      */
-    private function applyChange(DOMDocument $doc, DOMElement $root, DOMElement $targetElement, array $change): void
+    private function applyChange(DOMDocument $doc, DOMElement &$root, DOMElement &$targetElement, array $change): void
     {
         $kind = $this->stringValue($change, 'kind');
         $name = $this->stringValue($change, 'name');
         $value = $this->stringValue($change, 'value');
         $path = $this->stringValue($change, 'path');
 
+        if ($kind === 'content' && $name === 'block_tag') {
+            $tag = RichTextBlockTag::tryFrom($value);
+            if ($tag === null || RichTextBlockTag::tryFrom(strtolower($targetElement->tagName)) === null) {
+                throw NodeEditRejectedException::invalidBlock('Text block kind is not supported.');
+            }
+            $this->assertNodeIsNotBindingOwned($targetElement, $root);
+            $replacement = $doc->createElement($tag->value);
+            foreach ($targetElement->attributes as $attribute) {
+                $replacement->setAttribute($attribute->nodeName, $attribute->nodeValue);
+            }
+            while ($targetElement->firstChild) {
+                $replacement->appendChild($targetElement->firstChild);
+            }
+            $targetElement->parentNode?->replaceChild($replacement, $targetElement);
+            if ($root === $targetElement) {
+                $root = $replacement;
+            }
+            $targetElement = $replacement;
+            return;
+        }
+
         if ($kind === 'content' && $name === 'text') {
             $node = $path !== '' ? $this->locateByPath($doc, $path) : $targetElement;
             if (!$node instanceof DOMNode || !$this->nodeIsInsideTarget($node, $targetElement)) {
-                throw new \InvalidArgumentException('Selected content no longer exists. Select it again.');
+                throw NodeEditRejectedException::targetChanged('Selected content no longer exists. Select it again.');
             }
             $this->assertNodeIsNotBindingOwned($node, $root);
             $this->replaceText($doc, $node, $value);
@@ -158,7 +207,7 @@ final class SectionNodeHtmlMutator
                 $node = $targetElement;
             }
             if (!$node instanceof DOMElement || !$this->nodeIsInsideTarget($node, $targetElement)) {
-                throw new \InvalidArgumentException('Selected content no longer exists. Select it again.');
+                throw NodeEditRejectedException::targetChanged('Selected content no longer exists. Select it again.');
             }
             $this->assertNodeIsNotBindingOwned($node, $root);
             $this->replaceWithSafeInlineHtml($doc, $node, $value);
@@ -174,7 +223,7 @@ final class SectionNodeHtmlMutator
         if ($kind === 'attribute' && in_array($name, self::ALLOWED_ATTRIBUTES, true)) {
             $node = $path !== '' ? $this->locateByPath($doc, $path) : $targetElement;
             if (!$node instanceof DOMElement || !$this->nodeIsInsideTarget($node, $targetElement)) {
-                throw new \InvalidArgumentException('Selected attribute no longer exists. Select it again.');
+                throw NodeEditRejectedException::targetChanged('Selected attribute no longer exists. Select it again.');
             }
             $this->assertNodeIsNotBindingOwned($node, $root);
             $this->setOptionalAttribute($node, $name, $value);
@@ -204,7 +253,7 @@ final class SectionNodeHtmlMutator
         }
 
         if (!$node instanceof DOMElement) {
-            throw new \InvalidArgumentException('Selected content no longer exists. Select it again.');
+            throw NodeEditRejectedException::targetChanged('Selected content no longer exists. Select it again.');
         }
 
         while ($node->firstChild) {
@@ -269,7 +318,7 @@ final class SectionNodeHtmlMutator
         $fragment = $this->loadInlineFragment($html);
         $container = $fragment->getElementById('__upb_inline_fragment');
         if (!$container instanceof DOMElement) {
-            throw new \InvalidArgumentException('Safe HTML could not be parsed.');
+            throw NodeEditRejectedException::unsafeHtml('Safe HTML could not be parsed.');
         }
 
         $this->assertSafeHtmlChildren($container);
@@ -323,6 +372,16 @@ final class SectionNodeHtmlMutator
         ?string $expectedTag,
         array $changes,
     ): StableSelectorResult {
+        // A pending deletion can share a batch with a text edit. Neither text
+        // path promotion nor rich-text ancestor recovery may choose its parent.
+        $allowTextTarget = true;
+        foreach ($changes as $change) {
+            if ($this->stringValue($change, 'kind') === 'remove' && $this->stringValue($change, 'name') === 'node') {
+                $allowTextTarget = false;
+                break;
+            }
+        }
+
         $resolved = StableSelector::resolve(
             html: $html,
             selector: $selector,
@@ -330,9 +389,10 @@ final class SectionNodeHtmlMutator
             sourcePath: $sourcePath,
             seed: $seed,
             expectedTag: $expectedTag,
+            allowTextTarget: $allowTextTarget,
         );
 
-        if ($resolved->isResolved() || !$this->shouldRetryRepairableSafeHtmlTarget($selector, $identity, $sourcePath, $expectedTag, $changes)) {
+        if ($resolved->isResolved() || !$allowTextTarget || !$this->shouldRetryRepairableSafeHtmlTarget($selector, $identity, $sourcePath, $expectedTag, $changes)) {
             return $resolved;
         }
 
@@ -468,25 +528,31 @@ final class SectionNodeHtmlMutator
     private function assertSafeHtmlChildren(DOMNode $node): void
     {
         foreach ($node->childNodes as $child) {
-            if ($child->nodeType === XML_TEXT_NODE) {
+            // Authored source keeps text and comments. Both are inert.
+            if ($child->nodeType === XML_TEXT_NODE || $child->nodeType === XML_COMMENT_NODE) {
                 continue;
             }
             if (!$child instanceof DOMElement) {
-                throw new \InvalidArgumentException('Safe HTML supports text and HTML elements only.');
+                throw NodeEditRejectedException::unsafeHtml('Safe HTML supports text and HTML elements only.');
             }
 
             $this->assertSafeElementTree($child);
         }
     }
 
+    /**
+     * A reference without a scheme is relative to the site and stays safe.
+     * Browsers ignore ASCII control characters inside a scheme, so remove them
+     * before the scheme check.
+     */
     private function isUnsafeHref(string $href): bool
     {
-        $trimmed = strtolower(trim($href));
-        if ($trimmed === '' || str_starts_with($trimmed, '#') || str_starts_with($trimmed, '/')) {
+        $probe = strtolower((string) preg_replace('/[\x00-\x20]+/', '', $href));
+        if (preg_match('/^([a-z][a-z0-9+.\-]*):/', $probe, $matches) !== 1) {
             return false;
         }
 
-        return !preg_match('/^(https?:|mailto:|tel:)/', $trimmed);
+        return !in_array($matches[1], self::SAFE_URL_SCHEMES, true);
     }
 
     private function setOptionalAttribute(DOMElement $node, string $name, string $value): void
@@ -632,7 +698,7 @@ final class SectionNodeHtmlMutator
 
         $parent = $targetElement->parentNode;
         if (!$parent instanceof DOMNode) {
-            throw new \InvalidArgumentException('Selected node no longer exists. Select it again.');
+            throw NodeEditRejectedException::targetChanged('Selected node no longer exists. Select it again.');
         }
 
         $parent->removeChild($targetElement);
@@ -642,16 +708,16 @@ final class SectionNodeHtmlMutator
     {
         $tag = strtolower($element->tagName);
         if (in_array($tag, self::UNSAFE_FRAGMENT_TAGS, true)) {
-            throw new \InvalidArgumentException('HTML fragment contains an unsafe tag.');
+            throw NodeEditRejectedException::unsafeHtml('HTML fragment contains an unsafe tag.');
         }
 
         foreach ($element->attributes ?? [] as $attribute) {
             $name = strtolower($attribute->name);
             if (str_starts_with($name, 'on')) {
-                throw new \InvalidArgumentException('HTML fragment contains an unsafe event attribute.');
+                throw NodeEditRejectedException::unsafeHtml('HTML fragment contains an unsafe event attribute.');
             }
             if (in_array($name, ['href', 'src'], true) && $this->isUnsafeHref($attribute->value)) {
-                throw new \InvalidArgumentException('HTML fragment contains an unsafe URL.');
+                throw NodeEditRejectedException::unsafeHtml('HTML fragment contains an unsafe URL.');
             }
         }
 
@@ -688,7 +754,7 @@ final class SectionNodeHtmlMutator
     private function assertNodeIsNotBindingOwned(DOMNode $node, DOMElement $root): void
     {
         if ($this->isInsideDynamicBindingSubtree($node, $root)) {
-            throw new \InvalidArgumentException('Cannot edit content rendered by a dynamic binding. Edit the binding instead.');
+            throw NodeEditRejectedException::bindingOwned('Cannot edit content rendered by a dynamic binding. Edit the binding instead.');
         }
     }
 
@@ -717,6 +783,10 @@ final class SectionNodeHtmlMutator
     private function findByStableSelector(DOMNode $root, string $selector): ?DOMElement
     {
         if (preg_match('/^#([A-Za-z][\w-]*)$/', $selector, $matches) === 1) {
+            return $this->singleElementByAttribute($root, 'id', $matches[1]);
+        }
+
+        if (preg_match(StableSelector::AUTHORED_ID_SELECTOR_PATTERN, $selector, $matches) === 1) {
             return $this->singleElementByAttribute($root, 'id', $matches[1]);
         }
 
@@ -790,7 +860,7 @@ final class SectionNodeHtmlMutator
                 return null;
             }
 
-            $children = $this->treeChildren($current);
+            $children = SourceTreeChildren::of($current);
             $index = (int) $segment;
             if (!isset($children[$index])) {
                 return null;
@@ -800,23 +870,6 @@ final class SectionNodeHtmlMutator
         }
 
         return $current;
-    }
-
-    /** @return array<int, DOMNode> */
-    private function treeChildren(DOMNode $node): array
-    {
-        $out = [];
-        foreach ($node->childNodes as $child) {
-            if ($child->nodeType === XML_ELEMENT_NODE) {
-                $out[] = $child;
-                continue;
-            }
-            if ($child->nodeType === XML_TEXT_NODE && trim($child->textContent ?? '') !== '') {
-                $out[] = $child;
-            }
-        }
-
-        return $out;
     }
 
     private function loadDom(string $html): DOMDocument

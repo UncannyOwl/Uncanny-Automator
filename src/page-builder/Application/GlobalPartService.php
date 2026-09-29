@@ -70,17 +70,46 @@ final class GlobalPartService
         }
 
         $section = $this->sectionRepository->findById($sectionId);
+
+        return $this->createFromSectionSnapshot($section, $title, $type, false);
+    }
+
+    /**
+     * @return array{id: int, title: string, type: string, warnings: string[], section_id?: int, position?: int, name?: string, source_generation?: int, html?: string, css?: string, compiled_css?: string}
+     */
+    public function createFromSection(Section $section, string $title, GlobalPartType $type): array
+    {
+        return $this->createFromSectionSnapshot($section, $title, $type, true);
+    }
+
+    /**
+     * @return array{id: int, title: string, type: string, warnings: string[], section_id?: int, position?: int, name?: string, source_generation?: int, html?: string, css?: string, compiled_css?: string}
+     */
+    private function createFromSectionSnapshot(
+        Section $section,
+        string $title,
+        GlobalPartType $type,
+        bool $includeSource,
+    ): array {
         $postId = $this->repository->createPost($title, $type);
 
         try {
             $createdPart = $this->repository->findById($postId);
+            $source = Section::create(
+                $postId,
+                0,
+                $section->name(),
+                $section->content(),
+                $section->id(),
+            );
 
             return $this->persistSection(
                 $postId,
                 $title,
-                $section,
+                $source,
                 $type,
                 generation: (int) ($createdPart['generation'] ?? 0),
+                includeSource: $includeSource,
             );
         } catch (\Throwable $failure) {
             $this->rethrowAfterCreationCleanup($postId, $failure);
@@ -183,6 +212,36 @@ final class GlobalPartService
             $title,
             $sectionData,
             $type,
+            existingPart: $existing,
+        );
+    }
+
+    /**
+     * Create source against the exact blank snapshot that authorized bootstrap.
+     *
+     * @param array<string, mixed> $existing
+     * @return array{id: int, title: string, type: string, warnings: string[], section_id: int, position: int, name: string, source_generation: int, html: string, css: string, compiled_css: string}
+     */
+    public function bootstrapLoadedBlankSource(
+        int $globalPartId,
+        array $existing,
+        string $title,
+        array $sectionData,
+        GlobalPartType $type,
+    ): array {
+        if ((int) ($existing['post_id'] ?? 0) !== $globalPartId || ($existing['type'] ?? null) !== $type->value) {
+            throw new \RuntimeException('Global part not found.');
+        }
+        if ($this->sourceRowsForWrite($existing) !== []) {
+            throw new \RuntimeException('Global part source already exists.');
+        }
+
+        return $this->persistSectionData(
+            $globalPartId,
+            $title,
+            $sectionData,
+            $type,
+            includeSource: true,
             existingPart: $existing,
         );
     }
@@ -304,7 +363,7 @@ final class GlobalPartService
     }
 
     /**
-     * @return array{id: int, title: string, type: string, warnings: string[], section_id?: int, html?: string, css?: string, compiled_css?: string}
+     * @return array{id: int, title: string, type: string, warnings: string[], section_id?: int, position?: int, name?: string, source_generation?: int, html?: string, css?: string, compiled_css?: string}
      */
     private function persistSectionData(
         int $postId,
@@ -363,7 +422,8 @@ final class GlobalPartService
     ): array {
         $warnings = [];
         $requestedContent = $source->content();
-        $sanitizedContent = $this->sanitizeContent($requestedContent, $warnings, $source->id());
+        $ownedSectionId = $source->id() ?? $source->sourceRootId();
+        $sanitizedContent = $this->sanitizeContent($requestedContent, $warnings, $ownedSectionId);
         if (
             ($requireExactCss && $sanitizedContent->toArray() !== $requestedContent->toArray())
             || ($preserveExistingCss && $sanitizedContent->css() !== $requestedContent->css())
@@ -376,6 +436,7 @@ final class GlobalPartService
             $source->position(),
             $source->name() !== '' ? $source->name() : $title,
             $sanitizedContent,
+            $source->sourceRootId(),
         );
         if ($source->id() !== null) {
             $section->assignId($source->id());
@@ -430,6 +491,9 @@ final class GlobalPartService
         ];
         if ($includeSource) {
             $result['section_id'] = $section->id() ?? 0;
+            $result['position'] = $section->position();
+            $result['name'] = $section->name();
+            $result['source_generation'] = $generation + 1;
             $result['html'] = $section->content()->html();
             $result['css'] = $section->content()->css();
             $result['compiled_css'] = $compiled->minifiedCss();

@@ -20,17 +20,6 @@ final class CanvasHiddenControlStrings
     /**
      * @return array{label: string, description: string}
      */
-    public function sectionEditableUpdate(): array
-    {
-        return [
-            'label' => _x('Update editable', 'Page Builder', 'uncanny-automator'),
-            'description' => _x('Apply an inline editable update to section HTML.', 'Page Builder', 'uncanny-automator'),
-        ];
-    }
-
-    /**
-     * @return array{label: string, description: string}
-     */
     public function sectionNodeUpdate(): array
     {
         return [

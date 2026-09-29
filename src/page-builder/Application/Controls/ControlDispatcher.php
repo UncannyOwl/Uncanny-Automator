@@ -11,8 +11,8 @@ use UncannyPageBuilder\Application\Publishing\PagePublicationOutcome;
 use UncannyPageBuilder\Application\SourcePackage\PageSourceExportException;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartCreationUncertainException;
-use UncannyPageBuilder\Domain\Exception\EditableUpdateException;
 use UncannyPageBuilder\Domain\Exception\HistorySnapshotConflictException;
+use UncannyPageBuilder\Domain\Exception\NodeEditRejectedException;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
 use UncannyPageBuilder\Domain\Exception\SectionNotFoundException;
 use UncannyPageBuilder\Domain\Exception\SectionValidationException;
@@ -62,16 +62,23 @@ final class ControlDispatcher
                     'control_id' => $definition->id(),
                 ],
             );
+        } catch (NodeEditRejectedException $e) {
+            $error = match ($e->reason()) {
+                'target_changed' => ErrorMessage::EditableContentTargetChanged,
+                'invalid_block' => ErrorMessage::RichTextBlockInvalid,
+                'unsafe_html' => ErrorMessage::EditableContentUnsafe,
+                'binding_owned' => ErrorMessage::EditableContentBindingOwned,
+                default => ErrorMessage::ControlInvalidRequest,
+            };
+            return ApiResponse::error($error, [
+                'control_id' => $definition->id(),
+                'reason' => $e->reason(),
+                'detail' => $e->getMessage(),
+            ]);
         } catch (\InvalidArgumentException $e) {
             return ApiResponse::error(ErrorMessage::ControlInvalidRequest, [
                 'control_id' => $definition->id(),
                 'detail'     => $e->getMessage(),
-            ]);
-        } catch (EditableUpdateException $e) {
-            return ApiResponse::error($this->editableUpdateError($e), [
-                'control_id'   => $definition->id(),
-                'editable_key' => $e->editableKey(),
-                'detail'       => $e->getMessage(),
             ]);
         } catch (SectionValidationException $e) {
             return ApiResponse::validationError($e);
@@ -187,17 +194,6 @@ final class ControlDispatcher
         }
 
         return $resolved;
-    }
-
-    private function editableUpdateError(EditableUpdateException $e): ErrorMessage
-    {
-        return match ($e->reason()) {
-            'key_not_found' => ErrorMessage::EditableKeyNotFound,
-            'type_mismatch' => ErrorMessage::EditableTypeMismatch,
-            'duplicate_key' => ErrorMessage::EditableDuplicateKey,
-            'nested_markup' => ErrorMessage::EditableHasNestedMarkup,
-            default => ErrorMessage::ControlInvalidRequest,
-        };
     }
 
     private function publicationError(PagePublicationOutcome $outcome): ErrorMessage

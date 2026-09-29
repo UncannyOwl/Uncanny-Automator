@@ -43,12 +43,6 @@ final class EditorStateService
         $layout = is_array($publishedSource)
             ? ['sections' => $publishedSource['sections'] ?? []]
             : $this->sectionService->getLayout($pageId);
-        $capabilitiesMap = is_array($publishedSource)
-            ? $this->sectionService->buildEditableCapabilitiesMapForSource(
-                $pageId,
-                is_array($publishedSource['sections'] ?? null) ? $publishedSource['sections'] : [],
-            )
-            : $this->sectionService->buildEditableCapabilitiesMap($pageId);
         $workingShellMode = $this->shellModeService->resolveForPage($pageId);
         $snapshotShellMode = is_array($publishedSource)
             ? ShellMode::tryFrom((string) ($publishedSource['shell_mode'] ?? ''))
@@ -104,7 +98,7 @@ final class EditorStateService
                 'offer_parked_draft' => false,
             ],
             'global_part'      => null,
-            'sections'         => $this->sectionMetadataFromLayout($layout['sections'] ?? [], $capabilitiesMap),
+            'sections'         => $this->sectionMetadataFromLayout($layout['sections'] ?? []),
             'design_standards' => $this->designStandardsSummary($this->designStandardsService->resolve()),
             'chrome'           => $this->chrome($pageId, $provider),
         ]);
@@ -146,10 +140,9 @@ final class EditorStateService
 
     /**
      * @param array<int, array<string, mixed>> $sections
-     * @param array<int, array<int, array<string, mixed>>> $capabilitiesMap
      * @return array<int, array<string, mixed>>
      */
-    private function sectionMetadataFromLayout(array $sections, array $capabilitiesMap): array
+    private function sectionMetadataFromLayout(array $sections): array
     {
         $metadata = [];
 
@@ -159,7 +152,6 @@ final class EditorStateService
                 'id'                    => $sectionId,
                 'position'              => (int) ($section['position'] ?? 0),
                 'name'                  => (string) ($section['name'] ?? ''),
-                'editable_capabilities' => $capabilitiesMap[$sectionId] ?? [],
             ];
         }
 
@@ -179,7 +171,6 @@ final class EditorStateService
                 'id'                    => (int) ($section['id'] ?? 0),
                 'position'              => (int) ($section['position'] ?? $position),
                 'name'                  => (string) ($section['name'] ?? ''),
-                'editable_capabilities' => [],
             ];
         }
 

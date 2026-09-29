@@ -7,9 +7,9 @@ namespace UncannyPageBuilder\Domain\Editing;
 /**
  * Shared exact-match patcher for agent-facing source surgery.
  *
- * The public contract is search/replace driven. Legacy alias keys stay
- * accepted here for model compatibility, but the contract documentation should
- * describe only the canonical search/replace shape.
+ * Canonical search, replace, and content values are already JSON-decoded and
+ * remain byte-exact. Legacy alias keys stay accepted for model compatibility,
+ * including their historical escaped-whitespace decoding.
  */
 final class ExactSourcePatcher
 {
@@ -31,8 +31,10 @@ final class ExactSourcePatcher
             }
 
             $action = strtolower(trim((string) ($patch['action'] ?? 'replace')));
-            $search = (string) ($patch['search'] ?? $patch['old'] ?? $patch['old_string'] ?? '');
-            $search = str_replace(['\n', '\t'], ["\n", "\t"], $search);
+            [$searchKey, $search] = $this->firstPatchEntry($patch, ['search', 'old', 'old_string']);
+            if ($searchKey !== 'search') {
+                $search = $this->decodeLegacyEscapedWhitespace($search);
+            }
 
             if ($search === '') {
                 return [$subject, "{$field}_patches[{$index}]: empty 'search' string."];
@@ -144,17 +146,22 @@ final class ExactSourcePatcher
                 return ['', "{$field}_patches[{$index}]: missing 'replace' string."];
             }
 
-            return [
-                $this->normalizePatchText($this->firstPatchValue($patch, ['replace', 'new', 'new_string'])),
-                null,
-            ];
+            [$replacementKey, $replacement] = $this->firstPatchEntry(
+                $patch,
+                ['replace', 'new', 'new_string'],
+            );
+            if ($replacementKey !== 'replace') {
+                $replacement = $this->decodeLegacyEscapedWhitespace($replacement);
+            }
+
+            return [$replacement, null];
         }
 
         if (!$this->hasPatchValue($patch, ['content'])) {
             return ['', "{$field}_patches[{$index}]: action '{$action}' requires 'content'."];
         }
 
-        $content = $this->normalizePatchText($this->firstPatchValue($patch, ['content']));
+        [, $content] = $this->firstPatchEntry($patch, ['content']);
         if ($action === 'insert_before') {
             return [$content . $matched, null];
         }
@@ -180,19 +187,20 @@ final class ExactSourcePatcher
     /**
      * @param array<string, mixed> $patch
      * @param list<string> $keys
+     * @return array{0: string, 1: string}
      */
-    private function firstPatchValue(array $patch, array $keys): string
+    private function firstPatchEntry(array $patch, array $keys): array
     {
         foreach ($keys as $key) {
             if (array_key_exists($key, $patch)) {
-                return (string) $patch[$key];
+                return [$key, (string) $patch[$key]];
             }
         }
 
-        return '';
+        return ['', ''];
     }
 
-    private function normalizePatchText(string $value): string
+    private function decodeLegacyEscapedWhitespace(string $value): string
     {
         return str_replace(['\n', '\t'], ["\n", "\t"], $value);
     }

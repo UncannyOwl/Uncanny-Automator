@@ -1,6 +1,6 @@
 {
   "name": "manage_reusable",
-  "description": "Manage reusable/global-part lifecycle operations through one facade. List reusables, create a blank reusable, convert an existing page section into a reusable, update reusable properties, or delete a reusable. Mutations change shared working source only; they never update a live page, and a human must Publish or Update live in the Manual editor. Reusable types are header, footer, and section.",
+  "description": "Manage reusable/global-part lifecycle operations through one facade. List reusables, create a blank reusable, convert an existing page section into a reusable, update reusable properties, or delete a reusable. Conversion creates an independent reusable copy; editing it does not update the original page section. Mutations change shared working source only; they never update a live page, and a human must Publish or Update live in the Manual editor. STATUS is the internal nonpublic reusable record status; STATUS: publish does not mean new source is live on visitor pages. Reusable types are header, footer, and section.",
   "http": {
     "method": "POST",
     "path": "/wp-json/uncanny-page-builder/v1/agent/reusable"
@@ -19,7 +19,7 @@
       "type": "integer",
       "required": false,
       "in": "body",
-      "description": "Existing reusable/global-part post ID for update or delete. Omit to use the reusable currently open in the Manual editor.",
+      "description": "Existing reusable/global-part post ID for update or delete. Pass an explicit ID from manage_reusable operation=list or the current reusable canvas context.",
       "inject_from": "current_page_id"
     },
     {
@@ -56,7 +56,7 @@
   ],
   "output": {
     "content_type": "text/plain",
-    "description": "Plain-text reusable result with COUNT for list responses, per-item REUSABLE_ID, TITLE, REUSABLE_TYPE, STATUS, EDITOR_URL (the Manual editor URL), optional SOURCE_SECTION_ID, and NEXT STEP guidance."
+    "description": "Plain-text reusable result with COUNT for list responses, per-item REUSABLE_ID, TITLE, REUSABLE_TYPE, STATUS, EDITOR_URL (the Manual editor URL), optional SOURCE_SECTION_ID, and NEXT STEP guidance. STATUS is the internal nonpublic reusable record status, not proof that changed source is live on visitor pages."
   },
   "auto_approve": false,
   "group": "write"

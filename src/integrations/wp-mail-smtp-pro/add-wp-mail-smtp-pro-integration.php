@@ -26,7 +26,14 @@ class Add_Wp_Mail_Smtp_Pro_Integration {
 		$this->set_name( 'WP Mail SMTP Pro' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_icon( 'wp-mail-smtp-icon.svg' );
-		$this->set_plugin_file_path( 'wp-mail-smtp-pro/wp-mail-smtp.php' );
+		// The file this integration's own plugin_active() checks. The Pro
+		// plugin's header lives in wp_mail_smtp.php; wp-mail-smtp.php also
+		// exists in that folder but is not the plugin file.
+		$this->set_plugin_file_path( 'wp-mail-smtp-pro/wp_mail_smtp.php' );
+
+		$this->set_developer_name( 'WPForms' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

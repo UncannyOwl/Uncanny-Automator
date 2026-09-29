@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Infrastructure\Section;
 
+use UncannyPageBuilder\Domain\Binding\BindingRegistry;
+use UncannyPageBuilder\Domain\Binding\RegionReplaces;
 use UncannyPageBuilder\Domain\DesignStyles\ElementStyleRule;
+use UncannyPageBuilder\Domain\Editing\SourceTreeChildren;
+use UncannyPageBuilder\Domain\Section\DomElementPath;
 use UncannyPageBuilder\Domain\Section\Section;
 
 /**
@@ -13,6 +17,8 @@ use UncannyPageBuilder\Domain\Section\Section;
 final class DomSectionTargetInspector
 {
     private const PREVIEW_LIMIT = 160;
+
+    public function __construct(private readonly ?BindingRegistry $bindings = null) {}
 
     /**
      * @return array{tag: string, classes: list<string>, source_path: string}
@@ -90,7 +96,7 @@ final class DomSectionTargetInspector
             return null;
         }
 
-        return $this->preview($target->textContent ?? '');
+        return $this->previewFields($target->textContent ?? '')['text'];
     }
 
     public function attributeForTarget(Section $section, string $sourcePath, string $expectedTag, string $attribute): ?string
@@ -137,8 +143,13 @@ final class DomSectionTargetInspector
             $generatedRules = $includeCss ? $this->generatedCssCandidates($css, $id, $classes) : [];
             $hasInlineStyle = trim($element->getAttribute('style')) !== '';
             $styleOwnership = $elementStyleRules !== [] ? 'element_style' : ($hasInlineStyle ? 'inline_attribute' : 'unstyled');
+            $recommendedWrite = match ($styleOwnership) {
+                'element_style' => 'edit_part mode=durable_style',
+                'inline_attribute' => 'edit_part mode=source_patch',
+                default => 'edit_part mode=css_rule',
+            };
 
-            $target = [
+            $target = array_merge([
                 'label' => $this->label($element),
                 'tag' => strtolower($element->tagName),
                 'source_path' => $path,
@@ -146,16 +157,15 @@ final class DomSectionTargetInspector
                 'element_id' => $id,
                 'compiled_selector' => $this->compiledElementSelector($sectionId, $id),
                 'classes' => $classes,
-                'text' => $this->preview($element->textContent ?? ''),
                 'style_ownership' => $styleOwnership,
-                'recommended_write' => 'edit_part mode=durable_style',
-            ];
+                'recommended_write' => $recommendedWrite,
+            ], $this->previewFields($element->textContent ?? ''));
 
             if ($hasInlineStyle) {
                 $target['inline_style'] = trim($element->getAttribute('style'));
             }
+            $target['element_styles'] = $this->elementStyleLines($elementStyleRules);
             if ($includeCss) {
-                $target['element_styles'] = $this->elementStyleLines($elementStyleRules);
                 $target['generated_css_candidates'] = $generatedRules;
             }
 
@@ -277,7 +287,7 @@ final class DomSectionTargetInspector
     private function textTargets(\DOMElement $root): array
     {
         $targets = [];
-        $this->walkElements($root, function (\DOMElement $element, string $path) use (&$targets): void {
+        $this->walkElements($root, function (\DOMElement $element, string $path) use (&$targets, $root): void {
             $tag = strtolower($element->tagName);
             if ($this->isNonContentTag($element) || in_array($tag, ['a', 'button', 'img'], true)) {
                 return;
@@ -287,14 +297,13 @@ final class DomSectionTargetInspector
                 return;
             }
 
-            $targets[] = [
+            $targets[] = array_merge([
                 'target_id' => 'text-' . (count($targets) + 1),
                 'label' => $this->label($element),
                 'tag' => $tag,
                 'source_path' => $path,
-                'text' => $this->preview($element->textContent ?? ''),
                 'recommended_tool' => 'edit_part mode=text',
-            ];
+            ], $this->previewFields($element->textContent ?? ''), $this->bindingOwnership($element, $root));
         });
 
         return $targets;
@@ -306,7 +315,7 @@ final class DomSectionTargetInspector
     private function elementTargets(\DOMElement $root, string $tag, string $targetType): array
     {
         $targets = [];
-        $this->walkElements($root, function (\DOMElement $element, string $path) use (&$targets, $tag, $targetType): void {
+        $this->walkElements($root, function (\DOMElement $element, string $path) use (&$targets, $tag, $targetType, $root): void {
             if (strtolower($element->tagName) !== $tag) {
                 return;
             }
@@ -324,9 +333,10 @@ final class DomSectionTargetInspector
                 $target['alt'] = $element->getAttribute('alt');
             } else {
                 $target['href'] = $element->getAttribute('href');
-                $target['text'] = $this->preview($element->textContent ?? '');
+                $target = array_merge($target, $this->previewFields($element->textContent ?? ''));
             }
 
+            $target = array_merge($target, $this->bindingOwnership($element, $root));
             $targets[] = $target;
         });
 
@@ -339,7 +349,7 @@ final class DomSectionTargetInspector
     private function buttonTargets(\DOMElement $root): array
     {
         $targets = [];
-        $this->walkElements($root, function (\DOMElement $element, string $path) use (&$targets): void {
+        $this->walkElements($root, function (\DOMElement $element, string $path) use (&$targets, $root): void {
             $tag = strtolower($element->tagName);
             $classes = $this->classList($element);
             $looksLikeButton = $tag === 'button'
@@ -350,18 +360,93 @@ final class DomSectionTargetInspector
                 return;
             }
 
-            $targets[] = [
+            $targets[] = array_merge([
                 'target_id' => 'button-' . (count($targets) + 1),
                 'label' => $this->label($element),
                 'tag' => $tag,
                 'source_path' => $path,
-                'text' => $this->preview($element->textContent ?? ''),
                 'href' => $element->getAttribute('href'),
                 'recommended_tool' => $tag === 'a' ? 'edit_part mode=link' : 'edit_part mode=text',
-            ];
+            ], $this->previewFields($element->textContent ?? ''), $this->bindingOwnership($element, $root));
         });
 
         return $targets;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function bindingOwnership(\DOMElement $element, \DOMElement $root): array
+    {
+        $owner = $element;
+        while ($owner instanceof \DOMElement) {
+            $source = trim($owner->getAttribute('data-ai-dynamic'));
+            if ($source !== '') {
+                $bindingId = $source . ':' . DomElementPath::fromRoot($owner, $root);
+                $contract = $this->bindings?->regionContractFor($source);
+                if ($contract?->replaces === RegionReplaces::SelfElement) {
+                    return $this->directSourceOwnership();
+                }
+                if ($contract?->replaces === RegionReplaces::HostAttribute) {
+                    if (!$element->isSameNode($owner)) {
+                        return $this->directSourceOwnership();
+                    }
+
+                    $tag = strtolower($element->tagName);
+                    $ownedField = match ($tag) {
+                        'a' => 'href',
+                        'img' => 'src',
+                        default => 'host_attribute',
+                    };
+                    $storedFields = match ($tag) {
+                        'a' => 'text',
+                        'img' => 'alt',
+                        default => 'children',
+                    };
+
+                    return [
+                        'binding_ownership' => 'field_owned',
+                        'value_source' => 'mixed_source',
+                        'binding_source' => $source,
+                        'binding_id' => $bindingId,
+                        'binding_owned_field' => $ownedField,
+                        'stored_source_fields' => $storedFields,
+                        'recommended_tool' => $tag === 'a'
+                            ? 'edit_part mode=text'
+                            : 'edit_part mode=source_patch after read_part include=source',
+                    ];
+                }
+
+                return [
+                    'binding_ownership' => 'binding_owned',
+                    'value_source' => 'template_source',
+                    'binding_source' => $source,
+                    'binding_id' => $bindingId,
+                    'recommended_tool' => 'manage_binding operation=update_template',
+                ];
+            }
+
+            if ($owner->isSameNode($root)) {
+                break;
+            }
+
+            $parent = $owner->parentNode;
+            if (!$parent instanceof \DOMElement) {
+                break;
+            }
+            $owner = $parent;
+        }
+
+        return $this->directSourceOwnership();
+    }
+
+    /** @return array{binding_ownership: string, value_source: string} */
+    private function directSourceOwnership(): array
+    {
+        return [
+            'binding_ownership' => 'direct_source',
+            'value_source' => 'stored_source',
+        ];
     }
 
     /**
@@ -379,31 +464,12 @@ final class DomSectionTargetInspector
     {
         $visit($element, $path);
 
-        foreach ($this->treeChildren($element) as $index => $child) {
+        // Agent reads and browser edits must return the same source positions.
+        foreach (SourceTreeChildren::of($element) as $index => $child) {
             if ($child instanceof \DOMElement) {
                 $this->walkElement($child, $path . '.' . $index, $visit);
             }
         }
-    }
-
-    /**
-     * @return list<\DOMNode>
-     */
-    private function treeChildren(\DOMNode $node): array
-    {
-        $children = [];
-        foreach ($node->childNodes as $child) {
-            if ($child instanceof \DOMElement) {
-                $children[] = $child;
-                continue;
-            }
-
-            if ($child instanceof \DOMText && trim($child->wholeText) !== '') {
-                $children[] = $child;
-            }
-        }
-
-        return $children;
     }
 
     private function locateElementByPath(\DOMElement $root, string $path): ?\DOMElement
@@ -419,7 +485,7 @@ final class DomSectionTargetInspector
                 return null;
             }
 
-            $children = $this->treeChildren($current);
+            $children = SourceTreeChildren::of($current);
             $child = $children[(int) $segment] ?? null;
             if (!$child instanceof \DOMElement) {
                 return null;
@@ -447,14 +513,29 @@ final class DomSectionTargetInspector
         return $label;
     }
 
-    private function preview(string $text): string
+    /**
+     * @return array<string, string>
+     */
+    private function previewFields(string $text): array
     {
         $normalized = trim((string) preg_replace('/\s+/', ' ', $text));
-        if (strlen($normalized) <= self::PREVIEW_LIMIT) {
-            return $normalized;
+        $sourceBytes = strlen($normalized);
+        if ($sourceBytes <= self::PREVIEW_LIMIT) {
+            return ['text' => $normalized];
         }
 
-        return rtrim(substr($normalized, 0, self::PREVIEW_LIMIT - 3)) . '...';
+        $prefix = substr($normalized, 0, self::PREVIEW_LIMIT - 3);
+        while ($prefix !== '' && preg_match('//u', $prefix) !== 1) {
+            $prefix = substr($prefix, 0, -1);
+        }
+        $preview = rtrim($prefix) . '...';
+
+        return [
+            'text' => $preview,
+            'text_preview_truncated' => 'yes',
+            'text_preview_bytes' => (string) strlen($preview),
+            'text_source_bytes' => (string) $sourceBytes,
+        ];
     }
 
     /**

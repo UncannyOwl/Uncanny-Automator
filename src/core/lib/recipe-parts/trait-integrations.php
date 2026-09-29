@@ -24,6 +24,18 @@ use Uncanny_Automator\Utilities;
 trait Integrations {
 
 	/**
+	 * Plugin metadata setters/getters, so a legacy integration can declare the
+	 * same metadata a modern one does.
+	 *
+	 * This trait's own $plugin_file_path, set_plugin_file_path() and
+	 * get_plugin_file_path() take precedence over the composed ones and are
+	 * left in place deliberately: here the path doubles as the activeness
+	 * check in plugin_active(), which the manifest's inert accessors must not
+	 * displace.
+	 */
+	use \Uncanny_Automator\Integration_Manifest;
+
+	/**
 	 * @var
 	 */
 	protected $name;
@@ -221,10 +233,11 @@ trait Integrations {
 			'plugin_file_path' => $this->get_plugin_file_path(),
 		);
 
-		// If uses manifest trait, extract manifest data
-		if ( $this->uses_manifest_trait() && is_callable( array( $this, 'extract_manifest_data' ) ) ) {
-			/** @var array $manifest */
-			$manifest                      = call_user_func( array( $this, 'extract_manifest_data' ) );
+		// Only integrations that declared something carry a manifest key —
+		// extract_manifest_data() returns non-empty values only, so an
+		// integration that declares nothing registers exactly as it did before.
+		$manifest = $this->extract_manifest_data();
+		if ( ! empty( $manifest ) ) {
 			$registration_data['manifest'] = $manifest;
 		}
 
@@ -319,15 +332,5 @@ trait Integrations {
 	 */
 	public function set_plugin_file_path( $file_path ) {
 		$this->plugin_file_path = (string) $file_path;
-	}
-
-	/**
-	 * Check if integration uses Integration_Manifest trait.
-	 *
-	 * @return bool True if trait is used
-	 */
-	private function uses_manifest_trait() {
-		$traits = class_uses( get_class( $this ) );
-		return in_array( 'Uncanny_Automator\Integration_Manifest', $traits, true );
 	}
 }

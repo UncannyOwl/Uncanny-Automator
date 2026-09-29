@@ -19,6 +19,11 @@ class Groundhogg_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'GH' );
 		$this->set_name( 'Groundhogg' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/groundhogg-icon.svg' );
+
+		$this->set_plugin_file_path( 'groundhogg/groundhogg.php' );
+		$this->set_developer_name( 'Groundhogg' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

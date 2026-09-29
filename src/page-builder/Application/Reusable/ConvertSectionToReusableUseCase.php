@@ -13,7 +13,7 @@ final class ConvertSectionToReusableUseCase
     public function __invoke(ConvertSectionToReusableCommand $command): Reusable
     {
         return $this->reusablePort->convertSection(
-            $command->sectionId(),
+            $command->section(),
             $command->title(),
             $command->type(),
         );

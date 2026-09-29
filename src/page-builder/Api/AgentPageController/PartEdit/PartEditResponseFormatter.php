@@ -25,13 +25,14 @@ final class PartEditResponseFormatter
             return $response;
         }
 
-        $body = $this->rewriteRetiredToolReferences($body);
+        $body = $this->rewriteOwnedGuidance($body);
         $replacement = 'TOOL: edit_part';
         $body = preg_match('/^TOOL: /m', $body) === 1
             ? (preg_replace('/^TOOL: [^\n]+/m', $replacement, $body, 1) ?? $body)
             : $replacement . "\n" . $body;
 
-        if ($operation !== null && !str_contains($body, "\nOPERATION:")) {
+        $hasOwnedOperation = preg_match('/\ATOOL: [^\n]+\nRESULT: [^\n]+\nOPERATION: /', $body) === 1;
+        if ($operation !== null && !$hasOwnedOperation) {
             $body = preg_replace(
                 '/^RESULT: ([^\n]+)/m',
                 'RESULT: $1' . "\n" . 'OPERATION: ' . $operation,
@@ -56,9 +57,9 @@ final class PartEditResponseFormatter
         ]), $status);
     }
 
-    private function rewriteRetiredToolReferences(string $body): string
+    private function rewriteOwnedGuidance(string $body): string
     {
-        return strtr($body, [
+        $replacements = [
             'read_page_outline' => 'read_page_context',
             'read_section_manifest' => 'read_part include=manifest',
             'read_section_source' => 'read_part include=source',
@@ -80,6 +81,27 @@ final class PartEditResponseFormatter
             'preview_patch' => 'preview_change',
             'reorder_sections' => 'manage_sections operation=reorder',
             'delete_section' => 'manage_sections operation=delete',
-        ]);
+        ];
+
+        $lines = explode("\n", $body);
+        $lastNextStep = null;
+        foreach ($lines as $index => $line) {
+            if ($line === 'NEXT STEP') {
+                $lastNextStep = $index;
+                continue;
+            }
+
+            if (str_starts_with($line, 'NEXT STEP:')) {
+                $lines[$index] = strtr($line, $replacements);
+            }
+        }
+
+        if ($lastNextStep !== null) {
+            for ($index = $lastNextStep + 1, $count = count($lines); $index < $count; $index++) {
+                $lines[$index] = strtr($lines[$index], $replacements);
+            }
+        }
+
+        return implode("\n", $lines);
     }
 }

@@ -30,6 +30,7 @@ use UncannyPageBuilder\Application\Canvas\OriginalPageContentReaderInterface;
 use UncannyPageBuilder\Application\Canvas\ResolveEmptyCanvasInvitation;
 use UncannyPageBuilder\Application\Canvas\ReturnPageToWordPressUseCase;
 use UncannyPageBuilder\Application\Canvas\ReturnPageToWordPressTransitionInterface;
+use UncannyPageBuilder\Application\Canvas\WorkingCanvasUrlPortInterface;
 use UncannyPageBuilder\Application\Controls\PageDetailsProjectionInterface;
 use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\Controls\PageDetailsService;
@@ -67,9 +68,6 @@ use UncannyPageBuilder\Application\Editor\EditorStateService;
 use UncannyPageBuilder\Application\Editor\PublishedSourceSnapshotMigrationInterface;
 use UncannyPageBuilder\Application\Editor\SelectEditorPageSource;
 use UncannyPageBuilder\Application\Editor\RestorePublishedSourceToWorkingDraft;
-use UncannyPageBuilder\Application\Editing\EditableUpdateService;
-use UncannyPageBuilder\Application\Editing\EditableHtmlMutator;
-use UncannyPageBuilder\Application\Editing\GlobalPartEditableUpdateService;
 use UncannyPageBuilder\Application\Editing\GlobalPartNodeUpdateService;
 use UncannyPageBuilder\Application\Editing\SectionNodeHtmlMutator;
 use UncannyPageBuilder\Application\EditorLock\CheckHumanWriteOwnership;
@@ -219,6 +217,7 @@ use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageSourceImageCollecto
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPageSourceImageImporter;
 use UncannyPageBuilder\Infrastructure\WordPress\ZipPageSourceArchiveWriter;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressReusablePort;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressWorkingCanvasUrlPort;
 use UncannyPageBuilder\Infrastructure\WordPress\WpOwnedPageFinder;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostTypeIntentForPost;
 use UncannyPageBuilder\Infrastructure\WordPress\WpOriginalPageContentStore;
@@ -376,6 +375,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->typed(KsesSanitizer::class),
                 $c->typed(SourceGenerationStoreInterface::class),
                 $c->typed(GlobalSourceMutation::class),
+                $c->typed(ShadowCompiler::class),
             );
         });
 
@@ -627,6 +627,10 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return $c->typed(PageDetailsService::class);
         });
 
+        $container->factory(WorkingCanvasUrlPortInterface::class, static function (): WorkingCanvasUrlPortInterface {
+            return new WordPressWorkingCanvasUrlPort();
+        });
+
         $container->factory(PageDetailsHistoryRestorerInterface::class, static function (Container $c): PageDetailsHistoryRestorerInterface {
             return $c->typed(PageDetailsService::class);
         });
@@ -649,7 +653,6 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return new WordPressReusablePort(
                 $c->typed(DatabaseGlobalPartRepository::class),
                 $c->typed(GlobalPartService::class),
-                $c->typed(DatabaseSectionRepository::class),
                 $c->typed(GlobalPartDefaultsService::class),
                 $c->typed(GlobalSourceMutation::class),
             );
@@ -1111,13 +1114,6 @@ final class CoreServiceProvider implements ServiceProviderInterface
             );
         });
 
-        $container->factory(EditableUpdateService::class, static function (Container $c): EditableUpdateService {
-            return new EditableUpdateService(
-                $c->typed(SectionService::class),
-                $c->typed(EditableHtmlMutator::class),
-            );
-        });
-
         $container->factory(CreateCanvasUseCase::class, static function (Container $c): CreateCanvasUseCase {
             return new CreateCanvasUseCase(
                 $c->typed(CanvasPortInterface::class),
@@ -1188,17 +1184,6 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->factory(ListReusableUseCase::class, static function (Container $c): ListReusableUseCase {
             return new ListReusableUseCase(
                 $c->typed(ReusablePortInterface::class),
-            );
-        });
-
-        $container->factory(EditableHtmlMutator::class, static function (): EditableHtmlMutator {
-            return new EditableHtmlMutator();
-        });
-
-        $container->factory(GlobalPartEditableUpdateService::class, static function (Container $c): GlobalPartEditableUpdateService {
-            return new GlobalPartEditableUpdateService(
-                $c->typed(GlobalPartService::class),
-                $c->typed(EditableHtmlMutator::class),
             );
         });
 

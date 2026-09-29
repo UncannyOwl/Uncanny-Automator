@@ -39,6 +39,10 @@ class Zoom_Webinar_Integration extends App_Integration {
 
 		// Finalize setup.
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'Zoom' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

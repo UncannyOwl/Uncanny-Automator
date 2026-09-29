@@ -11,8 +11,6 @@ use Uncanny_Automator\Integration;
  */
 class Common_Integration extends Integration {
 
-	use \Uncanny_Automator\Integration_Manifest;
-
 	public $tokens;
 
 	/**
@@ -31,6 +29,10 @@ class Common_Integration extends Integration {
 		$this->set_integration_version( AUTOMATOR_PLUGIN_VERSION );
 		$this->set_short_description( esc_html_x( 'Common tokens for site information, user details, and recipe data.', 'Common', 'uncanny-automator' ) );
 		$this->set_full_description( esc_html_x( 'Provides common tokens including site information (name, URL, tagline), user details (name, email, role, IP address), and recipe data (ID, name) for use in automation workflows.', 'Common', 'uncanny-automator' ) );
+
+		$this->set_plugin_file_path( 'uncanny-automator/uncanny-automator.php' );
+		$this->set_developer_name( 'Uncanny Automator' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

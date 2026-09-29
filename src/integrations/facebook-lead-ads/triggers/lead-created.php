@@ -125,7 +125,7 @@ class Lead_Created extends \Uncanny_Automator\Recipe\App_Trigger {
 			'tokenName' => esc_html_x( 'Page ID', 'Facebook Lead Ads', 'uncanny-automator' ),
 		);
 
-		$form_fields = (array) maybe_unserialize( $trigger['meta'][ $this->helpers->get_const( 'FORM_FIELDS_META_KEY' ) ] ?? '' );
+		$form_fields = (array) automator_safe_unserialize( $trigger['meta'][ $this->helpers->get_const( 'FORM_FIELDS_META_KEY' ) ] ?? '' );
 
 		foreach ( $form_fields as $fields ) {
 			$tokens[] = array(

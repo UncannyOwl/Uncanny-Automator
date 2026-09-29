@@ -25,6 +25,11 @@ class Add_Jet_Crm_Integration {
 		$this->set_name( 'Jetpack CRM' );
 		$this->set_icon( 'jetpack-crm-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
+
+		$this->set_plugin_file_path( 'jetpack-crm/jetpack-crm.php' );
+		$this->set_developer_name( 'Jetpack CRM' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

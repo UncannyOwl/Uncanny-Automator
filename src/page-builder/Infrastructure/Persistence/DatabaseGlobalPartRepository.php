@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Infrastructure\Persistence;
 
 use UncannyPageBuilder\Application\Concurrency\GlobalSourceMutation;
 use UncannyPageBuilder\Domain\Compiler\CompiledOutput;
+use UncannyPageBuilder\Domain\Compiler\ShadowCompiler;
 use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartCreationCleanupInterface;
@@ -15,7 +16,10 @@ use UncannyPageBuilder\Domain\GlobalPart\GlobalPartSourceUpdateRepositoryInterfa
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\Section\Section;
 use UncannyPageBuilder\Domain\Section\SectionCollection;
+use UncannyPageBuilder\Domain\Section\SectionRootIdentityRemapper;
+use UncannyPageBuilder\Infrastructure\Compiler\CssMinifier;
 use UncannyPageBuilder\Infrastructure\WordPress\KsesSanitizer;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressSlashing;
 
 final class DatabaseGlobalPartRepository implements
     GlobalPartSnapshotRepositoryInterface,
@@ -37,11 +41,16 @@ final class DatabaseGlobalPartRepository implements
 
     private ?int $cacheGeneration = null;
 
+    private readonly ShadowCompiler $compiler;
+
     public function __construct(
         private readonly ?KsesSanitizer $ksesSanitizer = null,
         private readonly ?SourceGenerationStoreInterface $sourceGenerations = null,
         private readonly ?GlobalSourceMutation $globalSource = null,
-    ) {}
+        ?ShadowCompiler $compiler = null,
+    ) {
+        $this->compiler = $compiler ?? new ShadowCompiler(new CssMinifier());
+    }
 
     private function table(): string
     {
@@ -51,12 +60,13 @@ final class DatabaseGlobalPartRepository implements
     public function createPost(string $title, GlobalPartType $type): int
     {
         $store = $this->generationStore();
+        $slashedTitle = WordPressSlashing::slash($title);
         $postId = $this->commitGlobal(
             $store->globalGeneration(),
-            static function () use ($title, $type): int {
+            static function () use ($slashedTitle, $type): int {
                 $postId = wp_insert_post([
                     'post_type'   => self::CPT,
-                    'post_title'  => $title,
+                    'post_title'  => $slashedTitle,
                     'post_status' => 'publish',
                 ], true);
 
@@ -135,12 +145,16 @@ final class DatabaseGlobalPartRepository implements
         SectionCollection $sections,
         CompiledOutput $compiled,
     ): void {
+        $hasNewSections = $this->hasNewSections($sections);
         $nextGeneration = $sections->generation() + 1;
         $this->commitGlobal(
             $sections->generation(),
-            function () use ($globalPartId, $sections, $compiled): void {
+            function () use ($globalPartId, $sections, $compiled, $hasNewSections): void {
                 $this->replaceSectionRows($globalPartId, $sections);
-                $this->persistCompiled($globalPartId, $compiled);
+                $this->persistCompiled(
+                    $globalPartId,
+                    $hasNewSections ? $this->compiler->compile($sections) : $compiled,
+                );
             },
         );
 
@@ -211,7 +225,7 @@ final class DatabaseGlobalPartRepository implements
     {
         global $wpdb;
         $postmetaTable = isset($wpdb->postmeta) ? (string) $wpdb->postmeta : (string) $wpdb->prefix . 'postmeta';
-        $stored = $wpdb->get_var($wpdb->prepare(
+        $row = $wpdb->get_row($wpdb->prepare(
             "SELECT meta_value FROM {$postmetaTable}
              WHERE post_id = %d AND meta_key = %s
              ORDER BY meta_id DESC LIMIT 1",
@@ -219,11 +233,20 @@ final class DatabaseGlobalPartRepository implements
             self::META_COMPILED,
         ));
 
-        if ($stored === null || $stored === false) {
+        /*
+         * wpdb::get_var() returns null for both a missing row and an existing
+         * empty string. An empty compile is valid for a part without authored
+         * CSS or element styles, so verify row existence separately.
+         */
+        if (!is_object($row) || !property_exists($row, 'meta_value') || !is_string($row->meta_value)) {
             return false;
         }
 
-        $decoded = function_exists('maybe_unserialize') ? maybe_unserialize($stored) : $stored;
+        $stored = $row->meta_value;
+        // Never instantiate objects from stored metadata (PHP Object Injection).
+        $decoded = function_exists('is_serialized') && is_serialized($stored)
+            ? @unserialize(trim($stored), ['allowed_classes' => false])
+            : $stored;
 
         return is_string($decoded) && hash_equals($expectedCss, $decoded);
     }
@@ -381,7 +404,7 @@ final class DatabaseGlobalPartRepository implements
         $placeholders = implode(',', array_fill(0, count($postIds), '%d'));
         $rows = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$table} WHERE global_part_id IN ({$placeholders}) ORDER BY global_part_id, position",
+                "SELECT * FROM {$table} WHERE global_part_id IN ({$placeholders}) ORDER BY global_part_id, position, id",
                 ...$postIds
             )
         );
@@ -431,8 +454,50 @@ final class DatabaseGlobalPartRepository implements
             }
 
             if ($section->id() === null) {
-                $section->assignId((int) $wpdb->insert_id);
+                $this->assignDurableIdentity($section, (int) $wpdb->insert_id, $table);
             }
+        }
+    }
+
+    private function hasNewSections(SectionCollection $sections): bool
+    {
+        foreach ($sections->all() as $section) {
+            if ($section->isNew()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function assignDurableIdentity(Section $section, int $sectionId, string $table): void
+    {
+        global $wpdb;
+
+        $sourceSectionId = $section->sourceRootId();
+        $section->assignId($sectionId);
+        if ($sourceSectionId === null || $sourceSectionId === $sectionId) {
+            return;
+        }
+
+        $section->replaceContent(SectionRootIdentityRemapper::remap(
+            $section->content(),
+            $sourceSectionId,
+            $sectionId,
+        ));
+        $updated = $wpdb->update(
+            $table,
+            [
+                'html' => $section->content()->html(),
+                'css' => $section->content()->css(),
+                'element_styles' => $section->content()->elementStyles()->toJson(),
+            ],
+            ['id' => $sectionId],
+            ['%s', '%s', '%s'],
+            ['%d'],
+        );
+        if ($updated === false) {
+            throw new \RuntimeException("Failed to persist global part section {$sectionId} root identity.");
         }
     }
 

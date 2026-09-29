@@ -18,6 +18,11 @@ class DateTime_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'DATETIME' );
 		$this->set_name( 'Date and time' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/date-time-icon.svg' );
+
+		$this->set_plugin_file_path( 'uncanny-automator/uncanny-automator.php' );
+		$this->set_developer_name( 'Uncanny Automator' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

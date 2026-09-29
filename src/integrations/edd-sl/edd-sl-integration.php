@@ -21,6 +21,13 @@ class Edd_Software_Licensing_Integration extends Integration {
 		$this->set_integration( 'EDD_SL' );
 		$this->set_name( 'EDD Software Licensing' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/easy-digital-downloads-icon.svg' );
+
+		$this->set_plugin_file_path( 'edd-software-licensing/edd-software-licenses.php' );
+		$this->set_developer_name( 'Easy Digital Downloads' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
+		$this->set_plugin_required( 'easy-digital-downloads/easy-digital-downloads.php' );
+		$this->set_integration_required( 'EDD' );
 	}
 
 	/**

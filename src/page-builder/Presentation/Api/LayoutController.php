@@ -233,10 +233,6 @@ final class LayoutController
             return null;
         }
 
-        foreach ($layout['sections'] as $i => $section) {
-            $layout['sections'][$i]['editable_capabilities'] = $section['editable_capabilities'] ?? [];
-        }
-
         if ($this->refreshRenderer instanceof CanvasRefreshRendererInterface) {
             $layout['rendered_sections'] = $this->refreshRenderer->renderSections($layout['sections'], $globalPartId);
             $layout['has_runtime_javascript'] = $this->refreshRenderer->hasCurrentJavaScript($globalPartId);
@@ -275,17 +271,6 @@ final class LayoutController
             ];
         } else {
             $layout = $this->sectionService->getLayout($pageId);
-        }
-        $capabilitiesMap = is_array($publishedSource)
-            ? $this->sectionService->buildEditableCapabilitiesMapForSource(
-                $pageId,
-                is_array($publishedSource['sections'] ?? null) ? $publishedSource['sections'] : [],
-            )
-            : $this->sectionService->buildEditableCapabilitiesMap($pageId);
-
-        foreach ($layout['sections'] as $i => $section) {
-            $sectionId = $section['id'] ?? 0;
-            $layout['sections'][$i]['editable_capabilities'] = $capabilitiesMap[$sectionId] ?? [];
         }
 
         $projection = function () use (&$layout, $pageId, $publishedSource): void {

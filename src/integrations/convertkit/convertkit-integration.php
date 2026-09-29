@@ -38,6 +38,10 @@ class ConvertKit_Integration extends App_Integration {
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/kit-icon.svg' );
 
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'Kit' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

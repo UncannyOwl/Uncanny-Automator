@@ -36,6 +36,10 @@ class Drip_Integration extends \Uncanny_Automator\App_Integrations\App_Integrati
 		$this->helpers = new Drip_App_Helpers( self::get_config() );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/drip-icon.svg' );
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'Drip' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

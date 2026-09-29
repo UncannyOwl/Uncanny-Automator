@@ -19,6 +19,11 @@ class W3_Total_Cache_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'W3_TOTAL_CACHE' );
 		$this->set_name( 'W3 Total Cache' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/w3-total-cache-icon.svg' );
+
+		$this->set_plugin_file_path( 'w3-total-cache/w3-total-cache.php' );
+		$this->set_developer_name( 'BoldGrid' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

@@ -19,7 +19,7 @@ use UncannyPageBuilder\Domain\Publishing\PageStateRepositoryInterface;
  * WordPress supplies the one-time adoption values and URL shape. After that,
  * the Page Builder state row is authoritative for editor and Agent reads.
  */
-final class PageDetailsService implements PageDetailsPortInterface, PageDetailsHistoryRestorerInterface
+final class PageDetailsService implements PageDetailsPortInterface, PageDetailsHistoryRestorerInterface, PageTitleUpdatePortInterface
 {
     /** @var \Closure(): \DateTimeImmutable */
     private readonly \Closure $now;
@@ -91,6 +91,33 @@ final class PageDetailsService implements PageDetailsPortInterface, PageDetailsH
             throw new \RuntimeException('Page details must be initialized when Page Builder adopts the page.');
         }
 
+        return $this->saveUpdate($pageId, $projected, $state, $generation, $updatedBy);
+    }
+
+    public function updateTitle(int $pageId, string $title, int $updatedBy): PageDetails
+    {
+        $this->assertWriteContext($pageId, $updatedBy);
+
+        [$state, $generation] = $this->coherentState($pageId);
+        if (!$state instanceof PagePublicationState) {
+            throw new \RuntimeException('Page details must be initialized when Page Builder adopts the page.');
+        }
+
+        $projected = $this->projection->projectDraft($pageId, $title, $state->draftSlug());
+        if (!$projected instanceof PageDetails) {
+            throw new \RuntimeException('Page details could not be saved because the WordPress page was not found.');
+        }
+
+        return $this->saveUpdate($pageId, $projected, $state, $generation, $updatedBy);
+    }
+
+    private function saveUpdate(
+        int $pageId,
+        PageDetails $projected,
+        PagePublicationState $state,
+        int $generation,
+        int $updatedBy,
+    ): PageDetails {
         if (
             $state->draftTitle() === $projected->title()
             && $state->draftSlug() === $projected->slug()

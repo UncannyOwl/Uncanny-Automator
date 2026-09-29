@@ -127,6 +127,11 @@ class UOG_USERREDEEMS_GROUPKEY extends \Uncanny_Automator\Recipe\Trigger {
 			return false;
 		}
 
+		// The subject user comes from the hook, not the request. A redemption can
+		// complete outside that user's own session, so get_current_user_id() is not
+		// reliably the user who redeemed the key.
+		$this->set_user_id( $user_id );
+
 		if ( is_array( $code ) && 'success' !== $code['result'] ) {
 			return false;
 		}

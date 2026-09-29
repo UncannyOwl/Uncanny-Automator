@@ -160,6 +160,32 @@ final class Api_Request {
 	}
 
 	/**
+	 * Convert back to the legacy $params array format -- the inverse of from_legacy_params().
+	 *
+	 * The API log stores this array, never the object: log rows are decoded with
+	 * allowed_classes => false, so a serialized object cannot be read back.
+	 *
+	 * @return array
+	 */
+	public function to_legacy_params(): array {
+		$params = array(
+			'endpoint' => $this->endpoint,
+			'body'     => $this->body,
+			'method'   => $this->method,
+		);
+
+		if ( null !== $this->timeout ) {
+			$params['timeout'] = $this->timeout;
+		}
+
+		if ( null !== $this->action_data ) {
+			$params['action'] = $this->action_data;
+		}
+
+		return $params;
+	}
+
+	/**
 	 * Apply legacy parameter filters migrated from Api_Server::filter_params().
 	 *
 	 * These filters allow third-party code to modify API call parameters.

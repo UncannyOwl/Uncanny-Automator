@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Infrastructure\Section;
 
 use UncannyPageBuilder\Domain\Section\BindingSchema;
-use UncannyPageBuilder\Domain\Section\EditableManifestEntry;
+use UncannyPageBuilder\Domain\Section\AlpineAttributeProtection;
+use UncannyPageBuilder\Domain\Section\DomElementPath;
 use UncannyPageBuilder\Domain\Section\Section;
 use UncannyPageBuilder\Domain\Section\SectionManifest;
 use UncannyPageBuilder\Domain\Section\SectionManifestExtractorInterface;
@@ -18,7 +19,9 @@ final class DomSectionManifestExtractor implements SectionManifestExtractorInter
     public function extract(Section $section): SectionManifest
     {
         $doc = new \DOMDocument();
-        $wrappedHtml = '<div id="__upb_manifest_root">' . $section->content()->html() . '</div>';
+        $sourceHtml = $section->content()->html();
+        $alpine = new AlpineAttributeProtection($sourceHtml);
+        $wrappedHtml = '<div id="__upb_manifest_root">' . $alpine->protect($sourceHtml) . '</div>';
 
         $previousUseInternalErrors = libxml_use_internal_errors(true);
         $doc->loadHTML(
@@ -32,17 +35,10 @@ final class DomSectionManifestExtractor implements SectionManifestExtractorInter
         $root = $this->findFirstElementChild($container);
         $xpath = new \DOMXPath($doc);
 
-        $editables = [];
-        foreach ($xpath->query('//*[@data-ai-editable]') as $editableNode) {
-            if ($editableNode instanceof \DOMElement) {
-                $editables[] = EditableManifestEntry::fromExtracted($this->extractEditableNode($editableNode, $root));
-            }
-        }
-
         $dynamicRegions = [];
         foreach ($xpath->query('//*[@data-ai-dynamic]') as $dynamicNode) {
             if ($dynamicNode instanceof \DOMElement) {
-                $dynamicRegions[] = $this->extractDynamicRegion($dynamicNode, $root);
+                $dynamicRegions[] = $this->extractDynamicRegion($dynamicNode, $root, $alpine);
             }
         }
 
@@ -50,11 +46,9 @@ final class DomSectionManifestExtractor implements SectionManifestExtractorInter
             sectionId: $section->id(),
             pageId: $section->pageId(),
             root: $this->extractRootMetadata($root),
-            editables: $editables,
             dynamicRegions: $dynamicRegions,
             constraints: [
                 'requires_single_root' => true,
-                'allowed_editable_types' => BindingSchema::editableTypes(),
                 'allowed_dynamic_sources' => BindingSchema::dynamicSources(),
                 'allowed_bind_keys' => BindingSchema::allBindKeys(),
                 'scripts_forbidden' => true,
@@ -78,45 +72,16 @@ final class DomSectionManifestExtractor implements SectionManifestExtractorInter
         return [
             'tag' => strtolower($root->tagName),
             'class_list' => array_values(array_filter($classList, 'strlen')),
-            'path' => $this->buildNodePath($root, $root),
+            'path' => DomElementPath::fromRoot($root, $root),
         ];
     }
 
     /** @return array<string, mixed> */
-    private function extractEditableNode(\DOMElement $node, ?\DOMElement $root): array
-    {
-        $type = trim($node->getAttribute('data-ai-type')) ?: 'text';
-        $editable = [
-            'key' => trim($node->getAttribute('data-ai-editable')),
-            'type' => $type,
-            'tag' => strtolower($node->tagName),
-            'path' => $this->buildNodePath($node, $root),
-        ];
-
-        if ($type === 'link') {
-            $editable['text_value'] = trim($node->textContent);
-            $editable['url_value'] = $node->getAttribute('href');
-            return $editable;
-        }
-
-        if ($type === 'image') {
-            $editable['src_value'] = $node->getAttribute('src');
-            $editable['alt_value'] = $node->getAttribute('alt');
-            return $editable;
-        }
-
-        if ($type === 'bg-image') {
-            $editable['style_value'] = $node->getAttribute('style');
-            return $editable;
-        }
-
-        $editable['text_value'] = trim($node->textContent);
-        return $editable;
-    }
-
-    /** @return array<string, mixed> */
-    private function extractDynamicRegion(\DOMElement $node, ?\DOMElement $root): array
-    {
+    private function extractDynamicRegion(
+        \DOMElement $node,
+        ?\DOMElement $root,
+        AlpineAttributeProtection $alpine,
+    ): array {
         $source = trim($node->getAttribute('data-ai-dynamic')) ?: 'wp_query';
 
         $templateRoot = $this->findFirstElementChild($node);
@@ -130,7 +95,7 @@ final class DomSectionManifestExtractor implements SectionManifestExtractorInter
                 $bindings[] = [
                     'key' => $rootBindKey,
                     'tag' => strtolower($templateRoot->tagName),
-                    'path' => $this->buildNodePath($templateRoot, $root),
+                    'path' => DomElementPath::fromRoot($templateRoot, $root),
                 ];
             }
         }
@@ -149,7 +114,7 @@ final class DomSectionManifestExtractor implements SectionManifestExtractorInter
             $bindings[] = [
                 'key' => $bindKey,
                 'tag' => strtolower($bindingNode->tagName),
-                'path' => $this->buildNodePath($bindingNode, $root),
+                'path' => DomElementPath::fromRoot($bindingNode, $root),
             ];
         }
 
@@ -163,11 +128,11 @@ final class DomSectionManifestExtractor implements SectionManifestExtractorInter
 
         return array_merge([
             'source' => $source,
-            'path' => $this->buildNodePath($node, $root),
+            'path' => DomElementPath::fromRoot($node, $root),
         ], $queryData, [
             'bind_keys' => $bindKeys,
             'bindings' => $bindings,
-            'card_template_html' => $this->templateHtml($node),
+            'card_template_html' => $alpine->restore($this->templateHtml($node)),
         ]);
     }
 
@@ -217,55 +182,6 @@ final class DomSectionManifestExtractor implements SectionManifestExtractorInter
         }
 
         return null;
-    }
-
-    private function buildNodePath(\DOMElement $node, ?\DOMElement $root): string
-    {
-        $segments = [];
-        $current = $node;
-
-        while ($current instanceof \DOMElement) {
-            $segments[] = strtolower($current->tagName) . '[' . $this->indexWithinSiblingTag($current) . ']';
-
-            if ($root instanceof \DOMElement && $current->isSameNode($root)) {
-                break;
-            }
-
-            $parent = $current->parentNode;
-            if (!$parent instanceof \DOMElement) {
-                break;
-            }
-
-            $current = $parent;
-        }
-
-        return implode('/', array_reverse($segments));
-    }
-
-    private function indexWithinSiblingTag(\DOMElement $node): int
-    {
-        $parent = $node->parentNode;
-        if (!$parent instanceof \DOMNode) {
-            return 1;
-        }
-
-        $index = 0;
-        foreach ($parent->childNodes as $sibling) {
-            if (!$sibling instanceof \DOMElement) {
-                continue;
-            }
-
-            if (strtolower($sibling->tagName) !== strtolower($node->tagName)) {
-                continue;
-            }
-
-            $index++;
-            if ($sibling->isSameNode($node)) {
-                return $index;
-            }
-        }
-
-        return 1;
     }
 
     private function innerHtml(\DOMElement $node): string

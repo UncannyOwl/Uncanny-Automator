@@ -78,7 +78,7 @@ final class Token_Credential_Repository {
 			return array();
 		}
 
-		$value = maybe_unserialize( $records[0]->meta_value );
+		$value = automator_safe_unserialize( $records[0]->meta_value );
 
 		return is_array( $value ) ? $value : array();
 
@@ -109,7 +109,7 @@ final class Token_Credential_Repository {
 			$current = array();
 
 			if ( ! empty( $records ) ) {
-				$value   = maybe_unserialize( $records[0]->meta_value );
+				$value   = automator_safe_unserialize( $records[0]->meta_value );
 				$current = is_array( $value ) ? $value : array();
 			}
 

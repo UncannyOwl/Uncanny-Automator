@@ -9,7 +9,7 @@ use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 /**
  * Canonical vocabulary for the component/binding system.
  *
- * Single source of truth for editable types, dynamic sources, bind keys,
+ * Single source of truth for dynamic sources, bind keys,
  * and query attributes. All validators and extractors reference this class.
  *
  * Dynamic sources are loaded from the BindingRegistry (populated from
@@ -20,8 +20,6 @@ use UncannyPageBuilder\Domain\Binding\BindingRegistry;
 final class BindingSchema
 {
     public const SCHEMA_ID = 'uncanny_page_builder_v1';
-
-    private const EDITABLE_TYPES = ['text', 'textarea', 'image', 'link', 'bg-image'];
 
     private static ?BindingRegistry $registry = null;
 
@@ -48,12 +46,6 @@ final class BindingSchema
             throw new \LogicException('BindingSchema::init() must be called before use.');
         }
         return self::$registry;
-    }
-
-    /** @return string[] */
-    public static function editableTypes(): array
-    {
-        return self::EDITABLE_TYPES;
     }
 
     /** @return string[] */
@@ -118,11 +110,6 @@ final class BindingSchema
             $keys = array_merge($keys, self::allBindKeysForSource($source));
         }
         return array_values(array_unique($keys));
-    }
-
-    public static function isValidEditableType(string $type): bool
-    {
-        return in_array($type, self::EDITABLE_TYPES, true);
     }
 
     public static function isValidDynamicSource(string $source): bool
@@ -225,7 +212,6 @@ final class BindingSchema
 
         return [
             'schema_id'              => self::SCHEMA_ID,
-            'editable_types'         => self::EDITABLE_TYPES,
             'dynamic_sources'        => $sources,
             'dynamic_content_config' => DynamicContentConfig::toArray(),
         ];

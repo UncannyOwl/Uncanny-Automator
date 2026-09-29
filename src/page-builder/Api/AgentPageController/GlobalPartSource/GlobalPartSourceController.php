@@ -63,11 +63,12 @@ final class GlobalPartSourceController
             return $this->staleSourceToolError('edit_part', $exception);
         }
         if ($existing === null) {
-            return $this->textToolError('edit_part', 404, 'no_active_global_part', [
-                'PART_TYPE: ' . $partType,
-                'NEXT STEP',
-                'Create or assign an active ' . $partType . ' global part before rewriting it.',
-            ]);
+            return $this->textToolError(
+                'edit_part',
+                404,
+                'no_active_global_part',
+                $this->missingGlobalPartLines($partType, $globalPartId, 'rewriting it'),
+            );
         }
 
         $partType = $this->parts->resolvedType($existing, $partType);
@@ -93,7 +94,14 @@ final class GlobalPartSourceController
             ]);
         }
 
-        $title = $name !== '' ? $name : ($existing['title'] ?? $partType);
+        $title = trim((string) ($existing['title'] ?? ''));
+        if ($title === '') {
+            $title = $partType;
+        }
+        $sourceName = $name !== '' ? $name : $section->name();
+        if ($sourceName === '') {
+            $sourceName = $title;
+        }
         $oldHtml = $section->content()->html();
         $oldCss = $section->content()->css();
 
@@ -102,7 +110,7 @@ final class GlobalPartSourceController
                 $postId,
                 $existing,
                 $title,
-                ['name' => $title, 'content' => ['html' => $html, 'css' => $css]],
+                ['name' => $sourceName, 'content' => ['html' => $html, 'css' => $css]],
                 $gpType,
             );
         } catch (SectionValidationException $exception) {
@@ -127,6 +135,7 @@ final class GlobalPartSourceController
             'PART_TYPE: ' . $partType,
             'POST_ID: ' . $postId,
             'TITLE: ' . (string) ($result['title'] ?? $title),
+            'SOURCE_NAME: ' . (string) ($result['name'] ?? $sourceName),
             '',
             'WARNING',
             'This is a full global part rewrite. Prefer edit_part kind=global_part mode=source_patch for surgical changes.',
@@ -162,11 +171,12 @@ final class GlobalPartSourceController
             return $this->staleSourceToolError('edit_part', $exception);
         }
         if ($resolved === null) {
-            return $this->textToolError('edit_part', 404, 'no_active_global_part', [
-                'PART_TYPE: ' . $partType,
-                'NEXT STEP',
-                'Create or assign an active ' . $partType . ' global part before patching source.',
-            ]);
+            return $this->textToolError(
+                'edit_part',
+                404,
+                'no_active_global_part',
+                $this->missingGlobalPartLines($partType, $globalPartId, 'patching source'),
+            );
         }
 
         $partType = $this->parts->resolvedType($resolved, $partType);
@@ -206,7 +216,7 @@ final class GlobalPartSourceController
             ]);
         }
 
-        [$cssRules, $cssRuleError] = $this->patcher->normalizeRules('edit_part', $cssRules, [
+        [$cssRules, $cssRuleError, $cssDeclarationReport] = $this->patcher->normalizeRules('edit_part', $cssRules, [
             'PART_TYPE: ' . $partType,
             'POST_ID: ' . $postId,
         ]);
@@ -300,6 +310,7 @@ final class GlobalPartSourceController
             'This writes normal global part source CSS. Do not use it to fight durable element styles.',
             '',
         ];
+        $this->appendCssDeclarationReport($lines, $cssDeclarationReport);
         $this->appendWarningLines($lines, $result['warnings'] ?? []);
         $this->appendDiffLines($lines, 'HTML DIFF', $this->sourceDiffer->diff(
             'HTML DIFF',
@@ -332,6 +343,24 @@ final class GlobalPartSourceController
             'NEXT STEP',
             'Retry with global_part_id from the current reusable canvas, or ' . $fieldName . '=header or footer for assigned site defaults.',
         ]);
+    }
+
+    /** @return list<string> */
+    private function missingGlobalPartLines(string $partType, int $globalPartId, string $action): array
+    {
+        if ($globalPartId > 0) {
+            return [
+                'GLOBAL_PART_ID: ' . $globalPartId,
+                'NEXT STEP',
+                'Call manage_reusable operation=list and retry with a current REUSABLE_ID.',
+            ];
+        }
+
+        return [
+            'PART_TYPE: ' . $partType,
+            'NEXT STEP',
+            'Create or assign an active ' . $partType . ' global part before ' . $action . '.',
+        ];
     }
 
     // ---------------------------------------------------------------------
@@ -413,6 +442,42 @@ final class GlobalPartSourceController
         $lines[] = 'WARNING';
         foreach ($warnings as $warning) {
             $lines[] = $warning;
+        }
+        $lines[] = '';
+    }
+
+    /**
+     * @param list<string> $lines
+     * @param array<string, mixed> $report
+     */
+    private function appendCssDeclarationReport(array &$lines, array $report): void
+    {
+        $requested = (int) ($report['requested'] ?? 0);
+        if ($requested === 0) {
+            return;
+        }
+
+        $rejected = array_values(array_filter(
+            (array) ($report['rejected'] ?? []),
+            'is_array',
+        ));
+        $lines[] = 'CSS DECLARATIONS';
+        $lines[] = 'CSS_DECLARATIONS_REQUESTED: ' . $requested;
+        $lines[] = 'CSS_DECLARATIONS_APPLIED: ' . (int) ($report['applied'] ?? 0);
+        $lines[] = 'CSS_DECLARATIONS_REJECTED: ' . count($rejected);
+        $lines[] = '';
+
+        if ($rejected === []) {
+            return;
+        }
+
+        $lines[] = 'REJECTED CSS DECLARATIONS';
+        foreach ($rejected as $item) {
+            $lines[] = '- RULE_INDEX: ' . (string) ($item['rule_index'] ?? '');
+            $lines[] = '  SELECTOR: ' . (string) ($item['selector'] ?? '');
+            $lines[] = '  PROPERTY: ' . (string) ($item['property'] ?? '');
+            $lines[] = '  VALUE: ' . (string) ($item['value'] ?? '');
+            $lines[] = '  REASON: ' . (string) ($item['reason'] ?? '');
         }
         $lines[] = '';
     }

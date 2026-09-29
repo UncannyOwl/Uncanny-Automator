@@ -37,8 +37,6 @@ final class InlineEditingToolbarStrings
             'inline_editing' => _x('Inline editing', 'Page Builder', 'uncanny-automator'),
             'italic' => _x('Italic', 'Page Builder', 'uncanny-automator'),
             'justify' => _x('Justify', 'Page Builder', 'uncanny-automator'),
-            /* translators: 1: The selected editable label. 2: The editable type (for example, text). */
-            'label_format' => _x('%1$s (%2$s)', 'Page Builder', 'uncanny-automator'),
             'link' => _x('Link', 'Page Builder', 'uncanny-automator'),
             'media_unavailable' => _x('Media Library is unavailable', 'Page Builder', 'uncanny-automator'),
             'more_formatting' => _x('More formatting', 'Page Builder', 'uncanny-automator'),
@@ -49,7 +47,6 @@ final class InlineEditingToolbarStrings
             'preformatted' => _x('Preformatted', 'Page Builder', 'uncanny-automator'),
             'quote' => _x('Quote', 'Page Builder', 'uncanny-automator'),
             'replace_image' => _x('Replace image', 'Page Builder', 'uncanny-automator'),
-            'save' => _x('Save', 'Page Builder', 'uncanny-automator'),
             'strikethrough' => _x('Strikethrough', 'Page Builder', 'uncanny-automator'),
             'subscript' => _x('Subscript', 'Page Builder', 'uncanny-automator'),
             'superscript' => _x('Superscript', 'Page Builder', 'uncanny-automator'),

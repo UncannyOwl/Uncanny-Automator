@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Infrastructure\Persistence;
 
 use UncannyPageBuilder\Domain\JavaScriptRuntime\CustomJavaScriptRepositoryInterface;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressSlashing;
 
 final class WpPostMetaCustomJavaScriptRepository implements CustomJavaScriptRepositoryInterface
 {
@@ -23,7 +24,7 @@ final class WpPostMetaCustomJavaScriptRepository implements CustomJavaScriptRepo
 
     public function writeForPost(int $postId, string $javascript): void
     {
-        update_post_meta($postId, self::META_KEY, $this->slashForWordPress($javascript));
+        update_post_meta($postId, self::META_KEY, WordPressSlashing::slash($javascript));
 
         if ($this->freshReadForPost($postId) !== $javascript) {
             throw new WordPressWriteVerificationException('WordPress could not persist the custom JavaScript source.');
@@ -52,10 +53,5 @@ final class WpPostMetaCustomJavaScriptRepository implements CustomJavaScriptRepo
         }
 
         return $this->readForPost($postId);
-    }
-
-    private function slashForWordPress(string $javascript): string
-    {
-        return \function_exists('wp_slash') ? (string) \wp_slash($javascript) : $javascript;
     }
 }

@@ -224,7 +224,7 @@ final class Automator_Options {
 
 		// Decode and cache the value.
 		// Use null as default to keep stored '__null__' observable and consistent with cache paths.
-		$decoded_value = Automator_Option_Formatter::format_value( $raw_value, null );
+		$decoded_value = Automator_Option_Formatter::format_value( $raw_value, null, null, $key );
 		$this->cache->set( $key, $decoded_value, $raw_value, false, $update_object_cache );
 
 		return $decoded_value;

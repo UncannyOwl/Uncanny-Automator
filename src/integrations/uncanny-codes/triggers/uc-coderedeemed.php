@@ -96,6 +96,11 @@ class UC_CODEREDEEMED extends \Uncanny_Automator\Recipe\Trigger {
 			return false;
 		}
 
+		// The redeeming user comes from the hook, not the request. Registration
+		// flows (Gravity Forms, the Codes registration form) redeem a code for a
+		// user who is not logged in yet, so get_current_user_id() is still 0 here.
+		$this->set_user_id( $user_id );
+
 		return true;
 	}
 

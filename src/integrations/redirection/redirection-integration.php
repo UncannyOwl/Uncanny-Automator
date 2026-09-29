@@ -19,6 +19,11 @@ class Redirection_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'REDIRECTION' );
 		$this->set_name( 'Redirection' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/redirection-icon.svg' );
+
+		$this->set_plugin_file_path( 'redirection/redirection.php' );
+		$this->set_developer_name( 'John Godley' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

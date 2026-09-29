@@ -39,6 +39,10 @@ class Keap_Integration extends \Uncanny_Automator\App_Integrations\App_Integrati
 
 		// Setup app integration with same config.
 		$this->setup_app_integration( $config );
+
+		$this->set_developer_name( 'Keap' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

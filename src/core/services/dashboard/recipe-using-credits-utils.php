@@ -162,7 +162,81 @@ class Recipe_Using_Credits_Utils {
 	}
 
 	/**
+	 * Completed run counts for many recipes at once, keyed by recipe id.
+	 *
+	 * The per-recipe version below issued one COUNT per recipe. That was
+	 * tolerable while the usage report went out weekly; it goes out DAILY from
+	 * 7.7, and on a site with a few thousand app-using recipes it is a few
+	 * thousand round trips every day.
+	 *
+	 * A recipe with no completed runs is absent from a GROUP BY, so callers
+	 * must default a missing id to 0 — which is exactly what the per-recipe
+	 * COUNT returned for it. Same numbers, one query.
+	 *
+	 * @param int[] $recipe_ids
+	 *
+	 * @return array<int, int>
+	 */
+	public function get_recipe_run_counts( $recipe_ids ) {
+
+		$recipe_ids = array_filter( array_map( 'absint', (array) $recipe_ids ) );
+
+		if ( empty( $recipe_ids ) ) {
+			return array();
+		}
+
+		$placeholders = implode( ', ', array_fill( 0, count( $recipe_ids ), '%d' ) );
+
+		$rows = $this->db->get_results(
+			$this->db->prepare(
+				"SELECT automator_recipe_id, COUNT(run_number) AS total
+				FROM {$this->db->prefix}uap_recipe_log
+				WHERE completed = 1 AND automator_recipe_id IN ($placeholders)
+				GROUP BY automator_recipe_id",
+				$recipe_ids
+			),
+			ARRAY_A
+		);
+
+		$counts = array();
+
+		foreach ( (array) $rows as $row ) {
+			$counts[ (int) $row['automator_recipe_id'] ] = absint( $row['total'] );
+		}
+
+		return $counts;
+	}
+
+	/**
+	 * How many recipes use a credit-consuming integration.
+	 *
+	 * The system report wanted this number and got it by building the whole
+	 * per-recipe array — titles, edit links, post meta, a run count each — and
+	 * calling count() on it. That cost ~3 queries per recipe to produce one
+	 * integer. Nothing downstream of the count needs the rest.
+	 *
+	 * @return int
+	 */
+	public function count_recipes_with_apps() {
+
+		$app_actions        = $this->fetch_actions_from_specific_integrations();
+		$loops_and_recipes  = $this->identify_loops_and_recipes_from_post_types( $app_actions );
+		$recipes_determined = $this->determine_recipes_from( $loops_and_recipes );
+
+		// Counting the ids directly would be one query cheaper and subtly
+		// WRONG: determine_recipes_from() resolves a loop to its post_parent,
+		// which can point at a recipe that no longer exists, and it repeats an
+		// id once per app action the recipe owns. get_recipes_from() drops both
+		// — it looks the ids up as posts, and IN() returns each row once — so
+		// counting its result is identical to count( fetch() ) by construction.
+		return count( $this->get_recipes_from( $recipes_determined ) );
+	}
+
+	/**
 	 * Get the number of times a recipe has been executed.
+	 *
+	 * Kept for callers outside this class. fetch() now batches instead — see
+	 * get_recipe_run_counts().
 	 *
 	 * @param int $recipe_id Recipe ID to query.
 	 * @return int Number of runs for the specified recipe.
@@ -192,6 +266,17 @@ class Recipe_Using_Credits_Utils {
 		}
 		$recipe_items = array();
 
+		$recipe_ids = array_map( 'absint', array_column( $recipes, 'ID' ) );
+
+		// One query for every run count, instead of one per recipe.
+		$run_counts = $this->get_recipe_run_counts( $recipe_ids );
+
+		// Two more for every post and its meta. Without this, get_post_type()
+		// and get_post_meta() below each fall through to their own query per
+		// recipe — on a cold cron request, which is where the usage report
+		// runs, that was the bulk of the cost.
+		_prime_post_caches( $recipe_ids, false, true );
+
 		foreach ( $recipes as $recipe ) {
 			$recipe_id = $recipe['ID'];
 			// translators: 1: Recipe ID
@@ -200,7 +285,9 @@ class Recipe_Using_Credits_Utils {
 			$recipe_edit_url                  = get_edit_post_link( $recipe_id );
 			$recipe_type                      = get_post_type( $recipe_id );
 			$recipe_allowed_completions_total = get_post_meta( $recipe_id, 'recipe_max_completions_allowed', true );
-			$recipe_number_of_runs            = $this->get_recipe_number_of_runs( $recipe_id );
+			// Absent from the GROUP BY means no completed runs, which is what
+			// the per-recipe COUNT returned for such a recipe.
+			$recipe_number_of_runs            = isset( $run_counts[ (int) $recipe_id ] ) ? $run_counts[ (int) $recipe_id ] : 0;
 
 			// Calculate specific data based on the recipe type.
 			$recipe_times_per_user = '';

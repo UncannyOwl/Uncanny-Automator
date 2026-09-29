@@ -38,6 +38,10 @@ class Ontraport_Integration extends App_Integration {
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/ontraport-icon.svg' );
 		// Finalize setup via the parent class with the common config.
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'Ontraport' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

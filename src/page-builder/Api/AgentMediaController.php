@@ -17,7 +17,7 @@ final class AgentMediaController
     {
         register_rest_route('uncanny-page-builder/v1', '/agent/media', [
             'methods' => 'GET',
-            'callback' => [$this, 'manageMedia'],
+            'callback' => [$this, 'readMedia'],
             'permission_callback' => [$this->permissions, 'canEdit'],
             'args' => [
                 'operation' => [
@@ -48,6 +48,20 @@ final class AgentMediaController
             'callback' => [$this, 'manageMedia'],
             'permission_callback' => [$this->permissions, 'canEdit'],
         ]);
+    }
+
+    public function readMedia(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $operation = trim((string) ($request->get_param('operation') ?? ''));
+        if ($operation === 'upload') {
+            return $this->textError(405, 'read_only_transport', [
+                'OPERATION: upload',
+                'NEXT STEP',
+                'Retry operation upload with an HTTP POST request.',
+            ]);
+        }
+
+        return $this->manageMedia($request);
     }
 
     public function manageMedia(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
@@ -189,17 +203,27 @@ final class AgentMediaController
             ]);
         }
 
-        return AgentTextResponse::withStatus(implode("\n", [
+        $lines = [
             'TOOL: manage_media',
             'RESULT: success',
             'OPERATION: upload',
             'ATTACHMENT_ID: ' . (string) ($data['attachment_id'] ?? 0),
             'URL: ' . (string) ($data['url'] ?? ''),
             'ALT: ' . (string) ($data['alt'] ?? ''),
+            'REQUESTED_ALT: ' . (string) ($data['requested_alt'] ?? ''),
+        ];
+
+        foreach (is_array($data['warnings'] ?? null) ? $data['warnings'] : [] as $warning) {
+            $lines[] = 'WARNING: ' . (string) $warning;
+        }
+
+        $lines = array_merge($lines, [
             '',
             'NEXT STEP',
             'Use ATTACHMENT_ID or URL from this response for image selection or follow-up image edits.',
-        ]), $response->get_status());
+        ]);
+
+        return AgentTextResponse::withStatus(implode("\n", $lines), $response->get_status());
     }
 
     /**
@@ -210,6 +234,7 @@ final class AgentMediaController
      *   mime_type: string,
      *   width: int,
      *   height: int,
+     *   requested_size: string,
      *   selected_size: string,
      *   selected_size_url: string,
      *   sizes: list<string>
@@ -228,11 +253,20 @@ final class AgentMediaController
             $sizes = array_keys($metadata['sizes']);
         }
 
-        $selectedSize = trim($size) !== '' ? trim($size) : 'full';
-        $selectedUrl = wp_get_attachment_image_url($attachmentId, $selectedSize);
-        if (!is_string($selectedUrl) || $selectedUrl === '') {
+        $requestedSize = trim($size) !== '' ? trim($size) : 'full';
+        $selectedSize = $requestedSize;
+        $selectedImage = wp_get_attachment_image_src($attachmentId, $requestedSize);
+        if (is_array($selectedImage) && is_string($selectedImage[0] ?? null) && $selectedImage[0] !== '') {
+            $selectedUrl = $selectedImage[0];
+            if ($requestedSize !== 'full' && !((bool) ($selectedImage[3] ?? false))) {
+                $selectedSize = 'full';
+            }
+        } else {
             $selectedSize = 'full';
-            $selectedUrl = wp_get_attachment_image_url($attachmentId, 'full');
+            $fullImage = wp_get_attachment_image_src($attachmentId, 'full');
+            $selectedUrl = is_array($fullImage) && is_string($fullImage[0] ?? null)
+                ? $fullImage[0]
+                : '';
         }
 
         return [
@@ -242,8 +276,9 @@ final class AgentMediaController
             'mime_type' => (string) ($post->post_mime_type ?? ''),
             'width' => (int) ($metadata['width'] ?? 0),
             'height' => (int) ($metadata['height'] ?? 0),
+            'requested_size' => $requestedSize,
             'selected_size' => $selectedSize,
-            'selected_size_url' => is_string($selectedUrl) ? $selectedUrl : '',
+            'selected_size_url' => $selectedUrl,
             'sizes' => array_values(array_unique(array_merge(['full'], $sizes))),
         ];
     }
@@ -257,6 +292,7 @@ final class AgentMediaController
      *   mime_type: string,
      *   width: int,
      *   height: int,
+     *   requested_size: string,
      *   selected_size: string,
      *   selected_size_url: string,
      *   sizes: list<string>
@@ -269,6 +305,7 @@ final class AgentMediaController
         $lines[] = '  ALT: ' . $item['alt'];
         $lines[] = '  MIME_TYPE: ' . $item['mime_type'];
         $lines[] = '  DIMENSIONS: ' . $item['width'] . 'x' . $item['height'];
+        $lines[] = '  REQUESTED_SIZE: ' . $item['requested_size'];
         $lines[] = '  SELECTED_SIZE: ' . $item['selected_size'];
         $lines[] = '  SIZE_URL: ' . $item['selected_size_url'];
         $lines[] = '  AVAILABLE_SIZES: ' . implode(', ', $item['sizes']);

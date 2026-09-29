@@ -194,20 +194,52 @@ class Handler {
 	/**
 	 * Cleans up the file.
 	 *
-	 * Deletes the temporary and new file paths if they exist.
+	 * Deletes the temporary file (WordPress temp dir) and the new file (uploads/uncanny-automator).
+	 * Both roots are recomputed here; nothing stored on the object is trusted.
 	 *
 	 * @return void
 	 */
 	public function cleanup() {
-		if ( $this->temp_file_path && file_exists( $this->temp_file_path ) ) {
-			wp_delete_file( $this->temp_file_path );
-			$this->temp_file_path = null;
+
+		$uploads = wp_get_upload_dir();
+
+		$this->delete_file_within( $this->temp_file_path, get_temp_dir() );
+		$this->delete_file_within( $this->new_file_path, empty( $uploads['basedir'] ) ? '' : $uploads['basedir'] . '/uncanny-automator' );
+
+		$this->temp_file_path = null;
+		$this->new_file_path  = null;
+	}
+
+	/**
+	 * Delete a file only when it resolves to a regular file inside the allowed root.
+	 *
+	 * Canonical path containment (realpath + trailing-slash prefix) refuses traversal,
+	 * symlink escapes, sibling-prefix directories (uncanny-automator-evil) and stream
+	 * wrappers, so a tampered path can never turn cleanup() into a file-deletion gadget.
+	 *
+	 * @param mixed  $path The file path to delete.
+	 * @param string $root The absolute directory the file must live under.
+	 *
+	 * @return void
+	 */
+	private function delete_file_within( $path, $root ) {
+
+		if ( ! is_string( $path ) || '' === $path || wp_is_stream( $path ) || ! path_is_absolute( $root ) ) {
+			return;
 		}
 
-		if ( $this->new_file_path && file_exists( $this->new_file_path ) ) {
-			wp_delete_file( $this->new_file_path );
-			$this->new_file_path = null;
+		$real_root = realpath( $root );
+		$real_path = realpath( $path );
+
+		if ( false === $real_root || false === $real_path || ! is_file( $real_path ) ) {
+			return;
 		}
+
+		if ( 0 !== strpos( wp_normalize_path( $real_path ), trailingslashit( wp_normalize_path( $real_root ) ) ) ) {
+			return;
+		}
+
+		wp_delete_file( $real_path );
 	}
 
 	/**

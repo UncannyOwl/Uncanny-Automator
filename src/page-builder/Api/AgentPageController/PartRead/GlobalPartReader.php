@@ -51,10 +51,36 @@ final class GlobalPartReader
 
         $partType = $this->resolvedPartType($resolved, $partType);
 
-        return AgentTextResponse::ok(implode(
-            "\n",
-            $this->details->globalPartLines($partType, $resolved, $section, $includes, $request),
+        $sourceSections = $this->sourceSections($resolved);
+        $lines = $this->details->globalPartLines($partType, $resolved, $section, $includes, $request);
+        $lines[] = 'GLOBAL SOURCE ROWS';
+        $lines[] = 'SOURCE_ROW_COUNT: ' . count($sourceSections);
+        $lines[] = 'CANONICAL_SOURCE_ROW: 1';
+
+        if (count($sourceSections) > 1) {
+            $lines[] = 'NOTICE: This legacy global part stores multiple source rows. No row was merged or omitted.';
+            $lines[] = 'ADDITIONAL_ROWS_EDITABLE: no';
+            $lines[] = 'NOTICE: Additional rows are read-only legacy evidence. edit_part always changes canonical source row 1. Ask an administrator to consolidate legacy rows.';
+            foreach (array_slice($sourceSections, 1, null, true) as $index => $additionalSection) {
+                $rowNumber = (int) $index + 1;
+                if (in_array('source', $includes, true)) {
+                    array_push($lines, ...$this->details->additionalGlobalSourceLines($additionalSection, $rowNumber));
+                    continue;
+                }
+
+                $lines[] = 'ADDITIONAL SOURCE ROW ' . $rowNumber;
+                $lines[] = 'SOURCE_SECTION_ID: ' . (string) ($additionalSection->id() ?? 0);
+                $lines[] = 'SOURCE_SECTION_NAME: ' . $additionalSection->name();
+                $lines[] = 'POSITION: ' . $additionalSection->position();
+            }
+        }
+
+        array_push($lines, ...$this->details->globalPartNextStepLines(
+            $includes,
+            (int) ($resolved['post_id'] ?? 0),
         ));
+
+        return AgentTextResponse::ok(implode("\n", $lines));
     }
 
     /**
@@ -67,12 +93,18 @@ final class GlobalPartReader
     ): array {
         $resolved = $this->resolveRequested($request, $partType, $globalPartId);
         if ($resolved === null) {
-            return [null, null, $this->textToolError('read_part', 404, 'no_active_global_part', [
-                'KIND: global_part',
-                'PART_TYPE: ' . $partType,
-                'NEXT STEP',
-                'Create or assign an active ' . $partType . ' global part before reading it.',
-            ])];
+            $lines = ['KIND: global_part'];
+            if ($globalPartId > 0) {
+                $lines[] = 'GLOBAL_PART_ID: ' . $globalPartId;
+                $lines[] = 'NEXT STEP';
+                $lines[] = 'Call manage_reusable operation=list and retry with a current REUSABLE_ID.';
+            } else {
+                $lines[] = 'PART_TYPE: ' . $partType;
+                $lines[] = 'NEXT STEP';
+                $lines[] = 'Create or assign an active ' . $partType . ' global part before reading it.';
+            }
+
+            return [null, null, $this->textToolError('read_part', 404, 'no_active_global_part', $lines)];
         }
 
         $postId = (int) ($resolved['post_id'] ?? 0);
@@ -129,28 +161,41 @@ final class GlobalPartReader
      */
     private function sourceSection(array $globalPart): ?Section
     {
+        return $this->sourceSections($globalPart)[0] ?? null;
+    }
+
+    /**
+     * @param array<string, mixed> $globalPart
+     * @return list<Section>
+     */
+    private function sourceSections(array $globalPart): array
+    {
         $sections = $globalPart['sections'] ?? [];
         if (!is_array($sections) || $sections === []) {
-            return null;
+            return [];
         }
 
-        $sectionData = $sections[0] ?? null;
-        if (!is_array($sectionData)) {
-            return null;
+        $resolvedSections = [];
+        foreach ($sections as $sectionData) {
+            if (!is_array($sectionData)) {
+                continue;
+            }
+
+            if (!isset($sectionData['content']) && (isset($sectionData['html']) || isset($sectionData['css']))) {
+                $sectionData['content'] = [
+                    'html' => (string) ($sectionData['html'] ?? ''),
+                    'css' => (string) ($sectionData['css'] ?? ''),
+                ];
+            }
+
+            $resolvedSections[] = Section::fromStoredArray(
+                $sectionData,
+                (int) ($globalPart['post_id'] ?? 0),
+                (int) ($sectionData['position'] ?? count($resolvedSections)),
+            );
         }
 
-        if (!isset($sectionData['content']) && (isset($sectionData['html']) || isset($sectionData['css']))) {
-            $sectionData['content'] = [
-                'html' => (string) ($sectionData['html'] ?? ''),
-                'css' => (string) ($sectionData['css'] ?? ''),
-            ];
-        }
-
-        return Section::fromStoredArray(
-            $sectionData,
-            (int) ($globalPart['post_id'] ?? 0),
-            (int) ($sectionData['position'] ?? 0),
-        );
+        return $resolvedSections;
     }
 
     private function assignedPartTypeValue(\WP_REST_Request $request): string

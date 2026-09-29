@@ -36,6 +36,11 @@ class Add_Emails_Integration {
 
 		$this->set_icon_path( __DIR__ . '/img/' );
 
+		$this->set_plugin_file_path( 'uncanny-automator/uncanny-automator.php' );
+		$this->set_developer_name( 'Uncanny Automator' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'wp_org' );
+
 	}
 
 	/**

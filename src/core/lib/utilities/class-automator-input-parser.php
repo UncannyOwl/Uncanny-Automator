@@ -305,10 +305,10 @@ class Automator_Input_Parser {
 
 		if ( ! empty( $parsed_data ) ) {
 
-			$parsed_data = maybe_unserialize( $parsed_data );
+			$parsed_data = automator_safe_unserialize( $parsed_data );
 			$token_key   = '{{' . $matching_token . '}}';
 
-			if ( isset( $parsed_data[ $token_key ] ) && ! empty( $parsed_data[ $token_key ] ) ) {
+			if ( is_array( $parsed_data ) && ! empty( $parsed_data[ $token_key ] ) ) {
 				return $parsed_data[ $token_key ];
 			}
 		}

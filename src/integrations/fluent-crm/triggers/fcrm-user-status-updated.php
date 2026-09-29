@@ -113,6 +113,11 @@ class FCRM_USER_STATUS_UPDATED {
 			return;
 		}
 
+		// FluentCRM links contacts to accounts by email: never bind an administrator other than the logged-in user.
+		if ( ! automator_can_bind_user( $subscriber->user_id ) ) {
+			return;
+		}
+
 		$matched_recipe_ids = $this->get_matched_recipes_ids( $subscriber );
 
 		$this->process_trigger( $matched_recipe_ids, $subscriber );

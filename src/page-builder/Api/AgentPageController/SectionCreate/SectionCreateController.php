@@ -12,7 +12,6 @@ use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
 use UncannyPageBuilder\Domain\Exception\SectionValidationException;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
-use UncannyPageBuilder\Infrastructure\Persistence\DatabaseSectionRepository;
 
 /**
  * Routes create_section to page append or blank reusable source bootstrap.
@@ -21,7 +20,6 @@ final class SectionCreateController
 {
     public function __construct(
         private readonly SectionService $sectionService,
-        private readonly DatabaseSectionRepository $sections,
         private readonly PermissionChecker $permissions,
         private readonly CreateTargetResolver $targets,
         private readonly GlobalPartSourceCreator $globalPartSource,
@@ -76,10 +74,7 @@ final class SectionCreateController
             return ApiResponse::validationError($exception);
         }
 
-        $sections = $this->sections->findByPageId($pageId)->all();
-        $last = \end($sections);
-
-        return $this->responses->pageSuccess($pageId, $last, $result);
+        return $this->responses->pageSuccess($pageId, $result);
     }
 
     public function createGlobalPartSourceSection(

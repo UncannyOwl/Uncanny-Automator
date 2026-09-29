@@ -21,6 +21,11 @@ class SureMembers_Integration extends \Uncanny_Automator\Integration {
 		$this->set_name( 'SureMembers' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/suremembers-icon.svg' );
 
+		$this->set_plugin_file_path( 'suremembers/suremembers.php' );
+		$this->set_developer_name( 'SureMembers' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
+
 	}
 
 	/**

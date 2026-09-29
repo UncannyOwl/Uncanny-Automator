@@ -63,7 +63,7 @@ class Wp_Tokens {
 						$trigger_id = $trigger['ID'];
 						$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key LIKE %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", "%%$meta_field%%", $trigger_id ) );
 						if ( ! empty( $meta_value ) ) {
-							$value = maybe_unserialize( $meta_value );
+							$value = automator_safe_unserialize( $meta_value );
 						}
 					}
 				}

@@ -64,7 +64,7 @@ final class SectionManagementController
         }
 
         $result = $this->performDeleteSection($request);
-        if ($result instanceof \WP_Error) {
+        if ($result instanceof \WP_REST_Response || $result instanceof \WP_Error) {
             return $result;
         }
 
@@ -160,7 +160,7 @@ final class SectionManagementController
         }
 
         $result = $this->performDeleteSection($request);
-        if ($result instanceof \WP_Error) {
+        if ($result instanceof \WP_REST_Response || $result instanceof \WP_Error) {
             return $result;
         }
 
@@ -181,9 +181,9 @@ final class SectionManagementController
     /**
      * Execute the guarded delete path shared by the public lifecycle methods.
      *
-     * @return array{page_id: int, section_id: int, sections: int, preview: string}|\WP_Error
+     * @return array{page_id: int, section_id: int, sections: int, preview: string}|\WP_REST_Response|\WP_Error
      */
-    private function performDeleteSection(\WP_REST_Request $request): array|\WP_Error
+    private function performDeleteSection(\WP_REST_Request $request): array|\WP_REST_Response|\WP_Error
     {
         $sectionId = RequestId::positive($request->get_param('section_id')) ?? 0;
         $requestedPageId = RequestId::fromUrl($request, 'page_id') ?? 0;
@@ -223,7 +223,7 @@ final class SectionManagementController
         try {
             $result = $this->sections->delete($pageId, $sectionId);
         } catch (StaleSourceGenerationException $exception) {
-            return $this->staleSourceToolError('manage_sections', $exception);
+            return $this->staleSourceToolError('manage_sections', $exception, 'delete');
         } catch (PageNotFoundException) {
             return ApiResponse::error(ErrorMessage::PageNotFound);
         } catch (SectionNotFoundException) {

@@ -30,12 +30,20 @@ class Trigger_Arguments {
 	private $seen;
 
 	/**
+	 * Converts hook-argument objects to plain arrays and back.
+	 *
+	 * @var Trigger_Object_Codec
+	 */
+	private $codec;
+
+	/**
 	 * Constructor.
 	 *
 	 * @return void
 	 */
 	public function __construct() {
-		$this->seen = new SplObjectStorage();
+		$this->seen  = new SplObjectStorage();
+		$this->codec = new Trigger_Object_Codec();
 	}
 
 	/**
@@ -49,8 +57,10 @@ class Trigger_Arguments {
 	public function package( array $args, array $metadata = array() ) {
 
 		try {
+			// unpack() decodes with allowed_classes => false, so objects travel as plain
+			// arrays. An unsupported object throws and the package is refused.
 			$package = array(
-				'args'     => $this->clean_args( $args ),
+				'args'     => $this->codec->encode( $this->clean_args( $args ) ),
 				'metadata' => $metadata,
 			);
 			return maybe_serialize( $package );
@@ -70,12 +80,22 @@ class Trigger_Arguments {
 	public function unpack( $payload ) {
 
 		try {
-			$data = maybe_unserialize( $payload );
+			$data = automator_safe_unserialize( $payload );
 
-			if ( is_array( $data ) && isset( $data['args'] ) ) {
-				return $data;
+			if ( ! is_array( $data ) || ! isset( $data['args'] ) ) {
+				return false;
 			}
-			return false;
+
+			// package() never serializes objects. Any object here is a legacy or forged
+			// payload and decodes as __PHP_Incomplete_Class, which would break validation.
+			if ( $this->contains_object( $data['args'] ) ) {
+				$this->log( 'Packager skipped (unpack): payload contains serialized objects.' );
+				return false;
+			}
+
+			$data['args'] = $this->codec->decode( $data['args'] );
+
+			return $data;
 		} catch ( \Throwable $e ) {
 			$this->log( 'Packager error (unpack): ' . $e->getMessage() );
 			return false;
@@ -93,6 +113,32 @@ class Trigger_Arguments {
 		// Reset for each top-level call.
 		$this->seen = new SplObjectStorage();
 		return $this->clean( $val );
+	}
+
+	/**
+	 * Check whether a value holds an object at any depth.
+	 *
+	 * @param mixed $value The value to inspect.
+	 *
+	 * @return bool True when an object is found.
+	 */
+	private function contains_object( $value ) {
+
+		if ( is_object( $value ) ) {
+			return true;
+		}
+
+		if ( ! is_array( $value ) ) {
+			return false;
+		}
+
+		foreach ( $value as $item ) {
+			if ( $this->contains_object( $item ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

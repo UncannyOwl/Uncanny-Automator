@@ -19,6 +19,11 @@ class Edd_Integration extends Integration {
 		$this->set_integration( 'EDD' );
 		$this->set_name( 'Easy Digital Downloads' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/easy-digital-downloads-icon.svg' );
+
+		$this->set_plugin_file_path( 'easy-digital-downloads/easy-digital-downloads.php' );
+		$this->set_developer_name( 'Easy Digital Downloads' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

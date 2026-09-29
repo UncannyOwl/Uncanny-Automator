@@ -20,6 +20,11 @@ class Wordpress_Seo_Integration extends \Uncanny_Automator\Integration {
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/wordpress-seo-icon.svg' );
 		$this->helpers = new Wordpress_Seo_Helpers();
 		$this->register_hooks();
+
+		$this->set_plugin_file_path( 'wordpress-seo/wp-seo.php' );
+		$this->set_developer_name( 'Team Yoast' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

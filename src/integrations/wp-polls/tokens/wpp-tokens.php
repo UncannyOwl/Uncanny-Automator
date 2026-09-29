@@ -128,7 +128,7 @@ LIMIT 0, 1",
 
 						if ( null !== $answer_ids ) {
 
-							$answer_ids = maybe_unserialize( $answer_ids );
+							$answer_ids = automator_safe_unserialize( $answer_ids );
 							$safe_ids   = implode( ',', array_map( 'absint', (array) $answer_ids ) );
 							$poll_id    = absint( $poll_id );
 

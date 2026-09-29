@@ -41,6 +41,10 @@ class Linkedin_Integration extends \Uncanny_Automator\App_Integrations\App_Integ
 
 		// Finalize setup via the parent class with the common config.
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'LinkedIn' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

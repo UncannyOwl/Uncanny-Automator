@@ -19,6 +19,11 @@ class Sg_Security_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'SG_SECURITY' );
 		$this->set_name( 'Security Optimizer' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/sg-security-icon.svg' );
+
+		$this->set_plugin_file_path( 'sg-security/sg-security.php' );
+		$this->set_developer_name( 'SiteGround' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

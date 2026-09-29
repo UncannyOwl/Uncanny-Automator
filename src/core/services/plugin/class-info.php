@@ -23,23 +23,8 @@ class Info {
 	 */
 	public static function get_pro_plugin_file() {
 		return defined( self::PRO_PLUGIN_FILE_CONSTANT )
-			? self::get_relative_path_to_plugins_directory( constant( self::PRO_PLUGIN_FILE_CONSTANT ) )
+			? self::normalize_plugin_path( constant( self::PRO_PLUGIN_FILE_CONSTANT ) )
 			: false;
-	}
-
-	/**
-	 * Convert an absolute plugin path to a relative path.
-	 *
-	 * @param string $absolute_path The absolute path to convert.
-	 *
-	 * @return string The relative path from the plugins directory.
-	 */
-	private static function get_relative_path_to_plugins_directory( $absolute_path ) {
-		return str_replace(
-			trailingslashit( WP_PLUGIN_DIR ),
-			'',
-			$absolute_path
-		);
 	}
 
 	/**
@@ -58,7 +43,7 @@ class Info {
 		// Try to get the plugin file from its constant first
 		$constant_name = $addon['key'] . '_PLUGIN_FILE';
 		if ( self::does_plugin_constant_exist( $constant_name ) ) {
-			return self::get_relative_path_to_plugins_directory( constant( $constant_name ) );
+			return self::normalize_plugin_path( constant( $constant_name ) );
 		}
 
 		// Fallback to generating the path manually.
@@ -379,15 +364,12 @@ class Info {
 			return '';
 		}
 
-		$plugin_file = $plugin_file_path;
-
-		// Convert absolute path to relative
-		if ( strpos( $plugin_file_path, WP_PLUGIN_DIR ) === 0 ) {
-			$plugin_file = str_replace( trailingslashit( WP_PLUGIN_DIR ), '', $plugin_file_path );
-		}
-
-		// Normalize directory separators to forward slashes
-		return str_replace( DIRECTORY_SEPARATOR, '/', $plugin_file );
+		// plugin_basename() normalizes the separators on both sides before it compares
+		// them, and resolves symlinked plugin directories via $wp_plugin_paths. Comparing
+		// the raw strings cannot do either: on Windows a plugin's __FILE__ is backslash
+		// separated while trailingslashit( WP_PLUGIN_DIR ) appends a forward slash, so the
+		// prefix never matches and the absolute path is returned as if it were relative.
+		return plugin_basename( $plugin_file_path );
 	}
 
 	/**

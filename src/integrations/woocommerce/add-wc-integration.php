@@ -41,6 +41,10 @@ class Add_Wc_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'woocommerce/woocommerce.php' );
 		$this->set_loopable_tokens( $this->create_loopable_tokens() );
+
+		$this->set_developer_name( 'Automattic' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

@@ -348,7 +348,7 @@ class Migrate_Orphan_Readable_Meta extends Migration {
 		$configuration = array();
 
 		foreach ( get_post_meta( $item_id ) as $meta_key => $values ) {
-			$configuration[ $meta_key ] = maybe_unserialize( $values[0] );
+			$configuration[ $meta_key ] = automator_safe_unserialize( $values[0] );
 		}
 
 		$sentence = $this->composer()->compose(

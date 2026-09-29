@@ -42,11 +42,14 @@ final class PartEditRequestAdapter
      */
     public function durableStyleChanges(array $operation): mixed
     {
+        $legacyChanges = is_array($operation['changes'] ?? null) && $operation['changes'] !== []
+            ? array_values($operation['changes'])
+            : null;
         $target = is_array($operation['target'] ?? null) ? $operation['target'] : null;
         $styles = is_array($operation['styles'] ?? null) ? $operation['styles'] : null;
 
         if ($target === null || $styles === null || $styles === []) {
-            return null;
+            return $legacyChanges;
         }
 
         $viewport = $this->styleScopeValue($operation['viewport'] ?? null, 'desktop');
@@ -68,7 +71,7 @@ final class PartEditRequestAdapter
             ];
         }
 
-        return $changes !== [] ? $changes : null;
+        return $changes !== [] ? $changes : $legacyChanges;
     }
 
     private function styleScopeValue(mixed $value, string $fallback): string

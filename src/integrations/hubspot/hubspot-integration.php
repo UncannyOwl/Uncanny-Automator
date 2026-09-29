@@ -35,6 +35,10 @@ class HubSpot_Integration extends App_Integration {
 		$this->helpers = new HubSpot_App_Helpers( self::get_config() );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/hubspot-icon.svg' );
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'HubSpot' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

@@ -11,6 +11,7 @@ use UncannyPageBuilder\Api\AgentNavigationController;
 use UncannyPageBuilder\Api\AgentPageController;
 use UncannyPageBuilder\Api\AgentPageController\AgentWrite\AgentWriteErrorMapper;
 use UncannyPageBuilder\Api\AgentPageController\AgentWrite\AgentWriteGuard;
+use UncannyPageBuilder\Api\AgentPageController\AgentWrite\AgentWritePageOwnerResolver;
 use UncannyPageBuilder\Api\AgentPageController\BindingController;
 use UncannyPageBuilder\Api\AgentPageController\CanvasController;
 use UncannyPageBuilder\Api\AgentPageController\ContentTargetController;
@@ -50,6 +51,7 @@ use UncannyPageBuilder\Application\Canvas\AttachReusableToCanvasUseCase;
 use UncannyPageBuilder\Application\Canvas\DeleteCanvasUseCase;
 use UncannyPageBuilder\Application\Canvas\EditCanvasUseCase;
 use UncannyPageBuilder\Application\Canvas\ListCanvasUseCase;
+use UncannyPageBuilder\Application\Canvas\WorkingCanvasUrlPortInterface;
 use UncannyPageBuilder\Application\Controls\ControlRegistry;
 use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Application\Reusable\CreateReusableUseCase;
@@ -106,6 +108,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
                 $c->typed(PermissionChecker::class),
                 $c->typed(LocalFileReaderInterface::class),
                 $c->typed(ControlRegistry::class),
+                $c->typed(FailureReporterInterface::class),
             );
         });
 
@@ -153,7 +156,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
         $container->factory(ElementController::class, static function (Container $c): ElementController {
             return new ElementController(
                 $c->typed(SectionWriteRequestResolver::class),
-                new DomSectionTargetInspector(),
+                new DomSectionTargetInspector($c->typed(BindingRegistry::class)),
                 $c->typed(SectionNodeUpdateService::class),
                 $c->typed(CompactSourceDiffer::class),
             );
@@ -162,7 +165,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
         $container->factory(ContentTargetController::class, static function (Container $c): ContentTargetController {
             return new ContentTargetController(
                 $c->typed(SectionWriteRequestResolver::class),
-                new DomSectionTargetInspector(),
+                new DomSectionTargetInspector($c->typed(BindingRegistry::class)),
                 $c->typed(SectionNodeUpdateService::class),
                 $c->typed(CompactSourceDiffer::class),
             );
@@ -184,6 +187,9 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
                 $c->typed(UpdateReusableUseCase::class),
                 $c->typed(DeleteReusableUseCase::class),
                 $c->typed(ListReusableUseCase::class),
+                $c->typed(PermissionChecker::class),
+                $c->typed(DatabaseSectionRepository::class),
+                $c->typed(AgentWritePageOwnerResolver::class),
             );
         });
 
@@ -316,7 +322,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
             return new PartDetailPresenter(
                 $c->typed(ComponentCategoryClassifier::class),
                 $c->typed(DomSectionManifestExtractor::class),
-                new DomSectionTargetInspector(),
+                new DomSectionTargetInspector($c->typed(BindingRegistry::class)),
                 $c->typed(DomSectionBindingContractInspector::class),
                 $c->typed(PartSourcePresenter::class),
             );
@@ -375,7 +381,10 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
         });
 
         $container->factory(SectionCreateResponseFormatter::class, static function (Container $c): SectionCreateResponseFormatter {
-            return new SectionCreateResponseFormatter($c->typed(PageDetailsPortInterface::class));
+            return new SectionCreateResponseFormatter(
+                $c->typed(PageDetailsPortInterface::class),
+                $c->typed(WorkingCanvasUrlPortInterface::class),
+            );
         });
 
         $container->factory(GlobalPartSourceCreator::class, static function (Container $c): GlobalPartSourceCreator {
@@ -388,7 +397,6 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
         $container->factory(SectionCreateController::class, static function (Container $c): SectionCreateController {
             return new SectionCreateController(
                 $c->typed(SectionService::class),
-                $c->typed(DatabaseSectionRepository::class),
                 $c->typed(PermissionChecker::class),
                 $c->typed(CreateTargetResolver::class),
                 $c->typed(GlobalPartSourceCreator::class),
@@ -400,6 +408,10 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
             return new AgentWriteErrorMapper();
         });
 
+        $container->factory(AgentWritePageOwnerResolver::class, static function (Container $c): AgentWritePageOwnerResolver {
+            return new AgentWritePageOwnerResolver($c->typed(DatabaseSectionRepository::class));
+        });
+
         $container->factory(AgentWriteGuard::class, static function (Container $c): AgentWriteGuard {
             return new AgentWriteGuard(
                 $c->typed(AgentWriteErrorMapper::class),
@@ -408,6 +420,7 @@ final class AgentApiServiceProvider implements ServiceProviderInterface
                 $c->typed(\UncannyPageBuilder\Application\Editor\SelectEditorPageSource::class),
                 $c->typed(\UncannyPageBuilder\Application\Publishing\PageLiveStateReaderInterface::class),
                 $c->typed(FailureReporterInterface::class),
+                $c->typed(AgentWritePageOwnerResolver::class),
             );
         });
 

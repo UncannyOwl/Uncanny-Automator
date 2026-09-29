@@ -29,6 +29,10 @@ class Add_Bp_Integration {
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'buddypress/bp-loader.php' );
 		$this->set_loopable_tokens( $this->create_loopable_tokens() );
+
+		$this->set_developer_name( 'BuddyPress' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

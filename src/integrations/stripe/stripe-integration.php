@@ -48,6 +48,10 @@ class Stripe_Integration extends App_Integration {
 
 		// Finalize setup via the parent class with the common config.
 		$this->setup_app_integration( $config );
+
+		$this->set_developer_name( 'Stripe' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

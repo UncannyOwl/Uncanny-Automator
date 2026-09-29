@@ -1079,7 +1079,7 @@ class Learndash_Helpers {
 		$course_id      = absint( get_post_meta( $essay->ID, 'course_id', true ) );
 		$quiz_post_id   = absint( get_post_meta( $essay->ID, 'quiz_post_id', true ) );
 		$user_quiz_meta = get_user_meta( $essay->post_author, '_sfwd-quizzes', true );
-		$user_quiz_meta = maybe_unserialize( $user_quiz_meta );
+		$user_quiz_meta = automator_safe_unserialize( $user_quiz_meta );
 		if ( ! is_array( $user_quiz_meta ) ) {
 			return new \WP_Error( 'no_data', esc_html_x( 'No user quiz data recorded', 'Learndash', 'uncanny-automator' ) );
 		}

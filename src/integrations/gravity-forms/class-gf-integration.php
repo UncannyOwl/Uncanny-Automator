@@ -30,6 +30,11 @@ class Gravity_Forms_Integration extends \Uncanny_Automator\Integration {
 
 		// Register admin notice check
 		add_action( 'admin_init', array( $this, 'check_pro_compatibility_notice' ) );
+
+		$this->set_plugin_file_path( 'gravityforms/gravityforms.php' );
+		$this->set_developer_name( 'Gravity Forms' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

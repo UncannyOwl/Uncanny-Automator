@@ -247,7 +247,7 @@ LIMIT 0,1",
 					)
 				);
 
-				$value = maybe_unserialize( $entry );
+				$value = automator_safe_unserialize( $entry );
 			} elseif ( in_array( 'WPUMUSERPPHOTO', $pieces, true ) || in_array( 'WPUMPPUPDATED', $pieces, true )
 						|| in_array( 'WPUMUSERPPHOTOR', $pieces, true ) || in_array( 'WPUMPPREMOVED', $pieces, true )
 						|| in_array( 'WPUMUSERCOVER', $pieces, true ) || in_array( 'WPUMCPUPDATED', $pieces, true )
@@ -273,7 +273,7 @@ LIMIT 0,1",
 						)
 					);
 
-						$value = maybe_unserialize( $entry );
+						$value = automator_safe_unserialize( $entry );
 				} else {
 					$user  = get_user_by( 'id', $user_id );
 					$field = $pieces[2];

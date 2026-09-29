@@ -32,6 +32,11 @@ class Add_Autonami_Integration {
 		// By default, bwfan_tags_added_to_contact action passes a single tag or an array of tags.
 		// We need to create a custom hook that fires for each tag separately to make sure our tokens work.
 		add_action( 'bwfan_tags_added_to_contact', array( $this, 'tag_added_to_contact' ), 10, 2 );
+
+		$this->set_plugin_file_path( 'wp-marketing-automations/wp-marketing-automations.php' );
+		$this->set_developer_name( 'FunnelKit' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

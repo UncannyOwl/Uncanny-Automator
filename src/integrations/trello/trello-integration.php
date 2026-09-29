@@ -36,6 +36,10 @@ class Trello_Integration extends \Uncanny_Automator\App_Integrations\App_Integra
 		$this->helpers = new Trello_App_Helpers( self::get_config() );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/trello-icon.svg' );
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'Atlassian' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

@@ -159,6 +159,11 @@ class MEC_USER_BOOKING_COMPLETED {
 
 			$user = get_user_by( 'email', $attendee['email'] );
 
+			// An attendee's email never binds an administrator other than the logged-in user.
+			if ( ! automator_can_bind_user( $user ) ) {
+				continue;
+			}
+
 			if ( ! empty( $user ) && ! empty( $user->ID ) ) {
 
 				if ( ! empty( $matched_recipe_ids ) ) {

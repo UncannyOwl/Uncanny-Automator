@@ -21,6 +21,13 @@ class Woocommerce_Bookings_Integration extends Integration {
 		$this->set_integration( 'WC_BOOKINGS' );
 		$this->set_name( 'Woo Bookings' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/woo-icon.svg' );
+
+		$this->set_plugin_file_path( 'woocommerce-bookings/woocommerce-bookings.php' );
+		$this->set_developer_name( 'WooCommerce' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
+		$this->set_plugin_required( 'woocommerce/woocommerce.php' );
+		$this->set_integration_required( 'WC' );
 	}
 
 	/**

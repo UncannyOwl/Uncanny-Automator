@@ -27,6 +27,10 @@ class Add_Gp_Integration {
 		$this->set_icon( 'gamipress-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'gamipress/gamipress.php' );
+
+		$this->set_developer_name( 'GamiPress' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

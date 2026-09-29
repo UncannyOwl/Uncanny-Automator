@@ -26,6 +26,10 @@ class Add_WPCW_Integration {
 		$this->set_icon( 'wp-courseware-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'wp-courseware/wp-courseware.php' );
+
+		$this->set_developer_name( 'Fly Plugins' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

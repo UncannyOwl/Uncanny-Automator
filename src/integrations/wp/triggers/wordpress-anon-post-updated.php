@@ -152,7 +152,7 @@ class WP_ANON_UPDATES_POST extends \Uncanny_Automator\Recipe\Trigger {
 		$user_id = 0 !== (int) $post_after->post_author ? (int) $post_after->post_author : get_current_user_id();
 		$this->set_user_id( $user_id );
 
-		return $this->dedupe_recent_fire( $post_id );
+		return $this->dedupe_recent_fire( $post_id, $trigger['ID'] ?? 0 );
 	}
 
 	/**
@@ -161,16 +161,19 @@ class WP_ANON_UPDATES_POST extends \Uncanny_Automator\Recipe\Trigger {
 	 * fires once, then the actual save fires again), and without this
 	 * guard a recipe would run twice for one user-visible edit.
 	 *
-	 * Keys on trigger class + post + user, so concurrent edits from
-	 * different users on the same post stay independent.
+	 * Keys on trigger instance + post + user, so concurrent edits from
+	 * different users on the same post stay independent. The trigger ID matters:
+	 * static::class is identical for every recipe on this trigger, so a
+	 * class-only key let the first recipe claim the slot and skipped the rest.
 	 *
-	 * @param int $post_id Updated post ID.
+	 * @param int $post_id    Updated post ID.
+	 * @param int $trigger_id The recipe's trigger ID.
 	 *
 	 * @return bool True if the trigger should fire (slot now claimed for
 	 *              5 seconds); false if a fire already claimed the slot.
 	 */
-	private function dedupe_recent_fire( $post_id ) {
-		$key = 'uap_post_update_dedup_' . md5( static::class . '_' . absint( $post_id ) . '_' . get_current_user_id() );
+	private function dedupe_recent_fire( $post_id, $trigger_id = 0 ) {
+		$key = 'uap_post_update_dedup_' . md5( static::class . '_' . absint( $trigger_id ) . '_' . absint( $post_id ) . '_' . get_current_user_id() );
 		if ( false !== get_transient( $key ) ) {
 			return false;
 		}

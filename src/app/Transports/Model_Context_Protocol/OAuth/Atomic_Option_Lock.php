@@ -87,7 +87,7 @@ final class Atomic_Option_Lock {
 			return false;
 		}
 
-		$lock = maybe_unserialize( $stored_value );
+		$lock = automator_safe_unserialize( $stored_value );
 
 		if ( ! $this->is_owned_by( $lock, $owner ) ) {
 			return false;
@@ -202,7 +202,7 @@ final class Atomic_Option_Lock {
 			return false;
 		}
 
-		$lock = maybe_unserialize( $stored_value );
+		$lock = automator_safe_unserialize( $stored_value );
 
 		if ( ! $this->is_stale( $lock, $now ) ) {
 			return false;

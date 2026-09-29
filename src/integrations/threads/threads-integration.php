@@ -35,6 +35,10 @@ class Threads_Integration extends \Uncanny_Automator\App_Integrations\App_Integr
 		$this->helpers = new Threads_App_Helpers( self::get_config() );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/threads-icon.svg' );
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'Meta' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

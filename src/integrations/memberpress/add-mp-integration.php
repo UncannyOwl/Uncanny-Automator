@@ -27,6 +27,10 @@ class Add_Mp_Integration {
 		$this->set_icon( 'memberpress-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'memberpress/memberpress.php' );
+
+		$this->set_developer_name( 'Caseproof' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

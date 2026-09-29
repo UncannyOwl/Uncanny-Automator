@@ -16,7 +16,7 @@ class Resend_Action_Service {
 	 * current serialized blob AND the future gz1: format.
 	 *
 	 * @param mixed $raw
-	 * @return mixed array for gz1:/JSON; object-or-array for legacy serialized; array() on corrupt input.
+	 * @return mixed array for gz1:/JSON; array for serialized arrays; __PHP_Incomplete_Class for legacy serialized objects; array() on corrupt input.
 	 */
 	public static function decode_api_log_value( $raw ) {
 
@@ -43,11 +43,11 @@ class Resend_Action_Service {
 
 		// General gz: helper (Automator_Compression), then unserialize.
 		if ( 0 === strpos( $raw, 'gz:' ) && class_exists( Automator_Compression::class ) ) {
-			return maybe_unserialize( Automator_Compression::maybe_decompress_string( $raw ) );
+			return automator_safe_unserialize( Automator_Compression::maybe_decompress_string( $raw ) );
 		}
 
 		// Current format: PHP-serialized blob.
-		return maybe_unserialize( $raw );
+		return automator_safe_unserialize( $raw );
 	}
 
 	/**
@@ -81,20 +81,23 @@ class Resend_Action_Service {
 
 		$params = self::decode_api_log_value( $api_request->params );
 
-		// The 7.0+ app-client infra (Api_Client::send) logs the request as an immutable
-		// Api_Request object, not the legacy array. api_call() needs the array shape, so
-		// flatten it back via the value object's getters before replaying.
-		if ( $params instanceof \Uncanny_Automator\App\Infrastructure\Api_Client\Api_Request ) {
-			$params = $this->api_request_to_params( $params );
+		// Log rows are decoded with allowed_classes => false (CVE-2026-82627). Rows that
+		// stored a serialized Api_Request object decode to __PHP_Incomplete_Class and
+		// cannot be replayed; skip them cleanly. New rows store the legacy params array.
+		if ( ! is_array( $params ) || empty( $params['endpoint'] ) ) {
+			return array(
+				'ok'         => false,
+				'outcome'    => 'skipped',
+				'message'    => 'Stored request payload is unreadable (legacy object format) — cannot replay',
+				'api_log_id' => $api_log_id,
+			);
 		}
 
-		if ( is_array( $params ) ) {
-			// Flag the replay as a resend. App_Integrations\Api_Caller hooks the
-			// integration's {slug}_api_call filter on this flag and re-injects the
-			// CURRENT credential, so an expired/rotated token captured in the stored
-			// body is replaced with the live one before the request is re-fired.
-			$params['resend'] = true;
-		}
+		// Flag the replay as a resend. App_Integrations\Api_Caller hooks the
+		// integration's {slug}_api_call filter on this flag and re-injects the
+		// CURRENT credential, so an expired/rotated token captured in the stored
+		// body is replaced with the live one before the request is re-fired.
+		$params['resend'] = true;
 
 		try {
 			$this->fire_api_call( $params );
@@ -123,29 +126,6 @@ class Resend_Action_Service {
 	 */
 	protected function fire_api_call( $params ) {
 		return Api_Server::api_call( $params );
-	}
-
-	/**
-	 * Flatten a new-infra Api_Request value object back into the legacy params array shape
-	 * Api_Server::api_call() expects. Only endpoint + body are strictly required by api_call();
-	 * method and action (logging context) are carried through when present.
-	 *
-	 * @param \Uncanny_Automator\App\Infrastructure\Api_Client\Api_Request $request
-	 * @return array
-	 */
-	private function api_request_to_params( $request ) {
-		$params = array(
-			'endpoint' => $request->endpoint(),
-			'body'     => $request->body(),
-			'method'   => $request->method(),
-		);
-
-		$action_data = $request->action_data();
-		if ( null !== $action_data ) {
-			$params['action'] = $action_data;
-		}
-
-		return $params;
 	}
 
 	/**

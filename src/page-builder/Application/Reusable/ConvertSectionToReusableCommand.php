@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Application\Reusable;
 
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
+use UncannyPageBuilder\Domain\Section\Section;
 
 final class ConvertSectionToReusableCommand
 {
     public function __construct(
-        private readonly int $sectionId,
+        private readonly Section $section,
         private readonly string $title = '',
         private readonly GlobalPartType $type = GlobalPartType::Section,
     ) {}
 
-    public function sectionId(): int
+    public function section(): Section
     {
-        return $this->sectionId;
+        return $this->section;
     }
 
     public function title(): string

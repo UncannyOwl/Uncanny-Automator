@@ -47,6 +47,18 @@ if ( ! defined( 'AUTOMATOR_API_URL' ) ) {
 	define( 'AUTOMATOR_API_URL', apply_filters( 'automator_api_url', 'https://api.automatorplugin.com/' ) );
 }
 
+if ( ! defined( 'AUTOMATOR_USAGE_REPORTS_URL' ) ) {
+	/**
+	 * Usage Reports Service — where usage reports are sent.
+	 *
+	 * Reports post here directly rather than through AUTOMATOR_API_URL. The
+	 * service answers with an envelope carrying its own `statusCode`, and
+	 * Usage_Reports::send_report() requires that to be 201 before it clears the
+	 * locally accumulated stats it has just sent.
+	 */
+	define( 'AUTOMATOR_USAGE_REPORTS_URL', apply_filters( 'automator_usage_reports_url', 'https://usage.uncannyowl.com/' ) );
+}
+
 if ( ! defined( 'AUTOMATOR_LOGS_EXT' ) ) {
 	define( 'AUTOMATOR_LOGS_EXT', apply_filters( 'automator_logs_extension', 'log' ) );
 }

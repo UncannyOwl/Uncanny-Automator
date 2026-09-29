@@ -27,6 +27,10 @@ class Add_Cf_Integration {
 		$this->set_icon( 'caldera-forms-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'caldera-forms/caldera-core.php' );
+
+		$this->set_developer_name( 'CalderaWP' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

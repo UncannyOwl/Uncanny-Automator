@@ -28,6 +28,7 @@ final class AgentWriteGuard
         private readonly ?SelectEditorPageSource $editorPageSources = null,
         private readonly ?PageLiveStateReaderInterface $pageLiveState = null,
         private readonly ?FailureReporterInterface $failureReporter = null,
+        private readonly ?AgentWritePageOwnerResolver $pageOwners = null,
     ) {}
 
     /**
@@ -37,13 +38,13 @@ final class AgentWriteGuard
     {
         return function (\WP_REST_Request $request) use ($toolName, $callback): \WP_REST_Response|\WP_Error {
             try {
-                $blocked = $this->parkedDraftAgentWriteError($toolName, $request);
+                $pageId = $this->resolvedPageId($toolName, $request);
+                $blocked = $this->parkedDraftAgentWriteError($toolName, $request, $pageId);
                 if ($blocked instanceof \WP_REST_Response) {
                     return $blocked;
                 }
 
                 $invoke = fn(): \WP_REST_Response|\WP_Error => $callback($request);
-                $pageId = $this->requestPageId($request);
                 $response = $this->isDraftWriteRequest($toolName, $request)
                     && $pageId > 0
                     && $this->pageSourceMutation instanceof PageSourceMutation
@@ -67,6 +68,11 @@ final class AgentWriteGuard
                     $exception,
                 );
             } catch (\RuntimeException $exception) {
+                if (!$this->isWriteRequest($toolName, $request)) {
+                    $this->recordBoundaryFailure($toolName, $exception);
+
+                    return $this->readFailure($toolName, $this->errors->contextLines($request));
+                }
                 $contextLines = $this->errors->contextLines($request);
                 $verificationError = $this->errors->conservativeWordPressWriteVerification(
                     $toolName,
@@ -95,11 +101,15 @@ final class AgentWriteGuard
             } catch (\Throwable $failure) {
                 $this->recordBoundaryFailure($toolName, $failure);
 
+                if (!$this->isWriteRequest($toolName, $request)) {
+                    return $this->readFailure($toolName, $this->errors->contextLines($request));
+                }
+
                 return $this->uncertainWriteError($toolName, $this->errors->contextLines($request));
             }
 
             try {
-                return $this->describeDraftWriteBoundary($toolName, $request, $response);
+                return $this->describeDraftWriteBoundary($toolName, $request, $response, $pageId);
             } catch (\Throwable $failure) {
                 // The callback already returned success. Response decoration
                 // is informative and cannot reclassify or retry that write.
@@ -133,10 +143,25 @@ final class AgentWriteGuard
         ]), 500);
     }
 
+    /** @param list<string> $contextLines */
+    private function readFailure(string $toolName, array $contextLines): \WP_REST_Response
+    {
+        return AgentTextResponse::withStatus(implode("\n", [
+            'TOOL: ' . $toolName,
+            'RESULT: error',
+            'ERROR_CODE: read_failed',
+            ...$contextLines,
+            'RETRY_SAFETY: Nothing was saved by this read operation.',
+            'NEXT STEP',
+            'Resolve the WordPress or plugin failure, then retry the read operation.',
+        ]), 500);
+    }
+
     public function describeDraftWriteBoundary(
         string $toolName,
         \WP_REST_Request $request,
         \WP_REST_Response|\WP_Error $response,
+        ?int $resolvedPageId = null,
     ): \WP_REST_Response|\WP_Error {
         if (!$response instanceof \WP_REST_Response || $response->get_status() >= 400) {
             return $response;
@@ -152,13 +177,15 @@ final class AgentWriteGuard
         }
 
         if (!$this->pageSourceMutation instanceof PageSourceMutation) {
-            $this->markAgentDraftActive($request);
+            $this->markAgentDraftActive($resolvedPageId ?? $this->resolvedPageId($toolName, $request));
         }
         if (str_contains($body, 'LIVE_PAGE: unchanged')) {
             return $response;
         }
 
-        $publicationState = $this->publicationStateAfterDraftWrite($request);
+        $publicationState = $this->publicationStateAfterDraftWrite(
+            $resolvedPageId ?? $this->resolvedPageId($toolName, $request),
+        );
         $publicationLine = $publicationState !== null
             ? "\nPUBLICATION_STATE: {$publicationState}"
             : '';
@@ -172,8 +199,11 @@ final class AgentWriteGuard
         return AgentTextResponse::withStatus($body, $response->get_status());
     }
 
-    private function parkedDraftAgentWriteError(string $toolName, \WP_REST_Request $request): ?\WP_REST_Response
-    {
+    private function parkedDraftAgentWriteError(
+        string $toolName,
+        \WP_REST_Request $request,
+        int $pageId,
+    ): ?\WP_REST_Response {
         if (
             !$this->isDraftWriteRequest($toolName, $request)
             || !$this->editorPageSources instanceof SelectEditorPageSource
@@ -181,7 +211,6 @@ final class AgentWriteGuard
             return null;
         }
 
-        $pageId = $this->requestPageId($request);
         if ($pageId <= 0 || !$this->editorPageSources->forPage($pageId)->shouldOfferParkedDraft()) {
             return null;
         }
@@ -209,9 +238,8 @@ final class AgentWriteGuard
         ]), 409);
     }
 
-    private function markAgentDraftActive(\WP_REST_Request $request): void
+    private function markAgentDraftActive(int $pageId): void
     {
-        $pageId = $this->requestPageId($request);
         if ($pageId <= 0 || !$this->pageStates instanceof PageStateRepositoryInterface) {
             return;
         }
@@ -237,9 +265,19 @@ final class AgentWriteGuard
         };
     }
 
-    private function publicationStateAfterDraftWrite(\WP_REST_Request $request): ?string
+    private function isWriteRequest(string $toolName, \WP_REST_Request $request): bool
     {
-        $pageId = $this->requestPageId($request);
+        $requestedOperation = $request->get_param('operation');
+        $operation = is_string($requestedOperation) ? trim($requestedOperation) : '';
+
+        return match ($toolName) {
+            'manage_canvas' => in_array($operation, ['create', 'update', 'delete', 'attach_reusable'], true),
+            default => $this->isDraftWriteRequest($toolName, $request),
+        };
+    }
+
+    private function publicationStateAfterDraftWrite(int $pageId): ?string
+    {
         if ($pageId <= 0 || !$this->pageLiveState instanceof PageLiveStateReaderInterface) {
             return null;
         }
@@ -267,5 +305,12 @@ final class AgentWriteGuard
         $context = $request->get_param('page_builder_context');
 
         return is_array($context) ? \absint($context['page_id'] ?? 0) : 0;
+    }
+
+    private function resolvedPageId(string $toolName, \WP_REST_Request $request): int
+    {
+        return $this->pageOwners instanceof AgentWritePageOwnerResolver
+            ? $this->pageOwners->resolve($toolName, $request)
+            : $this->requestPageId($request);
     }
 }

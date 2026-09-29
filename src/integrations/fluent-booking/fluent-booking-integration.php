@@ -21,6 +21,11 @@ class Fluent_Booking_Integration extends Integration {
 		$this->set_integration( 'FLUENT_BOOKING' );
 		$this->set_name( 'FluentBooking' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/fluentbooking-icon.svg' );
+
+		$this->set_plugin_file_path( 'fluent-booking/fluent-booking.php' );
+		$this->set_developer_name( 'WP Fluent Forms' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

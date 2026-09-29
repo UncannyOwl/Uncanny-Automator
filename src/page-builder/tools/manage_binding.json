@@ -26,7 +26,7 @@
       "type": "string",
       "required": false,
       "in": "query",
-      "description": "Exact binding ID for operation=guide."
+      "description": "For guide, use the binding ID returned by search. For update_query or update_template, provide section_id and copy the exact BINDING_ID from a fresh inspect result; this is the inspected binding instance ID, not the guide declaration ID."
     },
     {
       "name": "section_id",
@@ -40,7 +40,7 @@
       "type": "object",
       "required": false,
       "in": "body",
-      "description": "Replacement binding query args for operation=update_query."
+      "description": "Declared binding query attributes to change for operation=update_query. Omitted attributes remain unchanged. Read the binding guide for allowed keys and values."
     },
     {
       "name": "template_html",
@@ -52,7 +52,7 @@
   ],
   "output": {
     "content_type": "text/plain",
-    "description": "Plain text binding search or guide response with NEXT STEP guidance."
+    "description": "Plain text binding search and guide results, section binding inspection details, or mutation status with applied changes, validation warnings, and NEXT STEP guidance."
   },
   "auto_approve": false,
   "group": "write",

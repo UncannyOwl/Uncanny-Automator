@@ -17,6 +17,7 @@
     {
       "name": "page_id",
       "type": "integer",
+      "minimum": 1,
       "required": false,
       "in": "query",
       "description": "Uncanny Page Builder page ID when scope=page."
@@ -24,6 +25,7 @@
     {
       "name": "global_part_id",
       "type": "integer",
+      "minimum": 1,
       "required": false,
       "in": "query",
       "description": "Reusable global part post ID when scope=global_part."

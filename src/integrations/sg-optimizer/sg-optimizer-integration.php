@@ -19,6 +19,11 @@ class Sg_Optimizer_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'SG_OPTIMIZER' );
 		$this->set_name( 'Speed Optimizer' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/sg-optimizer-icon.svg' );
+
+		$this->set_plugin_file_path( 'sg-optimizer/sg-optimizer.php' );
+		$this->set_developer_name( 'SiteGround' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

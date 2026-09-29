@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Api\AgentPageController;
 
 use UncannyPageBuilder\Api\AgentTextResponse;
+use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
+use UncannyPageBuilder\Api\AgentPageController\AgentWrite\AgentWritePageOwnerResolver;
 use UncannyPageBuilder\Application\Reusable\CreateReusableCommand;
 use UncannyPageBuilder\Application\Reusable\CreateReusableUseCase;
 use UncannyPageBuilder\Application\Reusable\ConvertSectionToReusableCommand;
@@ -18,8 +21,11 @@ use UncannyPageBuilder\Application\Reusable\UpdateReusableUseCase;
 use UncannyPageBuilder\Domain\Exception\CssRuleIntegrityException;
 use UncannyPageBuilder\Domain\Exception\ReusableNotFoundException;
 use UncannyPageBuilder\Domain\Exception\SectionNotFoundException;
+use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
+use UncannyPageBuilder\Domain\GlobalPart\GlobalPartCreationUncertainException;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\Reusable\Reusable;
+use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 use UncannyPageBuilder\Infrastructure\Persistence\SourceTransactionsUnavailableException;
 use UncannyPageBuilder\Infrastructure\Persistence\WordPressWriteVerificationException;
 
@@ -38,24 +44,31 @@ final class ReusableController
         private readonly UpdateReusableUseCase $updateReusable,
         private readonly DeleteReusableUseCase $deleteReusable,
         private readonly ListReusableUseCase $listReusable,
+        private readonly PermissionChecker $permissions,
+        private readonly SectionRepositoryInterface $sections,
+        private readonly ?AgentWritePageOwnerResolver $pageOwners = null,
     ) {}
 
     public function manage(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         $operation = trim((string) ($request->get_param('operation') ?? ''));
 
-        return match ($operation) {
-            'list' => $this->listFromRequest($request),
-            'create' => $this->createFromRequest($request),
-            'convert' => $this->convertSectionFromRequest($request),
-            'update' => $this->updateFromRequest($request),
-            'delete' => $this->deleteFromRequest($request),
-            default => $this->textToolError('manage_reusable', 400, 'invalid_operation', [
-                'OPERATION: ' . ($operation !== '' ? $operation : 'missing'),
-                'NEXT STEP',
-                'Retry with operation list, create, convert, update, or delete.',
-            ]),
-        };
+        try {
+            return match ($operation) {
+                'list' => $this->listFromRequest($request),
+                'create' => $this->createFromRequest($request),
+                'convert' => $this->convertSectionFromRequest($request),
+                'update' => $this->updateFromRequest($request),
+                'delete' => $this->deleteFromRequest($request),
+                default => $this->textToolError('manage_reusable', 400, 'invalid_operation', [
+                    'OPERATION: ' . ($operation !== '' ? $operation : 'missing'),
+                    'NEXT STEP',
+                    'Retry with operation list, create, convert, update, or delete.',
+                ]),
+            };
+        } catch (StaleSourceGenerationException $exception) {
+            return $this->staleSourceToolError($exception);
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -77,6 +90,8 @@ final class ReusableController
                 title: is_string($request->get_param('title')) ? (string) $request->get_param('title') : '',
                 type: $type ?? GlobalPartType::Section,
             ));
+        } catch (GlobalPartCreationUncertainException $exception) {
+            return $this->uncertainCreationError('reusable_create_failed', $exception);
         } catch (\RuntimeException $exception) {
             $this->rethrowAgentWriteBoundaryFailure($exception);
 
@@ -135,7 +150,7 @@ final class ReusableController
 
     private function convertSectionFromRequest(\WP_REST_Request $request): \WP_REST_Response
     {
-        $sectionId = absint($request->get_param('section_id'));
+        $sectionId = RequestId::positive($request->get_param('section_id')) ?? 0;
         $type = $this->requestedType($request);
 
         if ($sectionId <= 0) {
@@ -154,8 +169,35 @@ final class ReusableController
         }
 
         try {
+            $section = $this->pageOwners instanceof AgentWritePageOwnerResolver
+                ? $this->pageOwners->reusableConversionSection($request)
+                : $this->sections->findById($sectionId);
+        } catch (SectionNotFoundException) {
+            return $this->textToolError('manage_reusable', 404, 'section_not_found', [
+                'SECTION_ID: ' . $sectionId,
+                'NEXT STEP',
+                'Refresh page context and retry with a valid section_id.',
+            ]);
+        }
+        if ($section === null) {
+            return $this->textToolError('manage_reusable', 404, 'section_not_found', [
+                'SECTION_ID: ' . $sectionId,
+                'NEXT STEP',
+                'Refresh page context and retry with a valid section_id.',
+            ]);
+        }
+        if (!$this->permissions->canEditPage($section->pageId())) {
+            return $this->textToolError('manage_reusable', 403, 'reusable_edit_forbidden', [
+                'SECTION_ID: ' . $sectionId,
+                'PAGE_ID: ' . $section->pageId(),
+                'NEXT STEP',
+                'Ask a site administrator for permission to edit the source page.',
+            ]);
+        }
+
+        try {
             $reusable = ($this->convertSectionToReusable)(new ConvertSectionToReusableCommand(
-                sectionId: $sectionId,
+                section: $section,
                 title: is_string($request->get_param('title')) ? (string) $request->get_param('title') : '',
                 type: $type ?? GlobalPartType::Section,
             ));
@@ -165,6 +207,8 @@ final class ReusableController
                 'NEXT STEP',
                 'Refresh page context and retry with a valid section_id.',
             ]);
+        } catch (GlobalPartCreationUncertainException $exception) {
+            return $this->uncertainCreationError('reusable_convert_failed', $exception, $sectionId);
         } catch (\RuntimeException $exception) {
             $this->rethrowAgentWriteBoundaryFailure($exception);
 
@@ -182,6 +226,7 @@ final class ReusableController
             'OPERATION: convert',
             'SECTION_ID: ' . $sectionId,
             ...$this->summaryLines($reusable),
+            'COPY_OWNERSHIP: Reusable ' . $reusable->id() . ' is an independent copy. Editing it does not update source section ' . $sectionId . '.',
             '',
             'NEXT STEP',
             'Use read_part kind=global_part include=source to confirm the reusable source before further edits.',
@@ -197,13 +242,19 @@ final class ReusableController
                 'Retry with reusable_id, or run this from an active reusable canvas.',
             ]);
         }
-
         $type = $this->requestedType($request);
         if ($type === false) {
             return $this->textToolError('manage_reusable', 400, 'invalid_reusable_type', [
                 'REUSABLE_ID: ' . $reusableId,
                 'NEXT STEP',
                 'Retry with reusable_type header, footer, or section.',
+            ]);
+        }
+        if (!$this->permissions->canEditPost($reusableId)) {
+            return $this->textToolError('manage_reusable', 403, 'reusable_edit_forbidden', [
+                'REUSABLE_ID: ' . $reusableId,
+                'NEXT STEP',
+                'Ask a site administrator for permission to edit this reusable.',
             ]);
         }
 
@@ -229,11 +280,11 @@ final class ReusableController
         } catch (\RuntimeException $exception) {
             $this->rethrowAgentWriteBoundaryFailure($exception);
 
-            return $this->textToolError('manage_reusable', 500, 'reusable_update_failed', [
+            return $this->textToolError('manage_reusable', 500, 'write_failed', [
                 'REUSABLE_ID: ' . $reusableId,
-                'DETAIL: ' . $exception->getMessage(),
+                'RETRY_SAFETY: An earlier persistence step may already have completed. Do not retry blindly.',
                 'NEXT STEP',
-                'Retry once. If it still fails, inspect the server error log.',
+                'Read the current reusable first. If the requested change is present, do not retry. If it is absent, retry once against the current state.',
             ]);
         }
 
@@ -259,7 +310,6 @@ final class ReusableController
                 'Retry with reusable_id, or run this from an active reusable canvas.',
             ]);
         }
-
         $deleteMode = trim((string) ($request->get_param('delete_mode') ?? 'trash'));
         if (!in_array($deleteMode, ['trash', 'delete'], true)) {
             return $this->textToolError('manage_reusable', 400, 'invalid_delete_mode', [
@@ -267,6 +317,13 @@ final class ReusableController
                 'DELETE_MODE: ' . ($deleteMode !== '' ? $deleteMode : 'missing'),
                 'NEXT STEP',
                 'Retry with delete_mode trash or delete.',
+            ]);
+        }
+        if (!$this->permissions->canDeletePost($reusableId)) {
+            return $this->textToolError('manage_reusable', 403, 'reusable_edit_forbidden', [
+                'REUSABLE_ID: ' . $reusableId,
+                'NEXT STEP',
+                'Ask a site administrator for permission to delete this reusable.',
             ]);
         }
 
@@ -284,11 +341,11 @@ final class ReusableController
         } catch (\RuntimeException $exception) {
             $this->rethrowAgentWriteBoundaryFailure($exception);
 
-            return $this->textToolError('manage_reusable', 500, 'reusable_delete_failed', [
+            return $this->textToolError('manage_reusable', 500, 'write_failed', [
                 'REUSABLE_ID: ' . $reusableId,
-                'DETAIL: ' . $exception->getMessage(),
+                'RETRY_SAFETY: An earlier persistence step may already have completed. Do not retry blindly.',
                 'NEXT STEP',
-                'Retry once. If it still fails, inspect the server error log.',
+                'Read the current reusable list first. If the reusable is already absent, do not retry. If it remains, inspect it before retrying once.',
             ]);
         }
 
@@ -312,24 +369,11 @@ final class ReusableController
 
     private function requestedId(\WP_REST_Request $request): int
     {
-        $reusableId = absint($request->get_param('reusable_id'));
-        if ($reusableId > 0) {
-            return \get_post_type($reusableId) === 'upb_global_part' ? $reusableId : 0;
-        }
-
-        $globalPartId = $this->requestGlobalPartId($request);
-        if ($globalPartId > 0) {
-            return \get_post_type($globalPartId) === 'upb_global_part' ? $globalPartId : 0;
-        }
-
-        $canvasId = absint($request->get_param('canvas_id'));
-        if ($canvasId > 0) {
-            return \get_post_type($canvasId) === 'upb_global_part' ? $canvasId : 0;
-        }
-
-        $pageId = absint($request->get_param('page_id'));
-        if ($pageId > 0) {
-            return \get_post_type($pageId) === 'upb_global_part' ? $pageId : 0;
+        foreach (['reusable_id', 'global_part_id', 'canvas_id', 'page_id'] as $key) {
+            $value = $request->get_param($key);
+            if ($value !== null) {
+                return $this->globalPartId($value);
+            }
         }
 
         $context = $request->get_param('page_builder_context');
@@ -337,31 +381,20 @@ final class ReusableController
             return 0;
         }
 
-        $contextGlobalPartId = absint($context['global_part_id'] ?? 0);
-        if ($contextGlobalPartId > 0) {
-            return \get_post_type($contextGlobalPartId) === 'upb_global_part' ? $contextGlobalPartId : 0;
+        if (array_key_exists('global_part_id', $context)) {
+            return $this->globalPartId($context['global_part_id']);
         }
 
-        $contextPageId = absint($context['page_id'] ?? 0);
-
-        return $contextPageId > 0 && \get_post_type($contextPageId) === 'upb_global_part'
-            ? $contextPageId
+        return array_key_exists('page_id', $context)
+            ? $this->globalPartId($context['page_id'])
             : 0;
     }
 
-    private function requestGlobalPartId(\WP_REST_Request $request): int
+    private function globalPartId(mixed $value): int
     {
-        $requestId = absint($request->get_param('global_part_id'));
-        if ($requestId > 0) {
-            return $requestId;
-        }
+        $id = RequestId::positive($value);
 
-        $context = $request->get_param('page_builder_context');
-        if (is_array($context)) {
-            return absint($context['global_part_id'] ?? 0);
-        }
-
-        return 0;
+        return $id !== null && \get_post_type($id) === 'upb_global_part' ? $id : 0;
     }
 
     private function requestedType(\WP_REST_Request $request): GlobalPartType|false|null
@@ -402,7 +435,33 @@ final class ReusableController
             $lines[] = 'SOURCE_SECTION_ID: ' . $reusable->sourceSectionId();
         }
 
+        $warnings = array_values(array_unique(array_filter(
+            array_map(static fn (mixed $warning): string => trim((string) $warning), $reusable->warnings()),
+        )));
+        if ($warnings !== []) {
+            $lines[] = 'WARNING';
+            array_push($lines, ...$warnings);
+        }
+
         return $lines;
+    }
+
+    private function uncertainCreationError(
+        string $errorCode,
+        GlobalPartCreationUncertainException $exception,
+        ?int $sectionId = null,
+    ): \WP_REST_Response {
+        $lines = [];
+        if ($sectionId !== null) {
+            $lines[] = 'SECTION_ID: ' . $sectionId;
+        }
+        $lines[] = 'REUSABLE_ID: ' . $exception->globalPartId();
+        $lines[] = 'DETAIL: The reusable may exist because its failed creation could not be cleaned up.';
+        $lines[] = 'RETRY_SAFETY: Do not retry blindly. A retry can create a second reusable.';
+        $lines[] = 'NEXT STEP';
+        $lines[] = 'Call manage_reusable operation=list and look for REUSABLE_ID ' . $exception->globalPartId() . '. If it exists, inspect it before continuing. If it does not exist, resolve the cleanup failure before retrying.';
+
+        return $this->textToolError('manage_reusable', 500, $errorCode, $lines);
     }
 
     /**
@@ -413,6 +472,7 @@ final class ReusableController
     {
         if (
             $exception instanceof CssRuleIntegrityException
+            || $exception instanceof StaleSourceGenerationException
             || $this->wordpressWriteVerificationFailureInChain($exception) instanceof WordPressWriteVerificationException
             || $this->sourceTransactionFailureInChain($exception) instanceof SourceTransactionsUnavailableException
         ) {
@@ -459,5 +519,15 @@ final class ReusableController
             'ERROR_CODE: ' . $code,
             ...$lines,
         ]), $status);
+    }
+
+    private function staleSourceToolError(StaleSourceGenerationException $exception): \WP_REST_Response
+    {
+        return $this->textToolError('manage_reusable', 409, 'stale_source_generation', [
+            'SCOPE: ' . $exception->scope(),
+            'DETAIL: Page Builder source changed while this write was running.',
+            'NEXT STEP',
+            'Call read_page_context or read_part again, then reapply the change to the current source.',
+        ]);
     }
 }

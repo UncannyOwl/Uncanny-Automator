@@ -27,6 +27,10 @@ class Add_Esaf_Integration {
 		$this->set_icon( 'easy-affiliate-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'easy-affiliate/easy-affiliate.php' );
+
+		$this->set_developer_name( 'Caseproof, LLC' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

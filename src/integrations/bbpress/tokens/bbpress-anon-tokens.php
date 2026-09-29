@@ -64,7 +64,7 @@ LIMIT 0,1",
 					)
 				);
 
-				$value = maybe_unserialize( $entry );
+				$value = automator_safe_unserialize( $entry );
 			}
 		}
 

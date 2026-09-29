@@ -62,7 +62,7 @@ class AFFWP_NEWAFFILIATEAPPROVED {
 	 */
 	public function affwp_affiliate_approved( $affiliate_id, $status, $old_status ) {
 
-		$affwp_settings = maybe_unserialize( get_option( 'affwp_settings', 0 ) );
+		$affwp_settings = automator_safe_unserialize( get_option( 'affwp_settings', 0 ) );
 
 		$user_id = affwp_get_affiliate_user_id( $affiliate_id );
 

@@ -30,6 +30,17 @@ class Saveto_Wishlist_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'SAVETO_WISHLIST' );
 		$this->set_name( 'SaveTo Wishlist' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/saveto-wishlist-icon.svg' );
+
+		$this->set_plugin_file_path( 'saveto-wishlist-lite-for-woocommerce/saveto-wishlist-lite-for-woocommerce.php' );
+		$this->set_plugin_variations( array( 'saveto-wishlist-pro-for-woocommerce/saveto-wishlist-pro-for-woocommerce.php' ) );
+		$this->set_developer_name( 'Rymera Web Co' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
+
+		// Declared, not inferred: plugin_active() gates on
+		// defined( 'STWLITE_VERSION' ) && class_exists( 'WooCommerce' ).
+		$this->set_plugin_required( 'woocommerce/woocommerce.php' );
+		$this->set_integration_required( 'WC' );
 	}
 
 	/**

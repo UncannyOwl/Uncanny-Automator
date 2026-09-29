@@ -19,6 +19,11 @@ class Cloudflare_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'CLOUDFLARE' );
 		$this->set_name( 'Cloudflare' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/cloudflare-icon.svg' );
+
+		$this->set_plugin_file_path( 'cloudflare/cloudflare.php' );
+		$this->set_developer_name( 'Cloudflare' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

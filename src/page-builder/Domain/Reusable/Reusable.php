@@ -8,6 +8,9 @@ use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 
 final class Reusable
 {
+    /**
+     * @param list<string> $warnings
+     */
     public function __construct(
         private readonly int $id,
         private readonly string $title,
@@ -16,6 +19,7 @@ final class Reusable
         private readonly string $editorUrl,
         private readonly bool $hasSource,
         private readonly ?int $sourceSectionId = null,
+        private readonly array $warnings = [],
     ) {}
 
     public function id(): int
@@ -51,5 +55,13 @@ final class Reusable
     public function sourceSectionId(): ?int
     {
         return $this->sourceSectionId;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function warnings(): array
+    {
+        return $this->warnings;
     }
 }

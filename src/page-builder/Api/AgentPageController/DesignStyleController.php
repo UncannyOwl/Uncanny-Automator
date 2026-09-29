@@ -15,6 +15,7 @@ use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Domain\DesignStyles\DesignWriteScope;
 use UncannyPageBuilder\Domain\ErrorMessage;
 use UncannyPageBuilder\Domain\Exception\SectionNotFoundException;
+use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 
 /**
@@ -65,13 +66,23 @@ final class DesignStyleController
             ]);
         }
 
-        $result = $this->designStyles->commit(new DesignStyleCommitRequest(
-            scope: DesignWriteScope::Element,
-            pageId: $pageId,
-            changes: $changes,
-            capabilities: $this->capabilitiesForPage($pageId),
-            sectionId: $sectionId,
-        ));
+        try {
+            $result = $this->designStyles->commit(new DesignStyleCommitRequest(
+                scope: DesignWriteScope::Element,
+                pageId: $pageId,
+                changes: $changes,
+                capabilities: $this->capabilitiesForPage($pageId),
+                sectionId: $sectionId,
+            ));
+        } catch (StaleSourceGenerationException $exception) {
+            return $this->textToolError('update_element_style', 409, 'stale_source_generation', [
+                'SECTION_ID: ' . $sectionId,
+                'SCOPE: ' . $exception->scope(),
+                'DETAIL: Page Builder source changed while this style write was running. Nothing was saved.',
+                'NEXT STEP',
+                'Call read_part again, then reapply the style to the current source.',
+            ]);
+        }
         $payload = $result->toArray();
 
         if (!$result->isSuccess()) {

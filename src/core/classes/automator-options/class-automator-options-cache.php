@@ -156,7 +156,7 @@ final class Automator_Options_Cache {
 		$cached_value = wp_cache_get( $this->get_option_cache_prefix() . $key, $this->get_cache_group() );
 		if ( false !== $cached_value ) {
 			// Decode the cached value (use null default to make stored null observable) and store in memory.
-			$decoded_value               = Automator_Option_Formatter::format_value( $cached_value, null );
+			$decoded_value               = Automator_Option_Formatter::format_value( $cached_value, null, null, $key );
 			$this->cached_values[ $key ] = $decoded_value;
 			return $decoded_value;
 		}
@@ -224,7 +224,9 @@ final class Automator_Options_Cache {
 		foreach ( $autoloaded_options as $option_name => $option_value ) {
 			$this->autoloaded[ $option_name ] = Automator_Option_Formatter::format_value(
 				$option_value,
-				null
+				null,
+				null,
+				$option_name
 			);
 		}
 	}

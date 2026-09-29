@@ -68,7 +68,10 @@ final class CanvasRenderer implements CanvasGlobalPartRendererInterface
             return;
         }
 
-        $state = $this->workingCanvas->read($postId);
+        $previewWorkingDraft = isset($_GET['upb_preview'])
+            && !isset($_GET['upb_editor_viewport'])
+            && \UncannyPageBuilder\Infrastructure\WordPress\CanvasEditorChromeGate::currentUserHasAllowedCapability();
+        $state = $this->workingCanvas->read($postId, $previewWorkingDraft);
         $sections = $state['sections'];
         $compiledCss = $state['compiled_css'];
         $shellMode = $state['shell_mode'];

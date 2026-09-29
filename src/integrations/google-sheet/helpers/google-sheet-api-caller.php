@@ -29,25 +29,47 @@ class Google_Sheet_Api_Caller extends Api_Caller {
 	/**
 	 * Check for errors.
 	 *
+	 * Surfaces the platform's own reason rather than a generic endpoint string.
+	 * `/v2/google` answers a failure with an error envelope whose
+	 * `error.description` carries the actionable text ("Unable to parse range:
+	 * 'ny2025'!A2:A" for a renamed worksheet tab, "Your license has expired.");
+	 * on `Api_Caller::api_request()`'s caught-exception path that same text
+	 * arrives as a plain `error` string. Collapsing every non-200 into
+	 * "v2/google failed" made an expired licence, a spent credit balance, a
+	 * renamed tab and an empty header row indistinguishable to the user.
+	 *
 	 * @param array $response The response array.
 	 * @param array $args The arguments.
 	 *
 	 * @return void
-	 * @throws Exception
+	 * @throws Exception When the response is not a success.
 	 */
 	public function check_for_errors( $response, $args = array() ) {
 
-		$code = $response['statusCode'] ?? 0;
-		if ( 200 !== $code ) {
-			// TODO: Why aren't we showing the actual error message?
-			throw new Exception(
-				sprintf(
-					// translators: %s: API endpoint
-					esc_html_x( '%s failed', 'Google Sheet', 'uncanny-automator' ),
-					esc_html( $this->get_api_endpoint() )
-				)
+		// 4xx: the shared handler matches the registered credential patterns and
+		// otherwise throws error.description via Api_Caller::extract_error_message().
+		parent::check_for_errors( $response, $args );
+
+		$code = absint( $response['statusCode'] ?? 0 );
+
+		if ( 200 === $code ) {
+			return;
+		}
+
+		// Everything else non-200: a 5xx, a transport failure (code 0), or a 4xx
+		// whose envelope held nothing usable. Prefer the real message and keep the
+		// endpoint name only as the last resort.
+		$message = $this->extract_error_message( $response );
+
+		if ( '' === $message ) {
+			$message = sprintf(
+				// translators: %s: API endpoint
+				esc_html_x( '%s failed', 'Google Sheet', 'uncanny-automator' ),
+				$this->get_api_endpoint()
 			);
 		}
+
+		throw new Exception( esc_html( $message ), absint( $code ) );
 	}
 
 	//

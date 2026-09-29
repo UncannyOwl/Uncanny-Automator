@@ -26,6 +26,12 @@ class Add_Wpf_Integration {
 		$this->set_name( 'WPForms' );
 		$this->set_icon( 'wpforms-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
+
+		$this->set_plugin_file_path( 'wpforms-lite/wpforms.php' );
+		$this->set_plugin_variations( array( 'wpforms/wpforms.php' ) );
+		$this->set_developer_name( 'WPForms' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

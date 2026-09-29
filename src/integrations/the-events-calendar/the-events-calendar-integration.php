@@ -44,6 +44,10 @@ class The_Events_Calendar_Integration extends \Uncanny_Automator\Integration {
 			&& ! class_exists( '\Uncanny_Automator_Pro\Integrations\The_Events_Calendar\The_Events_Calendar_Pro_Integration' ) ) {
 			add_action( 'automator_add_integration_helpers', array( $this, 'alias_legacy_event_tickets_slug' ), PHP_INT_MAX );
 		}
+
+		$this->set_developer_name( 'The Events Calendar' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

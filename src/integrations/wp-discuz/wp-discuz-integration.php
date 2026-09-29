@@ -21,6 +21,11 @@ class Wp_Discuz_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'WPDISCUZ' );
 		$this->set_name( 'wpDiscuz' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/wpdiscuz-icon.svg' );
+
+		$this->set_plugin_file_path( 'wpdiscuz/class.WpdiscuzCore.php' );
+		$this->set_developer_name( 'gVectors' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

@@ -268,7 +268,7 @@ class Action_Logs_Resources {
 
 			$status_id = $status::get_class_name( $action_log['completed'] );
 
-			$properties = (array) maybe_unserialize( Automator()->db->action->get_meta( $action_log['ID'], 'properties' ) );
+			$properties = (array) automator_safe_unserialize( Automator()->db->action->get_meta( $action_log['ID'], 'properties' ) );
 
 			$action_runs[] = array(
 				'date'           => $this->utils->date_time_format_relative( $action_log['date_time'] ),
@@ -1070,7 +1070,7 @@ class Action_Logs_Resources {
 			// Grab the ction log id.
 			$action_log_id = isset( $action_log_record['ID'] ) ? $action_log_record['ID'] : null;
 			// The existing record is serialize. Unserialized it.
-			$action_meta_record = maybe_unserialize( Automator()->db->action->get_meta( $action_log_id, 'metas' ) );
+			$action_meta_record = automator_safe_unserialize( Automator()->db->action->get_meta( $action_log_id, 'metas' ) );
 			// Flatten the record to make it compatible with the post meta structure.
 			$action_meta_record = $this->utils->flatten_action_log_meta( $action_meta_record );
 			// Pass the value of the meta record to action meta if its a valid record.

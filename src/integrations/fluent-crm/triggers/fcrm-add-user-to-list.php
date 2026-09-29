@@ -86,6 +86,11 @@ class FCRM_ADD_USER_TO_LIST {
 			return;
 		}
 
+		// FluentCRM links contacts to accounts by email: never bind an administrator other than the logged-in user.
+		if ( ! automator_can_bind_user( $user_id ) ) {
+			return;
+		}
+
 		$list_ids = Automator()
 			->helpers
 			->recipe

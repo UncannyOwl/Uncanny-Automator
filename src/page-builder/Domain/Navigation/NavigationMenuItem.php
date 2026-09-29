@@ -21,6 +21,9 @@ final class NavigationMenuItem
         private readonly int $position = 0,
         private readonly string $target = '',
         private readonly array $classes = [],
+        private readonly string $description = '',
+        private readonly string $titleAttribute = '',
+        private readonly string $xfn = '',
     ) {}
 
     public function id(): int { return $this->id; }
@@ -32,6 +35,9 @@ final class NavigationMenuItem
     public function parentId(): int { return $this->parentId; }
     public function position(): int { return $this->position; }
     public function target(): string { return $this->target; }
+    public function description(): string { return $this->description; }
+    public function titleAttribute(): string { return $this->titleAttribute; }
+    public function xfn(): string { return $this->xfn; }
 
     /**
      * @return string[]

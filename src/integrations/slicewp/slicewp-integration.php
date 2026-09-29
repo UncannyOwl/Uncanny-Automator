@@ -21,6 +21,11 @@ class Slicewp_Integration extends Integration {
 		$this->set_integration( 'SLICEWP' );
 		$this->set_name( 'SliceWP' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/slicewp-icon.svg' );
+
+		$this->set_plugin_file_path( 'slice-wp/slice-wp.php' );
+		$this->set_developer_name( 'SliceWP' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

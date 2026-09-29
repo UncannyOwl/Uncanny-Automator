@@ -19,6 +19,11 @@ class Thrive_Ultimatum_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'THRIVE_ULTIMATUM' );
 		$this->set_name( 'Thrive Ultimatum' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/thrive-ultimatum-icon.svg' );
+
+		$this->set_plugin_file_path( 'thrive-ultimatum/thrive-ultimatum.php' );
+		$this->set_developer_name( 'Thrive Themes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

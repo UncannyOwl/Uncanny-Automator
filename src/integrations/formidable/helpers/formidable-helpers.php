@@ -3,13 +3,25 @@
 
 namespace Uncanny_Automator;
 
-use FrmDb;
 use FrmEntryMeta;
-use FrmForm;
+use Uncanny_Automator\Integrations\Formidable\Formidable_Helpers as Modern_Helpers;
 use Uncanny_Automator_Pro\Formidable_Pro_Helpers;
 
 /**
  * Class Formidable_Helpers
+ *
+ * Superseded by \Uncanny_Automator\Integrations\Formidable\Formidable_Helpers.
+ * Nothing in this plugin instantiates or extends it any more.
+ *
+ * It stays on disk for one reason: a Pro that has not been updated yet declares
+ * `Formidable_Pro_Helpers extends Formidable_Helpers`, which PHP resolves when
+ * the class is declared. Removing this file would fatal that install on load
+ * rather than degrade it. It goes when 8.0.0 forces Free and Pro to match.
+ *
+ * Since it only exists to keep that declaration resolvable, it holds no logic of
+ * its own — each method hands off to the modern helper.
+ *
+ * @deprecated Use \Uncanny_Automator\Integrations\Formidable\Formidable_Helpers.
  *
  * @package Uncanny_Automator
  */
@@ -34,7 +46,6 @@ class Formidable_Helpers {
 	 * Formidable_Helpers constructor.
 	 */
 	public function __construct() {
-
 	}
 
 	/**
@@ -59,20 +70,16 @@ class Formidable_Helpers {
 	 * @return mixed
 	 */
 	public function all_formidable_forms( $label = null, $option_code = 'FIFORMS', $args = array() ) {
-		// if ( ! $this->load_options ) {
-
-		// 	return Automator()->helpers->recipe->build_default_options_array( $label, $option_code );
-		// }
 
 		if ( ! $label ) {
-			$label = esc_attr__( 'Form', 'uncanny-automator' );
+			$label = esc_attr_x( 'Form', 'Formidable', 'uncanny-automator' );
 		}
 
 		$args = wp_parse_args(
 			$args,
 			array(
 				'uo_include_any' => false,
-				'uo_any_label'   => esc_attr__( 'Any product', 'uncanny-automator' ),
+				'uo_any_label'   => esc_attr_x( 'Any product', 'Formidable', 'uncanny-automator' ),
 			)
 		);
 
@@ -83,26 +90,17 @@ class Formidable_Helpers {
 		$options      = array();
 
 		if ( Automator()->helpers->recipe->load_helpers ) {
+
 			if ( $args['uo_include_any'] ) {
 				$options[- 1] = $args['uo_any_label'];
 			}
-			$s_query                = array(
-				array(
-					'or'               => 1,
-					'parent_form_id'   => null,
-					'parent_form_id <' => 1,
-				),
-			);
-			$s_query['is_template'] = 0;
-			$s_query['status !']    = 'trash';
-			$forms                  = FrmForm::getAll( $s_query, '', ' 0, 999' );
 
-			if ( ! empty( $forms ) ) {
-				foreach ( $forms as $form ) {
-					$options[ $form->id ] = $form->name;
-				}
+			// The modern helper owns the query; this shape is the legacy one.
+			foreach ( ( new Modern_Helpers() )->get_form_options() as $form ) {
+				$options[ $form['value'] ] = $form['text'];
 			}
 		}
+
 		$option = array(
 			'option_code'     => $option_code,
 			'label'           => $label,
@@ -114,8 +112,8 @@ class Formidable_Helpers {
 			'endpoint'        => $end_point,
 			'options'         => $options,
 			'relevant_tokens' => array(
-				$option_code         => esc_html__( 'Form title', 'uncanny-automator' ),
-				$option_code . '_ID' => esc_html__( 'Form ID', 'uncanny-automator' ),
+				$option_code         => esc_html_x( 'Form title', 'Formidable', 'uncanny-automator' ),
+				$option_code . '_ID' => esc_html_x( 'Form ID', 'Formidable', 'uncanny-automator' ),
 			),
 		);
 
@@ -123,9 +121,16 @@ class Formidable_Helpers {
 	}
 
 	/**
-	 * @param $entry_id
-	 * @param $form_id
-	 * @param $args
+	 * Write an entry's field values into the trigger log for the legacy parser.
+	 *
+	 * The one method here with no modern counterpart to hand off to: the
+	 * framework now writes token values itself from hydrate_tokens(), bucketed by
+	 * tokenIdentifier, so there is nothing equivalent to call. It stays whole for
+	 * the un-updated Pro that still drives token storage this way.
+	 *
+	 * @param int   $entry_id
+	 * @param int   $form_id
+	 * @param array $args
 	 *
 	 * @return array
 	 */
@@ -165,25 +170,11 @@ class Formidable_Helpers {
 	/**
 	 * Determine whether an entry is a completed submission.
 	 *
-	 * Formidable stores 0 for a submitted entry and 1 for a save-and-continue draft, and
-	 * reserves 2 and 3 for the Form Abandonment add-on's "In progress" and "Abandoned"
-	 * entries. All of them fire frm_after_create_entry. The hook fires again once the entry
-	 * is completed - from Formidable Pro for status 1, and from the abandonment add-on for
-	 * 2 and 3 - so skipping the incomplete ones still leaves one trigger run per entry.
-	 *
-	 * Not FrmEntry::getOne(): the add-on creates the entry as submitted and only then
-	 * flips it to "In progress" with a raw query, on this same hook at priority 1. That
-	 * leaves getOne() serving a cached is_draft of 0 by the time our triggers run.
-	 * FrmDb::get_var() caches under its own key, which nothing has populated by then.
-	 *
 	 * @param int $entry_id
 	 *
 	 * @return bool
 	 */
 	public function is_completed_entry( $entry_id ) {
-		$is_draft = FrmDb::get_var( 'frm_items', array( 'id' => $entry_id ), 'is_draft' );
-
-		return null !== $is_draft && 0 === (int) $is_draft;
+		return ( new Modern_Helpers() )->is_completed_entry( $entry_id );
 	}
-
 }

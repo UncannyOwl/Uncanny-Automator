@@ -235,7 +235,10 @@ final class DatabaseSectionRepository implements SectionRepositoryInterface
             return false;
         }
 
-        $decoded = function_exists('maybe_unserialize') ? maybe_unserialize($stored) : $stored;
+        // Never instantiate objects from stored metadata (PHP Object Injection).
+        $decoded = function_exists('is_serialized') && is_serialized($stored)
+            ? @unserialize(trim($stored), ['allowed_classes' => false])
+            : $stored;
 
         return is_string($decoded) && hash_equals($expectedCss, $decoded);
     }

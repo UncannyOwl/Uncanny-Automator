@@ -7,14 +7,13 @@ namespace UncannyPageBuilder\Domain\Section;
 /**
  * Versioned proposal submitted by the AI agent to edit an existing section.
  *
- * Supported operations: replace_source, patch_source, update_editables,
- * rewrite_editable, replace_binding_contract, no_op.
+ * Supported operations: replace_source, patch_source, replace_binding_contract, no_op.
  */
 final class SectionEditProposal
 {
     private const SCHEMA_VERSION = '1.0';
 
-    private const VALID_OPERATIONS = ['replace_source', 'patch_source', 'update_editables', 'rewrite_editable', 'replace_binding_contract', 'no_op'];
+    private const VALID_OPERATIONS = ['replace_source', 'patch_source', 'replace_binding_contract', 'no_op'];
 
     /**
      * @param string   $schemaVersion
@@ -24,12 +23,6 @@ final class SectionEditProposal
      * @param ?string  $name
      * @param ?string  $html
      * @param ?string  $css
-     * @param string[] $preservedEditableKeys
-     * @param EditableUpdate[] $editableUpdates
-     * @param ?string  $editableKey
-     * @param ?string  $editableType
-     * @param ?string  $replacementHtml
-     * @param ?string  $replacementCss
      * @param ?string  $bindingId
      * @param ?string  $bindingSource
      * @param ?string  $expectedContractHash
@@ -43,12 +36,6 @@ final class SectionEditProposal
         private readonly ?string $name,
         private readonly ?string $html,
         private readonly ?string $css,
-        private readonly array $preservedEditableKeys,
-        private readonly array $editableUpdates,
-        private readonly ?string $editableKey = null,
-        private readonly ?string $editableType = null,
-        private readonly ?string $replacementHtml = null,
-        private readonly ?string $replacementCss = null,
         private readonly ?string $bindingId = null,
         private readonly ?string $bindingSource = null,
         private readonly ?string $expectedContractHash = null,
@@ -88,8 +75,6 @@ final class SectionEditProposal
         $name = $data['name'] ?? null;
         $html = $data['html'] ?? null;
         $css  = $data['css'] ?? null;
-        $preservedEditableKeys = $data['preserved_editable_keys'] ?? [];
-        $editableUpdates = $data['editable_updates'] ?? [];
 
         if ($operation === 'replace_source') {
             if (!is_string($name) || trim($name) === '') {
@@ -136,51 +121,10 @@ final class SectionEditProposal
             }
         }
 
-        $parsedUpdates = [];
-        if ($operation === 'update_editables') {
-            if (!is_array($editableUpdates) || empty($editableUpdates)) {
-                throw new \InvalidArgumentException('editable_updates is required for update_editables.');
-            }
-            foreach ($editableUpdates as $i => $raw) {
-                if (!is_array($raw)) {
-                    throw new \InvalidArgumentException("editable_updates[{$i}] must be an object.");
-                }
-                $parsedUpdates[] = EditableUpdate::fromArray($raw);
-            }
-        }
-
-        $editableKey = null;
-        $editableType = null;
-        $replacementHtml = null;
-        $replacementCss = null;
         $bindingId = null;
         $bindingSource = null;
         $expectedContractHash = null;
         $replacementTemplateHtml = null;
-
-        if ($operation === 'rewrite_editable') {
-            $editableKey = $data['editable_key'] ?? '';
-            if (!is_string($editableKey) || trim($editableKey) === '') {
-                throw new \InvalidArgumentException('editable_key is required for rewrite_editable.');
-            }
-            $editableKey = trim($editableKey);
-
-            $editableType = $data['editable_type'] ?? '';
-            if (!is_string($editableType) || trim($editableType) === '') {
-                throw new \InvalidArgumentException('editable_type is required for rewrite_editable.');
-            }
-
-            $replacementHtml = $data['replacement_html'] ?? '';
-            if (!is_string($replacementHtml) || trim($replacementHtml) === '') {
-                throw new \InvalidArgumentException('replacement_html is required for rewrite_editable.');
-            }
-            $replacementHtml = trim($replacementHtml);
-
-            $replacementCss = $data['replacement_css'] ?? null;
-            if ($replacementCss !== null && !is_string($replacementCss)) {
-                throw new \InvalidArgumentException('replacement_css must be a string when provided.');
-            }
-        }
 
         if ($operation === 'replace_binding_contract') {
             $bindingId = $data['binding_id'] ?? '';
@@ -215,12 +159,6 @@ final class SectionEditProposal
             name: is_string($name) ? trim($name) : null,
             html: is_string($html) ? trim($html) : null,
             css: is_string($css) ? trim($css) : null,
-            preservedEditableKeys: $preservedEditableKeys,
-            editableUpdates: $parsedUpdates,
-            editableKey: $editableKey,
-            editableType: $editableType,
-            replacementHtml: $replacementHtml,
-            replacementCss: $replacementCss,
             bindingId: $bindingId,
             bindingSource: $bindingSource,
             expectedContractHash: $expectedContractHash,
@@ -238,18 +176,6 @@ final class SectionEditProposal
     public function html(): ?string         { return $this->html; }
     public function css(): ?string          { return $this->css; }
 
-    /** @return string[] */
-    public function preservedEditableKeys(): array { return $this->preservedEditableKeys; }
-
-    /** @return EditableUpdate[] */
-    public function editableUpdates(): array { return $this->editableUpdates; }
-
-    // ── Rewrite editable accessors ───────────────
-
-    public function editableKey(): ?string       { return $this->editableKey; }
-    public function editableType(): ?string      { return $this->editableType; }
-    public function replacementHtml(): ?string   { return $this->replacementHtml; }
-    public function replacementCss(): ?string    { return $this->replacementCss; }
     public function bindingId(): ?string         { return $this->bindingId; }
     public function expectedContractHash(): ?string { return $this->expectedContractHash; }
     public function replacementTemplateHtml(): ?string { return $this->replacementTemplateHtml; }
@@ -258,8 +184,6 @@ final class SectionEditProposal
 
     public function isReplaceSource(): bool      { return $this->operation === 'replace_source'; }
     public function isPatchSource(): bool        { return $this->operation === 'patch_source'; }
-    public function isUpdateEditables(): bool    { return $this->operation === 'update_editables'; }
-    public function isRewriteEditable(): bool    { return $this->operation === 'rewrite_editable'; }
     public function isReplaceBindingContract(): bool { return $this->operation === 'replace_binding_contract'; }
     public function isNoOp(): bool               { return $this->operation === 'no_op'; }
 
@@ -283,23 +207,6 @@ final class SectionEditProposal
             $data['name'] = $this->name;
             $data['html'] = $this->html;
             $data['css']  = $this->css;
-            $data['preserved_editable_keys'] = $this->preservedEditableKeys;
-        }
-
-        if ($this->isUpdateEditables()) {
-            $data['editable_updates'] = array_map(
-                static fn(EditableUpdate $u) => $u->toArray(),
-                $this->editableUpdates,
-            );
-        }
-
-        if ($this->isRewriteEditable()) {
-            $data['editable_key']     = $this->editableKey;
-            $data['editable_type']    = $this->editableType;
-            $data['replacement_html'] = $this->replacementHtml;
-            if ($this->replacementCss !== null) {
-                $data['replacement_css'] = $this->replacementCss;
-            }
         }
 
         if ($this->isPatchSource()) {

@@ -19,6 +19,11 @@ class Ht_Knowledge_Base_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'HT_KB' );
 		$this->set_name( 'Heroic Knowledge Base' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/ht-kb-icon.svg' );
+
+		$this->set_plugin_file_path( 'ht-knowledge-base/ht-knowledge-base.php' );
+		$this->set_developer_name( 'HeroThemes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

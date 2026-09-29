@@ -71,9 +71,10 @@ $automator_stats    = $report['automator_stats'];
 
 							// Trim the value and remove all linebreaks and multiple-spaces in between texts.
 							var the_value = $value_html.text().trim().replace(/\s\s+/g, ' ');
+							var $description = $(this).find('td.feature-state-description');
 							var value_array = the_value.split(', ');
 
-							if (value_array.length > 1) {
+							if (!$description.length && value_array.length > 1) {
 								// If value have a list of plugins ','.
 								// Split to add new line.
 								var temp_line = '';
@@ -82,6 +83,11 @@ $automator_stats    = $report['automator_stats'];
 								});
 
 								the_value = temp_line;
+							}
+
+							var description = $description.text().trim();
+							if (description) {
+								the_value += ' — ' + description;
 							}
 
 							report = report + '' + the_name + ': ' + the_value + '\n';
@@ -437,6 +443,7 @@ $automator_stats    = $report['automator_stats'];
 	</tr>
 	</tbody>
 </table>
+<?php require \Uncanny_Automator\Utilities::automator_get_view( 'admin-tools/tab/status/feature-state.php' ); ?>
 <table class="automator_status_table widefat" cellspacing="0">
 	<thead>
 	<tr>
@@ -1458,6 +1465,10 @@ if ( 0 < count( $dropins_mu_plugins['mu_plugins'] ) ) :
 			if ('&nbsp;' === item.innerHTML.trim() || 0 === item.innerHTML.trim().length) {
 				// Remove the '?' icon.
 				item.classList.add('no-tooltip-text');
+				return;
+			}
+			// Feature-state tooltips are already wrapped by their PHP template.
+			if (item.childNodes.length === 1 && item.firstChild.nodeName === 'SPAN') {
 				return;
 			}
 			wrapInner(item, 'span');

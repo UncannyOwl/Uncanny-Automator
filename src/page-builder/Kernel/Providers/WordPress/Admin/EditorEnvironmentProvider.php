@@ -26,6 +26,9 @@ use UncannyPageBuilder\Infrastructure\WordPress\BlockEditorButton;
 use UncannyPageBuilder\Infrastructure\WordPress\PageEditorMetaBoxes;
 use UncannyPageBuilder\Infrastructure\WordPress\PageOwnershipActions;
 use UncannyPageBuilder\Infrastructure\WordPress\NativePageSave;
+use UncannyPageBuilder\Infrastructure\WordPress\OwnedPageRestField;
+use UncannyPageBuilder\Infrastructure\WordPress\OwnedPageRestWriteGuard;
+use UncannyPageBuilder\Infrastructure\WordPress\RestPostSlugValidation;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressPostId;
 use UncannyPageBuilder\Infrastructure\WordPress\WordPressCallbackBoundary;
 use UncannyPageBuilder\Infrastructure\WordPress\WpOriginalPageContentStore;
@@ -104,6 +107,8 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
         $supportsPostType = $container->typed(SupportsPostTypeUseCase::class);
         $blockEditorButton = $container->typed(BlockEditorButton::class);
         $pageOwnershipActions = $container->typed(PageOwnershipActions::class);
+        $ownedPageRestWriteGuard = new OwnedPageRestWriteGuard($sectionRepo, $supportsPostType);
+        $ownedPageRestField = new OwnedPageRestField($ownedPageRestWriteGuard);
         $pageSource = $container->has(PageSourceMutation::class)
             ? $container->typed(PageSourceMutation::class)
             : null;
@@ -184,8 +189,34 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             $data = is_array($data) ? $data : [];
             $postarr = is_array($postarr) ? $postarr : [];
 
-            return self::protectOwnedPublicFields($data, $postarr, $sectionRepo, $supportsPostType);
+            // This filter cannot return an error. A check that fails must stop
+            // the request: returning the data would save an unvalidated write.
+            return (array) WordPressCallbackBoundary::valueOrDie(
+                'owned_page.public_fields',
+                static fn (): array => self::protectOwnedPublicFields($data, $postarr, $sectionRepo, $supportsPostType),
+            );
         }, 10, 2);
+
+        /*
+         * A REST client reads the silent restore above as a saved change, so
+         * refuse that request before WordPress writes, and state the boundary
+         * on reads so a client can route before it writes. Post types register
+         * on init, which runs before rest_api_init.
+         */
+        add_action('rest_api_init', $callbacks->action('owned_page_rest_guard.register', static function () use ($ownedPageRestWriteGuard, $ownedPageRestField, $supportsPostType): void {
+            foreach (get_post_types(['show_in_rest' => true]) as $postType) {
+                (new RestPostSlugValidation())->register($postType);
+                if (!$supportsPostType->isEnabledByAdministrator($postType)) {
+                    continue;
+                }
+                // The guard contains its own failure and refuses the request.
+                // The filter boundary would pass an unvalidated write on.
+                add_filter('rest_pre_insert_' . $postType, static function ($preparedPost = null) use ($ownedPageRestWriteGuard) {
+                    return $ownedPageRestWriteGuard->refuseManagedFieldChanges($preparedPost);
+                });
+                $ownedPageRestField->register($postType);
+            }
+        }));
 
         /*
          * Trash and restore call wp_update_post(), which also fires the normal
@@ -378,7 +409,6 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
             'upb_website_status',
             'upb_page_text_styles',
             'upb_page_colors',
-            'upb_section_order',
             'upb_global_part_selector',
         ];
         if (!isset($wp_meta_boxes[$postType]) || !is_array($wp_meta_boxes[$postType])) {
@@ -685,31 +715,22 @@ final class EditorEnvironmentProvider implements ServiceProviderInterface
         DatabaseSectionRepository $sectionRepo,
         ?SupportsPostTypeUseCase $supportsPostType = null,
     ): array {
-        if (WpOriginalPageContentStore::isWriting()) {
-            return $data;
-        }
-
+        // The REST guard refuses what this guard restores, so both use one gate.
         $postId = (int) ($postarr['ID'] ?? 0);
-        $postType = (string) ($data['post_type'] ?? '');
-        if ($postType === '' && $postId > 0 && function_exists('get_post_type')) {
-            $resolvedPostType = get_post_type($postId);
-            $postType = is_string($resolvedPostType) ? $resolvedPostType : '';
-        }
-        $supportsPostType ??= new SupportsPostTypeUseCase();
-        if (
-            $postId <= 0
-            || !$supportsPostType->isEnabledByAdministrator($postType)
-            || !$sectionRepo->isOwnedPage($postId)
-        ) {
+        $guard = new OwnedPageRestWriteGuard($sectionRepo, $supportsPostType ?? new SupportsPostTypeUseCase());
+        if (!$guard->isProtected($postId, (string) ($data['post_type'] ?? ''))) {
             return $data;
         }
 
         // Ordinary WordPress saves may edit working settings, but they cannot
         // move Page Builder-owned public content or identity fields.
+        // wp_insert_post() unslashes this array after the filter. A raw value
+        // would lose its backslashes, and the signed fallback body would no
+        // longer match its publication.
         foreach (['post_content', 'post_title', 'post_name'] as $publicField) {
             $stored = get_post_field($publicField, $postId, 'raw');
             if (is_string($stored)) {
-                $data[$publicField] = $stored;
+                $data[$publicField] = wp_slash($stored);
             }
         }
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Api\AgentPageController\SectionSourcePatch;
 
+use UncannyPageBuilder\Api\AgentPageController\CssRuleSetNormalizer;
 use UncannyPageBuilder\Api\AgentTextResponse;
 use UncannyPageBuilder\Domain\Binding\BindingRegistry;
-use UncannyPageBuilder\Domain\DesignStyles\DesignStyleProperty;
 use UncannyPageBuilder\Domain\Editing\ExactSourcePatcher;
 use UncannyPageBuilder\Domain\Exception\CssRuleIntegrityException;
 use UncannyPageBuilder\Domain\Section\Section;
@@ -24,11 +24,15 @@ final class PatchPayloadPreparer
     /** @var list<string>|null */
     private ?array $maskableBindingIds = null;
 
+    private readonly CssRuleSetNormalizer $ruleNormalizer;
+
     public function __construct(
         private readonly ExactSourcePatcher $sourcePatcher,
         private readonly CssRulePatcher $cssRulePatcher,
         private readonly ?BindingRegistry $bindingRegistry = null,
-    ) {}
+    ) {
+        $this->ruleNormalizer = new CssRuleSetNormalizer($cssRulePatcher);
+    }
 
     /**
      * @param array<int, mixed> $cssPatches
@@ -61,93 +65,19 @@ final class PatchPayloadPreparer
     /**
      * @param array<int, mixed> $rules
      * @param list<string> $contextLines
-     * @return array{0: list<array<string, mixed>>, 1: \WP_REST_Response|null}
+     * @return array{
+     *     0: list<array<string, mixed>>,
+     *     1: \WP_REST_Response|null,
+     *     2: array{
+     *         requested: int,
+     *         applied: int,
+     *         rejected: list<array{rule_index: int|string, selector: string, property: string, value: string, reason: string}>
+     *     }
+     * }
      */
     public function normalizeRules(string $toolName, array $rules, array $contextLines = []): array
     {
-        if ($rules === []) {
-            return [[], null];
-        }
-
-        $normalized = [];
-        foreach ($rules as $index => $rule) {
-            if (!\is_array($rule)) {
-                return [[], $this->invalidCssRuleResponse(
-                    $toolName,
-                    $contextLines,
-                    $index,
-                    'Each css_rules item must be an object.',
-                )];
-            }
-
-            $selector = \trim((string) ($rule['selector'] ?? ''));
-            $rawSet = $rule['set'] ?? ($rule['declarations'] ?? null);
-            if ($selector === '' || !\is_array($rawSet)) {
-                return [[], $this->invalidCssRuleResponse(
-                    $toolName,
-                    $contextLines,
-                    $index,
-                    'Provide selector and set/declarations properties.',
-                )];
-            }
-            if (!$this->cssRulePatcher->isSafeSelector($selector)) {
-                return [[], $this->invalidCssRuleResponse(
-                    $toolName,
-                    $contextLines,
-                    $index,
-                    'Selector contains unsupported or structural CSS syntax.',
-                )];
-            }
-
-            $set = [];
-            foreach ($rawSet as $property => $value) {
-                if (!\is_string($property) || (!\is_string($value) && !\is_numeric($value))) {
-                    continue;
-                }
-
-                $property = \strtolower(\trim($property));
-                $value = \trim((string) $value);
-                if (
-                    !DesignStyleProperty::isAllowed($property)
-                    || !$this->cssRulePatcher->isSafeDeclarationValue($value)
-                ) {
-                    continue;
-                }
-
-                $set[$property] = $value;
-            }
-
-            if ($set === []) {
-                return [[], $this->invalidCssRuleResponse(
-                    $toolName,
-                    $contextLines,
-                    $index,
-                    'No supported CSS declarations remained after validation.',
-                )];
-            }
-
-            $normalizedRule = [
-                'selector' => $selector,
-                'set' => $set,
-            ];
-
-            $media = isset($rule['media']) && \is_string($rule['media']) ? \trim($rule['media']) : '';
-            if ($media !== '') {
-                if (!$this->cssRulePatcher->isSafeMediaPrelude($media)) {
-                    return [[], $this->invalidCssRuleResponse(
-                        $toolName,
-                        $contextLines,
-                        $index,
-                        'Media must be one safe @media prelude without a rule body.',
-                    )];
-                }
-                $normalizedRule['media'] = $media;
-            }
-
-            $normalized[] = $normalizedRule;
-        }
-
-        return [$normalized, null];
+        return $this->ruleNormalizer->normalizeRules($toolName, $rules, $contextLines);
     }
 
     /**
@@ -225,7 +155,11 @@ final class PatchPayloadPreparer
     {
         foreach (['search', 'old', 'old_string'] as $key) {
             if (\array_key_exists($key, $patch)) {
-                return \str_replace(['\n', '\t'], ["\n", "\t"], (string) $patch[$key]);
+                $value = (string) $patch[$key];
+
+                return $key === 'search'
+                    ? $value
+                    : \str_replace(['\n', '\t'], ["\n", "\t"], $value);
             }
         }
 
@@ -241,7 +175,10 @@ final class PatchPayloadPreparer
         $css = '';
         foreach (['replace', 'new', 'new_string', 'content'] as $key) {
             if (\array_key_exists($key, $patch)) {
-                $css = \str_replace(['\n', '\t'], ["\n", "\t"], (string) $patch[$key]);
+                $css = (string) $patch[$key];
+                if (\in_array($key, ['new', 'new_string'], true)) {
+                    $css = \str_replace(['\n', '\t'], ["\n", "\t"], $css);
+                }
                 break;
             }
         }
@@ -362,24 +299,6 @@ final class PatchPayloadPreparer
                 CssRuleIntegrityException::UNPRESERVABLE_GLOBAL_PART_SOURCE_ROWS => 'Ask an administrator to repair or explicitly consolidate the stored legacy global-part rows before retrying the write.',
                 default => 'Call read_part include=source again. Preserve or explicitly repair the rejected CSS with mode=source_replace before retrying the requested edit.',
             },
-        ]);
-    }
-
-    /**
-     * @param list<string> $contextLines
-     */
-    private function invalidCssRuleResponse(
-        string $toolName,
-        array $contextLines,
-        int|string $index,
-        string $detail,
-    ): \WP_REST_Response {
-        return $this->textToolError($toolName, 422, 'invalid_css_rule', [
-            ...$contextLines,
-            'RULE_INDEX: ' . (string) $index,
-            'DETAIL: ' . $detail,
-            'NEXT STEP',
-            'Retry css_rules with selector and set/declarations, for example {"selector":".card","set":{"color":"#111"}}.',
         ]);
     }
 

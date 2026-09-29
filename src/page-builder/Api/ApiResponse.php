@@ -63,16 +63,12 @@ final class ApiResponse
             'multiple_roots', 'no_root'    => ErrorMessage::ValidationMultipleRoots,
             'forbidden_tag',
             'forbidden_attribute'          => ErrorMessage::ValidationForbiddenTag,
-            'editable_key_duplicate'       => ErrorMessage::ValidationEditableDuplicate,
-            'editable_invalid_type'        => ErrorMessage::ValidationEditableInvalidType,
             'dynamic_source_invalid',
             'dynamic_missing_template',
             'dynamic_extra_templates',
             'dynamic_missing_attribute',
             'dynamic_invalid_attribute'    => ErrorMessage::ValidationDynamicInvalid,
             'bind_key_invalid'             => ErrorMessage::ValidationBindKeyInvalid,
-            'preserved_key_not_in_source',
-            'preserved_key_missing'        => ErrorMessage::ValidationPreservedKeyMissing,
             default                        => ErrorMessage::ValidationManifestInvalid,
         };
 

@@ -1509,6 +1509,20 @@ WHERE t.automator_trigger_id = %d
 	}
 
 	/**
+	 * How many recipes use a credit-consuming integration.
+	 *
+	 * Use this wherever only the number is wanted. fetch_recipe_with_apps()
+	 * builds titles, edit links, post meta and a run count for every recipe;
+	 * count()ing that was costing ~3 queries per recipe to produce one integer,
+	 * every usage report.
+	 *
+	 * @return int
+	 */
+	public function count_recipes_with_apps() {
+		return ( new Recipe_Using_Credits_Utils() )->count_recipes_with_apps();
+	}
+
+	/**
 	 * @deprecated 7.2 Use fetch_recipe_with_apps() instead.
 	 *
 	 * @return array|int

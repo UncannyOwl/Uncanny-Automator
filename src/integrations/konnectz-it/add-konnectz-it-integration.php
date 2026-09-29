@@ -25,6 +25,9 @@ class Add_Konnectz_It_Integration {
 
 		$this->set_icon( __DIR__ . '/img/konnectzit-icon.svg' );
 
+		$this->set_developer_name( 'KonnectzIT' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

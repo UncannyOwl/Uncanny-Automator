@@ -25,6 +25,10 @@ class Add_Ifttt_Integration {
 		$this->set_icon( 'ifttt-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( '' );
+
+		$this->set_developer_name( 'IFTTT' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

@@ -255,8 +255,8 @@ final class CommandBarControlStateResolver implements ControlStateResolverInterf
                 ],
             ]),
             'page.preview' => $isGlobalPart
-                ? $this->hiddenPageOnlyState($state, 'Preview is not available when editing a reusable.')
-                : $this->pagePreviewState($state, $context, $publication),
+                ? $state
+                : $this->pagePreviewState($state, $context, $publication, $definition),
             'page.static_export' => $isGlobalPart
                 ? $this->hiddenPageOnlyState($state, 'Static export is not available when editing a reusable.')
                 : $state,
@@ -281,7 +281,7 @@ final class CommandBarControlStateResolver implements ControlStateResolverInterf
         };
     }
 
-    private function pagePreviewState(ControlState $state, ControlContext $context, ?PageLiveState $publication): ControlState
+    private function pagePreviewState(ControlState $state, ControlContext $context, ?PageLiveState $publication, ControlDefinition $definition): ControlState
     {
         $details = $context->pageId() > 0 ? $this->pageDetails?->find($context->pageId()) : null;
         if ($details === null) {
@@ -294,6 +294,12 @@ final class CommandBarControlStateResolver implements ControlStateResolverInterf
         return $state->withPatch([
             'label' => $isLive ? 'View live' : 'Preview',
             'description' => $isLive ? 'View the visitor-facing page in a new tab.' : 'Preview the working draft in a new tab.',
+            'presentation' => $definition->presentation() + [
+                'draft_url' => $details->previewUrl(),
+                'live_url' => $this->postStatus($context->pageId()) === 'publish' && is_string($publicUrl)
+                    ? $publicUrl
+                    : '',
+            ],
             // Draft slug edits must not make "View live" point at a URL that
             // has not been published. WordPress public fields move only with
             // the exact artifact pointer, so its permalink is authoritative.

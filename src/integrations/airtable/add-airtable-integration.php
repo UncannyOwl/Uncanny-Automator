@@ -29,6 +29,10 @@ class Add_Airtable_Integration {
 
 		$this->set_icon( __DIR__ . '/img/airtable-icon.svg' );
 
+		$this->set_developer_name( 'Airtable' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
+
 	}
 
 	/**

@@ -98,13 +98,6 @@ class LD_COURSE_PROGRESS_PERCENTAGE extends \Uncanny_Automator\Recipe\Trigger {
 
 		$this->set_user_id( $user_id );
 
-		// prevent duplicate triggers within a short window
-		$key = 'automator_course_progressed_' . $user_id . '_' . $course_id;
-		if ( get_transient( $key ) ) {
-			return false;
-		}
-		set_transient( $key, 1, 10 ); // 10 seconds throttle
-
 		$selected_course     = isset( $trigger['meta']['COURSE'] ) ? intval( $trigger['meta']['COURSE'] ) : -1;
 		$required_percentage = floatval( $trigger['meta']['PERCENTAGE'] ?? 0 );
 
@@ -126,11 +119,20 @@ class LD_COURSE_PROGRESS_PERCENTAGE extends \Uncanny_Automator\Recipe\Trigger {
 
 		$current_percentage = floatval( $progress['percentage'] );
 
-		if ( $current_percentage >= $required_percentage ) {
-			return true;
-		} else {
+		if ( $current_percentage < $required_percentage ) {
 			return false;
 		}
+
+		// Prevent duplicate fires within a short window. Only a matching recipe claims the
+		// slot, and the key includes the trigger ID: validate() runs once per recipe, so a
+		// shared key let one recipe block the others (and its own later threshold crossing).
+		$key = 'automator_course_progressed_' . absint( $trigger['ID'] ?? 0 ) . '_' . $user_id . '_' . $course_id;
+		if ( get_transient( $key ) ) {
+			return false;
+		}
+		set_transient( $key, 1, 10 ); // 10 seconds throttle
+
+		return true;
 	}
 
 	/**

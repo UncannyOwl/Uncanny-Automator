@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "package": {
     "name": "design-lens",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "contract": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "features": [
       "box-model@1",
       "compatibility-report@1",
@@ -41,12 +41,12 @@
       "sha256": "41ecf7f99c91ad4d07b8b66374d530e216f8022cbb49b944be2b66992e771862"
     },
     "dist/design-lens.es.js": {
-      "bytes": 181523,
-      "sha256": "584889f66c55ac3a61618efef25c65b06287102768a36ec0e23624a638628290"
+      "bytes": 185315,
+      "sha256": "55f3df6336790b52ba386b758ff33fcc0666add7e0edf0fb9c251990f4471cfd"
     },
     "dist/design-lens.iife.js": {
-      "bytes": 133998,
-      "sha256": "f426eea81bbd32a2aebc41dce7ee171d6f695349e9cd0c3f57d18631c6fc60e0"
+      "bytes": 136824,
+      "sha256": "199ca91c0bb10439d9c2838bb77b0647332cd46728a4117a83bcac538a5e46f0"
     }
   }
 }

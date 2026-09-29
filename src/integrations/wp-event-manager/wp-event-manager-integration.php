@@ -17,6 +17,11 @@ class Wp_Event_Manager_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'WP_EVENT_MANAGER' );
 		$this->set_name( 'WP Event Manager' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/wp-event-manager-icon.svg' );
+
+		$this->set_plugin_file_path( 'wp-event-manager/wp-event-manager.php' );
+		$this->set_developer_name( 'WP Event Manager' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

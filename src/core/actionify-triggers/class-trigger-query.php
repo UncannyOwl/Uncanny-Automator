@@ -48,7 +48,7 @@ class Trigger_Query {
 
 		foreach ( $triggers as $trigger ) {
 
-			$action_hook = maybe_unserialize( $trigger['action_hook'] );
+			$action_hook = automator_safe_unserialize( $trigger['action_hook'] );
 
 			if ( is_array( $action_hook ) ) {
 				foreach ( $action_hook as $hook ) {

@@ -49,25 +49,6 @@ final class SectionValidationException extends \RuntimeException
         );
     }
 
-    public static function editableKeyDuplicate(string $key): self
-    {
-        return new self(
-            "Duplicate editable key: '{$key}'.",
-            rule: 'editable_key_duplicate',
-            context: ['key' => $key],
-        );
-    }
-
-    public static function editableInvalidType(string $key, string $type): self
-    {
-        return new self(
-            "Editable '{$key}' has unsupported type '{$type}'. "
-            . "Allowed types: text, textarea, image, link, bg-image.",
-            rule: 'editable_invalid_type',
-            context: ['key' => $key, 'type' => $type],
-        );
-    }
-
     public static function dynamicSourceInvalid(string $source): self
     {
         return new self(
@@ -122,24 +103,6 @@ final class SectionValidationException extends \RuntimeException
             . "Call list_bindings to find the correct binding, "
             . "then call get_binding_guide to see the allowed bind keys.",
             rule: 'bind_key_invalid',
-            context: ['key' => $key],
-        );
-    }
-
-    public static function preservedKeyNotInSource(string $key): self
-    {
-        return new self(
-            "Preserved editable key '{$key}' does not exist in the original section.",
-            rule: 'preserved_key_not_in_source',
-            context: ['key' => $key],
-        );
-    }
-
-    public static function preservedKeyMissing(string $key): self
-    {
-        return new self(
-            "Preserved editable key '{$key}' is missing from the updated section.",
-            rule: 'preserved_key_missing',
             context: ['key' => $key],
         );
     }

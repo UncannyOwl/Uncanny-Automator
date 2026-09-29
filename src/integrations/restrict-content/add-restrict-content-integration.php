@@ -27,6 +27,10 @@ class Add_Restrict_Content_Integration {
 		$this->set_icon( 'restrict-content-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'restrict-content-pro/restrict-content-pro.php' );
+
+		$this->set_developer_name( 'Sandhills Development' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

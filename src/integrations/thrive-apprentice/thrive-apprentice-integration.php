@@ -17,6 +17,11 @@ class Thrive_Apprentice_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'THRIVE_APPRENTICE' );
 		$this->set_name( 'Thrive Apprentice' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/thrive-apprentice-icon.svg' );
+
+		$this->set_plugin_file_path( 'thrive-apprentice/thrive-apprentice.php' );
+		$this->set_developer_name( 'Thrive Themes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	public function load() {

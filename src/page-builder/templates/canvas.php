@@ -51,7 +51,9 @@ require __DIR__ . '/canvas/state.php';
 <div id="uncanny-pb-workspace-root">
 <!-- Editor chrome mount. -->
 <div id="uncanny-pb-topbar-root">
-    <div id="uncanny-pb-topbar"></div>
+    <div id="uncanny-pb-topbar"
+         data-upb-agent-scripts-disabled="<?php echo $runtimeScripts !== '' ? 'true' : 'false'; ?>"
+         data-upb-notice-scope="<?php echo esc_attr(get_site_url() . ':' . get_current_user_id()); ?>"></div>
 </div>
 <?php endif; ?>
 

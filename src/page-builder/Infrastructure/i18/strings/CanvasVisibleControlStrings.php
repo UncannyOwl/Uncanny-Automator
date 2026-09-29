@@ -91,7 +91,7 @@ final class CanvasVisibleControlStrings
             'label' => _x('Viewport', 'Page Builder', 'uncanny-automator'),
             'description' => _x('Change the editor preview viewport.', 'Page Builder', 'uncanny-automator'),
             'presentation' => [
-                'preview_label' => _x('Preview in new tab', 'Page Builder', 'uncanny-automator'),
+                'preview_label' => _x('Preview draft in new tab', 'Page Builder', 'uncanny-automator'),
             ],
         ];
     }

@@ -46,14 +46,14 @@ final class Api_Log_Entry {
 	private $endpoint;
 
 	/**
-	 * The request params (Api_Request or serializable).
+	 * The request params as a plain array (never an object: rows are read with allowed_classes => false).
 	 *
 	 * @var mixed
 	 */
 	private $params;
 
 	/**
-	 * The response data (Api_Response or serializable).
+	 * The response data as a plain array (never an object: rows are read with allowed_classes => false).
 	 *
 	 * @var mixed
 	 */

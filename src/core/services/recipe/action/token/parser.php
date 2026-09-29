@@ -295,7 +295,7 @@ class Parser {
 
 		$db_action_meta = Automator()->db->action->get_meta( $action_log_id, 'metas' );
 
-		$action_meta = apply_filters( 'automator_action_tokens_field_token_value', (array) maybe_unserialize( $db_action_meta ), $action_id, $process_args );
+		$action_meta = apply_filters( 'automator_action_tokens_field_token_value', (array) automator_safe_unserialize( $db_action_meta ), $action_id, $process_args );
 
 		// Decide whether to split the meta key with parts or go with meta key. Supports repeater field.
 		$is_4th_part_correctly_separated = $this->is_correctly_separated( explode( '|', $action_meta_key ) );

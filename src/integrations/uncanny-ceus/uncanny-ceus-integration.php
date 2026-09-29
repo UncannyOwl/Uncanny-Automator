@@ -24,6 +24,10 @@ class Uncanny_Ceus_Integration extends Integration {
 		$this->set_name( 'Uncanny CEUs' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/uncanny-owl-icon.svg' );
 		$this->set_plugin_file_path( 'uncanny-continuing-education-credits/uncanny-continuing-education-credits.php' );
+
+		$this->set_developer_name( 'Uncanny Owl' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

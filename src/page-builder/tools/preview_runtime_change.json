@@ -1,6 +1,6 @@
 {
   "name": "preview_runtime_change",
-  "description": "Dry-run a runtime JavaScript source patch and return validation plus a JavaScript diff without saving. This is only for the custom JavaScript runtime lane, not section HTML or CSS. Read the current runtime first, then preview small repairs here before calling edit_runtime operation=source_patch.",
+  "description": "Dry-run a runtime JavaScript source patch and return validation plus a JavaScript diff without saving. This validates exact patch application and source-size limits only. It does not execute JavaScript, validate JavaScript syntax, or prove browser behavior. This is only for the custom JavaScript runtime lane, not section HTML or CSS. Read the current runtime first, then preview small repairs here before calling edit_runtime operation=source_patch.",
   "http": {
     "method": "POST",
     "path": "/wp-json/uncanny-page-builder/v1/agent/runtime/preview"
@@ -17,6 +17,7 @@
     {
       "name": "page_id",
       "type": "integer",
+      "minimum": 1,
       "required": false,
       "in": "body",
       "description": "Uncanny Page Builder page ID when scope=page."
@@ -24,6 +25,7 @@
     {
       "name": "global_part_id",
       "type": "integer",
+      "minimum": 1,
       "required": false,
       "in": "body",
       "description": "Reusable global part post ID when scope=global_part."

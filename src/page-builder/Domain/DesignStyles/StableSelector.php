@@ -7,6 +7,7 @@ namespace UncannyPageBuilder\Domain\DesignStyles;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use UncannyPageBuilder\Domain\Editing\SourceTreeChildren;
 
 /**
  * Resolves a stable CSS selector for an element, promoting one when needed.
@@ -28,8 +29,17 @@ final class StableSelector
 {
     public const PROMOTED_ATTRIBUTE = 'data-upb-lens-id';
 
+    /**
+     * An authored id that is not a `#id` selector body is still a durable
+     * handle. It is addressed as an attribute selector and never rewritten.
+     */
+    public const AUTHORED_ID_SELECTOR_PATTERN = '/^\[id="([^"\\\\\s]+)"\]$/';
+
     /** Valid `#id` selector body: starts with a letter, word chars/dashes after. */
     private const ID_PATTERN = '/^[A-Za-z][\w-]*$/';
+
+    /** Attribute selector value: no quote, backslash, or whitespace. */
+    private const ATTRIBUTE_VALUE_PATTERN = '/^[^"\\\\\s]+$/';
 
     /**
      * @param string      $html        Section HTML.
@@ -38,6 +48,7 @@ final class StableSelector
      * @param string|null $sourcePath  Section-relative positional locator (root when null).
      * @param string      $seed        Deterministic seed for the generated id.
      * @param string|null $expectedTag Tag name of the located element, for verification.
+     * @param bool        $allowTextTarget Whether a text path can select its containing element.
      */
     public static function resolve(
         string $html,
@@ -46,6 +57,7 @@ final class StableSelector
         ?string $sourcePath,
         string $seed,
         ?string $expectedTag = null,
+        bool $allowTextTarget = true,
     ): StableSelectorResult {
 
         $callerIdSelector = is_string($selector) ? self::idFromSelector($selector) : null;
@@ -66,7 +78,7 @@ final class StableSelector
         }
 
         // Locate the target element by section-relative path (root when absent).
-        $target = self::normalizeLocatedTarget(self::locate($dom, $sourcePath));
+        $target = self::normalizeLocatedTarget(self::locate($dom, $sourcePath), $allowTextTarget);
         if (!$target instanceof DOMElement) {
             return StableSelectorResult::unresolved($html);
         }
@@ -101,6 +113,16 @@ final class StableSelector
         $existingId = $target->getAttribute('id');
         if ($existingId !== '' && preg_match(self::ID_PATTERN, $existingId) === 1 && self::idIsUnique($dom, $existingId)) {
             return new StableSelectorResult('#' . $existingId, $html, false);
+        }
+
+        // 3a. Any other unique authored id may be referenced by anchors and
+        //     CSS. Keep it and address it with an attribute selector.
+        if (
+            $existingId !== ''
+            && preg_match(self::ATTRIBUTE_VALUE_PATTERN, $existingId) === 1
+            && self::idIsUnique($dom, $existingId)
+        ) {
+            return new StableSelectorResult('[id="' . $existingId . '"]', $html, false);
         }
 
         // 3b. The browser may have created the preview id first so the live
@@ -259,10 +281,16 @@ final class StableSelector
      * element. Promote that node path back to its containing element before we
      * compare tags or inject a stable identity.
      */
-    private static function normalizeLocatedTarget(?DOMNode $node): ?DOMElement
+    private static function normalizeLocatedTarget(?DOMNode $node, bool $allowTextTarget): ?DOMElement
     {
         if ($node instanceof DOMElement) {
             return $node;
+        }
+
+        // Text edits can address a text run. A deletion must identify an
+        // element directly, or it could remove the whole containing block.
+        if (!$allowTextTarget) {
+            return null;
         }
 
         return $node?->parentNode instanceof DOMElement
@@ -298,7 +326,7 @@ final class StableSelector
                 return null;
             }
 
-            $children = self::treeChildren($current);
+            $children = SourceTreeChildren::of($current);
             $index = (int) $segment;
             if (!isset($children[$index])) {
                 return null;
@@ -321,28 +349,6 @@ final class StableSelector
         }
 
         return $elements;
-    }
-
-    /**
-     * Children that count as tree nodes: element nodes and non-empty text nodes,
-     * matching the Design Lens SDK's positional path semantics.
-     *
-     * @return array<int, DOMNode>
-     */
-    private static function treeChildren(DOMNode $node): array
-    {
-        $out = [];
-        foreach ($node->childNodes as $child) {
-            if ($child->nodeType === XML_ELEMENT_NODE) {
-                $out[] = $child;
-                continue;
-            }
-            if ($child->nodeType === XML_TEXT_NODE && trim($child->textContent ?? '') !== '') {
-                $out[] = $child;
-            }
-        }
-
-        return $out;
     }
 
     private static function htmlWithElementId(

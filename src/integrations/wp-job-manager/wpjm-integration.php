@@ -17,6 +17,11 @@ class Wpjm_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'WPJM' );
 		$this->set_name( 'WP Job Manager' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/wp-job-manager-icon.svg' );
+
+		$this->set_plugin_file_path( 'wp-job-manager/wp-job-manager.php' );
+		$this->set_developer_name( 'Automattic' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

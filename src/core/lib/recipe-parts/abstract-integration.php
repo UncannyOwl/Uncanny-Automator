@@ -24,6 +24,15 @@ use Uncanny_Automator\Integration_Loader\Load_Error_Handler;
 abstract class Integration {
 
 	/**
+	 * Plugin metadata setters/getters — plugin_file_path, developer_name,
+	 * integration_type, distribution_type, plugin_required, integration_required,
+	 * plugin_variations — available to every integration without per-class
+	 * plumbing. Integrations declare their values by calling the setters in
+	 * setup(); those that declare nothing register exactly as they did before.
+	 */
+	use Integration_Manifest;
+
+	/**
 	 * @var
 	 */
 	protected $name;
@@ -49,11 +58,6 @@ abstract class Integration {
 	protected $settings_url = '';
 
 	/**
-	 * @var string
-	 */
-	protected $plugin_file_path = '';
-
-	/**
 	 * helpers
 	 *
 	 * Use this variable for dependency injection
@@ -70,11 +74,12 @@ abstract class Integration {
 	protected $is_third_party = null;
 
 	/**
-	 * Integration instances keyed by integration code — the only bridge the
-	 * lazy trigger pipeline needs to reach pre-constructed helpers. Populated
-	 * in `__construct()`; read via `helpers_for()`.
+	 * Integration instances keyed by integration code, then by owner (the root
+	 * namespace of the integration class: Free, Pro or an add-on) — the only
+	 * bridge the lazy trigger pipeline needs to reach pre-constructed helpers.
+	 * Populated in `__construct()`; read via `helpers_for()`.
 	 *
-	 * @var array<string, self>
+	 * @var array<string, array<string, self>>
 	 */
 	private static $instances_by_code = array();
 
@@ -82,17 +87,48 @@ abstract class Integration {
 	 * Resolve an integration's helpers object by code. Returns null when the
 	 * integration wasn't loaded this request or has no helpers class.
 	 *
-	 * Used by `Trigger_Metadata_Loader` to produce the same dependency shape
-	 * `get_load_arguments()` passes on the eager path, so lazy triggers see
-	 * the identical `$dependencies[0]` helpers reference.
+	 * Used by `Trigger_Late_Resolver` to produce the same dependency shape
+	 * `get_load_arguments()` passes on the eager path. Pass the class of the
+	 * part being built: a Free trigger then gets Free's helpers and a Pro
+	 * trigger Pro's, even when Free and Pro share the integration code.
+	 * Without a class, or when the part's plugin registered no helpers for
+	 * the code, the last registered instance wins.
 	 *
-	 * @param string $code Integration code (e.g. 'SEO_BY_RANK_MATH').
+	 * @param string $code  Integration code (e.g. 'SEO_BY_RANK_MATH').
+	 * @param string $class Optional. Fully qualified class of the part being built.
 	 *
 	 * @return mixed|null
 	 */
-	public static function helpers_for( $code ) {
-		$instance = isset( self::$instances_by_code[ $code ] ) ? self::$instances_by_code[ $code ] : null;
-		return null !== $instance ? $instance->helpers : null;
+	public static function helpers_for( $code, $class = '' ) {
+
+		if ( empty( self::$instances_by_code[ $code ] ) ) {
+			return null;
+		}
+
+		$instances = self::$instances_by_code[ $code ];
+		$owner     = self::owner_of( $class );
+
+		if ( '' !== $owner && isset( $instances[ $owner ] ) ) {
+			return $instances[ $owner ]->helpers;
+		}
+
+		return end( $instances )->helpers;
+	}
+
+	/**
+	 * The root namespace of a class (`Uncanny_Automator`, `Uncanny_Automator_Pro`
+	 * or an add-on's), or '' for a class outside any namespace.
+	 *
+	 * @param string $class Fully qualified class name.
+	 *
+	 * @return string
+	 */
+	private static function owner_of( $class ) {
+
+		$class = ltrim( (string) $class, '\\' );
+		$pos   = strpos( $class, '\\' );
+
+		return false === $pos ? '' : substr( $class, 0, $pos );
 	}
 
 	/**
@@ -112,7 +148,10 @@ abstract class Integration {
 		// from clobbering Free's helpers-bearing entry when both share a code.
 		$code = $this->get_integration();
 		if ( '' !== $code && null !== $this->helpers ) {
-			self::$instances_by_code[ $code ] = $this;
+			$owner = self::owner_of( static::class );
+			// Re-registering an owner moves it to the end, so "last registered" stays true.
+			unset( self::$instances_by_code[ $code ][ $owner ] );
+			self::$instances_by_code[ $code ][ $owner ] = $this;
 		}
 
 		$registration_data = array(
@@ -122,10 +161,11 @@ abstract class Integration {
 			'plugin_file_path' => $this->get_plugin_file_path(),
 		);
 
-		// If uses manifest trait, extract manifest data
-		if ( $this->uses_manifest_trait() && is_callable( array( $this, 'extract_manifest_data' ) ) ) {
-			/** @var array $manifest */
-			$manifest                      = call_user_func( array( $this, 'extract_manifest_data' ) );
+		// Only integrations that declared something carry a manifest key —
+		// extract_manifest_data() returns non-empty values only, so an
+		// integration that declares nothing registers exactly as it did before.
+		$manifest = $this->extract_manifest_data();
+		if ( ! empty( $manifest ) ) {
 			$registration_data['manifest'] = $manifest;
 		}
 
@@ -468,41 +508,6 @@ abstract class Integration {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Get plugin file path.
-	 *
-	 * Returns plugin_file_path property. If Integration_Manifest trait is used,
-	 * the trait's method will override this one.
-	 *
-	 * @return string Plugin file path
-	 */
-	public function get_plugin_file_path() {
-		return $this->plugin_file_path ?? '';
-	}
-
-	/**
-	 * Set plugin file path.
-	 *
-	 * Sets the plugin_file_path property. If Integration_Manifest trait is used,
-	 * the trait's method will override this one.
-	 *
-	 * @param string $file_path Plugin file path
-	 * @return void
-	 */
-	public function set_plugin_file_path( $file_path ) {
-		$this->plugin_file_path = (string) $file_path;
-	}
-
-	/**
-	 * Check if integration uses Integration_Manifest trait.
-	 *
-	 * @return bool True if trait is used
-	 */
-	private function uses_manifest_trait() {
-		$traits = class_uses( get_class( $this ) );
-		return in_array( 'Uncanny_Automator\Integration_Manifest', $traits, true );
 	}
 
 	/**

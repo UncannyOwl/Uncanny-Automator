@@ -110,6 +110,7 @@ final class WordPressPagePublisher implements PagePublisherInterface
             throw PagePublicationFailed::publicStateCommitFailed(
                 $exception,
                 $exception->reasonCode(),
+                $exception->diagnostics(),
             );
         } catch (\Throwable $exception) {
             throw PagePublicationFailed::publicStateCommitFailed($exception);

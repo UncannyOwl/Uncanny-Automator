@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace UncannyPageBuilder\Api\AgentPageController\SectionCreate;
 
 use UncannyPageBuilder\Api\AgentTextResponse;
+use UncannyPageBuilder\Application\Canvas\WorkingCanvasUrlPortInterface;
 use UncannyPageBuilder\Application\Controls\PageDetails;
 use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
 use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
-use UncannyPageBuilder\Domain\Section\Section;
 use UncannyPageBuilder\Infrastructure\Persistence\SourceTransactionsUnavailableException;
 
 /**
@@ -18,20 +18,22 @@ final class SectionCreateResponseFormatter
 {
     public function __construct(
         private readonly ?PageDetailsPortInterface $pageDetails = null,
+        private readonly ?WorkingCanvasUrlPortInterface $workingCanvasUrls = null,
     ) {}
 
     /**
      * @param array<string, mixed> $result
      */
-    public function pageSuccess(int $pageId, Section $section, array $result): \WP_REST_Response
+    public function pageSuccess(int $pageId, array $result): \WP_REST_Response
     {
         $lines = [
             'TOOL: create_section',
             'RESULT: success',
             'PAGE_ID: ' . $pageId,
-            'SECTION_ID: ' . (string) $section->id(),
-            'POSITION: ' . (string) $section->position(),
-            'NAME: ' . $section->name(),
+            'SECTION_ID: ' . (string) ($result['section_id'] ?? 0),
+            'POSITION: ' . (string) ($result['position'] ?? 0),
+            'NAME: ' . (string) ($result['name'] ?? ''),
+            'SOURCE_GENERATION: ' . (string) ($result['source_generation'] ?? 0),
             'PREVIEW: ' . $this->pagePreviewUrl($pageId, (string) ($result['preview'] ?? '')),
             '',
         ];
@@ -48,7 +50,6 @@ final class SectionCreateResponseFormatter
     public function globalPartSuccess(
         int $globalPartId,
         string $partType,
-        Section $section,
         array $result,
     ): \WP_REST_Response {
         $lines = [
@@ -57,14 +58,16 @@ final class SectionCreateResponseFormatter
             'KIND: global_part',
             'GLOBAL_PART_ID: ' . $globalPartId,
             'PART_TYPE: ' . $partType,
-            'SECTION_ID: ' . (string) ($section->id() ?? 0),
-            'POSITION: ' . (string) $section->position(),
-            'NAME: ' . $section->name(),
-            'PREVIEW: ' . \get_permalink($globalPartId),
+            'SECTION_ID: ' . (string) ($result['section_id'] ?? 0),
+            'POSITION: ' . (string) ($result['position'] ?? 0),
+            'NAME: ' . (string) ($result['name'] ?? ''),
+            'SOURCE_GENERATION: ' . (string) ($result['source_generation'] ?? 0),
+            'PREVIEW: ' . ($this->workingCanvasUrls?->previewUrl($globalPartId) ?? ''),
             '',
         ];
         $this->appendWarnings($lines, $result['warnings'] ?? []);
         $lines[] = 'NEXT STEP';
+        $lines[] = 'Use read_part kind=global_part global_part_id=' . $globalPartId . ' include=source to confirm the saved reusable source.';
 
         return AgentTextResponse::ok(\implode("\n", $lines));
     }

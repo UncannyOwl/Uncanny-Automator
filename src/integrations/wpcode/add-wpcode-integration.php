@@ -26,6 +26,12 @@ class Add_Wpcode_Integration {
 		$this->set_name( 'WPCode' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_icon( 'wpcode-icon.svg' );
+
+		$this->set_plugin_file_path( 'insert-headers-and-footers/ihaf.php' );
+		$this->set_plugin_variations( array( 'wpcode-premium/wpcode.php' ) );
+		$this->set_developer_name( 'WPCode' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

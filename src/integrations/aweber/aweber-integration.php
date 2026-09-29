@@ -39,6 +39,10 @@ class Aweber_Integration extends \Uncanny_Automator\App_Integrations\App_Integra
 
 		// Setup app integration with same config.
 		$this->setup_app_integration( $config );
+
+		$this->set_developer_name( 'AWeber' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

@@ -125,7 +125,8 @@ class Sugar_Calendar_Ticket_Purchased extends \Uncanny_Automator\Recipe\Trigger 
 		// Resolve user context from buyer email here, not in validate().
 		if ( ! empty( $order_data['email'] ) ) {
 			$user = get_user_by( 'email', $order_data['email'] );
-			if ( false !== $user ) {
+			// A typed buyer email never binds an administrator other than the logged-in user.
+			if ( false !== $user && automator_can_bind_user( $user ) ) {
 				$this->set_user_id( $user->ID );
 			}
 		}

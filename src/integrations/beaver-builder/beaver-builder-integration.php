@@ -19,6 +19,11 @@ class Beaver_Builder_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'BEAVER_BUILDER' );
 		$this->set_name( 'Beaver Builder' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/beaver-builder-icon.svg' );
+
+		$this->set_plugin_file_path( 'beaver-builder-lite-version/fl-builder.php' );
+		$this->set_developer_name( 'The Beaver Builder Team' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

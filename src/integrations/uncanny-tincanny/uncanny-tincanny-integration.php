@@ -22,6 +22,11 @@ class Uotc_Integration extends \Uncanny_Automator\Integration {
 
 		// Deprecated shim -- Pro condition may use the singleton chain.
 		\Automator()->helpers->recipe->uncanny_tincanny = $this->helpers;
+
+		$this->set_plugin_file_path( 'tin-canny-learndash-reporting/tin-canny-learndash-reporting.php' );
+		$this->set_developer_name( 'Uncanny Owl' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

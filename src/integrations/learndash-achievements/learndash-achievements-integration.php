@@ -21,6 +21,13 @@ class Ld_Achievements_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'LD_ACHIEVEMENTS' );
 		$this->set_name( 'LearnDash Achievements' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/learndash-icon.svg' );
+
+		$this->set_plugin_file_path( 'learndash-achievements/learndash-achievements.php' );
+		$this->set_developer_name( 'LearnDash' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
+		$this->set_plugin_required( 'sfwd-lms/sfwd_lms.php' );
+		$this->set_integration_required( 'LD' );
 	}
 
 	/**

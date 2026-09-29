@@ -26,6 +26,10 @@ class Add_Wp_User_Manager_Integration {
 		$this->set_icon( 'wp-user-manager-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'wp-user-manager/wp-user-manager.php' );
+
+		$this->set_developer_name( 'WP User Manager' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

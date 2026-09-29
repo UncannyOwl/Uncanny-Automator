@@ -42,6 +42,10 @@ class Add_Bdb_Integration {
 		$this->set_plugin_file_path( 'buddyboss-platform/bp-loader.php' );
 		$this->set_loopable_tokens( $this->create_loopable_tokens() );
 
+		$this->set_developer_name( 'BuddyBoss' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
+
 	}
 
 	/**

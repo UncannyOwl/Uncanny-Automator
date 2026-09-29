@@ -19,6 +19,11 @@ class Litespeed_Cache_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'LITESPEED_CACHE' );
 		$this->set_name( 'LiteSpeed Cache' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/litespeed-cache-icon.svg' );
+
+		$this->set_plugin_file_path( 'litespeed-cache/litespeed-cache.php' );
+		$this->set_developer_name( 'LiteSpeed Technologies' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

@@ -26,6 +26,11 @@ class Add_Ameliabooking_Integration {
 		$this->set_integration( 'AMELIABOOKING' );
 		$this->set_name( 'Amelia' );
 		$this->set_icon( __DIR__ . '/img/amelia-icon.svg' );
+
+		$this->set_plugin_file_path( 'ameliabooking/ameliabooking.php' );
+		$this->set_developer_name( 'TMS' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

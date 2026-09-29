@@ -26,7 +26,12 @@ class Add_Wpsp_Integration {
 		$this->set_name( 'WP Simple Pay' );
 		$this->set_icon( 'wp-simple-pay-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
-		$this->set_plugin_file_path( '' );
+		// WP Simple Pay Lite ships from the 'stripe' folder, not 'wp-simple-pay'.
+		$this->set_plugin_file_path( 'stripe/stripe-checkout.php' );
+
+		$this->set_developer_name( 'WP Simple Pay' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

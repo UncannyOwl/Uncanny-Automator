@@ -257,7 +257,7 @@ function rest_api_init( WP_REST_Server $wp_rest_server ) {
 
 				// Find the loop containing this action and return its runs.
 				foreach ( $loops_log as $log ) {
-					$flow = (array) maybe_unserialize( $log['flow'] );
+					$flow = (array) automator_safe_unserialize( $log['flow'] );
 
 					$loop_index = array_search( absint( $log['loop_id'] ), array_column( $flow['items'] ?? array(), 'id' ), true );
 

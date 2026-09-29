@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Api\AgentPageController;
 
 use UncannyPageBuilder\Api\AgentTextResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
+use UncannyPageBuilder\Api\RequestId;
 use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Application\PageJavaScriptRuntimeService;
@@ -439,24 +440,24 @@ final class RuntimeController
 
     private function requestPageId(\WP_REST_Request $request): int
     {
-        $pageId = \absint($request->get_param('page_id'));
-        if ($pageId > 0) {
-            return $pageId;
+        $value = $request->get_param('page_id');
+        if ($value !== null) {
+            return RequestId::positive($value) ?? 0;
         }
 
         $context = $request->get_param('page_builder_context');
-        if (!is_array($context)) {
+        if (!is_array($context) || array_key_exists('global_part_id', $context)) {
             return 0;
         }
 
-        return \absint($context['page_id'] ?? 0);
+        return RequestId::positive($context['page_id'] ?? null) ?? 0;
     }
 
     private function requestGlobalPartId(\WP_REST_Request $request): int
     {
-        $globalPartId = \absint($request->get_param('global_part_id'));
-        if ($globalPartId > 0) {
-            return $globalPartId;
+        $value = $request->get_param('global_part_id');
+        if ($value !== null) {
+            return RequestId::positive($value) ?? 0;
         }
 
         $context = $request->get_param('page_builder_context');
@@ -464,7 +465,7 @@ final class RuntimeController
             return 0;
         }
 
-        return \absint($context['global_part_id'] ?? 0);
+        return RequestId::positive($context['global_part_id'] ?? null) ?? 0;
     }
 
     // ── Runtime request values ───────────────────────────────

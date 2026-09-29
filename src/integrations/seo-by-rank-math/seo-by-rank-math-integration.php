@@ -20,6 +20,11 @@ class Seo_By_Rank_Math_Integration extends \Uncanny_Automator\Integration {
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/rank-math-icon.svg' );
 		$this->helpers = new Seo_By_Rank_Math_Helpers();
 		$this->register_hooks();
+
+		$this->set_plugin_file_path( 'seo-by-rank-math/rank-math.php' );
+		$this->set_developer_name( 'Rank Math' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

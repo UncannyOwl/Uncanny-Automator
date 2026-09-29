@@ -1,6 +1,6 @@
 {
   "name": "create_section",
-  "description": "Add a new section to a page. Provide HTML and CSS — the section is appended at the end. This saves working draft source only and never updates the live page; a human must Publish or Update live in the Manual editor. Returns plain text with the created section ID, preview URL, and NEXT STEP.",
+  "description": "Add one section to working canvas source. On a page canvas, this appends the section at the end. On a blank reusable canvas, this creates its first source and is valid only when the reusable has no source; after bootstrap, use edit_part kind=global_part. This never updates a live page; a human must Publish or Update live in the Manual editor. Returns the created section ID, preview URL, warnings, and NEXT STEP.",
   "http": {
     "method": "POST",
     "path": "/wp-json/uncanny-page-builder/v1/agent/page/{page_id}/sections"
@@ -11,7 +11,7 @@
       "type": "integer",
       "required": false,
       "in": "path",
-      "description": "Uncanny Page Builder canvas page ID. Pass this when the user provides a canvas_id or a page_id known to be an Uncanny Page Builder canvas. For ordinary WordPress page URLs or names, resolve the target first; do not assume any page_id is editable. Omit to use the current page when a canvas is active.",
+      "description": "Uncanny Page Builder canvas page ID. Pass this when the user provides a canvas_id or a page_id known to be an Uncanny Page Builder canvas. For ordinary WordPress page URLs or names, resolve the target first; do not assume any page_id is editable. Omit only for the current page canvas. For a blank reusable canvas, pass its explicit ID.",
       "inject_from": "current_page_id"
     },
     {
@@ -38,12 +38,13 @@
   ],
   "output": {
     "content_type": "text/plain",
-    "description": "Plain text result with PAGE_ID, SECTION_ID, POSITION, NAME, PREVIEW, optional WARNING lines for advisory issues, and NEXT STEP."
+    "description": "Plain-text result. A page append returns PAGE_ID, SECTION_ID, POSITION, NAME, SOURCE_GENERATION, PREVIEW, optional WARNING lines, and NEXT STEP. A blank reusable bootstrap returns KIND: global_part, GLOBAL_PART_ID, PART_TYPE, SECTION_ID, POSITION, NAME, SOURCE_GENERATION, PREVIEW as the authenticated working preview, optional WARNING lines, and NEXT STEP."
   },
   "errors": {
     "422": "HTML validation failure — single root element required, no forbidden tags/attributes, valid editables and bindings.",
-    "404": "Page not found.",
-    "403": "Page not owned by Uncanny Page Builder."
+    "404": "Page or reusable canvas not found.",
+    "403": "Page or reusable canvas is not editable by the current user.",
+    "409": "The working source changed before the write committed. Read current source before retrying."
   },
   "auto_approve": false,
   "group": "write"

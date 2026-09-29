@@ -68,7 +68,7 @@ class Give_Tokens {
 								global $wpdb;
 								$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d ORDER BY ID DESC LIMIT 0,1", $meta_field, $trigger['ID'], $replace_args['trigger_log_id'] ) );
 								if ( ! empty( $meta_value ) ) {
-									$value = maybe_unserialize( $meta_value );
+									$value = automator_safe_unserialize( $meta_value );
 								}
 								break;
 						}
@@ -86,7 +86,7 @@ class Give_Tokens {
 								$meta_key   = 'payment_data';
 								$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d AND automator_trigger_log_id = %d  ORDER BY ID DESC LIMIT 0,1", $meta_key, $trigger['ID'], $replace_args['trigger_log_id'] ) );
 								if ( ! empty( $meta_value ) ) {
-									$meta_value  = maybe_unserialize( $meta_value );
+									$meta_value  = automator_safe_unserialize( $meta_value );
 									$form_fields = Automator()->helpers->recipe->give->get_form_fields_and_ffm( $meta_value['give_form_id'] );
 									$form_field  = isset( $form_fields[ $field_key ] ) ? $form_fields[ $field_key ] : array();
 									if ( ! empty( $form_field ) ) {

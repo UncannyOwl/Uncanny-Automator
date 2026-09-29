@@ -20,6 +20,12 @@ class Sugar_Calendar_Integration extends \Uncanny_Automator\Integration {
 		$this->set_name( 'Sugar Calendar' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/sugar-calendar-icon.svg' );
 		$this->register_hooks();
+
+		$this->set_plugin_file_path( 'sugar-calendar-lite/sugar-calendar-lite.php' );
+		$this->set_plugin_variations( array( 'sugar-calendar/sugar-calendar.php' ) );
+		$this->set_developer_name( 'Sandhills Development' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

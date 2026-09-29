@@ -73,6 +73,11 @@ class AMELIA_USER_APPOINTMENT_BOOKED {
 			return false;
 		}
 
+		// A customer email never binds an administrator other than the logged-in user.
+		if ( ! automator_can_bind_user( get_user_by( 'email', $normalized_data['customer']['email'] ?? '' ) ) ) {
+			return false;
+		}
+
 		// Only run for appointments. Don't run for events.
 		if ( empty( $normalized_data['type'] ) || 'appointment' !== $normalized_data['type'] ) {
 			return false;
