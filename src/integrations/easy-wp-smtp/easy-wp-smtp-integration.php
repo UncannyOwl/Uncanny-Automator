@@ -18,6 +18,11 @@ class Easy_Wp_Smtp_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'EASY_WP_SMTP' );
 		$this->set_name( 'Easy WP SMTP' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/easy-wp-smtp-icon.svg' );
+
+		$this->set_plugin_file_path( 'easy-wp-smtp/easy-wp-smtp.php' );
+		$this->set_developer_name( 'WPForms' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

@@ -365,7 +365,7 @@ class Copy_Recipe_Parts {
 				continue;
 			}
 
-			$val = isset( $value[0] ) ? maybe_unserialize( $value[0] ) : '';
+			$val = isset( $value[0] ) ? automator_safe_unserialize( $value[0] ) : '';
 
 			// Stash action conditions until end of process.
 			if ( self::ACTION_CONDITIONS_META_KEY === $key ) {

@@ -66,7 +66,7 @@ final class SectionSourcePatchController
             ]);
         }
 
-        [$cssRules, $cssRuleError] = $this->patches->normalizeRules('edit_part', $cssRules, [
+        [$cssRules, $cssRuleError, $cssDeclarationReport] = $this->patches->normalizeRules('edit_part', $cssRules, [
             'SECTION_ID: ' . (string) $section->id(),
         ]);
         if ($cssRuleError instanceof \WP_REST_Response) {
@@ -107,6 +107,7 @@ final class SectionSourcePatchController
             $htmlPatches,
             $cssPatches,
             $cssRules,
+            $cssDeclarationReport,
         );
     }
 
@@ -132,6 +133,15 @@ final class SectionSourcePatchController
             ]);
         }
 
+        [$cssRules, $cssRuleError, $cssDeclarationReport] = $this->patches->normalizeRules(
+            $toolName,
+            $cssRules,
+            ['SECTION_ID: ' . (string) $section->id()],
+        );
+        if ($cssRuleError instanceof \WP_REST_Response) {
+            return $cssRuleError;
+        }
+
         $prepared = $this->patches->prepare(
             toolName: $toolName,
             section: $section,
@@ -139,6 +149,7 @@ final class SectionSourcePatchController
             cssPatches: $cssPatches,
             cssRules: $cssRules,
             cssContextLines: ['SECTION_ID: ' . (string) $section->id()],
+            rulesAreNormalized: true,
         );
         if ($prepared instanceof \WP_REST_Response) {
             return $prepared;
@@ -171,6 +182,8 @@ final class SectionSourcePatchController
             'CSS_RULES: ' . \count($cssRules),
             '',
         ];
+        $this->responses->appendCssDeclarationReport($lines, $cssDeclarationReport);
+        $this->responses->appendWarnings($lines, $preview['warnings'] ?? []);
         $this->responses->appendDiff($lines, 'HTML DIFF', $preview['html_diff']);
         $this->responses->appendDiff($lines, 'CSS DIFF', $preview['css_diff']);
         $this->previewStyleWarning->append($lines, $section, $cssRules, $toolName);

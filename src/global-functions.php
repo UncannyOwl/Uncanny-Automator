@@ -359,19 +359,22 @@ function automator_filter_input( $variable = null, $type = INPUT_GET, $flags = F
 
 if ( ! function_exists( 'automator_safe_unserialize' ) ) {
 	/**
-	 * Unserialize a value WITHOUT allowing object instantiation.
+	 * Unserialize a value without instantiating any class but stdClass.
 	 *
 	 * Mirrors maybe_unserialize() semantics (non-serialized input is returned
-	 * as-is) but passes allowed_classes => false so an attacker-supplied
-	 * serialized object string can never instantiate a class -- closing the
-	 * PHP Object Injection vector on read/match paths that handle submitted
-	 * form values. Serialized arrays still decode to arrays.
+	 * as-is). Only stdClass may be restored: it has no magic methods, so no code
+	 * runs on decode, and Automator's own stored rows (the action log's `metas`,
+	 * for one) are stdClass objects that must stay readable. Any other class,
+	 * however deeply nested, decodes as __PHP_Incomplete_Class, which closes the
+	 * PHP Object Injection vector (CVE-2026-82627). PHP offers no denylist form of
+	 * allowed_classes, and a denylist could not name every gadget a site loads.
 	 *
 	 * @param mixed $value Possibly-serialized value.
 	 *
-	 * @return mixed Decoded value with objects neutralised, or the original value.
+	 * @return mixed Decoded value with non-stdClass objects neutralised, or the original value.
 	 *
 	 * @since 7.3.1.4
+	 * @since 7.7.0 Restores stdClass.
 	 * @package Uncanny_Automator
 	 */
 	function automator_safe_unserialize( $value ) {
@@ -382,8 +385,47 @@ if ( ! function_exists( 'automator_safe_unserialize' ) ) {
 		if ( ! is_serialized( $trimmed ) ) {
 			return $value;
 		}
-		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- allowed_classes => false prevents object injection.
-		return unserialize( $trimmed, array( 'allowed_classes' => false ) );
+		// Silenced like maybe_unserialize(): corrupt data returns false without a notice.
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, WordPress.PHP.NoSilencedErrors.Discouraged -- only stdClass, which has no magic methods, may be restored.
+		return @unserialize( $trimmed, array( 'allowed_classes' => array( 'stdClass' ) ) );
+	}
+}
+
+if ( ! function_exists( 'automator_unserialize_objects_of' ) ) {
+	/**
+	 * Unserialize a value Automator stored from a plugin's object, restoring that plugin's classes.
+	 *
+	 * Only for token meta Automator serialized itself from a hook's object (an ad,
+	 * a referral, a model), never for data a visitor or another plugin wrote.
+	 * Restores stdClass and each class named in the value that is, or extends, one
+	 * of $families; every other class still decodes as __PHP_Incomplete_Class.
+	 * allowed_classes needs exact names, and plugins store subclasses (one per ad
+	 * type, one per model), so the family is matched with is_a().
+	 *
+	 * @param mixed    $value    Possibly-serialized value.
+	 * @param string[] $families Classes, or their parents, the value may hold.
+	 *
+	 * @return mixed Decoded value, or the original value when it is not serialized.
+	 *
+	 * @since 7.7.0
+	 * @package Uncanny_Automator
+	 */
+	function automator_unserialize_objects_of( $value, array $families ) {
+		if ( ! is_string( $value ) || ! is_serialized( trim( $value ) ) ) {
+			return automator_safe_unserialize( $value );
+		}
+		$allowed_classes = array( 'stdClass' );
+		preg_match_all( '/[OC]:\d+:"([^"]+)"/', $value, $matches );
+		foreach ( array_unique( $matches[1] ) as $class ) {
+			foreach ( $families as $family ) {
+				if ( is_a( $class, $family, true ) ) {
+					$allowed_classes[] = $class;
+					break;
+				}
+			}
+		}
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, WordPress.PHP.NoSilencedErrors.Discouraged -- only stdClass and the named families may be restored.
+		return @unserialize( trim( $value ), array( 'allowed_classes' => $allowed_classes ) );
 	}
 }
 
@@ -1541,6 +1583,48 @@ function automator_get_capability() {
  */
 function automator_get_admin_capability() {
 	return apply_filters( 'automator_admin_capability', 'manage_options' );
+}
+
+/**
+ * Whether a user can manage the site (`manage_options`).
+ *
+ * Integrations that match a user from submitted data (a typed email or login)
+ * never bind an administrator to a recipe run; the user selector refuses
+ * administrators the same way. The check lives here so it changes in one place.
+ *
+ * @since 7.6.2
+ *
+ * @param int|\WP_User|false|null $user The matched user, or 0/false when none matched.
+ *
+ * @return bool
+ */
+function automator_is_admin_user( $user ) {
+	return user_can( $user, 'manage_options' );
+}
+
+/**
+ * Whether a user matched from submitted data (a typed email) may be bound to a recipe run.
+ *
+ * Returns false only for an administrator other than the logged-in user. The
+ * logged-in user is bound by default anyway, and this lets a site owner test a
+ * recipe as themselves, while an email someone else typed still never reaches
+ * an administrator.
+ *
+ * @since 7.6.2
+ *
+ * @param int|\WP_User|false|null $user The matched user, or 0/false when none matched.
+ *
+ * @return bool
+ */
+function automator_can_bind_user( $user ) {
+
+	if ( ! automator_is_admin_user( $user ) ) {
+		return true;
+	}
+
+	$user_id = $user instanceof WP_User ? $user->ID : (int) $user;
+
+	return 0 !== $user_id && get_current_user_id() === $user_id;
 }
 
 /**

@@ -13,7 +13,6 @@ use UncannyPageBuilder\Infrastructure\i18\strings\ErrorToastStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\EditorClientAppStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\GlobalPartModalStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\InlineEditingToolbarStrings;
-use UncannyPageBuilder\Infrastructure\i18\strings\InlineEditingSurfaceStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\PolishSelectionModalStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\RequestProgressStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\ReusablePickerStrings;
@@ -26,6 +25,7 @@ use UncannyPageBuilder\Infrastructure\i18\strings\WorkspaceTabPanelComponentStri
 use UncannyPageBuilder\Infrastructure\i18\strings\WorkspaceTabPanelContentStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\WorkspaceTabPanelDesignColorControlStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\WorkspaceTabPanelEffectsStrings;
+use UncannyPageBuilder\Infrastructure\i18\strings\WorkspaceTabPanelElementIdentityStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\WorkspaceTabPanelHelperStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\WorkspaceTabPanelLayoutStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\WorkspaceTabPanelShadowStrings;
@@ -44,7 +44,6 @@ final class PageBuilderJsStrings
         private readonly ?ErrorToastStrings $errorToastStrings = null,
         private readonly ?EditorClientAppStrings $editorClientAppStrings = null,
         private readonly ?GlobalPartModalStrings $globalPartModalStrings = null,
-        private readonly ?InlineEditingSurfaceStrings $inlineEditingSurfaceStrings = null,
         private readonly ?InlineEditingToolbarStrings $inlineEditingToolbarStrings = null,
         private readonly ?PolishSelectionModalStrings $polishSelectionModalStrings = null,
         private readonly ?ReusablePickerStrings $reusablePickerStrings = null,
@@ -58,6 +57,7 @@ final class PageBuilderJsStrings
         private readonly ?WorkspaceTabPanelContentStrings $workspaceTabPanelContentStrings = null,
         private readonly ?WorkspaceTabPanelDesignColorControlStrings $workspaceTabPanelDesignColorControlStrings = null,
         private readonly ?WorkspaceTabPanelEffectsStrings $workspaceTabPanelEffectsStrings = null,
+        private readonly ?WorkspaceTabPanelElementIdentityStrings $workspaceTabPanelElementIdentityStrings = null,
         private readonly ?WorkspaceTabPanelHelperStrings $workspaceTabPanelHelperStrings = null,
         private readonly ?WorkspaceTabPanelLayoutStrings $workspaceTabPanelLayoutStrings = null,
         private readonly ?WorkspaceTabPanelShadowStrings $workspaceTabPanelShadowStrings = null,
@@ -81,7 +81,6 @@ final class PageBuilderJsStrings
             'canvas.error_toast' => ($this->errorToastStrings ?? new ErrorToastStrings())->toArray(),
             'canvas.editor_client_app' => ($this->editorClientAppStrings ?? new EditorClientAppStrings())->toArray(),
             'canvas.global_part_modal' => ($this->globalPartModalStrings ?? new GlobalPartModalStrings())->toArray(),
-            'canvas.inline_editing.surface' => ($this->inlineEditingSurfaceStrings ?? new InlineEditingSurfaceStrings())->toArray(),
             'canvas.inline_editing.toolbar' => ($this->inlineEditingToolbarStrings ?? new InlineEditingToolbarStrings())->toArray(),
             'canvas.polish_selection_modal' => ($this->polishSelectionModalStrings ?? new PolishSelectionModalStrings())->toArray(),
             'canvas.reusable_picker' => ($this->reusablePickerStrings ?? new ReusablePickerStrings())->toArray(),
@@ -95,6 +94,7 @@ final class PageBuilderJsStrings
             'canvas.workspace_tab_panel.content_panel' => ($this->workspaceTabPanelContentStrings ?? new WorkspaceTabPanelContentStrings())->toArray(),
             'canvas.workspace_tab_panel.design_color_control' => ($this->workspaceTabPanelDesignColorControlStrings ?? new WorkspaceTabPanelDesignColorControlStrings())->toArray(),
             'canvas.workspace_tab_panel.effects_panel' => ($this->workspaceTabPanelEffectsStrings ?? new WorkspaceTabPanelEffectsStrings())->toArray(),
+            'canvas.workspace_tab_panel.element_identity' => ($this->workspaceTabPanelElementIdentityStrings ?? new WorkspaceTabPanelElementIdentityStrings())->toArray(),
             'canvas.workspace_tab_panel.helpers' => ($this->workspaceTabPanelHelperStrings ?? new WorkspaceTabPanelHelperStrings())->toArray(),
             'canvas.workspace_tab_panel.layout_panel' => ($this->workspaceTabPanelLayoutStrings ?? new WorkspaceTabPanelLayoutStrings())->toArray(),
             'canvas.workspace_tab_panel.shadow_panel' => ($this->workspaceTabPanelShadowStrings ?? new WorkspaceTabPanelShadowStrings())->toArray(),

@@ -3,6 +3,7 @@
 namespace Uncanny_Automator\Integrations\Zoom_Webinar;
 
 use Uncanny_Automator\Recipe\App_Action;
+use Uncanny_Automator\Integrations\Zoom\Zoom_Datetime_Trait;
 use Exception;
 
 /**
@@ -14,6 +15,8 @@ use Exception;
  * @property Zoom_Webinar_Api_Caller $api
  */
 class ZOOM_WEBINAR_CREATEWEBINAR extends App_Action {
+
+	use Zoom_Datetime_Trait;
 
 	/**
 	 * Setup action.
@@ -79,31 +82,33 @@ class ZOOM_WEBINAR_CREATEWEBINAR extends App_Action {
 		);
 
 		$start_date_field = array(
-			'option_code' => 'STARTDATE',
-			'input_type'  => 'date',
-			'label'       => esc_html_x( 'Start date', 'Zoom Webinar', 'uncanny-automator' ),
-			'description' => '',
-			'required'    => true,
-			'tokens'      => true,
+			'option_code'     => 'STARTDATE',
+			'input_type'      => 'date',
+			'label'           => esc_html_x( 'Start date', 'Zoom Webinar', 'uncanny-automator' ),
+			'description'     => esc_html_x( 'Pick a date or use a token. Tokens can return a date (YYYY-MM-DD or MM/DD/YYYY), a full date and time, or a Unix timestamp.', 'Zoom Webinar', 'uncanny-automator' ),
+			'required'        => true,
+			'supports_tokens' => true,
 		);
 
 		$start_time_field = array(
-			'option_code' => 'STARTTIME',
-			'input_type'  => 'time',
-			'label'       => esc_html_x( 'Start time', 'Zoom Webinar', 'uncanny-automator' ),
-			'description' => '',
-			'required'    => true,
-			'tokens'      => true,
+			'option_code'     => 'STARTTIME',
+			'input_type'      => 'time',
+			'label'           => esc_html_x( 'Start time', 'Zoom Webinar', 'uncanny-automator' ),
+			'description'     => esc_html_x( 'Pick a time or use a token. Tokens can return a time (HH:MM or h:mm AM/PM) or a full date and time.', 'Zoom Webinar', 'uncanny-automator' ),
+			'required'        => true,
+			'supports_tokens' => true,
 		);
 
 		$timezone_field = array(
-			'input_type'    => 'select',
-			'option_code'   => 'TIMEZONE',
-			'label'         => esc_html_x( 'Timezone', 'Zoom Webinar', 'uncanny-automator' ),
-			'description'   => esc_html_x( 'Select the timezone for the webinar', 'Zoom Webinar', 'uncanny-automator' ),
-			'required'      => false,
-			'default_value' => wp_timezone_string(),
-			'options'       => $this->helpers->get_timezone_options(),
+			'input_type'            => 'select',
+			'option_code'           => 'TIMEZONE',
+			'label'                 => esc_html_x( 'Timezone', 'Zoom Webinar', 'uncanny-automator' ),
+			'description'           => esc_html_x( 'Select the timezone for the webinar, or use a custom value or token such as America/New_York or UTC+5.', 'Zoom Webinar', 'uncanny-automator' ),
+			'required'              => false,
+			'default_value'         => wp_timezone_string(),
+			'options'               => $this->helpers->get_timezone_options(),
+			'supports_custom_value' => true,
+			'supports_tokens'       => true,
 		);
 
 		$duration_field = array(
@@ -395,19 +400,9 @@ class ZOOM_WEBINAR_CREATEWEBINAR extends App_Action {
 			throw new Exception( esc_html_x( 'Webinar duration cannot exceed 1440 minutes (24 hours). Zoom does not allow longer webinars.', 'Zoom Webinar', 'uncanny-automator' ) );
 		}
 
-		// Get timezone (default to site timezone if not specified).
-		$timezone = $this->get_parsed_meta_value( 'TIMEZONE' );
-		if ( empty( $timezone ) ) {
-			$timezone = wp_timezone_string();
-		}
-
-		// Convert 12-hour time format to 24-hour format for Zoom API with proper exception handling.
-		try {
-			$date_time      = new \DateTime( $start_date . ' ' . $start_time, new \DateTimeZone( $timezone ) );
-			$start_datetime = $date_time->format( 'Y-m-d\TH:i:s' );
-		} catch ( Exception $e ) {
-			throw new Exception( esc_html_x( 'Invalid date, time, or timezone format. Please use YYYY-MM-DD for date and HH:MM AM/PM for time.', 'Zoom Webinar', 'uncanny-automator' ) );
-		}
+		// Timezone defaults to the site timezone; the start time is sent to Zoom in UTC.
+		$timezone       = $this->parse_timezone();
+		$start_datetime = $this->parse_datetime( $start_date, $start_time, $timezone, true );
 
 		$webinar_data = array(
 			'topic'      => $webinar_topic,

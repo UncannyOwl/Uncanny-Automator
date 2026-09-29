@@ -19,6 +19,11 @@ class All_In_One_Wp_Migration_Integration extends \Uncanny_Automator\Integration
 		$this->set_integration( 'ALL_IN_ONE_WP_MIGRATION' );
 		$this->set_name( 'All-in-One WP Migration' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/all-in-one-wp-migration-icon.svg' );
+
+		$this->set_plugin_file_path( 'all-in-one-wp-migration/all-in-one-wp-migration.php' );
+		$this->set_developer_name( 'ServMask' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

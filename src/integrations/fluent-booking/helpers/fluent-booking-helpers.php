@@ -273,7 +273,7 @@ class Fluent_Booking_Helpers {
 		$event_id       = $this->get_posted_booking_event_id();
 		$options        = array();
 		$event_location = CalendarSlot::where( 'id', $event_id )->pluck( 'location_settings' )->toArray();
-		$event_location = maybe_unserialize( $event_location[0] );
+		$event_location = automator_safe_unserialize( $event_location[0] );
 		foreach ( $event_location as $location ) {
 			$options[] = array(
 				'value' => $location['type'],

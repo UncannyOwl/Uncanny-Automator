@@ -276,7 +276,7 @@ class Actionify_Triggers {
 		$active_add_actions = array();
 
 		foreach ( $r as $rr ) {
-			$rr = maybe_unserialize( $rr );
+			$rr = automator_safe_unserialize( $rr );
 			if ( is_array( $rr ) ) {
 				foreach ( $rr as $rrr ) {
 					$active_add_actions[] = (string) $rrr;

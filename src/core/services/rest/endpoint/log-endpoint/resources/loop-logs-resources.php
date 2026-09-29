@@ -190,7 +190,7 @@ class Loop_Logs_Resources {
 		$loops_db = Automator()->loop_db();
 
 		foreach ( $loops_log as $log ) {
-			$flow = (array) maybe_unserialize( $log['flow'] );
+			$flow = (array) automator_safe_unserialize( $log['flow'] );
 
 			$loop = $this->find_loop_by_id( $flow, $log['loop_id'] );
 
@@ -587,9 +587,9 @@ class Loop_Logs_Resources {
 
 		// New schema.
 		if ( isset( $entry['tokens_snapshot'] ) ) {
-			$payload              = maybe_unserialize( $entry['tokens_snapshot'] );
+			$payload              = automator_safe_unserialize( $entry['tokens_snapshot'] );
 			$uncompressed_payload = Automator_Compression::maybe_decompress_string( $payload );
-			return maybe_unserialize( $uncompressed_payload );
+			return automator_safe_unserialize( $uncompressed_payload );
 		}
 
 		return array();
@@ -604,7 +604,7 @@ class Loop_Logs_Resources {
 	 */
 	private function get_action_data( $entry ) {
 
-		$action_data = maybe_unserialize( $entry['action_data'] );
+		$action_data = automator_safe_unserialize( $entry['action_data'] );
 
 		// Fallback to latest schema for empty result. Otherwise, if the data is there, it will be in the old format.
 		if ( empty( $action_data ) ) {

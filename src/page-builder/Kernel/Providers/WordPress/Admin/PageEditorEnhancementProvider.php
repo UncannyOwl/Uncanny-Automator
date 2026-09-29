@@ -145,17 +145,7 @@ final class PageEditorEnhancementProvider implements ServiceProviderInterface
             }
         }, 10, 2);
 
-        // 10c. Section order meta box (drag-and-drop reordering)
-        add_action('add_meta_boxes', $callbacks->action('page_section_order_metabox.register', static function ($postType = null, $post = null) use ($supportsPostType, $sectionOrderMetaBox, $canEditWorkingSource): void {
-            if (
-                is_string($postType)
-                && $post instanceof \WP_Post
-                && $supportsPostType->isSupported($postType)
-                && $canEditWorkingSource($post->ID)
-            ) {
-                $sectionOrderMetaBox->register($post);
-            }
-        }), 10, 2);
+        // The main section list submits to the existing guarded save handler.
         add_action('save_post', static function ($postId = null, $post = null) use ($supportsPostType, $sectionOrderMetaBox): void {
             try {
                 $postId = WordPressPostId::fromMixed($postId);

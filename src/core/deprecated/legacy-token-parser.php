@@ -352,8 +352,8 @@ class Legacy_Token_Parser {
 					$run_func    = true;
 
 					if ( ! empty( $parsed_data ) ) {
-						$parsed_data = maybe_unserialize( $parsed_data );
-						if ( key_exists( '{{' . $match . '}}', $parsed_data ) && ! empty( $parsed_data[ '{{' . $match . '}}' ] ) ) {
+						$parsed_data = automator_safe_unserialize( $parsed_data );
+						if ( is_array( $parsed_data ) && ! empty( $parsed_data[ '{{' . $match . '}}' ] ) ) {
 							$replaceable = $parsed_data[ '{{' . $match . '}}' ];
 							$run_func    = false;
 						} else {

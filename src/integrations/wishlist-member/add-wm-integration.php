@@ -27,6 +27,10 @@ class Add_Wm_Integration {
 		$this->set_icon( 'wishlist-member-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'wishlist-member/wpm.php' );
+
+		$this->set_developer_name( 'Wishlist Products' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

@@ -81,6 +81,11 @@ class ANON_FCRM_ADDED_TO_LIST {
 		$user_id  = $subscriber->user_id;
 		$list_ids = Automator()->helpers->recipe->fluent_crm->get_attached_list_ids( $attached_list_ids );
 
+		// FluentCRM links contacts to accounts by email: an administrator other than the logged-in user is never bound.
+		if ( ! automator_can_bind_user( $user_id ) ) {
+			$user_id = 0;
+		}
+
 		if ( empty( $list_ids ) ) {
 			// sanity check
 			return;

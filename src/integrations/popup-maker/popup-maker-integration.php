@@ -31,6 +31,10 @@ class Pm_Integration extends Integration {
 		$this->set_name( 'Popup Maker' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/popup-maker-icon.svg' );
 		$this->set_plugin_file_path( 'popup-maker/popup-maker.php' );
+
+		$this->set_developer_name( 'Popup Maker' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**
@@ -136,7 +140,7 @@ class Pm_Integration extends Integration {
 		foreach ( $popup_settings as $popup ) {
 
 			$popup_id       = $popup->post_id;
-			$popup_settings = maybe_unserialize( $popup->settings );
+			$popup_settings = automator_safe_unserialize( $popup->settings );
 
 			if ( isset( $popup_settings['triggers'] ) ) {
 				foreach ( $popup_settings['triggers'] as $trigger ) {
@@ -214,7 +218,7 @@ class Pm_Integration extends Integration {
 		foreach ( $popup_settings as $popup ) {
 
 			$popup_id = $popup->post_id;
-			$settings = maybe_unserialize( $popup->settings );
+			$settings = automator_safe_unserialize( $popup->settings );
 
 			if ( ! isset( $settings['triggers'] ) ) {
 				continue;

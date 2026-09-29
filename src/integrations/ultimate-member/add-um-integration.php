@@ -27,6 +27,10 @@ class Add_Um_Integration {
 		$this->set_icon( 'ultimate-member-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'ultimate-member/ultimate-member.php' );
+
+		$this->set_developer_name( 'Ultimate Member' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

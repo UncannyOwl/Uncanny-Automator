@@ -16,9 +16,8 @@ use UncannyPageBuilder\Domain\Section\SectionCollection;
 /**
  * Updates generated section HTML by selected node identity.
  *
- * This is the non-legacy Design Lens save path. Legacy `data-ai-editable`
- * updates stay in EditableUpdateService; arbitrary generated markup reaches this
- * service only after Page Builder has a section target and a previewed change.
+ * This Design Lens save path accepts generated markup after Page Builder
+ * resolves a section target and previews the change.
  */
 final class SectionNodeUpdateService
 {
@@ -468,6 +467,10 @@ final class SectionNodeUpdateService
     private function findByStableSelector(DOMElement $root, string $selector): ?DOMElement
     {
         if (preg_match('/^#([A-Za-z][\w-]*)$/', $selector, $matches) === 1) {
+            return $this->singleElementByAttribute($root, 'id', $matches[1]);
+        }
+
+        if (preg_match(StableSelector::AUTHORED_ID_SELECTOR_PATTERN, $selector, $matches) === 1) {
             return $this->singleElementByAttribute($root, 'id', $matches[1]);
         }
 

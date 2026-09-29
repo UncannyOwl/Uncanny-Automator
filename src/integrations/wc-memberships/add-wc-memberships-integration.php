@@ -27,6 +27,12 @@ class Add_Wc_Memberships_Integration {
 		$this->set_icon( 'woo-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'woocommerce-memberships/woocommerce-memberships.php' );
+
+		$this->set_developer_name( 'WooCommerce' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
+		$this->set_plugin_required( 'woocommerce/woocommerce.php' );
+		$this->set_integration_required( 'WC' );
 	}
 
 	/**

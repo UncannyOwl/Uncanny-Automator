@@ -172,7 +172,7 @@ class Kadence_Helpers extends Abstract_Helpers {
 		$fields = $this->get_forms_attributes_from_content( $form_id, 'fields' );
 
 		if ( defined( 'KADENCE_BLOCKS_VERSION' ) && is_numeric( $form_id ) ) {
-			$fields = maybe_unserialize( get_post_meta( $form_id, '_kad_form_fields', true ) );
+			$fields = automator_safe_unserialize( get_post_meta( $form_id, '_kad_form_fields', true ) );
 		}
 
 		return $fields;

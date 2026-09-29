@@ -145,6 +145,43 @@ function automator_api_client( ?Api_Client $override = null, bool $reset = false
 }
 
 /**
+ * Get the API Client bound to the Usage Reports Service.
+ *
+ * Same client, different host: usage reports go to
+ * AUTOMATOR_USAGE_REPORTS_URL rather than AUTOMATOR_API_URL.
+ *
+ * Deliberately NOT automator_api_client() with a swapped base URL — that
+ * instance is the singleton License_Manager holds for license and credit
+ * calls, and repointing it would send those to the reports host. This is a
+ * second, separate instance; it also skips the set_api_client() back-wire for
+ * the same reason.
+ *
+ * @param Api_Client|null $override Optional override for testing.
+ * @param bool            $reset    Reset the cached instance.
+ *
+ * @return Api_Client|null
+ */
+function automator_usage_reports_client( ?Api_Client $override = null, bool $reset = false ): ?Api_Client {
+	static $instance = null;
+	if ( $reset ) {
+		$instance = null;
+		return null;
+	}
+	if ( null !== $override ) {
+		$instance = $override;
+		return $instance;
+	}
+	if ( null === $instance ) {
+		$instance = new Api_Client(
+			new License_Header_Injector( automator_license_manager() ),
+			automator_api_log_store(),
+			AUTOMATOR_USAGE_REPORTS_URL
+		);
+	}
+	return $instance;
+}
+
+/**
  * Get the Credit Manager instance.
  *
  * @param Credit_Manager|null $override Optional override for testing.

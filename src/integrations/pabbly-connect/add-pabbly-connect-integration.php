@@ -29,6 +29,10 @@ class Add_Pabbly_Connect_Integration {
 
 		$this->set_icon( __DIR__ . '/img/pabbly-icon.svg' );
 
+		$this->set_developer_name( 'Pabbly' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'saas' );
+
 	}
 
 	/**

@@ -61,7 +61,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
      * @param int|null    $sectionId  Required when action is 'edit_section'
      * @param int|null    $sourceRootId  Root identity owned by copied source
      *
-     * @return array{page_id: int, sections: int, preview: string, warnings: string[]}
+     * @return array{page_id: int, sections: int, section_id: int, position: int, name: string, source_generation: int, preview: string, warnings: string[]}
      *
      * @throws PageNotFoundException
      * @throws \UncannyPageBuilder\Domain\Exception\SectionNotFoundException
@@ -139,9 +139,13 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         $this->dispatchSectionSaved($pageId, $savedId, $action === 'edit_section' ? 'edited' : 'created');
 
         return [
-            'page_id'  => $pageId,
+            'page_id' => $pageId,
             'sections' => $sections->count(),
-            'preview'  => $this->repository->getPermalink($pageId),
+            'section_id' => $savedId,
+            'position' => $newSection->position(),
+            'name' => $newSection->name(),
+            'source_generation' => $sections->generation(),
+            'preview' => $this->repository->getPermalink($pageId),
             'warnings' => $warnings,
         ];
     }
@@ -679,7 +683,6 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
      * Validate and apply a structured edit proposal.
      *
      * @throws \UncannyPageBuilder\Domain\Exception\SectionNotFoundException
-     * @throws EditableUpdateException
      */
     public function applyProposal(SectionEditProposal $proposal): SectionEditResult
     {
@@ -723,16 +726,6 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
             );
         }
 
-        if ($proposal->isRewriteEditable()) {
-            $patched = $this->htmlCssProcessor->applyRewriteEditable(
-                $existing->content()->html(),
-                $existing->content()->css(),
-                $proposal,
-                $existing->id(),
-            );
-            return new SectionContent($patched['html'], $patched['css'], $existing->content()->elementStyles());
-        }
-
         if ($proposal->isReplaceBindingContract()) {
             $patchedHtml = $this->bindingContractReplacementService->replace(
                 $existing,
@@ -743,12 +736,7 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
             return new SectionContent($patchedHtml, $existing->content()->css(), $existing->content()->elementStyles());
         }
 
-        // update_editables
-        $patchedHtml = $this->htmlCssProcessor->applyEditableUpdates(
-            $existing->content()->html(),
-            $proposal->editableUpdates(),
-        );
-        return new SectionContent($patchedHtml, $existing->content()->css(), $existing->content()->elementStyles());
+        throw new \LogicException('The section proposal does not change source.');
     }
 
     private function applyPatchList(string $subject, array $patches, string $label): string
@@ -1044,54 +1032,6 @@ final class SectionService implements SectionSourceWriter, SectionHistoryRestore
         } catch (\Throwable) {
             return null;
         }
-    }
-
-    /**
-     * Build a map of section ID => editable capabilities for all sections on a page.
-     *
-     * @return array<int, array<int, array{key: string, type: string, supports_inline_update: bool, supports_ai_rewrite: bool}>>
-     */
-    public function buildEditableCapabilitiesMap(int $pageId): array
-    {
-        return $this->editableCapabilitiesMap($this->findAllSections($pageId));
-    }
-
-    /**
-     * Build capabilities from the exact source selected for the editor.
-     *
-     * @param array<int, array<string, mixed>> $rawSections
-     * @return array<int, array<int, array{key: string, type: string, supports_inline_update: bool, supports_ai_rewrite: bool}>>
-     */
-    public function buildEditableCapabilitiesMapForSource(int $pageId, array $rawSections): array
-    {
-        return $this->editableCapabilitiesMap(
-            SectionCollection::fromArray($rawSections, $pageId, 0)->all(),
-        );
-    }
-
-    /**
-     * @param \UncannyPageBuilder\Domain\Section\Section[] $sections
-     * @return array<int, array<int, array{key: string, type: string, supports_inline_update: bool, supports_ai_rewrite: bool}>>
-     */
-    private function editableCapabilitiesMap(array $sections): array
-    {
-        $map = [];
-
-        foreach ($sections as $section) {
-            $manifest = $this->manifestExtractor->extract($section);
-            $caps = [];
-            foreach ($manifest->editables() as $entry) {
-                $caps[] = [
-                    'key'                    => $entry->key(),
-                    'type'                   => $entry->type(),
-                    'supports_inline_update' => $entry->supportsInlineUpdate(),
-                    'supports_ai_rewrite'    => $entry->supportsAiRewrite(),
-                ];
-            }
-            $map[$section->id()] = $caps;
-        }
-
-        return $map;
     }
 
     /**

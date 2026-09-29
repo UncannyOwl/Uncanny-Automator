@@ -6,7 +6,11 @@ namespace UncannyPageBuilder\Api;
 
 use UncannyPageBuilder\Application\NavigationMenuService;
 use UncannyPageBuilder\Domain\ErrorMessage;
+use UncannyPageBuilder\Domain\Exception\InvalidNavigationRequestException;
+use UncannyPageBuilder\Domain\Exception\NavigationChangedConcurrentlyException;
+use UncannyPageBuilder\Domain\Exception\NavigationItemTextNotSavableException;
 use UncannyPageBuilder\Domain\Exception\NavigationMenuNotFoundException;
+use UncannyPageBuilder\Domain\Exception\StaleNavigationMenuException;
 
 final class AgentNavigationController
 {
@@ -64,16 +68,34 @@ final class AgentNavigationController
         $operation = trim((string) ($request->get_param('operation') ?? ''));
 
         try {
+            $permissionItemIds = $this->isWriteOperation($operation)
+                ? $this->itemIdsForPermission($operation, $request)
+                : [];
+            if (
+                $this->isWriteOperation($operation)
+                && !$this->permissions->canManageNavigation(
+                    $operation,
+                    $this->positiveId($request->get_param('item_id'), 'item_id'),
+                    $permissionItemIds,
+                )
+            ) {
+                return $this->textError(403, 'native_navigation_capability_required', [
+                    'OPERATION: ' . $operation,
+                    'NEXT STEP',
+                    'Use an account with the WordPress capability registered for this navigation operation.',
+                ]);
+            }
+
             return match ($operation) {
                 '', 'list_locations' => $this->listLocations(),
                 'list_menus' => $this->listMenus(),
-                'read_menu' => $this->readMenu(absint($request->get_param('menu_id') ?? 0)),
+                'read_menu' => $this->readMenu($this->positiveId($request->get_param('menu_id'), 'menu_id')),
                 'create_menu' => $this->createMenu(trim((string) ($request->get_param('name') ?? ''))),
                 'add_item' => $this->addItem($request),
                 'update_item' => $this->updateItem($request),
                 'delete_item' => $this->deleteItem($request),
-                'move_item' => $this->moveItem($request),
-                'replace_tree' => $this->replaceTree($request),
+                'move_item' => $this->moveItem($request, $this->positiveItemIds($permissionItemIds)),
+                'replace_tree' => $this->replaceTree($request, $this->positiveItemIds($permissionItemIds)),
                 'assign_location' => $this->assignLocation($request),
                 default => AgentTextResponse::withStatus(implode("\n", [
                     'TOOL: manage_navigation',
@@ -86,7 +108,38 @@ final class AgentNavigationController
             };
         } catch (NavigationMenuNotFoundException) {
             return ApiResponse::error(ErrorMessage::NavigationMenuNotFound);
-        } catch (\InvalidArgumentException $e) {
+        } catch (NavigationChangedConcurrentlyException $conflict) {
+            $lines = [
+                'OPERATION: ' . $operation,
+                'PRESERVED_ITEM_IDS: ' . implode(', ', $conflict->itemIds()),
+                'DETAIL: Someone else changed these items while this request ran. Their changes were kept. The other changes from this request were undone.',
+            ];
+            if ($conflict->unrestoredPositionItemIds() !== []) {
+                $lines[] = 'ORDER_NOT_RESTORED_ITEM_IDS: ' . implode(', ', $conflict->unrestoredPositionItemIds());
+                $lines[] = 'The menu order may differ from its order before this request.';
+            }
+
+            return $this->textError(409, 'navigation_changed_concurrently', [
+                ...$lines,
+                'NEXT STEP',
+                'Call read_menu, review the current items, and retry only if the change is still needed.',
+            ]);
+        } catch (NavigationItemTextNotSavableException $refusal) {
+            return $this->textError(422, 'navigation_text_not_savable', [
+                'OPERATION: ' . $operation,
+                'ITEM_IDS: ' . implode(', ', $refusal->itemIds()),
+                'DETAIL: WordPress would remove markup from these items because this account cannot save it. Nothing was saved.',
+                'NEXT STEP',
+                'Ask a user who can save unfiltered HTML to make this change. Do not remove markup from these items unless a person asks for it.',
+            ]);
+        } catch (StaleNavigationMenuException) {
+            return $this->textError(409, 'stale_navigation_menu', [
+                'OPERATION: ' . $operation,
+                'DETAIL: The navigation menu changed after authorization. Nothing was saved.',
+                'NEXT STEP',
+                'Call read_menu, review the current items, and retry with the new menu state.',
+            ]);
+        } catch (InvalidNavigationRequestException $e) {
             return $this->textError(400, 'invalid_navigation_request', [
                 'DETAIL: ' . $e->getMessage(),
                 'NEXT STEP',
@@ -260,21 +313,19 @@ final class AgentNavigationController
 
     private function addItem(\WP_REST_Request $request): \WP_REST_Response
     {
-        $menu = $this->menus->addItem(
-            menuId: absint($request->get_param('menu_id') ?? 0),
+        $result = $this->menus->addItem(
+            menuId: $this->positiveId($request->get_param('menu_id'), 'menu_id'),
             input: $this->itemInput($request, false),
         );
 
-        $added = $this->lastItem($menu);
-
-        return $this->itemMutationSuccess('add_item', $menu, $added['id'] ?? 0);
+        return $this->itemMutationSuccess('add_item', $result['menu'], $result['item_id']);
     }
 
     private function updateItem(\WP_REST_Request $request): \WP_REST_Response
     {
-        $itemId = absint($request->get_param('item_id') ?? 0);
+        $itemId = $this->positiveId($request->get_param('item_id'), 'item_id');
         $menu = $this->menus->updateItem(
-            menuId: absint($request->get_param('menu_id') ?? 0),
+            menuId: $this->positiveId($request->get_param('menu_id'), 'menu_id'),
             itemId: $itemId,
             input: $this->itemInput($request, true),
         );
@@ -284,9 +335,9 @@ final class AgentNavigationController
 
     private function deleteItem(\WP_REST_Request $request): \WP_REST_Response
     {
-        $itemId = absint($request->get_param('item_id') ?? 0);
+        $itemId = $this->positiveId($request->get_param('item_id'), 'item_id');
         $menu = $this->menus->deleteItem(
-            menuId: absint($request->get_param('menu_id') ?? 0),
+            menuId: $this->positiveId($request->get_param('menu_id'), 'menu_id'),
             itemId: $itemId,
         );
 
@@ -304,20 +355,23 @@ final class AgentNavigationController
         ]));
     }
 
-    private function moveItem(\WP_REST_Request $request): \WP_REST_Response
+    /** @param int[] $expectedItemIds */
+    private function moveItem(\WP_REST_Request $request, array $expectedItemIds): \WP_REST_Response
     {
-        $itemId = absint($request->get_param('item_id') ?? 0);
+        $itemId = $this->positiveId($request->get_param('item_id'), 'item_id');
         $menu = $this->menus->moveItem(
-            menuId: absint($request->get_param('menu_id') ?? 0),
+            menuId: $this->positiveId($request->get_param('menu_id'), 'menu_id'),
             itemId: $itemId,
-            parentId: absint($request->get_param('parent_id') ?? 0),
+            parentId: $this->nonNegativeId($request->get_param('parent_id'), 'parent_id'),
             position: (int) ($request->get_param('position') ?? 0),
+            expectedItemIds: $expectedItemIds,
         );
 
         return $this->itemMutationSuccess('move_item', $menu, $itemId);
     }
 
-    private function replaceTree(\WP_REST_Request $request): \WP_REST_Response
+    /** @param int[] $expectedItemIds */
+    private function replaceTree(\WP_REST_Request $request, array $expectedItemIds): \WP_REST_Response
     {
         if (!$this->isTruthy($request->get_param('replace_tree'))) {
             return $this->textError(400, 'invalid_navigation_request', [
@@ -328,8 +382,9 @@ final class AgentNavigationController
         }
 
         $menu = $this->menus->replaceTree(
-            menuId: absint($request->get_param('menu_id') ?? 0),
+            menuId: $this->positiveId($request->get_param('menu_id'), 'menu_id'),
             items: $this->treeItems($request->get_param('items')),
+            expectedItemIds: $expectedItemIds,
         );
 
         return AgentTextResponse::ok(implode("\n", [
@@ -349,7 +404,7 @@ final class AgentNavigationController
     {
         $location = $this->menus->assignLocation(
             locationSlug: (string) ($request->get_param('location_slug') ?? ''),
-            menuId: absint($request->get_param('menu_id') ?? 0),
+            menuId: $this->positiveId($request->get_param('menu_id'), 'menu_id'),
         );
 
         return AgentTextResponse::ok(implode("\n", [
@@ -390,8 +445,11 @@ final class AgentNavigationController
 
         foreach (['object_id', 'parent_id'] as $field) {
             $value = $request->get_param($field);
-            if ($value !== null && ($allowPartial || (int) $value > 0 || $field === 'parent_id')) {
-                $input[$field] = (int) $value;
+            if ($value !== null) {
+                $id = $this->nonNegativeId($value, $field);
+                if ($allowPartial || $id > 0 || $field === 'parent_id') {
+                    $input[$field] = $id;
+                }
             }
         }
 
@@ -409,10 +467,29 @@ final class AgentNavigationController
     private function treeItems(mixed $items): array
     {
         if (!is_array($items)) {
-            throw new \InvalidArgumentException('items must be an array.');
+            throw new InvalidNavigationRequestException('items must be an array.');
         }
 
-        return array_values(array_filter($items, static fn (mixed $item): bool => is_array($item)));
+        $validated = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                throw new InvalidNavigationRequestException('Each items entry must be an object.');
+            }
+
+            if (array_key_exists('item_id', $item)) {
+                $item['item_id'] = $this->nonNegativeId($item['item_id'], 'items.item_id');
+            }
+            if (array_key_exists('parent_id', $item)) {
+                $item['parent_id'] = $this->nonNegativeId($item['parent_id'], 'items.parent_id');
+            }
+            if (array_key_exists('object_id', $item)) {
+                $item['object_id'] = $this->nonNegativeId($item['object_id'], 'items.object_id');
+            }
+
+            $validated[] = $item;
+        }
+
+        return $validated;
     }
 
     /**
@@ -450,18 +527,6 @@ final class AgentNavigationController
         ];
     }
 
-    /**
-     * @param array{id: int, name: string, items: array<int, array<string, mixed>>} $menu
-     * @return array<string, mixed>
-     */
-    private function lastItem(array $menu): array
-    {
-        $items = (array) ($menu['items'] ?? []);
-        $last = end($items);
-
-        return is_array($last) ? $last : [];
-    }
-
     private function isTruthy(mixed $value): bool
     {
         if (is_bool($value)) {
@@ -469,6 +534,126 @@ final class AgentNavigationController
         }
 
         return in_array(strtolower(trim((string) $value)), ['1', 'true', 'yes'], true);
+    }
+
+    private function isWriteOperation(string $operation): bool
+    {
+        return in_array($operation, [
+            'create_menu',
+            'add_item',
+            'update_item',
+            'delete_item',
+            'move_item',
+            'replace_tree',
+            'assign_location',
+        ], true);
+    }
+
+    /**
+     * @return int[]
+     */
+    private function treeItemIdsForPermission(mixed $items): array
+    {
+        if (!is_array($items)) {
+            return [];
+        }
+
+        $ids = [];
+        foreach (array_values($items) as $item) {
+            if (!is_array($item)) {
+                throw new InvalidNavigationRequestException('Each items entry must be an object.');
+            }
+
+            $ids[] = $this->nonNegativeId($item['item_id'] ?? null, 'items.item_id');
+        }
+
+        return $ids;
+    }
+
+    /**
+     * A move rewrites the complete normalized tree, so it needs object-level
+     * permission for every existing item that the repository will save.
+     *
+     * @return int[]
+     */
+    private function itemIdsForPermission(string $operation, \WP_REST_Request $request): array
+    {
+        if (!in_array($operation, ['move_item', 'replace_tree'], true)) {
+            return [];
+        }
+
+        $requestedItemIds = $operation === 'replace_tree'
+            ? $this->treeItemIdsForPermission($request->get_param('items'))
+            : [];
+        $menuId = $this->positiveId($request->get_param('menu_id'), 'menu_id');
+        if ($menuId <= 0) {
+            throw new InvalidNavigationRequestException('menu_id is required.');
+        }
+        $menu = $this->menus->readMenu($menuId);
+        if (!is_array($menu)) {
+            // Report a missing menu only to a caller who may edit navigation,
+            // so the capability error still hides which menus exist.
+            if ($this->permissions->canManageNavigation('replace_tree', 0, [])) {
+                throw new NavigationMenuNotFoundException($menuId);
+            }
+
+            return [];
+        }
+
+        $ids = [];
+        foreach ((array) ($menu['items'] ?? []) as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $ids[] = $this->positiveId($item['id'] ?? null, 'stored item ID');
+        }
+
+        if ($operation === 'replace_tree' && in_array(0, $requestedItemIds, true)) {
+            $ids[] = 0;
+        }
+
+        return $ids;
+    }
+
+    /**
+     * @param int[] $itemIds
+     * @return int[]
+     */
+    private function positiveItemIds(array $itemIds): array
+    {
+        return array_values(array_filter(
+            $itemIds,
+            static fn (int $itemId): bool => $itemId > 0,
+        ));
+    }
+
+    private function positiveId(mixed $value, string $field): int
+    {
+        if ($value === null) {
+            return 0;
+        }
+
+        $id = RequestId::positive($value);
+        if ($id === null) {
+            throw new InvalidNavigationRequestException($field . ' must be a positive integer.');
+        }
+
+        return $id;
+    }
+
+    private function nonNegativeId(mixed $value, string $field): int
+    {
+        if ($value === null) {
+            return 0;
+        }
+
+        $id = RequestId::nonNegative($value);
+        if ($id === null) {
+            throw new InvalidNavigationRequestException($field . ' must be a non-negative integer.');
+        }
+
+        return $id;
     }
 
     /**

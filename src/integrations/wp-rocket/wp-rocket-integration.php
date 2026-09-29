@@ -19,6 +19,11 @@ class Wp_Rocket_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'WP_ROCKET' );
 		$this->set_name( 'WP Rocket' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/wp-rocket-icon.svg' );
+
+		$this->set_plugin_file_path( 'wp-rocket/wp-rocket.php' );
+		$this->set_developer_name( 'WP Rocket' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

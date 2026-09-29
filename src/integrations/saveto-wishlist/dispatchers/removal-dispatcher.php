@@ -30,11 +30,6 @@ namespace Uncanny_Automator\Integrations\Saveto_Wishlist\Dispatchers;
 class Removal_Dispatcher {
 
 	/**
-	 * Internal action the removal trigger listens on.
-	 */
-	const HOOK = 'automator_saveto_wishlist_product_removed';
-
-	/**
 	 * Pre-delete snapshot of a collection's product IDs, keyed by collection ID.
 	 * Only populated for reverse (prune) deletes, where the hook reports the kept
 	 * set rather than the removed set.
@@ -79,7 +74,7 @@ class Removal_Dispatcher {
 			return;
 		}
 
-		do_action( self::HOOK, $product_id, $collection_id, is_array( $variation_ids ) ? $variation_ids : array() );
+		do_action( 'automator_saveto_wishlist_product_removed', $product_id, $collection_id, is_array( $variation_ids ) ? $variation_ids : array() );
 	}
 
 	/**
@@ -138,7 +133,7 @@ class Removal_Dispatcher {
 		foreach ( $removed as $product_id ) {
 			$product_id = absint( $product_id );
 			if ( $product_id > 0 ) {
-				do_action( self::HOOK, $product_id, $collection_id, array() );
+				do_action( 'automator_saveto_wishlist_product_removed', $product_id, $collection_id, array() );
 			}
 		}
 	}

@@ -13,6 +13,8 @@ use Exception;
  */
 trait Zoom_Meeting_Trait {
 
+	use Zoom_Datetime_Trait;
+
 	/**
 	 * Get meeting topic field.
 	 *
@@ -37,12 +39,12 @@ trait Zoom_Meeting_Trait {
 	 */
 	protected function get_start_date_field() {
 		return array(
-			'option_code' => 'STARTDATE',
-			'input_type'  => 'date',
-			'label'       => esc_html_x( 'Start date', 'Zoom', 'uncanny-automator' ),
-			'description' => '',
-			'required'    => true,
-			'tokens'      => true,
+			'option_code'     => 'STARTDATE',
+			'input_type'      => 'date',
+			'label'           => esc_html_x( 'Start date', 'Zoom', 'uncanny-automator' ),
+			'description'     => esc_html_x( 'Pick a date or use a token. Tokens can return a date (YYYY-MM-DD or MM/DD/YYYY), a full date and time, or a Unix timestamp.', 'Zoom', 'uncanny-automator' ),
+			'required'        => true,
+			'supports_tokens' => true,
 		);
 	}
 
@@ -53,12 +55,12 @@ trait Zoom_Meeting_Trait {
 	 */
 	protected function get_start_time_field() {
 		return array(
-			'option_code' => 'STARTTIME',
-			'input_type'  => 'time',
-			'label'       => esc_html_x( 'Start time', 'Zoom', 'uncanny-automator' ),
-			'description' => '',
-			'required'    => true,
-			'tokens'      => true,
+			'option_code'     => 'STARTTIME',
+			'input_type'      => 'time',
+			'label'           => esc_html_x( 'Start time', 'Zoom', 'uncanny-automator' ),
+			'description'     => esc_html_x( 'Pick a time or use a token. Tokens can return a time (HH:MM or h:mm AM/PM) or a full date and time.', 'Zoom', 'uncanny-automator' ),
+			'required'        => true,
+			'supports_tokens' => true,
 		);
 	}
 
@@ -69,14 +71,15 @@ trait Zoom_Meeting_Trait {
 	 */
 	protected function get_timezone_field() {
 		return array(
-			'input_type'    => 'select',
-			'option_code'   => 'TIMEZONE',
-			'label'         => esc_html_x( 'Timezone', 'Zoom', 'uncanny-automator' ),
-			'description'   => esc_html_x( 'Select the timezone for the meeting', 'Zoom', 'uncanny-automator' ),
-			'required'      => false,
-			'default_value' => wp_timezone_string(),
-			'options'       => $this->get_timezone_options(),
-			'tokens'        => true,
+			'input_type'            => 'select',
+			'option_code'           => 'TIMEZONE',
+			'label'                 => esc_html_x( 'Timezone', 'Zoom', 'uncanny-automator' ),
+			'description'           => esc_html_x( 'Select the timezone for the meeting, or use a custom value or token such as America/New_York or UTC+5.', 'Zoom', 'uncanny-automator' ),
+			'required'              => false,
+			'default_value'         => wp_timezone_string(),
+			'options'               => $this->get_timezone_options(),
+			'supports_custom_value' => true,
+			'supports_tokens'       => true,
 		);
 	}
 
@@ -482,12 +485,12 @@ trait Zoom_Meeting_Trait {
 	 */
 	protected function get_end_date_field() {
 		return array(
-			'option_code' => 'ENDDATE',
-			'input_type'  => 'date',
-			'label'       => esc_html_x( 'End date', 'Zoom', 'uncanny-automator' ),
-			'description' => esc_html_x( 'When should the recurring meeting stop?', 'Zoom', 'uncanny-automator' ),
-			'required'    => false,
-			'tokens'      => true,
+			'option_code'     => 'ENDDATE',
+			'input_type'      => 'date',
+			'label'           => esc_html_x( 'End date', 'Zoom', 'uncanny-automator' ),
+			'description'     => esc_html_x( 'When should the recurring meeting stop? Pick a date or use a token. Tokens can return a date (YYYY-MM-DD or MM/DD/YYYY), a full date and time, or a Unix timestamp.', 'Zoom', 'uncanny-automator' ),
+			'required'        => false,
+			'supports_tokens' => true,
 		);
 	}
 
@@ -611,37 +614,6 @@ trait Zoom_Meeting_Trait {
 	}
 
 	/**
-	 * Parse timezone with fallback to site timezone.
-	 *
-	 * @return string
-	 */
-	protected function parse_timezone() {
-		$timezone = $this->get_parsed_meta_value( 'TIMEZONE' );
-		return empty( $timezone ) ? wp_timezone_string() : $timezone;
-	}
-
-	/**
-	 * Parse datetime with timezone conversion
-	 *
-	 * @param string $start_date
-	 * @param string $start_time
-	 * @param string $timezone
-	 * @param bool $include_timezone_offset Whether to include timezone offset in output
-	 *
-	 * @return string
-	 * @throws Exception
-	 */
-	protected function parse_datetime( $start_date, $start_time, $timezone, $include_timezone_offset = false ) {
-		try {
-			$date_time = new \DateTime( $start_date . ' ' . $start_time, new \DateTimeZone( $timezone ) );
-			$format    = $include_timezone_offset ? 'Y-m-d\TH:i:sP' : 'Y-m-d\TH:i:s';
-			return $date_time->format( $format );
-		} catch ( Exception $e ) {
-			throw new Exception( esc_html_x( 'Invalid date, time, or timezone format. Please use YYYY-MM-DD for date and HH:MM AM/PM for time.', 'Zoom', 'uncanny-automator' ) );
-		}
-	}
-
-	/**
 	 * Build meeting data array with common fields.
 	 *
 	 * @param string $topic
@@ -743,6 +715,7 @@ trait Zoom_Meeting_Trait {
 	 * @param string $timezone
 	 *
 	 * @return array
+	 * @throws Exception When the End date can't be parsed.
 	 */
 	protected function build_recurrence_data( $timezone ) {
 		$recurrence_type  = $this->get_parsed_meta_value( 'RECURRENCETYPE' );
@@ -777,13 +750,7 @@ trait Zoom_Meeting_Trait {
 
 		// Add end date or end times.
 		if ( ! empty( $end_date ) ) {
-			try {
-				$end_datetime                = new \DateTime( $end_date, new \DateTimeZone( $timezone ) );
-				$recurrence['end_date_time'] = $end_datetime->format( 'Y-m-d\TH:i:sP' );
-			} catch ( Exception $e ) {
-				// If end date is invalid, ignore it and continue without end date.
-				$recurrence['end_date_time'] = null;
-			}
+			$recurrence['end_date_time'] = $this->parse_end_datetime( $end_date, $timezone );
 		} elseif ( ! empty( $end_times ) ) {
 			$recurrence['end_times'] = (int) $end_times;
 		}

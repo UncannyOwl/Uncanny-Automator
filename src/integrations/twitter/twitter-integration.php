@@ -40,6 +40,10 @@ class Twitter_Integration extends App_Integration {
 
 		// Finalize setup via the parent class with the common config.
 		$this->setup_app_integration( self::get_config() );
+
+		$this->set_developer_name( 'X Corp' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

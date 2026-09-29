@@ -131,6 +131,11 @@ class UT_USER_IMPORTED_IN_GROUP extends \Uncanny_Automator\Recipe\Trigger {
 			return false;
 		}
 
+		// The imported user comes from the hook, not the request. A CSV import runs
+		// in the importing admin's session, or unattended, so get_current_user_id()
+		// is never the user being imported.
+		$this->set_user_id( $user_id );
+
 		$meta_value = Ut_Helpers::build_token_data( $csv_data, $csv_header, $key_location, $user_id );
 
 		if ( ! isset( $meta_value['learndash_group_ids'] ) || empty( $meta_value['learndash_group_ids'] ) ) {

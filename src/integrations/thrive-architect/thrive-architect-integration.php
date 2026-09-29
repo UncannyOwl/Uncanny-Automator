@@ -18,6 +18,11 @@ class Thrive_Architect_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'THRIVE_ARCHITECT' );
 		$this->set_name( 'Thrive Architect' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/thrive-architect-icon.svg' );
+
+		$this->set_plugin_file_path( 'thrive-visual-editor/thrive-visual-editor.php' );
+		$this->set_developer_name( 'Thrive Themes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

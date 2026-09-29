@@ -27,6 +27,11 @@ class Add_Mec_Integration {
 		$this->set_icon( 'modern-events-calendar-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'modern-events-calendar/mec.php' );
+
+		$this->set_plugin_variations( array( 'modern-events-calendar/modern-events-calendar.php' ) );
+		$this->set_developer_name( 'Webnus' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

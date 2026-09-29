@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace UncannyPageBuilder\Application;
 
+use UncannyPageBuilder\Domain\Exception\InvalidNavigationRequestException;
 use UncannyPageBuilder\Domain\Exception\NavigationMenuNotFoundException;
+use UncannyPageBuilder\Domain\Exception\StaleNavigationMenuException;
 use UncannyPageBuilder\Domain\Navigation\NavigationLocation;
 use UncannyPageBuilder\Domain\Navigation\NavigationMenu;
 use UncannyPageBuilder\Domain\Navigation\NavigationMenuItem;
@@ -59,7 +61,7 @@ final class NavigationMenuService
     {
         $trimmed = trim($name);
         if ($trimmed === '') {
-            throw new \InvalidArgumentException('name is required.');
+            throw new InvalidNavigationRequestException('name is required.');
         }
 
         return $this->repository->createMenu($trimmed)->toArray();
@@ -76,20 +78,30 @@ final class NavigationMenuService
      *   target?: string,
      *   classes?: string[]
      * } $input
-     * @return array{id: int, name: string, items: array<int, array<string, mixed>>}
+     * @return array{
+     *   menu: array{id: int, name: string, items: array<int, array<string, mixed>>},
+     *   item_id: int
+     * }
      */
     public function addItem(int $menuId, array $input): array
     {
         $menu = $this->requireMenu($menuId);
+        $parentId = max(0, (int) ($input['parent_id'] ?? 0));
 
         $item = $this->hydrateMenuItem(
             id: 0,
             input: $input,
             fallback: null,
-            position: count($menu->items()) + 1,
+            position: count($menu->childrenOf($parentId)) + 1,
         );
+        $this->assertValidParent($menu, $item->id(), $item->parentId());
 
-        return $this->repository->saveMenuItem($menuId, $item)->toArray();
+        $saved = $this->repository->saveMenuItem($menuId, $item);
+
+        return [
+            'menu' => $saved->menu()->toArray(),
+            'item_id' => $saved->itemId(),
+        ];
     }
 
     /**
@@ -108,23 +120,35 @@ final class NavigationMenuService
     public function updateItem(int $menuId, int $itemId, array $input): array
     {
         if ($itemId <= 0) {
-            throw new \InvalidArgumentException('item_id is required.');
+            throw new InvalidNavigationRequestException('item_id is required.');
         }
 
         $menu = $this->requireMenu($menuId);
         $existing = $menu->findItemById($itemId);
         if ($existing === null) {
-            throw new \InvalidArgumentException('item_id was not found in this menu.');
+            throw new InvalidNavigationRequestException('item_id was not found in this menu.');
         }
+
+        $parentId = max(0, (int) ($input['parent_id'] ?? $existing->parentId()));
+        // An item that changes parent becomes the last child of its new parent.
+        // Use move_item to place it at another sibling position.
+        $position = $parentId === $existing->parentId()
+            ? $existing->position()
+            : count($menu->childrenOf($parentId)) + 1;
 
         $item = $this->hydrateMenuItem(
             id: $itemId,
             input: $input,
             fallback: $existing,
-            position: $existing->position(),
+            position: $position,
         );
+        // An unchanged parent needs no check. It can be an item that readers
+        // do not see, such as a link to a trashed page.
+        if ($parentId !== $existing->parentId()) {
+            $this->assertValidParent($menu, $item->id(), $item->parentId());
+        }
 
-        return $this->repository->saveMenuItem($menuId, $item)->toArray();
+        return $this->repository->saveMenuItem($menuId, $item)->menu()->toArray();
     }
 
     /**
@@ -133,12 +157,15 @@ final class NavigationMenuService
     public function deleteItem(int $menuId, int $itemId): array
     {
         if ($itemId <= 0) {
-            throw new \InvalidArgumentException('item_id is required.');
+            throw new InvalidNavigationRequestException('item_id is required.');
         }
 
         $menu = $this->requireMenu($menuId);
         if ($menu->findItemById($itemId) === null) {
-            throw new \InvalidArgumentException('item_id was not found in this menu.');
+            throw new InvalidNavigationRequestException('item_id was not found in this menu.');
+        }
+        if ($menu->childrenOf($itemId) !== []) {
+            throw new InvalidNavigationRequestException('item_id has child items. Move or delete its children first.');
         }
 
         return $this->repository->deleteMenuItem($menuId, $itemId)->toArray();
@@ -147,31 +174,29 @@ final class NavigationMenuService
     /**
      * @return array{id: int, name: string, items: array<int, array<string, mixed>>}
      */
-    public function moveItem(int $menuId, int $itemId, int $parentId, int $position): array
-    {
+    public function moveItem(
+        int $menuId,
+        int $itemId,
+        int $parentId,
+        int $position,
+        ?array $expectedItemIds = null,
+    ): array {
         if ($itemId <= 0) {
-            throw new \InvalidArgumentException('item_id is required.');
+            throw new InvalidNavigationRequestException('item_id is required.');
         }
 
         $menu = $this->requireMenu($menuId);
+        $authorizedItemIds = $this->authorizedItemIds($menuId, $menu, $expectedItemIds);
         $item = $menu->findItemById($itemId);
         if ($item === null) {
-            throw new \InvalidArgumentException('item_id was not found in this menu.');
+            throw new InvalidNavigationRequestException('item_id was not found in this menu.');
         }
 
-        if ($parentId > 0) {
-            $parent = $menu->findItemById($parentId);
-            if ($parent === null) {
-                throw new \InvalidArgumentException('parent_id was not found in this menu.');
-            }
-            if ($parentId === $itemId || $this->isDescendantParent($menu, $itemId, $parentId)) {
-                throw new \InvalidArgumentException('parent_id cannot move an item into itself or its descendant.');
-            }
-        }
+        $this->assertValidParent($menu, $itemId, $parentId);
 
         $updatedItems = $this->reorderItems($menu, $itemId, $parentId, $position);
 
-        return $this->repository->saveMenuTree($menuId, $updatedItems)->toArray();
+        return $this->repository->saveMenuTree($menuId, $updatedItems, $authorizedItemIds)->toArray();
     }
 
     /**
@@ -189,12 +214,13 @@ final class NavigationMenuService
      * }> $items
      * @return array{id: int, name: string, items: array<int, array<string, mixed>>}
      */
-    public function replaceTree(int $menuId, array $items): array
+    public function replaceTree(int $menuId, array $items, ?array $expectedItemIds = null): array
     {
         $menu = $this->requireMenu($menuId);
+        $authorizedItemIds = $this->authorizedItemIds($menuId, $menu, $expectedItemIds);
         $prepared = $this->prepareTreeReplacementItems($menu, $items);
 
-        return $this->repository->saveMenuTree($menuId, $prepared)->toArray();
+        return $this->repository->saveMenuTree($menuId, $prepared, $authorizedItemIds)->toArray();
     }
 
     /**
@@ -204,15 +230,18 @@ final class NavigationMenuService
     {
         $slug = trim($locationSlug);
         if ($slug === '') {
-            throw new \InvalidArgumentException('location_slug is required.');
+            throw new InvalidNavigationRequestException('location_slug is required.');
         }
 
         $this->requireMenu($menuId);
         $location = $this->requireLocation($slug);
 
-        $this->repository->assignMenuToLocation($slug, $menuId);
+        $assignedMenuId = $this->repository->assignMenuToLocation($slug, $menuId);
+        if ($assignedMenuId !== $menuId) {
+            throw new \RuntimeException('The navigation location assignment did not persist as requested.');
+        }
 
-        $location['assigned_menu_id'] = $menuId;
+        $location['assigned_menu_id'] = $assignedMenuId;
 
         return $location;
     }
@@ -220,7 +249,7 @@ final class NavigationMenuService
     private function requireMenu(int $menuId): NavigationMenu
     {
         if ($menuId <= 0) {
-            throw new \InvalidArgumentException('menu_id is required.');
+            throw new InvalidNavigationRequestException('menu_id is required.');
         }
 
         $menu = $this->repository->findMenuById($menuId);
@@ -229,6 +258,46 @@ final class NavigationMenuService
         }
 
         return $menu;
+    }
+
+    /**
+     * @param int[]|null $expectedItemIds
+     * @return int[]
+     */
+    private function authorizedItemIds(
+        int $menuId,
+        NavigationMenu $menu,
+        ?array $expectedItemIds,
+    ): array {
+        $currentItemIds = $this->normalizedItemIds(array_map(
+            static fn (NavigationMenuItem $item): int => $item->id(),
+            $menu->items(),
+        ));
+        if ($expectedItemIds === null) {
+            return $currentItemIds;
+        }
+
+        $expectedItemIds = $this->normalizedItemIds($expectedItemIds);
+        if ($expectedItemIds !== $currentItemIds) {
+            throw new StaleNavigationMenuException($menuId);
+        }
+
+        return $expectedItemIds;
+    }
+
+    /**
+     * @param int[] $itemIds
+     * @return int[]
+     */
+    private function normalizedItemIds(array $itemIds): array
+    {
+        $itemIds = array_values(array_unique(array_filter(
+            array_map('intval', $itemIds),
+            static fn (int $itemId): bool => $itemId > 0,
+        )));
+        sort($itemIds, SORT_NUMERIC);
+
+        return $itemIds;
     }
 
     /**
@@ -242,7 +311,22 @@ final class NavigationMenuService
             }
         }
 
-        throw new \InvalidArgumentException('location_slug was not found.');
+        throw new InvalidNavigationRequestException('location_slug was not found.');
+    }
+
+    private function assertValidParent(NavigationMenu $menu, int $itemId, int $parentId): void
+    {
+        if ($parentId === 0) {
+            return;
+        }
+
+        if ($menu->findItemById($parentId) === null) {
+            throw new InvalidNavigationRequestException('parent_id was not found in this menu.');
+        }
+
+        if ($itemId > 0 && ($parentId === $itemId || $this->isDescendantParent($menu, $itemId, $parentId))) {
+            throw new InvalidNavigationRequestException('parent_id cannot move an item into itself or its descendant.');
+        }
     }
 
     /**
@@ -265,15 +349,24 @@ final class NavigationMenuService
         }
 
         $moved = $byId[$movedItemId];
+        foreach (array_keys($groups) as $parentId) {
+            usort($groups[$parentId], static function (NavigationMenuItem $left, NavigationMenuItem $right): int {
+                $position = $left->position() <=> $right->position();
+                if ($position !== 0) {
+                    return $position;
+                }
+
+                return $left->id() <=> $right->id();
+            });
+        }
+
         $groups[$newParentId] ??= [];
-        usort($groups[$newParentId], static fn (NavigationMenuItem $left, NavigationMenuItem $right): int => $left->position() <=> $right->position());
 
         $insertAt = max(0, min(count($groups[$newParentId]), $newPosition - 1));
         array_splice($groups[$newParentId], $insertAt, 0, [$this->copyItem($moved, parentId: $newParentId, position: 0)]);
 
         $updated = [];
         foreach ($groups as $parentId => $siblings) {
-            usort($siblings, static fn (NavigationMenuItem $left, NavigationMenuItem $right): int => $left->position() <=> $right->position());
             foreach (array_values($siblings) as $index => $sibling) {
                 $updated[] = $this->copyItem($sibling, parentId: (int) $parentId, position: $index + 1);
             }
@@ -302,7 +395,7 @@ final class NavigationMenuService
     private function prepareTreeReplacementItems(NavigationMenu $menu, array $items): array
     {
         if ($items === []) {
-            throw new \InvalidArgumentException('items is required for replace_tree.');
+            throw new InvalidNavigationRequestException('items is required for replace_tree.');
         }
 
         $existingById = [];
@@ -316,19 +409,19 @@ final class NavigationMenuService
 
         foreach ($items as $index => $itemInput) {
             if (!is_array($itemInput)) {
-                throw new \InvalidArgumentException('items must contain objects.');
+                throw new InvalidNavigationRequestException('items must contain objects.');
             }
 
             $itemId = (int) ($itemInput['item_id'] ?? 0);
             if ($existingMenuHasItems && $itemId <= 0) {
-                throw new \InvalidArgumentException('replace_tree requires explicit item_id values for existing menus.');
+                throw new InvalidNavigationRequestException('replace_tree requires explicit item_id values for existing menus.');
             }
             if ($itemId > 0) {
                 if (isset($seenIds[$itemId])) {
-                    throw new \InvalidArgumentException('replace_tree cannot repeat item_id values.');
+                    throw new InvalidNavigationRequestException('replace_tree cannot repeat item_id values.');
                 }
                 if (!isset($existingById[$itemId])) {
-                    throw new \InvalidArgumentException('replace_tree referenced an unknown item_id.');
+                    throw new InvalidNavigationRequestException('replace_tree referenced an unknown item_id.');
                 }
                 $seenIds[$itemId] = true;
             }
@@ -345,7 +438,7 @@ final class NavigationMenuService
         if ($existingMenuHasItems) {
             foreach (array_keys($existingById) as $existingId) {
                 if (!isset($seenIds[$existingId])) {
-                    throw new \InvalidArgumentException('replace_tree must include every existing item_id.');
+                    throw new InvalidNavigationRequestException('replace_tree must include every existing item_id.');
                 }
             }
         }
@@ -357,10 +450,10 @@ final class NavigationMenuService
             }
             $parent = $this->findPreparedItemById($prepared, $parentId);
             if ($parent === null) {
-                throw new \InvalidArgumentException('replace_tree referenced a missing parent_id.');
+                throw new InvalidNavigationRequestException('replace_tree referenced a missing parent_id.');
             }
             if ($parent->id() === $item->id() || $this->isPreparedDescendantParent($prepared, $item->id(), $parent->id())) {
-                throw new \InvalidArgumentException('replace_tree cannot move an item into itself or its descendant.');
+                throw new InvalidNavigationRequestException('replace_tree cannot move an item into itself or its descendant.');
             }
         }
 
@@ -413,8 +506,14 @@ final class NavigationMenuService
     private function isDescendantParent(NavigationMenu $menu, int $itemId, int $candidateParentId): bool
     {
         $queue = [$itemId];
+        $visited = [];
         while ($queue !== []) {
-            $current = array_shift($queue);
+            $current = (int) array_shift($queue);
+            if (isset($visited[$current])) {
+                continue;
+            }
+            $visited[$current] = true;
+
             foreach ($menu->childrenOf((int) $current) as $child) {
                 if ($child->id() === $candidateParentId) {
                     return true;
@@ -432,10 +531,16 @@ final class NavigationMenuService
     private function isPreparedDescendantParent(array $items, int $itemId, int $candidateParentId): bool
     {
         $queue = [$itemId];
+        $visited = [];
         while ($queue !== []) {
-            $current = array_shift($queue);
+            $current = (int) array_shift($queue);
+            if (isset($visited[$current])) {
+                continue;
+            }
+            $visited[$current] = true;
+
             foreach ($items as $item) {
-                if ($item->parentId() !== (int) $current) {
+                if ($item->parentId() !== $current) {
                     continue;
                 }
                 if ($item->id() === $candidateParentId) {
@@ -464,12 +569,13 @@ final class NavigationMenuService
     {
         $type = strtolower(trim((string) ($input['type'] ?? $fallback?->type() ?? '')));
         if (!in_array($type, ['custom', 'post_type', 'taxonomy'], true)) {
-            throw new \InvalidArgumentException('type must be custom, post_type, or taxonomy.');
+            throw new InvalidNavigationRequestException('type must be custom, post_type, or taxonomy.');
         }
 
         $label = trim((string) ($input['label'] ?? $fallback?->label() ?? ''));
-        if ($label === '') {
-            throw new \InvalidArgumentException('label is required.');
+        // A linked item without a label follows its linked object's title.
+        if ($label === '' && $type === 'custom') {
+            throw new InvalidNavigationRequestException('label is required.');
         }
 
         $objectType = trim((string) ($input['object_type'] ?? $fallback?->objectType() ?? ''));
@@ -478,16 +584,19 @@ final class NavigationMenuService
 
         if ($type === 'custom') {
             if (!$this->isValidCustomUrl($url)) {
-                throw new \InvalidArgumentException('url must be a valid custom link.');
+                throw new InvalidNavigationRequestException('url must be a valid custom link.');
             }
             $objectType = 'custom';
             $objectId = 0;
         } else {
             if ($objectType === '') {
-                throw new \InvalidArgumentException('object_type is required for non-custom items.');
+                throw new InvalidNavigationRequestException('object_type is required for non-custom items.');
             }
             if ($objectId <= 0) {
-                throw new \InvalidArgumentException('object_id is required for non-custom items.');
+                throw new InvalidNavigationRequestException('object_id is required for non-custom items.');
+            }
+            if (!$this->repository->isValidItemReference($type, $objectType, $objectId)) {
+                throw new InvalidNavigationRequestException('The referenced WordPress object was not found for this item type.');
             }
         }
 
@@ -506,6 +615,9 @@ final class NavigationMenuService
             position: $position,
             target: $target,
             classes: $classes,
+            description: $fallback?->description() ?? '',
+            titleAttribute: $fallback?->titleAttribute() ?? '',
+            xfn: $fallback?->xfn() ?? '',
         );
     }
 
@@ -522,6 +634,9 @@ final class NavigationMenuService
             position: $position,
             target: $item->target(),
             classes: $item->classes(),
+            description: $item->description(),
+            titleAttribute: $item->titleAttribute(),
+            xfn: $item->xfn(),
         );
     }
 

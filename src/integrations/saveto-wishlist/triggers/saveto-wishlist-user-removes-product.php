@@ -27,7 +27,7 @@ class SAVETO_WISHLIST_USER_REMOVES_PRODUCT extends Trigger {
 	public static function definition() {
 		return self::new_definition( 'USER_REMOVES_PRODUCT', 'SAVETO_WISHLIST' )
 			->trigger_meta( 'WISHLIST_PRODUCT' )
-			->hook( Removal_Dispatcher::HOOK, 10, 3 );
+			->hook( 'automator_saveto_wishlist_product_removed', 10, 3 );
 	}
 
 	/**

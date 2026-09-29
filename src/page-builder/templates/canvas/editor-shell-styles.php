@@ -118,6 +118,39 @@ defined('ABSPATH') || exit;
     }
 
     /*
+     * The rich-text action belongs beside its field, not stacked under it.
+     * The field grows and the compact button keeps its own width, aligned to
+     * the input's baseline rather than the label above it.
+     */
+    #uncanny-pb-tab-panel-root .upb-text-panel__field {
+        align-items: flex-end;
+        display: flex;
+        gap: 4px;
+    }
+
+    #uncanny-pb-tab-panel-root .upb-text-panel__field > *:first-child {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    #uncanny-pb-tab-panel-root .upb-text-panel__rich-edit {
+        flex: 0 0 auto;
+    }
+
+    /*
+     * The selector is supporting detail under the element name. Keep it to one
+     * line so a long authored class list cannot push the controls down; the
+     * complete reported symbol stays in the element's title attribute.
+     */
+    #uncanny-pb-tab-panel-root .upb-selected-target-code {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /*
      * Gutenberg hierarchy: PanelBody owns the visible heading while the
      * nested ToolsPanel keeps its native options and reset menu.
      */

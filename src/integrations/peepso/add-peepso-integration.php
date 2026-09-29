@@ -27,6 +27,10 @@ class Add_PeepSo_Integration {
 		$this->set_icon( 'peepso-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'peepso-core/peepso.php' );
+
+		$this->set_developer_name( 'PeepSo' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

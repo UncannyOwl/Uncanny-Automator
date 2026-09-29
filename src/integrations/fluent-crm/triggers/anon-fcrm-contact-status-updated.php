@@ -156,6 +156,11 @@ class ANON_FCRM_CONTACT_STATUS_UPDATED {
 
 		$user_id = $subscriber->user_id;
 
+		// FluentCRM links contacts to accounts by email: an administrator other than the logged-in user is never bound.
+		if ( ! automator_can_bind_user( $user_id ) ) {
+			$user_id = 0;
+		}
+
 		// Fluent CRM contact email.
 		$contact_email = '';
 

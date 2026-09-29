@@ -32,6 +32,10 @@ class Ld_Integration extends \Uncanny_Automator\Integration {
 		// Prevents fatal errors in Free 7.2 + Old Pro <7.2 scenario.
 		// Migrated code MUST use $this->item_helpers instead.
 		\Automator()->helpers->recipe->learndash = $this->helpers;
+
+		$this->set_developer_name( 'LearnDash' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

@@ -37,6 +37,11 @@ class Fluent_Boards_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'FLUENT_BOARDS' );
 		$this->set_name( 'FluentBoards' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/fluent-boards-icon.svg' );
+
+		$this->set_plugin_file_path( 'fluent-boards/fluent-boards.php' );
+		$this->set_developer_name( 'WPManageNinja' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

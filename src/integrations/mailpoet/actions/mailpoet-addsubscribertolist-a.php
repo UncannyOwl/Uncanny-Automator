@@ -258,9 +258,9 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	 */
 	public function subscribe_to_the_list( $email, $list_id, $options, $user_id, $action_data, $recipe_id ) {
 		try {
-			$list_id             = maybe_unserialize( $list_id );
-			$options             = maybe_unserialize( $options );
-			$action_data         = maybe_unserialize( $action_data );
+			$list_id             = automator_safe_unserialize( $list_id );
+			$options             = automator_safe_unserialize( $options );
+			$action_data         = automator_safe_unserialize( $action_data );
 			$mailpoet            = \MailPoet\API\API::MP( 'v1' );
 			$existing_subscriber = $mailpoet->getSubscriber( $email );
 			$r                   = $mailpoet->subscribeToLists( $existing_subscriber['id'], $list_id, $options );

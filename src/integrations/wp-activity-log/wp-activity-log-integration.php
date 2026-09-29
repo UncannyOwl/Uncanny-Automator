@@ -19,6 +19,11 @@ class Wp_Activity_Log_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'WP_ACTIVITY_LOG' );
 		$this->set_name( 'WP Activity Log' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/wp-activity-log-icon.svg' );
+
+		$this->set_plugin_file_path( 'wp-security-audit-log/wp-security-audit-log.php' );
+		$this->set_developer_name( 'Melapress' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

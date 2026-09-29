@@ -36,10 +36,6 @@ enum ErrorMessage
 
     // Proposal
     case ProposalMalformed;
-    case EditableKeyNotFound;
-    case EditableTypeMismatch;
-    case EditableDuplicateKey;
-    case EditableHasNestedMarkup;
     case BindingContractUpdateInvalid;
     case BindingTargetIdRequired;
     case BindingIdRequired;
@@ -51,11 +47,8 @@ enum ErrorMessage
     // Validation
     case ValidationMultipleRoots;
     case ValidationForbiddenTag;
-    case ValidationEditableDuplicate;
-    case ValidationEditableInvalidType;
     case ValidationDynamicInvalid;
     case ValidationBindKeyInvalid;
-    case ValidationPreservedKeyMissing;
     case ValidationManifestInvalid;
 
     // Layout
@@ -91,6 +84,10 @@ enum ErrorMessage
     case ControlNotInvokable;
     case ControlInvokeForbidden;
     case ControlInvalidRequest;
+    case EditableContentTargetChanged;
+    case RichTextBlockInvalid;
+    case EditableContentUnsafe;
+    case EditableContentBindingOwned;
     case ControlInvokeFailed;
     case WriteResultUncertain;
 
@@ -126,9 +123,6 @@ enum ErrorMessage
     case AgentMissingUpdates;
     case AgentNoPatches;
     case AgentPatchFailed;
-    case AgentEditableNotFound;
-    case AgentInvalidEditableKey;
-    case AgentInvalidUpdate;
     case AgentMissingBindingId;
     case AgentInvalidChangeType;
     case AgentBindingNotFound;
@@ -160,10 +154,6 @@ enum ErrorMessage
         'GlobalPartEditForbidden'    => ['You do not have permission to edit this reusable.', 403],
         'BindingTargetForbidden'     => ['You do not have permission to edit this binding target.', 403],
         'ProposalMalformed'          => ["We couldn't apply that edit because some information was missing. Refresh the editor and try again.", 400],
-        'EditableKeyNotFound'        => ['This content changed before your edit could be applied. Refresh the editor and try again.', 422],
-        'EditableTypeMismatch'       => ["This content can no longer accept that kind of edit. Refresh the editor, reselect it, and try again.", 422],
-        'EditableDuplicateKey'       => ["We couldn't identify the exact content to change. Ask Uncanny Agent to rebuild the section, then try again.", 422],
-        'EditableHasNestedMarkup'    => ["This content is too complex for a direct text edit. Ask Uncanny Agent to update the section instead.", 422],
         'BindingContractUpdateInvalid' => ["We couldn't update this dynamic content. Refresh the editor and try again.", 422],
         'BindingTargetIdRequired'    => ['target_id is required.', 400],
         'BindingIdRequired'          => ['binding_id is required.', 400],
@@ -173,11 +163,8 @@ enum ErrorMessage
         'BindingTargetNotFound'      => ['That dynamic content no longer exists. Refresh the editor to see the latest version.', 404],
         'ValidationMultipleRoots'    => ["We couldn't save this section because its structure isn't supported. Undo the latest change or ask Uncanny Agent to rebuild it.", 422],
         'ValidationForbiddenTag'     => ["We couldn't save this section because it contains code that isn't allowed. Remove the latest custom code and try again.", 422],
-        'ValidationEditableDuplicate' => ["We couldn't save this section because two editable areas have the same identity. Ask Uncanny Agent to rebuild the section.", 422],
-        'ValidationEditableInvalidType' => ["We couldn't save this section because one editable area uses an unsupported content type. Ask Uncanny Agent to rebuild it.", 422],
         'ValidationDynamicInvalid'   => ["We couldn't save this section because its dynamic content isn't supported. Review the latest change and try again.", 422],
         'ValidationBindKeyInvalid'   => ["We couldn't save this section because one dynamic field isn't supported. Review the latest change and try again.", 422],
-        'ValidationPreservedKeyMissing' => ['This section changed in an unexpected way. Refresh the editor and try your edit again.', 422],
         'ValidationManifestInvalid'  => ["We couldn't prepare this section for editing. Ask Uncanny Agent to rebuild it and try again.", 422],
         'LayoutParamsRequired'       => ["We couldn't build this page because some required content is missing. Refresh the editor and try again.", 400],
         'NotEnginePage'              => ["This page isn't managed by Uncanny Page Builder. Return to Pages and choose a Page Builder page.", 404],
@@ -203,6 +190,10 @@ enum ErrorMessage
         'ControlNotInvokable'        => ["That action isn't available right now. Refresh the editor and try again.", 400],
         'ControlInvokeForbidden'     => ["You don't have permission to make this change. Ask a site administrator for access.", 403],
         'ControlInvalidRequest'      => ["We couldn't complete that action because some information was missing or invalid. Refresh the editor and try again.", 400],
+        'EditableContentTargetChanged' => ['This content changed since you selected it. Select it again, then save.', 400],
+        'RichTextBlockInvalid'       => ['This block format cannot hold the selected content. Choose a compatible block format and try again.', 400],
+        'EditableContentUnsafe'     => ['This content contains unsupported HTML or an unsafe link. Remove it, then save again.', 400],
+        'EditableContentBindingOwned' => ['This content comes from a dynamic binding. Edit the binding to change it.', 400],
         'ControlInvokeFailed'        => ["We couldn't complete that action. Try again. If it keeps happening, ask your site administrator for help.", 500],
         'WriteResultUncertain'       => ["We couldn't confirm whether that change was saved. Reload the editor before you make another change.", 500],
         'PublicationStaticSafetyFailed' => ["One of this page's sections contains something we cannot publish safely. Review your latest changes, then try again.", 422],
@@ -228,9 +219,6 @@ enum ErrorMessage
         'AgentMissingUpdates'        => ['updates must be a non-empty array.', 400],
         'AgentNoPatches'             => ['At least one patch or css_rule is required.', 400],
         'AgentPatchFailed'           => ['A string patch could not be applied.', 422],
-        'AgentEditableNotFound'      => ['The specified editable was not found in the section.', 422],
-        'AgentInvalidEditableKey'    => ['An editable key contains invalid characters.', 422],
-        'AgentInvalidUpdate'         => ['An editable update is invalid.', 422],
         'AgentMissingBindingId'      => ['binding_id is required.', 400],
         'AgentInvalidChangeType'     => ["change_type must be 'query' or 'template'.", 400],
         'AgentBindingNotFound'       => ['Specified binding not found.', 404],

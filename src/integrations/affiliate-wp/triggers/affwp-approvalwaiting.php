@@ -61,7 +61,7 @@ class AFFWP_APPROVALWAITING {
 	 */
 	public function affwp_approval_awaiting( $affiliate_id, $status, $args ) {
 
-		$affwp_settings = maybe_unserialize( get_option( 'affwp_settings', 0 ) );
+		$affwp_settings = automator_safe_unserialize( get_option( 'affwp_settings', 0 ) );
 
 		if ( 0 === (int) $affwp_settings['require_approval'] || $status != 'pending' ) {
 			return $status;

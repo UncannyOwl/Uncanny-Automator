@@ -127,6 +127,11 @@ class UOG_REGISTERED_WITH_GROUPKEY extends \Uncanny_Automator\Recipe\Trigger {
 			return false;
 		}
 
+		// The subject user comes from the hook, not the request. A key redeemed
+		// during registration creates the user without signing them in, so
+		// get_current_user_id() is still 0 at this point.
+		$this->set_user_id( $user_id );
+
 		if ( is_array( $code ) && 'success' !== $code['result'] ) {
 			return false;
 		}

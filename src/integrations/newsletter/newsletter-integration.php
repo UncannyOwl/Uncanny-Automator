@@ -20,6 +20,11 @@ class Newsletter_Integration extends Integration {
 		$this->set_integration( 'NEWSLETTER' );
 		$this->set_name( 'Newsletter' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/newsletter-icon.svg' );
+
+		$this->set_plugin_file_path( 'newsletter/plugin.php' );
+		$this->set_developer_name( 'The Newsletter Plugin' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

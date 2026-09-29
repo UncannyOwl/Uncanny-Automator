@@ -27,6 +27,10 @@ class Add_Cf7_Integration {
 		$this->set_icon( 'contact-form-7-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'contact-form-7/wp-contact-form-7.php' );
+
+		$this->set_developer_name( 'Takayuki Miyoshi' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

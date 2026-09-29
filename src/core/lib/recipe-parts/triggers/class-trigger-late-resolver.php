@@ -109,7 +109,7 @@ class Trigger_Late_Resolver {
 		}
 
 		$integration = isset( $entry['integration'] ) ? (string) $entry['integration'] : '';
-		$helpers     = Integration::helpers_for( $integration );
+		$helpers     = Integration::helpers_for( $integration, $fqcn );
 		$deps        = null !== $helpers ? array( $helpers ) : array();
 
 		try {

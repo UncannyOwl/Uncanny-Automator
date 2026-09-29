@@ -48,6 +48,11 @@ class Wp_Integration extends \Uncanny_Automator\Integration {
 
 		// @deprecated 7.2 — Singleton shim for old Pro (54 calls to Automator()->helpers->recipe->wp).
 		\Automator()->helpers->recipe->wp = $this->helpers;
+
+		$this->set_plugin_file_path( 'wordpress_core' );
+		$this->set_developer_name( 'WordPress' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

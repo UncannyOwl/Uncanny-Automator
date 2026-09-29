@@ -3,7 +3,10 @@ declare(strict_types=1);
 namespace Uncanny_Automator\App\Transports\Model_Context_Protocol;
 
 use Uncanny_Automator\App\Application\Mcp\Mcp_Client;
+use Uncanny_Automator\App\Feature_State\Application\Can_Refresh_Frontend_Allocation;
 use Uncanny_Automator\App\Feature_State\Infrastructure\Mcp_Allocation_Facts_Refresh;
+use Uncanny_Automator\App\Feature_State\Infrastructure\Feature_State_Report;
+use Uncanny_Automator\App\Feature_State\Infrastructure\WP_Frontend_Feature_Request_Adapter;
 use Uncanny_Automator\App\Infrastructure\License\License_Manager;
 use Uncanny_Automator\App\Plan\Services\License\License_Service;
 use Uncanny_Automator\App\Transports\Model_Context_Protocol\Authentication\Key_Binding_Challenge_Controller;
@@ -115,6 +118,7 @@ class Mcp_Bootstrap {
 	 * @return void
 	 */
 	public function init() {
+		( new Feature_State_Report() )->register();
 		$this->allocation_facts_refresh = null;
 
 		// Allocation warming is optional presentation infrastructure. A malformed
@@ -126,7 +130,8 @@ class Mcp_Bootstrap {
 			if ( $licenses instanceof License_Manager ) {
 				$this->allocation_facts_refresh = new Mcp_Allocation_Facts_Refresh(
 					$licenses,
-					Mcp_Client::get_inference_url()
+					Mcp_Client::get_inference_url(),
+					new Can_Refresh_Frontend_Allocation( new WP_Frontend_Feature_Request_Adapter() )
 				);
 				$this->allocation_facts_refresh->register();
 			}

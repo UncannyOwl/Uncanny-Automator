@@ -8,6 +8,8 @@ use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Api\PermissionChecker;
 use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 use UncannyPageBuilder\Domain\ErrorMessage;
+use UncannyPageBuilder\Infrastructure\WordPress\ServerPathRedaction;
+use UncannyPageBuilder\Infrastructure\WordPress\WordPressSlashing;
 
 final class MediaController
 {
@@ -41,6 +43,9 @@ final class MediaController
 
     public function upload(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        $uploadStarted = false;
+        $uploadedFile = '';
+
         // Terminal boundary: no Throwable may escape the REST callback.
         try {
             $imageData = $request->get_param('image_data');
@@ -87,15 +92,33 @@ final class MediaController
             }
 
             // Write bytes to the uploads directory.
-            $upload = wp_upload_bits($validatedFile['filename'], null, $bytes);
+            $uploadStarted = true;
+            $fileWriteReached = true;
+            $upload = $this->uploadBitsWithCapturedFile(
+                $validatedFile['filename'],
+                $bytes,
+                $uploadedFile,
+                $fileWriteReached,
+            );
 
             if (!empty($upload['error'])) {
+                // Core applies wp_handle_upload only after it writes the file.
+                // When the capture filter never ran, no file was written.
+                if ($fileWriteReached && ($uploadedFile === '' || !$this->cleanupFailedUpload(0, $uploadedFile))) {
+                    return $this->mediaCleanupFailure(0, 'file_upload');
+                }
+
                 return ApiResponse::error(ErrorMessage::MediaUploadFailed, [
-                    'detail' => $upload['error'],
+                    'detail' => $this->uploadErrorDetail($upload['error']),
                 ]);
             }
 
             $attachmentId = 0;
+            $requestedAlt = sanitize_text_field($request->get_param('alt') ?? '');
+            $storedAlt = '';
+            $altVerified = false;
+            $warnings = [];
+            $generatedMetadata = [];
 
             try {
                 // Create the attachment post.
@@ -128,6 +151,9 @@ final class MediaController
                 }
 
                 $attachmentId = (int) $insertedAttachment;
+                if (!$this->attachmentOwnsFile($attachmentId, (string) $upload['file'])) {
+                    return $this->mediaCleanupFailure($attachmentId, 'attachment_verification');
+                }
 
                 // Generate thumbnails and image metadata.
                 require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -151,6 +177,7 @@ final class MediaController
                         'WordPress did not return valid attachment metadata.',
                     );
                 }
+                $generatedMetadata = $metadata;
 
                 $metadataUpdated = wp_update_attachment_metadata($attachmentId, $metadata);
                 $persistedMetadata = $metadataUpdated === false
@@ -160,7 +187,7 @@ final class MediaController
                 // WordPress persists image metadata while generating each sub-size.
                 // A final identical update returns false, which is a valid no-op.
                 if (!is_array($persistedMetadata) || $persistedMetadata === []) {
-                    if (!$this->cleanupFailedUpload($attachmentId, $upload['file'])) {
+                    if (!$this->cleanupFailedUpload($attachmentId, $upload['file'], $generatedMetadata)) {
                         return $this->mediaCleanupFailure($attachmentId, 'metadata_persistence');
                     }
 
@@ -170,14 +197,47 @@ final class MediaController
                     );
                 }
 
-                // Set alt text.
-                $alt = sanitize_text_field($request->get_param('alt') ?? '');
-                if ($alt !== '') {
-                    update_post_meta($attachmentId, '_wp_attachment_alt_text', $alt);
+                if ($requestedAlt !== '') {
+                    try {
+                        update_post_meta(
+                            $attachmentId,
+                            '_wp_attachment_alt_text',
+                            WordPressSlashing::slash($requestedAlt),
+                        );
+                    } catch (\Throwable $failure) {
+                        $this->recordFailure('media upload', $attachmentId, 'attachment.alt_write', $failure);
+                    }
+                }
+
+                try {
+                    $persistedAlt = get_post_meta($attachmentId, '_wp_attachment_alt_text', true);
+                    $storedAlt = is_scalar($persistedAlt) ? (string) $persistedAlt : '';
+                    $altVerified = true;
+                } catch (\Throwable $failure) {
+                    $this->recordFailure('media upload', $attachmentId, 'attachment.alt_read', $failure);
+                }
+
+                if (!$altVerified) {
+                    $warnings[] = 'Stored alt text could not be verified. Read the attachment before relying on ALT.';
+                } elseif ($requestedAlt !== '' && $storedAlt !== $requestedAlt) {
+                    $warnings[] = 'Requested alt text was not saved. The ALT field reports the current stored value.';
                 }
             } catch (\Throwable $exception) {
-                $cleanupComplete = $this->cleanupFailedUpload($attachmentId, $upload['file']);
                 $this->recordFailure('media upload', $attachmentId, 'attachment.unexpected', $exception);
+
+                // WordPress can persist the attachment and its file metadata
+                // before a third-party attachment hook interrupts the return.
+                // Without the returned ID, deleting the file can break that
+                // retained Media Library row.
+                if ($attachmentId <= 0) {
+                    return $this->mediaCleanupFailure(0, 'attachment_insert');
+                }
+
+                $cleanupComplete = $this->cleanupFailedUpload(
+                    $attachmentId,
+                    $upload['file'],
+                    $generatedMetadata,
+                );
 
                 if (!$cleanupComplete) {
                     return $this->mediaCleanupFailure($attachmentId, 'unexpected_exception');
@@ -192,14 +252,112 @@ final class MediaController
             return ApiResponse::created([
                 'attachment_id' => $attachmentId,
                 'url'           => $upload['url'],
-                'alt'           => $alt,
+                'alt'           => $storedAlt,
+                'requested_alt' => $requestedAlt,
+                'warnings'      => $warnings,
             ])->toResponse();
         } catch (\Throwable $failure) {
             $this->recordFailure('media upload', 0, 'upload.unexpected', $failure);
+
+            if ($uploadStarted) {
+                if ($uploadedFile !== '' && $this->cleanupFailedUpload(0, $uploadedFile)) {
+                    return ApiResponse::error(ErrorMessage::MediaUploadFailed, [
+                        'failure_stage' => 'file_upload',
+                    ]);
+                }
+
+                return $this->mediaCleanupFailure(0, 'file_upload');
+            }
+
             return ApiResponse::error(ErrorMessage::MediaUploadFailed, [
                 'failure_stage' => 'unexpected_exception',
             ]);
         }
+    }
+
+    private function uploadBitsWithCapturedFile(
+        string $filename,
+        string $bytes,
+        string &$capturedFile,
+        bool &$fileWriteReached,
+    ): array {
+        if (!function_exists('add_filter') || !function_exists('remove_filter')) {
+            // Without the capture filter, a written file cannot be ruled out.
+            $fileWriteReached = true;
+
+            return wp_upload_bits($filename, null, $bytes);
+        }
+
+        $fileWriteReached = false;
+        $captureActive = true;
+        $captureFile = static function ($upload = null) use (&$captureActive, &$capturedFile, &$fileWriteReached) {
+            if ($captureActive) {
+                $fileWriteReached = true;
+            }
+            try {
+                if (
+                    $captureActive
+                    && is_array($upload)
+                    && is_string($upload['file'] ?? null)
+                    && $upload['file'] !== ''
+                ) {
+                    $capturedFile = $upload['file'];
+                }
+            } catch (\Throwable) {
+                // A hostile filter value must pass through unchanged.
+            }
+
+            return $upload;
+        };
+
+        add_filter('wp_handle_upload', $captureFile, PHP_INT_MIN);
+
+        try {
+            return wp_upload_bits($filename, null, $bytes);
+        } finally {
+            // A failed filter removal must not leave this request-scoped
+            // callback active for a later upload in the same process.
+            $captureActive = false;
+
+            try {
+                remove_filter('wp_handle_upload', $captureFile, PHP_INT_MIN);
+            } catch (\Throwable) {
+                // Cleanup still uses the captured path at the REST boundary.
+            }
+        }
+    }
+
+    private function attachmentOwnsFile(int $attachmentId, string $file): bool
+    {
+        if (!function_exists('get_attached_file')) {
+            return false;
+        }
+
+        try {
+            $post = get_post($attachmentId);
+            $attachedFile = get_attached_file($attachmentId, true);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('media upload', $attachmentId, 'attachment.verification', $failure);
+
+            return false;
+        }
+
+        if (!is_object($post) || (string) ($post->post_type ?? '') !== 'attachment' || !is_string($attachedFile)) {
+            return false;
+        }
+
+        $expected = rtrim(str_replace('\\', '/', $file), '/');
+        $stored = rtrim(str_replace('\\', '/', $attachedFile), '/');
+        if ($expected === $stored) {
+            return true;
+        }
+
+        $expectedRealPath = realpath($file);
+        $storedRealPath = realpath($attachedFile);
+
+        return is_string($expectedRealPath)
+            && is_string($storedRealPath)
+            && $expectedRealPath === $storedRealPath;
     }
 
     private function recordFailure(string $scope, int $ownerId, string $step, \Throwable $failure): void
@@ -233,6 +391,17 @@ final class MediaController
         return ApiResponse::error(ErrorMessage::MediaAttachmentFailed, $extra);
     }
 
+    /**
+     * WordPress upload errors can name the absolute server path of the file.
+     * Keep the reason and remove the path. A filter can also return WP_Error.
+     */
+    private function uploadErrorDetail(mixed $error): string
+    {
+        $message = is_wp_error($error) ? $error->get_error_message() : $error;
+
+        return ServerPathRedaction::redact(is_scalar($message) ? (string) $message : 'unknown');
+    }
+
     private function mediaCleanupFailure(int $attachmentId, string $originalFailureStage): \WP_Error
     {
         $extra = [
@@ -255,8 +424,24 @@ final class MediaController
      * attachment exists WordPress owns all derived image files, so its delete
      * API is the only safe cleanup. Before that point only the uploaded file
      * exists and can be removed directly through WordPress' file hook.
+     *
+     * @param array<string, mixed> $generatedMetadata
      */
-    private function cleanupFailedUpload(int $attachmentId, string $file): bool
+    private function cleanupFailedUpload(int $attachmentId, string $file, array $generatedMetadata = []): bool
+    {
+        try {
+            return $this->performFailedUploadCleanup($attachmentId, $file, $generatedMetadata);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('media upload', $attachmentId, 'cleanup.unexpected', $failure);
+
+            return false;
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $generatedMetadata
+     */
+    private function performFailedUploadCleanup(int $attachmentId, string $file, array $generatedMetadata): bool
     {
         if ($attachmentId > 0) {
             if (!function_exists('wp_delete_attachment')) {
@@ -270,6 +455,8 @@ final class MediaController
                 return false;
             }
 
+            $inventory = $this->knownAttachmentFiles($attachmentId, $file, $generatedMetadata);
+
             try {
                 $deleted = wp_delete_attachment($attachmentId, true);
             } catch (\Throwable $failure) {
@@ -278,8 +465,20 @@ final class MediaController
                 return false;
             }
 
-            if ($deleted !== false && !is_wp_error($deleted)) {
-                return true;
+            try {
+                if (
+                    $deleted !== false
+                    && !is_wp_error($deleted)
+                    && get_post($attachmentId) === null
+                    && $inventory['complete']
+                    && $this->filesAreAbsent($inventory['files'])
+                ) {
+                    return true;
+                }
+            } catch (\Throwable $failure) {
+                $this->recordFailure('media upload', $attachmentId, 'attachment.cleanup_verification', $failure);
+
+                return false;
             }
 
             $this->recordFailure(
@@ -294,12 +493,125 @@ final class MediaController
             return false;
         }
 
-        if ($file !== '' && function_exists('wp_delete_file')) {
-            try {
-                wp_delete_file($file);
-            } catch (\Throwable $failure) {
-                $this->recordFailure('media upload', 0, 'file.cleanup', $failure);
+        if ($file === '' || !function_exists('wp_delete_file')) {
+            $this->recordFailure(
+                'media upload',
+                0,
+                'file.cleanup',
+                new \RuntimeException('WordPress file cleanup is unavailable.'),
+            );
 
+            return false;
+        }
+
+        try {
+            wp_delete_file($file);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('media upload', 0, 'file.cleanup', $failure);
+
+            return false;
+        }
+
+        try {
+            $fileStillExists = file_exists($file);
+        } catch (\Throwable $failure) {
+            $this->recordFailure('media upload', 0, 'file.cleanup_verification', $failure);
+
+            return false;
+        }
+
+        if ($fileStillExists) {
+            $this->recordFailure(
+                'media upload',
+                0,
+                'file.cleanup',
+                new \RuntimeException('WordPress could not remove the uploaded file.'),
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array<string, mixed> $generatedMetadata
+     * @return array{files: list<string>, complete: bool}
+     */
+    private function knownAttachmentFiles(int $attachmentId, string $file, array $generatedMetadata): array
+    {
+        $known = $file !== '' ? [$file] : [];
+        $metadataSets = [];
+        $complete = true;
+        if ($generatedMetadata !== []) {
+            $metadataSets[] = $generatedMetadata;
+        }
+
+        try {
+            $persistedMetadata = wp_get_attachment_metadata($attachmentId, true);
+            if (is_array($persistedMetadata)) {
+                $metadataSets[] = $persistedMetadata;
+            }
+        } catch (\Throwable $failure) {
+            $complete = false;
+            $this->recordFailure('media upload', $attachmentId, 'attachment.cleanup_inventory', $failure);
+        }
+
+        try {
+            $backupSizes = get_post_meta($attachmentId, '_wp_attachment_backup_sizes', true);
+            if (is_array($backupSizes)) {
+                $metadataSets[] = $backupSizes;
+            }
+        } catch (\Throwable $failure) {
+            $complete = false;
+            $this->recordFailure('media upload', $attachmentId, 'attachment.cleanup_inventory', $failure);
+        }
+
+        $directory = dirname($file);
+        foreach ($metadataSets as $metadata) {
+            $this->appendMetadataFiles($metadata, $directory, $known);
+        }
+
+        return [
+            'files' => array_values(array_unique($known)),
+            'complete' => $complete,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $metadata
+     * @param list<string> $known
+     */
+    private function appendMetadataFiles(array $metadata, string $directory, array &$known): void
+    {
+        foreach ($metadata as $key => $value) {
+            if (
+                is_string($value)
+                && in_array((string) $key, [
+                    'file',
+                    'original_image',
+                    'thumb',
+                    'source_image',
+                    'animated_video',
+                    'animated_video_poster',
+                ], true)
+                && trim($value) !== ''
+            ) {
+                $known[] = rtrim($directory, '/\\') . DIRECTORY_SEPARATOR . basename($value);
+                continue;
+            }
+
+            if (is_array($value)) {
+                $this->appendMetadataFiles($value, $directory, $known);
+            }
+        }
+    }
+
+    /** @param list<string> $files */
+    private function filesAreAbsent(array $files): bool
+    {
+        foreach ($files as $file) {
+            if ($file !== '' && file_exists($file)) {
                 return false;
             }
         }

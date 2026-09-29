@@ -610,7 +610,7 @@ class Edd_Tokens {
 					)
 				);
 
-				$value = maybe_unserialize( $entry );
+				$value = automator_safe_unserialize( $entry );
 
 				// Format if its a numeric value.
 				if ( is_numeric( $value ) && in_array(

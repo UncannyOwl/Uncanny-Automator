@@ -164,7 +164,7 @@ class Fcrm_Tokens {
 
 					if ( 'FCRMLIST' === $trigger_meta ) {
 						// ids added to subscriber during trigger
-						$list_ids = maybe_unserialize( $entry );
+						$list_ids = automator_safe_unserialize( $entry );
 
 						if ( is_array( $list_ids ) ) {
 							$list_names = array();
@@ -194,7 +194,7 @@ class Fcrm_Tokens {
 					if ( 'FCRMTAG' === $trigger_meta ) {
 
 						// ids added to subscriber during trigger
-						$tag_ids = maybe_unserialize( $entry );
+						$tag_ids = automator_safe_unserialize( $entry );
 
 						if ( is_array( $tag_ids ) ) {
 							$tag_names = array();

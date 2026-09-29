@@ -105,6 +105,11 @@ class UC_CODESSUFFIX extends \Uncanny_Automator\Recipe\Trigger {
 			return false;
 		}
 
+		// The redeeming user comes from the hook, not the request. Registration
+		// flows (Gravity Forms, the Codes registration form) redeem a code for a
+		// user who is not logged in yet, so get_current_user_id() is still 0 here.
+		$this->set_user_id( $user_id );
+
 		$selected_suffix = $trigger['meta'][ $this->get_trigger_meta() . '_readable' ] ?? '';
 
 		$suffix = $this->get_suffix_by_coupon( $coupon_id );

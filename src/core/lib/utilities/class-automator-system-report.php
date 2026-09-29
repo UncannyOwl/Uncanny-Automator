@@ -706,7 +706,7 @@ class Automator_System_Report {
 			'recipe_logs_count'    => Automator()->get->recipe_log_count(),
 			'not_completed_status' => Automator()->get->recipe_log_count( false ),
 			'credits_left'         => $credits,
-			'credit_recipes'       => count( Automator()->get->fetch_recipe_with_apps() ),
+			'credit_recipes'       => Automator()->get->count_recipes_with_apps(),
 		);
 	}
 }

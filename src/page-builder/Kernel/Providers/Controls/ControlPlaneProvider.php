@@ -25,7 +25,6 @@ use UncannyPageBuilder\Application\Controls\Handlers\PageResumeDraftHandler;
 use UncannyPageBuilder\Application\Controls\Handlers\PageStatusHandler;
 use UncannyPageBuilder\Application\Controls\Handlers\PageTitleHandler;
 use UncannyPageBuilder\Application\Controls\Handlers\SectionDeleteHandler;
-use UncannyPageBuilder\Application\Controls\Handlers\SectionEditableUpdateHandler;
 use UncannyPageBuilder\Application\Controls\Handlers\SectionNodeUpdateHandler;
 use UncannyPageBuilder\Application\Controls\Handlers\SectionReorderHandler;
 use UncannyPageBuilder\Application\Controls\Handlers\SectionRewriteSourceHandler;
@@ -40,8 +39,6 @@ use UncannyPageBuilder\Application\DesignStyles\InlineTypographyMigrator;
 use UncannyPageBuilder\Application\DesignStyles\WorkingDesignTokenCssRendererInterface;
 use UncannyPageBuilder\Application\Concurrency\PageSourceMutation;
 use UncannyPageBuilder\Application\Editor\RestorePublishedSourceToWorkingDraft;
-use UncannyPageBuilder\Application\Editing\EditableUpdateService;
-use UncannyPageBuilder\Application\Editing\GlobalPartEditableUpdateService;
 use UncannyPageBuilder\Application\Editing\GlobalPartNodeUpdateService;
 use UncannyPageBuilder\Application\Editing\SectionNodeHtmlMutator;
 use UncannyPageBuilder\Application\Editing\SectionNodeUpdateService;
@@ -73,7 +70,6 @@ use UncannyPageBuilder\Infrastructure\i18\strings\DeleteConfirmationModalPresent
 use UncannyPageBuilder\Infrastructure\i18\strings\CanvasSectionActionControlStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\CanvasVisibleControlStrings;
 use UncannyPageBuilder\Infrastructure\i18\strings\GlobalPartModalPresentationStrings;
-use UncannyPageBuilder\Infrastructure\i18\strings\InlineEditingPresentationStrings;
 use UncannyPageBuilder\Kernel\Container;
 use UncannyPageBuilder\Kernel\Contracts\ServiceProviderInterface;
 
@@ -158,12 +154,6 @@ final class ControlPlaneProvider implements ServiceProviderInterface
                 $c->typed(PageSourceArchiveArtifactStoreInterface::class),
             );
         });
-        $container->factory(SectionEditableUpdateHandler::class, static function (Container $c): SectionEditableUpdateHandler {
-            return new SectionEditableUpdateHandler(
-                $c->typed(EditableUpdateService::class),
-                $c->typed(GlobalPartEditableUpdateService::class),
-            );
-        });
         $container->factory(SectionNodeUpdateService::class, static function (Container $c): SectionNodeUpdateService {
             return new SectionNodeUpdateService(
                 $c->typed(SectionService::class),
@@ -235,7 +225,6 @@ final class ControlPlaneProvider implements ServiceProviderInterface
                 $c->typed(PageSourceMutation::class),
                 $c->typed(RestorePublishedSourceToWorkingDraft::class),
                 $c->typed(DesignStyleCommitHandler::class),
-                $c->typed(SectionEditableUpdateHandler::class),
                 $c->typed(SectionNodeUpdateHandler::class),
                 $c->typed(SectionRewriteSourceHandler::class),
                 $c->typed(SectionService::class),
@@ -325,7 +314,6 @@ final class ControlPlaneProvider implements ServiceProviderInterface
     {
         $resolver = CommandBarControlStateResolver::class;
         $sectionResolver = SectionActionControlStateResolver::class;
-        $inlineEditingPresentationStrings = new InlineEditingPresentationStrings();
         $globalPartModalPresentationStrings = new GlobalPartModalPresentationStrings();
         $deleteConfirmationModalPresentationStrings = new DeleteConfirmationModalPresentationStrings();
         $canvasVisibleControlStrings = new CanvasVisibleControlStrings();
@@ -364,20 +352,6 @@ final class ControlPlaneProvider implements ServiceProviderInterface
             ],
             'local'          => true,
             'state_resolver' => $resolver,
-        ]);
-
-        // Order 5: section.editable.update - Apply an inline editable update to section HTML.
-        $sectionEditableUpdate = ControlDefinition::make([
-            'id'             => 'section.editable.update',
-            ...$canvasHiddenControlStrings->sectionEditableUpdate(),
-            'zone'           => ControlZone::Tools,
-            'canvas_area'    => CanvasArea::Hidden,
-            'order'          => 5,
-            'type'           => ControlType::Trigger,
-            'client_hint'    => 'contenteditable',
-            'presentation'   => $inlineEditingPresentationStrings->toArray(),
-            'handler'        => SectionEditableUpdateHandler::class,
-            'writes_editor_state' => true,
         ]);
 
         // Order 6: section.node.update - Apply a Design Lens node update to section HTML.
@@ -522,6 +496,27 @@ final class ControlPlaneProvider implements ServiceProviderInterface
             'order'          => 15,
             'type'           => ControlType::Display,
             'state_resolver' => $resolver,
+        ]);
+
+        // Order 18: shell.mode.open - Layout writes, so it follows the read-only Preview and viewport controls and joins the page status actions.
+        $shellModeOpen = ControlDefinition::make([
+            'id'          => 'shell.mode.open',
+            ...$canvasVisibleControlStrings->shellModeOpen(),
+            'zone'        => ControlZone::Tools,
+            'canvas_area' => CanvasArea::TopBarRight,
+            'order'       => 18,
+            'type'        => ControlType::Trigger,
+            'icon'        => 'preformatted',
+            'client_hint' => 'open_modal',
+            'presentation' => [
+                'surface'             => 'modal',
+                'component'           => 'shell-mode',
+                'icon_only'           => true,
+                'responsive_priority' => 3,
+                'toolbar_group'       => 'post_viewport',
+            ],
+            'state_resolver' => $resolver,
+            'local'       => true,
         ]);
 
         // Order 20: history.redo - Reapply the next editor operation.
@@ -691,25 +686,6 @@ final class ControlPlaneProvider implements ServiceProviderInterface
             'state_resolver' => $resolver,
         ]);
 
-        // Order 35: shell.mode.open - Keep page status actions ahead of Layout.
-        $shellModeOpen = ControlDefinition::make([
-            'id'          => 'shell.mode.open',
-            ...$canvasVisibleControlStrings->shellModeOpen(),
-            'zone'        => ControlZone::Tools,
-            'canvas_area' => CanvasArea::TopBarRight,
-            'order'       => 35,
-            'type'        => ControlType::Trigger,
-            'icon'        => 'preformatted',
-            'client_hint' => 'open_modal',
-            'presentation' => [
-                'surface'             => 'modal',
-                'component'           => 'shell-mode',
-                'icon_only'           => true,
-                'responsive_priority' => 3,
-            ],
-            'state_resolver' => $resolver,
-            'local'       => true,
-        ]);
 
         // Order 36: page.exit_full_screen_mode - Return to the windowed canvas editor.
         $pageExitFullScreenMode = ControlDefinition::make([
@@ -1240,7 +1216,6 @@ final class ControlPlaneProvider implements ServiceProviderInterface
         $controls = [
             $sectionCreate,
             $pageNewCanvas,
-            $sectionEditableUpdate,
             $sectionNodeUpdate,
             $sectionRewriteSource,
             $designStyleCommit,
@@ -1251,6 +1226,7 @@ final class ControlPlaneProvider implements ServiceProviderInterface
             $manualChangesCommit,
             $pageResumeDraft,
             $pageCanvasType,
+            $shellModeOpen,
             $historyRedo,
             $pageStatus,
             $pageSaveDraft,
@@ -1259,7 +1235,6 @@ final class ControlPlaneProvider implements ServiceProviderInterface
             $pageSwitchToDraft,
             $pagePublish,
             $pageFullScreenMode,
-            $shellModeOpen,
             $pageExitFullScreenMode,
             $pagePreview,
             $pageSourceImport,

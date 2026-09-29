@@ -18,6 +18,11 @@ class Everest_Forms_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'EVEREST_FORMS' );
 		$this->set_name( 'Everest Forms' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/everest-forms-icon.svg' );
+
+		$this->set_plugin_file_path( 'everest-forms/everest-forms.php' );
+		$this->set_developer_name( 'WPEverest' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

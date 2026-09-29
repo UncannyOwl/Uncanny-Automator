@@ -863,6 +863,7 @@ class Automator_Load {
 	public function load_migrations() {
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-error-log.php';
 		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-orphan-readable-meta.php';
+		require_once UA_ABSPATH . 'src/core/migrations/class-migrate-remove-completed-recipes-option.php';
 
 		// The orphaned-label repair can only tell a maintained readable from a
 		// stale one by reading each item's field definitions, and integrations

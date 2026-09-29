@@ -31,7 +31,7 @@ final class PartSourcePresenter
     /**
      * @return list<string>
      */
-    public function detailLines(Section $section): array
+    public function detailLines(Section $section, bool $includeNextStep = true): array
     {
         $lines = [
             'SOURCE',
@@ -41,16 +41,21 @@ final class PartSourcePresenter
 
         $this->appendDynamicRegionAdvisory($lines, $section->content()->html());
 
-        return [
+        $lines = [
             ...$lines,
             '',
             '--- CSS ---',
             $section->content()->css(),
             '',
-            'NEXT STEP',
-            'Use edit_part mode=source_patch or mode=source_replace.',
-            '',
         ];
+
+        if ($includeNextStep) {
+            $lines[] = 'NEXT STEP';
+            $lines[] = 'Use edit_part mode=source_patch or mode=source_replace.';
+            $lines[] = '';
+        }
+
+        return $lines;
     }
 
     private function maskForAgent(string $html): string

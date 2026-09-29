@@ -28,6 +28,11 @@ class Add_Webhooks_Integration {
 
 		$this->set_icon( __DIR__ . '/img/webhooks-icon.svg' );
 
+		$this->set_plugin_file_path( 'uncanny-automator/uncanny-automator.php' );
+		$this->set_developer_name( 'Uncanny Automator' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'wp_org' );
+
 	}
 
 	/**

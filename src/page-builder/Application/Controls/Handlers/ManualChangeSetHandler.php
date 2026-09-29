@@ -38,7 +38,6 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
         private readonly PageSourceMutation $pageSource,
         private readonly RestorePublishedSourceToWorkingDraft $restorePublishedSource,
         private readonly DesignStyleCommitHandler $designStyles,
-        private readonly SectionEditableUpdateHandler $editableContent,
         private readonly SectionNodeUpdateHandler $sectionNodes,
         private readonly SectionRewriteSourceHandler $rewriteSectionSource,
         private readonly SectionService $sections,
@@ -346,7 +345,6 @@ final class ManualChangeSetHandler implements ControlHandlerInterface
                 $commandId = trim((string) ($change['command_id'] ?? ''));
                 $value = is_array($change['value'] ?? null) ? $change['value'] : [];
                 $handler = match ($commandId) {
-                    'section.editable.update' => $this->editableContent,
                     'section.node.update' => $this->sectionNodes,
                     'section.rewrite_source' => $this->rewriteSectionSource,
                     default => throw new \InvalidArgumentException('Unsupported Manual content change.'),

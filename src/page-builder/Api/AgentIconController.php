@@ -110,7 +110,7 @@ final class AgentIconController
             }
         }
 
-        return array_keys($queries);
+        return array_map('strval', array_keys($queries));
     }
 
     /**

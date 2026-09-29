@@ -19,6 +19,7 @@ final class AttachReusableToCanvasResult
         private readonly int $sectionId,
         private readonly int $position,
         private readonly string $sectionName,
+        private readonly string $editorUrl,
         private readonly string $previewUrl,
         private readonly array $warnings = [],
     ) {}
@@ -61,6 +62,11 @@ final class AttachReusableToCanvasResult
     public function previewUrl(): string
     {
         return $this->previewUrl;
+    }
+
+    public function editorUrl(): string
+    {
+        return $this->editorUrl;
     }
 
     /**

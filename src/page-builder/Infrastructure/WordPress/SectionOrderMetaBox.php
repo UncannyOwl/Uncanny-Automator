@@ -12,7 +12,7 @@ use UncannyPageBuilder\Domain\Concurrency\SourceGenerationStoreInterface;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 
 /**
- * Admin metabox for drag-and-drop section reordering on Engine-owned pages.
+ * Save handler for section ordering in the main Page sections list.
  *
  * Reordering is browser-local until the native WordPress Update action submits
  * the form. The save then joins the same guarded Manual draft lane as canvas
@@ -20,7 +20,6 @@ use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
  */
 final class SectionOrderMetaBox
 {
-    private const META_BOX_ID = 'upb_section_order';
     private const NONCE_KEY = 'upb_section_order_nonce';
     private const NONCE_ACTION = 'upb_save_section_order';
     private const ORDER_FIELD = 'upb_section_order_ids';
@@ -35,49 +34,6 @@ final class SectionOrderMetaBox
         private readonly ?SourceGenerationStoreInterface $sourceGenerations = null,
         private readonly ?NativePageSave $nativePageSave = null,
     ) {}
-
-    public function register(\WP_Post $post): void
-    {
-        if (
-            !$this->repository->isOwnedPage($post->ID)
-            || !$this->allowedCapabilities->currentUserHasAllowedCapability()
-        ) {
-            return;
-        }
-
-        add_meta_box(
-            self::META_BOX_ID,
-            _x('Section order', 'Page Builder', 'uncanny-automator'),
-            [$this, 'render'],
-            $post->post_type,
-            'side',
-            'default',
-        );
-    }
-
-    public function render($post = null): void
-    {
-        if (!$post instanceof \WP_Post) {
-            return;
-        }
-
-        try {
-            $pageId = $post->ID;
-            $sections = $this->repository->findByPageId($pageId);
-            $workingGeneration = $this->sourceGenerations?->pageGeneration($pageId)
-                ?? $sections->generation();
-
-            include __DIR__ . '/../../Presentation/Pages/section-order.php';
-
-            if ($sections->count() > 1) {
-                include __DIR__ . '/../../Presentation/Pages/section-order-script.php';
-            }
-        } catch (\Throwable $failure) {
-            // Render nothing further; a metabox failure must not fail the
-            // complete WordPress edit screen.
-            error_log('[Uncanny Page Builder] Section order metabox render failed (' . $failure::class . ')');
-        }
-    }
 
     public function save(int $postId, \WP_Post $post): void
     {

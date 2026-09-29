@@ -20,6 +20,11 @@ class Code_Snippets_Integration extends Integration {
 		$this->set_integration( 'CODE_SNIPPETS' );
 		$this->set_name( 'Code Snippets' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/code-snippets-icon.svg' );
+
+		$this->set_plugin_file_path( 'code-snippets/code-snippets.php' );
+		$this->set_developer_name( 'Code Snippets Pro' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

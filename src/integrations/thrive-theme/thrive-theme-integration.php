@@ -18,6 +18,11 @@ class Thrive_Theme_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'THRIVE_THEME_BUILDER' );
 		$this->set_name( 'Thrive Theme Builder' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/thrive-theme-builder-icon.svg' );
+
+		$this->set_plugin_file_path( 'thrive-theme-builder/thrive-theme-builder.php' );
+		$this->set_developer_name( 'Thrive Themes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

@@ -151,7 +151,12 @@ class CAMPAIGN_CREATEANDSEND extends \Uncanny_Automator\Recipe\App_Action {
 		$from_name          = sanitize_text_field( trim( $this->get_parsed_meta_value( 'MCFROMNAME' ) ) );
 		$from_email_address = sanitize_email( trim( $this->get_parsed_meta_value( 'MCFROMEMAILADDRESS' ) ) );
 		$to_name            = sanitize_text_field( trim( $this->get_parsed_meta_value( 'MCTONAME' ) ) );
-		$email_content      = wp_kses_post( $this->get_parsed_meta_value( 'MCEMAILCONTENT' ) );
+
+		// Raw HTML for Mailchimp's API, never rendered by WP. Parsed straight from
+		// meta as pre-7.3 did: wp_kses_post() stripped <style>/<head>/<body> from
+		// responsive templates, and the parser trait's autop has no place in a
+		// full HTML document.
+		$email_content = Automator()->parse->text( $action_data['meta']['MCEMAILCONTENT'] ?? '', $recipe_id, $user_id, $args );
 
 		// "To name" is intentionally NOT required. Mailchimp treats it as optional
 		// (it personalizes the recipient line, e.g. *|FNAME|*), and pre-7.3 sent it

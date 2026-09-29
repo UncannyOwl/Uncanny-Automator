@@ -197,7 +197,7 @@ class Loop_Logs_Queries {
 		);
 
 		// maybe_unserialize returns false for invalid/empty serialized data. Normalize to empty array.
-		$unserialized = maybe_unserialize( $results );
+		$unserialized = automator_safe_unserialize( $results );
 
 		return is_array( $unserialized ) ? $unserialized : array();
 	}

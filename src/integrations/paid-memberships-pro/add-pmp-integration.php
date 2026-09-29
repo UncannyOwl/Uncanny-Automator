@@ -27,6 +27,10 @@ class Add_Pmp_Integration {
 		$this->set_icon( 'paid-memberships-pro-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'paid-memberships-pro/paid-memberships-pro.php' );
+
+		$this->set_developer_name( 'Paid Memberships Pro' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

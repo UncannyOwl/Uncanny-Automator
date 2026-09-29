@@ -17,6 +17,11 @@ class Presto_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'PRESTO' );
 		$this->set_name( 'Presto' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/presto-player-icon.svg' );
+
+		$this->set_plugin_file_path( 'presto-player/presto-player.php' );
+		$this->set_developer_name( 'Presto Player' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 	/**
 	 * Load.

@@ -131,7 +131,9 @@ class LD_LESSONDONE extends \Uncanny_Automator\Recipe\Trigger {
 		}
 
 		// Dedup via runtime cache — LearnDash may fire the hook multiple times for the same lesson.
-		$cache_key   = 'automator_lesson_completed_ ' . $lesson->ID . '_user_' . $user->ID;
+		// Keyed per trigger: validate() runs once per recipe on this object, so a key without
+		// the trigger ID let the first recipe claim it and skipped every other recipe.
+		$cache_key   = 'automator_lesson_completed_' . absint( $trigger['ID'] ?? 0 ) . '_' . $lesson->ID . '_user_' . $user->ID;
 		$cache_group = 'automator-ld-lesson-completed';
 
 		if ( false !== Automator()->cache->get( $cache_key, $cache_group ) ) {

@@ -25,6 +25,11 @@ class Divi_Integration extends \Uncanny_Automator\Integration {
 		// legacy \Uncanny_Automator\Divi_Helpers shim, not on the modern helper. New
 		// code uses $this->get_item_helpers() / $this->item_helpers — never this chain.
 		\Automator()->helpers->recipe->divi = new \Uncanny_Automator\Divi_Helpers();
+
+		$this->set_plugin_file_path( 'divi-builder/divi-builder.php' );
+		$this->set_developer_name( 'Elegant Themes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

@@ -50,6 +50,10 @@ class Grok_Integration extends App_Integration {
 
 		// Setup app integration (required by framework)
 		$this->setup_app_integration( $config );
+
+		$this->set_developer_name( 'xAI' );
+		$this->set_integration_type( 'app' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

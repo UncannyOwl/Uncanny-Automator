@@ -27,6 +27,10 @@ class Add_Fr_Integration {
 		$this->set_icon( 'forminator-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'forminator/forminator.php' );
+
+		$this->set_developer_name( 'WPMU DEV' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

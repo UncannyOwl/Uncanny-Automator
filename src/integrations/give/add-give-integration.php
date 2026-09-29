@@ -27,6 +27,10 @@ class Add_Give_Integration {
 		$this->set_icon( 'givewp-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'give/give.php' );
+
+		$this->set_developer_name( 'GiveWP' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

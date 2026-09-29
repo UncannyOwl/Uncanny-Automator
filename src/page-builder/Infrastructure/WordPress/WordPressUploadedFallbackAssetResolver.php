@@ -29,6 +29,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
     private const LOCK_RETRY_MICROSECONDS = 50_000;
 
     private ?object $filesystem = null;
+    private FallbackAssetFilesystemDiagnostics $filesystemDiagnostics;
 
     /**
      * @param null|\Closure(): array<string, mixed> $uploadsReader
@@ -59,6 +60,8 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
 
     public function resolveFallback(PageDeactivationFallback $fallback): PublishedPageAssets
     {
+        $this->filesystemDiagnostics = new FallbackAssetFilesystemDiagnostics();
+        $this->filesystemDiagnostics->addPath($this->pluginPath, '[plugin]');
         try {
             $pluginAssets = $this->pluginAssets->resolveFallback($fallback);
         } catch (PublishedPageRuntimeUnavailable $failure) {
@@ -111,6 +114,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         $error = is_array($uploads) ? trim((string) ($uploads['error'] ?? '')) : '';
         $baseDirectory = is_array($uploads) ? (string) ($uploads['basedir'] ?? '') : '';
         $baseUrl = is_array($uploads) ? (string) ($uploads['baseurl'] ?? '') : '';
+        $this->filesystemDiagnostics->addPath($baseDirectory, '[uploads]');
 
         if (
             $error !== ''
@@ -134,7 +138,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
 
         $filesystem = $this->filesystem();
         if (!$filesystem->is_dir($baseDirectory) && !$this->createDirectory($baseDirectory)) {
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_upload_dir_invalid',
                 'The WordPress uploads directory cannot be created.',
             );
@@ -147,10 +151,11 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                 'The WordPress uploads directory cannot be verified.',
             );
         }
+        $this->filesystemDiagnostics->addPath($uploadsRoot, '[uploads]');
 
         $productRoot = $uploadsRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, self::PRODUCT_DIRECTORY);
         if (!$filesystem->is_dir($productRoot) && !$this->createDirectory($productRoot)) {
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_upload_dir_invalid',
                 'The fallback asset directory cannot be created.',
             );
@@ -194,15 +199,20 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
             );
         }
 
-        $lock = @fopen($lockPath, 'c+b');
+        $lock = $this->filesystemOperation('open_lock_file', static fn() => @fopen($lockPath, 'c+b'));
         if (!is_resource($lock)) {
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset lock cannot be opened.',
             );
         }
 
-        $stat = fstat($lock);
+        try {
+            $stat = $this->filesystemOperation('inspect_lock_file', static fn() => fstat($lock));
+        } catch (\Throwable $failure) {
+            fclose($lock);
+            throw $failure;
+        }
         if (
             is_link($lockPath)
             || !is_array($stat)
@@ -210,7 +220,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
             || (($stat['mode'] & 0170000) !== 0100000)
         ) {
             fclose($lock);
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset lock cannot be verified.',
             );
@@ -221,7 +231,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         } catch (\Throwable $failure) {
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- WP_Filesystem has no advisory-lock stream to close.
             fclose($lock);
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset lock cannot be checked.',
                 $failure,
@@ -231,7 +241,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         if (!$acquired) {
             // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- WP_Filesystem has no advisory-lock stream to close.
             fclose($lock);
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_asset_lock_timeout',
                 'The fallback asset lock wait timed out.',
             );
@@ -246,9 +256,9 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         $waitedMicroseconds = 0;
 
         while (true) {
-            $acquired = $this->lockAcquirer instanceof \Closure
+            $acquired = $this->filesystemOperation('acquire_lock', fn() => $this->lockAcquirer instanceof \Closure
                 ? ($this->lockAcquirer)($lock, LOCK_EX | LOCK_NB)
-                : @flock($lock, LOCK_EX | LOCK_NB);
+                : @flock($lock, LOCK_EX | LOCK_NB));
 
             if ($acquired) {
                 return true;
@@ -321,7 +331,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
 
         $hashDirectory = $productRoot . DIRECTORY_SEPARATOR . $expectedHash;
         if (!$filesystem->is_dir($hashDirectory) && !$this->createHashDirectory($hashDirectory)) {
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset hash directory cannot be created.',
             );
@@ -407,6 +417,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                 'The fallback asset source is invalid.',
             );
         }
+        $this->filesystemDiagnostics->addPath($pluginRoot, '[plugin]');
 
         return $source;
     }
@@ -430,10 +441,17 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         $output = null;
 
         try {
-            $input = @fopen($source, 'rb');
-            $output = @fopen($temporary, 'x+b');
-            if (!is_resource($input) || !is_resource($output) || is_link($temporary)) {
-                throw $this->failure(
+            $input = $this->filesystemOperation('open_source_file', static fn() => @fopen($source, 'rb'));
+            if (!is_resource($input)) {
+                throw $this->filesystemFailure(
+                    'fallback_asset_write_failed',
+                    'The fallback asset source file cannot be opened.',
+                );
+            }
+            // Check each open before the next call can replace its warning.
+            $output = $this->filesystemOperation('create_temporary_file', static fn() => @fopen($temporary, 'x+b'));
+            if (!is_resource($output) || is_link($temporary)) {
+                throw $this->filesystemFailure(
                     'fallback_asset_write_failed',
                     'The fallback asset temporary file cannot be opened.',
                 );
@@ -441,9 +459,9 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
 
             $hashContext = hash_init('sha256');
             while (!feof($input)) {
-                $chunk = fread($input, 1048576);
+                $chunk = $this->filesystemOperation('read_source_file', static fn() => fread($input, 1048576));
                 if (!is_string($chunk)) {
-                    throw $this->failure(
+                    throw $this->filesystemFailure(
                         'fallback_asset_write_failed',
                         'The fallback asset source cannot be copied.',
                     );
@@ -452,7 +470,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                     if (feof($input)) {
                         break;
                     }
-                    throw $this->failure(
+                    throw $this->filesystemFailure(
                         'fallback_asset_write_failed',
                         'The fallback asset source read was incomplete.',
                     );
@@ -462,8 +480,8 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                 $this->writeAll($output, $chunk);
             }
 
-            if (!fflush($output)) {
-                throw $this->failure(
+            if (!$this->filesystemOperation('flush_temporary_file', static fn() => fflush($output))) {
+                throw $this->filesystemFailure(
                     'fallback_asset_write_failed',
                     'The fallback asset temporary file cannot be flushed.',
                 );
@@ -504,10 +522,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                 );
             }
 
-            $linked = $this->fileLinker instanceof \Closure
-                ? ($this->fileLinker)($temporary, $destination)
-                : @link($temporary, $destination);
-            if (!$linked) {
+            if (!$this->publishVerifiedFallbackAsset($temporary, $destination)) {
                 if ($this->filesystem()->exists($destination) || is_link($destination)) {
                     $this->verifyExistingDestination(
                         $destination,
@@ -519,7 +534,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
                     return;
                 }
 
-                throw $this->failure(
+                throw $this->filesystemFailure(
                     'fallback_asset_write_failed',
                     'The fallback asset cannot be published.',
                 );
@@ -535,7 +550,7 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         } catch (PublishedPageRuntimeUnavailable $failure) {
             throw $failure;
         } catch (\Throwable $failure) {
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset cannot be written.',
                 $failure,
@@ -553,17 +568,61 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         }
     }
 
+    /**
+     * Publish a verified fallback asset at its permanent public path.
+     *
+     * Page Builder copies required CSS and JavaScript into WordPress uploads so
+     * a published page can continue to render if the plugin files become
+     * unavailable. Visitors must never receive a partially written asset.
+     *
+     * WP_Filesystem_Direct::move() is not used here. It falls back from
+     * rename() to copy(), which can expose a partial public file. The caller
+     * holds the publication lock, and verifies the final file after this call.
+     */
+    private function publishVerifiedFallbackAsset(string $temporary, string $destination): bool
+    {
+        if ($this->filesystem()->exists($destination) || is_link($destination)) {
+            return false;
+        }
+
+        if ($this->fileLinker instanceof \Closure) {
+            return $this->filesystemOperation(
+                'create_hard_link',
+                fn() => ($this->fileLinker)($temporary, $destination),
+            );
+        }
+
+        if (function_exists('link')) {
+            return $this->filesystemOperation(
+                'create_hard_link',
+                static fn() => @link($temporary, $destination),
+            );
+        }
+
+        // Some managed hosts disable link(). rename() keeps the verified file
+        // hidden until the complete file appears at its public path.
+        if ($this->filesystem()->exists($destination) || is_link($destination)) {
+            return false;
+        }
+
+        return $this->filesystemOperation(
+            'rename_verified_file',
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- WP_Filesystem_Direct::move() can fall back to a non-atomic copy.
+            static fn() => @rename($temporary, $destination),
+        );
+    }
+
     /** @param resource $stream */
     private function writeAll($stream, string $content): void
     {
         $offset = 0;
         $length = strlen($content);
         while ($offset < $length) {
-            $written = $this->streamWriter instanceof \Closure
+            $written = $this->filesystemOperation('write_temporary_file', fn() => $this->streamWriter instanceof \Closure
                 ? ($this->streamWriter)($stream, substr($content, $offset))
-                : fwrite($stream, substr($content, $offset));
+                : fwrite($stream, substr($content, $offset)));
             if (!is_int($written) || $written <= 0) {
-                throw $this->failure(
+                throw $this->filesystemFailure(
                     'fallback_asset_write_failed',
                     'The fallback asset write was incomplete.',
                 );
@@ -617,11 +676,11 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
     private function createDirectory(string $directory): bool
     {
         try {
-            return $this->directoryCreator instanceof \Closure
+            return $this->filesystemOperation('create_directory', fn() => $this->directoryCreator instanceof \Closure
                 ? ($this->directoryCreator)($directory)
-                : wp_mkdir_p($directory);
+                : wp_mkdir_p($directory), 'fallback_upload_dir_invalid');
         } catch (\Throwable $failure) {
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_upload_dir_invalid',
                 'The fallback asset directory cannot be created.',
                 $failure,
@@ -632,13 +691,13 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
     private function createHashDirectory(string $directory): bool
     {
         try {
-            $created = $this->directoryCreator instanceof \Closure
+            $created = $this->filesystemOperation('create_hash_directory', fn() => $this->directoryCreator instanceof \Closure
                 ? ($this->directoryCreator)($directory)
-                : wp_mkdir_p($directory);
+                : wp_mkdir_p($directory));
 
             return $created || $this->filesystem()->is_dir($directory);
         } catch (\Throwable $failure) {
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_asset_write_failed',
                 'The fallback asset hash directory cannot be created.',
                 $failure,
@@ -648,9 +707,9 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
 
     private function directoryMode(string $directory): int
     {
-        $permissions = @fileperms($directory);
+        $permissions = $this->filesystemOperation('read_permissions', static fn() => @fileperms($directory), 'fallback_upload_dir_invalid');
         if (!is_int($permissions)) {
-            throw $this->failure(
+            throw $this->filesystemFailure(
                 'fallback_upload_dir_invalid',
                 'The fallback asset directory permissions cannot be read.',
             );
@@ -680,31 +739,37 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
          * mask is applied.
          */
         clearstatcache(true, $path);
-        $permissions = @fileperms($path);
+        $permissions = $this->filesystemOperation('read_permissions', static fn() => @fileperms($path), $reasonCode);
         if (!is_int($permissions)) {
-            throw $this->failure($reasonCode, 'The fallback asset permissions cannot be verified.');
+            throw $this->filesystemFailure($reasonCode, 'The fallback asset permissions cannot be verified.');
         }
 
+        $permissionDiagnostics = null;
         if (($permissions & 07777) !== $preferredMode) {
             try {
-                if ($this->permissionApplier instanceof \Closure) {
-                    ($this->permissionApplier)($path, $preferredMode);
-                } else {
-                    @chmod($path, $preferredMode);
-                }
+                $this->filesystemOperation('set_permissions', fn() => $this->permissionApplier instanceof \Closure
+                    ? ($this->permissionApplier)($path, $preferredMode)
+                    : @chmod($path, $preferredMode), $reasonCode);
             } catch (\Throwable) {
                 // A mode difference is acceptable when required access remains.
+            } finally {
+                $permissionDiagnostics = $this->filesystemDiagnostics->details();
             }
         }
 
         clearstatcache(true, $path);
-        $permissions = @fileperms($path);
+        $permissions = $this->filesystemOperation('read_permissions', static fn() => @fileperms($path), $reasonCode);
         if (
             !is_int($permissions)
             || (($permissions & $requiredMode) !== $requiredMode)
             || (($permissions & 0170000) === 0100000 && ($permissions & 0022) !== 0)
         ) {
-            throw $this->failure($reasonCode, 'The fallback asset permissions cannot be verified.');
+            // A successful stat must not replace the chmod warning that explains the bad mode.
+            throw $this->filesystemFailure(
+                $reasonCode,
+                'The fallback asset permissions cannot be verified.',
+                diagnostics: is_int($permissions) ? $permissionDiagnostics : null,
+            );
         }
     }
 
@@ -916,6 +981,30 @@ final class WordPressUploadedFallbackAssetResolver implements PageDeactivationFa
         }
 
         return false;
+    }
+
+    private function filesystemOperation(string $operation, \Closure $action, string $reasonCode = 'fallback_asset_write_failed'): mixed
+    {
+        try {
+            return $this->filesystemDiagnostics->capture($operation, $action);
+        } catch (\Throwable $failure) {
+            throw $this->filesystemFailure($reasonCode, 'The fallback filesystem operation failed.', $failure);
+        }
+    }
+
+    /** @param null|array<string, string> $diagnostics */
+    private function filesystemFailure(
+        string $reasonCode,
+        string $message,
+        ?\Throwable $previous = null,
+        ?array $diagnostics = null,
+    ): PublishedPageRuntimeUnavailable {
+        return new PublishedPageRuntimeUnavailable(
+            $reasonCode,
+            $message,
+            $previous,
+            $diagnostics ?? $this->filesystemDiagnostics->details(),
+        );
     }
 
     private function failure(

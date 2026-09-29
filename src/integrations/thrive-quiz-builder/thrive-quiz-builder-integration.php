@@ -17,6 +17,11 @@ class Thrive_Quiz_Builder_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'THRIVE_QB' );
 		$this->set_name( 'Thrive Quiz Builder' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/thrive-quiz-builder-icon.svg' );
+
+		$this->set_plugin_file_path( 'thrive-quiz-builder/thrive-quiz-builder.php' );
+		$this->set_developer_name( 'Thrive Themes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

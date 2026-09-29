@@ -167,6 +167,11 @@ class UOTC_MODULEINTERACTION extends \Uncanny_Automator\Recipe\Trigger {
 			return false;
 		}
 
+		// The subject user comes from the hook, not the request. Tin Can statements
+		// are processed from the SCORM player's own request, which is not guaranteed
+		// to carry the learner's session, so get_current_user_id() may not be them.
+		$this->set_user_id( $user_id );
+
 		if ( empty( $module_id ) && ! absint( $module_id ) ) {
 			return false;
 		}

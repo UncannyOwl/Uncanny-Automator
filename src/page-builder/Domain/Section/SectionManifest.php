@@ -11,7 +11,6 @@ final class SectionManifest
 {
     /**
      * @param array<string, mixed> $root
-     * @param EditableManifestEntry[] $editables
      * @param array<int, array<string, mixed>> $dynamicRegions
      * @param array<string, mixed> $constraints
      */
@@ -19,7 +18,6 @@ final class SectionManifest
         private readonly ?int $sectionId,
         private readonly int $pageId,
         private readonly array $root,
-        private readonly array $editables,
         private readonly array $dynamicRegions,
         private readonly array $constraints,
     ) {}
@@ -32,34 +30,8 @@ final class SectionManifest
             'section_id'       => $this->sectionId,
             'page_id'          => $this->pageId,
             'root'             => $this->root,
-            'editables'        => array_map(
-                static fn(EditableManifestEntry $e): array => $e->toArray(),
-                $this->editables,
-            ),
             'dynamic_regions'  => $this->dynamicRegions,
             'constraints'      => $this->constraints,
         ];
-    }
-
-    /**
-     * Find an editable entry by its key, or null if not found.
-     */
-    public function findEditable(string $key): ?EditableManifestEntry
-    {
-        foreach ($this->editables as $entry) {
-            if ($entry->key() === $key) {
-                return $entry;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return EditableManifestEntry[]
-     */
-    public function editables(): array
-    {
-        return $this->editables;
     }
 }

@@ -19,11 +19,13 @@ use UncannyPageBuilder\Application\Canvas\EditCanvasUseCase;
 use UncannyPageBuilder\Application\Canvas\ListCanvasQuery;
 use UncannyPageBuilder\Application\Canvas\ListCanvasUseCase;
 use UncannyPageBuilder\Domain\Canvas\Canvas;
+use UncannyPageBuilder\Domain\Canvas\CanvasCreationUncertainException;
 use UncannyPageBuilder\Domain\Canvas\CanvasKind;
 use UncannyPageBuilder\Domain\Exception\CanvasNotFoundException;
 use UncannyPageBuilder\Domain\Exception\CssRuleIntegrityException;
 use UncannyPageBuilder\Domain\Exception\ReusableNotFoundException;
 use UncannyPageBuilder\Domain\Exception\SectionValidationException;
+use UncannyPageBuilder\Domain\Exception\StaleSourceGenerationException;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
 use UncannyPageBuilder\Infrastructure\Persistence\SourceTransactionsUnavailableException;
@@ -51,18 +53,22 @@ final class CanvasController
     {
         $operation = trim((string) ($request->get_param('operation') ?? ''));
 
-        return match ($operation) {
-            'list' => $this->listFromRequest($request),
-            'create' => $this->createFromRequest($request),
-            'update' => $this->updateFromRequest($request),
-            'delete' => $this->deleteFromRequest($request),
-            'attach_reusable' => $this->attachReusableFromRequest($request),
-            default => $this->textToolError('manage_canvas', 400, 'invalid_operation', [
-                'OPERATION: ' . ($operation !== '' ? $operation : 'missing'),
-                'NEXT STEP',
-                'Retry with operation list, create, update, delete, or attach_reusable.',
-            ]),
-        };
+        try {
+            return match ($operation) {
+                'list' => $this->listFromRequest($request),
+                'create' => $this->createFromRequest($request),
+                'update' => $this->updateFromRequest($request),
+                'delete' => $this->deleteFromRequest($request),
+                'attach_reusable' => $this->attachReusableFromRequest($request),
+                default => $this->textToolError('manage_canvas', 400, 'invalid_operation', [
+                    'OPERATION: ' . ($operation !== '' ? $operation : 'missing'),
+                    'NEXT STEP',
+                    'Retry with operation list, create, update, or attach_reusable.',
+                ]),
+            };
+        } catch (StaleSourceGenerationException $exception) {
+            return $this->staleSourceToolError($exception);
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -101,6 +107,8 @@ final class CanvasController
                 title: is_string($title) ? $title : '',
                 globalPartType: $globalPartType,
             ));
+        } catch (CanvasCreationUncertainException $exception) {
+            return $this->uncertainCreationError($exception);
         } catch (PageBuilderDisabledException $exception) {
             return $this->textToolError('manage_canvas', 403, 'page_builder_disabled', [
                 'KIND: ' . $kind->value,
@@ -162,7 +170,7 @@ final class CanvasController
         $lines[] = 'NEXT STEP';
         $lines[] = $canvases === []
             ? 'Create a canvas with manage_canvas operation=create.'
-            : 'Pick a CANVAS_ID from the list, then use read_page_context or manage_canvas update/delete.';
+            : 'Pick a CANVAS_ID from the list. Read it with read_page_context or read_part, or change working properties with manage_canvas operation=update.';
 
         return AgentTextResponse::ok(implode("\n", $lines));
     }
@@ -176,7 +184,6 @@ final class CanvasController
                 'Retry with canvas_id, or run this from an active canvas.',
             ]);
         }
-
         /*
          * Agent edits belong to working state. Publication is a separate,
          * human-only decision, so even stale callers that still send status
@@ -197,6 +204,13 @@ final class CanvasController
                 'CANVAS_ID: ' . $canvasId,
                 'NEXT STEP',
                 'Retry with shell_mode uncanny_native, theme_composition, or none.',
+            ]);
+        }
+        if (!$this->permissions->canEditPost($canvasId)) {
+            return $this->textToolError('manage_canvas', 403, 'canvas_edit_forbidden', [
+                'CANVAS_ID: ' . $canvasId,
+                'NEXT STEP',
+                'Ask a site administrator for permission to edit this canvas.',
             ]);
         }
 
@@ -222,11 +236,11 @@ final class CanvasController
         } catch (\RuntimeException $exception) {
             $this->rethrowAgentWriteBoundaryFailure($exception);
 
-            return $this->textToolError('manage_canvas', 500, 'canvas_update_failed', [
+            return $this->textToolError('manage_canvas', 500, 'write_failed', [
                 'CANVAS_ID: ' . $canvasId,
-                'DETAIL: ' . $exception->getMessage(),
+                'RETRY_SAFETY: An earlier persistence step may already have completed. Do not retry blindly.',
                 'NEXT STEP',
-                'Retry once. If it still fails, inspect the server error log.',
+                'Read the current canvas first. If the requested change is present, do not retry. If it is absent, retry once against the current state.',
             ]);
         }
 
@@ -236,8 +250,9 @@ final class CanvasController
             'OPERATION: update',
             ...$this->canvasSummaryLines($canvas),
             '',
-            'NEXT STEP',
         ];
+        $this->appendWarningLines($lines, $canvas->warnings());
+        $lines[] = 'NEXT STEP';
         $lines[] = $canvas->kind() === CanvasKind::Page
             ? 'Call read_page_context to continue working on this page.'
             : 'Use create_section once if this reusable is blank; otherwise use edit_part kind=global_part to keep working on this reusable source.';
@@ -272,11 +287,11 @@ final class CanvasController
             ]);
         }
 
-        if (!$this->permissions->canManagePost($canvasId)) {
-            return $this->textToolError('manage_canvas', 403, 'canvas_manage_forbidden', [
+        if (!$this->permissions->canDeletePost($canvasId)) {
+            return $this->textToolError('manage_canvas', 403, 'canvas_delete_forbidden', [
                 'CANVAS_ID: ' . $canvasId,
                 'NEXT STEP',
-                'Ask a site administrator for permission to manage this canvas.',
+                'Ask a site administrator for permission to delete this canvas.',
             ]);
         }
 
@@ -311,11 +326,11 @@ final class CanvasController
         } catch (\RuntimeException $exception) {
             $this->rethrowAgentWriteBoundaryFailure($exception);
 
-            return $this->textToolError('manage_canvas', 500, 'canvas_delete_failed', [
+            return $this->textToolError('manage_canvas', 500, 'write_failed', [
                 'CANVAS_ID: ' . $canvasId,
-                'DETAIL: ' . $exception->getMessage(),
+                'RETRY_SAFETY: An earlier persistence step may already have completed. Do not retry blindly.',
                 'NEXT STEP',
-                'Retry once. If it still fails, inspect the server error log.',
+                'Read the current canvas list first. If the canvas is already absent, do not retry. If it remains, inspect it before retrying once.',
             ]);
         }
 
@@ -349,6 +364,21 @@ final class CanvasController
                 'CANVAS_ID: ' . $canvasId,
                 'NEXT STEP',
                 'Retry with reusable_id from manage_reusable list, or run this from an active reusable canvas and a page canvas target.',
+            ]);
+        }
+        if (!$this->permissions->canEditPage($canvasId)) {
+            return $this->textToolError('manage_canvas', 403, 'canvas_edit_forbidden', [
+                'CANVAS_ID: ' . $canvasId,
+                'NEXT STEP',
+                'Ask a site administrator for permission to edit the destination page.',
+            ]);
+        }
+        if (!$this->permissions->canEditPost($reusableId)) {
+            return $this->textToolError('manage_canvas', 403, 'reusable_edit_forbidden', [
+                'CANVAS_ID: ' . $canvasId,
+                'REUSABLE_ID: ' . $reusableId,
+                'NEXT STEP',
+                'Ask a site administrator for permission to use this reusable.',
             ]);
         }
 
@@ -412,6 +442,9 @@ final class CanvasController
             'NAME: ' . $result->sectionName(),
         ];
 
+        if ($result->editorUrl() !== '') {
+            $lines[] = 'EDITOR_URL: ' . $result->editorUrl();
+        }
         if ($result->previewUrl() !== '') {
             $lines[] = 'PREVIEW_URL: ' . $result->previewUrl();
         }
@@ -419,6 +452,11 @@ final class CanvasController
         $lines[] = '';
         $this->appendWarningLines($lines, $result->warnings());
         $lines[] = 'NEXT STEP';
+        $lines[] = sprintf(
+            'Read the page copy with read_part kind=section section_id=%d before editing it. Changes to this copy do not update reusable %d or other copies.',
+            $result->sectionId(),
+            $result->reusableId(),
+        );
 
         return AgentTextResponse::ok(implode("\n", $lines));
     }
@@ -468,24 +506,11 @@ final class CanvasController
 
     private function requestedReusableId(\WP_REST_Request $request): int
     {
-        $reusableId = absint($request->get_param('reusable_id'));
-        if ($reusableId > 0) {
-            return get_post_type($reusableId) === 'upb_global_part' ? $reusableId : 0;
-        }
-
-        $globalPartId = $this->requestGlobalPartId($request);
-        if ($globalPartId > 0) {
-            return get_post_type($globalPartId) === 'upb_global_part' ? $globalPartId : 0;
-        }
-
-        $canvasId = absint($request->get_param('canvas_id'));
-        if ($canvasId > 0) {
-            return get_post_type($canvasId) === 'upb_global_part' ? $canvasId : 0;
-        }
-
-        $pageId = absint($request->get_param('page_id'));
-        if ($pageId > 0) {
-            return get_post_type($pageId) === 'upb_global_part' ? $pageId : 0;
+        foreach (['reusable_id', 'global_part_id'] as $key) {
+            $value = $request->get_param($key);
+            if ($value !== null) {
+                return $this->globalPartId($value);
+            }
         }
 
         $context = $request->get_param('page_builder_context');
@@ -493,16 +518,20 @@ final class CanvasController
             return 0;
         }
 
-        $contextGlobalPartId = absint($context['global_part_id'] ?? 0);
-        if ($contextGlobalPartId > 0) {
-            return get_post_type($contextGlobalPartId) === 'upb_global_part' ? $contextGlobalPartId : 0;
+        if (array_key_exists('global_part_id', $context)) {
+            return $this->globalPartId($context['global_part_id']);
         }
 
-        $contextPageId = absint($context['page_id'] ?? 0);
-
-        return $contextPageId > 0 && get_post_type($contextPageId) === 'upb_global_part'
-            ? $contextPageId
+        return array_key_exists('page_id', $context)
+            ? $this->globalPartId($context['page_id'])
             : 0;
+    }
+
+    private function globalPartId(mixed $value): int
+    {
+        $id = RequestId::positive($value);
+
+        return $id !== null && get_post_type($id) === 'upb_global_part' ? $id : 0;
     }
 
     private function requestedReusableType(\WP_REST_Request $request): GlobalPartType|false|null
@@ -533,21 +562,6 @@ final class CanvasController
         }
 
         return ShellMode::tryFrom(trim($modeValue)) ?: false;
-    }
-
-    private function requestGlobalPartId(\WP_REST_Request $request): int
-    {
-        $requestId = absint($request->get_param('global_part_id'));
-        if ($requestId > 0) {
-            return $requestId;
-        }
-
-        $context = $request->get_param('page_builder_context');
-        if (is_array($context)) {
-            return absint($context['global_part_id'] ?? 0);
-        }
-
-        return 0;
     }
 
     /**
@@ -606,6 +620,7 @@ final class CanvasController
     {
         if (
             $exception instanceof CssRuleIntegrityException
+            || $exception instanceof StaleSourceGenerationException
             || $this->wordpressWriteVerificationFailureInChain($exception) instanceof WordPressWriteVerificationException
             || $this->sourceTransactionFailureInChain($exception) instanceof SourceTransactionsUnavailableException
         ) {
@@ -652,5 +667,27 @@ final class CanvasController
             'ERROR_CODE: ' . $code,
             ...$lines,
         ]), $status);
+    }
+
+    private function staleSourceToolError(StaleSourceGenerationException $exception): \WP_REST_Response
+    {
+        return $this->textToolError('manage_canvas', 409, 'stale_source_generation', [
+            'SCOPE: ' . $exception->scope(),
+            'DETAIL: Page Builder source changed while this write was running.',
+            'NEXT STEP',
+            'Call read_page_context or read_part again, then reapply the change to the current source.',
+        ]);
+    }
+
+    private function uncertainCreationError(CanvasCreationUncertainException $exception): \WP_REST_Response
+    {
+        return $this->textToolError('manage_canvas', 500, 'canvas_creation_uncertain', [
+            'CANVAS_ID: ' . $exception->canvasId(),
+            'KIND: ' . $exception->kind(),
+            'DETAIL: The canvas may exist because its failed creation could not be cleaned up.',
+            'RETRY_SAFETY: Do not retry blindly. A retry can create a second canvas.',
+            'NEXT STEP',
+            'Call manage_canvas operation=list and look for CANVAS_ID ' . $exception->canvasId() . '. If it exists, inspect it before continuing. If it does not exist, resolve the cleanup failure before retrying.',
+        ]);
     }
 }

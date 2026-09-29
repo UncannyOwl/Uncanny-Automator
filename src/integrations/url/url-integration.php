@@ -19,6 +19,11 @@ class URL_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'URL' );
 		$this->set_name( 'URL' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/url-icon.svg' );
+
+		$this->set_plugin_file_path( 'uncanny-automator/uncanny-automator.php' );
+		$this->set_developer_name( 'Uncanny Automator' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

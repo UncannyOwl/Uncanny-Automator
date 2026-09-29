@@ -115,7 +115,9 @@ final class PageContextController
             $lines[] = '   NAME: ' . $section->name();
             $lines[] = '   POSITION: ' . (string) $section->position();
             $lines[] = '   CATEGORY: ' . $this->classifySection($section)->value;
-            $lines[] = '   NEXT: read_part kind=section include=manifest,source,design_targets';
+            $lines[] = '   CONTENT: read_part kind=section section_id=' . (string) $section->id() . ' include=content_targets';
+            $lines[] = '   STYLING: read_part kind=section section_id=' . (string) $section->id() . ' include=design_targets';
+            $lines[] = '   SOURCE PATCH: read_part kind=section section_id=' . (string) $section->id() . ' include=source';
             $lines[] = '';
         }
 
@@ -196,8 +198,8 @@ final class PageContextController
             ]);
         }
 
-        $section = $this->globalPartSourceSection($resolved);
-        if (!$section instanceof Section) {
+        $sections = $this->globalPartSourceSections($resolved);
+        if ($sections === []) {
             return $this->textToolError($toolName, 404, 'no_global_part_source', [
                 'KIND: global_part',
                 'POST_ID: ' . $globalPartId,
@@ -206,7 +208,7 @@ final class PageContextController
             ]);
         }
 
-        return AgentTextResponse::ok(\implode("\n", [
+        $lines = [
             'TOOL: ' . $toolName,
             'RESULT: success',
             'KIND: global_part',
@@ -215,42 +217,60 @@ final class PageContextController
             'PART_TYPE: ' . $this->resolvedGlobalPartType($resolved, ''),
             '',
             'SECTIONS',
-            '1. SOURCE_SECTION_NAME: ' . $section->name(),
-            '   POSITION: ' . (string) $section->position(),
-            '   NEXT: read_part kind=global_part include=manifest,source,design_targets',
-            '',
+            'SOURCE_ROW_COUNT: ' . \count($sections),
+        ];
+        foreach ($sections as $index => $section) {
+            $lines[] = ((int) $index + 1) . '. SOURCE_SECTION_NAME: ' . $section->name();
+            $lines[] = '   SOURCE_SECTION_ID: ' . (string) ($section->id() ?? 0);
+            $lines[] = '   POSITION: ' . (string) $section->position();
+            $lines[] = '   NEXT: read_part kind=global_part global_part_id=' . $globalPartId . ' include=source';
+            $lines[] = '';
+        }
+        if (\count($sections) > 1) {
+            $lines[] = 'NOTICE: This legacy global part stores multiple source rows. Read source before consolidation.';
+            $lines[] = '';
+        }
+        array_push(
+            $lines,
             'NEXT STEP',
             'Read the reusable source that contains the requested target.',
-        ]));
+        );
+
+        return AgentTextResponse::ok(\implode("\n", $lines));
     }
 
     /**
      * @param array<string, mixed> $globalPart
+     * @return list<Section>
      */
-    private function globalPartSourceSection(array $globalPart): ?Section
+    private function globalPartSourceSections(array $globalPart): array
     {
         $sections = $globalPart['sections'] ?? [];
         if (!\is_array($sections) || $sections === []) {
-            return null;
+            return [];
         }
 
-        $sectionData = $sections[0] ?? null;
-        if (!\is_array($sectionData)) {
-            return null;
+        $resolvedSections = [];
+        foreach ($sections as $sectionData) {
+            if (!\is_array($sectionData)) {
+                continue;
+            }
+
+            if (!isset($sectionData['content']) && (isset($sectionData['html']) || isset($sectionData['css']))) {
+                $sectionData['content'] = [
+                    'html' => (string) ($sectionData['html'] ?? ''),
+                    'css' => (string) ($sectionData['css'] ?? ''),
+                ];
+            }
+
+            $resolvedSections[] = Section::fromStoredArray(
+                $sectionData,
+                (int) ($globalPart['post_id'] ?? 0),
+                (int) ($sectionData['position'] ?? \count($resolvedSections)),
+            );
         }
 
-        if (!isset($sectionData['content']) && (isset($sectionData['html']) || isset($sectionData['css']))) {
-            $sectionData['content'] = [
-                'html' => (string) ($sectionData['html'] ?? ''),
-                'css' => (string) ($sectionData['css'] ?? ''),
-            ];
-        }
-
-        return Section::fromStoredArray(
-            $sectionData,
-            (int) ($globalPart['post_id'] ?? 0),
-            (int) ($sectionData['position'] ?? 0),
-        );
+        return $resolvedSections;
     }
 
     private function classifySection(Section $section): ComponentCategory

@@ -9,6 +9,9 @@ use UncannyPageBuilder\Domain\Shell\ShellMode;
 
 final class Canvas
 {
+    /**
+     * @param list<string> $warnings
+     */
     public function __construct(
         private readonly int $id,
         private readonly CanvasKind $kind,
@@ -19,6 +22,7 @@ final class Canvas
         private readonly string $previewUrl,
         private readonly ?ShellMode $shellMode = null,
         private readonly ?GlobalPartType $globalPartType = null,
+        private readonly array $warnings = [],
     ) {}
 
     public function id(): int
@@ -64,5 +68,13 @@ final class Canvas
     public function globalPartType(): ?GlobalPartType
     {
         return $this->globalPartType;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function warnings(): array
+    {
+        return $this->warnings;
     }
 }

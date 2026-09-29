@@ -1,6 +1,6 @@
 {
   "name": "preview_change",
-  "description": "Dry-run a part source patch and return validation plus HTML/CSS diffs without saving. Use mode=source_patch first. This reuses the same patch, sanitization, and validation path as the real source patch write.",
+  "description": "Dry-run a section source patch and return validation plus HTML/CSS diffs without saving. This tool requires a section_id and does not preview global parts. Use mode=source_patch first. This reuses the same patch, sanitization, and validation path as the real section source patch write.",
   "http": {
     "method": "POST",
     "path": "/wp-json/uncanny-page-builder/v1/agent/part/preview"

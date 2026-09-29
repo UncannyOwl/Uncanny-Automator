@@ -19,6 +19,11 @@ class Google_Site_Kit_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'GOOGLE_SITE_KIT' );
 		$this->set_name( 'Site Kit' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/google-site-kit-icon.svg' );
+
+		$this->set_plugin_file_path( 'google-site-kit/google-site-kit.php' );
+		$this->set_developer_name( 'Google' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

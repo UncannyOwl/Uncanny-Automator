@@ -13,6 +13,10 @@ final class CanvasCommandBarStrings
     {
         return [
             'actions_group' => _x('Actions', 'Page Builder', 'uncanny-automator'),
+            /* translators: %s: The "Open Preview" link. */
+            'agent_scripts_disabled' => _x('Interactive features powered by JavaScript are paused while editing. %s to test animations, buttons, and other interactions.', 'Page Builder', 'uncanny-automator'),
+            'hide_for_90_days' => _x('Hide notice', 'Page Builder', 'uncanny-automator'),
+            'open_preview' => _x('Open Preview', 'Page Builder', 'uncanny-automator'),
             'agent_update_manual_edits' => _x('Turn on Manual edits to fine-tune it directly.', 'Page Builder', 'uncanny-automator'),
             'agent_update_ready' => _x('Your page update is ready.', 'Page Builder', 'uncanny-automator'),
             'cancel' => _x('Cancel', 'Page Builder', 'uncanny-automator'),
@@ -47,7 +51,13 @@ final class CanvasCommandBarStrings
             'page_status_label' => _x('Page status: %s', 'Page Builder', 'uncanny-automator'),
             'page_title_placeholder' => _x('Page title', 'Page Builder', 'uncanny-automator'),
             'permalink' => _x('Permalink:', 'Page Builder', 'uncanny-automator'),
-            'preview_in_new_tab' => _x('Preview in new tab', 'Page Builder', 'uncanny-automator'),
+            'preview_menu' => _x('Preview', 'Page Builder', 'uncanny-automator'),
+            'preview_draft' => _x('Preview draft', 'Page Builder', 'uncanny-automator'),
+            'preview_draft_description' => _x('See your latest saved changes before publishing.', 'Page Builder', 'uncanny-automator'),
+            'view_live_page' => _x('View live page', 'Page Builder', 'uncanny-automator'),
+            'view_live_page_description' => _x('See the published version your visitors see.', 'Page Builder', 'uncanny-automator'),
+            'page_not_published' => _x('This page is not published.', 'Page Builder', 'uncanny-automator'),
+            'preview_in_new_tab' => _x('Preview draft in new tab', 'Page Builder', 'uncanny-automator'),
             'quick_links_group' => _x('Quick links', 'Page Builder', 'uncanny-automator'),
             'save' => _x('Save', 'Page Builder', 'uncanny-automator'),
             'saved' => _x('Saved', 'Page Builder', 'uncanny-automator'),
@@ -59,6 +69,11 @@ final class CanvasCommandBarStrings
             'undo_pending_change' => _x('Undo pending change', 'Page Builder', 'uncanny-automator'),
             'undo_pending_change_description' => _x('Undo the latest browser-local change.', 'Page Builder', 'uncanny-automator'),
             'view_group' => _x('View', 'Page Builder', 'uncanny-automator'),
+            'view_menu' => _x('View', 'Page Builder', 'uncanny-automator'),
+            'view_options' => _x('View options', 'Page Builder', 'uncanny-automator'),
+            'viewport_info_desktop' => _x('Preview desktop viewport.', 'Page Builder', 'uncanny-automator'),
+            'viewport_info_mobile' => _x('Preview mobile viewport.', 'Page Builder', 'uncanny-automator'),
+            'viewport_info_tablet' => _x('Preview tablet viewport.', 'Page Builder', 'uncanny-automator'),
         ];
     }
 }

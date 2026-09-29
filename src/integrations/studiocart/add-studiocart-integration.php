@@ -24,7 +24,11 @@ class Add_Studiocart_Integration {
 		$this->set_name( 'Studiocart' );
 		$this->set_icon( 'studiocart-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
-		$this->set_plugin_file_path( '' );
+		$this->set_plugin_file_path( 'studiocart/studiocart.php' );
+
+		$this->set_developer_name( 'Studiocart' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

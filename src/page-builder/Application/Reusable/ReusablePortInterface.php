@@ -6,6 +6,7 @@ namespace UncannyPageBuilder\Application\Reusable;
 
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\Reusable\Reusable;
+use UncannyPageBuilder\Domain\Section\Section;
 
 interface ReusablePortInterface
 {
@@ -19,7 +20,7 @@ interface ReusablePortInterface
     public function create(string $title, GlobalPartType $type): Reusable;
 
     public function convertSection(
-        int $sectionId,
+        Section $section,
         string $title,
         GlobalPartType $type,
     ): Reusable;

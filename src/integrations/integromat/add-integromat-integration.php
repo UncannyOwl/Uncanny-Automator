@@ -27,6 +27,10 @@ class Add_Integromat_Integration {
 		$this->set_icon( 'integromat-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( '' );
+
+		$this->set_developer_name( 'Make' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

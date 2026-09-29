@@ -827,7 +827,7 @@ class WP_Recipe_Store implements Recipe_Store {
 		}
 
 		/** WordPress meta handling is inconsistent - data may arrive pre-unserialized */
-		$unserialized = is_array( $legacy_data ) ? $legacy_data : maybe_unserialize( $legacy_data );
+		$unserialized = is_array( $legacy_data ) ? $legacy_data : automator_safe_unserialize( $legacy_data );
 		if ( ! is_array( $unserialized ) ) {
 			return $defaults;
 		}
@@ -893,7 +893,7 @@ class WP_Recipe_Store implements Recipe_Store {
 		}
 
 		/** Handle WordPress meta serialization inconsistencies */
-		$unserialized = is_array( $legacy_data ) ? $legacy_data : maybe_unserialize( $legacy_data );
+		$unserialized = is_array( $legacy_data ) ? $legacy_data : automator_safe_unserialize( $legacy_data );
 		if ( ! is_array( $unserialized ) ) {
 			return null;
 		}
@@ -943,7 +943,7 @@ class WP_Recipe_Store implements Recipe_Store {
 		}
 
 		/** Handle WordPress serialization variations gracefully */
-		$unserialized = is_array( $legacy_data ) ? $legacy_data : maybe_unserialize( $legacy_data );
+		$unserialized = is_array( $legacy_data ) ? $legacy_data : automator_safe_unserialize( $legacy_data );
 		if ( ! is_array( $unserialized ) ) {
 			return null;
 		}

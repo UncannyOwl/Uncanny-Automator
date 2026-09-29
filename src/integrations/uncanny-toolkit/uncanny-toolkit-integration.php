@@ -19,6 +19,11 @@ class Ut_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'UNCANNYTOOLKIT' );
 		$this->set_name( 'Uncanny Toolkit' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/uncanny-owl-icon.svg' );
+
+		$this->set_plugin_file_path( 'uncanny-learndash-toolkit/uncanny-learndash-toolkit.php' );
+		$this->set_developer_name( 'Uncanny Owl' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

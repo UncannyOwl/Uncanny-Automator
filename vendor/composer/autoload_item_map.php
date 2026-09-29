@@ -263,19 +263,19 @@ return array(
 		'triggers' => array(
 			'ARMEMBER_ARM_CANCEL_PLAN' => array(
 				'code'  => 'ARM_CANCEL_PLAN',
-				'class' => 'Uncanny_Automator\\ARMEMBER_MEMBERSHIP_CANCELLED',
+				'class' => 'Uncanny_Automator\\Integrations\\Armember\\ARMEMBER_MEMBERSHIP_CANCELLED',
 				'file'  => $baseDir . '/src/integrations/armember/triggers/armember-membership-cancelled.php',
 			),
 			'ARMEMBER_ARM_MEMBERSHIP_ADDED' => array(
 				'code'  => 'ARM_MEMBERSHIP_ADDED',
-				'class' => 'Uncanny_Automator\\ARMEMBER_MEMBERSHIP_ADDED',
+				'class' => 'Uncanny_Automator\\Integrations\\Armember\\ARMEMBER_MEMBERSHIP_ADDED',
 				'file'  => $baseDir . '/src/integrations/armember/triggers/armember-membership-added.php',
 			),
 		),
 		'actions' => array(
 			'ARMEMBER_ARM_PLAN_CANCELED' => array(
 				'code'  => 'ARM_PLAN_CANCELED',
-				'class' => 'Uncanny_Automator\\ARMEMBER_MEMBERSHIP_PLAN_CANCELLED',
+				'class' => 'Uncanny_Automator\\Integrations\\Armember\\ARMEMBER_MEMBERSHIP_PLAN_CANCELLED',
 				'file'  => $baseDir . '/src/integrations/armember/actions/armember-membership-plan-cancelled.php',
 			),
 		),
@@ -622,6 +622,32 @@ return array(
 				'code'  => 'CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER_CODE',
 				'class' => 'Uncanny_Automator\\Integrations\\Campaign_Monitor\\CAMPAIGN_MONITOR_REMOVE_SUBSCRIBER',
 				'file'  => $baseDir . '/src/integrations/campaign-monitor/actions/campaign-monitor-remove-subscriber.php',
+			),
+		),
+	),
+	'CARTFLOWS' => array(
+		'triggers' => array(
+			'CARTFLOWS_CARTFLOWS_CHECKOUT_COMPLETED' => array(
+				'code'  => 'CARTFLOWS_CHECKOUT_COMPLETED',
+				'class' => 'Uncanny_Automator\\Integrations\\Cartflows\\Cartflows_User_Completes_Checkout',
+				'file'  => $baseDir . '/src/integrations/cartflows/triggers/cartflows-user-completes-checkout.php',
+			),
+			'CARTFLOWS_CARTFLOWS_PRODUCT_PURCHASED' => array(
+				'code'  => 'CARTFLOWS_PRODUCT_PURCHASED',
+				'class' => 'Uncanny_Automator\\Integrations\\Cartflows\\Cartflows_User_Purchases_Product',
+				'file'  => $baseDir . '/src/integrations/cartflows/triggers/cartflows-user-purchases-product.php',
+			),
+		),
+		'actions' => array(
+			'CARTFLOWS_CARTFLOWS_CREATE_FLOW' => array(
+				'code'  => 'CARTFLOWS_CREATE_FLOW',
+				'class' => 'Uncanny_Automator\\Integrations\\Cartflows\\Cartflows_Create_Flow',
+				'file'  => $baseDir . '/src/integrations/cartflows/actions/cartflows-create-flow.php',
+			),
+			'CARTFLOWS_CARTFLOWS_CREATE_STEP' => array(
+				'code'  => 'CARTFLOWS_CREATE_STEP',
+				'class' => 'Uncanny_Automator\\Integrations\\Cartflows\\Cartflows_Create_Step',
+				'file'  => $baseDir . '/src/integrations/cartflows/actions/cartflows-create-step.php',
 			),
 		),
 	),
@@ -1271,6 +1297,52 @@ return array(
 			),
 		),
 	),
+	'EVENTIN' => array(
+		'triggers' => array(
+			'EVENTIN_EVENTIN_ATTENDEE_CHECKED_IN' => array(
+				'code'  => 'EVENTIN_ATTENDEE_CHECKED_IN',
+				'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Attendee_Checked_In',
+				'file'  => $baseDir . '/src/integrations/eventin/triggers/eventin-attendee-checked-in.php',
+			),
+			'EVENTIN_EVENTIN_ATTENDEE_REGISTERED' => array(
+				'code'  => 'EVENTIN_ATTENDEE_REGISTERED',
+				'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Attendee_Registered',
+				'file'  => $baseDir . '/src/integrations/eventin/triggers/eventin-attendee-registered.php',
+			),
+			'EVENTIN_EVENTIN_EVENT_CREATED' => array(
+				'code'  => 'EVENTIN_EVENT_CREATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Event_Created',
+				'file'  => $baseDir . '/src/integrations/eventin/triggers/eventin-event-created.php',
+			),
+			'EVENTIN_EVENTIN_EVENT_UPDATED' => array(
+				'code'  => 'EVENTIN_EVENT_UPDATED',
+				'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Event_Updated',
+				'file'  => $baseDir . '/src/integrations/eventin/triggers/eventin-event-updated.php',
+			),
+			'EVENTIN_EVENTIN_TICKET_PURCHASED' => array(
+				'code'  => 'EVENTIN_TICKET_PURCHASED',
+				'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Ticket_Purchased',
+				'file'  => $baseDir . '/src/integrations/eventin/triggers/eventin-ticket-purchased.php',
+			),
+		),
+		'actions' => array(
+			'EVENTIN_EVENTIN_ADD_ATTENDEE' => array(
+				'code'  => 'EVENTIN_ADD_ATTENDEE',
+				'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Add_Attendee',
+				'file'  => $baseDir . '/src/integrations/eventin/actions/eventin-add-attendee.php',
+			),
+			'EVENTIN_EVENTIN_CHECK_IN_ATTENDEE' => array(
+				'code'  => 'EVENTIN_CHECK_IN_ATTENDEE',
+				'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Check_In_Attendee',
+				'file'  => $baseDir . '/src/integrations/eventin/actions/eventin-check-in-attendee.php',
+			),
+			'EVENTIN_EVENTIN_UPDATE_ORDER_STATUS' => array(
+				'code'  => 'EVENTIN_UPDATE_ORDER_STATUS',
+				'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Update_Order_Status',
+				'file'  => $baseDir . '/src/integrations/eventin/actions/eventin-update-order-status.php',
+			),
+		),
+	),
 	'EVENTSMANAGER' => array(
 		'triggers' => array(
 			'EVENTSMANAGER_ANONEVENTREGISTER' => array(
@@ -1407,12 +1479,12 @@ return array(
 		'triggers' => array(
 			'FI_ANONFISUBMITFORM' => array(
 				'code'  => 'ANONFISUBMITFORM',
-				'class' => 'Uncanny_Automator\\ANON_FI_SUBMITFORM',
+				'class' => 'Uncanny_Automator\\Integrations\\Formidable\\ANON_FI_SUBMITFORM',
 				'file'  => $baseDir . '/src/integrations/formidable/triggers/anon-fi-submitform.php',
 			),
 			'FI_FISUBMITFORM' => array(
 				'code'  => 'FISUBMITFORM',
-				'class' => 'Uncanny_Automator\\FI_SUBMITFORM',
+				'class' => 'Uncanny_Automator\\Integrations\\Formidable\\FI_SUBMITFORM',
 				'file'  => $baseDir . '/src/integrations/formidable/triggers/fi-submitform.php',
 			),
 		),
@@ -2479,6 +2551,57 @@ return array(
 			),
 		),
 	),
+	'LOGINIZER' => array(
+		'triggers' => array(
+			'LOGINIZER_LOGINIZER_LOGIN_BLOCKED' => array(
+				'code'  => 'LOGINIZER_LOGIN_BLOCKED',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Login_Blocked',
+				'file'  => $baseDir . '/src/integrations/loginizer/triggers/loginizer-login-blocked.php',
+			),
+			'LOGINIZER_LOGINIZER_LOGIN_FAILED' => array(
+				'code'  => 'LOGINIZER_LOGIN_FAILED',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Login_Failed',
+				'file'  => $baseDir . '/src/integrations/loginizer/triggers/loginizer-login-failed.php',
+			),
+			'LOGINIZER_LOGINIZER_SOCIAL_REGISTRATION' => array(
+				'code'  => 'LOGINIZER_SOCIAL_REGISTRATION',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Social_Registration',
+				'file'  => $baseDir . '/src/integrations/loginizer/triggers/loginizer-social-registration.php',
+			),
+			'LOGINIZER_LOGINIZER_USER_LOGS_IN' => array(
+				'code'  => 'LOGINIZER_USER_LOGS_IN',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_User_Logs_In',
+				'file'  => $baseDir . '/src/integrations/loginizer/triggers/loginizer-user-logs-in.php',
+			),
+		),
+		'actions' => array(
+			'LOGINIZER_LOGINIZER_ADD_IP_TO_BLACKLIST' => array(
+				'code'  => 'LOGINIZER_ADD_IP_TO_BLACKLIST',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Add_Ip_To_Blacklist',
+				'file'  => $baseDir . '/src/integrations/loginizer/actions/loginizer-add-ip-to-blacklist.php',
+			),
+			'LOGINIZER_LOGINIZER_ADD_IP_TO_WHITELIST' => array(
+				'code'  => 'LOGINIZER_ADD_IP_TO_WHITELIST',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Add_Ip_To_Whitelist',
+				'file'  => $baseDir . '/src/integrations/loginizer/actions/loginizer-add-ip-to-whitelist.php',
+			),
+			'LOGINIZER_LOGINIZER_CLEAR_FAILED_LOGINS' => array(
+				'code'  => 'LOGINIZER_CLEAR_FAILED_LOGINS',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Clear_Failed_Logins',
+				'file'  => $baseDir . '/src/integrations/loginizer/actions/loginizer-clear-failed-logins.php',
+			),
+			'LOGINIZER_LOGINIZER_REMOVE_IP_FROM_BLACKLIST' => array(
+				'code'  => 'LOGINIZER_REMOVE_IP_FROM_BLACKLIST',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Remove_Ip_From_Blacklist',
+				'file'  => $baseDir . '/src/integrations/loginizer/actions/loginizer-remove-ip-from-blacklist.php',
+			),
+			'LOGINIZER_LOGINIZER_REMOVE_IP_FROM_WHITELIST' => array(
+				'code'  => 'LOGINIZER_REMOVE_IP_FROM_WHITELIST',
+				'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Remove_Ip_From_Whitelist',
+				'file'  => $baseDir . '/src/integrations/loginizer/actions/loginizer-remove-ip-from-whitelist.php',
+			),
+		),
+	),
 	'LP' => array(
 		'triggers' => array(
 			'LP_LPCOURSEDONE' => array(
@@ -3180,6 +3303,20 @@ return array(
 			),
 		),
 	),
+	'POST_SMTP' => array(
+		'triggers' => array(
+			'POST_SMTP_POST_SMTP_EMAIL_FAILED' => array(
+				'code'  => 'POST_SMTP_EMAIL_FAILED',
+				'class' => 'Uncanny_Automator\\Integrations\\Post_Smtp\\Post_Smtp_Email_Failed',
+				'file'  => $baseDir . '/src/integrations/post-smtp/triggers/post-smtp-email-failed.php',
+			),
+			'POST_SMTP_POST_SMTP_EMAIL_SENT' => array(
+				'code'  => 'POST_SMTP_EMAIL_SENT',
+				'class' => 'Uncanny_Automator\\Integrations\\Post_Smtp\\Post_Smtp_Email_Sent',
+				'file'  => $baseDir . '/src/integrations/post-smtp/triggers/post-smtp-email-sent.php',
+			),
+		),
+	),
 	'PP' => array(
 		'triggers' => array(
 			'PP_PPUSERFOLLOWSAUSER' => array(
@@ -3522,6 +3659,32 @@ return array(
 			),
 		),
 	),
+	'SMUSH' => array(
+		'triggers' => array(
+			'SMUSH_SMUSH_IMAGE_OPTIMIZATION_SKIPPED' => array(
+				'code'  => 'SMUSH_IMAGE_OPTIMIZATION_SKIPPED',
+				'class' => 'Uncanny_Automator\\Integrations\\Smush\\Smush_Image_Optimization_Skipped',
+				'file'  => $baseDir . '/src/integrations/smush/triggers/smush-image-optimization-skipped.php',
+			),
+			'SMUSH_SMUSH_IMAGE_OPTIMIZED' => array(
+				'code'  => 'SMUSH_IMAGE_OPTIMIZED',
+				'class' => 'Uncanny_Automator\\Integrations\\Smush\\Smush_Image_Optimized',
+				'file'  => $baseDir . '/src/integrations/smush/triggers/smush-image-optimized.php',
+			),
+		),
+		'actions' => array(
+			'SMUSH_SMUSH_OPTIMIZE_IMAGE' => array(
+				'code'  => 'SMUSH_OPTIMIZE_IMAGE',
+				'class' => 'Uncanny_Automator\\Integrations\\Smush\\Smush_Optimize_Image',
+				'file'  => $baseDir . '/src/integrations/smush/actions/smush-optimize-image.php',
+			),
+			'SMUSH_SMUSH_RESTORE_IMAGE' => array(
+				'code'  => 'SMUSH_RESTORE_IMAGE',
+				'class' => 'Uncanny_Automator\\Integrations\\Smush\\Smush_Restore_Image',
+				'file'  => $baseDir . '/src/integrations/smush/actions/smush-restore-image.php',
+			),
+		),
+	),
 	'STRIPE' => array(
 		'triggers' => array(
 			'STRIPE_CUST_CREATED' => array(
@@ -3599,6 +3762,35 @@ return array(
 				'code'  => 'USERPURCHASESPRODUCT',
 				'class' => 'Uncanny_Automator\\STUDIOCART_USERPURCHASESPRODUCT',
 				'file'  => $baseDir . '/src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php',
+			),
+		),
+	),
+	'SUCURI' => array(
+		'actions' => array(
+			'SUCURI_SUCURI_APPLY_HARDENING' => array(
+				'code'  => 'SUCURI_APPLY_HARDENING',
+				'class' => 'Uncanny_Automator\\Integrations\\Sucuri\\Sucuri_Apply_Hardening',
+				'file'  => $baseDir . '/src/integrations/sucuri/actions/sucuri-apply-hardening.php',
+			),
+			'SUCURI_SUCURI_LOG_SECURITY_EVENT' => array(
+				'code'  => 'SUCURI_LOG_SECURITY_EVENT',
+				'class' => 'Uncanny_Automator\\Integrations\\Sucuri\\Sucuri_Log_Security_Event',
+				'file'  => $baseDir . '/src/integrations/sucuri/actions/sucuri-log-security-event.php',
+			),
+			'SUCURI_SUCURI_REMOVE_HARDENING' => array(
+				'code'  => 'SUCURI_REMOVE_HARDENING',
+				'class' => 'Uncanny_Automator\\Integrations\\Sucuri\\Sucuri_Remove_Hardening',
+				'file'  => $baseDir . '/src/integrations/sucuri/actions/sucuri-remove-hardening.php',
+			),
+			'SUCURI_SUCURI_RESET_USER_PASSWORD' => array(
+				'code'  => 'SUCURI_RESET_USER_PASSWORD',
+				'class' => 'Uncanny_Automator\\Integrations\\Sucuri\\Sucuri_Reset_User_Password',
+				'file'  => $baseDir . '/src/integrations/sucuri/actions/sucuri-reset-user-password.php',
+			),
+			'SUCURI_SUCURI_RUN_MALWARE_SCAN' => array(
+				'code'  => 'SUCURI_RUN_MALWARE_SCAN',
+				'class' => 'Uncanny_Automator\\Integrations\\Sucuri\\Sucuri_Run_Malware_Scan',
+				'file'  => $baseDir . '/src/integrations/sucuri/actions/sucuri-run-malware-scan.php',
 			),
 		),
 	),
@@ -4815,6 +5007,37 @@ return array(
 				'code'  => 'WPAI_POSTTYPE_IMPORTED',
 				'class' => 'Uncanny_Automator\\WPAI_POST_TYPE_IMPORTED',
 				'file'  => $baseDir . '/src/integrations/wp-all-import/triggers/wpai-post-type-imported.php',
+			),
+		),
+	),
+	'WPCAFE' => array(
+		'triggers' => array(
+			'WPCAFE_WPCAFE_RESERVATION_CANCELLED' => array(
+				'code'  => 'WPCAFE_RESERVATION_CANCELLED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wpcafe\\Wpcafe_Reservation_Cancelled',
+				'file'  => $baseDir . '/src/integrations/wpcafe/triggers/wpcafe-reservation-cancelled.php',
+			),
+			'WPCAFE_WPCAFE_RESERVATION_STATUS_CHANGED' => array(
+				'code'  => 'WPCAFE_RESERVATION_STATUS_CHANGED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wpcafe\\Wpcafe_Reservation_Status_Changed',
+				'file'  => $baseDir . '/src/integrations/wpcafe/triggers/wpcafe-reservation-status-changed.php',
+			),
+			'WPCAFE_WPCAFE_TABLE_BOOKED' => array(
+				'code'  => 'WPCAFE_TABLE_BOOKED',
+				'class' => 'Uncanny_Automator\\Integrations\\Wpcafe\\Wpcafe_Table_Booked',
+				'file'  => $baseDir . '/src/integrations/wpcafe/triggers/wpcafe-table-booked.php',
+			),
+		),
+		'actions' => array(
+			'WPCAFE_WPCAFE_CREATE_RESERVATION' => array(
+				'code'  => 'WPCAFE_CREATE_RESERVATION',
+				'class' => 'Uncanny_Automator\\Integrations\\Wpcafe\\Wpcafe_Create_Reservation',
+				'file'  => $baseDir . '/src/integrations/wpcafe/actions/wpcafe-create-reservation.php',
+			),
+			'WPCAFE_WPCAFE_UPDATE_RESERVATION_STATUS' => array(
+				'code'  => 'WPCAFE_UPDATE_RESERVATION_STATUS',
+				'class' => 'Uncanny_Automator\\Integrations\\Wpcafe\\Wpcafe_Update_Reservation_Status',
+				'file'  => $baseDir . '/src/integrations/wpcafe/actions/wpcafe-update-reservation-status.php',
 			),
 		),
 	),

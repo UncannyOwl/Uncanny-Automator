@@ -84,11 +84,7 @@ final class WordPressPageDetailsProjection implements PageDetailsProjectionInter
          * WordPress preview URL would correctly resolve the public artifact
          * and could misleadingly hide unsaved working changes.
          */
-        $previewUrl = add_query_arg(
-            'upb_preview',
-            '1',
-            AdminCanvasPage::editorUrl((int) $post->ID),
-        );
+        $previewUrl = AdminCanvasPage::previewUrl((int) $post->ID);
 
         return new PageDetails(
             pageId: (int) $post->ID,

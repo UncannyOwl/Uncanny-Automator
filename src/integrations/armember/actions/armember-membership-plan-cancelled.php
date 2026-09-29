@@ -1,91 +1,83 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Armember;
 
-class ARMEMBER_MEMBERSHIP_PLAN_CANCELLED {
+use Uncanny_Automator\Recipe\Action;
 
-	use Recipe\Actions;
+/**
+ * Class ARMEMBER_MEMBERSHIP_PLAN_CANCELLED
+ *
+ * @package Uncanny_Automator
+ *
+ * @property Armember_Helpers $item_helpers
+ */
+class ARMEMBER_MEMBERSHIP_PLAN_CANCELLED extends Action {
 
 	/**
-	 * Set up Automator action constructor.
-	 */
-	public function __construct() {
-		$this->setup_action();
-	}
-
-	/**
-	 * Define and register the action by pushing it into the Automator object
+	 * Action setup.
+	 *
+	 * @return void
 	 */
 	protected function setup_action() {
-		$this->set_helpers( new Armember_Helpers() );
 		$this->set_integration( 'ARMEMBER' );
 		$this->set_action_code( 'ARM_PLAN_CANCELED' );
 		$this->set_action_meta( 'ARM_PLANS' );
+		$this->set_is_pro( false );
 		$this->set_requires_user( true );
 
-		/* translators: Action - ARMember */
-		$this->set_sentence( sprintf( esc_attr__( "Cancel the user's {{membership plan:%1\$s}}", 'uncanny-automator' ), $this->get_action_meta() ) );
-
-		/* translators: Action - ARMember */
-		$this->set_readable_sentence( esc_attr__( "Cancel the user's {{membership plan}}", 'uncanny-automator' ) );
-
-		$this->set_options_callback( array( $this, 'load_options' ) );
-		$this->register_action();
+		// translators: %1$s is the membership plan selector
+		$this->set_sentence( sprintf( esc_html_x( "Cancel the user's {{membership plan:%1\$s}}", 'ARMember', 'uncanny-automator' ), $this->get_action_meta() ) );
+		$this->set_readable_sentence( esc_html_x( "Cancel the user's {{membership plan}}", 'ARMember', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * load_options
+	 * Action fields.
 	 *
 	 * @return array
 	 */
-	public function load_options() {
-
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					$this->get_helpers()->get_all_plans(
-						array(
-							'option_code'           => $this->get_action_meta(),
-							'supports_custom_value' => true,
-						)
-					),
-				),
-			)
+	public function options() {
+		return array(
+			$this->item_helpers->get_plan_option_config( $this->get_action_meta(), 'plans_strict', true ),
 		);
-
 	}
 
 	/**
-	 * Process the action.
+	 * Cancel the plan the way ARMember's own cancel flow does: history entry,
+	 * the cancel hook, the plan detail cleared, secondary status "cancelled".
 	 *
-	 * @param $user_id
-	 * @param $action_data
-	 * @param $recipe_id
-	 * @param $args
-	 * @param $parsed
+	 * @param int   $user_id
+	 * @param array $action_data
+	 * @param int   $recipe_id
+	 * @param array $args
+	 * @param array $parsed
 	 *
-	 * @return void.
-	 * @throws \Exception
+	 * @return bool
 	 */
 	protected function process_action( $user_id, $action_data, $recipe_id, $args, $parsed ) {
-		$plan_id = isset( $parsed[ $this->get_action_meta() ] ) ? sanitize_text_field( $parsed[ $this->get_action_meta() ] ) : '';
 
-		if ( empty( $plan_id ) ) {
-			$action_data['complete_with_errors'] = true;
-			$message                             = esc_html__( 'Plan does not exist.', 'uncanny-automator' );
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, $message );
+		$plan_id = absint( $parsed[ $this->get_action_meta() ] ?? 0 );
 
-			return;
+		if ( 0 === $plan_id ) {
+			$this->add_log_error( esc_html_x( 'Plan does not exist.', 'ARMember', 'uncanny-automator' ) );
+			return false;
 		}
 
-		global $arm_subscription_plans;
+		$plans = $this->item_helpers->subscription_plans();
+
+		if ( null === $plans ) {
+			$this->add_log_error( esc_html_x( 'ARMember is not available.', 'ARMember', 'uncanny-automator' ) );
+			return false;
+		}
+
+		// ARMember stores and compares plan ids as strings throughout.
+		$plan_arg = (string) $plan_id;
+
 		do_action( 'arm_before_update_user_subscription', $user_id, '0' );
-		$arm_subscription_plans->arm_add_membership_history( $user_id, $plan_id, 'cancel_subscription' );
-		do_action( 'arm_cancel_subscription', $user_id, $plan_id );
-		$arm_subscription_plans->arm_clear_user_plan_detail( $user_id, $plan_id );
+		$plans->arm_add_membership_history( $user_id, $plan_arg, 'cancel_subscription' );
+		do_action( 'arm_cancel_subscription', $user_id, $plan_arg );
+		$plans->arm_clear_user_plan_detail( $user_id, $plan_arg );
 		update_user_meta( $user_id, 'arm_secondary_status', 6 );
 
-		Automator()->complete->action( $user_id, $action_data, $recipe_id );
+		return true;
 	}
-
 }

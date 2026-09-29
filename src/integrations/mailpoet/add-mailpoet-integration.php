@@ -27,6 +27,10 @@ class Add_Mailpoet_Integration {
 		$this->set_icon( 'mailpoet-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'mailpoet/mailpoet.php' );
+
+		$this->set_developer_name( 'MailPoet' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

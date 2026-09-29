@@ -94,6 +94,10 @@ class WPSP_ANONSUBSCRIPTION {
 		$billing_email = $object->customer->email;
 		if ( is_email( $billing_email ) ) {
 			$user_id = false === email_exists( $billing_email ) ? 0 : email_exists( $billing_email );
+			// A typed billing email never binds an administrator other than the logged-in user.
+			if ( ! automator_can_bind_user( $user_id ) ) {
+				$user_id = 0;
+			}
 		}
 		$recipes            = Automator()->get->recipes_from_trigger_code( $this->trigger_code );
 		$required_form      = Automator()->get->meta_from_recipes( $recipes, $this->trigger_meta );

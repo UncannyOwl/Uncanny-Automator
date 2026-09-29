@@ -27,6 +27,10 @@ class Add_Advanced_Coupons_Integration {
 		$this->set_icon( 'advanced-coupons-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'advanced-coupons-for-woocommerce-free/advanced-coupons-for-woocommerce-free.php' );
+
+		$this->set_developer_name( 'Josh Kohlbach' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

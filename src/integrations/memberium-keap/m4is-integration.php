@@ -19,6 +19,11 @@ class M4IS_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'M4IS' );
 		$this->set_name( 'Memberium for Keap' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/memberium-icon.svg' );
+
+		$this->set_plugin_file_path( 'memberium-for-keap/memberium-for-keap.php' );
+		$this->set_developer_name( 'Memberium' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

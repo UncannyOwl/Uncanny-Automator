@@ -1,6 +1,6 @@
 {
   "name": "manage_canvas",
-  "description": "Manage canvas lifecycle operations through one facade. Canvas is the internal resource term; in user-facing replies, call the editing interface the Manual editor. List owned canvases, create a new page or reusable canvas, update working canvas properties, or attach an existing reusable section onto a page canvas. Page title updates are saved as unpublished working changes. Publication, visibility, Trash, and permanent page deletion are separate human actions. Reusable/global-part updates only support title changes.",
+  "description": "Manage canvas lifecycle operations through one facade. Canvas is the internal resource term; in user-facing replies, call the editing interface the Manual editor. List owned canvases, create a new page or reusable canvas, update working canvas properties, or attach an existing reusable section onto a page canvas. Only a reusable with reusable_type=section can be attached. Attachment creates a page-owned independent copy; later edits to the page copy do not update the saved reusable or other copies. Page title and shell-mode updates remain unpublished working changes. For page updates, send title and shell_mode in separate update requests. Publication, visibility, Trash, and permanent page deletion are separate human actions. Reusable/global-part updates only support title changes.",
   "http": {
     "method": "POST",
     "path": "/wp-json/uncanny-page-builder/v1/agent/canvas"
@@ -19,7 +19,7 @@
       "type": "integer",
       "required": false,
       "in": "body",
-      "description": "Existing canvas target ID for update or attach_reusable. Omit to use the Page Builder page or reusable currently open in the Manual editor.",
+      "description": "Existing canvas target ID for update or attach_reusable. Omit only to use the Page Builder page currently open in the Manual editor. For a reusable canvas, pass its explicit ID.",
       "inject_from": "current_page_id"
     },
     {
@@ -35,7 +35,7 @@
       "enum": ["page", "global_part"],
       "required": false,
       "in": "body",
-      "description": "Canvas kind filter for list, or canvas kind for create. Use page or global_part."
+      "description": "Canvas kind filter for list, or canvas kind for create. Required for operation=create. Use page or global_part."
     },
     {
       "name": "title",
@@ -63,7 +63,7 @@
   ],
   "output": {
     "content_type": "text/plain",
-    "description": "Plain-text canvas result with COUNT for list responses, per-item CANVAS_ID, KIND, TITLE, STATUS, EDITOR_URL (the Manual editor URL), optional GLOBAL_PART_TYPE, and NEXT STEP guidance. Page TITLE is working state; STATUS remains the WordPress public status. attach_reusable returns the created SECTION_ID and reusable summary."
+    "description": "Plain-text canvas result with COUNT for list responses, per-item CANVAS_ID, KIND, TITLE, STATUS, EDITOR_URL (the Manual editor URL), optional GLOBAL_PART_TYPE, and NEXT STEP guidance. Page TITLE is working state. For page canvases, STATUS is the WordPress public status. For reusable/global-part canvases, STATUS is the internal nonpublic record status and does not mean its source is live on visitor pages. attach_reusable returns the created SECTION_ID, reusable summary, EDITOR_URL for the Manual editor, and PREVIEW_URL for the saved working draft."
   },
   "auto_approve": false,
   "group": "write"

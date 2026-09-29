@@ -87,6 +87,46 @@ return array (
       ),
     ),
   ),
+  'ARM_MEMBERSHIP_ADDED' => 
+  array (
+    'code' => 'ARM_MEMBERSHIP_ADDED',
+    'class' => 'Uncanny_Automator\\Integrations\\Armember\\ARMEMBER_MEMBERSHIP_ADDED',
+    'integration' => 'ARMEMBER',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'ARM_ALL_PLANS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'arm_after_user_plan_change',
+        1 => 10,
+        2 => 2,
+      ),
+      1 => 
+      array (
+        0 => 'arm_after_user_plan_change_by_admin',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'ARM_CANCEL_PLAN' => 
+  array (
+    'code' => 'ARM_CANCEL_PLAN',
+    'class' => 'Uncanny_Automator\\Integrations\\Armember\\ARMEMBER_MEMBERSHIP_CANCELLED',
+    'integration' => 'ARMEMBER',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'ARM_ALL_PLANS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'arm_cancel_subscription',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
   'BB_CONTACT_FORM_SUBMITTED' => 
   array (
     'code' => 'BB_CONTACT_FORM_SUBMITTED',
@@ -118,6 +158,40 @@ return array (
         0 => 'fl_builder_subscribe_form_submission_complete',
         1 => 10,
         2 => 6,
+      ),
+    ),
+  ),
+  'CARTFLOWS_CHECKOUT_COMPLETED' => 
+  array (
+    'code' => 'CARTFLOWS_CHECKOUT_COMPLETED',
+    'class' => 'Uncanny_Automator\\Integrations\\Cartflows\\Cartflows_User_Completes_Checkout',
+    'integration' => 'CARTFLOWS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'CARTFLOWS_FLOW',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_cartflows_checkout_completed',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'CARTFLOWS_PRODUCT_PURCHASED' => 
+  array (
+    'code' => 'CARTFLOWS_PRODUCT_PURCHASED',
+    'class' => 'Uncanny_Automator\\Integrations\\Cartflows\\Cartflows_User_Purchases_Product',
+    'integration' => 'CARTFLOWS',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'CARTFLOWS_PRODUCT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_cartflows_checkout_completed',
+        1 => 10,
+        2 => 3,
       ),
     ),
   ),
@@ -339,6 +413,91 @@ return array (
         0 => 'edd_sl_post_set_status',
         1 => 20,
         2 => 2,
+      ),
+    ),
+  ),
+  'EVENTIN_ATTENDEE_CHECKED_IN' => 
+  array (
+    'code' => 'EVENTIN_ATTENDEE_CHECKED_IN',
+    'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Attendee_Checked_In',
+    'integration' => 'EVENTIN',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'EVENTIN_EVENT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_eventin_attendee_checked_in',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'EVENTIN_ATTENDEE_REGISTERED' => 
+  array (
+    'code' => 'EVENTIN_ATTENDEE_REGISTERED',
+    'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Attendee_Registered',
+    'integration' => 'EVENTIN',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'EVENTIN_EVENT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_eventin_attendee_registered',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'EVENTIN_EVENT_CREATED' => 
+  array (
+    'code' => 'EVENTIN_EVENT_CREATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Event_Created',
+    'integration' => 'EVENTIN',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'EVENTIN_EVENT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'eventin_event_created',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'EVENTIN_EVENT_UPDATED' => 
+  array (
+    'code' => 'EVENTIN_EVENT_UPDATED',
+    'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Event_Updated',
+    'integration' => 'EVENTIN',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'EVENTIN_EVENT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'eventin_event_updated',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
+  'EVENTIN_TICKET_PURCHASED' => 
+  array (
+    'code' => 'EVENTIN_TICKET_PURCHASED',
+    'class' => 'Uncanny_Automator\\Integrations\\Eventin\\Eventin_Ticket_Purchased',
+    'integration' => 'EVENTIN',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'EVENTIN_EVENT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_eventin_order_completed',
+        1 => 10,
+        2 => 1,
       ),
     ),
   ),
@@ -594,6 +753,40 @@ return array (
         0 => 'fluent_cart/payments/subscription_status_changed',
         1 => 10,
         2 => 1,
+      ),
+    ),
+  ),
+  'ANONFISUBMITFORM' => 
+  array (
+    'code' => 'ANONFISUBMITFORM',
+    'class' => 'Uncanny_Automator\\Integrations\\Formidable\\ANON_FI_SUBMITFORM',
+    'integration' => 'FI',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'ANONFIFORM',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'frm_after_create_entry',
+        1 => 20,
+        2 => 2,
+      ),
+    ),
+  ),
+  'FISUBMITFORM' => 
+  array (
+    'code' => 'FISUBMITFORM',
+    'class' => 'Uncanny_Automator\\Integrations\\Formidable\\FI_SUBMITFORM',
+    'integration' => 'FI',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'FIFORM',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'frm_after_create_entry',
+        1 => 10,
+        2 => 2,
       ),
     ),
   ),
@@ -979,6 +1172,74 @@ return array (
       ),
     ),
   ),
+  'LOGINIZER_LOGIN_BLOCKED' => 
+  array (
+    'code' => 'LOGINIZER_LOGIN_BLOCKED',
+    'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Login_Blocked',
+    'integration' => 'LOGINIZER',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'LOGINIZER_LOGIN_BLOCKED_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_loginizer_login_blocked',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'LOGINIZER_LOGIN_FAILED' => 
+  array (
+    'code' => 'LOGINIZER_LOGIN_FAILED',
+    'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Login_Failed',
+    'integration' => 'LOGINIZER',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'LOGINIZER_LOGIN_FAILED_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_loginizer_login_failed',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'LOGINIZER_SOCIAL_REGISTRATION' => 
+  array (
+    'code' => 'LOGINIZER_SOCIAL_REGISTRATION',
+    'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_Social_Registration',
+    'integration' => 'LOGINIZER',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'LOGINIZER_SOCIAL_REGISTRATION_META',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'register_new_user',
+        1 => 10,
+        2 => 1,
+      ),
+    ),
+  ),
+  'LOGINIZER_USER_LOGS_IN' => 
+  array (
+    'code' => 'LOGINIZER_USER_LOGS_IN',
+    'class' => 'Uncanny_Automator\\Integrations\\Loginizer\\Loginizer_User_Logs_In',
+    'integration' => 'LOGINIZER',
+    'trigger_type' => 'user',
+    'trigger_meta' => 'LOGINIZER_USER_ROLE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wp_login',
+        1 => 10,
+        2 => 2,
+      ),
+    ),
+  ),
   'ANON_PM_FORM_SUBMITTED' => 
   array (
     'code' => 'ANON_PM_FORM_SUBMITTED',
@@ -1078,6 +1339,40 @@ return array (
         0 => 'pum_sub_form_success',
         1 => 10,
         2 => 1,
+      ),
+    ),
+  ),
+  'POST_SMTP_EMAIL_FAILED' => 
+  array (
+    'code' => 'POST_SMTP_EMAIL_FAILED',
+    'class' => 'Uncanny_Automator\\Integrations\\Post_Smtp\\Post_Smtp_Email_Failed',
+    'integration' => 'POST_SMTP',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'POST_SMTP_FAILED_TRANSPORT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'post_smtp_on_failed',
+        1 => 10,
+        2 => 5,
+      ),
+    ),
+  ),
+  'POST_SMTP_EMAIL_SENT' => 
+  array (
+    'code' => 'POST_SMTP_EMAIL_SENT',
+    'class' => 'Uncanny_Automator\\Integrations\\Post_Smtp\\Post_Smtp_Email_Sent',
+    'integration' => 'POST_SMTP',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'POST_SMTP_TRANSPORT',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'post_smtp_on_success',
+        1 => 10,
+        2 => 4,
       ),
     ),
   ),
@@ -1333,6 +1628,40 @@ return array (
         0 => 'automator_rank_math_seo_data_saved',
         1 => 10,
         2 => 1,
+      ),
+    ),
+  ),
+  'SMUSH_IMAGE_OPTIMIZATION_SKIPPED' => 
+  array (
+    'code' => 'SMUSH_IMAGE_OPTIMIZATION_SKIPPED',
+    'class' => 'Uncanny_Automator\\Integrations\\Smush\\Smush_Image_Optimization_Skipped',
+    'integration' => 'SMUSH',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'SMUSH_SKIPPED_IMAGE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'automator_smush_optimization_skipped',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'SMUSH_IMAGE_OPTIMIZED' => 
+  array (
+    'code' => 'SMUSH_IMAGE_OPTIMIZED',
+    'class' => 'Uncanny_Automator\\Integrations\\Smush\\Smush_Image_Optimized',
+    'integration' => 'SMUSH',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'SMUSH_IMAGE',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wp_smush_image_optimised',
+        1 => 10,
+        2 => 3,
       ),
     ),
   ),
@@ -2784,6 +3113,57 @@ return array (
         0 => 'wpwhpro/admin/webhooks/webhook_trigger_sent',
         1 => 10,
         2 => 4,
+      ),
+    ),
+  ),
+  'WPCAFE_RESERVATION_CANCELLED' => 
+  array (
+    'code' => 'WPCAFE_RESERVATION_CANCELLED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wpcafe\\Wpcafe_Reservation_Cancelled',
+    'integration' => 'WPCAFE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPCAFE_CANCELLED_RESERVATION',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'transition_post_status',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'WPCAFE_RESERVATION_STATUS_CHANGED' => 
+  array (
+    'code' => 'WPCAFE_RESERVATION_STATUS_CHANGED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wpcafe\\Wpcafe_Reservation_Status_Changed',
+    'integration' => 'WPCAFE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPCAFE_RESERVATION_STATUS',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'transition_post_status',
+        1 => 10,
+        2 => 3,
+      ),
+    ),
+  ),
+  'WPCAFE_TABLE_BOOKED' => 
+  array (
+    'code' => 'WPCAFE_TABLE_BOOKED',
+    'class' => 'Uncanny_Automator\\Integrations\\Wpcafe\\Wpcafe_Table_Booked',
+    'integration' => 'WPCAFE',
+    'trigger_type' => 'anonymous',
+    'trigger_meta' => 'WPCAFE_RESERVATION',
+    'hooks' => 
+    array (
+      0 => 
+      array (
+        0 => 'wpcafe_after_reservation_create',
+        1 => 10,
+        2 => 1,
       ),
     ),
   ),

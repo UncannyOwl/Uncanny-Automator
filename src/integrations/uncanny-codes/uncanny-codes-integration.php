@@ -19,6 +19,11 @@ class Uc_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'UNCANNYCODE' );
 		$this->set_name( 'Uncanny Redemption Codes' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/uncanny-owl-icon.svg' );
+
+		$this->set_plugin_file_path( 'uncanny-learndash-codes/uncanny-learndash-codes.php' );
+		$this->set_developer_name( 'Uncanny Owl' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

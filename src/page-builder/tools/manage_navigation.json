@@ -123,7 +123,7 @@
   ],
   "output": {
     "content_type": "text/plain",
-    "description": "Plain text navigation summary with menu ids, immediate WordPress-global public impact for writes, the unchanged Page Builder live-artifact state, and NEXT STEP guidance. For wp_menu bindings, exact menus should be rendered with data-menu-id."
+    "description": "Plain text navigation summary with menu ids, immediate WordPress-global public impact for writes, the unchanged Page Builder live-artifact state, stale-menu refusals before tree writes, and NEXT STEP guidance. For wp_menu bindings, exact menus should be rendered with data-menu-id."
   },
   "auto_approve": false,
   "group": "write",

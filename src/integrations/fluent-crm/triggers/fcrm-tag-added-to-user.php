@@ -99,6 +99,11 @@ class FCRM_TAG_ADDED_TO_USER {
 			return;
 		}
 
+		// FluentCRM links contacts to accounts by email: never bind an administrator other than the logged-in user.
+		if ( ! automator_can_bind_user( $user_id ) ) {
+			return;
+		}
+
 		// Contact is already attached with tag ids. Perform recipe trigger matching.
 		$matched_recipes = Automator()
 			->helpers

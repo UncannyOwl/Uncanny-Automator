@@ -37,9 +37,11 @@ final class WorkingCanvasSource
     /**
      * @return array{sections: array<int, array<string, mixed>>, compiled_css: string, shell_mode: ShellMode, header: array<string, mixed>|null, footer: array<string, mixed>|null}
      */
-    public function read(int $pageId): array
+    public function read(int $pageId, bool $previewWorkingDraft = false): array
     {
-        $selection = $this->pageSources?->forPage($pageId);
+        // Preview reads the saved draft without resuming or publishing it.
+        // Editable responsive frames retain the normal editor source policy.
+        $selection = $previewWorkingDraft ? null : $this->pageSources?->forPage($pageId);
         $this->renderSelections[$pageId] = $selection;
         $snapshot = $selection?->loadedSource() === 'published'
             ? $selection->publishedSnapshot()

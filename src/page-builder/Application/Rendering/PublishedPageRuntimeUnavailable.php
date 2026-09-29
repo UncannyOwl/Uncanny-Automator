@@ -9,10 +9,12 @@ namespace UncannyPageBuilder\Application\Rendering;
  */
 final class PublishedPageRuntimeUnavailable extends \RuntimeException
 {
+    /** @param array<string, string> $diagnostics Safe infrastructure details, with server paths already removed. */
     public function __construct(
         private readonly string $reasonCode,
         string $message,
         ?\Throwable $previous = null,
+        private readonly array $diagnostics = [],
     ) {
         parent::__construct($message, 0, $previous);
     }
@@ -20,5 +22,11 @@ final class PublishedPageRuntimeUnavailable extends \RuntimeException
     public function reasonCode(): string
     {
         return $this->reasonCode;
+    }
+
+    /** @return array<string, string> */
+    public function diagnostics(): array
+    {
+        return $this->diagnostics;
     }
 }

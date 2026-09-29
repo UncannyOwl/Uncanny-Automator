@@ -118,7 +118,7 @@ trait Integration_Manifest {
 	protected $integration_required = array();
 
 	/**
-	 * Distribution type ('wp_org', 'commercial', 'free', 'saas').
+	 * Distribution type ('wp_org', 'open_source', 'commercial' or 'saas').
 	 *
 	 * @var string
 	 */
@@ -141,7 +141,7 @@ trait Integration_Manifest {
 	protected $integration_version = '';
 
 	/**
-	 * Integration type ('plugin', 'app', 'built-in', 'third_party').
+	 * Integration type ('plugin', 'app', 'built-in', 'addon', 'third_party').
 	 *
 	 * @var string
 	 */
@@ -435,7 +435,14 @@ trait Integration_Manifest {
 	/**
 	 * Set distribution type.
 	 *
-	 * @param string $type Distribution type ('wp_org', 'commercial', 'free', 'saas').
+	 * How the user obtains what this integration needs:
+	 *
+	 * - 'wp_org'      A plugin in the WordPress.org directory.
+	 * - 'open_source' A free plugin, but not in the directory.
+	 * - 'commercial'  A plugin that has to be bought.
+	 * - 'saas'        A hosted service the user connects an account with.
+	 *
+	 * @param string $type One of 'wp_org', 'open_source', 'commercial', 'saas'.
 	 *
 	 * @return void
 	 */
@@ -613,9 +620,15 @@ trait Integration_Manifest {
 	/**
 	 * Set integration type.
 	 *
-	 * Validates against allowed values: 'plugin', 'app', 'built-in', 'third_party'.
+	 * What this integration connects Automator to:
 	 *
-	 * @param string $type Integration type.
+	 * - 'plugin'      Another WordPress plugin, e.g. WooCommerce.
+	 * - 'app'         An external service reached over its API, e.g. Slack.
+	 * - 'built-in'    Bundled functionality with nothing to install.
+	 * - 'addon'       An Automator addon.
+	 * - 'third_party' An integration authored outside Uncanny Owl.
+	 *
+	 * @param string $type One of 'plugin', 'app', 'built-in', 'addon', 'third_party'.
 	 *
 	 * @return void
 	 * @throws InvalidArgumentException If type is invalid.
@@ -629,8 +642,18 @@ trait Integration_Manifest {
 			return;
 		}
 
-		// Validate against allowed values
-		$allowed_types = array( 'plugin', 'app', 'built-in', 'third_party' );
+		// These are the values complete.json publishes, which is what every
+		// consumer of the key reads. The marketing database spells the same
+		// concepts differently ('saas_app', 'automator_core', 'wordpress_core',
+		// 'automator_addon') and translates them on the way out, so those
+		// spellings never reach the plugin and must not be declared here.
+		$allowed_types = array(
+			'plugin',
+			'app',
+			'built-in',
+			'addon',
+			'third_party',
+		);
 		if ( ! in_array( $type, $allowed_types, true ) ) {
 			throw new InvalidArgumentException(
 				sprintf(

@@ -90,6 +90,11 @@ class ANON_FCRM_TAG_ADDED {
 
 		$user_id = absint( $subscriber->user_id );
 
+		// FluentCRM links contacts to accounts by email: an administrator other than the logged-in user is never bound.
+		if ( ! automator_can_bind_user( $user_id ) ) {
+			$user_id = 0;
+		}
+
 		$matched_recipes = Automator()->helpers->recipe->fluent_crm->match_single_condition( $attached_tag_ids, 'int', $this->trigger_meta, $this->trigger_code );
 
 		if ( ! empty( $matched_recipes ) ) {

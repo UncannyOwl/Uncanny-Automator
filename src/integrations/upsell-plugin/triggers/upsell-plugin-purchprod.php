@@ -81,6 +81,10 @@ class UPSELL_PLUGIN_PURCHPROD {
 		} else {
 			$customer = get_user_by( 'email', $order->customer_email );
 			$user_id  = ( ! empty( $customer ) ) ? $customer->ID : 0;
+			// A checkout email never binds an administrator other than the logged-in user.
+			if ( ! automator_can_bind_user( $customer ) ) {
+				$user_id = 0;
+			}
 		}
 
 		if ( 0 === $user_id ) {

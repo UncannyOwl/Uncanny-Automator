@@ -1,6 +1,6 @@
 {
   "name": "manage_media",
-  "description": "Search, read, and upload WordPress media attachments through one consolidated facade. Use operation=search to find attachments by keyword or mime type, operation=read to inspect one attachment and its available sizes, and operation=upload to create a new attachment through the existing validated upload flow.",
+  "description": "Search, read, and upload WordPress media attachments through one consolidated facade. Send search and read operations with GET. Send upload operations with POST so a read request cannot create an attachment.",
   "http": {
     "method": "MIXED",
     "path": "/wp-json/uncanny-page-builder/v1/agent/media"
@@ -12,7 +12,7 @@
       "enum": ["search", "read", "upload"],
       "required": false,
       "in": "query",
-      "description": "Optional media action. Omit operation or use search for discovery, then use read or upload as needed."
+      "description": "Optional media action. Omit operation or use search for discovery with GET. Use GET for read. Use POST for upload."
     },
     {
       "name": "search",
@@ -40,33 +40,33 @@
       "type": "string",
       "required": false,
       "in": "query",
-      "description": "Optional requested size for operation=search or read. Falls back to full."
+      "description": "Optional requested image size for operation=search or read. Output reports REQUESTED_SIZE and the actual SELECTED_SIZE; WordPress can fall back to full."
     },
     {
       "name": "image_data",
       "type": "string",
       "required": false,
       "in": "body",
-      "description": "Required base64 image payload for operation=upload. Data URLs are accepted."
+      "description": "Required POST body value for operation=upload. Supply a base64 image payload; data URLs are accepted."
     },
     {
       "name": "filename",
       "type": "string",
       "required": false,
       "in": "body",
-      "description": "Optional upload filename for operation=upload."
+      "description": "Optional POST body filename for operation=upload."
     },
     {
       "name": "alt",
       "type": "string",
       "required": false,
       "in": "body",
-      "description": "Optional attachment alt text for operation=upload."
+      "description": "Optional POST body alt text for operation=upload."
     }
   ],
   "output": {
     "content_type": "text/plain",
-    "description": "Plain text media results with attachment ids, metadata, available sizes, selected size URLs, or uploaded attachment details."
+    "description": "Plain text media results with attachment ids, metadata, available sizes, requested and actual selected size URLs, or uploaded attachment details."
   },
   "auto_approve": false,
   "group": "write"

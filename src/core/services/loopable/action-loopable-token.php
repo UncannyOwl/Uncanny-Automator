@@ -109,7 +109,7 @@ abstract class Action_Loopable_Token extends Loopable_Token {
 			return '';
 		}
 
-		$to_array = (array) maybe_unserialize( $value );
+		$to_array = (array) automator_safe_unserialize( $value );
 
 		if ( ! is_array( $to_array ) ) {
 			return '';

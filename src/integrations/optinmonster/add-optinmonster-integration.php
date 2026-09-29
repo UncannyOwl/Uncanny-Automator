@@ -27,6 +27,10 @@ class Add_Optinmonster_Integration {
 		$this->set_icon( 'optinmonster-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'optinmonster/optin-monster-wp-api.php' );
+
+		$this->set_developer_name( 'OptinMonster' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

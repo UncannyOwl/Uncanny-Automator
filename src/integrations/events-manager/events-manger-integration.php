@@ -22,6 +22,11 @@ class Events_Manager_Integration extends Integration {
 		$this->set_integration( 'EVENTSMANAGER' );
 		$this->set_name( 'Events Manager' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/events-manager-icon.svg' );
+
+		$this->set_plugin_file_path( 'events-manager/events-manager.php' );
+		$this->set_developer_name( 'Marcus Sykes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

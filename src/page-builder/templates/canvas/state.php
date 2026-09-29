@@ -26,6 +26,8 @@ $showEditorChrome = CanvasEditorChromeGate::shouldShow(
     (int) ($postId ?? 0),
     $_GET,
 );
+// Use the same runtime decision for the notice and the script output.
+$runtimeScripts = $renderer->renderCustomJavaScript($postId, $headerData ?? null, $footerData ?? null);
 $isGlobalPartCanvas = is_singular('upb_global_part');
 $hasCanvasSections = is_array($sections ?? null) && count($sections) > 0;
 $shellModeValue = $shellMode instanceof ShellMode

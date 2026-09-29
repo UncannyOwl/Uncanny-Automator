@@ -41,6 +41,11 @@ final class AdminCanvasPage
         return admin_url('admin.php?page=' . self::PAGE_SLUG . '&canvas_id=' . $postId);
     }
 
+    public static function previewUrl(int $postId): string
+    {
+        return add_query_arg('upb_preview', '1', self::editorUrl($postId));
+    }
+
     public function __construct(
         private readonly SectionRepositoryInterface $repository,
         private readonly CanvasRenderer $canvasRenderer,

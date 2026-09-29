@@ -41,5 +41,10 @@ class Bricks_Builder_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'BRICKS_BUILDER' );
 		$this->set_name( 'Bricks Builder' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/bricks-builder-icon.svg' );
+
+		$this->set_plugin_file_path( 'bricks/bricks.php' );
+		$this->set_developer_name( 'Bricks' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 }

@@ -28,13 +28,7 @@
 	word-break: normal !important;
 }
 
-/* ─── Editable Markers ───────────────────────────────────────── */
-
-[data-ai-editable].upb-hover {
-	outline: 2px dashed rgba(51, 102, 255, 0.6);
-	outline-offset: 4px;
-	cursor: pointer;
-}
+/* ─── Rich Text ──────────────────────────────────────────────── */
 
 .upb-active[contenteditable="true"] {
 	/* The caret and inline toolbar already communicate active editing state. */
@@ -52,9 +46,15 @@
 	bottom: 0;
 	z-index: 9998;
 	display: flex;
+	/* Centre the canvas both ways, as the WordPress editor does. */
+	flex-direction: column;
+	align-items: center;
 	justify-content: center;
+	/* Room around the canvas, and for the resize handles outside it. */
+	padding: 24px;
+	box-sizing: border-box;
 	background: #f0f0f1;
-	overflow: auto;
+	overflow: hidden;
 }
 
 .upb-preview-iframe {
@@ -63,4 +63,86 @@
 	border: 0;
 	background: #ffffff;
 	box-shadow: 0 0 0 1px #dcdcde;
+}
+
+/*
+ * The resizable canvas and its handles. Sizes, offsets and colours follow the
+ * WordPress editor's resizable-editor stylesheet, so the two feel the same.
+ */
+.upb-preview-resizable {
+	overflow: visible;
+	margin: 0 auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.upb-preview-resizable:not(.is-resizing) {
+		transition:
+			width 0.2s ease-out,
+			height 0.2s ease-out;
+	}
+}
+
+.upb-preview-slot,
+.upb-preview-resizable .upb-preview-iframe {
+	width: 100%;
+	height: 100%;
+}
+
+/* The iframe would swallow the pointer and stall the drag. */
+.upb-preview-resizable.is-resizing .upb-preview-iframe {
+	pointer-events: none;
+}
+
+.upb-preview-resize-handle {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 12px;
+	height: 100px;
+	margin: auto 0;
+	padding: 0;
+	border: 0;
+	border-radius: 9999px;
+	outline: none;
+	background: none;
+	cursor: ew-resize;
+	appearance: none;
+}
+
+.upb-preview-resize-handle::after {
+	content: "";
+	position: absolute;
+	top: 16px;
+	right: 0;
+	bottom: 16px;
+	left: 4px;
+	width: 4px;
+	border-radius: 9999px;
+	background-color: rgba(47, 47, 47, 0.4);
+}
+
+.upb-preview-resize-handle.is-left {
+	left: -18px;
+}
+
+.upb-preview-resize-handle.is-right {
+	right: -18px;
+}
+
+.upb-preview-resize-handle:hover::after,
+.upb-preview-resize-handle:focus::after,
+.upb-preview-resize-handle:active::after {
+	background-color: var(--wp-admin-theme-color, #3858e9);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.upb-preview-resize-handle {
+		transition: transform 0.1s ease-out;
+	}
+
+	.upb-preview-resize-handle:hover,
+	.upb-preview-resize-handle:focus,
+	.upb-preview-resize-handle:active {
+		transform: scaleY(1.3);
+	}
 }

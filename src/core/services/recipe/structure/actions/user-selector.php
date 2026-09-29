@@ -37,7 +37,7 @@ class User_Selector {
 		$fields = isset( $this->data_source['fields'] ) ? $this->data_source['fields'] : array();
 		$source = isset( $this->data_source['source'] ) ? $this->data_source['source'] : array();
 
-		$this->fields = (array) maybe_unserialize( $fields );
+		$this->fields = (array) automator_safe_unserialize( $fields );
 
 		$defaults = array(
 			'uniqueField'      => null,

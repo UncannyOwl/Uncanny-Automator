@@ -352,6 +352,7 @@ final class McpPayloadContextResolver
      * @return array{
      *     page_custom_javascript_enabled: bool,
      *     global_part_custom_javascript_enabled: bool,
+     *     editor_custom_javascript_enabled: bool,
      *     approved_libraries: array{anime: bool, swiper: bool},
      *     approved_library_slugs: list<string>
      * }
@@ -361,6 +362,7 @@ final class McpPayloadContextResolver
         return [
             'page_custom_javascript_enabled' => $this->toolSettingsAccess->pageCustomJavaScriptEnabled(),
             'global_part_custom_javascript_enabled' => $this->toolSettingsAccess->globalPartCustomJavaScriptEnabled(),
+            'editor_custom_javascript_enabled' => false,
             'approved_libraries' => $this->toolSettingsAccess->approvedLibraries(),
             'approved_library_slugs' => $this->toolSettingsAccess->approvedLibrarySlugs(),
         ];

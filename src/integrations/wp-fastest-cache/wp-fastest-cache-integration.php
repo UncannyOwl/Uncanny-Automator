@@ -19,6 +19,11 @@ class Wp_Fastest_Cache_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'WP_FASTEST_CACHE' );
 		$this->set_name( 'WP Fastest Cache' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/wp-fastest-cache-icon.svg' );
+
+		$this->set_plugin_file_path( 'wp-fastest-cache/wpFastestCache.php' );
+		$this->set_developer_name( 'Emre Vona' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

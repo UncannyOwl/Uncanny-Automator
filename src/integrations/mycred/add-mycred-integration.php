@@ -27,6 +27,10 @@ class Add_Mycred_Integration {
 		$this->set_icon( 'mycred-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'mycred/mycred.php' );
+
+		$this->set_developer_name( 'myCred' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

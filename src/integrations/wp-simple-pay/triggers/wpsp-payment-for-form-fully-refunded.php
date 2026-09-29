@@ -87,6 +87,10 @@ class WPSP_PAYMENT_FOR_FORM_FULLY_REFUNDED extends Trigger {
 		$billing_email = $charge->billing_details->email;
 		if ( is_email( $billing_email ) ) {
 			$user_id = false === email_exists( $billing_email ) ? 0 : email_exists( $billing_email );
+			// A typed billing email never binds an administrator other than the logged-in user.
+			if ( ! automator_can_bind_user( $user_id ) ) {
+				$user_id = 0;
+			}
 			$this->set_user_id( $user_id );
 		}
 

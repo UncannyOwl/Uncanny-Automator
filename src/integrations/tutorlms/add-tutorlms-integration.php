@@ -36,6 +36,10 @@ class Add_Tutorlms_Integration {
 		$this->set_icon( 'tutorlms-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
 		$this->set_plugin_file_path( 'tutor/tutor.php' );
+
+		$this->set_developer_name( 'Themeum' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

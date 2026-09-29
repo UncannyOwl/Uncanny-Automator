@@ -19,6 +19,11 @@ class Aioseo_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'AIOSEO' );
 		$this->set_name( 'All in One SEO' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/aioseo-icon.svg' );
+
+		$this->set_plugin_file_path( 'all-in-one-seo-pack/all_in_one_seo_pack.php' );
+		$this->set_developer_name( 'All in One SEO' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

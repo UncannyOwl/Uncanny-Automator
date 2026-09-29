@@ -230,6 +230,11 @@ final class PageEditorMetaBoxes
                 array_keys($sourceSections),
             );
 
+            // Order controls and code rows must use the same source snapshot.
+            $sectionOrderEnabled = ($sourceState['loaded_source'] ?? '') === 'working'
+                && $this->permissions->canEditPost($post->ID);
+            $workingGeneration = (int) ($sourceState['working_generation'] ?? 0);
+
             $sectionCodeData = [];
             foreach ($sourceSections as $sourceSection) {
                 $sectionId = (int) ($sourceSection['id'] ?? 0);

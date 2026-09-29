@@ -220,10 +220,7 @@ final class WpOriginalPageContentStore implements OriginalPageContentStoreInterf
 
     private function unserializeMetadata(string $value): mixed
     {
-        if (function_exists('maybe_unserialize')) {
-            return maybe_unserialize($value);
-        }
-
+        // Never instantiate objects from stored metadata (PHP Object Injection).
         if (!preg_match('/^(?:a|s|i|b|d|O|C|E|N):/', $value)) {
             return $value;
         }

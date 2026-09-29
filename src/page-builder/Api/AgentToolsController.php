@@ -8,6 +8,7 @@ use UncannyPageBuilder\Api\ApiResponse;
 use UncannyPageBuilder\Application\Agent\AgentToolRegistryAdapter;
 use UncannyPageBuilder\Application\Controls\ControlRegistry;
 use UncannyPageBuilder\Application\Filesystem\LocalFileReaderInterface;
+use UncannyPageBuilder\Application\Observability\FailureReporterInterface;
 
 /**
  * Serves the page-building tool contract for agent discovery.
@@ -23,6 +24,7 @@ final class AgentToolsController
         private readonly PermissionChecker $permissions,
         private readonly LocalFileReaderInterface $filesystem,
         private readonly ?ControlRegistry $registry = null,
+        private readonly ?FailureReporterInterface $failureReporter = null,
     ) {}
 
     public function registerRoutes(): void
@@ -36,7 +38,20 @@ final class AgentToolsController
 
     public function index(\WP_REST_Request $request): \WP_REST_Response
     {
-        return ApiResponse::ok(self::contract($this->filesystem, $this->registry))->toResponse();
+        try {
+            return ApiResponse::ok(self::contract($this->filesystem, $this->registry))->toResponse();
+        } catch (\Throwable $failure) {
+            try {
+                $this->failureReporter?->report('agent tools', 0, 'discovery', $failure);
+            } catch (\Throwable) {
+                // Diagnostic failure cannot escape the REST boundary.
+            }
+
+            return new \WP_REST_Response([
+                'code' => 'agent_tools_unavailable',
+                'message' => 'The Page Builder tool contract could not be loaded.',
+            ], 500);
+        }
     }
 
     /**

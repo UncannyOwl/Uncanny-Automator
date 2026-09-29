@@ -1,141 +1,124 @@
 <?php
 
-namespace Uncanny_Automator;
+namespace Uncanny_Automator\Integrations\Formidable;
+
+use Uncanny_Automator\Recipe\Trigger;
 
 /**
  * Class FI_SUBMITFORM
  *
  * @package Uncanny_Automator
+ *
+ * @property Formidable_Helpers $item_helpers
  */
-class FI_SUBMITFORM {
+class FI_SUBMITFORM extends Trigger {
 
 	/**
-	 * Integration code
+	 * Declare the trigger so the engine can register its hook without
+	 * constructing the class on every frontend request.
 	 *
-	 * @var string
+	 * @return object
 	 */
-	public static $integration = 'FI';
-
-	private $trigger_code;
-	private $trigger_meta;
-
-	/**
-	 * @var Formidable_Helpers
-	 */
-	private $fi_helper;
-
-	/**
-	 * Set up Automator trigger constructor.
-	 */
-	public function __construct() {
-		$this->trigger_code = 'FISUBMITFORM';
-		$this->trigger_meta = 'FIFORM';
-		$this->fi_helper    = new Formidable_Helpers();
-		$this->define_trigger();
+	public static function definition() {
+		return self::new_definition( 'FISUBMITFORM', 'FI' )
+			->trigger_meta( 'FIFORM' )
+			->hook( 'frm_after_create_entry', 10, 2 );
 	}
 
 	/**
-	 * Define and register the trigger by pushing it into the Automator object
+	 * Trigger setup.
+	 *
+	 * @return void
 	 */
-	public function define_trigger() {
-		$trigger = array(
-			'author'              => Automator()->get_author_name(),
-			'support_link'        => Automator()->get_author_support_link( $this->trigger_code, 'integration/formidable-forms/' ),
-			'integration'         => self::$integration,
-			'code'                => $this->trigger_code,
-			/* translators: Logged-in trigger - Formidable */
-			'sentence'            => sprintf( esc_attr_x( 'A user submits {{a form:%1$s}}', 'Formidable', 'uncanny-automator' ), $this->trigger_meta ),
-			/* translators: Logged-in trigger - Formidable */
-			'select_option_name'  => esc_attr_x( 'A user submits {{a form}}', 'Formidable', 'uncanny-automator' ),
-			'action'              => 'frm_after_create_entry',
-			'priority'            => 10,
-			'accepted_args'       => 2,
-			'validation_function' => array( $this, 'fi_submit_form' ),
-			'options_callback'    => array( $this, 'load_options' ),
-		);
+	protected function setup_trigger() {
+		// integration / code / trigger_meta / trigger_type / hook are auto-applied from definition().
+		$this->set_is_pro( false );
+		$this->set_is_login_required( true );
+		$this->set_support_link( Automator()->get_author_support_link( $this->get_trigger_code(), 'integration/formidable-forms/' ) );
 
-		Automator()->register->trigger( $trigger );
+		/* translators: %1$s is the form selector */
+		$this->set_sentence( sprintf( esc_html_x( 'A user submits {{a form:%1$s}}', 'Formidable', 'uncanny-automator' ), $this->get_trigger_meta() ) );
+		$this->set_readable_sentence( esc_html_x( 'A user submits {{a form}}', 'Formidable', 'uncanny-automator' ) );
 	}
 
 	/**
-	 * @return array[]
+	 * Trigger fields.
+	 *
+	 * @return array
 	 */
-	public function load_options() {
-		return Automator()->utilities->keep_order_of_options(
-			array(
-				'options' => array(
-					$this->fi_helper->all_formidable_forms( null, $this->trigger_meta ),
-				),
-			)
+	public function options() {
+		return array(
+			$this->item_helpers->get_form_option_config( $this->get_trigger_meta() ),
 		);
 	}
 
 	/**
-	 * Validation function when the trigger action is hit
+	 * Token definitions, including one per field of the selected form.
 	 *
-	 * @param $entry
-	 * @param $form_id
+	 * @param array $trigger
+	 * @param array $tokens
+	 *
+	 * @return array
 	 */
-	public function fi_submit_form( $entry_id, $form_id ) {
-		$user_id = get_current_user_id();
-		if ( empty( $user_id ) ) {
-			return;
+	public function define_tokens( $trigger, $tokens ) {
+
+		$meta        = $this->get_trigger_meta();
+		$form_id     = absint( $trigger['meta'][ $meta ] ?? 0 );
+		$token_class = $this->item_helpers->tokens();
+
+		return array_merge(
+			$tokens,
+			$token_class->entry_tokens(),
+			$token_class->form_tokens( $meta ),
+			$token_class->form_field_tokens( $form_id, $meta )
+		);
+	}
+
+	/**
+	 * Does this submission match the form the recipe selected?
+	 *
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
+	 * @return bool
+	 */
+	public function validate( $trigger, $hook_args ) {
+
+		list( $entry_id, $form_id ) = array_pad( $hook_args, 2, null );
+
+		if ( empty( $entry_id ) || empty( $form_id ) ) {
+			return false;
+		}
+
+		$selected = $trigger['meta'][ $this->get_trigger_meta() ] ?? '';
+
+		if ( intval( '-1' ) !== intval( $selected ) && absint( $form_id ) !== absint( $selected ) ) {
+			return false;
 		}
 
 		// Drafts and Form Abandonment "In progress" entries fire this hook too.
-		if ( ! $this->fi_helper->is_completed_entry( $entry_id ) ) {
-			return;
-		}
+		return $this->item_helpers->is_completed_entry( $entry_id );
+	}
 
-		$args = array(
-			'code'    => $this->trigger_code,
-			'meta'    => $this->trigger_meta,
-			'post_id' => absint( $form_id ),
-			'user_id' => absint( $user_id ),
+	/**
+	 * Token values for this submission.
+	 *
+	 * @param array $trigger
+	 * @param array $hook_args
+	 *
+	 * @return array
+	 */
+	public function hydrate_tokens( $trigger, $hook_args ) {
+
+		list( $entry_id, $form_id ) = array_pad( $hook_args, 2, null );
+
+		$meta        = $this->get_trigger_meta();
+		$token_class = $this->item_helpers->tokens();
+
+		return array_merge(
+			$token_class->hydrate_entry_tokens( $entry_id ),
+			$token_class->hydrate_form_tokens( $form_id, $meta ),
+			$token_class->hydrate_form_field_tokens( $entry_id, $form_id, $meta )
 		);
-
-		$result = Automator()->maybe_add_trigger_entry( $args, false );
-
-		if ( $result ) {
-			foreach ( $result as $r ) {
-				if ( true === $r['result'] ) {
-					if ( isset( $r['args'] ) && isset( $r['args']['get_trigger_id'] ) ) {
-						//Saving form values in trigger log meta for token parsing!
-						$fi_args = array(
-							'trigger_id'     => (int) $r['args']['trigger_id'],
-							'user_id'        => $user_id,
-							'trigger_log_id' => $r['args']['get_trigger_id'],
-							'run_number'     => $r['args']['run_number'],
-						);
-
-						$fi_args['meta_key'] = $this->trigger_meta;
-						$this->fi_helper->extract_save_fi_fields( $entry_id, $form_id, $fi_args );
-
-						$fi_args['meta_key']   = 'FIENTRYID';
-						$fi_args['meta_value'] = $entry_id;
-						Automator()->insert_trigger_meta( $fi_args );
-
-						global $wpdb;
-						$entries     = $wpdb->get_row( $wpdb->prepare( "SELECT it.*, fr.name as form_name, fr.form_key as form_key FROM {$wpdb->prefix}frm_items it LEFT OUTER JOIN {$wpdb->prefix}frm_forms fr ON it.form_id=fr.id WHERE it.id = %d", $entry_id ) );
-						$description = json_decode( $entries->description );
-
-						$fi_args['meta_key']   = 'FIUSERIP';
-						$fi_args['meta_value'] = maybe_serialize( $entries->ip );
-						Automator()->insert_trigger_meta( $fi_args );
-
-						$date_format           = __( 'M j, Y @ G:i', 'formidable' ); // phpcs:ignore WordPress.WP.I18n.TextDomainMismatch, Uncanny_Automator.Strings -- reuses Formidable's own translation.
-						$fi_args['meta_key']   = 'FIENTRYDATE';
-						$fi_args['meta_value'] = maybe_serialize( \FrmAppHelper::get_localized_date( $date_format, $entries->created_at ) );
-						Automator()->insert_trigger_meta( $fi_args );
-
-						$fi_args['meta_key']   = 'FIENTRYSOURCEURL';
-						$fi_args['meta_value'] = maybe_serialize( $description->referrer );
-						Automator()->insert_trigger_meta( $fi_args );
-					}
-
-					Automator()->maybe_trigger_complete( $r['args'] );
-				}
-			}
-		}
 	}
 }

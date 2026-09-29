@@ -139,11 +139,11 @@ return array(
 		),
 	),
 	'armember' => array(
-		'main' => $baseDir . '/src/integrations/armember/add-armember-integration.php',
 		'actions' => array(
 			$baseDir . '/src/integrations/armember/actions/armember-membership-plan-cancelled.php',
 		),
 		'helpers' => array(
+			$baseDir . '/src/integrations/armember/helpers/armember-helpers-new.php',
 			$baseDir . '/src/integrations/armember/helpers/armember-helpers.php',
 		),
 		'tokens' => array(
@@ -362,6 +362,22 @@ return array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/campaign-monitor/helpers/campaign-monitor-api-caller.php',
 			$baseDir . '/src/integrations/campaign-monitor/helpers/campaign-monitor-app-helpers.php',
+		),
+	),
+	'cartflows' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/cartflows/actions/cartflows-create-flow.php',
+			$baseDir . '/src/integrations/cartflows/actions/cartflows-create-step.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/cartflows/helpers/cartflows-helpers.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/cartflows/tokens/cartflows-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/cartflows/triggers/cartflows-user-completes-checkout.php',
+			$baseDir . '/src/integrations/cartflows/triggers/cartflows-user-purchases-product.php',
 		),
 	),
 	'charitable' => array(
@@ -659,6 +675,26 @@ return array(
 			$baseDir . '/src/integrations/emails/helpers/emails-helpers.php',
 		),
 	),
+	'eventin' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/eventin/actions/eventin-add-attendee.php',
+			$baseDir . '/src/integrations/eventin/actions/eventin-check-in-attendee.php',
+			$baseDir . '/src/integrations/eventin/actions/eventin-update-order-status.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/eventin/helpers/eventin-helpers.php',
+		),
+		'tokens' => array(
+			$baseDir . '/src/integrations/eventin/tokens/eventin-tokens.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/eventin/triggers/eventin-attendee-checked-in.php',
+			$baseDir . '/src/integrations/eventin/triggers/eventin-attendee-registered.php',
+			$baseDir . '/src/integrations/eventin/triggers/eventin-event-created.php',
+			$baseDir . '/src/integrations/eventin/triggers/eventin-event-updated.php',
+			$baseDir . '/src/integrations/eventin/triggers/eventin-ticket-purchased.php',
+		),
+	),
 	'events-manager' => array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/events-manager/helpers/events-manager-helpers.php',
@@ -825,12 +861,13 @@ return array(
 		),
 	),
 	'formidable' => array(
-		'main' => $baseDir . '/src/integrations/formidable/add-fi-integration.php',
 		'helpers' => array(
+			$baseDir . '/src/integrations/formidable/helpers/formidable-helpers-new.php',
 			$baseDir . '/src/integrations/formidable/helpers/formidable-helpers.php',
 		),
 		'tokens' => array(
-			$baseDir . '/src/integrations/formidable/tokens/fi-tokens.php',
+			$baseDir . '/src/integrations/formidable/tokens/formidable-field-tokens.php',
+			$baseDir . '/src/integrations/formidable/tokens/formidable-tokens.php',
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/formidable/triggers/anon-fi-submitform.php',
@@ -1299,6 +1336,24 @@ return array(
 			$baseDir . '/src/integrations/logging/helpers/logging-helpers.php',
 		),
 	),
+	'loginizer' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/loginizer/actions/loginizer-add-ip-to-blacklist.php',
+			$baseDir . '/src/integrations/loginizer/actions/loginizer-add-ip-to-whitelist.php',
+			$baseDir . '/src/integrations/loginizer/actions/loginizer-clear-failed-logins.php',
+			$baseDir . '/src/integrations/loginizer/actions/loginizer-remove-ip-from-blacklist.php',
+			$baseDir . '/src/integrations/loginizer/actions/loginizer-remove-ip-from-whitelist.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/loginizer/helpers/loginizer-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/loginizer/triggers/loginizer-login-blocked.php',
+			$baseDir . '/src/integrations/loginizer/triggers/loginizer-login-failed.php',
+			$baseDir . '/src/integrations/loginizer/triggers/loginizer-social-registration.php',
+			$baseDir . '/src/integrations/loginizer/triggers/loginizer-user-logs-in.php',
+		),
+	),
 	'mailchimp' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/mailchimp/actions/audience-addauser.php',
@@ -1644,6 +1699,15 @@ return array(
 			$baseDir . '/src/integrations/popup-maker/triggers/user-pm-sub-form-submitted.php',
 		),
 	),
+	'post-smtp' => array(
+		'helpers' => array(
+			$baseDir . '/src/integrations/post-smtp/helpers/post-smtp-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/post-smtp/triggers/post-smtp-email-failed.php',
+			$baseDir . '/src/integrations/post-smtp/triggers/post-smtp-email-sent.php',
+		),
+	),
 	'presto' => array(
 		'helpers' => array(
 			$baseDir . '/src/integrations/presto/helpers/presto-helpers.php',
@@ -1808,6 +1872,19 @@ return array(
 			$baseDir . '/src/integrations/slicewp/triggers/slicewp-becomes-affiliate.php',
 		),
 	),
+	'smush' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/smush/actions/smush-optimize-image.php',
+			$baseDir . '/src/integrations/smush/actions/smush-restore-image.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/smush/helpers/smush-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/smush/triggers/smush-image-optimization-skipped.php',
+			$baseDir . '/src/integrations/smush/triggers/smush-image-optimized.php',
+		),
+	),
 	'stripe' => array(
 		'actions' => array(
 			$baseDir . '/src/integrations/stripe/actions/create-customer.php',
@@ -1846,6 +1923,18 @@ return array(
 			$baseDir . '/src/integrations/studiocart/triggers/studiocart-usercompletesorder.php',
 			$baseDir . '/src/integrations/studiocart/triggers/studiocart-userorderrefunded.php',
 			$baseDir . '/src/integrations/studiocart/triggers/studiocart-userpurchasesproduct.php',
+		),
+	),
+	'sucuri' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/sucuri/actions/sucuri-apply-hardening.php',
+			$baseDir . '/src/integrations/sucuri/actions/sucuri-log-security-event.php',
+			$baseDir . '/src/integrations/sucuri/actions/sucuri-remove-hardening.php',
+			$baseDir . '/src/integrations/sucuri/actions/sucuri-reset-user-password.php',
+			$baseDir . '/src/integrations/sucuri/actions/sucuri-run-malware-scan.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/sucuri/helpers/sucuri-helpers.php',
 		),
 	),
 	'sugar-calendar' => array(
@@ -2662,6 +2751,20 @@ return array(
 		),
 		'triggers' => array(
 			$baseDir . '/src/integrations/wp-webhooks/triggers/wpwh-triggertriggered.php',
+		),
+	),
+	'wpcafe' => array(
+		'actions' => array(
+			$baseDir . '/src/integrations/wpcafe/actions/wpcafe-create-reservation.php',
+			$baseDir . '/src/integrations/wpcafe/actions/wpcafe-update-reservation-status.php',
+		),
+		'helpers' => array(
+			$baseDir . '/src/integrations/wpcafe/helpers/wpcafe-helpers.php',
+		),
+		'triggers' => array(
+			$baseDir . '/src/integrations/wpcafe/triggers/wpcafe-reservation-cancelled.php',
+			$baseDir . '/src/integrations/wpcafe/triggers/wpcafe-reservation-status-changed.php',
+			$baseDir . '/src/integrations/wpcafe/triggers/wpcafe-table-booked.php',
 		),
 	),
 	'wpcode' => array(

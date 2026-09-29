@@ -17,6 +17,12 @@ class Duplicator_Integration extends \Uncanny_Automator\Integration {
 		$this->set_integration( 'DUPLICATOR' );
 		$this->set_name( 'Duplicator' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/duplicator-icon.svg' );
+
+		$this->set_plugin_file_path( 'duplicator/duplicator.php' );
+		$this->set_plugin_variations( array( 'duplicator-pro/duplicator-pro.php' ) );
+		$this->set_developer_name( 'Duplicator' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

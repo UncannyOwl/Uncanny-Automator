@@ -166,7 +166,7 @@ class WPF_TOPIC_ADDED_TOKENS {
 		$meta_value = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->prefix}uap_trigger_log_meta WHERE meta_key = %s AND automator_trigger_id = %d ORDER BY ID DESC LIMIT 0,1", $meta_key, $trigger_id ) );
 
 		if ( ! empty( $meta_value ) ) {
-			return maybe_unserialize( $meta_value );
+			return automator_safe_unserialize( $meta_value );
 		}
 
 		return '';

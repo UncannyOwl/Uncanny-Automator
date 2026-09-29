@@ -170,7 +170,7 @@ class Token_Validator {
 					}
 				}
 			}
-		} catch ( \Exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Diagnostics should not throw.
 		}
 
@@ -288,7 +288,7 @@ class Token_Validator {
 					$valid_tokens = array_merge( $valid_tokens, $this->extract_tokens_from_items_recursive( $actions ) );
 				}
 			}
-		} catch ( \Exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Log error if WP_DEBUG is enabled, but continue with already collected tokens.
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -468,7 +468,7 @@ class Token_Validator {
 					$tokens[] = '{{' . $token_id . '}}';
 				}
 			}
-		} catch ( \Exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Fail gracefully - return empty if registry fails.
 			return array();
 		}

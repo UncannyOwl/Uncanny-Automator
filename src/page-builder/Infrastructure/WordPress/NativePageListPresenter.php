@@ -161,14 +161,44 @@ final class NativePageListPresenter
         ];
 
         foreach ($actions as $key => $action) {
-            if ($key === 'edit') {
+            if ($key === 'edit' || $key === 'view') {
                 continue;
             }
 
             $updatedActions[$key] = $action;
         }
 
-        return $updatedActions;
+        return $updatedActions + $this->previewActions($post, $pageTitle);
+    }
+
+    /** @return array<string, string> */
+    private function previewActions(\WP_Post $post, string $pageTitle): array
+    {
+        // WordPress's native preview URL still reads the public artifact. Draft
+        // previews must use the authenticated working canvas, as the editor does.
+        $draftUrl = AdminCanvasPage::previewUrl($post->ID);
+        $draftLabel = sprintf(
+            /* translators: %s: Page title. */
+            _x('Preview draft of “%s”', 'Page Builder', 'uncanny-automator'),
+            $pageTitle,
+        );
+        $actions = [
+            'preview_draft' => '<a href="' . esc_url($draftUrl) . '" aria-label="' . esc_attr($draftLabel) . '" target="_blank" rel="noopener">'
+                . esc_html_x('Preview draft', 'Page Builder', 'uncanny-automator') . '</a>',
+        ];
+
+        $liveUrl = $post->post_status === 'publish' ? get_permalink($post->ID) : false;
+        if (is_string($liveUrl) && $liveUrl !== '') {
+            $liveLabel = sprintf(
+                /* translators: %s: Page title. */
+                _x('Preview live version of “%s”', 'Page Builder', 'uncanny-automator'),
+                $pageTitle,
+            );
+            $actions['view'] = '<a href="' . esc_url($liveUrl) . '" aria-label="' . esc_attr($liveLabel) . '" target="_blank" rel="noopener">'
+                . esc_html_x('Preview live', 'Page Builder', 'uncanny-automator') . '</a>';
+        }
+
+        return $actions;
     }
 
     /**

@@ -29,6 +29,9 @@ class Add_Make_Integration {
 
 		$this->set_icon( __DIR__ . '/img/make-icon.svg' );
 
+		$this->set_developer_name( 'Make' );
+		$this->set_integration_type( 'built-in' );
+		$this->set_distribution_type( 'saas' );
 	}
 
 	/**

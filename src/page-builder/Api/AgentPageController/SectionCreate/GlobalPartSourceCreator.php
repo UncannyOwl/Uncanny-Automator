@@ -53,8 +53,9 @@ final class GlobalPartSourceCreator
         }
 
         try {
-            $result = $this->globalParts->replaceExisting(
+            $result = $this->globalParts->bootstrapLoadedBlankSource(
                 $globalPartId,
+                $existing,
                 $title,
                 [
                     'name' => $name !== '' ? $name : $title,
@@ -62,6 +63,9 @@ final class GlobalPartSourceCreator
                 ],
                 GlobalPartType::fromString($partType),
             );
+            if ((int) ($result['section_id'] ?? 0) <= 0) {
+                throw new \RuntimeException('The saved global part source did not return its section identity.');
+            }
         } catch (SectionValidationException $exception) {
             return $this->responses->error('create_section', 422, 'global_part_validation_failed', [
                 'KIND: global_part',
@@ -82,26 +86,9 @@ final class GlobalPartSourceCreator
             );
         }
 
-        $section = $this->globalParts->sourceSection($globalPartId);
-        if (!$section instanceof Section) {
-            return $this->responses->error(
-                'create_section',
-                500,
-                'global_part_source_bootstrap_failed',
-                [
-                    'KIND: global_part',
-                    'GLOBAL_PART_ID: ' . $globalPartId,
-                    'PART_TYPE: ' . $partType,
-                    'NEXT STEP',
-                    'Refresh the reusable canvas and retry once.',
-                ],
-            );
-        }
-
         return $this->responses->globalPartSuccess(
             $globalPartId,
             $partType,
-            $section,
             $result,
         );
     }

@@ -19,6 +19,11 @@ class Thrive_Leads_Integration extends Integration {
 		$this->set_integration( 'THRIVELEADS' );
 		$this->set_name( 'Thrive Leads' );
 		$this->set_icon_url( plugin_dir_url( __FILE__ ) . 'img/thrive-leads-icon.svg' );
+
+		$this->set_plugin_file_path( 'thrive-leads/thrive-leads.php' );
+		$this->set_developer_name( 'Thrive Themes' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'commercial' );
 	}
 
 	/**

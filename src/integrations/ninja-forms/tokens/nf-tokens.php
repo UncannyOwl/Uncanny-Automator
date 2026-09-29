@@ -157,7 +157,7 @@ class Nf_Tokens {
 						$trigger_id
 					)
 				);
-				$entry          = maybe_unserialize( $entry );
+				$entry          = automator_safe_unserialize( $entry );
 				$to_match       = "{$trigger_id}:{$trigger_meta}:{$field}";
 				if ( is_array( $entry ) && key_exists( $to_match, $entry ) ) {
 					$value = $entry[ $to_match ];

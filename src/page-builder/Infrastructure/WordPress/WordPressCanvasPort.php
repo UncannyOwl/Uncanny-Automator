@@ -9,12 +9,14 @@ use UncannyPageBuilder\Application\Canvas\AttachReusableToCanvasResult;
 use UncannyPageBuilder\Application\Canvas\CanvasPortInterface;
 use UncannyPageBuilder\Application\Canvas\DeleteCanvasResult;
 use UncannyPageBuilder\Application\Controls\PageDetailsPortInterface;
+use UncannyPageBuilder\Application\Controls\PageTitleUpdatePortInterface;
 use UncannyPageBuilder\Application\Concurrency\GlobalSourceMutation;
 use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\Publishing\WorkingCanvasRefresherInterface;
 use UncannyPageBuilder\Application\ShellModeService;
 use UncannyPageBuilder\Application\SectionService;
 use UncannyPageBuilder\Domain\Canvas\Canvas;
+use UncannyPageBuilder\Domain\Canvas\CanvasCreationUncertainException;
 use UncannyPageBuilder\Domain\Canvas\CanvasKind;
 use UncannyPageBuilder\Domain\Exception\CanvasNotFoundException;
 use UncannyPageBuilder\Domain\Exception\PageNotFoundException;
@@ -25,11 +27,14 @@ use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\Section\Section;
 use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
 use UncannyPageBuilder\Domain\Shell\ShellMode;
+use UncannyPageBuilder\Infrastructure\Persistence\WordPressWriteVerificationException;
 
 final class WordPressCanvasPort implements CanvasPortInterface
 {
+    private const WORKING_CANVAS_REFRESH_WARNING = 'The page layout was saved, but the working canvas could not be refreshed.';
     private const GLOBAL_PART_POST_TYPE = 'upb_global_part';
     private const GLOBAL_PART_TYPE_META = '_upb_global_part_type';
+    private const CREATION_MARKER_PREFIX = 'uncanny-page-builder:create:';
 
     public function __construct(
         private readonly SectionRepositoryInterface $sectionRepository,
@@ -37,7 +42,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
         private readonly SectionService $sectionService,
         private readonly GlobalPartService $globalPartService,
         private readonly ShellModeService $shellModeService,
-        private readonly PageDetailsPortInterface $pageDetails,
+        private readonly PageDetailsPortInterface&PageTitleUpdatePortInterface $pageDetails,
         private readonly GlobalSourceMutation $globalSource,
         private readonly ?WorkingCanvasRefresherInterface $workingCanvas = null,
         private readonly SupportsPostTypeUseCase $supportsPostType = new SupportsPostTypeUseCase(),
@@ -147,12 +152,14 @@ final class WordPressCanvasPort implements CanvasPortInterface
             ? _x('Untitled page', 'Page Builder', 'uncanny-automator')
             : $resolvedTitle;
         $initialSlug = $isUntitled ? '' : sanitize_title($initialTitle);
+        $creationMarker = self::CREATION_MARKER_PREFIX . bin2hex(random_bytes(16));
 
         $post = [
             'post_type'   => 'page',
-            'post_title'  => $initialTitle,
+            'post_title'  => WordPressSlashing::slash($initialTitle),
             'post_status' => 'draft',
             'post_author' => get_current_user_id(),
+            'post_content_filtered' => $creationMarker,
         ];
 
         /*
@@ -165,7 +172,16 @@ final class WordPressCanvasPort implements CanvasPortInterface
             $post['post_name'] = $initialSlug;
         }
 
-        $pageId = wp_insert_post($post, true);
+        try {
+            $pageId = wp_insert_post($post, true);
+        } catch (\Throwable $failure) {
+            $recoveredPageId = $this->pageIdForCreationMarker($creationMarker);
+            if ($recoveredPageId > 0) {
+                $this->rethrowAfterCreatedPostCleanup($recoveredPageId, $failure, 'page');
+            }
+
+            throw $failure;
+        }
 
         if ($pageId instanceof \WP_Error || (int) $pageId <= 0) {
             throw new \RuntimeException(
@@ -206,6 +222,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
             if (!$canvas instanceof Canvas) {
                 throw new \RuntimeException('Created page canvas could not be loaded.');
             }
+            $this->clearCreationMarker($pageId, $creationMarker);
 
             return $canvas;
         } catch (\Throwable $failure) {
@@ -241,7 +258,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
         ?string $title,
         ?ShellMode $shellMode,
     ): Canvas {
-        $this->currentPagePost($canvasId);
+        $current = $this->mapCanvas($this->currentPagePost($canvasId), CanvasKind::Page);
 
         if ($title !== null && $shellMode instanceof ShellMode) {
             throw new \InvalidArgumentException('Update the draft title and layout in separate requests.');
@@ -251,31 +268,37 @@ final class WordPressCanvasPort implements CanvasPortInterface
             throw new \InvalidArgumentException('Provide at least one canvas property to update.');
         }
 
+        $committedTitle = $current->title();
+        $committedPreviewUrl = $current->previewUrl();
+        $warnings = [];
         if ($title !== null) {
-            $current = $this->pageDetails->find($canvasId);
-            if ($current === null) {
-                throw new \RuntimeException('Draft page details are unavailable.');
-            }
-
-            $this->pageDetails->update(
+            $details = $this->pageDetails->updateTitle(
                 $canvasId,
                 $title,
-                $current->slug(),
                 max(0, (int) get_current_user_id()),
             );
+            $committedTitle = $details->title();
+            $committedPreviewUrl = $details->previewUrl();
         }
 
         if ($shellMode instanceof ShellMode) {
             $this->shellModeService->setForPage($canvasId, $shellMode);
-            $this->refreshWorkingCanvas($canvasId);
+            try {
+                $this->refreshWorkingCanvas($canvasId);
+            } catch (\Throwable) {
+                // The shell mode is already committed. A derived refresh
+                // failure cannot turn that known write into a retry.
+                $warnings[] = self::WORKING_CANVAS_REFRESH_WARNING;
+            }
         }
 
-        $canvas = $this->find($canvasId);
-        if (!$canvas instanceof Canvas) {
-            throw new CanvasNotFoundException($canvasId);
-        }
-
-        return $canvas;
+        return $this->canvasWithCommittedValues(
+            $current,
+            $committedTitle,
+            $committedPreviewUrl,
+            $shellMode ?? $current->shellMode(),
+            $warnings,
+        );
     }
 
     public function updateGlobalPart(int $canvasId, ?string $title): Canvas
@@ -284,7 +307,10 @@ final class WordPressCanvasPort implements CanvasPortInterface
             throw new \InvalidArgumentException('Provide at least one canvas property to update.');
         }
 
-        $this->currentGlobalPartPost($canvasId);
+        $current = $this->mapCanvas(
+            $this->currentGlobalPartPost($canvasId),
+            CanvasKind::GlobalPart,
+        );
 
         $resolvedTitle = trim($title);
         if ($resolvedTitle === '') {
@@ -294,12 +320,12 @@ final class WordPressCanvasPort implements CanvasPortInterface
         $this->globalSource->run(fn (): mixed => $this->updateGlobalPartTitle($canvasId, $resolvedTitle));
         clean_post_cache($canvasId);
 
-        $canvas = $this->find($canvasId);
-        if (!$canvas instanceof Canvas) {
-            throw new CanvasNotFoundException($canvasId);
-        }
-
-        return $canvas;
+        return $this->canvasWithCommittedValues(
+            $current,
+            $resolvedTitle,
+            $current->previewUrl(),
+            $current->shellMode(),
+        );
     }
 
     // ── Canvas delete ────────────────────────────────────────────────────────
@@ -317,6 +343,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
         if ($deleted === false || $deleted instanceof \WP_Error) {
             throw new \RuntimeException('Could not delete the page canvas.');
         }
+        $this->assertPostDeletionState($canvasId, $forceDelete, 'page canvas');
 
         return new DeleteCanvasResult($canvas, $forceDelete);
     }
@@ -336,6 +363,7 @@ final class WordPressCanvasPort implements CanvasPortInterface
         if ($deleted === false || $deleted instanceof \WP_Error) {
             throw new \RuntimeException('Could not delete the reusable canvas.');
         }
+        $this->assertPostDeletionState($canvasId, $forceDelete, 'reusable canvas');
 
         return new DeleteCanvasResult($canvas, $forceDelete);
     }
@@ -360,24 +388,24 @@ final class WordPressCanvasPort implements CanvasPortInterface
             throw new \InvalidArgumentException('Only reusable sections can be attached to page canvases.');
         }
 
-        $resolved = $this->globalPartService->resolveSourceContent($reusableId);
-        if ($resolved === null) {
+        $source = $this->globalPartService->sourceSectionFromSnapshot($reusableId, $reusable);
+        if (!$source instanceof Section) {
             throw new \InvalidArgumentException('Reusable has no source content.');
         }
 
         try {
             $result = $this->sectionService->create(
                 pageId: $canvasId,
-                sectionName: sanitize_text_field((string) ($resolved['title'] ?? '')),
-                content: $resolved['content'],
-                sourceRootId: $resolved['section_id'],
+                sectionName: sanitize_text_field((string) ($reusable['title'] ?? '')),
+                content: $source->content()->toArray(),
+                sourceRootId: $source->id(),
             );
         } catch (PageNotFoundException | SectionValidationException $e) {
             throw $e;
         }
 
-        $inserted = $this->lastPageSection($canvasId);
-        if (!$inserted instanceof Section) {
+        $sectionId = (int) ($result['section_id'] ?? 0);
+        if ($sectionId <= 0) {
             throw new \RuntimeException('Attached reusable section could not be loaded.');
         }
 
@@ -386,10 +414,11 @@ final class WordPressCanvasPort implements CanvasPortInterface
             reusableId: $reusableId,
             reusableTitle: trim((string) ($reusable['title'] ?? '')) !== '' ? (string) $reusable['title'] : _x('Untitled reusable', 'Page Builder', 'uncanny-automator'),
             reusableType: (string) ($reusable['type'] ?? GlobalPartType::Section->value),
-            sectionId: $inserted->id() ?? 0,
-            position: $inserted->position(),
-            sectionName: $inserted->name(),
-            previewUrl: (string) ($result['preview'] ?? ''),
+            sectionId: $sectionId,
+            position: (int) ($result['position'] ?? 0),
+            sectionName: (string) ($result['name'] ?? ''),
+            editorUrl: $canvas->editorUrl(),
+            previewUrl: $canvas->previewUrl(),
             warnings: array_values(array_map('strval', (array) ($result['warnings'] ?? []))),
         );
     }
@@ -476,6 +505,58 @@ final class WordPressCanvasPort implements CanvasPortInterface
         return trim((string) ($post->post_status ?? '')) === 'publish';
     }
 
+    private function pageIdForCreationMarker(string $marker): int
+    {
+        global $wpdb;
+        $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        $query = $wpdb->prepare(
+            "SELECT ID FROM {$postsTable} WHERE post_content_filtered = %s AND post_type = %s ORDER BY ID DESC LIMIT 2",
+            $marker,
+            'page',
+        );
+        $ids = $wpdb->get_col($query);
+        if (!is_array($ids) || count($ids) !== 1) {
+            return 0;
+        }
+
+        return max(0, (int) $ids[0]);
+    }
+
+    private function clearCreationMarker(int $postId, string $marker): void
+    {
+        global $wpdb;
+        $postsTable = isset($wpdb->posts) ? (string) $wpdb->posts : (string) $wpdb->prefix . 'posts';
+        $updated = $wpdb->update(
+            $postsTable,
+            ['post_content_filtered' => ''],
+            ['ID' => $postId, 'post_content_filtered' => $marker],
+            ['%s'],
+            ['%d', '%s'],
+        );
+        if ($updated === false) {
+            throw new \RuntimeException('Created page recovery marker could not be cleared.');
+        }
+
+        clean_post_cache($postId);
+    }
+
+    private function assertPostDeletionState(int $postId, bool $forceDelete, string $label): void
+    {
+        clean_post_cache($postId);
+        $remaining = get_post($postId);
+
+        if ($forceDelete && is_object($remaining)) {
+            throw new WordPressWriteVerificationException(
+                "WordPress returned from deleting the {$label}, but post {$postId} still exists.",
+            );
+        }
+        if (!$forceDelete && (!is_object($remaining) || !$this->isTrashedPost($remaining))) {
+            throw new WordPressWriteVerificationException(
+                "WordPress returned from trashing the {$label}, but post {$postId} is not in Trash.",
+            );
+        }
+    }
+
     /**
      * A WordPress post is only one step of canvas creation. If Page Builder
      * initialization fails after that insert, remove the post before exposing
@@ -489,19 +570,27 @@ final class WordPressCanvasPort implements CanvasPortInterface
                 ? wp_delete_post($postId, true)
                 : false;
             $deleted = $delete();
+            if ($deleted !== false && !$deleted instanceof \WP_Error) {
+                clean_post_cache($postId);
+                if (is_object(get_post($postId))) {
+                    throw new \RuntimeException('The incomplete WordPress post still exists after cleanup.');
+                }
+            }
         } catch (\Throwable $cleanupFailure) {
-            throw new \RuntimeException(
-                "Created {$kind} initialization failed, and its WordPress post could not be removed: {$cleanupFailure->getMessage()}",
-                0,
+            throw new CanvasCreationUncertainException(
+                $postId,
+                $kind,
                 $failure,
+                $cleanupFailure,
             );
         }
 
         if ($deleted === false || $deleted instanceof \WP_Error) {
-            throw new \RuntimeException(
-                "Created {$kind} initialization failed, and its WordPress post could not be removed.",
-                0,
+            throw new CanvasCreationUncertainException(
+                $postId,
+                $kind,
                 $failure,
+                new \RuntimeException('The incomplete WordPress post could not be removed.'),
             );
         }
 
@@ -533,16 +622,25 @@ final class WordPressCanvasPort implements CanvasPortInterface
         $this->workingCanvas->refresh($pageId);
     }
 
-    private function lastPageSection(int $pageId): ?Section
-    {
-        $sections = $this->sectionRepository->findByPageId($pageId)->all();
-        if ($sections === []) {
-            return null;
-        }
-
-        $last = end($sections);
-
-        return $last instanceof Section ? $last : null;
+    private function canvasWithCommittedValues(
+        Canvas $current,
+        string $title,
+        string $previewUrl,
+        ?ShellMode $shellMode,
+        array $warnings = [],
+    ): Canvas {
+        return new Canvas(
+            id: $current->id(),
+            kind: $current->kind(),
+            title: $title,
+            status: $current->status(),
+            owned: $current->owned(),
+            editorUrl: $current->editorUrl(),
+            previewUrl: $previewUrl,
+            shellMode: $shellMode,
+            globalPartType: $current->globalPartType(),
+            warnings: $warnings,
+        );
     }
 
     private function mapCanvas(object $post, CanvasKind $kind): Canvas

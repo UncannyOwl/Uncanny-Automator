@@ -10,10 +10,12 @@ use UncannyPageBuilder\Application\GlobalPartService;
 use UncannyPageBuilder\Application\Reusable\DeleteReusableResult;
 use UncannyPageBuilder\Application\Reusable\ReusablePortInterface;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartRepositoryInterface;
+use UncannyPageBuilder\Domain\GlobalPart\GlobalPartCreationUncertainException;
 use UncannyPageBuilder\Domain\GlobalPart\GlobalPartType;
 use UncannyPageBuilder\Domain\Reusable\Reusable;
-use UncannyPageBuilder\Domain\Section\SectionRepositoryInterface;
+use UncannyPageBuilder\Domain\Section\Section;
 use UncannyPageBuilder\Infrastructure\Persistence\SchemaManager;
+use UncannyPageBuilder\Infrastructure\Persistence\WordPressWriteVerificationException;
 
 final class WordPressReusablePort implements ReusablePortInterface
 {
@@ -23,7 +25,6 @@ final class WordPressReusablePort implements ReusablePortInterface
     public function __construct(
         private readonly GlobalPartRepositoryInterface $globalPartRepository,
         private readonly GlobalPartService $globalPartService,
-        private readonly SectionRepositoryInterface $sectionRepository,
         private readonly GlobalPartDefaultsService $globalPartDefaults,
         private readonly GlobalSourceMutation $globalSource,
     ) {}
@@ -121,46 +122,56 @@ final class WordPressReusablePort implements ReusablePortInterface
     }
 
     public function convertSection(
-        int $sectionId,
+        Section $section,
         string $title,
         GlobalPartType $type,
     ): Reusable {
-        $resolvedTitle = $this->resolvedConvertedTitle($sectionId, $title);
-        $result = $this->globalPartService->createFromSectionId($sectionId, $resolvedTitle, $type);
+        $resolvedTitle = $this->resolvedConvertedTitle($section, $title);
+        $result = $this->globalPartService->createFromSection($section, $resolvedTitle, $type);
         $reusableId = (int) ($result['id'] ?? 0);
 
         if ($reusableId <= 0) {
             throw new \RuntimeException('Converted reusable was created without a valid ID.');
         }
 
-        try {
-            $reusable = $this->find($reusableId);
-            if (!$reusable instanceof Reusable) {
-                throw new \RuntimeException('Converted reusable could not be loaded.');
-            }
-
-            return $reusable;
-        } catch (\Throwable $failure) {
-            $this->rethrowAfterCreatedPostCleanup($reusableId, $failure);
+        $sourceSectionId = (int) ($result['section_id'] ?? 0);
+        if ($sourceSectionId <= 0) {
+            $this->rethrowAfterCreatedPostCleanup(
+                $reusableId,
+                new \RuntimeException('Converted reusable was created without a valid source section ID.'),
+            );
         }
+
+        return new Reusable(
+            id: $reusableId,
+            title: (string) ($result['title'] ?? $resolvedTitle),
+            type: GlobalPartType::fromString((string) ($result['type'] ?? $type->value)),
+            status: 'publish',
+            editorUrl: $this->editorUrl($reusableId, 'publish'),
+            hasSource: true,
+            sourceSectionId: $sourceSectionId,
+            warnings: array_values(array_map('strval', (array) ($result['warnings'] ?? []))),
+        );
     }
 
     // ── Reusable update ─────────────────────────────────────────────────────
 
     public function update(int $reusableId, ?string $title, ?GlobalPartType $type): Reusable
     {
-        $this->currentPost($reusableId);
+        $current = $this->mapReusable($this->currentPost($reusableId));
 
         if ($title === null && $type === null) {
             throw new \InvalidArgumentException('Provide at least one reusable property to update.');
         }
 
-        $this->globalSource->run(function () use ($reusableId, $title, $type): void {
+        $committedTitle = $title !== null
+            ? $this->resolvedTitle($title, $this->untitledTitleWithId($reusableId))
+            : $current->title();
+        $committedType = $type ?? $current->type();
+
+        $this->globalSource->run(function () use ($reusableId, $title, $type, $committedTitle): void {
             if ($title !== null) {
-                $this->updatePostTitle(
-                    $reusableId,
-                    $this->resolvedTitle($title, $this->untitledTitleWithId($reusableId)),
-                );
+                $this->updatePostTitle($reusableId, $committedTitle);
             }
 
             if ($type instanceof GlobalPartType) {
@@ -170,12 +181,17 @@ final class WordPressReusablePort implements ReusablePortInterface
         });
 
         clean_post_cache($reusableId);
-        $reloaded = get_post($reusableId);
-        if (!$reloaded instanceof \WP_Post) {
-            throw new \RuntimeException('Updated reusable could not be loaded.');
-        }
 
-        return $this->mapReusable($reloaded);
+        return new Reusable(
+            id: $current->id(),
+            title: $committedTitle,
+            type: $committedType,
+            status: $current->status(),
+            editorUrl: $current->editorUrl(),
+            hasSource: $current->hasSource(),
+            sourceSectionId: $current->sourceSectionId(),
+            warnings: $current->warnings(),
+        );
     }
 
     // ── Reusable delete ─────────────────────────────────────────────────────
@@ -193,6 +209,18 @@ final class WordPressReusablePort implements ReusablePortInterface
         $deleted = $forceDelete ? wp_delete_post($reusableId, true) : wp_trash_post($reusableId);
         if ($deleted === false || $deleted instanceof \WP_Error) {
             throw new \RuntimeException('Could not delete the reusable.');
+        }
+        clean_post_cache($reusableId);
+        $remaining = get_post($reusableId);
+        if ($forceDelete && $remaining instanceof \WP_Post) {
+            throw new WordPressWriteVerificationException(
+                "WordPress returned from deleting reusable {$reusableId}, but the post still exists.",
+            );
+        }
+        if (!$forceDelete && (!$remaining instanceof \WP_Post || $remaining->post_status !== 'trash')) {
+            throw new WordPressWriteVerificationException(
+                "WordPress returned from trashing reusable {$reusableId}, but the post is not in Trash.",
+            );
         }
 
         return new DeleteReusableResult($reusable, $forceDelete);
@@ -265,7 +293,7 @@ final class WordPressReusablePort implements ReusablePortInterface
 
         $row = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT id FROM {$table} WHERE global_part_id = %d ORDER BY position ASC LIMIT 1",
+                "SELECT id FROM {$table} WHERE global_part_id = %d ORDER BY position ASC, id ASC LIMIT 1",
                 $reusableId,
             )
         );
@@ -279,14 +307,13 @@ final class WordPressReusablePort implements ReusablePortInterface
         ];
     }
 
-    private function resolvedConvertedTitle(int $sectionId, string $title): string
+    private function resolvedConvertedTitle(Section $section, string $title): string
     {
         $resolvedTitle = trim($title);
         if ($resolvedTitle !== '') {
             return $resolvedTitle;
         }
 
-        $section = $this->sectionRepository->findById($sectionId);
         $sectionName = trim($section->name());
 
         return $sectionName !== '' ? $sectionName : _x('Untitled reusable', 'Page Builder', 'uncanny-automator');
@@ -310,19 +337,25 @@ final class WordPressReusablePort implements ReusablePortInterface
         try {
             $canDeletePost = function_exists(__NAMESPACE__ . '\\wp_delete_post') || function_exists('wp_delete_post');
             $deleted = $canDeletePost ? wp_delete_post($reusableId, true) : false;
+            if ($deleted !== false && !$deleted instanceof \WP_Error) {
+                clean_post_cache($reusableId);
+                if (get_post($reusableId) instanceof \WP_Post) {
+                    throw new \RuntimeException('The incomplete reusable post still exists after cleanup.');
+                }
+            }
         } catch (\Throwable $cleanupFailure) {
-            throw new \RuntimeException(
-                "Reusable creation failed, and its WordPress post could not be removed: {$cleanupFailure->getMessage()}",
-                0,
+            throw new GlobalPartCreationUncertainException(
+                $reusableId,
                 $failure,
+                $cleanupFailure,
             );
         }
 
         if ($deleted === false || $deleted instanceof \WP_Error) {
-            throw new \RuntimeException(
-                'Reusable creation failed, and its WordPress post could not be removed.',
-                0,
+            throw new GlobalPartCreationUncertainException(
+                $reusableId,
                 $failure,
+                new \RuntimeException('The incomplete reusable post could not be removed.'),
             );
         }
 

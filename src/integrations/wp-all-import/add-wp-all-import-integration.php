@@ -26,6 +26,12 @@ class Add_Wp_All_Import_Integration {
 		$this->set_name( 'WP All Import' );
 		$this->set_icon( 'wp-all-import-icon.svg' );
 		$this->set_icon_path( __DIR__ . '/img/' );
+
+		$this->set_plugin_file_path( 'wp-all-import/plugin.php' );
+		$this->set_plugin_variations( array( 'wp-all-import-pro/wp-all-import-pro.php' ) );
+		$this->set_developer_name( 'Soflyy' );
+		$this->set_integration_type( 'plugin' );
+		$this->set_distribution_type( 'wp_org' );
 	}
 
 	/**

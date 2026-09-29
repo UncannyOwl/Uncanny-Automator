@@ -13,19 +13,37 @@ namespace Uncanny_Automator;
 final class Automator_Option_Formatter {
 
 	/**
+	 * Options whose stored value holds objects, mapped to the only classes each may restore.
+	 *
+	 * Every other option decodes with allowed_classes => false (CVE-2026-82627).
+	 * Custom User Fields stores its field definitions as serialized Field objects,
+	 * which have no magic methods. Remove the entry once the addon stores arrays.
+	 *
+	 * @var array<string, string[]>
+	 */
+	const OBJECT_OPTION_CLASSES = array(
+		'uacuf_all_fields' => array( 'UncannyAutomator\AddOn\CustomUserFields\Fields\Field' ),
+	);
+
+	/**
 	 * Format and convert a raw option value to its proper type.
 	 *
-	 * @param string $option The option name.
 	 * @param mixed $value The raw value from storage.
 	 * @param mixed $default_value The default value if conversion fails.
 	 * @param string|null $type The type of the value. (integer|double|boolean|NULL)
+	 * @param string $option The option name. Selects the object allowlist, if any.
 	 *
 	 * @return mixed The properly formatted value.
 	 */
-	public static function format_value( $value, $default_value, $type = null ) {
+	public static function format_value( $value, $default_value, $type = null, $option = '' ) {
 
 		// Unserialize the value if needed.
-		$value = maybe_unserialize( $value );
+		if ( isset( self::OBJECT_OPTION_CLASSES[ $option ] ) && is_string( $value ) && is_serialized( trim( $value ) ) ) {
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, WordPress.PHP.NoSilencedErrors.Discouraged -- allowed_classes is a fixed per-option allowlist.
+			$value = @unserialize( trim( $value ), array( 'allowed_classes' => self::OBJECT_OPTION_CLASSES[ $option ] ) );
+		} else {
+			$value = automator_safe_unserialize( $value );
+		}
 
 		// Return false if the value is false.
 		if ( '__false__' === $value || ( '' === $value && false === $default_value ) ) {

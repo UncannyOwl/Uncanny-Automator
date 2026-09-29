@@ -83,12 +83,13 @@ defined('ABSPATH') || exit;
 <?php endif; ?>
 
 <?php
-$runtimeScripts = $renderer->renderCustomJavaScript(
-    $postId,
-    $headerData ?? null,
-    $footerData ?? null,
-);
-if ($runtimeScripts !== '') {
+/*
+ * Manual edits must start from authored HTML. Agent scripts can replace that
+ * HTML with temporary animation elements, so only Preview runs these scripts.
+ * Responsive editing frames hide the chrome but retain the same restriction.
+ */
+$isEditingCanvas = $showEditorChrome || isset($_GET['upb_editor_viewport']);
+if (!$isEditingCanvas && $runtimeScripts !== '') {
     echo $runtimeScripts;
 }
 ?>
