@@ -25,6 +25,44 @@ class Edd_Helpers {
 	 */
 	public $load_options = true;
 
+	/**
+	 * Edd_Helpers constructor.
+	 */
+	public function __construct() {
+		// Static callback: every helper instance (Pro's included) shares one registration.
+		add_filter( 'automator_trigger_object_codec_adapters', array( self::class, 'register_codec_adapters' ) );
+	}
+
+	/**
+	 * Carry EDD's hook-argument objects through the trigger loopback.
+	 *
+	 * EDD's PayPal IPN, Stripe webhooks and non-AJAX checkout complete orders on init
+	 * priority 10 and exit, before recipe parts load, so edd_complete_purchase runs through
+	 * the AJAX loopback. Each object travels as its ID and EDD reloads it on the receiving
+	 * request.
+	 *
+	 * @param array<string, array{encode: callable, decode: callable}> $adapters Adapters keyed by class name.
+	 *
+	 * @return array<string, array{encode: callable, decode: callable}>
+	 */
+	public static function register_codec_adapters( $adapters ) {
+
+		$adapters['EDD_Payment'] = array(
+			'encode' => function ( $payment ) {
+				return (int) $payment->ID;
+			},
+			'decode' => 'edd_get_payment',
+		);
+
+		$adapters['EDD_Customer'] = array(
+			'encode' => function ( $customer ) {
+				return (int) $customer->id;
+			},
+			'decode' => 'edd_get_customer',
+		);
+
+		return $adapters;
+	}
 
 	/**
 	 * Get user address data from EDD with standardized format.

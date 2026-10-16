@@ -3,6 +3,7 @@
 
 namespace Uncanny_Automator;
 
+use MeprUser;
 use Uncanny_Automator_Pro\Memberpress_Pro_Helpers;
 
 /**
@@ -31,7 +32,45 @@ class Memberpress_Helpers {
 	 * Memberpress_Helpers constructor.
 	 */
 	public function __construct() {
+		// Static callback: every helper instance (Pro's included) shares one registration.
+		add_filter( 'automator_trigger_object_codec_adapters', array( self::class, 'register_codec_adapters' ) );
+	}
 
+	/**
+	 * Carry MemberPress's hook-argument models through the trigger loopback.
+	 *
+	 * MemberPress handles gateway webhooks and signup forms on init priority 10 and
+	 * exits, before recipe parts load, so its triggers run through the AJAX loopback.
+	 * Each model travels as its ID and MemberPress reloads it on the receiving request.
+	 *
+	 * @param array<string, array{encode: callable, decode: callable}> $adapters Adapters keyed by class name.
+	 *
+	 * @return array<string, array{encode: callable, decode: callable}>
+	 */
+	public static function register_codec_adapters( $adapters ) {
+
+		foreach ( array( 'MeprTransaction', 'MeprSubscription', 'MeprEvent' ) as $model ) {
+			$adapters[ $model ] = array(
+				'encode' => function ( $instance ) {
+					return (int) $instance->id;
+				},
+				'decode' => function ( $id ) use ( $model ) {
+					return new $model( $id );
+				},
+			);
+		}
+
+		// MeprUser is keyed by its WordPress user ID.
+		$adapters['MeprUser'] = array(
+			'encode' => function ( $user ) {
+				return (int) $user->ID;
+			},
+			'decode' => function ( $id ) {
+				return new MeprUser( $id );
+			},
+		);
+
+		return $adapters;
 	}
 
 	/**

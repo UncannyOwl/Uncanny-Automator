@@ -11,13 +11,18 @@ namespace Uncanny_Automator\Actionify_Triggers;
  *
  * - Snapshot types (stdClass, WP_User, WP_Post, WP_Term, WP_Comment) keep their public
  *   properties, so hook-time state survives (e.g. post_updated's $post_before, or a
- *   post that is deleted before the loopback runs).
- * - WooCommerce data types keep only their ID and are reloaded through WooCommerce's
- *   own factories, because their state lives in protected properties.
+ *   post that is deleted before the loopback runs). This list is fixed.
+ * - Reference types keep only their ID and are reloaded from their source of truth by
+ *   an adapter, because their state lives in protected properties or a plugin table.
+ *   WooCommerce's data types are built in; an integration registers its own through
+ *   the `automator_trigger_object_codec_adapters` filter (MemberPress does).
  *
- * Only this fixed list is rebuilt. A type name in the payload never selects an
- * arbitrary class to instantiate. An input array that already contains the marker key
- * is escaped, so hook data can never be mistaken for an encoded object.
+ * A type name in the payload never selects an arbitrary class to instantiate: a
+ * snapshot marker is rebuilt only for the fixed list, and a reference marker only by an
+ * adapter that code registered in the receiving request. A reloaded object must be an
+ * instance of its registered type and carry the same ID, so a missing row is refused
+ * rather than delivered empty. An input array that already contains the marker key is
+ * escaped, so hook data can never be mistaken for an encoded object.
  *
  * The payload is signed but not encrypted, so secret fields (password hashes,
  * activation keys, post passwords) are never copied into it. They are refilled from
@@ -42,11 +47,11 @@ class Trigger_Object_Codec {
 	const SNAPSHOT_TYPES = array( 'WP_User', 'WP_Post', 'WP_Term', 'WP_Comment' );
 
 	/**
-	 * WooCommerce types restored by ID. Order matters: the first match wins.
+	 * Filter through which an integration registers reference adapters.
 	 *
-	 * @var string[]
+	 * @var string
 	 */
-	const REFERENCE_TYPES = array( 'WC_Abstract_Order', 'WC_Product', 'WC_Order_Item', 'WC_Customer', 'WC_Coupon' );
+	const ADAPTERS_FILTER = 'automator_trigger_object_codec_adapters';
 
 	/**
 	 * Marker type for an input array that contains the marker key.
@@ -134,14 +139,15 @@ class Trigger_Object_Codec {
 	 */
 	private function encode_object( $instance ) {
 
-		$type = $this->type_of( $instance );
-
-		if ( in_array( $type, self::REFERENCE_TYPES, true ) ) {
-			return $this->encode_reference( $type, $instance );
-		}
+		$adapters = $this->adapters();
+		$type     = $this->type_of( $instance, $adapters );
 
 		if ( null === $type ) {
 			throw new \InvalidArgumentException( 'Unsupported hook argument object: ' . esc_html( get_class( $instance ) ) );
+		}
+
+		if ( isset( $adapters[ $type ] ) ) {
+			return $this->encode_reference( $type, $instance, $adapters[ $type ] );
 		}
 
 		return array(
@@ -174,15 +180,16 @@ class Trigger_Object_Codec {
 
 	/**
 	 * @param string $type     The matched reference type.
-	 * @param object $instance The WooCommerce data object.
+	 * @param object $instance The object to carry by ID.
+	 * @param array  $adapter  The type's adapter.
 	 *
 	 * @return array The marker array.
 	 *
 	 * @throws \InvalidArgumentException When the object has not been saved.
 	 */
-	private function encode_reference( $type, $instance ) {
+	private function encode_reference( $type, $instance, array $adapter ) {
 
-		$id = (int) $instance->get_id();
+		$id = (int) call_user_func( $adapter['encode'], $instance );
 
 		if ( $id <= 0 ) {
 			throw new \InvalidArgumentException( 'Unsaved hook argument object cannot be reloaded: ' . esc_html( get_class( $instance ) ) );
@@ -196,16 +203,17 @@ class Trigger_Object_Codec {
 
 	/**
 	 * @param object $instance The object to classify.
+	 * @param array  $adapters The reference adapters keyed by type.
 	 *
-	 * @return string|null The supported type, or null.
+	 * @return string|null The supported type, or null. Snapshot types win, then adapters in order.
 	 */
-	private function type_of( $instance ) {
+	private function type_of( $instance, array $adapters ) {
 
 		if ( 'stdClass' === get_class( $instance ) ) {
 			return 'stdClass';
 		}
 
-		foreach ( array_merge( self::SNAPSHOT_TYPES, self::REFERENCE_TYPES ) as $type ) {
+		foreach ( array_merge( self::SNAPSHOT_TYPES, array_keys( $adapters ) ) as $type ) {
 			if ( $instance instanceof $type ) {
 				return $type;
 			}
@@ -221,10 +229,11 @@ class Trigger_Object_Codec {
 	 */
 	private function decode_object( array $marker ) {
 
-		$type = (string) $marker[ self::MARKER ];
+		$type     = (string) $marker[ self::MARKER ];
+		$adapters = $this->adapters();
 
-		if ( in_array( $type, self::REFERENCE_TYPES, true ) ) {
-			return $this->load_reference( $type, (int) ( $marker['id'] ?? 0 ) );
+		if ( isset( $adapters[ $type ] ) ) {
+			return $this->load_reference( $type, (int) ( $marker['id'] ?? 0 ), $adapters[ $type ] );
 		}
 
 		$props = $this->decode( (array) ( $marker['props'] ?? array() ) );
@@ -306,46 +315,125 @@ class Trigger_Object_Codec {
 	}
 
 	/**
-	 * Reload a WooCommerce data object through WooCommerce's own factories.
+	 * Reload a reference type through its adapter.
 	 *
-	 * @param string $type The reference type.
-	 * @param int    $id   The object ID.
+	 * @param string $type    The reference type.
+	 * @param int    $id      The object ID.
+	 * @param array  $adapter The type's adapter.
 	 *
 	 * @return object|null The object, or null when it no longer exists.
 	 */
-	private function load_reference( $type, $id ) {
+	private function load_reference( $type, $id, array $adapter ) {
 
-		if ( $id <= 0 || ! function_exists( 'wc_get_order' ) ) {
+		if ( $id <= 0 ) {
 			return null;
 		}
 
-		$instance = $this->load_woocommerce_object( $type, $id );
+		$instance = call_user_func( $adapter['decode'], $id );
 
-		// Some constructors (e.g. WC_Coupon) return an empty object for a missing ID.
-		return is_object( $instance ) && (int) $instance->get_id() === $id ? $instance : null;
+		// Some loaders return an empty object for a missing ID (WC_Coupon, every
+		// MemberPress model), so the reloaded object must prove it is the one asked for.
+		if ( ! $instance instanceof $type || (int) call_user_func( $adapter['encode'], $instance ) !== $id ) {
+			return null;
+		}
+
+		return $instance;
 	}
 
 	/**
-	 * @param string $type The reference type.
-	 * @param int    $id   The object ID.
+	 * Reference adapters keyed by class or interface name. Each is an array with an
+	 * `encode` callable (object in, positive ID out) and a `decode` callable (ID in,
+	 * object out, or null when it no longer exists).
 	 *
-	 * @return object|false|null
+	 * The WooCommerce adapters are built in and cannot be replaced. The rest come from
+	 * the filter, applied on every call because the queue is constructed before
+	 * integrations register. Order matters: the first `instanceof` match wins.
+	 *
+	 * @return array<string, array{encode: callable, decode: callable}>
 	 */
-	private function load_woocommerce_object( $type, $id ) {
+	private function adapters() {
 
-		switch ( $type ) {
-			case 'WC_Abstract_Order':
-				return wc_get_order( $id );
-			case 'WC_Product':
-				return wc_get_product( $id );
-			case 'WC_Order_Item':
-				return \WC_Order_Factory::get_order_item( $id );
-			case 'WC_Customer':
-				return new \WC_Customer( $id );
-			case 'WC_Coupon':
-				return new \WC_Coupon( $id );
+		/**
+		 * Registers reference adapters for hook-argument objects the loopback payload
+		 * cannot carry as snapshots. Register from code that runs on every request where
+		 * the hook can fire (an integration's helpers), never from the trigger itself:
+		 * the encoding request may exit before recipe parts load. Keys are matched with
+		 * `instanceof` in registration order, after the built-ins, so register the
+		 * concrete class, not a parent that other integrations' objects also extend.
+		 *
+		 * @since 7.7.1
+		 *
+		 * @param array<string, array{encode: callable, decode: callable}> $adapters Adapters keyed by class name.
+		 */
+		$registered = apply_filters( self::ADAPTERS_FILTER, array() );
+
+		return $this->woocommerce_adapters() + $this->valid_adapters( is_array( $registered ) ? $registered : array() );
+	}
+
+	/**
+	 * Keep only well-formed registrations. The snapshot types stay fixed.
+	 *
+	 * @param array $adapters Registered adapters.
+	 *
+	 * @return array<string, array{encode: callable, decode: callable}>
+	 */
+	private function valid_adapters( array $adapters ) {
+
+		$valid = array();
+
+		foreach ( $adapters as $type => $adapter ) {
+			if ( ! is_string( $type ) || 'stdClass' === $type || in_array( $type, self::SNAPSHOT_TYPES, true ) ) {
+				continue;
+			}
+			if ( ! is_array( $adapter ) || ! is_callable( $adapter['encode'] ?? null ) || ! is_callable( $adapter['decode'] ?? null ) ) {
+				continue;
+			}
+			$valid[ $type ] = $adapter;
 		}
 
-		return null;
+		return $valid;
+	}
+
+	/**
+	 * WooCommerce data types, reloaded through WooCommerce's own factories.
+	 *
+	 * @return array<string, array{encode: callable, decode: callable}> Empty when WooCommerce is not loaded.
+	 */
+	private function woocommerce_adapters() {
+
+		if ( ! function_exists( 'wc_get_order' ) ) {
+			return array();
+		}
+
+		$by_id = function ( $instance ) {
+			return (int) $instance->get_id();
+		};
+
+		return array(
+			'WC_Abstract_Order' => array(
+				'encode' => $by_id,
+				'decode' => 'wc_get_order',
+			),
+			'WC_Product'        => array(
+				'encode' => $by_id,
+				'decode' => 'wc_get_product',
+			),
+			'WC_Order_Item'     => array(
+				'encode' => $by_id,
+				'decode' => array( 'WC_Order_Factory', 'get_order_item' ),
+			),
+			'WC_Customer'       => array(
+				'encode' => $by_id,
+				'decode' => function ( $id ) {
+					return new \WC_Customer( $id );
+				},
+			),
+			'WC_Coupon'         => array(
+				'encode' => $by_id,
+				'decode' => function ( $id ) {
+					return new \WC_Coupon( $id );
+				},
+			),
+		);
 	}
 }

@@ -87,10 +87,13 @@ class Trigger_Engine {
 		// is still captured. Canonical case: Wordfence's firewall block fires
 		// `wordfence_security_event` then exit()s from `plugins_loaded@10`. Once the
 		// event is enqueued the queue's shutdown → admin-ajax loopback processes it
-		// in a full-lifecycle request. Free's monitored hooks come from the static
-		// build-time metadata cache (readable this early); Pro/postmeta hooks stay
-		// with the full pass below. register_single_trigger() dedups per hook, so
-		// the two passes never double-attach a listener.
+		// in a full-lifecycle request. Monitored hooks come from the static
+		// build-time metadata caches (readable this early): Free's, plus any
+		// addon's added to the list before `plugins_loaded`. Postmeta hooks, and
+		// an addon that adds its file during `init`, stay with the full pass
+		// below. register_single_trigger() dedups per hook, so the two passes
+		// never double-attach a listener. The same pass boots the dispatchers
+		// active triggers declare, ahead of any `init` callback.
 		add_action( 'plugins_loaded', array( $this, 'register_code_defined_hooks' ), 0 );
 
 		if ( did_action( 'automator_after_add_integrations' ) ) {
@@ -110,17 +113,62 @@ class Trigger_Engine {
 	 *
 	 * Runs on `plugins_loaded` (priority 0) so a monitored hook an upstream plugin
 	 * fires-and-exit()s before `init` is still captured. Reads the same build-time
-	 * metadata cache as the full `init` pass; Pro's filter-contributed metadata may
-	 * not be present this early, so Pro/postmeta hooks are left to
-	 * register_automation_hooks(). Idempotent — register_single_trigger() attaches
-	 * each hook's shared listener at most once.
+	 * metadata caches as the full `init` pass, so an addon is covered only when it
+	 * adds its file to the list before `plugins_loaded`; postmeta hooks, and an
+	 * addon that adds its file during `init`, are left to
+	 * register_automation_hooks(). Idempotent — register_single_trigger()
+	 * attaches each hook's shared listener at most once.
+	 *
+	 * Also boots the dispatcher an active trigger declared with
+	 * `Trigger_Definition::dispatcher()`. A dispatcher normally boots in its
+	 * integration's `load_shared_hooks()` at `init` 1, which misses an upstream
+	 * plugin that completes the event and exit()s earlier (Masteriyo's PayPal
+	 * IPN at `init` 0).
 	 *
 	 * @return void
 	 */
 	public function register_code_defined_hooks() {
 		foreach ( $this->collect_code_defined_hooks() as $row ) {
+			$this->boot_dispatcher( $row );
 			$this->register_single_trigger( $row );
 		}
+	}
+
+	/**
+	 * Boot the dispatcher a code-defined row declares, if any.
+	 *
+	 * `boot()` is static, takes no argument and is idempotent (the generator
+	 * rejects any other declaration), so the integration's later call is a no-op.
+	 *
+	 * The row comes from the recipe manifest, which tracks live recipes and not
+	 * plugin status, so a dispatcher boots here whether or not its plugin is
+	 * active. The integration's `plugin_active()` is an instance check whose
+	 * constructor has side effects, and it can read false this early, so the
+	 * engine does not gate on it: R17 keeps a declared dispatcher safe to boot
+	 * without its plugin.
+	 *
+	 * @param array $row A row from collect_code_defined_hooks().
+	 *
+	 * @return void
+	 */
+	private function boot_dispatcher( array $row ) {
+
+		$dispatcher = $row['dispatcher'] ?? '';
+
+		if ( '' === $dispatcher ) {
+			return;
+		}
+
+		if ( ! is_callable( array( $dispatcher, 'boot' ) ) ) {
+			// The build rejects a bad declaration, so this is a stale classmap or
+			// a cache another build wrote. The `init` boot still runs, so only
+			// the event a plugin exits on before `init` is lost — say so, or the
+			// miss stays invisible.
+			error_log( 'Automator trigger-engine: dispatcher skipped — not loadable: ' . $dispatcher . ' (code: ' . ( $row['code'] ?? '' ) . ')' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			return;
+		}
+
+		call_user_func( array( $dispatcher, 'boot' ) );
 	}
 
 	/**
@@ -267,14 +315,35 @@ class Trigger_Engine {
 			}
 
 			foreach ( $entry['hooks'] as $hook ) {
-				$rows[] = array(
-					'code' => (string) $code,
-					'hook' => (string) ( isset( $hook[0] ) ? $hook[0] : '' ),
-				);
+				$rows[] = $this->build_row( (string) $code, $hook, $entry );
 			}
 		}
 
 		return $rows;
+	}
+
+	/**
+	 * Build one `{code, hook}` row, plus `dispatcher` when the entry declares one.
+	 *
+	 * @param string $code  Trigger code.
+	 * @param array  $hook  Hook tuple `[$hook_name, $priority, $accepted_args]`.
+	 * @param array  $entry The trigger's metadata cache entry.
+	 *
+	 * @return array{code: string, hook: string, dispatcher?: string}
+	 */
+	private function build_row( $code, $hook, array $entry ) {
+
+		$row = array(
+			'code' => $code,
+			'hook' => (string) ( isset( $hook[0] ) ? $hook[0] : '' ),
+		);
+
+		// Only when declared, so undispatched rows keep their `{code, hook}` shape.
+		if ( ! empty( $entry['dispatcher'] ) ) {
+			$row['dispatcher'] = (string) $entry['dispatcher'];
+		}
+
+		return $row;
 	}
 
 	/**

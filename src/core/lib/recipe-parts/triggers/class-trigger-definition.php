@@ -108,6 +108,17 @@ final class Trigger_Definition {
 	public $enqueue_gate = null;
 
 	/**
+	 * FQCN of the dispatcher that fires this trigger's hook, or null.
+	 *
+	 * When set, `Trigger_Engine`'s eager `plugins_loaded` pass calls its static
+	 * `boot()` for an active trigger, so an event the upstream plugin completes
+	 * and exit()s on before `init` still reaches the dispatcher.
+	 *
+	 * @var string|null
+	 */
+	public $dispatcher = null;
+
+	/**
 	 * Private constructor — use create() as the entry point.
 	 *
 	 * @param string $code        Unique trigger code.
@@ -213,6 +224,23 @@ final class Trigger_Definition {
 	}
 
 	/**
+	 * Declare the dispatcher that fires this trigger's hook.
+	 *
+	 * Opt in only when the upstream plugin can complete the event and exit()
+	 * before `init` (e.g. a payment gateway callback at `init` 0). The
+	 * dispatcher's static `boot()` takes no argument and is idempotent, so the
+	 * integration's own `load_shared_hooks()` call later is a no-op.
+	 *
+	 * @param string $dispatcher Dispatcher FQCN, e.g. `Foo_Dispatcher::class`.
+	 *
+	 * @return $this
+	 */
+	public function dispatcher( $dispatcher ) {
+		$this->dispatcher = (string) $dispatcher;
+		return $this;
+	}
+
+	/**
 	 * Set the concrete trigger class FQCN. Normally populated automatically
 	 * by `Abstract_Trigger::new_definition()` or Pro's equivalent helper;
 	 * exposed here so callers can override or supply it explicitly.
@@ -261,6 +289,10 @@ final class Trigger_Definition {
 		// Emit only when declared so non-gated entries stay byte-identical.
 		if ( null !== $this->enqueue_gate ) {
 			$entry['enqueue_gate'] = $this->enqueue_gate;
+		}
+
+		if ( null !== $this->dispatcher ) {
+			$entry['dispatcher'] = $this->dispatcher;
 		}
 
 		return $entry;

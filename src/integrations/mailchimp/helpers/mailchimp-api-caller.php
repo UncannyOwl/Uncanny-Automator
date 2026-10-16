@@ -86,6 +86,13 @@ class Mailchimp_Api_Caller extends Api_Caller {
 			}
 		}
 
+		// The platform rejected the request itself: api_request() re-passes the
+		// description as a string on its exception path; an envelope carries
+		// message + upstream_detail.
+		if ( empty( $error_message ) && ! empty( $response['error'] ) ) {
+			$error_message = $this->platform_error_message( $response['error'] );
+		}
+
 		if ( empty( $error_message ) ) {
 			$error_message = esc_html_x( 'An unknown error occurred with Mailchimp.', 'Mailchimp', 'uncanny-automator' );
 		}
@@ -96,6 +103,29 @@ class Mailchimp_Api_Caller extends Api_Caller {
 		}
 
 		throw new Exception( esc_html( $error_message ), absint( $status_code ) );
+	}
+
+	/**
+	 * The platform's own error text: the description string from the exception
+	 * path, or the envelope's message plus the vendor detail when it adds to it.
+	 *
+	 * @param array|string $error The $response['error'] value.
+	 *
+	 * @return string
+	 */
+	private function platform_error_message( $error ) {
+		if ( ! is_array( $error ) ) {
+			return (string) $error;
+		}
+
+		$message = (string) ( $error['message'] ?? '' );
+		$detail  = (string) ( $error['upstream_detail'] ?? ( $error['description'] ?? '' ) );
+
+		if ( '' !== $detail && $detail !== $message ) {
+			$message = trim( $message . ' ' . $detail );
+		}
+
+		return $message;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -225,19 +255,17 @@ class Mailchimp_Api_Caller extends Api_Caller {
 			? $subscriber_data['merge_fields']
 			: array();
 
-		$user_interests = array();
-		if ( false !== $existing_user ) {
-			// If user exists and update_existing is no, throw error.
-			if ( 'no' === $subscriber_data['update_existing'] ) {
-				throw new Exception( esc_html_x( 'User already subscribed to the list.', 'Mailchimp', 'uncanny-automator' ) );
-			}
-			// Compile user interests based on change_groups setting.
-			$user_interests = $this->compile_user_interests(
-				$existing_user,
-				$subscriber_data['change_groups'],
-				$subscriber_data['groups_list']
-			);
+		if ( false !== $existing_user && 'no' === $subscriber_data['update_existing'] ) {
+			throw new Exception( esc_html_x( 'User already subscribed to the list.', 'Mailchimp', 'uncanny-automator' ) );
 		}
+
+		// The selected groups apply to a new contact as much as to an existing one;
+		// compile_user_interests() reads the existing interests only for "Replace all".
+		$user_interests = $this->compile_user_interests(
+			$existing_user,
+			$subscriber_data['change_groups'],
+			$subscriber_data['groups_list']
+		);
 
 		// Determine status based on double opt-in setting
 		$status = 'yes' === $subscriber_data['double_optin'] ? 'pending' : 'subscribed';
@@ -274,9 +302,9 @@ class Mailchimp_Api_Caller extends Api_Caller {
 	/**
 	 * Compile user interests based on existing interests and change groups setting.
 	 *
-	 * @param array  $existing_user
-	 * @param string $change_groups
-	 * @param mixed  $groups_list
+	 * @param array|false $existing_user The member as Mailchimp returned it, or false for a new contact.
+	 * @param string      $change_groups
+	 * @param mixed       $groups_list
 	 *
 	 * @return array
 	 */

@@ -4,7 +4,7 @@ Tags: ai, automation, ai agent, ai assistant, workflow automation
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 7.7.0
+Stable tag: 7.7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -473,80 +473,18 @@ Yes — Uncanny Automator is free to install and use. It includes Uncanny Recipe
 
 == Changelog ==
 
-= 7.7.0 [2026-09-29] =
-
-**New Integration:**
-
-* [CartFlows](https://automatorplugin.com/integration/cartflows/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7542
-* [Eventin](https://automatorplugin.com/integration/eventin/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #8446
-* [Loginizer](https://automatorplugin.com/integration/loginizer/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7548
-* [Post SMTP](https://automatorplugin.com/integration/post-smtp/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7552
-* [Smush](https://automatorplugin.com/integration/smush/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7559
-* [Sucuri Security](https://automatorplugin.com/integration/sucuri-security/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #7561
-* [WPCafe](https://automatorplugin.com/integration/wpcafe/?utm_source=wp-repo&utm_medium=readme&utm_content=changelog) #8449
-
-**New Triggers:**
-
-* CartFlows - A checkout is completed in a flow #7582
-* CartFlows - A product is purchased in a flow #7583
-* Eventin - A user purchases a ticket for an event #8445
-* Eventin - An attendee is checked in to an event #8443
-* Eventin - An attendee is registered for an event #8444
-* Eventin - An event is created #8441
-* Eventin - An event is updated #8442
-* Loginizer - A login attempt fails #7630
-* Loginizer - A user logs in #7629
-* Loginizer - A user registers via social login #7628
-* Loginizer - A login is blocked #7631
-* Post SMTP - An email fails to send via a transport #7648
-* Post SMTP - An email is sent via a transport #7649
-* Smush - An image is optimized #7676
-* Smush - An image optimization is skipped #7675
-* WPCafe - A reservation is cancelled #8452
-* WPCafe - A reservation is made #8454
-* WPCafe - A reservation's status is changed to a status #8453
-
-**New Actions:**
-
-* CartFlows - Create a flow #7584
-* CartFlows - Create a step in a flow #7585
-* Eventin - Add the user as an attendee to an event #8440
-* Eventin - Check in an attendee #8448
-* Eventin - Update the status of an order #8447
-* Loginizer - Add an IP range to the blacklist #7627
-* Loginizer - Add an IP range to the whitelist #7626
-* Loginizer - Clear the failed login logs for an IP #7623
-* Loginizer - Remove an IP address from the blacklist #7625
-* Loginizer - Remove an IP from the whitelist #7624
-* Smush - Optimize an image #7674
-* Smush - Restore an image #7673
-* Sucuri Security - Apply hardening to a directory #7666
-* Sucuri Security - Log a security event #7664
-* Sucuri Security - Remove hardening from a directory #7665
-* Sucuri Security - Reset the user's password #7663
-* Sucuri Security - Run a malware scan #7667
-* WPCafe - Create a reservation #8451
-* WPCafe - Update the status of a reservation #8450
-
-**Updated:**
-
-* Zoom Meetings & Webinar - Allow tokens in the meeting creation actions - date & time fields. #8548
+= 7.7.1 [2026-10-16] =
 
 **Fixed:**
 
-* Google Sheets - Improved error messages to provide more details when requests fail. #8550
-* Mailchimp - Create and send a campaign - Preserved HTML formatting in campaign email content. #8534
-* Uncanny Codes - Fixed code redemption triggers recording an incorrect user ID for logged-out redemptions. #8558
-* Uncanny Groups - Group key triggers now record the correct user ID for logged-out redemptions. #8560
-* Uncanny Tin Can - Module triggers now record the correct user when the learner is not the current user. #8562
-* Uncanny Tin Can - Prevented unnecessary reporting queries when a module is not selected. #8552
-* Uncanny Toolkit - User import triggers now attribute runs to the imported user instead of the importing administrator. #8564
+* Easy Digital Downloads - Resolved an issue where purchase and subscription triggers failed to run during checkout or webhook processing. #8864
+* MailPoet - Add a subscriber to a list - Resolved an issue where the action could remain stuck on Waiting and fail to add subscribers to lists. #8846
+* Mailchimp - Add the user to an audience - Selected groups are not applied to a new contact. #8844
+* MemberPress - Resolved an issue where triggers failed to run when initiated by payment gateway webhooks or signup forms. #8854
 
 **Under the hood:**
 
-* Core - Improved plugin installation checks on Windows. #8623
-* Trigger Object - Added support for safely processing supported WordPress and WooCommerce objects in trigger loopbacks without object deserialization. #8667
-* ARMember & Formidable Forms - Updated to the latest framework. #8578 #8556
+* Core - Triggers can now declare their dispatcher to start before init, so events from plugins that finish and exit early are no longer missed. #8863
 
 [View the full changelog.](https://automatorplugin.com/plugin-changelog/uncanny-automator/?utm_source=wp-repo&utm_medium=readme&utm_content=view-full-changelog)
 

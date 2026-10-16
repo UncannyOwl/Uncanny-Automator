@@ -2,6 +2,7 @@
 
 namespace Uncanny_Automator\Integrations\Edd_Recurring_Integration;
 
+use EDD_Subscription;
 use Uncanny_Automator_Pro\Integrations\Edd_Recurring_Pro_Helpers;
 
 /**
@@ -10,6 +11,40 @@ use Uncanny_Automator_Pro\Integrations\Edd_Recurring_Pro_Helpers;
  * @package Uncanny_Automator
  */
 class Edd_Recurring_Helpers {
+
+	/**
+	 * Edd_Recurring_Helpers constructor.
+	 */
+	public function __construct() {
+		// Static callback: every helper instance (Pro's included) shares one registration.
+		add_filter( 'automator_trigger_object_codec_adapters', array( self::class, 'register_codec_adapters' ) );
+	}
+
+	/**
+	 * Carry EDD Recurring's subscription through the trigger loopback.
+	 *
+	 * Renewals, cancellations and expirations arrive by gateway webhook, which EDD and
+	 * EDD Recurring handle on init before priority 30 and exit, so their triggers run
+	 * through the AJAX loopback. The subscription travels as its ID and is reloaded on
+	 * the receiving request.
+	 *
+	 * @param array<string, array{encode: callable, decode: callable}> $adapters Adapters keyed by class name.
+	 *
+	 * @return array<string, array{encode: callable, decode: callable}>
+	 */
+	public static function register_codec_adapters( $adapters ) {
+
+		$adapters['EDD_Subscription'] = array(
+			'encode' => function ( $subscription ) {
+				return (int) $subscription->id;
+			},
+			'decode' => function ( $id ) {
+				return new EDD_Subscription( $id );
+			},
+		);
+
+		return $adapters;
+	}
 
 	/**
 	 * All EDD downloads options.

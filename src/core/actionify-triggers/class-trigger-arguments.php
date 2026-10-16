@@ -49,7 +49,7 @@ class Trigger_Arguments {
 	/**
 	 * Package arguments for safe storage.
 	 *
-	 * @param array $args Hook arguments to package.
+	 * @param array $args Hook arguments to package. The queue passes its item (trigger_code, action_hook, args), which a refusal log names.
 	 * @param array $metadata Trigger metadata to include.
 	 *
 	 * @return string|false Serialized package or false on failure.
@@ -65,7 +65,7 @@ class Trigger_Arguments {
 			);
 			return maybe_serialize( $package );
 		} catch ( \Throwable $e ) {
-			$this->log( 'Packager error (package): ' . $e->getMessage() );
+			$this->log( $this->refusal_message( 'package', $args, $e ) );
 			return false;
 		}
 	}
@@ -78,6 +78,8 @@ class Trigger_Arguments {
 	 * @return array|false Unpacked data or false on failure.
 	 */
 	public function unpack( $payload ) {
+
+		$data = null;
 
 		try {
 			$data = automator_safe_unserialize( $payload );
@@ -97,7 +99,8 @@ class Trigger_Arguments {
 
 			return $data;
 		} catch ( \Throwable $e ) {
-			$this->log( 'Packager error (unpack): ' . $e->getMessage() );
+			// The item's trigger_code and action_hook are scalars, readable before decode().
+			$this->log( $this->refusal_message( 'unpack', $data['args'] ?? array(), $e ) );
 			return false;
 		}
 	}
@@ -233,7 +236,32 @@ class Trigger_Arguments {
 	}
 
 	/**
-	 * Log errors.
+	 * Name the trigger and hook a refused loopback item belonged to.
+	 *
+	 * @param string     $stage Where the item was refused: 'package' or 'unpack'.
+	 * @param mixed      $item  The queue item (trigger_code, action_hook, args).
+	 * @param \Throwable $e     Why it was refused.
+	 *
+	 * @return string
+	 */
+	private function refusal_message( $stage, $item, \Throwable $e ) {
+
+		$item = is_array( $item ) ? $item : array();
+
+		return sprintf(
+			'Loopback %s refused for %s on %s: %s',
+			$stage,
+			$item['trigger_code'] ?? 'unknown',
+			$item['action_hook'] ?? 'unknown',
+			$e->getMessage()
+		);
+	}
+
+	/**
+	 * Write to the trigger-queue log shown in Automator > Tools > Debug.
+	 *
+	 * Forced past debug mode: a refused payload drops a trigger, and that has to be
+	 * visible in the product, not only in the PHP error log.
 	 *
 	 * @param string $message Error message.
 	 *
@@ -241,7 +269,7 @@ class Trigger_Arguments {
 	 */
 	private function log( $message ) {
 		if ( function_exists( 'automator_log' ) ) {
-			automator_log( $message, 'safe-hook-arguments-packaging' );
+			automator_log( $message, 'safe-hook-arguments-packaging', true, 'trigger-queue' );
 		}
 	}
 }

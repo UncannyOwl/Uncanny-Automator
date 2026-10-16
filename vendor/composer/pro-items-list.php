@@ -1577,19 +1577,7 @@ function automator_pro_items_list() {
 					'is_elite' => false,
 				),
 				array(
-					'name'     => esc_html_x( 'A user cancels their subscription to {{a price option}} of {{a download}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'logged-in',
-					'is_pro'   => true,
-					'is_elite' => false,
-				),
-				array(
 					'name'     => esc_html_x( 'A customer makes a payment and their lifetime value is {{greater than, less than, or equal to}} {{a specific amount}}', 'Automator Pro item', 'uncanny-automator' ),
-					'type'     => 'logged-in',
-					'is_pro'   => true,
-					'is_elite' => false,
-				),
-				array(
-					'name'     => esc_html_x( 'A user subscribes to {{a price option}} of {{a download}}', 'Automator Pro item', 'uncanny-automator' ),
 					'type'     => 'logged-in',
 					'is_pro'   => true,
 					'is_elite' => false,

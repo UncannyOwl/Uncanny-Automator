@@ -8,7 +8,9 @@
 
 namespace Uncanny_Automator;
 
+use MailPoet\DI\ContainerWrapper;
 use MailPoet\Entities\SubscriberEntity;
+use MailPoet\Subscribers\SubscribersRepository;
 
 /**
  * Class MAILPOET_ADDSUBSCRIBERTOLIST_A
@@ -41,6 +43,8 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 		$this->action_code = 'SUBSCRIBERTOLIST';
 		$this->action_meta = 'MAILPOETLISTS';
 		$this->define_action();
+
+		// @deprecated <version> — Backward-compat shim: drains list steps queued by 7.7.0 and earlier. Remove after 2027-01.
 		add_action(
 			'automator_mailpoet_subscribe_to_list',
 			array(
@@ -63,9 +67,9 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			'code'               => $this->action_code,
 			'requires_user'      => false,
 			/* translators: Action - MailPoet */
-			'sentence'           => sprintf( esc_attr__( 'Add {{a subscriber:%1$s}} to {{a list:%2$s}}', 'uncanny-automator' ), 'ADDSUBSCRIBER', $this->action_meta ),
+			'sentence'           => sprintf( esc_html_x( 'Add {{a subscriber:%1$s}} to {{a list:%2$s}}', 'MailPoet', 'uncanny-automator' ), 'ADDSUBSCRIBER', $this->action_meta ),
 			/* translators: Action - MailPoet */
-			'select_option_name' => esc_attr__( 'Add {{a subscriber}} to {{a list}}', 'uncanny-automator' ),
+			'select_option_name' => esc_html_x( 'Add {{a subscriber}} to {{a list}}', 'MailPoet', 'uncanny-automator' ),
 			'priority'           => 10,
 			'accepted_args'      => 1,
 			'execution_function' => array(
@@ -105,16 +109,16 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 					array(
 						'ADDSUBSCRIBER'    =>
 							array(
-								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER', esc_attr__( 'Email', 'uncanny-automator' ), true, 'text', '', true, '' ),
-								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_FIRSTNAME', esc_attr__( 'First name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_LASTNAME', esc_attr__( 'Last name', 'uncanny-automator' ), true, 'text', '', false, '' ),
-								Automator()->helpers->recipe->field->select_field( 'ADDSUBSCRIBER_STATUS', esc_attr__( 'Subscriber Status', 'uncanny-automator' ), $subscriber_status ),
-								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_CONFIRMATIONEMAIL', esc_attr__( 'Add the user directly to the list - Do not send confirmation email', 'uncanny-automator' ), true, 'checkbox', '', false ),
+								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER', esc_html_x( 'Email', 'MailPoet', 'uncanny-automator' ), true, 'text', '', true, '' ),
+								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_FIRSTNAME', esc_html_x( 'First name', 'MailPoet', 'uncanny-automator' ), true, 'text', '', false, '' ),
+								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_LASTNAME', esc_html_x( 'Last name', 'MailPoet', 'uncanny-automator' ), true, 'text', '', false, '' ),
+								Automator()->helpers->recipe->field->select_field( 'ADDSUBSCRIBER_STATUS', esc_html_x( 'Subscriber Status', 'MailPoet', 'uncanny-automator' ), $subscriber_status ),
+								Automator()->helpers->recipe->field->text_field( 'ADDSUBSCRIBER_CONFIRMATIONEMAIL', esc_html_x( 'Add the user directly to the list - Do not send confirmation email', 'MailPoet', 'uncanny-automator' ), true, 'checkbox', '', false ),
 							),
 						$this->action_meta => array(
 							array(
 								'option_code'              => $this->action_meta,
-								'label'                    => esc_attr__( 'List', 'uncanny-automator' ),
+								'label'                    => esc_html_x( 'List', 'MailPoet', 'uncanny-automator' ),
 								'input_type'               => 'select',
 								'supports_multiple_values' => true,
 								'required'                 => true,
@@ -201,30 +205,11 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 				$this->update_status_manually( $subscriber['status'], $subscriber_id );
 			}
 
-			/**
-			 * Adding a cron here so that the
-			 * status 'subscribed' is properly delegated.
-			 * Else Welcome Emails linked to the list aren't sent.
-			 *
-			 * @since 4.7
-			 */
-			$rr = wp_schedule_single_event(
-				time() + 5,
-				'automator_mailpoet_subscribe_to_list',
-				array(
-					$subscriber['email'],
-					maybe_serialize( json_decode( $list_id ) ),
-					maybe_serialize( $options ),
-					$user_id,
-					maybe_serialize( $action_data ),
-					$recipe_id,
-				),
-				true
-			);
+			// Same request: the status was set on MailPoet's own entity, so welcome
+			// emails and the segment-subscribed hooks see it.
+			$mailpoet->subscribeToLists( $subscriber_id, (array) json_decode( $list_id, true ), $options );
 
-			// Complete the action with notice while Cron is processing it.
-			$action_data['complete_with_notice'] = true;
-			Automator()->complete->action( $user_id, $action_data, $recipe_id, _x( 'Waiting for the action to be completed', 'MailPoet action status', 'uncanny-automator' ) );
+			Automator()->complete->action( $user_id, $action_data, $recipe_id );
 
 		} catch ( \MailPoet\API\MP\v1\APIException $e ) {
 			$error_message                       = $e->getMessage();
@@ -240,12 +225,27 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 	 * @return void
 	 */
 	public function update_status_manually( $status, $subscriber_id ) {
-		global $wpdb;
-		$table_name = $wpdb->prefix . 'mailpoet_subscribers';
-		$wpdb->update( $table_name, array( 'status' => $status ), array( 'id' => $subscriber_id ) );
+		// Through MailPoet's repository, not raw SQL, so its in-memory entity
+		// carries the new status into subscribeToLists() in this request.
+		$repository = ContainerWrapper::getInstance()->get( SubscribersRepository::class );
+		$entity     = $repository->findOneById( (int) $subscriber_id );
+
+		if ( null === $entity ) {
+			return;
+		}
+
+		$entity->setStatus( $status );
+		$repository->flush();
 	}
 
 	/**
+	 * Run a list step that 7.7.0 and earlier deferred to WP-Cron.
+	 *
+	 * The action now subscribes in the same request; this only drains events
+	 * already queued on a site when it updates.
+	 *
+	 * @deprecated <version> — Backward-compat shim for `automator_mailpoet_subscribe_to_list` events queued by 7.7.0 and earlier. Remove after 2027-01.
+	 *
 	 * @param $email
 	 * @param $list_id
 	 * @param $options
@@ -271,5 +271,4 @@ class MAILPOET_ADDSUBSCRIBERTOLIST_A {
 			Automator()->complete->action( $user_id, $action_data, $recipe_id, $error_message );
 		}
 	}
-
 }
